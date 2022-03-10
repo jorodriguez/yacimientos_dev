@@ -20,3 +20,28 @@ Versión actualizada del Sistema Integral Administrativo (SIA)
 - Inventarios
 - Proveedor
 - ServiciosGenerales
+
+## Bibliotecas
+ - JSF
+ - PrimeFaces
+ - Lombok
+ - SLF4j
+ - Logback
+ - jOOQ
+ - Guava
+ - PostgreSQL JDBC
+ - Freemarker
+ - JasperReports
+ - POI
+ - Commons Compress
+ - Commons IO
+ - Passay
+ - Commons File Upload
+ - Alfresco
+   - OAuth
+   - Google HTTP Client
+   - Open CMIS
+   - Alfresco Client
+   - Apache Tika
+ - Java Melody
+ - JRobin
