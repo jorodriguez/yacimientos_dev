@@ -1,0 +1,115 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"    
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"  
+      >
+
+    <body>
+        <ui:composition template="./../../../WEB-INF/facelets/templates/templateGrupos.xhtml">
+            <h:panelGroup  rendered="#{empty sesion.usuario}" styleClass="altura">
+                <ui:include src="./../../../login.xhtml"/>
+            </h:panelGroup>
+            <ui:define name="contenido">
+                <div id="row">
+                    <div class="row">
+                        <ui:include src="../menuAdministracion.xhtml" />
+                    </div>
+                    <div class="row"> 
+                        <h:form>
+                            <div class="row">
+                                <div class="col-lg-4">
+                                    <h:selectOneMenu value="#{proveedorSinCartaBean.campoProveedorId}" 
+                                                     styleClass="form-control">
+                                        <f:selectItem itemLabel="Todos . . . " itemValue="0"/>
+                                        <f:selectItems value="#{proveedorSinCartaBean.camposProveedores}"/>
+                                        <f:ajax render="dtProveedor" listener="#{proveedorSinCartaBean.cambiarCampo}"/>
+                                    </h:selectOneMenu>
+                                </div>
+                                <div class="col-lg-4">
+                                    <h:commandLink styleClass="btn btn-primary" actionListener="#{proveedorSinCartaBean.inicioGuardar(e)}">
+                                        <i class="fa fa-plus"/>
+                                    </h:commandLink> 
+                                </div>
+                            </div>
+                            <p:dataTable id="dtProveedor" value="#{proveedorSinCartaBean.proveedores}" var="dataP" 
+                                           rowIndexVar="index" paginator="true" paginatorAlwaysVisible="true"
+                                           paginatorPosition="bottom" rows="15"> 
+                                <p:column headerText="Campo" style="text-align: left; width: 30%"
+                                            >
+                                    <h:outputLabel value="#{dataP.campo}"/>
+                                </p:column>
+                                <p:column headerText="RFC">
+                                    <h:outputLabel value="#{dataP.rfcProveedor}"/>
+                                </p:column>
+                                <p:column headerText="Proveedor" style="text-align: left;">
+                                    <h:outputLabel value="#{dataP.proveedor}"/>
+                                </p:column>
+                                <p:column >
+                                    <h:commandLink actionListener="#{proveedorSinCartaBean.elimianar(e)}"
+                                                   onclick="if (!confirm('La operación va a quitar el proveedor de la lista, ¿ está seguro ?'))
+                                                               return false;">
+                                        <i class="fa fa-trash text-danger"/>
+                                        <f:param name="indice" value="#{index}"/>
+                                    </h:commandLink>
+                                </p:column>                                
+                            </p:dataTable>
+                        </h:form>
+                    </div>
+                </div>
+                <!-- Agregar proveedor -->
+                <div class="modal fade" id="dialogoAgregarProveedor" data-backdrop="static" data-keyboard="false" style="color: black;">
+                    <div class="modal-dialog" >
+                        <div class="modal-content">
+                            <div class="modal-header">                    
+                                <h4 class="modal-title">Agregar proveedor</h4>                                                                
+                            </div>
+                            <h:form id="frmAgregarProv" styleClass="textoIzquierda">
+                                <div class="modal-body">   
+                                    <div class="row">
+                                        <div  class="row">
+                                            <h:message  for="" style="display: block;" infoClass="alert alert-success" warnClass="alert alert-warning"
+                                                        errorClass="alert alert-danger" fatalClass="alert alert-danger"  />
+                                        </div>
+                                        <div class="col-lg-12">
+                                            <h:outputLabel value="Proveedor:" styleClass="control-label"/>
+                                            <h:inputText id="autocomplete" size="40"     styleClass="form-control"
+                                                         onclick="autocompletar(this, 'hidenDes', 'frmAgregarProv');">
+                                            </h:inputText>
+                                            <h:inputHidden id="hidenDes" value="#{proveedorSinCartaBean.proveedorId}"/>
+                                        </div>
+                                        <div class="col-lg-12">
+                                            <h:outputLabel value="¿Aplicar a todos los campos?" styleClass="control-label"
+                                                           />
+                                            <div class="col-lg-12">
+                                                <h:selectBooleanCheckbox value="#{proveedorSinCartaBean.aplicarTodosCampos}"
+                                                                         styleClass="form-check"/>                                                
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-12">
+                                            <h:outputLabel value="Bloque:" styleClass="control-label"/>
+                                            <h:selectOneMenu value="#{proveedorSinCartaBean.campoId}" 
+                                                             styleClass="form-control">
+                                                <f:selectItem itemLabel="Todos . . . " itemValue="0"/>
+                                                <f:selectItems value="#{proveedorSinCartaBean.campos}"/>
+                                            </h:selectOneMenu>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <h:commandLink styleClass="btn btn-default" value="Cerrar" actionListener="#{proveedorSinCartaBean.cerrarGuardar(e)}"/>
+                                    <h:commandLink styleClass="btn btn-primary" value="Guardar" 
+                                                   actionListener="#{proveedorSinCartaBean.guardar(e)}"/>
+                                </div>
+                            </h:form>
+                        </div>
+                    </div>
+                </div>
+            </ui:define>
+
+        </ui:composition>
+
+    </body>
+</html>

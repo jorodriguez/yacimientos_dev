@@ -1,0 +1,819 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      
+      xmlns:c="http://java.sun.com/jsp/jstl/core"
+      >
+
+    <body>
+
+        <ui:composition template="./../../../WEB-INF/facelets/templates/templateGrupos.xhtml">
+            <h:panelGroup  rendered="#{empty sesion.usuario}" styleClass="altura">
+                <ui:include src="./../../../login.xhtml"/>
+            </h:panelGroup>
+            <ui:define name="contenido" >
+                <script>
+                    function removeSpecialChars(str) {
+                        return str.replace(/(?!\w|\s|\.)./g, '')
+                                .replace(/\s+/g, ' ')
+                                .replace(/^(\s*)([\W\w]*)(\b\s*$)/g, '$2');
+                    }
+
+                    function validarCajaTextoCantidad(idComponente) {
+                        var patt = /^\d+(\.\d{1,10})?$/;
+                        return patt.test($("#" + idComponente).val());
+                    }
+
+                    function validarDecimal(event, idComponente) {
+                        var x = event.which || event.keyCode;
+                        var xx = String.fromCharCode(x);
+                        if (!validarCajaTextoCantidad(idComponente)) {
+                            var str = $("#" + idComponente).val();                               
+                            str = removeSpecialChars(str);                            
+                            var n = str.replace(xx, "");
+                            var n = n.replace(xx.toLowerCase(), "");
+                            $("#" + idComponente).val(n);
+                            return false;
+                        }
+
+                        return true;
+                    }
+
+                </script>
+                <style>
+                    .nav > li > a {
+                        display: block;
+                        padding: 10px;
+                        position: relative;
+                    }
+
+                </style>
+                <div id="page">
+                    <div class="row">
+                        <ui:include src="./../menuAdministracion.xhtml" rendered="#{not empty sesion.usuario}" />
+                    </div>                    
+                    <div class="row">   
+                        <h:form rendered="#{not empty sesion.usuario}" >
+                            <div class="row" style="margin-top: 15px; margin-bottom: 15px;">                                
+                                <strong><h:outputText class="col-lg-1 col-xs-12 control-label" value="Filtro:"/></strong>
+                                <div class="col-lg-5 col-xs-12">                                            
+                                    <p:selectOneMenu id="idParidadUsuario" styleClass="form-control"
+                                                       value="#{paridadBean.companiaSeleccionada}" 
+                                                       valueChangeListener="#{paridadBean.cambiarValorCompania}"
+                                                       
+                                                       >                                        
+                                        <f:selectItems value="#{paridadBean.companias}"/>
+                                    </p:selectOneMenu>
+                                </div>
+                                <div class="visible-lg col-lg-6" ></div>                                                
+                            </div>
+                            <div class="panel with-nav-tabs panel-info">                            
+                                <div class="panel-heading">
+                                    <ul class="nav nav-tabs">
+                                        <li class="#{paridadBean.activeTab1}">
+                                            <a data-toggle="tab" href="#home" onclick="$('.valTab').val(1);">Catálogo de Paridad</a></li>
+                                        <li class="#{paridadBean.activeTab2}">
+                                            <a data-toggle="tab" href="#menu1" onclick="$('.valTab').val(2);">Paridad Valor</a></li>    
+                                    </ul>
+                                </div>
+                                <div class="panel-body">
+                                    <div class="tab-content">
+                                        <div id="home" class="tab-pane fade in #{paridadBean.activeTab1}">                          
+
+
+                                            <div class="col-lg-12">
+                                                <div class="col-lg-4"></div>
+                                                <div class="col-lg-6">
+                                                    <h2 class="page-header">Catálogo de Paridad</h2>
+                                                </div>
+                                            </div>
+                                            <center><h:messages globalOnly="true" errorClass="errorMessage" infoClass="infoMessage"/></center>
+
+
+                                            <p:panelGrid>
+                                                <p:commandLink title="#{msgs['sistema.crear']} Paridad" actionListener="#{paridadBean.crearParidad(event)}" styleClass="btn btn-default">
+                                                    <p:graphicImage title="#{msgs['sistema.crear']} Paridad" alt="#{msgs['sistema.crear']} Paridad" url="./resources/imagenes/button_create.png" styleClass="imagenSinBorde"/>
+                                                </p:commandLink>
+                                                <p:commandLink value="#{msgs['sistema.crear']} Paridad" title="#{msgs['sistema.crear']} Paridad" actionListener="#{paridadBean.crearParidad(event)}" styleClass="linkPequenio" />
+                                            </p:panelGrid>  
+
+                                            <div class="row">
+                                                <p:dataTable id="dgParidad" rows="10" var="data" styleClass="table table-bordered table-striped "
+                                                               value="#{paridadBean.lstParidad}"   style="text-align: center;" >
+                                                    <p:column style="text-align: center;">
+                                                        <f:facet name="header"><h:outputText value="Compañia"/></f:facet>
+                                                        <h:outputText value="#{data.compania}"/>
+                                                    </p:column>
+                                                    <p:column style="text-align: center;">
+                                                        <f:facet name="header"><h:outputText value="Paridad"/></f:facet>
+                                                        <h:outputText value="#{data.monedaOrigenSiglas} ->  #{data.monedaDestinoSiglas}"/>
+                                                    </p:column>                                                        
+                                                    <p:column style="text-align: center;">
+                                                        <f:facet name="header"><h:outputText value="Fecha Valido"/></f:facet>
+                                                        <h:outputText value="#{data.fechaValido}">
+                                                            <f:convertDateTime dateStyle="default" pattern="dd/MM/yyyy"/>
+                                                        </h:outputText>
+                                                    </p:column>                                    
+                                                    <p:column style="text-align: center;">
+                                                        <center>
+                                                            <p:commandLink value="#{msgs['sistema.modificar']}" actionListener="#{paridadBean.editarParidad(event)}" styleClass="link">
+                                                                <f:param name="idParidad" value="#{data.id}"/>
+                                                            </p:commandLink>
+                                                        </center>
+                                                    </p:column>
+                                                    <p:column style="text-align: center;">
+                                                        <center>
+                                                            <p:commandLink value="#{msgs['sistema.eliminar']}" 
+                                                                             actionListener="#{paridadBean.deleteParidad(event)}" styleClass="link">
+                                                                <f:param name="idParidad" value="#{data.id}"/>
+                                                            </p:commandLink>
+                                                        </center>                                    
+                                                    </p:column>
+                                                </p:dataTable>
+                                            </div>
+                                            
+                                            <br/>
+
+
+                                        </div>
+                                        <div id="menu1" class="tab-pane fade in #{paridadBean.activeTab2}">
+
+                                            <div class="row">
+                                                <div class="panel with-nav-tabs panel-info">
+                                                    <div class="panel-heading">
+                                                        <ul class="nav nav-tabs">
+                                                            <li class="tabEnero">
+                                                                <a data-toggle="tab" href="#Enero">Enero</a></li>
+                                                            <li class="tabFebrero">
+                                                                <a data-toggle="tab" href="#Febrero">Febrero</a></li>    
+                                                            <li class="tabMarzo">
+                                                                <a data-toggle="tab" href="#Marzo">Marzo</a></li>    
+                                                            <li class="tabAbril">
+                                                                <a data-toggle="tab" href="#Abril">Abril</a></li>    
+                                                            <li class="tabMayo">
+                                                                <a data-toggle="tab" href="#Mayo">Mayo</a></li>    
+                                                            <li class="tabJunio">
+                                                                <a data-toggle="tab" href="#Junio">Junio</a></li>    
+                                                            <li class="tabJulio">
+                                                                <a data-toggle="tab" href="#Julio">Julio</a></li>    
+                                                            <li class="tabAgosto">
+                                                                <a data-toggle="tab" href="#Agosto">Agosto</a></li>
+                                                            <li class="tabSeptiembre">
+                                                                <a data-toggle="tab" href="#Septiembre">Septiembre</a></li>    
+                                                            <li class="tabOctubre">
+                                                                <a data-toggle="tab" href="#Octubre">Octubre</a></li>    
+                                                            <li class="tabNoviembre">
+                                                                <a data-toggle="tab" href="#Noviembre">Noviembre</a></li>    
+                                                            <li class="tabDiciembre">
+                                                                <a data-toggle="tab" href="#Diciembre">Diciembre</a></li>    
+
+                                                        </ul>
+                                                    </div>
+                                                    <div class="panel-body">
+                                                        <div class="tab-content">
+                                                            <div id="Enero" class="Enero tab-pane fade in ">
+                                                                <ui:fragment rendered="#{paridadBean.paridadAnual != null and paridadBean.paridadAnual.meses.get(0).paridades != null}">
+                                                                    <div class="row">         
+                                                                        <c:forEach items="#{paridadBean.paridadAnual.meses.get(0).paridades}" var="paridad">
+                                                                            <div class="col-lg-3">
+                                                                                <strong><h:outputText class="col-lg-8 col-xs-12 control-label" value="#{paridad.monedaOrigenSiglas}"/></strong>
+                                                                                <p:commandLink title="#{msgs['sistema.crear']} Valor Paridad" 
+                                                                                                 actionListener="#{paridadBean.crearParidadValor(event)}" 
+                                                                                                 styleClass="col-lg-4 col-xs-12 btn btn-default">
+                                                                                    <p:graphicImage title="#{msgs['sistema.crear']} Valor Paridad" alt="#{msgs['sistema.crear']} Valor Paridad" url="./resources/imagenes/button_create.png" styleClass="imagenSinBorde"/>
+                                                                                    <f:param name="idParidad" value="#{paridad.id}"/>                                                                                    
+                                                                                </p:commandLink>
+                                                                                <p:dataTable var="data" styleClass="table table-bordered table-striped "
+                                                                                               value="#{paridad.mes}"   style="font-size: x-small; text-align: center;" >                                                                            
+                                                                                    <p:column style="text-align: center;">
+                                                                                        <f:facet name="header"><h:outputText value="Fecha"/></f:facet>
+                                                                                        <h:outputText value="#{data.fechaValido}">
+                                                                                            <f:convertDateTime dateStyle="default" pattern="dd/MM/yyyy"/>
+                                                                                        </h:outputText>
+                                                                                    </p:column>                                    
+                                                                                    <p:column style="text-align: center;">
+                                                                                        <f:facet name="header"><h:outputText value="Paridad"/></f:facet>
+                                                                                        <h:outputText value="#{data.valor}"/>
+                                                                                    </p:column>                                                                                    
+                                                                                    <p:column>
+                                                                                        <p:commandLink 
+                                                                                            styleClass="btn btn-info btn-sm"                                                     
+                                                                                            actionListener="#{paridadBean.editarParidadValor(event)}"
+                                                                                            title="Click aquí para editar valor paridad..." >
+                                                                                            <i class="glyphicon glyphicon-pencil"></i>
+                                                                                            <f:param name="idParidadValor" value="#{data.id}"/>
+                                                                                        </p:commandLink>                                                        
+                                                                                    </p:column>
+                                                                                </p:dataTable>
+                                                                            </div>
+                                                                        </c:forEach>
+                                                                    </div>
+                                                                </ui:fragment>                                                                
+                                                            </div>
+                                                            <div id="Febrero" class="Febrero tab-pane fade in ">
+                                                                <ui:fragment rendered="#{paridadBean.paridadAnual != null and paridadBean.paridadAnual.meses.get(1).paridades != null}">
+                                                                    <div class="row"> 
+                                                                        <c:forEach items="#{paridadBean.paridadAnual.meses.get(1).paridades}" var="paridad">
+                                                                            <div class="col-lg-3">
+                                                                                <strong><h:outputText class="col-lg-8 col-xs-12 control-label" value="#{paridad.monedaOrigenSiglas}"/></strong>
+                                                                                <p:commandLink title="#{msgs['sistema.crear']} Valor Paridad" 
+                                                                                                 actionListener="#{paridadBean.crearParidadValor(event)}" 
+                                                                                                 styleClass="col-lg-4 col-xs-12 btn btn-default">
+                                                                                    <p:graphicImage title="#{msgs['sistema.crear']} Valor Paridad" alt="#{msgs['sistema.crear']} Valor Paridad" url="./resources/imagenes/button_create.png" styleClass="imagenSinBorde"/>
+                                                                                    <f:param name="idParidad" value="#{paridad.id}"/>                                                                                    
+                                                                                </p:commandLink>
+                                                                                <p:dataTable var="data" styleClass="table table-bordered table-striped "
+                                                                                               value="#{paridad.mes}"   style="font-size: x-small; text-align: center;" >                                                                            
+                                                                                    <p:column style="text-align: center;">
+                                                                                        <f:facet name="header"><h:outputText value="Fecha"/></f:facet>
+                                                                                        <h:outputText value="#{data.fechaValido}">
+                                                                                            <f:convertDateTime dateStyle="default" pattern="dd/MM/yyyy"/>
+                                                                                        </h:outputText>
+                                                                                    </p:column>                                    
+                                                                                    <p:column style="text-align: center;">
+                                                                                        <f:facet name="header"><h:outputText value="Paridad"/></f:facet>
+                                                                                        <h:outputText value="#{data.valor}"/>
+                                                                                    </p:column>
+                                                                                    <p:column>
+                                                                                        <p:commandLink 
+                                                                                            styleClass="btn btn-info btn-sm"                                                     
+                                                                                            actionListener="#{paridadBean.editarParidadValor(event)}"
+                                                                                            title="Click aquí para editar valor paridad..." >
+                                                                                            <i class="glyphicon glyphicon-pencil"></i>
+                                                                                            <f:param name="idParidadValor" value="#{data.id}"/>
+                                                                                        </p:commandLink>                                                        
+                                                                                    </p:column>
+                                                                                </p:dataTable>
+                                                                            </div>
+                                                                        </c:forEach>
+                                                                    </div>
+                                                                </ui:fragment>                                                                
+                                                            </div>
+                                                            <div id="Marzo" class="Marzo tab-pane fade in ">
+                                                                <ui:fragment rendered="#{paridadBean.paridadAnual != null and paridadBean.paridadAnual.meses.get(2).paridades != null}">
+                                                                    <div class="row">   
+                                                                        <c:forEach items="#{paridadBean.paridadAnual.meses.get(2).paridades}" var="paridad">
+                                                                            <div class="col-lg-3">
+                                                                                <strong><h:outputText class="col-lg-8 col-xs-12 control-label" value="#{paridad.monedaOrigenSiglas}"/></strong>
+                                                                                <p:commandLink title="#{msgs['sistema.crear']} Valor Paridad" 
+                                                                                                 actionListener="#{paridadBean.crearParidadValor(event)}" 
+                                                                                                 styleClass="col-lg-4 col-xs-12 btn btn-default">
+                                                                                    <p:graphicImage title="#{msgs['sistema.crear']} Valor Paridad" alt="#{msgs['sistema.crear']} Valor Paridad" url="./resources/imagenes/button_create.png" styleClass="imagenSinBorde"/>
+                                                                                    <f:param name="idParidad" value="#{paridad.id}"/>                                                                                    
+                                                                                </p:commandLink>
+                                                                                <p:dataTable var="data" styleClass="table table-bordered table-striped "
+                                                                                               value="#{paridad.mes}"   style="font-size: x-small; text-align: center;" >                                                                            
+                                                                                    <p:column style="text-align: center;">
+                                                                                        <f:facet name="header"><h:outputText value="Fecha"/></f:facet>
+                                                                                        <h:outputText value="#{data.fechaValido}">
+                                                                                            <f:convertDateTime dateStyle="default" pattern="dd/MM/yyyy"/>
+                                                                                        </h:outputText>
+                                                                                    </p:column>                                    
+                                                                                    <p:column style="text-align: center;">
+                                                                                        <f:facet name="header"><h:outputText value="Paridad"/></f:facet>
+                                                                                        <h:outputText value="#{data.valor}"/>
+                                                                                    </p:column>
+                                                                                    <p:column>
+                                                                                        <p:commandLink 
+                                                                                            styleClass="btn btn-info btn-sm"                                                     
+                                                                                            actionListener="#{paridadBean.editarParidadValor(event)}"
+                                                                                            title="Click aquí para editar valor paridad..." >
+                                                                                            <i class="glyphicon glyphicon-pencil"></i>
+                                                                                            <f:param name="idParidadValor" value="#{data.id}"/>
+                                                                                        </p:commandLink>                                                        
+                                                                                    </p:column>
+                                                                                </p:dataTable>
+                                                                            </div>
+                                                                        </c:forEach>
+                                                                    </div>
+                                                                </ui:fragment>                                                                
+                                                            </div>
+                                                            <div id="Abril" class="Abril tab-pane fade in ">
+                                                                <ui:fragment rendered="#{paridadBean.paridadAnual != null and paridadBean.paridadAnual.meses.get(3).paridades != null}">
+                                                                    <div class="row">                                                                        
+                                                                        <c:forEach items="#{paridadBean.paridadAnual.meses.get(3).paridades}" var="paridad">
+                                                                            <div class="col-lg-3">
+                                                                                <strong><h:outputText class="col-lg-8 col-xs-12 control-label" value="#{paridad.monedaOrigenSiglas}"/></strong>
+                                                                                <p:commandLink title="#{msgs['sistema.crear']} Valor Paridad" 
+                                                                                                 actionListener="#{paridadBean.crearParidadValor(event)}" 
+                                                                                                 styleClass="col-lg-4 col-xs-12 btn btn-default">
+                                                                                    <p:graphicImage title="#{msgs['sistema.crear']} Valor Paridad" alt="#{msgs['sistema.crear']} Valor Paridad" url="./resources/imagenes/button_create.png" styleClass="imagenSinBorde"/>
+                                                                                    <f:param name="idParidad" value="#{paridad.id}"/>                                                                                    
+                                                                                </p:commandLink>
+                                                                                <p:dataTable var="data" styleClass="table table-bordered table-striped "
+                                                                                               value="#{paridad.mes}"   style="font-size: x-small; text-align: center;" >                                                                            
+                                                                                    <p:column style="text-align: center;">
+                                                                                        <f:facet name="header"><h:outputText value="Fecha"/></f:facet>
+                                                                                        <h:outputText value="#{data.fechaValido}">
+                                                                                            <f:convertDateTime dateStyle="default" pattern="dd/MM/yyyy"/>
+                                                                                        </h:outputText>
+                                                                                    </p:column>                                    
+                                                                                    <p:column style="text-align: center;">
+                                                                                        <f:facet name="header"><h:outputText value="Paridad"/></f:facet>
+                                                                                        <h:outputText value="#{data.valor}"/>
+                                                                                    </p:column>
+                                                                                    <p:column>
+                                                                                        <p:commandLink 
+                                                                                            styleClass="btn btn-info btn-sm"                                                     
+                                                                                            actionListener="#{paridadBean.editarParidadValor(event)}"
+                                                                                            title="Click aquí para editar valor paridad..." >
+                                                                                            <i class="glyphicon glyphicon-pencil"></i>
+                                                                                            <f:param name="idParidadValor" value="#{data.id}"/>
+                                                                                        </p:commandLink>                                                        
+                                                                                    </p:column>
+                                                                                </p:dataTable>
+                                                                            </div>
+                                                                        </c:forEach>
+                                                                    </div>
+                                                                </ui:fragment>                                                                
+                                                            </div>
+                                                            <div id="Mayo" class="Mayo tab-pane fade in ">
+                                                                <ui:fragment rendered="#{paridadBean.paridadAnual != null and paridadBean.paridadAnual.meses.get(4).paridades != null}">
+                                                                    <div class="row">                                                                        
+                                                                        <c:forEach items="#{paridadBean.paridadAnual.meses.get(4).paridades}" var="paridad">
+                                                                            <div class="col-lg-3">
+                                                                                <strong><h:outputText class="col-lg-8 col-xs-12 control-label" value="#{paridad.monedaOrigenSiglas}"/></strong>
+                                                                                <p:commandLink title="#{msgs['sistema.crear']} Valor Paridad" 
+                                                                                                 actionListener="#{paridadBean.crearParidadValor(event)}" 
+                                                                                                 styleClass="col-lg-4 col-xs-12 btn btn-default">
+                                                                                    <p:graphicImage title="#{msgs['sistema.crear']} Valor Paridad" alt="#{msgs['sistema.crear']} Valor Paridad" url="./resources/imagenes/button_create.png" styleClass="imagenSinBorde"/>
+                                                                                    <f:param name="idParidad" value="#{paridad.id}"/>                                                                                    
+                                                                                </p:commandLink>
+                                                                                <p:dataTable var="data" styleClass="table table-bordered table-striped "
+                                                                                               value="#{paridad.mes}"   style="font-size: x-small; text-align: center;" >                                                                            
+                                                                                    <p:column style="text-align: center;">
+                                                                                        <f:facet name="header"><h:outputText value="Fecha"/></f:facet>
+                                                                                        <h:outputText value="#{data.fechaValido}">
+                                                                                            <f:convertDateTime dateStyle="default" pattern="dd/MM/yyyy"/>
+                                                                                        </h:outputText>
+                                                                                    </p:column>                                    
+                                                                                    <p:column style="text-align: center;">
+                                                                                        <f:facet name="header"><h:outputText value="Paridad"/></f:facet>
+                                                                                        <h:outputText value="#{data.valor}"/>
+                                                                                    </p:column>
+                                                                                    <p:column>
+                                                                                        <p:commandLink 
+                                                                                            styleClass="btn btn-info btn-sm"                                                     
+                                                                                            actionListener="#{paridadBean.editarParidadValor(event)}"
+                                                                                            title="Click aquí para editar valor paridad..." >
+                                                                                            <i class="glyphicon glyphicon-pencil"></i>
+                                                                                            <f:param name="idParidadValor" value="#{data.id}"/>
+                                                                                        </p:commandLink>                                                        
+                                                                                    </p:column>
+                                                                                </p:dataTable>
+                                                                            </div>
+                                                                        </c:forEach>
+                                                                    </div>
+                                                                </ui:fragment>                                                                
+                                                            </div>
+                                                            <div id="Junio" class="Junio tab-pane fade in ">
+                                                                <ui:fragment rendered="#{paridadBean.paridadAnual != null and paridadBean.paridadAnual.meses.get(5).paridades != null}">
+                                                                    <div class="row">                                                                        
+                                                                        <c:forEach items="#{paridadBean.paridadAnual.meses.get(5).paridades}" var="paridad">
+                                                                            <div class="col-lg-3">
+                                                                                <strong><h:outputText class="col-lg-8 col-xs-12 control-label" value="#{paridad.monedaOrigenSiglas}"/></strong>
+                                                                                <p:commandLink title="#{msgs['sistema.crear']} Valor Paridad" 
+                                                                                                 actionListener="#{paridadBean.crearParidadValor(event)}" 
+                                                                                                 styleClass="col-lg-4 col-xs-12 btn btn-default">
+                                                                                    <p:graphicImage title="#{msgs['sistema.crear']} Valor Paridad" alt="#{msgs['sistema.crear']} Valor Paridad" url="./resources/imagenes/button_create.png" styleClass="imagenSinBorde"/>
+                                                                                    <f:param name="idParidad" value="#{paridad.id}"/>                                                                                    
+                                                                                </p:commandLink>
+                                                                                <p:dataTable var="data" styleClass="table table-bordered table-striped "
+                                                                                               value="#{paridad.mes}"   style="font-size: x-small; text-align: center;" >                                                                            
+                                                                                    <p:column style="text-align: center;">
+                                                                                        <f:facet name="header"><h:outputText value="Fecha"/></f:facet>
+                                                                                        <h:outputText value="#{data.fechaValido}">
+                                                                                            <f:convertDateTime dateStyle="default" pattern="dd/MM/yyyy"/>
+                                                                                        </h:outputText>
+                                                                                    </p:column>                                    
+                                                                                    <p:column style="text-align: center;">
+                                                                                        <f:facet name="header"><h:outputText value="Paridad"/></f:facet>
+                                                                                        <h:outputText value="#{data.valor}"/>
+                                                                                    </p:column>
+                                                                                    <p:column>
+                                                                                        <p:commandLink 
+                                                                                            styleClass="btn btn-info btn-sm"                                                     
+                                                                                            actionListener="#{paridadBean.editarParidadValor(event)}"
+                                                                                            title="Click aquí para editar valor paridad..." >
+                                                                                            <i class="glyphicon glyphicon-pencil"></i>
+                                                                                            <f:param name="idParidadValor" value="#{data.id}"/>
+                                                                                        </p:commandLink>                                                        
+                                                                                    </p:column>
+                                                                                </p:dataTable>
+                                                                            </div>
+                                                                        </c:forEach>
+                                                                    </div>
+                                                                </ui:fragment>                                                                
+                                                            </div>
+                                                            <div id="Julio" class="Julio tab-pane fade in ">
+                                                                <ui:fragment rendered="#{paridadBean.paridadAnual != null and paridadBean.paridadAnual.meses.get(6).paridades != null}">
+                                                                    <div class="row">                                                                        
+                                                                        <c:forEach items="#{paridadBean.paridadAnual.meses.get(6).paridades}" var="paridad">
+                                                                            <div class="col-lg-3">
+                                                                                <strong><h:outputText class="col-lg-8 col-xs-12 control-label" value="#{paridad.monedaOrigenSiglas}"/></strong>
+                                                                                <p:commandLink title="#{msgs['sistema.crear']} Valor Paridad" 
+                                                                                                 actionListener="#{paridadBean.crearParidadValor(event)}" 
+                                                                                                 styleClass="col-lg-4 col-xs-12 btn btn-default">
+                                                                                    <p:graphicImage title="#{msgs['sistema.crear']} Valor Paridad" alt="#{msgs['sistema.crear']} Valor Paridad" url="./resources/imagenes/button_create.png" styleClass="imagenSinBorde"/>
+                                                                                    <f:param name="idParidad" value="#{paridad.id}"/>                                                                                    
+                                                                                </p:commandLink>
+                                                                                <p:dataTable var="data" styleClass="table table-bordered table-striped "
+                                                                                               value="#{paridad.mes}"   style="font-size: x-small; text-align: center;" >                                                                            
+                                                                                    <p:column style="text-align: center;">
+                                                                                        <f:facet name="header"><h:outputText value="Fecha"/></f:facet>
+                                                                                        <h:outputText value="#{data.fechaValido}">
+                                                                                            <f:convertDateTime dateStyle="default" pattern="dd/MM/yyyy"/>
+                                                                                        </h:outputText>
+                                                                                    </p:column>                                    
+                                                                                    <p:column style="text-align: center;">
+                                                                                        <f:facet name="header"><h:outputText value="Paridad"/></f:facet>
+                                                                                        <h:outputText value="#{data.valor}"/>
+                                                                                    </p:column>
+                                                                                    <p:column>
+                                                                                        <p:commandLink 
+                                                                                            styleClass="btn btn-info btn-sm"                                                     
+                                                                                            actionListener="#{paridadBean.editarParidadValor(event)}"
+                                                                                            title="Click aquí para editar valor paridad..." >
+                                                                                            <i class="glyphicon glyphicon-pencil"></i>
+                                                                                            <f:param name="idParidadValor" value="#{data.id}"/>
+                                                                                        </p:commandLink>                                                        
+                                                                                    </p:column>
+                                                                                </p:dataTable>
+                                                                            </div>
+                                                                        </c:forEach>
+                                                                    </div>
+                                                                </ui:fragment>                                                                
+                                                            </div>
+                                                            <div id="Agosto" class="Agosto tab-pane fade in ">
+                                                                <ui:fragment rendered="#{paridadBean.paridadAnual != null and paridadBean.paridadAnual.meses.get(7).paridades != null}">
+                                                                    <div class="row">                                                                        
+                                                                        <c:forEach items="#{paridadBean.paridadAnual.meses.get(7).paridades}" var="paridad">
+                                                                            <div class="col-lg-3">
+                                                                                <strong><h:outputText class="col-lg-8 col-xs-12 control-label" value="#{paridad.monedaOrigenSiglas}"/></strong>
+                                                                                <p:commandLink title="#{msgs['sistema.crear']} Valor Paridad" 
+                                                                                                 actionListener="#{paridadBean.crearParidadValor(event)}" 
+                                                                                                 styleClass="col-lg-4 col-xs-12 btn btn-default">
+                                                                                    <p:graphicImage title="#{msgs['sistema.crear']} Valor Paridad" alt="#{msgs['sistema.crear']} Valor Paridad" url="./resources/imagenes/button_create.png" styleClass="imagenSinBorde"/>
+                                                                                    <f:param name="idParidad" value="#{paridad.id}"/>                                                                                    
+                                                                                </p:commandLink>
+                                                                                <p:dataTable var="data" styleClass="table table-bordered table-striped "
+                                                                                               value="#{paridad.mes}"   style="font-size: x-small; text-align: center;" >                                                                            
+                                                                                    <p:column style="text-align: center;">
+                                                                                        <f:facet name="header"><h:outputText value="Fecha"/></f:facet>
+                                                                                        <h:outputText value="#{data.fechaValido}">
+                                                                                            <f:convertDateTime dateStyle="default" pattern="dd/MM/yyyy"/>
+                                                                                        </h:outputText>
+                                                                                    </p:column>                                    
+                                                                                    <p:column style="text-align: center;">
+                                                                                        <f:facet name="header"><h:outputText value="Paridad"/></f:facet>
+                                                                                        <h:outputText value="#{data.valor}"/>
+                                                                                    </p:column>
+                                                                                    <p:column>
+                                                                                        <p:commandLink 
+                                                                                            styleClass="btn btn-info btn-sm"                                                     
+                                                                                            actionListener="#{paridadBean.editarParidadValor(event)}"
+                                                                                            title="Click aquí para editar valor paridad..." >
+                                                                                            <i class="glyphicon glyphicon-pencil"></i>
+                                                                                            <f:param name="idParidadValor" value="#{data.id}"/>
+                                                                                        </p:commandLink>                                                        
+                                                                                    </p:column>
+                                                                                </p:dataTable>
+                                                                            </div>
+                                                                        </c:forEach>
+                                                                    </div>
+                                                                </ui:fragment>                                                                
+                                                            </div>
+                                                            <div id="Septiembre" class="Septiembre tab-pane fade in ">
+                                                                <ui:fragment rendered="#{paridadBean.paridadAnual != null and paridadBean.paridadAnual.meses.get(8).paridades != null}">
+                                                                    <div class="row">                                                                        
+                                                                        <c:forEach items="#{paridadBean.paridadAnual.meses.get(8).paridades}" var="paridad">
+                                                                            <div class="col-lg-3">
+                                                                                <strong><h:outputText class="col-lg-8 col-xs-12 control-label" value="#{paridad.monedaOrigenSiglas}"/></strong>
+                                                                                <p:commandLink title="#{msgs['sistema.crear']} Valor Paridad" 
+                                                                                                 actionListener="#{paridadBean.crearParidadValor(event)}" 
+                                                                                                 styleClass="col-lg-4 col-xs-12 btn btn-default">
+                                                                                    <p:graphicImage title="#{msgs['sistema.crear']} Valor Paridad" alt="#{msgs['sistema.crear']} Valor Paridad" url="./resources/imagenes/button_create.png" styleClass="imagenSinBorde"/>
+                                                                                    <f:param name="idParidad" value="#{paridad.id}"/>                                                                                    
+                                                                                </p:commandLink>
+                                                                                <p:dataTable var="data" styleClass="table table-bordered table-striped "
+                                                                                               value="#{paridad.mes}"   style="font-size: x-small; text-align: center;" >                                                                            
+                                                                                    <p:column style="text-align: center;">
+                                                                                        <f:facet name="header"><h:outputText value="Fecha"/></f:facet>
+                                                                                        <h:outputText value="#{data.fechaValido}">
+                                                                                            <f:convertDateTime dateStyle="default" pattern="dd/MM/yyyy"/>
+                                                                                        </h:outputText>
+                                                                                    </p:column>                                    
+                                                                                    <p:column style="text-align: center;">
+                                                                                        <f:facet name="header"><h:outputText value="Paridad"/></f:facet>
+                                                                                        <h:outputText value="#{data.valor}"/>
+                                                                                    </p:column>
+                                                                                    <p:column>
+                                                                                        <p:commandLink 
+                                                                                            styleClass="btn btn-info btn-sm"                                                     
+                                                                                            actionListener="#{paridadBean.editarParidadValor(event)}"
+                                                                                            title="Click aquí para editar valor paridad..." >
+                                                                                            <i class="glyphicon glyphicon-pencil"></i>
+                                                                                            <f:param name="idParidadValor" value="#{data.id}"/>
+                                                                                        </p:commandLink>                                                        
+                                                                                    </p:column>
+                                                                                </p:dataTable>
+                                                                            </div>
+                                                                        </c:forEach>
+                                                                    </div>
+                                                                </ui:fragment>                                                                
+                                                            </div>
+                                                            <div id="Octubre" class="Octubre tab-pane fade in ">
+                                                                <ui:fragment rendered="#{paridadBean.paridadAnual != null and paridadBean.paridadAnual.meses.get(9).paridades != null}">
+                                                                    <div class="row">                                                                        
+                                                                        <c:forEach items="#{paridadBean.paridadAnual.meses.get(9).paridades}" var="paridad">
+                                                                            <div class="col-lg-3">
+                                                                                <strong><h:outputText class="col-lg-8 col-xs-12 control-label" value="#{paridad.monedaOrigenSiglas}"/></strong>
+                                                                                <p:commandLink title="#{msgs['sistema.crear']} Valor Paridad" 
+                                                                                                 actionListener="#{paridadBean.crearParidadValor(event)}" 
+                                                                                                 styleClass="col-lg-4 col-xs-12 btn btn-default">
+                                                                                    <p:graphicImage title="#{msgs['sistema.crear']} Valor Paridad" alt="#{msgs['sistema.crear']} Valor Paridad" url="./resources/imagenes/button_create.png" styleClass="imagenSinBorde"/>
+                                                                                    <f:param name="idParidad" value="#{paridad.id}"/>                                                                                    
+                                                                                </p:commandLink>
+                                                                                <p:dataTable var="data" styleClass="table table-bordered table-striped "
+                                                                                               value="#{paridad.mes}"   style="font-size: x-small; text-align: center;" >                                                                            
+                                                                                    <p:column style="text-align: center;">
+                                                                                        <f:facet name="header"><h:outputText value="Fecha"/></f:facet>
+                                                                                        <h:outputText value="#{data.fechaValido}">
+                                                                                            <f:convertDateTime dateStyle="default" pattern="dd/MM/yyyy"/>
+                                                                                        </h:outputText>
+                                                                                    </p:column>                                    
+                                                                                    <p:column style="text-align: center;">
+                                                                                        <f:facet name="header"><h:outputText value="Paridad"/></f:facet>
+                                                                                        <h:outputText value="#{data.valor}"/>
+                                                                                    </p:column>
+                                                                                    <p:column>
+                                                                                        <p:commandLink 
+                                                                                            styleClass="btn btn-info btn-sm"                                                     
+                                                                                            actionListener="#{paridadBean.editarParidadValor(event)}"
+                                                                                            title="Click aquí para editar valor paridad..." >
+                                                                                            <i class="glyphicon glyphicon-pencil"></i>
+                                                                                            <f:param name="idParidadValor" value="#{data.id}"/>
+                                                                                        </p:commandLink>                                                        
+                                                                                    </p:column>
+                                                                                </p:dataTable>
+                                                                            </div>
+                                                                        </c:forEach>
+                                                                    </div>
+                                                                </ui:fragment>                                                                
+                                                            </div>
+                                                            <div id="Noviembre" class="Noviembre tab-pane fade in ">
+                                                                <ui:fragment rendered="#{paridadBean.paridadAnual != null and paridadBean.paridadAnual.meses.get(10).paridades != null}">
+                                                                    <div class="row">                                                                        
+                                                                        <c:forEach items="#{paridadBean.paridadAnual.meses.get(10).paridades}" var="paridad">
+                                                                            <div class="col-lg-3">
+                                                                                <strong><h:outputText class="col-lg-8 col-xs-12 control-label" value="#{paridad.monedaOrigenSiglas}"/></strong>
+                                                                                <p:commandLink title="#{msgs['sistema.crear']} Valor Paridad" 
+                                                                                                 actionListener="#{paridadBean.crearParidadValor(event)}" 
+                                                                                                 styleClass="col-lg-4 col-xs-12 btn btn-default">
+                                                                                    <p:graphicImage title="#{msgs['sistema.crear']} Valor Paridad" alt="#{msgs['sistema.crear']} Valor Paridad" url="./resources/imagenes/button_create.png" styleClass="imagenSinBorde"/>
+                                                                                    <f:param name="idParidad" value="#{paridad.id}"/>                                                                                    
+                                                                                </p:commandLink>
+                                                                                <p:dataTable var="data" styleClass="table table-bordered table-striped "
+                                                                                               value="#{paridad.mes}"   style="font-size: x-small; text-align: center;" >                                                                            
+                                                                                    <p:column style="text-align: center;">
+                                                                                        <f:facet name="header"><h:outputText value="Fecha"/></f:facet>
+                                                                                        <h:outputText value="#{data.fechaValido}">
+                                                                                            <f:convertDateTime dateStyle="default" pattern="dd/MM/yyyy"/>
+                                                                                        </h:outputText>
+                                                                                    </p:column>                                    
+                                                                                    <p:column style="text-align: center;">
+                                                                                        <f:facet name="header"><h:outputText value="Paridad"/></f:facet>
+                                                                                        <h:outputText value="#{data.valor}"/>
+                                                                                    </p:column>
+                                                                                    <p:column>
+                                                                                        <p:commandLink 
+                                                                                            styleClass="btn btn-info btn-sm"                                                     
+                                                                                            actionListener="#{paridadBean.editarParidadValor(event)}"
+                                                                                            title="Click aquí para editar valor paridad..." >
+                                                                                            <i class="glyphicon glyphicon-pencil"></i>
+                                                                                            <f:param name="idParidadValor" value="#{data.id}"/>
+                                                                                        </p:commandLink>                                                        
+                                                                                    </p:column>
+                                                                                </p:dataTable>
+                                                                            </div>
+                                                                        </c:forEach>
+                                                                    </div>
+                                                                </ui:fragment>                                                                
+                                                            </div>
+                                                            <div id="Diciembre" class="Diciembre tab-pane fade in ">
+                                                                <ui:fragment rendered="#{paridadBean.paridadAnual != null and paridadBean.paridadAnual.meses.get(11).paridades != null}">
+                                                                    <div class="row">                                                                        
+                                                                        <c:forEach items="#{paridadBean.paridadAnual.meses.get(11).paridades}" var="paridad">
+                                                                            <div class="col-lg-3">
+                                                                                <strong><h:outputText class="col-lg-8 col-xs-12 control-label" value="#{paridad.monedaOrigenSiglas}"/></strong>
+                                                                                <p:commandLink title="#{msgs['sistema.crear']} Valor Paridad" 
+                                                                                                 actionListener="#{paridadBean.crearParidadValor(event)}" 
+                                                                                                 styleClass="col-lg-4 col-xs-12 btn btn-default">
+                                                                                    <p:graphicImage title="#{msgs['sistema.crear']} Valor Paridad" alt="#{msgs['sistema.crear']} Valor Paridad" url="./resources/imagenes/button_create.png" styleClass="imagenSinBorde"/>
+                                                                                    <f:param name="idParidad" value="#{paridad.id}"/>                                                                                    
+                                                                                </p:commandLink>
+                                                                                <p:dataTable var="data" styleClass="table table-bordered table-striped "
+                                                                                               value="#{paridad.mes}"   style="font-size: x-small; text-align: center;" >                                                                            
+                                                                                    <p:column style="text-align: center;">
+                                                                                        <f:facet name="header"><h:outputText value="Fecha"/></f:facet>
+                                                                                        <h:outputText value="#{data.fechaValido}">
+                                                                                            <f:convertDateTime dateStyle="default" pattern="dd/MM/yyyy"/>
+                                                                                        </h:outputText>
+                                                                                    </p:column>                                    
+                                                                                    <p:column style="text-align: center;">
+                                                                                        <f:facet name="header"><h:outputText value="Paridad"/></f:facet>
+                                                                                        <h:outputText value="#{data.valor}"/>
+                                                                                    </p:column>
+                                                                                    <p:column>
+                                                                                        <p:commandLink 
+                                                                                            styleClass="btn btn-info btn-sm"                                                     
+                                                                                            actionListener="#{paridadBean.editarParidadValor(event)}"
+                                                                                            title="Click aquí para editar valor paridad..." >
+                                                                                            <i class="glyphicon glyphicon-pencil"></i>
+                                                                                            <f:param name="idParidadValor" value="#{data.id}"/>
+                                                                                        </p:commandLink>                                                        
+                                                                                    </p:column>
+                                                                                </p:dataTable>
+                                                                            </div>
+                                                                        </c:forEach>
+                                                                    </div>
+                                                                </ui:fragment>                                                                
+                                                            </div>
+                                                            <h:inputText style="visibility: hidden;" styleClass="valTab" value="#{paridadBean.indexTab}"/>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </h:form>
+                    </div>
+                </div>
+
+                <div class="modal fade" id="dialogoPopUpParidad" data-backdrop="static" data-keyboard="false" style="color: black;">
+                    <div class="modal-dialog" style="width: 70%;">
+                        <div class="modal-content">
+                            <div class="modal-header">                    
+                                <h4 class="modal-title">Crear/Editar Paridad</h4>                                                                
+                            </div>
+                            <h:form id="frmPnlParidad" styleClass="textoIzquierda">
+                                <div class="modal-body">                                                                                                        
+                                    <div class="container-fluid">
+                                        <div class="form-group panel">                                          
+                                            <div style="margin-top: 0px;" class="col-lg-12 col-xs-12">                        
+                                                <h:message  for="" style="display: block;" infoClass="alert alert-success" warnClass="alert alert-warning"
+                                                            errorClass="alert alert-danger" fatalClass="alert alert-danger"  />
+                                            </div>
+                                            <div class="form-group col-lg-12 col-xs-12" >                                                
+                                                <div class="row">
+                                                    <div class="visible-lg col-lg-2" ></div>
+                                                    <strong><h:outputText class="col-lg-3 col-xs-12 control-label" value="Compañia:"/></strong>
+                                                    <div class="col-lg-6 col-xs-12">                                            
+                                                        <h:outputText class="control-label" value="#{paridadBean.companiaSelec.nombre}"/>
+                                                    </div>
+                                                    <div class="visible-lg col-lg-1" ></div>                                                
+                                                </div>                                                
+                                                <div class="row">
+                                                    <div class="visible-lg col-lg-2" ></div>
+                                                    <strong><h:outputText class="col-lg-3 col-xs-12 control-label" value="Moneda Origen:"/></strong>
+                                                    <div class="col-lg-6 col-xs-12">                                            
+                                                        <p:selectOneMenu id="idParidadeseditMonedaOr" 
+                                                                           styleClass="form-control"
+                                                                           value="#{paridadBean.newParidad.monedaOrigen}"  
+                                                                           valueChangeListener="#{paridadBean.cambiarValorMonedaOrigen}"
+                                                                           
+                                                                           >
+                                                            <f:selectItem itemValue="0" itemLabel="Seleccione . . . "/>
+                                                            <f:selectItems value="#{paridadBean.monedasOrigen}"/>
+                                                        </p:selectOneMenu>
+                                                    </div>
+                                                    <div class="visible-lg col-lg-1" ></div>                                                
+                                                </div>
+                                                <div class="row">
+                                                    <div class="visible-lg col-lg-2" ></div>
+                                                    <strong><h:outputText class="col-lg-3 col-xs-12 control-label" value="Moneda Destino:"/></strong>
+                                                    <div class="col-lg-6 col-xs-12">                                            
+                                                        <p:selectOneMenu id="idParidadeseditMonedaDes" styleClass="form-control"
+                                                                           value="#{paridadBean.newParidad.monedaDestino}"                                                                               
+                                                                           >
+                                                            <f:selectItem itemValue="0" itemLabel="Seleccione . . . "/>
+                                                            <f:selectItems value="#{paridadBean.monedasDestino}"/>
+                                                        </p:selectOneMenu>
+                                                    </div>
+                                                    <div class="visible-lg col-lg-1" ></div>                                                
+                                                </div>
+                                            </div>    
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-9"></div>  
+                                </div>
+                                <div class="modal-footer" style="border-top: white;">
+                                    <h:commandButton id="saveParidad"
+                                                     value="Guardar"
+                                                     styleClass="btn btn-info" 
+                                                     onclick="return window.confirm('¿Está seguro de guardar la paridad?');"
+                                                     actionListener="#{paridadBean.guardarParidad(actionEvent)}"
+                                                     />
+                                    <p:commandButton
+                                        value="Cerrar"
+                                        styleClass="btn btn-cancelar"
+                                        onclick="$(dialogoPopUpParidad).modal('hide');"
+                                        title="Cerrar ventana..." 
+                                        />
+                                </div>    
+                            </h:form>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal fade" id="dialogoPopUpParidadValor" data-backdrop="static" data-keyboard="false" style="color: black;">
+                    <div class="modal-dialog" style="width: 70%;">
+                        <div class="modal-content">
+                            <div class="modal-header">                    
+                                <h4 class="modal-title">Crear/Editar Valor de Paridad</h4>                                                                
+                            </div>
+                            <h:form id="frmPnlParidadValor" styleClass="textoIzquierda">
+                                <div class="modal-body">                                                                                                        
+                                    <div class="container-fluid">
+                                        <div class="form-group panel">                                          
+                                            <div style="margin-top: 0px;" class="col-lg-12 col-xs-12">                        
+                                                <h:message  for="" style="display: block;" infoClass="alert alert-success" warnClass="alert alert-warning"
+                                                            errorClass="alert alert-danger" fatalClass="alert alert-danger"  />
+                                            </div>
+                                            <div class="form-group col-lg-12 col-xs-12" >                                                
+                                                <div class="row">
+                                                    <div class="visible-lg col-lg-2" ></div>
+                                                    <strong><h:outputText class="col-lg-2 col-xs-12 control-label" value="Compañia:"/></strong>
+                                                    <div class="col-lg-6 col-xs-12">                                            
+                                                        <h:outputText class="control-label" value="#{paridadBean.companiaSelec.nombre}"/>
+                                                    </div>
+                                                    <div class="visible-lg col-lg-2" ></div>                                                
+                                                </div>                                                
+                                                <div class="row">
+                                                    <div class="visible-lg col-lg-2" ></div>
+                                                    <strong><h:outputText class="col-lg-2 col-xs-12 control-label" value="Paridad:"/></strong>
+                                                    <div class="col-lg-6 col-xs-12">                                            
+                                                        <h:inputText styleClass="form-control" 
+                                                                     maxlength="15"
+                                                                     id="valorParidadID"
+                                                                     value="#{paridadBean.newParidadValorVO.valor}" 
+                                                                     onkeyup="return validarDecimal(event, 'frmPnlParidadValor\\:valorParidadID');" 
+                                                                     >                                                              
+                                                            <f:converter converterId="javax.faces.Double"/>                                                            
+                                                        </h:inputText>
+                                                    </div>
+                                                    <div class="visible-lg col-lg-2" ></div>                                                
+                                                </div>                                                
+                                                <div class="row">
+                                                    <div class="visible-lg col-lg-2" ></div>
+                                                    <strong><h:outputText class="col-lg-2 col-xs-12 control-label" value="Fecha Valido:"/></strong>
+                                                    <div class="col-lg-6 col-xs-12">                                                                                                    
+                                                        <p:datePicker pattern="dd/MM/yyyy" 
+                                                                           value="#{paridadBean.newParidadValorVO.fechaValido}"
+                                                                           required="true" requiredMessage="Es necesario seleccionar una fecha. "/>
+                                                    </div>
+                                                    <div class="visible-lg col-lg-2" ></div>                                                
+                                                </div>                                                                                                
+                                            </div>            
+
+
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-9"></div>  
+                                </div>
+                                <div class="modal-footer" style="border-top: white;">
+                                    <h:commandButton id="saveParidadValor"
+                                                     value="Guardar"
+                                                     styleClass="btn btn-info"                                                      
+                                                     onclick="return window.confirm('¿Está seguro de guardar el valor de paridad?');"
+                                                     actionListener="#{paridadBean.guardarParidadValor(actionEvent)}"
+                                                     />
+                                    <p:commandButton
+                                        value="Cerrar"
+                                        styleClass="btn btn-cancelar"
+                                        onclick="$(dialogoPopUpParidadValor).modal('hide');"
+                                        title="Cerrar ventana..." 
+                                        />
+                                </div>    
+                            </h:form>
+                        </div>
+                    </div>
+                </div>
+                <script>
+                    $(document).ready(function () {
+                        getMesActual();
+                    });
+                </script>
+            </ui:define>
+
+        </ui:composition>
+
+    </body>
+</html>

@@ -1,0 +1,128 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"    
+      xmlns:p="http://primefaces.org/ui"  
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:my="http://www.mytags.com/schema/mytags"
+      xmlns:h="http://xmlns.jcp.org/jsf/html">
+    <body>
+        <ui:composition template="./../../../WEB-INF/facelets/templates/templateGrupos.xhtml">
+	    <h:panelGroup  rendered="#{empty sesion.usuario}" styleClass="altura">
+		<ui:include src="./../../../login.xhtml"/>
+	    </h:panelGroup>
+            <ui:define name="contenido">
+		<div id="page">
+		    <div class="row">
+			<ui:include src="./../menuAdministracion.xhtml" rendered="#{not empty sesion.usuario}" />
+		    </div>
+		    <div class="row"> 
+			<h:form rendered="#{not empty sesion.usuario}" styleClass="textoIzquierda" id="frmGerencia">
+			    <div class="col-lg-12">
+				<div class="col-lg-4"></div>
+				<div class="col-lg-6">
+				    <h2 class="page-header">#{msgs['gerencia.crear']}"</h2>
+				</div>
+			    </div>
+			    <h:messages  globalOnly="true" errorClass="errorMessage" infoClass="infoMessage"/>
+			    <br/>
+			    <p:panelGrid columns="2">
+				<p:panelGrid columns="2">
+				    <h:outputText value="#{msgs['sia.bloque.nombre']}"/>
+				    <h:outputText value="*" styleClass="textoRojo"/>
+				</p:panelGrid>                                
+				<p:panelGrid columns="2">
+				    <p:selectOneMenu  value="#{catalogoApGerenciaBean.idCampo}" id="campoGerencia" 
+						       valueChangeListener="#{catalogoApGerenciaBean.idCampoGer}">
+					<f:selectItems value="#{catalogoApGerenciaBean.listaCampo}"/>
+				    </p:selectOneMenu>
+				</p:panelGrid>
+
+				<p:panelGrid columns="2">
+				    <h:outputText value="#{msgs['sia.rh.gerencia']}"/>
+				    <h:outputText value="*" styleClass="textoRojo"/>
+
+				</p:panelGrid>
+				<p:panelGrid columns="2" >
+				    <p:selectOneMenu id="listager" value="#{catalogoApGerenciaBean.idGerencia}">
+					<f:selectItem itemValue="-1" itemLabel="#{msgs['sistema.seleccione']}"/>
+					<f:selectItems value="#{catalogoApGerenciaBean.listaGerencia}"/>
+				    </p:selectOneMenu>
+				    <p:commandLink actionListener="#{catalogoApGerenciaBean.openPopupCreateGerencia(actionEvent)}" 
+						     immediate="true"  title="#{msgs['gerencia.crear']}" styleClass="btn btn-default" >
+					<p:graphicImage url="resources/imagenes/button_create.png" alt="#{msgs['gerencia.crear']}" styleClass="imagenSinBorde" width="16px" height="16px" />
+				    </p:commandLink>
+				    <h:message errorClass="textoMensajeError" infoStyle="textoMensajeError" for="campoUser"/>
+
+
+				</p:panelGrid>
+				<p:panelGrid columns="2">
+				    <h:outputText value="#{msgs['usuario.responsable']}"/>
+				    <h:outputText value="*" styleClass="textoRojo"/>
+				</p:panelGrid>     
+
+				<p:panelGrid columns="3">
+                                    <!--textChangeListener="#{catalogoApGerenciaBean.usuarioListenerAsignaCampo}"-->
+                                    <p:autoComplete id="nombreUser"
+							 value="#{catalogoApGerenciaBean.responsable}" >
+					<f:selectItems value="#{catalogoApGerenciaBean.listaUsuariosAlta}" />
+                                    </p:autoComplete>
+				    <h:message errorClass="textoMensajeError" infoStyle="textoMensajeError" for="nombreUser"/>
+				</p:panelGrid>
+				<h:outputText/>
+				<p:panelGrid columns="2">   
+				    <p:commandButton  id="guardar" value="#{msgs['sistema.guardar']}" 
+							actionListener="#{catalogoApGerenciaBean.guardar(actionEvent)}" styleClass="btn btn-info"/>
+				    <p:commandLink actionListener="#{catalogoApGerenciaBean.goToCatalogoApGerencia(event)}" 
+						     title="#{msgs['gerencia.regresar.catalogo.gerencia']}" 
+						     action="catalogoApGerencia"
+						     immediate="true" styleClass="btn btn-default" value="#{msgs['sistema.cancelar']}" >
+				    </p:commandLink>
+				</p:panelGrid>
+			    </p:panelGrid>
+			</h:form>
+			<h:form id="popupCreateGerencia">
+			    <my:panelPopup tituloPanel="#{msgs['gerencia.titulo.agregar']}" 
+					   mostrarPanel="#{sesion.controladorPopups['popupCreateGerencia']}" conBoton="false" >
+
+				<center><h:message for="frmPopCampoUsuario" errorClass="errorMessage" infoClass="infoMessage" styleClass="textoMensajeError"/></center>
+
+				<h:panelGroup>
+				    <br/>
+				    <p:panelGrid columns="2">
+					<h:outputText value="#{msgs['presupuesto.nuevos.campoCompania']} "/>
+					<h:outputText value="#{catalogoApGerenciaBean.rfcEmpresa}"/>
+					<h:outputText value="#{msgs['gerencia']}"/>
+					<p:selectOneMenu value="#{catalogoApGerenciaBean.idGerencia}" id="idGer">
+					    <f:selectItem itemLabel="#{msgs['sistema.seleccione']}"  itemValue="-1"/>
+					    <f:selectItems value="#{catalogoApGerenciaBean.listaTodasGerencia}"/>
+					</p:selectOneMenu>
+                                        <p:commandLink title="Crear gerencia nueva" 
+                                                         action="#{catalogoApGerenciaBean.crearNuevaGerencia()}"
+						     immediate="true"  styleClass="btn btn-default" >
+					<p:graphicImage url="resources/imagenes/button_create.png" alt="#{msgs['gerencia.crear']}" styleClass="imagenSinBorde" width="16px" height="16px" />
+				    </p:commandLink>
+				    </p:panelGrid>
+                                    <p:panelGrid columns="2" rendered="#{catalogoApGerenciaBean.verNewGerencia}">
+                                        <h:outputText value="Nueva Gerencia"/>
+                                        <p:inputText />
+                                    </p:panelGrid>
+				    <center>
+					<p:panelGrid columns="2" >
+					    <p:commandLink value="#{msgs['sistema.aceptar']}" 
+							     actionListener="#{catalogoApGerenciaBean.agregarGerenciaCompania(event)}" styleClass="btn btn-info" />
+					    <p:commandLink value="#{msgs['sistema.cancelar']}" 
+							     actionListener="#{catalogoApGerenciaBean.closePopupCreateGerencia(actionEvent)}" styleClass="btn btn-default" immediate="true" />
+					</p:panelGrid>
+				    </center>
+				</h:panelGroup>
+			    </my:panelPopup>
+
+			</h:form>
+		    </div>
+		</div>
+	    </ui:define>
+	</ui:composition>
+
+    </body>
+</html>

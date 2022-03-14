@@ -1,0 +1,70 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"       
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      >
+    <body>
+        <ui:composition template="./../../../WEB-INF/facelets/templates/templateGrupos.xhtml">
+	    <h:panelGroup  rendered="#{empty sesion.usuario}" styleClass="altura">
+		<ui:include src="./../../../login.xhtml"/>
+	    </h:panelGroup>
+            <ui:define name="contenido">
+		<div id="Pa">
+		    <div class="row">
+			<ui:include src="../menuAdministracion.xhtml" rendered="#{not empty sesion.usuario}" />
+		    </div>
+		    <div class="row"> 
+			<h:form id="frmRelCampoPro" rendered="#{not empty sesion.usuario}" styleClass="textoIzquierda">
+			    <div class="col-lg-12">
+				<div class="col-lg-4"></div>
+				<div class="col-lg-6">
+				    <h2 class="page-header">Proveedores a excentar de autorización</h2>
+				</div>
+			    </div>
+			    <center><h:messages errorClass="mensaje" infoClass="mensaje"/></center> 
+			    <div class="col-lg-12 col-xs-12">
+				<h:outputLabel value="Bloque"/>
+				<p:selectOneMenu value="#{proveedorBean.idCampo}" valueChangeListener="#{proveedorBean.cambirCampoSeleccionado}"
+						   >
+				    <!--f:selectItem itemLabel="Seleccione . . . " itemValue="-1"/-->
+				    <f:selectItems value="#{proveedorBean.listaCampoPorUsuario}"/>
+				</p:selectOneMenu>
+				<h:outputLabel value="#{msgs['orden.proveedor']}"/>
+				<p:inputText id="autocomplete" size="40"            
+					       onclick="autocompletar(this, 'hidenDes', 'frmRelCampoPro');">
+				</p:inputText>
+				<h:inputHidden id="hidenDes" value="#{proveedorBean.idProveedor}"/>  
+				<h:commandLink title="Agregar relación proveedor" value="#{msgs['sistema.guardar']}"  
+					       actionListener="#{proveedorBean.agregarProveedor(event)}"
+					       onclick=" return validaRelacionCampo();"
+					       styleClass="btn btn-info">
+				</h:commandLink>
+			    </div>
+			    <div class="col-lg-12 col-xs-12">
+				<p:dataTable value="#{proveedorBean.listaPorveedorPorCampo}" var="data"
+					       styleClass="table table-striped table-bordered">
+				    <!--p:column headerText="Id">
+					<h:outputText value="#{data.idRelacion}"/>
+				    </p:column-->
+				    <p:column headerText="Proveedor">
+					<h:outputText value="#{data.nombre}"/>
+				    </p:column>
+				    <p:column>
+					<h:commandLink value="#{msgs['sistema.eliminar']}" style="color: blue;"
+						       actionListener="#{proveedorBean.eliminarProveedorCampo(event)}"
+						       onclick="return confirm('La operación va quitar el proveedor. ¿Esta seguro? ');">
+					    <f:param name="idProveedorCampo" value="#{data.idRelacion}"/>
+					</h:commandLink>
+				    </p:column>
+				</p:dataTable>
+			    </div>
+			</h:form>
+		    </div>
+		</div>
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

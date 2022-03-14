@@ -1,0 +1,189 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      
+      xmlns:c="http://java.sun.com/jsp/jstl/core"
+      >
+
+    <body>
+
+        <ui:composition template="./../../../WEB-INF/facelets/templates/templateGrupos.xhtml">
+            <h:panelGroup  rendered="#{empty sesion.usuario}" styleClass="altura">
+                <ui:include src="./../../../login.xhtml"/>
+            </h:panelGroup>
+            <ui:define name="contenido" >
+                <div id="page">
+                    <div class="row">
+                        <ui:include src="./../menuAdministracion.xhtml" rendered="#{not empty sesion.usuario}" />
+                    </div>
+                    <div class="row">
+                        <h:form styleClass="textoIzquierda"  rendered="#{not empty sesion.usuario}" >
+                            <div class="col-lg-12">
+                                <div class="col-lg-4"></div>
+                                <div class="col-lg-6">
+                                    <h2 class="page-header">Catálogo de Monedas</h2>
+                                </div>
+                            </div>
+                            <center><h:messages globalOnly="true" errorClass="errorMessage" infoClass="infoMessage"/></center>
+
+
+                            <p:panelGrid>
+                                <p:commandLink title="#{msgs['sistema.crear']} Moneda" actionListener="#{monedaCatalogoBean.crearMoneda(event)}" styleClass="btn btn-default">
+                                    <p:graphicImage title="#{msgs['sistema.crear']} Moneda" alt="#{msgs['sistema.crear']} Moneda" url="./resources/imagenes/button_create.png" styleClass="imagenSinBorde"/>
+                                </p:commandLink>
+                                <p:commandLink value="#{msgs['sistema.crear']} Moneda" title="#{msgs['sistema.crear']} Moneda" actionListener="#{monedaCatalogoBean.crearMoneda(event)}" styleClass="linkPequenio" />
+                            </p:panelGrid>  
+                        </h:form>
+
+                        <h:form id="cataMoneda">	
+                            <div class="row" style="margin-top: 15px; margin-bottom: 15px;">                                
+                                <strong><h:outputText class="col-lg-1 col-xs-12 control-label" value="Filtro:"/></strong>
+                                <div class="col-lg-5 col-xs-12">                                            
+                                    <p:selectOneMenu id="idMonedaUsuario" styleClass="form-control"
+                                                       value="#{monedaCatalogoBean.companiaSeleccionada}" 
+                                                       valueChangeListener="#{monedaCatalogoBean.cambiarValorCompania}"
+                                                       
+                                                       >                                        
+                                        <f:selectItems value="#{monedaCatalogoBean.companias}"/>
+                                    </p:selectOneMenu>
+                                </div>
+                                <div class="visible-lg col-lg-6" ></div>                                                
+                            </div>
+                            <div class="row">
+                                <p:dataTable id="dgMoneda" rows="10" var="data" styleClass="table table-bordered table-striped "
+                                               value="#{monedaCatalogoBean.lstMoneda}"   style="text-align: center;" >
+                                    <p:column style="text-align: center;">
+                                        <f:facet name="header"><h:outputText value="Nombre"/></f:facet>
+                                        <h:outputText value="#{data.nombre}"/>
+                                    </p:column>
+                                    <p:column style="text-align: center;">
+                                        <f:facet name="header"><h:outputText value="Siglas"/></f:facet>
+                                        <h:outputText value="#{data.siglas}"/>
+                                    </p:column>
+                                    <p:column style="text-align: center;">
+                                        <f:facet name="header"><h:outputText value="Compañia"/></f:facet>
+                                        <h:outputText value="#{data.compania}"/>
+                                    </p:column>
+                                    <p:column style="text-align: center;">
+                                        <f:facet name="header"><h:outputText value="Activa"/></f:facet>                                    
+                                        <h:selectBooleanCheckbox value="#{data.activo}" disabled="true" />
+                                    </p:column>
+                                    <p:column style="text-align: center;">
+                                        <center>
+                                            <p:commandLink value="#{msgs['sistema.modificar']}" actionListener="#{monedaCatalogoBean.editarMoneda(event)}" styleClass="link">
+                                                <f:param name="idMoneda" value="#{data.id}"/>
+                                            </p:commandLink>
+                                        </center>
+                                    </p:column>
+                                    <p:column style="text-align: center;">
+                                        <center>
+                                            <p:commandLink value="#{msgs['sistema.eliminar']}" 
+                                                             actionListener="#{monedaCatalogoBean.deleteMoneda(event)}" styleClass="link">
+                                                <f:param name="idMoneda" value="#{data.id}"/>
+                                            </p:commandLink>
+                                        </center>                                    
+                                    </p:column>
+                                </p:dataTable>
+                            </div>
+                            
+                            <br/>
+                        </h:form>          
+                    </div>
+                </div>
+
+                <div class="modal fade" id="dialogoPopUpMoneda" data-backdrop="static" data-keyboard="false" style="color: black;">
+                    <div class="modal-dialog" style="width: 70%;">
+                        <div class="modal-content">
+                            <div class="modal-header">                    
+                                <h4 class="modal-title">Crear/Editar Moneda</h4>                                                                
+                            </div>
+                            <h:form id="frmPnlMoneda" styleClass="textoIzquierda">
+                                <div class="modal-body">                                                                                                        
+                                    <div class="container-fluid">
+                                        <div class="form-group panel">                                          
+                                            <div style="margin-top: 0px;" class="col-lg-12 col-xs-12">                        
+                                                <h:message  for="" style="display: block;" infoClass="alert alert-success" warnClass="alert alert-warning"
+                                                            errorClass="alert alert-danger" fatalClass="alert alert-danger"  />
+                                            </div>
+                                            <div class="form-group col-lg-12 col-xs-12" >
+                                                <div class="row">
+                                                    <div class="visible-lg col-lg-2" ></div>
+                                                    <div class="col-lg-2 col-xs-12" >
+                                                        <strong><h:outputText class="control-label" value="Nombre:"/></strong>
+                                                    </div>
+                                                    <div class="col-lg-6 col-xs-12">                                            
+                                                        <p:inputText maxlength="15"                                                     
+                                                            styleClass="form-control"                                                    
+                                                            value="#{monedaCatalogoBean.newMoneda.nombre}"
+                                                            />  
+                                                    </div>
+                                                    <div class="visible-lg col-lg-2" ></div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="visible-lg col-lg-2" ></div>
+                                                    <strong><h:outputText class="col-lg-2 col-xs-12 control-label" value="Siglas:"/></strong>
+                                                    <div class="col-lg-6 col-xs-12">                                            
+                                                        <p:inputText maxlength="5"
+                                                            styleClass="form-control"                                                    
+                                                            value="#{monedaCatalogoBean.newMoneda.siglas}"
+                                                            />  
+                                                    </div>
+                                                    <div class="visible-lg col-lg-2" ></div>                                                
+                                                </div>
+                                                <div class="row">
+                                                    <div class="visible-lg col-lg-2" ></div>
+                                                    <strong><h:outputText class="col-lg-2 col-xs-12 control-label" value="Compañia:"/></strong>
+                                                    <div class="col-lg-6 col-xs-12">                                            
+                                                        <p:selectOneMenu id="idmonedasedit" styleClass="form-control"
+                                                                           value="#{monedaCatalogoBean.newMoneda.compania}"  
+                                                                           disabled="#{monedaCatalogoBean.newMoneda.id > 0}"
+                                                                           >
+                                                            <f:selectItem itemValue="0" itemLabel="Seleccione . . . "/>
+                                                            <f:selectItems value="#{monedaCatalogoBean.companias}"/>
+                                                        </p:selectOneMenu>
+                                                    </div>
+                                                    <div class="visible-lg col-lg-2" ></div>                                                
+                                                </div>
+                                                <div class="row">
+                                                    <div class="visible-lg col-lg-2" ></div>
+                                                    <strong><h:outputText class="col-lg-2 col-xs-12 control-label" value="Activo:"/></strong>
+                                                    <div class="col-lg-6 col-xs-12">                                            
+                                                        <h:selectBooleanCheckbox value="#{monedaCatalogoBean.newMoneda.activo}" />
+                                                    </div>
+                                                    <div class="visible-lg col-lg-2" ></div>                                                
+                                                </div>
+                                            </div>            
+
+
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-9"></div>  
+                                </div>
+                                <div class="modal-footer" style="border-top: white;">
+                                    <h:commandButton id="saveLlegada"
+                                                     value="Guardar"
+                                                     styleClass="btn btn-info" 
+                                                     onclick="return window.confirm('¿Está seguro de guardar la moneda?');"
+                                                     actionListener="#{monedaCatalogoBean.guardarMoneda(actionEvent)}"
+                                                     />
+                                    <p:commandButton
+                                        value="Cerrar"
+                                        styleClass="btn btn-cancelar"
+                                        onclick="$(dialogoPopUpMoneda).modal('hide');"
+                                        title="Cerrar ventana..." 
+                                        />
+                                </div>    
+                            </h:form>
+                        </div>
+                    </div>
+                </div>
+            </ui:define>
+
+        </ui:composition>
+
+    </body>
+</html>

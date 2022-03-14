@@ -1,0 +1,135 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:my="http://www.mytags.com/schema/mytags">
+
+    <body>
+        <ui:composition template="./../../../WEB-INF/facelets/templates/templateGrupos.xhtml">
+	    <h:panelGroup  rendered="#{empty sesion.usuario}" styleClass="altura">
+		<ui:include src="./../../../login.xhtml"/>
+	    </h:panelGroup>
+            <ui:define name="contenido">
+		<div id="page">
+		    <div class="row">
+			<ui:include src="./../menuAdministracion.xhtml" rendered="#{not empty sesion.usuario}" />
+		    </div>
+		    <div class="row"> 
+			<h:form id="formPrincipal" rendered="#{not empty sesion.usuario}" styleClass="textoIzquierda" >
+
+			    <div class="col-lg-12">
+				<div class="col-lg-4"></div>
+				<div class="col-lg-6">
+				    <h2 class="page-header">#{msgs['sia.gerencia.catalogo.titulo']}</h2>
+				</div>
+			    </div>
+			    <center><h:messages globalOnly="true" errorClass="errorMessage" infoClass="infoMessage"/></center>  
+                            <div class="col-lg-12 col-xs-12" style="display: #{ catalogoApGerenciaBean.validaRolDesarrollo() ? 'block':'none'}">
+				<p:commandLink  immediate="true" type="submit" 
+						  title="#{msgs['sia.catalogo.gerencia.agregar.responsable']}" 
+						  action="/vistas/administracion/gerencia/altaGerencia"  
+						  actionListener="#{catalogoApGerenciaBean.goToAltaGerencia()}" styleClass="btn btn-default" >
+				    <p:graphicImage url="resources/imagenes/button_create.png" 
+						      alt="#{msgs['sia.catalogo.gerencia.agregar.responsable']}" styleClass="imagenSinBorde" 
+						      width="16px" height="16px" />
+				</p:commandLink>
+				<p:commandLink  immediate="true" 
+						  value="#{msgs['sia.catalogo.gerencia.agregar.responsable']}" 
+						  type="submit" title="#{msgs['sia.catalogo.gerencia.agregar.responsable']}" action="/vistas/administracion/gerencia/altaGerencia"  actionListener="#{catalogoApGerenciaBean.goToAltaGerencia()}" styleClass="linkPequenio" >
+				</p:commandLink>
+			    </div>
+
+			    <div class="col-lg-12 col-xs-12">
+
+				<h:outputLabel value="#{msgs['sistema.filtro']}"/>
+				<p:selectOneRadio value="#{catalogoApGerenciaBean.idCampo}" 
+						    valueChangeListener="#{catalogoApGerenciaBean.idCampoSel}"
+						     layout="lineDirection" >
+				    <f:selectItems value="#{catalogoApGerenciaBean.listaCampo}"/>
+				</p:selectOneRadio>
+			    </div>
+			    <div class="col-lg-12 col-xs-12">
+				<my:dataGrid id="dataGridModulo" rows="10" 
+					     value="#{catalogoApGerenciaBean.allApGerenciaDataModel}" 
+					     showPaginator="true" textoResultado="#{msgs['sistema.paginador.mostrando']} 
+					     #{msgs['sistema.proposicion.de']}" textoPagina="#{msgs['sistema.paginador.pagina']}" textoDe="#{msgs['sistema.paginador.de']}" >
+				    <p:column>
+					<f:facet name="header">
+					    <h:outputText value="#{msgs['sia.rh.gerencia']}"/>
+					</f:facet>
+					<h:outputText value="#{data.nombreGerencia}" />
+				    </p:column>
+				    <p:column>
+					<f:facet name="header">
+					    <h:outputText value="#{msgs['usuario.responsable']}"/>
+					</f:facet>
+					<h:outputText value="#{data.nombreResponsable}"/>
+				    </p:column>
+				    <p:column style="text-align: center;">
+					<f:facet name="header"><h:outputText value="#{msgs['sistema.visible']}"/></f:facet>
+					<h:commandLink value="#{data.visibleApCampo eq true ? 'Si' : 'No'}" styleClass="link"
+						       actionListener="#{catalogoApGerenciaBean.cambiarVisible(event)}"
+						       onclick="return confirmar('La operación va a cambiar el estado visible de la Gerencia seleccionada. \nNota: \nSí, Visible en Crear Requisiciones. \nNo, Visible todo el sistema menos en Crear Requisiciones.');"/>
+				    </p:column>
+				    <p:column>
+					<h:commandLink title="#{msgs['sistema.cambiar.responsable']}" value="#{msgs['sistema.cambiar.responsable']}" 
+						       actionListener="#{catalogoApGerenciaBean.cambiarResponsable(actionEvent)}"
+						       onclick="return mostrarDialogoUnaCaja('dialogoResponsableGerencia', 'frmPopResponsableGerencia', 'btnCerrar', 'btnGuardar', 'autocompleteUsuario');"
+						       styleClass="link"/>
+				    </p:column>
+                                    <p:column rendered="#{catalogoApGerenciaBean.validaRolDesarrollo()}">
+                                        <h:commandLink title="Eliminar Gerencia" value="Eliminar gerencia" 
+                                                       action="#{catalogoApGerenciaBean.eliminarGerencia(event)}"
+                                                       onclick="return confirmar('Esta a punto de eliminar una gerencia. \n Esta Seguro?')"
+                                                       styleClass="link"/>
+                                    </p:column>
+				</my:dataGrid>
+			    </div>
+			</h:form>
+			<div id="dialogoResponsableGerencia" style="display: none;" title="Agregar responsable a gerencias">
+			    <h:form id="frmPopResponsableGerencia" styleClass="textoIzquierda">
+				<center><h:messages for="frmPopCambiarResponsable" errorClass="errorMessage" infoClass="infoMessage" styleClass="textoMensajeError"/></center>
+				<h:panelGroup>
+				    <br/>
+				    <p:panelGrid columns="2">
+					<h:outputText value="#{msgs['sia.rh.gerencia']}:"/>
+					<h:outputText value="#{catalogoApGerenciaBean.apCampoGerenciaVo.nombreGerencia}"/>
+					<h:outputText value="#{msgs['usuario.responsable']}: "/>
+					<p:panelGrid columns="3">
+					    <p:panelGrid columns="2">
+						<p:inputText id="autocompleteUsuario" size="40"
+							       onclick="autocompletarUsuario(this, 'hidenDesUsuario', 'frmPopResponsableGerencia');"/>
+						<h:inputHidden id="hidenDesUsuario" value="#{catalogoApGerenciaBean.responsable}"/>
+					    </p:panelGrid>  
+					</p:panelGrid>
+					<!--p:selectInputText id="nombreUser"
+							     value="#{catalogoApGerenciaBean.responsable}" 
+							     textChangeListener="#{catalogoApGerenciaBean.usuarioListenerAsignaCampo}"
+							     rows="10" width="200">
+					    <f:selectItems value="#{catalogoApGerenciaBean.listaUsuariosAlta}" />
+					</p:selectInputText-->
+				    </p:panelGrid>
+				    <center>
+					<p:panelGrid columns="2" >
+					    <h:commandLink id="btnGuardar" value="#{msgs['sistema.aceptar']}" style="display: none;"
+							   actionListener="#{catalogoApGerenciaBean.completarCambiarResponsable(event)}" styleClass="btn btn-info" />
+					    <h:commandLink id="btnCerrar" value="#{msgs['sistema.cancelar']}" style="display: none;"
+							   actionListener="#{catalogoApGerenciaBean.cerrarCambioResponsable(actionEvent)}" styleClass="btn btn-default"/>
+					</p:panelGrid>
+				    </center>
+				</h:panelGroup>
+			    </h:form>
+			</div>
+			<div id="dialogOK" style="display: none;" title="#{msgs['sia.mensaje.titulo.operacion.realizada']}">
+			    <h:outputText value="#{msgs['sia.mensaje.operacion.realizada']}"
+					  styleClass="textoNegrita10" style="color: blue;"/><br/><br/>
+			</div>
+		    </div>
+		</div>
+	    </ui:define>
+	</ui:composition>
+    </body>
+</html>

@@ -1,0 +1,458 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                >
+
+    <style>
+        .errorSIA {
+            border-color: #FF4040;    
+        }    
+        .existe{
+            color: #004085;
+            background-color: #cce5ff;
+            border-color: #b8daff;
+
+        }
+        .noExiste{
+            color: #721c24;
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+        }
+        .waExiste{
+            color: #856404;
+            background-color: #fff3cd;
+            border-color: #ffeeba;
+        }
+        .existePartida {
+            color: #1b1e21;
+            background-color: #d6d8d9;
+            border-color: #c6c8ca;
+        }
+    </style>
+
+
+    <div class="modal fade" id="dialogoPresModMonto" data-backdrop="static" data-keyboard="false" style="width: 100%;">
+        <div class="modal-dialog" style="width: 80%;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Modificar Monto</h4>
+                </div>
+                <h:form id="frmDialogPresModMonto">
+                    <div class="modal-body panel-body">
+                        <div class="col-lg-12 col-xs-12">                            
+                            <div class="input-group col-lg-12 col-xs-12">                                
+                                <div class="row form-group" style="margin-top: 10px;">              
+                                    <div class="row form-group ">                           
+                                        <h:outputText class="col-lg-2 control-label" value="Presupuesto: "/>
+                                        <div class="col-lg-10">
+                                            <h:outputText class="col-lg-12 control-label" value="#{presupuestoAdminBean.presVO.nombre}"/>
+                                        </div>
+                                    </div>
+                                    <div class="row form-group ">                           
+                                        <h:outputText class="col-lg-2 control-label" value="Año: "/>
+                                        <div class="col-lg-10">
+                                            <h:outputText class="col-lg-12 control-label" value="#{presupuestoAdminBean.anio}"/>
+                                        </div>
+                                    </div>
+                                    <div class="row form-group ">                           
+                                        <h:outputText class="col-lg-2 control-label" value="Mes: "/>
+                                        <div class="col-lg-10">
+                                            <h:outputText class="col-lg-12 control-label" value="#{presupuestoAdminBean.mes}"/>
+                                        </div>
+                                    </div>
+                                    <div class="row form-group ">                           
+                                        <h:outputText class="col-lg-2 control-label" value="Actividad: "/>
+                                        <div class="col-lg-10">
+                                            <h:selectOneMenu id="actId" styleClass="form-control selectt"                                                                        
+                                                             value="#{presupuestoAdminBean.partidaModificar.actPetroleraId}"
+                                                             >
+                                                <f:selectItem itemValue="0" itemLabel="Seleccione . . . "/>
+                                                <f:selectItems value="#{presupuestoAdminBean.lstActividad}"/>
+                                                <f:ajax listener="#{presupuestoAdminBean.refrescarSubact}" render="subActId"/>
+                                            </h:selectOneMenu>                                                                
+                                        </div>
+                                        <h:outputText class="col-lg-2 control-label" value="Subactividad: "/>
+                                        <div class="col-lg-10">
+                                            <h:selectOneMenu id="subActId" styleClass="form-control selectt"                                                                        
+                                                             value="#{presupuestoAdminBean.partidaModificar.unidadCostoId}"
+                                                             >
+                                                <f:selectItem itemValue="0" itemLabel="Seleccione . . . "/>
+                                                <f:selectItems value="#{presupuestoAdminBean.lstUnidadCosto}"/>
+                                                <f:ajax listener="#{presupuestoAdminBean.refrescarTarea}" render="tareaId"/>
+                                            </h:selectOneMenu>                                                                
+                                        </div>                                    
+                                        <h:outputText class="col-lg-2 control-label" value="Tarea: "/>
+                                        <div class="col-lg-10">
+                                            <h:selectOneMenu id="tareaId" styleClass="form-control selectt"                                                                        
+                                                             value="#{presupuestoAdminBean.partidaModificar.tareaCodigoId}"
+                                                             >
+                                                <f:selectItem itemValue="0" itemLabel="Seleccione . . . "/>
+                                                <f:selectItems value="#{presupuestoAdminBean.lstTarea}" var="tt" itemLabel="#{tt.nombreTarea}" itemValue="#{tt.idNombreTarea}"/>
+                                                <f:ajax listener="#{presupuestoAdminBean.refrescarSubtarea}" render="subTareaId"/>
+                                            </h:selectOneMenu>                                                                
+                                        </div>
+                                        <h:outputText class="col-lg-2 control-label" value="Subtarea: "/>
+                                        <div class="col-lg-10">
+                                            <h:selectOneMenu id="subTareaId" styleClass="form-control selectt"                                                                        
+                                                             value="#{presupuestoAdminBean.partidaModificar.subTareaCodigoId}"
+                                                             >
+                                                <f:selectItem itemValue="0" itemLabel="Seleccione . . . "/>
+                                                <f:selectItems value="#{presupuestoAdminBean.lstSubTarea}"/>                                                
+                                                <f:ajax listener="#{presupuestoAdminBean.refrescarTipos}" render="tiposId"/>
+                                            </h:selectOneMenu>                                                                
+                                        </div>
+                                        <h:outputText class="col-lg-2 control-label" value="Tipo Monto: "/>
+                                        <div class="col-lg-10">
+                                            <h:selectOneMenu id="tiposId" styleClass="form-control selectt"                                                                        
+                                                             value="#{presupuestoAdminBean.tipo}"
+                                                             >
+                                                <f:selectItem itemValue="0" itemLabel="Seleccione . . . "/>
+                                                <f:selectItems value="#{presupuestoAdminBean.lstTipos}"/>                                                
+                                                <f:ajax listener="#{presupuestoAdminBean.refrescarMontos}" render="montoActual"/>
+                                            </h:selectOneMenu>                                            
+                                        </div>
+                                        <h:outputText class="col-lg-2 control-label" value="Monto Actual: "/>
+                                        <div class="col-lg-4">
+                                            <h:inputText id="montoActual" size="20" class="form-control" readonly="true" value="#{presupuestoAdminBean.partidaModificar.montoActual}"/>
+                                        </div>
+                                        <h:outputText class="col-lg-2 control-label" value="Nuevo Monto: "/>
+                                        <div class="col-lg-4">
+                                            <h:inputText id="montoNue" size="20" class="form-control" readonly="false" value="#{presupuestoAdminBean.partidaModificar.montoNuevo}"/>
+                                        </div>
+                                    </div>                                    
+                                </div>
+
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <h:commandLink value="Guardar"	 
+                                       onclick="return validarForma('frmDialogPresModMonto');"
+                                       actionListener="#{presupuestoAdminBean.guardarMonto(event)}"                                       
+                                       class="btn btn-info">                            
+                        </h:commandLink>
+                        <p:commandButton
+                            onclick="$(dialogoPresModMonto).modal('hide');"
+                            value="Cancelar"
+                            styleClass="btn btn-default"                            
+                            title="Cerrar ventana..."                             
+                            />
+                    </div>
+                </h:form>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="modal fade" id="dialogoPresProyOT" data-backdrop="static" data-keyboard="false" style="width: 100%;">
+        <div class="modal-dialog" style="width: 80%;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Registro de Proyecto OT</h4>
+                </div>
+                <h:form id="frmDialogPresProyOT">
+                    <div class="modal-body panel-body">
+                        <div class="col-lg-12 col-xs-12">                            
+                            <div class="input-group col-lg-12 col-xs-12">                                
+                                <div class="row form-group" style="margin-top: 10px;">              
+                                    <div class="row form-group ">                           
+                                        <h:outputText class="col-lg-2 control-label" value="Presupuesto: "/>
+                                        <div class="col-lg-10">
+                                            <h:outputText class="col-lg-12 control-label" value="#{presupuestoAdminBean.presVO.nombre}"/>
+                                        </div>
+                                    </div>                                    
+                                    <div class="row form-group ">                           
+                                        <h:outputText class="col-lg-2 control-label" value="Actividad: "/>
+                                        <div class="col-lg-10">
+                                            <h:selectOneMenu id="actIdProyOT" styleClass="form-control selectt"                                                                        
+                                                             value="#{presupuestoAdminBean.idActPetro}"
+                                                             >
+                                                <f:selectItem itemValue="0" itemLabel="Seleccione . . . "/>
+                                                <f:selectItems value="#{presupuestoAdminBean.lstActividad}"/>
+                                                <f:ajax listener="#{presupuestoAdminBean.refrescarProyectosOTs}" render="lstOldProy newProyOT"/>
+                                            </h:selectOneMenu>                                                                
+                                        </div>
+
+                                        <h:outputText class="col-lg-2 control-label" style="margin-top: 10px;" value="Proyectos OTs: "/>
+                                        <div class="col-lg-10" style="margin-top: 10px; margin-bottom: 10px;">                                            
+                                            <p:dataTable id="lstOldProy" value="#{presupuestoAdminBean.lstOldProyectosOTs}" var="data"
+                                                           paginator="true"   rows="6"
+                                                           paginatorPosition="bottom" 
+                                                           style="font-size: 1em; width: 100%">
+                                                <p:column style="width: 15%">
+                                                    <h:outputText value="#{data['label']}"/>
+                                                    <f:facet name="header"><h:outputText value="Nombre"/></f:facet>
+                                                </p:column>
+
+                                            </p:dataTable>                                                                                            
+                                        </div>      
+
+                                        <h:outputText class="col-lg-2 control-label" value="Nuevo Poryecto: "/>
+                                        <div class="col-lg-10">
+                                            <h:selectOneMenu id="newProyOT" styleClass="form-control selectt"                                                                        
+                                                             value="#{presupuestoAdminBean.idNewProy}"
+                                                             >
+                                                <f:selectItem itemValue="0" itemLabel="Seleccione . . . "/>
+                                                <f:selectItems value="#{presupuestoAdminBean.lstNewProyectosOTs}"/>                                                
+                                            </h:selectOneMenu>                                                                                                        
+                                        </div>                                    
+                                    </div>
+                                </div>
+
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <h:commandLink value="Guardar"	 
+                                       onclick="return validarForma('frmDialogPresProyOT');"
+                                       actionListener="#{presupuestoAdminBean.guardarProyOT(event)}"                                       
+                                       class="btn btn-info">                            
+                        </h:commandLink>
+                        <p:commandButton
+                            onclick="$(dialogoPresProyOT).modal('hide');"
+                            value="Cancelar"
+                            styleClass="btn btn-default"                            
+                            title="Cerrar ventana..."                             
+                            />
+                    </div>
+                </h:form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="dialogoPresAltaPart" data-backdrop="static" data-keyboard="false" style="width: 100%;">
+        <div class="modal-dialog" style="width: 80%;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Agregar proyecto a la partida presupuestal</h4>
+                </div>
+                <h:form id="frmDialogPresAltaPart">
+                    <div class="modal-body panel-body">
+                        <div class="col-lg-12 col-xs-12">                            
+                            <div class="input-group col-lg-12 col-xs-12">                                
+                                <div class="row form-group" style="margin-top: 10px;">              
+
+                                    <div class="row form-group ">                                        
+                                        <div class="col-lg-12 col-xs-12" style="margin-bottom: 10px;margin-top: 10px;">
+                                            <h:outputText class="col-lg-2 control-label" value="Actividad Codigo: "/>
+                                            <div class="col-lg-4">
+                                                <h:outputText class="col-lg-12 control-label" value="#{presupuestoAdminBean.partidaProy.codigo}"/>
+                                            </div>
+                                            <h:outputText class="col-lg-2 control-label" value="Actividad Nombre; "/>
+                                            <div class="col-lg-4">
+                                                <h:outputText class="col-lg-12 control-label" value="#{presupuestoAdminBean.partidaProy.nombre}"/>
+                                            </div>
+                                            <h:outputText class="col-lg-2 control-label" value="Nuevo Poryecto: "/>
+                                            <div class="col-lg-10">
+                                                <h:selectOneMenu id="newProyOTPart" styleClass="form-control selectt"                                                                        
+                                                                 value="#{presupuestoAdminBean.partidaProy.idNuevoProyecto}"
+                                                                 >
+                                                    <f:selectItem itemValue="0" itemLabel="Seleccione . . . "/>
+                                                    <f:selectItems value="#{presupuestoAdminBean.lstNewProyectosOTs}"/>                                                
+                                                </h:selectOneMenu>                                                                                                        
+                                            </div>                                    
+
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <h:commandLink value="Guardar"	 
+                                       onclick="return validarForma('frmDialogPresAltaPart');"
+                                       actionListener="#{presupuestoAdminBean.agregarProyOTPartida(event)}"                                       
+                                       class="btn btn-info">                            
+                        </h:commandLink>
+                        <p:commandButton
+                            onclick="$(dialogoPresAltaPart).modal('hide');"
+                            value="Cancelar"
+                            styleClass="btn btn-default"                            
+                            title="Cerrar ventana..."                             
+                            />
+                    </div>
+                </h:form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="dialogoNuevoPres" data-backdrop="static" data-keyboard="false" style="width: 100%;">
+        <div class="modal-dialog" style="width: 80%;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Nuevo Presupuesto</h4>
+                </div>
+                <h:form id="frmDialogNewPres">
+                    <div class="modal-body panel-body">
+                        <div class="col-lg-12 col-xs-12">                            
+                            <div class="input-group col-lg-12 col-xs-12">                                
+                                <div class="row form-group" style="margin-top: 10px;">              
+                                    <div class="row form-group ">                           
+                                        <h:outputText class="col-lg-2 control-label" value="Nombre: "/>
+                                        <div class="col-lg-10">
+                                            <h:inputText id="nombrePres" class="form-control texOb" value="#{presupuestoAdminBean.presVO.nombre}"/>
+                                        </div>
+                                    </div>
+                                    <div class="row form-group ">                           
+                                        <h:outputText class="col-lg-2 control-label" value="Código: "/>
+                                        <div class="col-lg-10">
+                                            <h:inputText id="codigoPres" class="form-control texOb" value="#{presupuestoAdminBean.presVO.codigo}"/>
+                                        </div>
+                                    </div>                                    
+                                    <div class="row form-group ">                           
+                                        <h:outputText class="col-lg-2 control-label" value="Moneda: "/>
+                                        <div class="col-lg-10">
+                                            <h:selectOneMenu id="actId" styleClass="form-control selectt"                                                                        
+                                                             value="#{presupuestoAdminBean.presVO.idMoneda}"
+                                                             >
+                                                <f:selectItem itemValue="0" itemLabel="Seleccione . . . "/>
+                                                <f:selectItems value="#{presupuestoAdminBean.monedas}"/>                                                
+                                            </h:selectOneMenu>                                                                
+                                        </div>
+                                    </div>                                    
+                                </div>
+
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <h:commandLink value="Guardar"	 
+                                       onclick="return validarForma('frmDialogNewPres');"
+                                       actionListener="#{presupuestoAdminBean.guardarPresupuesto(event)}"                                       
+                                       class="btn btn-info">                            
+                        </h:commandLink>
+                        <p:commandButton
+                            onclick="$(dialogoNuevoPres).modal('hide');"
+                            value="Cancelar"
+                            styleClass="btn btn-default"                            
+                            title="Cerrar ventana..."                             
+                            />
+                    </div>
+                </h:form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="dialogoDisplayPartida" data-backdrop="static" data-keyboard="false" style="width: 100%;">
+        <div class="modal-dialog" style="width: 90%;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Montos Partida Presupuestal</h4>
+                </div>
+                <h:form id="frmDialogDisplayPart">
+                    <div class="modal-body panel-body">
+                        <div class="col-lg-12 col-xs-12">  
+                            <div class="form-group col-lg-12 col-xs-12">
+                                <strong><h:outputText styleClass="col-lg-1 col-xs-12 control-label" value="Pres.Id:" /></strong> 
+                                <div class="col-lg-3 col-xs-12">
+                                    <h:outputText styleClass="col-lg-12 col-xs-12 control-label" value="#{presupuestoAdminBean.presVO.id}" />
+                                </div>                                        
+                                <strong><h:outputText styleClass="col-lg-1 col-xs-12 control-label" value="Pres.Nombre:" /></strong> 
+                                <div class="col-lg-3 col-xs-12">
+                                    <h:outputText styleClass="col-lg-12 col-xs-12 control-label" value="#{presupuestoAdminBean.presVO.nombre}" />
+                                </div>                                        
+                                <strong><h:outputText styleClass="col-lg-1 col-xs-12 control-label" value="Actividad:" /></strong> 
+                                <div class="col-lg-3 col-xs-12">
+                                    <h:outputText styleClass="col-lg-12 col-xs-12 control-label" value="#{presupuestoAdminBean.partidaDisplay.actPetroleraNombre}" />
+                                </div>                                        
+                            </div>                                                
+                            <div class="form-group col-lg-12 col-xs-12">
+                                <strong><h:outputText styleClass="col-lg-1 col-xs-12 control-label" value="SubActiv.:" /></strong> 
+                                <div class="col-lg-3 col-xs-12">
+                                    <h:outputText styleClass="col-lg-12 col-xs-12 control-label" value="#{presupuestoAdminBean.partidaDisplay.unidadCostoNombre}" 
+                                                  title="#{presupuestoAdminBean.partidaDisplay.unidadCostoCodigo}"/>
+                                </div>                                        
+                                <strong><h:outputText styleClass="col-lg-1 col-xs-12 control-label" value="Tarea:" /></strong> 
+                                <div class="col-lg-3 col-xs-12">
+                                    <h:outputText styleClass="col-lg-12 col-xs-12 control-label" value="#{presupuestoAdminBean.partidaDisplay.tareaNombre}"
+                                                  title="#{presupuestoAdminBean.partidaDisplay.tareaCodigo}"/>
+                                </div>                                        
+                                <strong><h:outputText styleClass="col-lg-1 col-xs-12 control-label" value="SubTarea:" /></strong> 
+                                <div class="col-lg-3 col-xs-12">
+                                    <h:outputText styleClass="col-lg-12 col-xs-12 control-label" value="#{presupuestoAdminBean.partidaDisplay.subTareaNombre}"
+                                                  title="#{presupuestoAdminBean.partidaDisplay.subTareaCodigo}"/>
+                                </div>                                        
+                            </div>                                                
+                            <div class="table table-responsive">
+                                <p:dataTable id="displayPartida" 
+                                               value="#{presupuestoAdminBean.partidaDisplay.montos}" var="data"                                                                                              
+                                               style="font-size: 1em; width: 100%"  >                                
+                                    <p:column style="#{data.newDetID gt 0 ? 'background-color: #f8d7da;' : 'background-color: #cce5ff;'}">
+                                        <h:outputText value="#{data.fecha}">
+                                            <f:convertDateTime dateStyle="default" pattern="MMM/yyyy" type="date"/>
+                                        </h:outputText>
+                                        <h:outputText value="(#{data.mes})"/>
+                                        <h:outputText value="(#{data.anio})"/>                                        
+                                        <f:facet name="header"><h:outputText value="Mes/Año"/></f:facet>
+                                    </p:column>
+                                    <p:column style="#{data.newDetID gt 0 ? 'background-color: #f8d7da;' : 'background-color: #cce5ff;'}">
+                                        <h:outputText value="#{data.manoObraCn}"/>
+                                        <f:facet name="header"><h:outputText value="ManoObraCN"/></f:facet>
+                                    </p:column>
+                                    <p:column style="#{data.newDetID gt 0 ? 'background-color: #f8d7da;' : 'background-color: #cce5ff;'}">
+                                        <h:outputText value="#{data.manoObraEx}"/>
+                                        <f:facet name="header"><h:outputText value="ManoObraEX"/></f:facet>
+                                    </p:column>
+                                    <p:column style="#{data.newDetID gt 0 ? 'background-color: #f8d7da;' : 'background-color: #cce5ff;'}">
+                                        <h:outputText value="#{data.bienasCn}"/>
+                                        <f:facet name="header"><h:outputText value="BienesCN"/></f:facet>
+                                    </p:column>
+                                    <p:column style="#{data.newDetID gt 0 ? 'background-color: #f8d7da;' : 'background-color: #cce5ff;'}">
+                                        <h:outputText value="#{data.bienesEx}"/>
+                                        <f:facet name="header"><h:outputText value="BienesEX"/></f:facet>
+                                    </p:column>
+                                    <p:column style="#{data.newDetID gt 0 ? 'background-color: #f8d7da;' : 'background-color: #cce5ff;'}">
+                                        <h:outputText value="#{data.serviciosCn}"/>
+                                        <f:facet name="header"><h:outputText value="ServiciosCN"/></f:facet>
+                                    </p:column>
+                                    <p:column style="#{data.newDetID gt 0 ? 'background-color: #f8d7da;' : 'background-color: #cce5ff;'}">
+                                        <h:outputText value="#{data.serviciosEx}"/>
+                                        <f:facet name="header"><h:outputText value="ServiciosEX"/></f:facet>
+                                    </p:column>
+                                    <p:column style="#{data.newDetID gt 0 ? 'background-color: #f8d7da;' : 'background-color: #cce5ff;'}">
+                                        <h:outputText value="#{data.capacitacionCn}"/>
+                                        <f:facet name="header"><h:outputText value="CapacitacionCN"/></f:facet>
+                                    </p:column>
+                                    <p:column style="#{data.newDetID gt 0 ? 'background-color: #f8d7da;' : 'background-color: #cce5ff;'}">
+                                        <h:outputText value="#{data.capacitacionEx}"/>
+                                        <f:facet name="header"><h:outputText value="CapacitacionEX"/></f:facet>
+                                    </p:column>
+                                    <p:column style="#{data.newDetID gt 0 ? 'background-color: #f8d7da;' : 'background-color: #cce5ff;'}">
+                                        <h:outputText value="#{data.transferenciaTec}"/>
+                                        <f:facet name="header"><h:outputText value="Transf.Tec."/></f:facet>
+                                    </p:column>
+                                    <p:column style="#{data.newDetID gt 0 ? 'background-color: #f8d7da;' : 'background-color: #cce5ff;'}">
+                                        <h:outputText value="#{data.infraestructura}"/>
+                                        <f:facet name="header"><h:outputText value="Infraest."/></f:facet>
+                                    </p:column>
+                                </p:dataTable>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">                        
+                        <p:commandButton
+                            onclick="$(dialogoDisplayPartida).modal('hide');"
+                            value="Cancelar"
+                            styleClass="btn btn-default"                            
+                            title="Cerrar ventana..."                             
+                            />
+                    </div>
+                </h:form>
+            </div>
+        </div>
+    </div>
+
+    
+
+
+</ui:composition>

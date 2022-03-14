@@ -1,0 +1,246 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      >
+    <body>
+        <ui:composition template="./../../WEB-INF/facelets/templates/templateGrupos.xhtml">
+            <ui:define name="contenido">
+                <h:panelGroup  rendered="#{empty sesion.usuario}" styleClass="altura">
+                    <ui:include src="./../../login.xhtml"/>
+                </h:panelGroup>
+                <div id="page">
+                    <div class="row">
+                        <ui:include src="menuAdministracion.xhtml" rendered="#{not empty sesion.usuario}" />
+                    </div>
+                    <div class="row">
+                        <h:form rendered="#{not empty sesion.usuario}">
+                            <div class="col-lg-12">
+                                <div class="col-lg-4"></div>
+                                <div class="col-lg-6">
+                                    <h2 class="page-header">Reasignar requisición</h2>
+                                </div>
+                            </div>
+                            <div class="col-lg-12 col-xs-12">
+                                <p:selectOneRadio value="#{devolucionRequisicion.idBloque}" 
+                                                    valueChangeListener="#{devolucionRequisicion.cambiarSeleccionCampo}" 
+                                                     layout="lineDirection" >
+                                    <f:selectItems value="#{devolucionRequisicion.listaCampoPorUsuario}"/> 
+                                </p:selectOneRadio>
+                                <p:panelGrid columns="3">
+                                    <label for="req" class="col-xs-2">Requisición</label>
+                                    <p:panelGrid columns="1" >
+                                        <p:inputText value="#{devolucionRequisicion.req}" size="12" styleClass="form-control"
+                                                       />
+                                        <h:outputText value="12-1234" style="font-size: xx-small; float: right; "/>
+                                    </p:panelGrid>
+
+                                    <p:commandButton value="Buscar" actionListener="#{devolucionRequisicion.buscarRequisicion(event)}" styleClass="btn-success" style="margin-bottom: 5%;"/>					
+                                </p:panelGrid>
+                            </div>
+                            <div class="col-lg-12 col-xs-12">
+                                <h:messages id="msgDev" errorClass="errorMessage" infoClass="infoMessage"/>
+                                <p:panelGrid columns="3" rendered="#{devolucionRequisicion.mostrar}">
+                                    <h:outputText value="La requisición"/>
+                                    <h:outputText value="#{devolucionRequisicion.req}." style="color: #0895d6; font-weight: bold;"/>
+                                    <h:outputText value=" No existe o no se ha creado o el sistema no la tiene."/>
+                                </p:panelGrid>
+                            </div>
+                            <div class="col-lg-12 col-xs-12">
+                                <h:panelGroup rendered="#{devolucionRequisicion.requisicionVO != null}">                        
+                                    <p:panelGrid columns="1" rendered="#{devolucionRequisicion.requisicionVO.idStatus == 40 and devolucionRequisicion.dev eq 'True'}">
+                                        <h:commandButton value="Click aquí para reasignar la requisición  a otro analista" styleClass="btn btn-default" 
+                                                         actionListener="#{devolucionRequisicion.devolverSIARequisicion(event)}"
+                                                         onclick="$(dialogoReasignarReq).modal('show');"/>
+                                    </p:panelGrid>
+                                    <p:panelGrid rendered="#{devolucionRequisicion.requisicionVO.idStatus != 40 or devolucionRequisicion.dev eq 'False'}" columns="3">
+                                        <h:outputText value="La requición"/>
+                                        <h:outputText value="#{devolucionRequisicion.requisicionVO.consecutivo}." style="color: #0895d6; font-weight: bold;"/>
+                                        <h:outputText value="No puede ser reasignada."/>
+                                    </p:panelGrid>
+                                    <br/>
+                                    <div class="col-lg-3 col-xs-4">
+                                        <label for="req2" class="col-lg-5 col-xs-3">Requisición</label>
+                                        <div class="col-lg-6 col-xs-3" >
+                                            <input value="#{devolucionRequisicion.requisicionVO.consecutivo}" disabled="true" class="form-control"></input>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-5 col-xs-4">
+                                        <label for="comp" class="col-lg-2 col-xs-3">Compañia</label>
+                                        <div class="col-lg-10 col-xs-12" >
+                                            <input value="#{devolucionRequisicion.requisicionVO.compania}" disabled="true" class="form-control"></input>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4 col-xs-4">
+                                        <label for="est" class="col-lg-3 col-xs-3">Estatus</label>
+                                        <div class="col-lg-9 col-xs-3" >
+                                            <input value="#{devolucionRequisicion.requisicionVO.estatus}" disabled="true" class="form-control"></input>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3 col-xs-4" style="margin-top: 1%;">
+                                        <label for="req3" class="col-lg-5 col-xs-3">Requiere</label>
+                                        <div class="col-lg-6 col-xs-3" >
+                                            <input value="#{devolucionRequisicion.requisicionVO.fechaRequerida}" disabled="true" class="form-control" ></input>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-5 col-xs-4" style="margin-top: 1%">
+                                        <label for="entrega" class="col-lg-2 col-xs-3">Entrega</label>
+                                        <div class="col-lg-10 col-xs-10" >
+                                            <input value="#{devolucionRequisicion.requisicionVO.lugarEntrega}" disabled="true" class="form-control"></input>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4 col-xs-4" style="margin-top: 1%;">
+                                        <label for="ananlista" class="col-lg-3 col-xs-3">Analista</label>
+                                        <div class="col-lg-9 col-xs-9" >
+                                            <input value="#{devolucionRequisicion.requisicionVO.comprador}" disabled="true" class="form-control" ></input>
+                                        </div>
+                                    </div>
+                                    <!--<p:panelGrid columns="2"  bgcolor="#EDEFF4">
+                                        
+                                        <p:panelGrid columns="1">
+                                            <h:outputText value="Requisición"/>
+                                            <p:inputText value="#{devolucionRequisicion.requisicionVO.consecutivo}" disabled="true" size="8" />
+                                        </p:panelGrid>
+                                        <label for="req3" class="col-xs-2">Requiere</label>
+                                        <p:panelGrid columns="1">
+                                            <h:outputText value="Requiere"/>
+                                            <p:inputText value="#{devolucionRequisicion.requisicionVO.fechaRequerida}" disabled="true" size="10">
+                                                <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                            </p:inputText>
+                                        </p:panelGrid>
+                                        <p:panelGrid columns="2">
+                                            <h:outputText value="Compania"/>
+                                            <p:inputText value="#{devolucionRequisicion.requisicionVO.compania}" disabled="true" size="45"/>
+                                            <h:outputText value="Lugar de entrega"/>
+                                            <p:inputText value="#{devolucionRequisicion.requisicionVO.lugarEntrega}" disabled="true" size="38"/>
+                                        </p:panelGrid>
+                                        <p:panelGrid columns="2">
+                                            <h:outputText value="Estatus"/>
+                                            <p:inputText value="#{devolucionRequisicion.requisicionVO.estatus}" disabled="true" size="10"/>
+                                            <h:outputText value="Analista"/>
+                                            <p:inputText value="#{devolucionRequisicion.requisicionVO.comprador}" disabled="true" size="15"/>
+                                        </p:panelGrid>                            
+                                    </p:panelGrid>-->
+                                    <!-- <br/>
+                                     <p:panelGrid columns="2">
+                                         <h:outputText value="Gerencia"/>
+                                         <p:inputText value="#{devolucionRequisicion.requisicionVO.gerencia}" size="20"/>
+                                         <h:outputText value="Proyecto OT"/>
+                                         <p:inputText value="#{devolucionRequisicion.requisicionVO.proyectoOT}" size="35"/>
+                                         <h:outputText value="Tipo de obra"/>
+                                         <p:inputText value="#{devolucionRequisicion.requisicionVO.tipoObra}" size="35"/>
+                                         <h:outputText value="Proveedor"/>
+                                         <p:inputText value="#{devolucionRequisicion.requisicionVO.proveedor}" size="65"/>
+                                         <h:outputText value="Observación"/>
+                                         <p:inputTextarea value="#{devolucionRequisicion.requisicionVO.observaciones}" cols="70" rows="2"/>
+                                     </p:panelGrid>  -->                                            
+                                </h:panelGroup> 
+                            </div>
+                            <div class="col-lg-12 col-xs-12">
+                                <hr  style="color: maroon;"/><br/>
+                                <p:panelGrid columns="1" rendered="#{devolucionRequisicion.listaOrden.rowCount gt 0}">
+                                    <h:outputText value="Orden de compra" style="color: #0e8fcb; font-weight: bold;"/>
+                                    <p:dataTable value="#{devolucionRequisicion.ordenesCompra}" var="oc" 
+                                                   styleClass="table table-bordered table-striped">
+                                        <p:column style="font-size: x-small;">
+                                            <f:facet name="header"><h:outputText value="Orden"/></f:facet>
+                                            <h:outputText value="#{oc.consecutivo}"/>
+                                        </p:column>
+                                        <p:column style="font-size: x-small;">
+                                            <f:facet name="header"><h:outputText value="Analista"/></f:facet>
+                                            <h:outputText value="#{oc.analista.nombre}"/>
+                                        </p:column>
+                                        <p:column style="font-size: x-small;">
+                                            <f:facet name="header"><h:outputText value="ProyectoOT"/></f:facet>
+                                            <h:outputText value="#{oc.proyectoOt.nombre}"/>
+                                        </p:column>
+                                        <p:column style="font-size: x-small;">
+                                            <f:facet name="header"><h:outputText value="Proveedor"/></f:facet>
+                                            <h:outputText value="#{oc.proveedor.nombre}"/>
+                                        </p:column>
+                                        <p:column style="font-size: x-small;">
+                                            <f:facet name="header"><h:outputText value="Subtotal"/></f:facet>
+                                            <h:outputText value="#{oc.subtotal}"/>
+                                        </p:column>
+                                        <p:column style="font-size: x-small;">
+                                            <f:facet name="header"><h:outputText value="moneda"/></f:facet>
+                                            <h:outputText value="#{oc.moneda.siglas}"/>
+                                        </p:column>
+                                    </p:dataTable>
+                                    <h:outputText value="Autorizaciones de Orden de compra" style="color: #0e8fcb; font-weight: bold;"/>
+                                    <p:dataTable value="#{devolucionRequisicion.listaAuto}" var="aoc" 
+                                                   styleClass="table table-striped table-bordered">
+                                        <p:column style="font-size: x-small;">
+                                            <f:facet name="header"><h:outputText value="Consecutivo"/></f:facet>
+                                            <h:outputText value="#{aoc.orden.consecutivo}"/>
+                                        </p:column>
+                                        <p:column style="font-size: x-small;">
+                                            <f:facet name="header"><h:outputText value="Estatus"/></f:facet>
+                                            <h:outputText value="#{aoc.estatus.nombre}"/>
+                                        </p:column>
+                                        <p:column style="font-size: x-small;">
+                                            <f:facet name="header"><h:outputText value="Solicitó"/></f:facet>
+                                            <h:outputText value="#{aoc.solicito.nombre}"/>
+                                        </p:column>
+                                        <p:column style="font-size: x-small;">
+                                            <f:facet name="header"><h:outputText value="Fecha"/></f:facet>
+                                            <h:outputText value="#{aoc.fechaSolicito}">
+                                                <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                            </h:outputText>
+                                        </p:column>
+                                        <p:column style="font-size: x-small;">
+                                            <f:facet name="header"><h:outputText value="Hora"/></f:facet>
+                                            <h:outputText value="#{aoc.horaSolicito}">
+                                                <f:convertDateTime pattern="HH:mm:ss"/>
+                                            </h:outputText>
+                                        </p:column>
+                                    </p:dataTable>
+                                </p:panelGrid>
+                            </div>
+                        </h:form>
+
+                        <!-- Modal Panel Popup Rechazo -->
+                        <div class="modal fade" id="dialogoReasignarReq" data-backdrop="static" data-keyboard="false">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h4 class="modal-title">
+                                            Reasignar requisición
+                                        </h4>
+                                    </div>
+                                    <h:form id="form1">
+                                        <div class="modal-body panel panel-footer">
+                                            <p:panelGrid columns="2">
+                                                <h:outputText value="Código: "/>
+                                                <h:outputLabel value="#{devolucionRequisicion.requisicionVO.consecutivo}"/> 
+                                                <h:outputText value="Motivo: "/>
+                                                <p:inputTextarea value="#{devolucionRequisicion.motivo}" cols="65" styleClass="form-control"/> 
+                                                <h:outputText value="Analista: "/>
+                                                <p:selectOneMenu value="#{devolucionRequisicion.idAnalista}" id="listaAnalistas"
+                                                                   styleClass="form-control">
+                                                    <f:selectItems value="#{devolucionRequisicion.listaAnalista}"/> 
+                                                </p:selectOneMenu>
+                                            </p:panelGrid>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <h:commandLink value="Reasignar" actionListener="#{devolucionRequisicion.completarDevolverSIARequisicion(event)}" 
+                                                           styleClass="btn btn-info" onclick="if (!confirm('Se reasignará la requisición. ¿ está seguro ?'))
+                                                                       return false;" />
+                                            <h:commandLink value="Cancelar" actionListener="#{devolucionRequisicion.cancelarDevolverSIARequisicion(event)}" 
+                                                           styleClass="btn btn-default"
+                                                           onclick="$(dialogoReasignarReq).modal('hide')"/>
+                                        </div>
+                                    </h:form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </ui:define>
+        </ui:composition>
+
+    </body>
+</html>

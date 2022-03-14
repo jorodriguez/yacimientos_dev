@@ -1,0 +1,277 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"    
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"  
+      
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <body>
+        <ui:composition template="./../../WEB-INF/facelets/templates/templateGrupos.xhtml">
+            <h:panelGroup  rendered="#{empty sesion.usuario}" styleClass="altura">
+                <ui:include src="./../../login.xhtml"/>
+            </h:panelGroup> 
+            <ui:define name="contenido">
+                <div id="Page">
+                    <div class="row">
+                        <ui:include src="./menuRecursos.xhtml" rendered="#{not empty sesion.usuario}" />
+                    </div>
+                    <div class="row"> 
+                        <h:form rendered="#{not empty sesion.usuario}" styleClass="textoIzquierda" id="frmDoctoRh">
+                            <p:dataTable  value="#{documentosProveedoresRhBean.proveedores}" var="dataDoc"
+                                            paginator="true" paginatorAlwaysVisible="true"
+                                            rows="15" paginatorPosition="bottom">                                
+                                <p:column headerText="RFC" filterBy="#{dataDoc.rfc}" 
+                                            filterMatchMode="contains" sortBy="#{dataDoc.rfc}">
+                                    <h:outputText value="#{dataDoc.rfc}"/>
+                                </p:column>
+                                <p:column headerText="Nombre" style="text-align: left;"  
+                                            filterBy="#{dataDoc.nombre}" 
+                                            filterMatchMode="contains" sortBy="#{dataDoc.nombre}">
+                                    <h:outputText value="#{dataDoc.nombre}"/>
+                                </p:column>
+                                <p:column >
+                                    <h:commandLink title="Ver contratos" actionListener="#{documentosProveedoresRhBean.verContratos(e)}">
+                                        <i class="fa fa-eye text-primary"/>
+                                        <f:param name="proveedorId" value="#{dataDoc.idProveedor}"/>
+                                        <f:param name="proveedorRfc" value="#{dataDoc.rfc}"/>
+                                        <f:param name="proveedorNombre" value="#{dataDoc.nombre}"/>
+                                    </h:commandLink>
+                                </p:column>
+                            </p:dataTable>
+                        </h:form>
+                    </div>
+                </div>
+                <!-- Contratos del proveedor -->
+                <div class="modal fade" id="dialogoContratosProveedor" data-backdrop="static" data-keyboard="false">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h4 class="modal-title">Contratos del proveedor</h4>
+                            </div>
+                            <h:form id="frmContrProveedor">
+                                <div class="modal-body">
+                                    <div class="row">
+                                        <div class="col-lg-12">
+                                            <div class="form-group">
+                                                <h:outputLabel value="Proveedor"/>
+                                                <div>
+                                                    <h:outputText value="#{documentosProveedoresRhBean.proveedoreVo.nombre}"
+                                                                  styleClass="form-control"/>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <p:dataTable value="#{documentosProveedoresRhBean.contratosProveedor}"
+                                                   var="dataC" rowIndexVar="index" >
+                                        <p:column headerText="Número" style="text-align: left;" sortBy="#{dataC.numero}"
+                                                    >
+                                            <h:outputText value="#{dataC.numero}"/>
+                                        </p:column>
+                                        <p:column headerText="Nombre" style="text-align: left;" sortBy="#{dataC.nombre}"
+                                                    >
+                                            <h:outputText value="#{dataC.nombre}"/>
+                                        </p:column>
+                                        <p:column headerText="Inicio">
+                                            <h:outputText value="#{dataC.fechaInicio}">
+                                                <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                            </h:outputText>
+                                        </p:column>
+                                        <p:column headerText="Vencimiento">
+                                            <h:outputText value="#{dataC.fechaVencimiento}">
+                                                <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                            </h:outputText>
+                                        </p:column>
+                                        <p:column headerText="Monto">
+                                            <h:outputText value="#{dataC.monto}">
+                                                <f:convertNumber pattern="#,###.##"/>
+                                            </h:outputText>
+                                        </p:column>
+                                        <p:column headerText="Moneda">
+                                            <h:outputText value="#{dataC.moneda}"/>
+                                        </p:column>
+                                        <p:column >
+                                            <h:commandLink actionListener="#{documentosProveedoresRhBean.verDoctosPorContrato(e)}">
+                                                <i class="fa fa-eye text-primary"/>
+                                                <f:param name="indice" value="#{index}"/>
+                                            </h:commandLink>
+                                        </p:column>
+                                    </p:dataTable>
+                                </div>
+                                <div class="modal-footer">
+                                    <h:commandLink value="Cerrar" onclick="$(dialogoContratosProveedor).modal('hide');" 
+                                                   immediate="true"/>
+                                </div>
+                            </h:form>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal fade" id="dialogoDoctosProveedor" data-backdrop="static" data-keyboard="false">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h4 class="modal-title">Docuementos RH</h4>
+                            </div>
+                            <h:form id="frmDoctosProveedor">
+                                <div class="modal-body">
+                                    <div class="row">
+                                        <div class="col-lg-3">
+                                            <div class="form-group">
+                                                <h:outputText value="Número"/>
+                                                <div> 
+                                                    <h:outputLabel value="#{documentosProveedoresRhBean.contratoVo.numero}"/>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-9">
+                                            <div class="form-group">
+                                                <h:outputText value="Contrato"/>
+                                                <div> 
+                                                    <h:outputLabel value="#{documentosProveedoresRhBean.contratoVo.nombre}"/>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <p:tabView >
+                                        <p:tab title="Documentos periodicos">
+                                            <p:dataTable id="dtDoctosPerRh" 
+                                                           value="#{documentosProveedoresRhBean.doctosRhPeriodicos}" var="dataPer">
+                                                <p:column headerText="Documento" style="text-align: left;">
+                                                    <h:outputText value="#{dataPer.documento}"/>
+                                                </p:column>
+                                                <p:column headerText="Descargar">
+                                                    <h:outputLink target="_blank"  value="/Sia/AbrirArchivo?ZWZ2W=#{dataPer.idAdjunto}&amp:ZWZ3W=#{dataPer.uuId}"
+                                                                  style="color: blue; text-decoration:  underline;"
+                                                                  rendered="#{dataPer.idAdjunto gt 0}">
+                                                        <h:outputText value=" Abrir"/>
+                                                    </h:outputLink>
+                                                </p:column>
+                                                <p:column headerText="Fecha">
+                                                    <h:outputLabel value="#{dataPer.fechaGenero}">
+                                                        <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                                    </h:outputLabel>
+                                                </p:column>
+                                                <p:column>
+                                                    <h:commandLink actionListener="#{documentosProveedoresRhBean.inicioEnviarObservacion(e)}"
+                                                                   value="Nota" styleClass="btn btn-default"> 
+                                                        <f:param name="doctoRhId" value="#{dataPer.id}"/>
+                                                    </h:commandLink>
+                                                </p:column>
+                                            </p:dataTable>
+                                            <p:dataExporter fileName="DocumentosPeriodicosRh" target="dtDoctosPerRh" type="xls">
+                                                Exportar tabla
+                                            </p:dataExporter>
+                                        </p:tab>
+                                        <p:tab title="Documentos NO periodicos">
+                                            <p:dataTable id="dtDoctosNoPer" value="#{documentosProveedoresRhBean.doctosRhNoPeriodicos}" var="dataNoPer">
+                                                <p:column headerText="Documento" style="text-align: left;">
+                                                    <h:outputText value="#{dataNoPer.documento}"/>
+                                                </p:column>
+                                                <p:column headerText="Descargar">
+                                                    <h:outputLink target="_blank"  value="/Sia/AbrirArchivo?ZWZ2W=#{dataNoPer.idAdjunto}&amp:ZWZ3W=#{dataNoPer.uuId}"
+                                                                  style="color: blue; text-decoration:  underline;"
+                                                                  rendered="#{dataNoPer.idAdjunto gt 0}">
+                                                        <h:outputText value=" Abrir"/>
+                                                    </h:outputLink>
+                                                </p:column>
+                                                <p:column>
+                                                    <h:commandLink actionListener="#{documentosProveedoresRhBean.inicioEnviarObservacion(e)}"
+                                                                   value="Nota" styleClass="btn btn-default">
+                                                        <f:param name="doctoRhId" value="#{dataNoPer.id}"/>
+                                                    </h:commandLink>
+                                                </p:column>
+                                            </p:dataTable>
+                                            <p:dataExporter fileName="DocumentosNoPeriodicos" target="dtDoctosNoPer" type="xls">
+                                                Exportar tabla
+                                            </p:dataExporter>
+                                        </p:tab>
+                                    </p:tabView>
+                                </div>
+                                <div class="modal-footer">
+                                    <h:commandLink value="Cerrar" onclick="$(dialogoDoctosProveedor).modal('hide');" immediate="true"/>
+                                </div>
+                            </h:form>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal fade" id="dialogoEnviarNotaDoctosProveedor" data-backdrop="static" data-keyboard="false">
+                    <div class="modal-dialog" style="width: 60%;">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h4 class="modal-title">Nota de docuementos RH</h4>
+                            </div>
+                            <h:form id="frmNotaDatosProveedor">
+                                <div class="modal-body">
+                                    <div class="row">
+                                        <div class="col-lg-12">
+                                            <div class="form-group">
+                                                <h:outputLabel value="Documento:"/>
+                                                <div >
+                                                    <h:outputText value="#{documentosProveedoresRhBean.doctosRhVo.documento}"/>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <h:outputLabel value="Observación:"/>
+                                                <div >
+                                                    <h:inputTextarea class="form-control" value="#{documentosProveedoresRhBean.doctosRhVo.observacion}"
+                                                                     required="true" requiredMessage="Es necesario agregar la observación."/>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-row">
+                                            <div class="col-lg-6">	
+                                                <!--rowSelectListener="#{documentosProveedoresRhBean.seleccionarContacto}"-->
+                                                <p:dataTable value="#{documentosProveedoresRhBean.contactosProveedor}" var="data"
+                                                               selectionMode="single" styleClass="table table-responsive"
+                                                               
+                                                               rows="5" paginatorAlwaysVisible="false" paginator="true" paginatorPosition="bottom"
+                                                               style="font-size: 1em;" >
+                                                    <f:facet name="header" >contactos del proveedor</f:facet>
+                                                    <p:column headerText="Nombre" style="text-align: left;">
+                                                        <h:outputText value="#{data.nombre}"/>
+                                                    </p:column>
+                                                    <p:column headerText="Puesto" style="text-align: left;">
+                                                        <h:outputText value="#{data.puesto}"/>
+                                                    </p:column>
+                                                    <p:column headerText="Correo" style="text-align: left;">
+                                                        <h:outputText value="#{data.correo}"/>
+                                                    </p:column>
+                                                </p:dataTable>
+                                            </div>
+                                            <div class="col-lg-6">	
+                                                <p:dataTable value="#{documentosProveedoresRhBean.listaCorreo}" var="data"
+                                                               style="font-size: 1em;" rowIndexVar="index">
+                                                    <f:facet name="header" >Correo para</f:facet>
+                                                    <p:column headerText="Nombre" style="text-align: left;">
+                                                        <h:outputText value="#{data.nombre}"/>
+                                                    </p:column>
+                                                    <p:column >
+                                                        <h:commandLink actionListener="#{documentosProveedoresRhBean.quitarUsuarioCorreo(e)}" 
+                                                                       immediate="true">
+                                                            <i class="fa fa-trash text text-danger"/>
+                                                            <f:param name="indice" value="#{index}"/>						
+                                                        </h:commandLink>
+                                                    </p:column>
+                                                </p:dataTable>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <h:commandLink value="Cerrar" onclick="$(dialogoEnviarNotaDoctosProveedor).modal('hide');" 
+                                                   immediate="true" styleClass="btn btn-default"/>
+                                    <h:commandLink value="Enviar"  styleClass="btn btn-primary"
+                                                   actionListener="#{documentosProveedoresRhBean.enviarObservacion(e)}"/>
+                                </div>
+                            </h:form>
+                        </div>
+                    </div>
+                </div>
+
+            </ui:define>
+
+        </ui:composition>
+
+    </body>
+</html>
