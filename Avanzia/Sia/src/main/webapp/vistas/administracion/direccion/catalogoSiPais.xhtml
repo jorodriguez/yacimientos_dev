@@ -1,0 +1,125 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      
+      xmlns:c="http://java.sun.com/jsp/jstl/core"
+      xmlns:my="http://www.mytags.com/schema/mytags">
+
+    <body>
+
+        <ui:composition template="./../../../WEB-INF/facelets/templates/templateGrupos.xhtml">
+	    <h:panelGroup  rendered="#{empty sesion.usuario}" styleClass="altura">
+		<ui:include src="./../../../login.xhtml"/>
+	    </h:panelGroup>
+	    <ui:define name="contenido" >
+		<div id="page">
+		    <div class="row">
+			<ui:include src="./../menuAdministracion.xhtml" rendered="#{not empty sesion.usuario}" />
+		    </div>
+		    <div class="row">
+			<h:form styleClass="textoIzquierda"  rendered="#{not empty sesion.usuario}" >
+			    <div class="col-lg-12">
+				<div class="col-lg-4"></div>
+				<div class="col-lg-6">
+				    <h2 class="page-header">Catálogo de Paises</h2>
+				</div>
+			    </div>
+			    <center><h:messages globalOnly="true" errorClass="errorMessage" infoClass="infoMessage"/></center>
+
+			    <center><h:outputText value="#{msgs['siPais.catalogo']}" styleClass="tituloEncabezado"/></center>
+
+			    <p:panelGrid>
+				<p:commandLink title="#{msgs['sistema.crear']} #{msgs['siPais']}" actionListener="#{direccionBean.openPopupCreateSiPais(event)}" styleClass="btn btn-default">
+				    <p:graphicImage title="#{msgs['sistema.crear']} #{msgs['siPais']}" alt="#{msgs['sistema.crear']} #{msgs['siPais']}" url="./resources/imagenes/button_create.png" styleClass="imagenSinBorde"/>
+				</p:commandLink>
+				<p:commandLink value="#{msgs['sistema.crear']} #{msgs['siPais']}" title="#{msgs['sistema.crear']} #{msgs['siPais']}" actionListener="#{direccionBean.openPopupCreateSiPais(event)}" styleClass="linkPequenio" />
+			    </p:panelGrid>  
+			</h:form>
+
+			<h:form id="cataPais" styleClass="textoIzquierda">
+			    <my:dataGrid id="dgSiPais" rows="10" value="#{direccionBean.allSiPaisDataModel}" showPaginator="true" textoResultado="#{msgs['sistema.paginador.mostrando']} #{msgs['siPais']} " textoPagina="#{msgs['sistema.paginador.pagina']}" textoDe="#{msgs['sistema.paginador.de']}" >
+				<p:column>
+				    <f:facet name="header"><h:outputText value="#{msgs['siPais']}"/></f:facet>
+				    <h:outputText value="#{data.nombre}"/>
+				</p:column>
+				<p:column>
+				    <center>
+					<p:commandLink value="#{msgs['sistema.modificar']}" actionListener="#{direccionBean.openPopupUpdateSiPais(event)}" styleClass="link" />
+				    </center>
+				</p:column>
+				<p:column>
+                                    <center>
+                                        <p:commandLink value="#{msgs['sistema.eliminar']}" actionListener="#{direccionBean.deleteSiPais(event)}"  styleClass="link" />
+                                    </center>
+                                    <p:confirmDialog id="pnlCon"   message="#{msgs['siPais.msg.delete']}"
+							   style="margin-top: 30px;" />
+                                </p:column>
+			    </my:dataGrid>
+			    <br/>
+			</h:form>           
+
+			<!--Crear SiPais-->
+			<h:form id="formPopupCreateSiPais" styleClass="textoIzquierda">
+			    <my:panelPopup tituloPanel="#{msgs['sistema.crear']} #{msgs['siPais']}" mostrarPanel="#{sesion.controladorPopups['popupCreateSiPais']}" conBoton="false" >
+				<h:outputText id="msgsPopupCreateSiPais" value="" />
+				<center><h:message for="msgsPopupCreateSiPais" errorClass="errorMessage" infoClass="infoMessage"/></center>                    
+
+				<p:panelGrid columns="2">
+				    <p:panelGrid columns="2">
+					<h:outputLabel value="#{msgs['generales.nombre']}: "/>
+					<h:outputText value="*" styleClass="textoRojo" />
+				    </p:panelGrid>
+				    <p:panelGrid columns="2">
+					<p:inputText id="inpTxtNombre" value="#{direccionBean.siPais.nombre}" maxlength="64" size="32" required="true" requiredMessage="#{msgs['generales.nombre']} #{msgs['sistema.mensaje.error.esRequerido']}"/>
+					<h:message id="nombre" for="inpTxtNombre" errorClass="errorMessage" infoClass="infoMessage"/>
+				    </p:panelGrid>
+				</p:panelGrid>
+
+				<center>
+				    <p:panelGrid columns="2">
+					<p:commandLink value="#{msgs['sistema.aceptar']}" actionListener="#{direccionBean.saveSiPais(event)}" styleClass="btn btn-info" />
+					<p:commandLink value="#{msgs['sistema.cancelar']}" actionListener="#{direccionBean.closePopupCreateSiPais(event)}" immediate="true" styleClass="btn btn-default" />
+				    </p:panelGrid>
+				</center>                                  
+			    </my:panelPopup>
+			</h:form>
+
+			<!--Modificar SiPais-->
+			<h:form id="formPopupUpdateSiPais" styleClass="textoIzquierda">
+			    <my:panelPopup tituloPanel="#{msgs['sistema.modificar']} #{msgs['siPais']}" mostrarPanel="#{sesion.controladorPopups['popupUpdateSiPais']}" conBoton="false" >
+				<h:outputText id="msgsPopupUpdateSiPais" value="" />
+				<center><h:message for="msgsPopupUpdateSiPais" errorClass="errorMessage" infoClass="infoMessage"/></center>       
+
+				<p:panelGrid columns="2">
+				    <p:panelGrid columns="2">
+					<h:outputLabel value="#{msgs['generales.nombre']}: "/>
+					<h:outputText value="*" styleClass="textoRojo" />
+				    </p:panelGrid>
+				    <p:panelGrid columns="2">
+					<p:inputText id="inpTxtNombre" value="#{direccionBean.siPais.nombre}" 
+                                                     maxlength="64" size="32" required="true" 
+                                                     requiredMessage="#{msgs['generales.nombre']} #{msgs['sistema.mensaje.error.esRequerido']}"/>
+					<h:message id="nombre" for="inpTxtNombre" errorClass="errorMessage" infoClass="infoMessage"/>
+				    </p:panelGrid>
+				</p:panelGrid>
+
+				<center>
+				    <p:panelGrid columns="2">
+					<p:commandLink value="#{msgs['sistema.actualizar']}" actionListener="#{direccionBean.updateSiPais(event)}" styleClass="btn btn-info" />
+					<p:commandLink value="#{msgs['sistema.cancelar']}" actionListener="#{direccionBean.closePopupUpdateSiPais(event)}" immediate="true" styleClass="btn btn-default" />
+				    </p:panelGrid>
+				</center>                                 
+			    </my:panelPopup>
+			</h:form>
+		    </div>
+		</div>
+            </ui:define>
+
+        </ui:composition>
+
+    </body>
+</html>

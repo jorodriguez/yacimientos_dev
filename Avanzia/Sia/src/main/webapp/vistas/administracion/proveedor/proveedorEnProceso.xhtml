@@ -1,0 +1,103 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"       
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      >
+    <body>
+        <ui:composition template="./../../../WEB-INF/facelets/templates/templateGrupos.xhtml">
+            <h:panelGroup  rendered="#{empty sesion.usuario}" styleClass="altura">
+                <ui:include src="./../../../login.xhtml"/>
+            </h:panelGroup>
+            <ui:define name="contenido">
+                <div id="Pa">
+                    <div class="row">
+                        <ui:include src="../menuAdministracion.xhtml" rendered="#{not empty sesion.usuario}" />
+                    </div>
+                    <div class="row"> 
+                        <h:message  for="" style="display: block;" infoClass="alert alert-success" warnClass="alert alert-warning"
+                                    errorClass="alert alert-danger" fatalClass="alert alert-danger"  />
+                        <h:form id="frmRelCampoPro" rendered="#{not empty sesion.usuario}" styleClass="textoIzquierda">
+                            <div class="col-lg-12">
+                                <div class="col-lg-4"></div>
+                                <div class="col-lg-6">
+                                    <h2 class="page-header">Registro de proveedores</h2>
+                                </div>
+                            </div>
+                            <div class="col-lg-12 col-xs-12">
+                                <p:dataTable value="#{validarProveedorBean.listaProveedor}" var="data"
+                                               styleClass="table table-striped table-bordered">
+                                    <p:column headerText="Proveedor">
+                                        <h:outputText value="#{data.nombre}"/>
+                                    </p:column>
+                                    <p:column headerText="RFC">
+                                        <h:outputText value="#{data.rfc}"/>
+                                    </p:column>
+                                    <p:column headerText="IdCIF">
+                                        <h:outputText value="#{data.idCIF}"/>
+                                    </p:column>
+                                    <p:column headerText="Dirección">
+                                        <h:outputText value="#{data.calle} #{data.numero} #{data.ciudad} #{data.estado} #{data.pais}"/>
+                                    </p:column>
+                                    <p:column>
+                                        <h:outputLink  target="_blank" value="/Sia/ProveedorDocumento?ZWZPR=#{data.idProveedor}" >
+                                            <i id="btn#{data.idProveedor}" class="fa fa-download btn btn-warning" onclick="cambiarColor('btn#{data.idProveedor}')"></i>
+                                        </h:outputLink>
+                                    </p:column>
+                                    <p:column>
+                                        <h:commandLink value="Activar" style="color: blue;"
+                                                       action="#{validarProveedorBean.activarProveedor()}">
+                                            <f:setPropertyActionListener value="#{data}" target="#{validarProveedorBean.proveedorVo}"/>
+                                        </h:commandLink>
+                                    </p:column>
+                                    <p:column>
+                                        <h:commandLink value="Devolver" style="color: blue;"
+                                                       action="#{validarProveedorBean.iniciarDevProveedor()}">
+                                            <f:setPropertyActionListener value="#{data}" target="#{validarProveedorBean.proveedorVo}"/>
+                                        </h:commandLink>
+                                    </p:column>
+                                </p:dataTable>
+                            </div>
+                        </h:form>
+                    </div>
+                </div>
+                <!-- Modal Panel Popup Rechazo -->
+                <div class="modal fade" id="dialogoDevolver" data-backdrop="static" data-keyboard="false">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h4 class="modal-title">Devolver</h4>
+                            </div>
+                            <h:form id="frmMosDocs">
+                                <div class="modal-body card card-footer">
+                                    <div class="row">
+                                        <div class="col-lg-12">
+                                            Proveedor: <h:outputLabel value="#{validarProveedorBean.proveedorVo.nombre}"/> 
+                                        </div>
+                                        <div class="col-lg-12">
+                                            Motivo: <h:inputTextarea id="motivoCan" value="#{validarProveedorBean.motivoCanvelacion}" styleClass="form-control"
+                                                                     required="true" requiredMessage="Es necesario agregar el motivo."/>
+                                        </div>
+                                        <h:message for="motivoCan" styleClass="text text-danger"/>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <p:commandLink value="Cancelar" styleClass="btn btn-default" onclick="$(dialogoDevolver).modal('hide');">
+
+                                    </p:commandLink>
+                                    <p:commandLink value="Devolver" styleClass="btn btn-primary" 
+                                                     actionListener="#{validarProveedorBean.devolverProveedor(event)}">
+
+                                    </p:commandLink>
+                                </div>
+                            </h:form>
+                        </div>
+                    </div>
+                </div>
+            </ui:define>
+
+        </ui:composition>
+    </body>
+</html>

@@ -1,0 +1,397 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"       
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:c="http://java.sun.com/jsp/jstl/core"                
+      >
+    <body>
+        <ui:composition template="./../../../WEB-INF/facelets/templates/templateGrupos.xhtml">
+            <h:panelGroup  rendered="#{empty sesion.usuario}" styleClass="altura">
+                <ui:include src="./../../../login.xhtml"/>
+            </h:panelGroup>
+            <ui:define name="contenido">
+                <div id="page">
+                    <div class="row">
+                        <ui:include src="../menuAdministracion.xhtml" rendered="#{not empty sesion.usuario}" />
+                    </div>
+                    <div class="row"> 
+                        <div class="col-lg-12">
+                            <div class="col-lg-4"></div>
+                            <div class="col-lg-6">
+                                <h2 class="page-header">Presupuestos</h2>
+                            </div>
+                        </div>
+                        <div class="row"> 
+                            <div class="col-lg-12">
+                                <h:message  for="" style="display: block;" infoClass="alert alert-success" warnClass="alert alert-warning"
+                                            errorClass="alert alert-danger" fatalClass="alert alert-danger"  />
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div id="divAutoriza" class="btn-group" style="text-align: left;">
+                                <h:form>
+                                    <h:commandLink value="Nuevo" actionListener="#{presupuestoAdminBean.nuevoPresupuestos(actionEvent)}"                                           
+                                                   styleClass="btn btn-primary"/>                                
+
+                                </h:form>
+                            </div>
+                            <div id="divOperacion" class="btn-group" style="text-align: left; display: none;">
+                                <h:form>                     
+                                    <h:commandLink value="Regresar" actionListener="#{presupuestoAdminBean.regresarPresupuestos(actionEvent)}"                                           
+                                                   styleClass="btn btn-primary"/>                                
+                                    <h:commandLink value="Modificar Monto" actionListener="#{presupuestoAdminBean.modificarMonto(actionEvent)}"                                           
+                                                   styleClass="btn btn-primary"/>
+                                    <!-- h:commandLink value="Nuevo Proyecto OT" actionListener="#{presupuestoAdminBean.agregarProyOT(actionEvent)}"                                           
+                                                   styleClass="btn btn-default"/ -->
+
+                                </h:form>
+                            </div>
+                            <div id="divOpImportar" class="btn-group" style="text-align: left; display: none;">
+                                <h:form id="frmOpsImportar">                     
+                                    <h:commandLink value="Regresar" actionListener="#{presupuestoAdminBean.regresarPresupuestos(actionEvent)}"                                           
+                                                   styleClass="btn btn-primary"/>  
+                                    <ui:fragment rendered="#{presupuestoAdminBean.nuevosActividadP.size() gt 0}">
+                                        <h:commandLink value="Agregar Actividades" actionListener="#{presupuestoAdminBean.abrirGuardarNuevoActP(actionEvent)}"                                           
+                                                       styleClass="btn btn-danger"/>
+                                    </ui:fragment>
+                                    <ui:fragment rendered="#{presupuestoAdminBean.nuevosSubActividadP.size() gt 0}">
+                                        <h:commandLink value="Agregar Subctividades"                                                            
+                                                       actionListener="#{presupuestoAdminBean.abrirGuardarNuevoSubActP(actionEvent)}"                                           
+                                                       styleClass="btn btn-danger"/>                                                                    
+                                    </ui:fragment>
+
+                                    <ui:fragment rendered="#{presupuestoAdminBean.nuevosCodigosTarea.size() gt 0}">
+                                        <h:commandLink value="Agregar Codigo Tarea"                                                            
+                                                       actionListener="#{presupuestoAdminBean.abrirGuardarNuevosCodigoTarea(actionEvent)}"                                           
+                                                       styleClass="btn btn-danger"/>                                                                    
+                                    </ui:fragment>
+
+                                    <ui:fragment rendered="#{presupuestoAdminBean.nuevosNombresTarea.size() gt 0}">
+                                        <h:commandLink value="Agregar Nombre Tarea"                                                            
+                                                       actionListener="#{presupuestoAdminBean.abrirGuardarNuevosNombreTarea(actionEvent)}"                                           
+                                                       styleClass="btn btn-danger"/>                                                                    
+                                    </ui:fragment>
+
+                                    <ui:fragment rendered="#{presupuestoAdminBean.nuevosSubTareas.size() gt 0}">
+                                        <h:commandLink value="Agregar Subtarea"                                                            
+                                                       actionListener="#{presupuestoAdminBean.abrirGuardarNuevoSubtarea(actionEvent)}"                                           
+                                                       styleClass="btn btn-danger"/>                                                                    
+                                    </ui:fragment>
+
+                                    <ui:fragment rendered="#{presupuestoAdminBean.nuevosProyectosOts.size() gt 0}">
+                                        <h:commandLink value="Agregar ProyectoOT"                                                            
+                                                       actionListener="#{presupuestoAdminBean.abrirGuardarNuevosProyectoOT(actionEvent)}"                                           
+                                                       styleClass="btn btn-danger"/>                                                                    
+                                    </ui:fragment>
+                                    <ui:fragment rendered="#{presupuestoAdminBean.lstPartidas.size() gt 0 and 
+                                                             presupuestoAdminBean.nuevosActividadP.size() lt 1 and
+                                                             presupuestoAdminBean.nuevosSubActividadP.size() lt 1 and
+                                                             presupuestoAdminBean.nuevosCodigosTarea.size() lt 1 and
+                                                             presupuestoAdminBean.nuevosNombresTarea.size() lt 1 and
+                                                             presupuestoAdminBean.nuevosSubTareas.size() lt 1 and
+                                                             presupuestoAdminBean.nuevosProyectosOts.size() lt 1}">
+                                        <h:commandLink value="Guardar" 
+                                                       onclick="return confirmar('Este proceso guardará el presupuesto en el SIA para ser utilizado en las futuras requisiciones del bloque. ¿Desea guardar el presupuesto?.');"
+                                                       actionListener="#{presupuestoAdminBean.guardarPresupuestoDet(actionEvent)}"                                           
+                                                       styleClass="btn btn-success"/>                                                                    
+                                    </ui:fragment>
+                                </h:form>
+                            </div>
+                        </div>
+                        <br/>
+                        <div id="divTabla" class="row"> 
+                            <h:form>                     
+                                <div class="table table-responsive">
+                                    <p:dataTable id="PresupuestosDts" rows="15"
+                                                   value="#{presupuestoAdminBean.presupuestos}" var="data"
+                                                   paginator="true"  
+                                                   paginatorPosition="bottom" 
+                                                   style="font-size: 1em; width: 100%"  >                                
+                                        <p:column style="width: 20%">
+                                            <h:outputText value="#{data['id']}"/>
+                                            <f:facet name="header"><h:outputText value="Identificador"/></f:facet>
+                                        </p:column>
+                                        <p:column style="width: 35%">
+                                            <h:outputText value="#{data['nombre']}"/>
+                                            <f:facet name="header"><h:outputText value="Nombre"/></f:facet>
+                                        </p:column>
+                                        <p:column style="width: 30%">
+                                            <h:outputText value="#{data['codigo']}"/>
+                                            <f:facet name="header">
+                                                <h:outputText value="Codigo"/>
+                                            </f:facet>
+                                        </p:column>
+                                        <p:column style="width: 5%">
+                                            <p:commandLink actionListener="#{presupuestoAdminBean.seleccionarPresupuesto(actionEvent)}"                                                      
+                                                             title="Clic aquí para ver el detalle del presupuesto..."                                                             
+                                                             >
+                                                <i class="glyphicon glyphicon-list"></i>
+                                                <f:param name="idPresupuesto" value="#{data['id']}"/>                                                
+                                            </p:commandLink>                                            
+                                        </p:column>
+                                        <p:column style="width: 5%">                                            
+                                            <p:commandLink actionListener="#{presupuestoAdminBean.seleccionarImportar(actionEvent)}"                                                      
+                                                             title="Clic aquí para importar partidas al presupuesto..."                                                                                                                          
+                                                             >
+                                                <i class="glyphicon glyphicon-import"></i>
+                                                <f:param name="idPresupuesto" value="#{data['id']}"/>                                                
+                                            </p:commandLink>
+                                        </p:column>                                        
+                                        <p:column style="width: 5%">                                            
+                                            <p:commandLink actionListener="#{presupuestoAdminBean.borrarPresupuesto(actionEvent)}"                                                      
+                                                             title="Clic aquí para eliminar el presupuesto..."                                                             
+                                                             onclick="return confirmar('La operación inactivara el presupuesto y no podrá ser utilizado. ¿Está seguro?');"
+                                                             >
+                                                <i class="glyphicon glyphicon-trash"></i>
+                                                <f:param name="idPresupuesto" value="#{data['id']}"/>                                                
+                                            </p:commandLink>
+                                        </p:column>                                        
+                                        <p:column style="width: 5%">                                            
+                                            <p:link value="/Sia/generarExcel?ZWZ2W=#{data['id']}">
+                                                <h:outputText value="Exportar" style="color: blue;" 
+                                                                title="Clic aqui para generar el excel del presupuesto...">
+                                                </h:outputText>
+                                            </p:link>
+                                        </p:column>                                        
+                                    </p:dataTable>
+                                </div>
+                            </h:form>
+                        </div>                    
+                        <br/>
+                        <div id="divDatos" style="display: none;" class="row">  
+                            <h:form>                     
+                                <ui:fragment rendered="#{presupuestoAdminBean.idPres gt 0}">
+
+                                    <div class="form-group col-lg-12 col-xs-12">
+                                        <strong><h:outputText styleClass="col-lg-2 col-xs-12 control-label" value="Identificador:" /></strong> 
+                                        <div class="col-lg-4 col-xs-12">
+                                            <h:outputText styleClass="col-lg-12 col-xs-12 control-label" value="#{presupuestoAdminBean.presVO.id}" />
+                                        </div>              
+                                        <strong><h:outputText styleClass="col-lg-2 col-xs-12 control-label" value="Presupuesto:" /></strong> 
+                                        <div class="col-lg-4 col-xs-12">
+                                            <h:outputText styleClass="col-lg-12 col-xs-12 control-label" value="#{presupuestoAdminBean.presVO.nombre}" />
+                                        </div>                                        
+                                    </div>                                                
+                                    <div class="form-group col-lg-12 col-xs-12">
+
+
+                                        <strong><h:outputText styleClass="col-lg-2 col-xs-12 control-label" value="Año:" /></strong> 
+                                        <div class="col-lg-4 col-xs-12">
+                                            <h:selectOneMenu id="anioPres" value="#{presupuestoAdminBean.anio}" 
+                                                             class="form-control"
+                                                             >                                                
+                                                <f:selectItems value="#{presupuestoAdminBean.anios}"/>                                                
+                                                <f:ajax listener="#{presupuestoAdminBean.cambiarAnio}" render="PresupuestoDetID mesPres"/>
+                                            </h:selectOneMenu>
+                                        </div>                                        
+                                        <strong><h:outputText styleClass="col-lg-2 col-xs-12 control-label" value="Mes:" /></strong> 
+                                        <div class="col-lg-4 col-xs-12">
+                                            <h:selectOneMenu id="mesPres" value="#{presupuestoAdminBean.mes}" 
+                                                             class="form-control"
+                                                             >                                                
+                                                <f:selectItems value="#{presupuestoAdminBean.meses}"/>                                                
+                                                <f:ajax listener="#{presupuestoAdminBean.refrescarContratoDet}" render="PresupuestoDetID"/>
+                                            </h:selectOneMenu>
+                                        </div>                                        
+                                    </div>                                                
+
+                                </ui:fragment>
+
+                                <div class="table table-responsive">
+                                    <p:dataTable id="PresupuestoDetID" 
+                                                   value="#{presupuestoAdminBean.detalle}" var="data"
+                                                                                                      
+                                                   style="font-size: 1em; width: 100%"  >                                
+                                        <p:column style="width: 25%">
+                                            <h:outputText value="#{data['subTareaCode']}" title="#{data['subTareaNombre']}"/>
+                                            <f:facet name="header"><h:outputText value="SubTarea"/></f:facet>
+                                        </p:column>
+                                        <p:column style="width: 25%">
+                                            <h:outputText value="#{data['otsTexto']}"/>
+                                            <f:facet name="header"><h:outputText value="OTs"/></f:facet>
+                                        </p:column>
+                                        <p:column style="width: 5%">
+                                            <h:outputText value="#{data['manoObraCn']}"/>
+                                            <f:facet name="header">
+                                                <h:outputText value="ManoObra CN"/>
+                                            </f:facet>
+                                        </p:column>
+                                        <p:column style="width: 5%">
+                                            <h:outputText value="#{data['manoObraEx']}"/>
+                                            <f:facet name="header">
+                                                <h:outputText value="ManoObra EX"/>
+                                            </f:facet>
+                                        </p:column>
+                                        <p:column style="width: 5%">
+                                            <h:outputText value="#{data['bienasCn']}"/>
+                                            <f:facet name="header">
+                                                <h:outputText value="BienesCN"/>
+                                            </f:facet>
+                                        </p:column>
+                                        <p:column style="width: 5%">
+                                            <h:outputText value="#{data['bienesEx']}"/>
+                                            <f:facet name="header">
+                                                <h:outputText value="BienesEX"/>
+                                            </f:facet>
+                                        </p:column>
+                                        <p:column style="width: 5%">
+                                            <h:outputText value="#{data['serviciosCn']}"/>
+                                            <f:facet name="header">
+                                                <h:outputText value="Servic. CN"/>
+                                            </f:facet>
+                                        </p:column>
+                                        <p:column style="width: 5%">
+                                            <h:outputText value="#{data['serviciosEx']}"/>
+                                            <f:facet name="header">
+                                                <h:outputText value="Serv. EX"/>
+                                            </f:facet>
+                                        </p:column>
+                                        <p:column style="width: 5%">
+                                            <h:outputText value="#{data['capacitacionCn']}"/>
+                                            <f:facet name="header">
+                                                <h:outputText value="Cap. CN"/>
+                                            </f:facet>
+                                        </p:column>
+                                        <p:column style="width: 5%">
+                                            <h:outputText value="#{data['capacitacionEx']}"/>
+                                            <f:facet name="header">
+                                                <h:outputText value="Cap. EX"/>
+                                            </f:facet>
+                                        </p:column>                                        
+                                        <p:column style="width: 5%">
+                                            <h:outputText value="#{data['transferenciaTec']}"/>
+                                            <f:facet name="header">
+                                                <h:outputText value="Trans.Tec."/>
+                                            </f:facet>
+                                        </p:column>                                        
+                                        <p:column style="width: 5%">
+                                            <h:outputText value="#{data['infraestructura']}"/>
+                                            <f:facet name="header">
+                                                <h:outputText value="Infra."/>
+                                            </f:facet>
+                                        </p:column>
+
+                                    </p:dataTable>
+                                </div>
+                            </h:form>
+                        </div>
+                        <div id="divImportar" style="display: none;" class="row">  
+                            <h:form id="frmImportPresDet">                     
+                                <ui:fragment rendered="#{presupuestoAdminBean.idPres gt 0}">
+                                    <div class="form-group col-lg-12 col-xs-12">
+                                        <strong><h:outputText styleClass="col-lg-2 col-xs-12 control-label" value="Presupuesto Id:" /></strong> 
+                                        <div class="col-lg-4 col-xs-12">
+                                            <h:outputText styleClass="col-lg-12 col-xs-12 control-label" value="#{presupuestoAdminBean.presVO.id}" />
+                                        </div>                                        
+                                        <strong><h:outputText styleClass="col-lg-2 col-xs-12 control-label" value="Presupuesto Nombre:" /></strong> 
+                                        <div class="col-lg-4 col-xs-12">
+                                            <h:outputText styleClass="col-lg-12 col-xs-12 control-label" value="#{presupuestoAdminBean.presVO.nombre}" />
+                                        </div>                                        
+                                    </div>                                                                                    
+                                    <div class="form-group col-lg-12 col-xs-12">
+                                        <ui:fragment rendered="#{presupuestoAdminBean.lstPartidas.size() eq 0}">
+                                            <div class="col-lg-12 col-xs-12" style="margin-bottom: 10px;margin-top: 10px;border: 1px solid #aaaaaa;">
+                                                <p:fileUpload id="file-entry"     
+                                                               listener="#{presupuestoAdminBean.uploadFile}" />
+                                                <h:panelGrid styleClass="centeredPanelGrid" style="margin-bottom: 10px;">
+                                                    <h:commandButton id="submit" type="submit" onclick="areaBlockCSS();" value="Cargar archivo" class="btn btn-info"/>
+                                                </h:panelGrid>
+                                            </div>                                
+                                        </ui:fragment>
+                                        <ui:fragment rendered="#{presupuestoAdminBean.lstPartidas.size() gt 0}">
+                                            <div class="col-lg-12 col-xs-12" style="margin-bottom: 10px;margin-top: 10px;">
+                                                <p:tabView >
+                                                    <p:tab title="Nuevas Partidas" >
+                                                        <div class="table table-responsive">
+                                                            <!--rowSelectListener="#{presupuestoAdminBean.displayPartida}"-->
+                                                            <p:dataTable id="PresupuestoDetID" 
+                                                                           value="#{presupuestoAdminBean.lstPartidas}" var="data"
+                                                                           
+                                                                           selectionMode="single"
+                                                                                                                              
+                                                                           style="font-size: 1em; width: 100%"  >                                                                                                
+                                                                <p:column style="width: 8%;#{data.existePresDet ? 'background-color: #d6d8d9;' : data.existeActP ? 'background-color: #cce5ff;' : 'background-color: #f8d7da;'}">
+                                                                    <h:outputText value="#{data['actPetroleraCodigo']}"/>
+                                                                    <f:facet name="header"><h:outputText value="ActPet Cod"/></f:facet>
+                                                                </p:column>
+                                                                <p:column style="width: 8%;#{data.existePresDet ? 'background-color: #d6d8d9;' : data.existeActP ? 'background-color: #cce5ff;' : 'background-color: #f8d7da;'}">
+                                                                    <h:outputText value="#{data['actPetroleraNombre']}"/>
+                                                                    <f:facet name="header">
+                                                                        <h:outputText value="ActPet Nom"/>
+                                                                    </f:facet>
+                                                                </p:column>
+                                                                <p:column style="width: 8%;#{data.existePresDet ? 'background-color: #d6d8d9;' : data.existeUnidadC ? 'background-color: #cce5ff;' : 'background-color: #f8d7da;'}">
+                                                                    <h:outputText value="#{data['unidadCostoCodigo']}"/>
+                                                                    <f:facet name="header">
+                                                                        <h:outputText value="SubAct Cod"/>
+                                                                    </f:facet>
+                                                                </p:column>
+                                                                <p:column style="width: 10%;#{data.existePresDet ? 'background-color: #d6d8d9;' : data.existeUnidadC ? 'background-color: #cce5ff;' : 'background-color: #f8d7da;'}">
+                                                                    <h:outputText value="#{data['unidadCostoNombre']}"/>
+                                                                    <f:facet name="header">
+                                                                        <h:outputText value="SubAct Nom"/>
+                                                                    </f:facet>
+                                                                </p:column>
+                                                                <p:column style="width: 10%;#{data.existePresDet ? 'background-color: #d6d8d9;' : data.existeTarea ? 'background-color: #cce5ff;' : 'background-color: #f8d7da;'}">
+                                                                    <h:outputText value="#{data['tareaCodigo']}"/>
+                                                                    <f:facet name="header">
+                                                                        <h:outputText value="Tarea Cod"/>
+                                                                    </f:facet>
+                                                                </p:column>
+                                                                <p:column style="width: 10%;#{data.existePresDet ? 'background-color: #d6d8d9;' : data.existeTarea ? 'background-color: #cce5ff;' : 'background-color: #f8d7da;'}">
+                                                                    <h:outputText value="#{data['tareaNombre']}"/>
+                                                                    <f:facet name="header">
+                                                                        <h:outputText value="Tarea Nom"/>
+                                                                    </f:facet>
+                                                                </p:column>
+                                                                <p:column style="width: 10%;#{data.existePresDet ? 'background-color: #d6d8d9;' : data.existeSubTarea ? 'background-color: #cce5ff;' : 'background-color: #f8d7da;'}">
+                                                                    <h:outputText value="#{data['subTareaCodigo']}"/>
+                                                                    <f:facet name="header">
+                                                                        <h:outputText value="SubTar Cod"/>
+                                                                    </f:facet>
+                                                                </p:column>
+                                                                <p:column style="width: 10%;#{data.existePresDet ? 'background-color: #d6d8d9;' : data.existeSubTarea ? 'background-color: #cce5ff;' : 'background-color: #f8d7da;'}">
+                                                                    <h:outputText value="#{data['subTareaNombre']}"/>
+                                                                    <f:facet name="header">
+                                                                        <h:outputText value="SubTar Nom"/>
+                                                                    </f:facet>
+                                                                </p:column>                                        
+                                                                <p:column style="width: 5%;#{data.existePresDet ? 'background-color: #d6d8d9;' : data.existeOT ? 'background-color: #cce5ff;' : data.sinOT ? 'background-color: #fff3cd;' : 'background-color: #f8d7da;'}">
+                                                                    <h:outputText value="#{data['proyectoOtCodigo']}"/>
+                                                                    <h:outputText value="No se especifico OT." rendered="#{data.sinOT}"/>
+                                                                    <f:facet name="header">
+                                                                        <h:outputText value="OT C.C."/>
+                                                                    </f:facet>
+                                                                </p:column>
+                                                                <p:column style="width: 10%;#{data.existePresDet ? 'background-color: #d6d8d9;' : data.existeOT ? 'background-color: #cce5ff;'  : data.sinOT ? 'background-color: #fff3cd;' : 'background-color: #f8d7da;'}">
+                                                                    <h:outputText value="#{data['proyectoOtNombre']}"/>
+                                                                    <h:outputText value="Se aplicara para todas las OTs del bloque." rendered="#{data.sinOT}"/>
+                                                                    <f:facet name="header">
+                                                                        <h:outputText value="OT Nom"/>
+                                                                    </f:facet>
+                                                                </p:column>                                        
+                                                                <p:ajax event="select" process="@this" update="@all" />
+                                                            </p:dataTable>
+                                                        </div>
+                                                    </p:tab>                                                    
+                                                </p:tabView>
+                                            </div>
+                                        </ui:fragment>
+                                    </div>    
+                                </ui:fragment>
+                            </h:form>
+                        </div>
+                    </div>
+                </div>
+
+                <ui:include src="popUpNuevoPresupuesto.xhtml"/>
+                <ui:include src="popUpPresupuestos.xhtml"/>
+
+            </ui:define>
+
+        </ui:composition>
+    </body>
+</html>

@@ -1,0 +1,139 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:my="http://www.mytags.com/schema/mytags"
+                >
+    <!-- Navigation -->
+
+    <nav class="navbar navbar-default navbar-static-top"  role="navigation" 
+         style="margin-bottom: 0; background-color: #b6c9de;">
+        <h:form  rendered="#{not empty sesion.usuario}">
+            <div class="navbar-header">
+                <img alt="" class="iceGphImg" id="j_idt10" src="/Sia/resources/imagenes/ihsa.png" style="width: 97px; height: 49px;"/>
+            </div>
+
+            <ul class="nav navbar-top-links navbar-right">
+                <li class="hidden-xs">
+                    <h:commandLink action="#{sesion.mostrarDatosUsuario}" title="Usuario"> #{usuarioBean.usuarioVO.nombre}
+                    </h:commandLink>
+                </li>
+                <li class="hidden-xs">
+                    <a href="#">#{usuarioBean.usuarioVO.puesto} - 
+                        #{usuarioBean.usuarioVO.gerencia}</a></li>
+                <li class="hidden-xs">
+                    <p:commandLink value="#{usuarioBean.usuarioVO.campo}" onclick="$(dialogoUsuarioCampo).modal('show');" title="Campo"/>
+                </li>
+                <li class="hidden-xs">
+                    <h:commandLink title="Soporte técnico" action="/vistas/administracion/ticket/tickets"
+                                   immediate="true">
+                        <img src="./resources/imagenes/soporte.png" width="26" height="31" style="border-radius: 50%; padding-bottom:30%;"/>
+                    </h:commandLink>
+                </li>
+                <li class="dropdown">
+                    <p:commandLink title="Inicio" 
+                                     action="/principal">
+                        <i class="fa fa-home fa-fw fa-2x"></i>
+                    </p:commandLink>
+                </li>
+                <li class="dropdown">
+                    <p:commandLink title="Ayuda" 
+                                     action="/vistas/administracion/ayuda/consultarArbolAyudas">
+                        <i class="fa fa-question-circle fa-fw fa-2x"></i>
+                    </p:commandLink>
+                </li>                
+
+                <li class="dropdown">
+                    <h:commandLink title="#{msgs['menu.titulo.CerrarSesion']}" 
+                                   actionListener="#{sesion.cerrarSesion(actionEvent)}"                                                     
+                                   action="/principal"
+                                   id="linkLogout">
+                        <i class="fa fa-sign-out fa-fw fa-2x text-danger"></i>
+                    </h:commandLink>
+                </li>
+            </ul>
+        </h:form>
+
+        <!-- /.navbar-top-links -->
+        <div class="navbar-default sidebar" style="margin-top: 65px;" role="navigation" >
+            <div class="row">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" 
+                        data-target=".navbar-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+            </div>
+            <div class="sidebar-nav navbar-collapse">
+                <div class="nav in row" >
+                    <div class="pull-left info col-lg-12 col-xs-12" >
+                        <ui:repeat value="#{sesion.listaModulos}" var="modulo">
+                            <ui:fragment rendered="${modulo.ruta == null and modulo.rutaServlet != null and modulo.mapOpcion.size() gt 0}">
+                                <div class = "col-lg-12 col-xs-12" id = "accordion">
+                                    <div class="card row"  id="panel1#{contr.id}">                                                                                            
+                                        <a data-toggle="collapse"   href="#collapseOne#{modulo.id}" >
+                                            <div class="card-heading" style="background-color: #b6c9de;">                                            
+                                                <h4 class="panel-title">
+                                                    <b><small>#{modulo.nombre}</small></b>
+                                                </h4>
+                                            </div>
+                                        </a>
+                                        <div id="collapseOne#{modulo.id}" class="panel-collapse collapse in">
+                                            <div class="card-body">
+                                                <ui:repeat value="#{modulo.mapOpcion.entrySet().toArray()}" var="entry">
+                                                    <lu>
+                                                        <b style="color: #{sesion.usuario.apCampo.nombre eq entry.key ? '#006666' : ''} ">#{entry.key}</b>                                                    
+                                                        <ui:repeat value="#{modulo.mapOpcion.get(entry.key)}" var="opc">
+                                                            <ul style="padding: 2% 0 0 4%;">                                                                
+                                                                <p:link value="${sesion.sustituirArrancarModuloPorCampo(modulo.rutaServlet, opc.idCampo, opc.pagina )}" 
+                                                                                title="#{opc.nombre}"     
+                                                                                onmouseover="window.status = ' ';
+                                                                                        return true">          
+                                                                    #{opc.nombre} <i class="badge" style="background-color: orange;">#{opc.total}</i>
+                                                                </p:link>
+                                                            </ul>
+                                                        </ui:repeat>
+                                                    </lu>
+                                                </ui:repeat>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </ui:fragment>
+                        </ui:repeat>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+    <!-- Registro de categoría -->
+    <div class="modal fade" id="dialogoUsuarioCampo" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Campos</h4>
+                </div>
+                <h:form id="frmCampoUsuario">
+                    <div class="modal-body">				    
+                        <"--rowSelectListener="#{sesion.cambioCampoUsuario}"-->
+                        <p:dataTable value="#{sesion.camposPorUsuario}" var="data"
+                                       rowStyleClass="table table-bordered table-striped"
+                                       selectionMode="single"
+                                       >
+                            <p:column style="text-align: left;">
+                                <h:outputText value=" #{data.campo}" class="#{sesion.usuario.apCampo.id  eq data.idCampo ? 'fa fa-dot-circle-o text-info' : 'fa fa-circle-o'} " />
+                            </p:column>
+                        </p:dataTable>
+                    </div>
+                    <div class="modal-footer">
+                        <p:commandLink value="Cerrar" styleClass="btn btn-default"
+                                         immediate="true"
+                                         onclick="$(dialogoUsuarioCampo).modal('hide');"/>
+                    </div>
+                </h:form>
+            </div>
+        </div>
+    </div>
+</ui:composition>

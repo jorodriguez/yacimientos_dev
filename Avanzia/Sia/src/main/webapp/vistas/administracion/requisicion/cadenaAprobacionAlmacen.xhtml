@@ -1,0 +1,101 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"      
+      xmlns:p="http://primefaces.org/ui"       
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      >
+    <body>                        
+        <ui:composition template="./../../../WEB-INF/facelets/templates/templateGrupos.xhtml">
+            <h:panelGroup  rendered="#{empty sesion.usuario}" styleClass="altura">
+                <ui:include src="./../../../login.xhtml"/>
+            </h:panelGroup>
+            <ui:define name="contenido">
+                <ui:include src="../menuAdministracion.xhtml" rendered="#{not empty sesion.usuario}" />
+                <h:form  id="frmCadSolMat"  rendered="#{not empty usuarioBean.usuarioVO}">
+                    <p:panelGrid  >
+                        <h:commandLink styleClass="btn btn-primary" actionListener="#{cadenaAprobacionAlmacenBean.crearCadena(e)}">
+                            <i class="glyphicon glyphicon-plus"/>
+                        </h:commandLink>
+                    </p:panelGrid>
+                    <p:panelGrid  >
+                        <p:dataTable id="dtSolCadMat" value="#{cadenaAprobacionAlmacenBean.cadenas}" var="cad" 
+                                       rows="15" paginator="true"  
+                                       paginatorPosition="bottom" >
+                            <f:facet name="header"><h:outputText value="Cadena de aprobación"/></f:facet>
+                            <p:column headerText="Solicita">
+                                <h:outputText value="#{cad.solicita}"/>
+                            </p:column>
+                            <p:column headerText="Autoriza">
+                                <h:outputText value="#{cad.aprueba}" id="idcm"/>
+                            </p:column>
+                            <p:column>
+                                <h:commandLink value="Eliminar" style="color: red;"
+                                               actionListener="#{cadenaAprobacionAlmacenBean.eliminarCadena(event)}" >
+                                    <f:param name="idCad" value="#{cad.id}"/>
+                                </h:commandLink>
+                            </p:column>
+                        </p:dataTable>                        
+                    </p:panelGrid>
+                </h:form>
+                <div class="modal fade" id="dialogoCadenaAprobacion" data-backdrop="static" data-keyboard="false">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">                    
+                                <h4 class="modal-title">Crear Cadenas de aprobación</h4>                                                                
+                            </div>
+                            <h:form id="frmPnlImpuesto" styleClass="textoIzquierda">
+                                <div class="modal-body panel">                                                                                                        
+                                    <div class="col-lg-12 col-xs-12">                        
+                                        <h:message  for="" style="display: block;" infoClass="alert alert-success" warnClass="alert alert-warning"
+                                                    errorClass="alert alert-danger" fatalClass="alert alert-danger"  />
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-lg-6">
+                                            <h:outputText class="col-lg-3" value="Solicita:"/>
+                                            <div class="col-lg-8">
+                                                <!--listValue="#{cadenaAprobacionAlmacenBean.usuarios}"-->
+                                                <p:autoComplete id="inpSol" value="#{cadenaAprobacionAlmacenBean.cadenaAprobacionVo.solicita}"
+                                                                completeMethod="${cadenaAprobacionAlmacenBean.seleccionarSolicita}">
+                                                    <p:ajax listener="#{cadenaAprobacionAlmacenBean.onItemSelectSolicita}"/>
+                                                    <f:facet name="selectInputText">
+                                                        <h:panelGrid style="z-index: 10000026; background: #EFEFEF;" >
+                                                            <h:outputText value="#{user.nombre}"/>
+                                                        </h:panelGrid>
+                                                    </f:facet>
+                                                </p:autoComplete>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <h:outputText class="col-lg-3" value="Autoriza:"/>
+                                            <div class="col-lg-8">   
+                                                <!--listValue="#{cadenaAprobacionAlmacenBean.usuarios}"-->
+                                                <p:autoComplete  id="inpApr" value="#{cadenaAprobacionAlmacenBean.cadenaAprobacionVo.aprueba}"
+                                                                     valueChangeListener="#{cadenaAprobacionAlmacenBean.seleccionarAutoriza}"
+                                                                     >
+                                                    <f:facet name="selectInputText">
+                                                        <h:panelGrid style="z-index: 10000026; background: #EFEFEF;" >
+                                                            <h:outputText value="#{userA.nombre}"/>
+                                                        </h:panelGrid>
+                                                    </f:facet>
+                                                </p:autoComplete>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <h:commandLink id="btnGuardar" value="Guardar" styleClass="btn btn-info" 
+                                                   actionListener="#{cadenaAprobacionAlmacenBean.guardar(actionEvent)}" />
+                                    <h:commandLink value="Cerrar"  styleClass="btn btn-cancelar"
+                                                   onclick="$(dialogoCadenaAprobacion).modal('hide');"
+                                                   title="Cerrar ventana..."  />
+                                </div>    
+                            </h:form>
+                        </div>
+                    </div>
+                </div>
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

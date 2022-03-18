@@ -1,0 +1,151 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"    
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"  
+      
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <body>
+        <ui:composition template="./../../WEB-INF/facelets/templates/templateGrupos.xhtml">
+	    <h:panelGroup  rendered="#{empty sesion.usuario}" styleClass="altura">
+		<ui:include src="./../../login.xhtml"/>
+	    </h:panelGroup>
+	    <ui:define name="contenido">
+		<div id="Page">
+		    <div class="row">
+			<ui:include src="./menuRecursos.xhtml" rendered="#{not empty sesion.usuario}" />
+		    </div>
+		    <div class="row"> 
+			<h:form rendered="#{not empty sesion.usuario}" styleClass="textoIzquierda" id="frmUser">
+			    <div class="col-lg-12">
+				<div class="col-lg-4"></div>
+				<div class="col-lg-6">
+				    <h2 class="page-header">#{msgs['sia.rh.titulo']}</h2>
+				</div>
+			    </div>    
+			    <div class="col-lg-12 col-xs-12">
+				<h:outputText value="#{msgs['sistema.usuario']}"/>                                    
+				<!-- immediate="true" -->
+				<p:inputText id="autocompleteUsuario" size="40"
+					       onclick="autocompletarUsuario(this, 'hidenDesUsuario', 'frmUser');"/>
+				<h:inputHidden id="hidenDesUsuario" value="#{usuarioBean.u}"/>
+				<p:commandLink  action="#{usuarioBean.buscarUsuarioSolicitudNuevoIngreso()}"
+						  styleClass="btn btn-default">
+				    <p:graphicImage url="./resources/imagenes/search.png" alt="Escriba el nombre del proyecto Ot y oprima este botón para buscar el registro "  
+						      styleClass="imagenSinBorde"/>
+				</p:commandLink>
+			    </div>
+			    <h:messages id="error" infoClass="textoMensajeError"/>
+			    <div class="col-lg-12 col-xs-12">
+				<p:panelGrid columns="8">
+				    <h:outputText value="#{msgs['generales.nombre']}"/>
+				    <p:inputText value="#{usuarioBean.usuarioVOAlta.nombre}" disabled="true" />
+				    <h:outputText value="#{msgs['sia.rh.gerencia']}"/>
+				    <p:inputText value="#{usuarioBean.usuarioVOAlta.gerencia}" disabled="true"/>
+				    <h:outputText value="#{msgs['sia.puesto.nombre']}"/>   
+				    <p:inputText value="#{usuarioBean.usuarioVOAlta.puesto}" disabled="true"/>
+				    <h:outputText value="#{msgs['sia.rh.oficina']}"/>   
+				    <p:inputText value="#{usuarioBean.usuarioVOAlta.oficina}" disabled="true"/>
+				</p:panelGrid>
+			    </div>
+
+			    <div class="col-lg-12">
+				<h:selectOneRadio value="#{usuarioBean.seleccionNuevoIngreso}">
+				    <f:selectItem itemLabel="Nuevo Ingreso" itemValue="1"/>
+				    <f:selectItem itemLabel="Candidato en Proceso de Contratación" itemValue="2"/>
+				</h:selectOneRadio>
+			    </div>
+			    <div class="col-lg-12 col-xs-12">
+				<p:dataTable value="#{usuarioBean.listaMaterial}" var="d" 
+					       styleClass="table table-striped table-bordered">
+				    <f:facet name="header"><h:outputText value="#{msgs['sia.rh.materia.entregar']} "/></f:facet>                           
+				    <p:column style="width: 10%">
+					<f:facet name="header"><h:outputText value="#{msgs['sia.rh.gerencia']}"/></f:facet>
+					<h:outputText value="#{d.gerencia}"/>
+				    </p:column>
+				    <p:column style="width: 5%">                                
+					<p:selectBooleanCheckbox                                                                            
+					    value="#{usuarioBean.filaSeleccionada[d.id]}"                                       
+					    />                                                                    
+				    </p:column >
+				    <p:column style="width: 20%">
+					<f:facet name="header"><h:outputText value="#{msgs['generales.nombre']}"/></f:facet>
+					<h:outputText value="#{d.nombre}"/>
+				    </p:column>
+				    <p:column style="width: 65%">
+					<f:facet name="header"><h:outputText value="#{msgs['presupuesto.nuevos.campoDescripcion']}"/></f:facet>
+					<p:inputTextarea cols="65" rows="1" value="#{d.descripcion}"  >                                    
+
+					</p:inputTextarea>
+
+				    </p:column>
+				</p:dataTable>
+			    </div>
+			    <center>
+				<p:panelGrid columns="2" >
+				    <p:commandLink styleClass="btn btn-info" 
+						     rendered="#{usuarioBean.usuarioVOAlta ne null}"
+						     value="#{msgs['sia.rh.solicitar']}" 
+						     action="#{usuarioBean.solicitarMaterialUSuarios()}"/>
+
+				    <p:commandLink styleClass="btn btn-default" value="#{msgs['sistema.cancelar']}" 
+						     rendered="#{usuarioBean.usuarioVOAlta ne null}"
+						     actionListener="#{usuarioBean.cancelarUsuario(event)}"/>
+				</p:panelGrid>
+			    </center>
+			</h:form>
+			<!--Solicita estancia-->
+			<h:form id="frmSolicitudEstancia" styleClass="textoIzquierda">
+                            <p:dialog rendered="#{usuarioBean.solicitaEstancia}" draggable="false" >
+				<f:facet name="header">
+				    <p:panelGrid>
+					<h:outputText value="#{msgs['sia.rh.solicitar.estancia']}"/>
+				    </p:panelGrid>
+				</f:facet>
+				<f:facet name="body">
+				    <h:outputText id="mensajes" value=""/>
+				    <h:messages for="mensajes"   globalOnly="true" styleClass="textoMensajeError" />
+				    <h:panelGroup>                               
+					<p:panelGrid columns="2">
+					    <h:outputLabel value="Gerencia"/>
+					    <h:outputText value="#{usuarioBean.usuarioVOAlta.gerencia}"/>                                
+					    <h:outputLabel value="#{msgs['sia.rh.oficina']} :"/>
+					    <p:selectOneMenu value="#{usuarioBean.idSgOficina}">
+						<f:selectItem itemLabel="#{msgs['sia.generales.seleccione']} . . ." itemValue="-1" />                                        
+						<f:selectItems value="#{usuarioBean.listaOficina}" />                                        
+					    </p:selectOneMenu>                                
+
+					    <h:outputLabel value="#{msgs['sia.rh.fecha.ingreso']} :"/>
+                                            <p:datePicker id="fechaInicio" 
+								 value="#{usuarioBean.usuarioVOAlta.fechaIngreso}"
+								 validator="#{usuarioBean.validaFechaInicio}" >
+						<!-- <f:convertDateTime dateStyle="default" type="date"/>-->
+						<f:convertDateTime pattern="dd/MM/yyyy" type="date"/>
+
+                                            </p:datePicker>                                
+					    <h:outputLabel value="#{msgs['sia.rh.fecha.salida']} :"/>
+                                            <p:datePicker value="#{usuarioBean.fechaSalida}"  
+								 validator="#{usuarioBean.validaFechaFin}"
+								 >
+						<f:convertDateTime pattern="dd/MM/yyyy"/>                                    
+                                            </p:datePicker>                                                                      
+					</p:panelGrid>
+					<p:panelGrid columns="2">
+					    <p:commandLink value="#{msgs['sia.rh.solicitar']}" styleClass="btn btn-info" action="#{usuarioBean.solicitarEstancia()}"/>
+					    <p:commandLink value="#{msgs['sistema.cancelar']}" styleClass="btn btn-default" 
+							     onclick="if (!confirm('#{msgs['sia.rh.mensaje.confirmacion.cancelacion']} '))
+									 return false;"
+							     actionListener="#{usuarioBean.cancelarSolicitarEstancia(event)}"/>
+					</p:panelGrid>
+				    </h:panelGroup>
+				</f:facet>
+                            </p:dialog>   
+			    <h:messages for="error" infoClass="textoMensajeError"/>
+			</h:form>
+		    </div>
+		</div>
+	    </ui:define>
+	</ui:composition>
+    </body>
+</html>

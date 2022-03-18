@@ -1,0 +1,37 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <body>
+        <ui:composition template="./../../../WEB-INF/facelets/templates/templateGrupos.xhtml">
+            <ui:define name="menu" rendered="#{not empty sesion.usuario}">
+                <h:form rendered="#{not empty sesion.usuario}">                
+                    <ui:include src="../menuAdministracion.xhtml"/>
+                </h:form>
+            </ui:define>
+            <ui:define name="contenido">
+                <h:panelGroup  rendered="#{empty sesion.usuario}" styleClass="altura">
+                    <ui:include src="./../../../login.xhtml"/>
+                </h:panelGroup>  
+                <h:form id="frmReporteCompra" rendered="#{not empty sesion.usuario}" styleClass="textoIzquierda">                    
+                    <p:panelGrid styleClass="bordePanelGrid" style="margin: 15% 20% 20% 33%; text-align: center;">
+                        <h:outputLabel value="Enviar reporte de compradores" styleClass="tituloEncabezado"/>
+                        <p:selectOneRadio disabled="true">
+                            <f:selectItems value="#{devolverOrdenCompraBean.listaCampo}"/>
+                        </p:selectOneRadio>
+                        <p:commandLink actionListener="#{devolverOrdenCompraBean.enviarReporteCompradores(event)}"
+                                         style="width: 50px; height: 50px;" title="Enviar reporte de compradores">
+                            <p:graphicImage url="./resources/imagenes/recordar.png" alt="Enviar correo"/>                            
+                        </p:commandLink>
+                        <h:outputText value="Clic en el icono" style="font-size: 10px; color: gray;"/>
+                        <h:messages style="color: red;" />
+                    </p:panelGrid>
+                </h:form>
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

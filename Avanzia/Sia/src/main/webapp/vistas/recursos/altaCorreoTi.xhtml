@@ -1,0 +1,127 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"    
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"  
+      
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:my="http://www.mytags.com/schema/mytags">
+    <body>
+        <ui:composition template="./../../WEB-INF/facelets/templates/templateGrupos.xhtml">
+            <ui:define name="menu" rendered="#{not empty sesion.usuario}">
+                <h:form rendered="#{not empty sesion.usuario}" styleClass="textoIzquierda">                
+                    <ui:include src="./menuRecursos.xhtml"/>
+                </h:form> 
+            </ui:define>
+            <ui:define name="contenido">
+                <!-- <script type="text/javascript">
+                    //<![CDATA[
+                    function validarEmail(idComponente) {
+                      alert(idComponente);
+                      var dom = document.getElementById(idComponente);
+                      alert(dom);
+                        if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3,4})+$/.test(dom.val())){
+                            alert("La dirección de email  es correcta.");
+                        } else {
+                            alert("La dirección de email es incorrecta.");
+                        }
+                    }
+                    //]]>
+                </script>-->
+                <h:panelGroup  rendered="#{empty sesion.usuario}" styleClass="altura">
+                    <ui:include src="./../../login.xhtml"/>
+                </h:panelGroup> 
+                <h:form id="frmCorreoRealTi" rendered="#{not empty sesion.usuario}" styleClass="textoIzquierda" >
+                    <br/>
+                    <center>
+                        <p:panelGrid columns="1">
+                            <h:outputText value="Agregar dirección de correo para empleados de nuevo ingreso" styleClass="tituloEncabezado"/>
+                        </p:panelGrid>
+                        <br/>
+                    </center>    
+                    <p:dataTable value="#{usuarioBean.listaUsuario}" var="d" >                            
+                        <p:column >
+                            <f:facet name="header"><h:outputText value="Nombre"/></f:facet>
+                            <h:outputText value="#{d.nombre}"/>
+                        </p:column>
+                        <p:column>                                
+                            <f:facet name="header"><h:outputText value="Correo"/></f:facet>
+                            <h:outputText value="#{d.mail}"/>
+                        </p:column >                            
+                        <p:column >                                
+                            <p:commandLink value="Asignar correo"
+                                             title="Clic aquí para asignar una direccion de correo"
+                                             actionListener="#{usuarioBean.abrirPopup(event)}" styleClass="link"/>
+                        </p:column>
+                    </p:dataTable>                    
+                    <!--<table>
+                        <tr>
+                            <td valign="middle" style="padding: 10px 0px 0px 1px;">
+                                <h:outputText value="#{msgs['sistema.usuario']}"/>                                    
+                            </td>
+                            <td>
+                                <p:autoComplete id="userSelect" 
+                                                     listVar="userOp"
+                                                     immediate="true"
+                                                     width="155" listValue="#{usuarioBean.listaUsuariosAlta}"
+                                                     value="#{usuarioBean.u}" 
+                                                     valueChangeListener="#{usuarioBean.usuarioListenerSolMat}"
+                                                     action="#{usuarioBean.buscarUsuarioSolicitudNuevoIngreso()}">
+                                    <f:facet name="selectInputText">
+                                        <p:panelGrid columns="2" style="margin-bottom: 2px;">
+                                            <h:outputText id="autoCompleteUsurOp" value="#{userOp.nombre}" />
+                                        </p:panelGrid>
+                                    </f:facet>
+                                </p:autoComplete>                                 
+                            </td>
+                            <td valign="bottom" style="padding: 12px 0px 0px 1px;">
+                                <p:commandLink  action="#{usuarioBean.buscarUsuarioSolicitudNuevoIngreso()}"
+                                                  styleClass="btn btn-default">
+                                    <p:graphicImage url="./resources/imagenes/search.png" alt="#{msgs['cabecera.buscar']}"  
+                                                      styleClass="imagenSinBorde"/>
+                                </p:commandLink>
+                            </td>
+                        </tr>
+                    </table>-->
+                    <br/>
+                    <my:panelPopup tituloPanel="Ingresar nueva direccion de correo"
+                                   mostrarPanel="#{usuarioBean.flag}" 
+                                   conBoton="false">
+                        <center><h:messages errorClass="mensaje" infoClass="mensaje"/></center>  
+                        <p:panelGrid columns="2"  style="width: 250px;" styleClass="bordePanelGrid">
+                            <h:outputText value="#{msgs['generales.nombre']} :"/>
+                            <p:inputText value="#{usuarioBean.usuarioVOAlta.nombre}" disabled="true" />
+                            <h:outputText value="#{msgs['sia.rh.gerencia']} :"/>
+                            <p:inputText value="#{usuarioBean.usuarioVOAlta.gerencia}" disabled="true"/>
+                            <h:outputText value="#{msgs['sia.puesto.nombre']} :"/>   
+                            <p:inputText value="#{usuarioBean.usuarioVOAlta.puesto}" disabled="true"/>
+                            <h:outputText value="#{msgs['sia.rh.oficina']} :"/>   
+                            <p:inputText value="#{usuarioBean.usuarioVOAlta.oficina}" disabled="true"/>
+                        </p:panelGrid>
+                        <br/>
+                        <p:panelGrid columns="2"  style="padding: 0px 0px 6px 0px;" >
+                            <h:outputLabel value="Nuevo Correo :"/>
+                            <p:inputText id="email" value="#{usuarioBean.usuarioVOAlta.mail}">                                                
+                                <!-- <f:ajax event="valueChange" execute="@this"/>-->
+                            </p:inputText>
+                        </p:panelGrid>                        
+                        <center>
+                            <p:panelGrid columns="2">
+                                <!-- onclick="if(!confirm('Confirme que la dirección #{usuarioBean.usuarioVOAlta.mail} es correcta ')) return false;"-->
+                                <p:commandLink styleClass="btn btn-info"                                                                                               
+
+                                                 actionListener="#{usuarioBean.modificarCorreoPorTi(event)}"                                                 
+                                                 value="Guardar"/>                            
+                                <p:commandLink styleClass="btn btn-default" 
+                                                 actionListener="#{usuarioBean.cerrarPopup(event)}"
+                                                 value="#{msgs['sistema.cancelar']}"                                              
+                                                 />
+                            </p:panelGrid>
+                        </center>
+                    </my:panelPopup>
+                </h:form>
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>
