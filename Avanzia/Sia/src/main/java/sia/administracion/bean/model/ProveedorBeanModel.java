@@ -32,6 +32,7 @@ import sia.servicios.orden.impl.OrdenImpl;
 import sia.servicios.proveedor.impl.ContactoProveedorImpl;
 import sia.servicios.proveedor.impl.ProveedorServicioImpl;
 import sia.servicios.proveedor.impl.PvProveedorCompaniaImpl;
+import sia.sistema.bean.backing.Sesion;
 import sia.util.ProveedorEnum;
 import sia.util.UtilLog4j;
 
@@ -47,7 +48,7 @@ public class ProveedorBeanModel implements Serializable{
      * Creates a new instance of ProveedorBeanModel
      */
     @Inject
-    private UsuarioBean usuarioBean;
+    private Sesion sesion;
     //
     @Inject
     private ProveedorServicioImpl proveedorImpl;
@@ -88,16 +89,16 @@ public class ProveedorBeanModel implements Serializable{
     private ProveedorVo proveedorVo;
 
     public void irAgregarProveedor() {
-        setRfcCompania(usuarioBean.getUsuarioVO().getRfcEmpresa());
+        setRfcCompania(sesion.getUsuarioVo().getRfcEmpresa());
     }
 
     public void irRelacionProveedorCompania() {
-        setRfcCompania(usuarioBean.getUsuarioVO().getRfcEmpresa());
+        setRfcCompania(sesion.getUsuarioVo().getRfcEmpresa());
     }
 
     public String traerProveedorJson() {
         StringBuilder sb = new StringBuilder();
-        List<CompaniaVo> lc = usuarioImpl.traerCompaniaPorUsuario(usuarioBean.getUsuarioVO().getId());
+        List<CompaniaVo> lc = usuarioImpl.traerCompaniaPorUsuario(sesion.getUsuarioVo().getId());
         for (CompaniaVo cmp : lc) {
             if (sb.length() == 0) {
                 sb.append("'").append(cmp.getRfcCompania()).append("'");
@@ -112,7 +113,7 @@ public class ProveedorBeanModel implements Serializable{
 
     public List<CompaniaVo> listaEmpresa() {
         try {
-            return usuarioImpl.traerCompaniaPorUsuario(usuarioBean.getUsuarioVO().getId());
+            return usuarioImpl.traerCompaniaPorUsuario(sesion.getUsuarioVo().getId());
         } catch (Exception e) {
             UtilLog4j.log.fatal(this, "Ocurrio un error al recuperar la empresa por usario " + e.getMessage());
             return null;
@@ -124,7 +125,7 @@ public class ProveedorBeanModel implements Serializable{
             List<SelectItem> ls = null;
             if (getIdProveedor() > 0) {
                 ls = new ArrayList<SelectItem>();
-                for (CompaniaVo c : usuarioImpl.traerCompaniaPorUsuario(usuarioBean.getUsuarioVO().getId())) {
+                for (CompaniaVo c : usuarioImpl.traerCompaniaPorUsuario(sesion.getUsuarioVo().getId())) {
                     ls.add(new SelectItem(c.getRfcCompania(), c.getNombre()));
                 }
             }
@@ -140,7 +141,7 @@ public class ProveedorBeanModel implements Serializable{
             if (getIdProveedor() > 0) {
                 setLista(new ListDataModel(proveedorCompaniaImpl.traerCompaniaPorProveedor(getIdProveedor())));
                 listaContactoPorPorveedor();
-                setProveedorVo(proveedorImpl.traerProveedorPorRfc(null, null, getIdProveedor(), usuarioBean.getUsuarioVO().getRfcEmpresa()));
+                setProveedorVo(proveedorImpl.traerProveedorPorRfc(null, null, getIdProveedor(), sesion.getUsuarioVo().getRfcEmpresa()));
                 return getLista();
             }
             return null;
@@ -153,7 +154,7 @@ public class ProveedorBeanModel implements Serializable{
     public boolean enviarArchivosPortal() {
         boolean ret = false;
         if(this.getProveedorVo() != null && this.getProveedorVo().getIdProveedor() > 0){
-           ret = notificacionImpl.notificacionArchivosPortal(this.getProveedorVo(), usuarioBean.getUsuarioVO().getMail(), Constantes.VACIO);
+           ret = notificacionImpl.notificacionArchivosPortal(this.getProveedorVo(), sesion.getUsuarioVo().getMail(), Constantes.VACIO);
         }        
         return ret;
     }
@@ -172,7 +173,7 @@ public class ProveedorBeanModel implements Serializable{
         UtilLog4j.log.info(this, "pro:  " + getIdProveedor());
         UtilLog4j.log.info(this, "rfcc:  " + getRfcCompania());
         UtilLog4j.log.info(this, "num:  " + getNumeroReferencia());
-        proveedorCompaniaImpl.guardarRelacionProveedor(getIdProveedor(), getRfcCompania(), getNumeroReferencia(), usuarioBean.getUsuarioVO().getId());
+        proveedorCompaniaImpl.guardarRelacionProveedor(getIdProveedor(), getRfcCompania(), getNumeroReferencia(), sesion.getUsuarioVo().getId());
         listaCompania();
     }
 
@@ -181,7 +182,7 @@ public class ProveedorBeanModel implements Serializable{
         CompaniaVo cvo = lc.get(getIdRelacion());
         lc.get(getIdRelacion()).setEditar(false);
         setLista(new ListDataModel(lc));
-        proveedorCompaniaImpl.modificarRel(usuarioBean.getUsuarioVO().getId(), cvo);
+        proveedorCompaniaImpl.modificarRel(sesion.getUsuarioVo().getId(), cvo);
     }
 
     public boolean buscarProveedorPorId() {
@@ -195,7 +196,7 @@ public class ProveedorBeanModel implements Serializable{
         List<CompaniaVo> lc = (List<CompaniaVo>) getLista().getWrappedData();
         CompaniaVo cvo = lc.get(getIdRelacion());
         setLista(new ListDataModel(lc));
-        proveedorCompaniaImpl.eliminarRel(usuarioBean.getUsuarioVO().getId(), cvo);
+        proveedorCompaniaImpl.eliminarRel(sesion.getUsuarioVo().getId(), cvo);
         setLista(new ListDataModel(proveedorCompaniaImpl.traerCompaniaPorProveedor(getIdProveedor())));
     }
 
@@ -205,7 +206,7 @@ public class ProveedorBeanModel implements Serializable{
         List<CampoUsuarioPuestoVo> lc;
         try {
             //lc = apCampoImpl.getAllField();
-            lc = apCampoUsuarioRhPuestoImpl.getAllPorUsurio(usuarioBean.getUsuarioVO().getId());
+            lc = apCampoUsuarioRhPuestoImpl.getAllPorUsurio(sesion.getUsuarioVo().getId());
             for (CampoUsuarioPuestoVo ca : lc) {
                 SelectItem item = new SelectItem(ca.getIdCampo(), ca.getCampo());
                 l.add(item);
@@ -225,12 +226,12 @@ public class ProveedorBeanModel implements Serializable{
     }
 
     public void agregarProveedor() {
-        ocCampoProveedorLocal.agregarProveedor(getIdCampo(), getIdProveedor(), usuarioBean.getUsuarioVO().getId());
+        ocCampoProveedorLocal.agregarProveedor(getIdCampo(), getIdProveedor(), sesion.getUsuarioVo().getId());
     }
 
     public void eliminarProveedorCampo() {
         UtilLog4j.log.info(this, "Relacion : : :: " + getIdRelacion());
-        ocCampoProveedorLocal.eliminarProveedorCampo(getIdRelacion(), usuarioBean.getUsuarioVO().getId());
+        ocCampoProveedorLocal.eliminarProveedorCampo(getIdRelacion(), sesion.getUsuarioVo().getId());
     }
 /////////////////////
 
@@ -239,13 +240,13 @@ public class ProveedorBeanModel implements Serializable{
     }
 
     public void eliminarContacto() {
-        contactoProveedorImpl.eliminarContacto(getIdContacto(), usuarioBean.getUsuarioVO().getId());
+        contactoProveedorImpl.eliminarContacto(getIdContacto(), sesion.getUsuarioVo().getId());
     }
 
     public void completarModificarContacto() {
         List<ContactoProveedorVO> lc = (List<ContactoProveedorVO>) getListaContacto().getWrappedData();
         ContactoProveedorVO contactoProveedor = lc.get(getIdContacto());
-        contactoProveedorImpl.actualizarContacto(contactoProveedor.getIdContactoProveedor(), contactoProveedor.getNombre(), contactoProveedor.getCorreo(), contactoProveedor.getTelefono(), Boolean.FALSE, usuarioBean.getUsuarioVO().getId());
+        contactoProveedorImpl.actualizarContacto(contactoProveedor.getIdContactoProveedor(), contactoProveedor.getNombre(), contactoProveedor.getCorreo(), contactoProveedor.getTelefono(), Boolean.FALSE, sesion.getUsuarioVo().getId());
         setListaContacto(new ListDataModel(contactoProveedorImpl.traerContactoPorProveedor(getIdProveedor(), Constantes.CONTACTO_REP_COMPRAS)));
     }
 
@@ -257,11 +258,11 @@ public class ProveedorBeanModel implements Serializable{
                 setCorreo(newCorreo.substring(Constantes.CERO, newCorreo.length() - 1));
             }
         }
-        contactoProveedorImpl.guardarContacto(getIdProveedor(), getContacto(), getTelefono(), getCorreo(), Constantes.CONTACTO_REP_COMPRAS, usuarioBean.getUsuarioVO().getId());
+        contactoProveedorImpl.guardarContacto(getIdProveedor(), getContacto(), getTelefono(), getCorreo(), Constantes.CONTACTO_REP_COMPRAS, sesion.getUsuarioVo().getId());
     }
 
     public void modificarDatosProveedor() {
-        proveedorImpl.modificarDatos(getProveedorVo(), usuarioBean.getUsuarioVO().getId());
+        proveedorImpl.modificarDatos(getProveedorVo(), sesion.getUsuarioVo().getId());
     }
 
     //
@@ -326,13 +327,6 @@ public class ProveedorBeanModel implements Serializable{
      */
     public void setRfcCompania(String rfcCompania) {
         this.rfcCompania = rfcCompania;
-    }
-
-    /**
-     * @param usuarioBean the usuarioBean to set
-     */
-    public void setUsuarioBean(UsuarioBean usuarioBean) {
-        this.usuarioBean = usuarioBean;
     }
 
     /**

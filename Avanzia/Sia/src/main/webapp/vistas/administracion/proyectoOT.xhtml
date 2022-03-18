@@ -11,20 +11,11 @@
     <body>
 
         <ui:composition template="./../../WEB-INF/facelets/templates/templateSistema.xhtml">
-            <ui:define name="menu" rendered="#{not empty sesion.usuario}">
-                <h:form rendered="#{not empty sesion.usuario}" styleClass="textoIzquierda">
-                    <ui:include src="menuAdministracion.xhtml"/>
-                </h:form>
-            </ui:define>
-
             <ui:define name="contenido">                
-                <h:panelGroup  rendered="#{empty sesion.usuario}" styleClass="altura">
-                    <ui:include src="./../../login.xhtml"/>
-                </h:panelGroup>  
                 <p:panelGrid>
                     <h:messages style="color: maroon; font-size: small; font-weight: normal;"/>
                 </p:panelGrid>
-                <h:form id="frmProyectoOT" rendered="#{not empty sesion.usuario}" styleClass="textoIzquierda">
+                <h:form id="frmProyectoOT" styleClass="textoIzquierda">
                     <center>
                         <h:outputText value="#{msgs['sia.admin.proyecto.ot.titulo']}" styleClass="tituloEncabezado"/>
                         <br/>
@@ -49,7 +40,7 @@
                         <p:autoComplete value="#{proyectoOTBean.cadena}"                                         
                                         />
                         <p:panelGrid style="margin-top: 10px;">
-                            <p:commandLink value="Todos"  actionListener="#{proyectoOTBean.llenarListaOts(e)}" style="color: blue; text-decoration: underline; padding-top: 5px;"/>
+                            <p:commandLink value="Todos"  action="#{proyectoOTBean.llenarListaOts(e)}" style="color: blue; text-decoration: underline; padding-top: 5px;"/>
                         </p:panelGrid>
                     </p:panelGrid>
                     <hr/>
@@ -85,16 +76,16 @@
                                                                onclick="if (!confirm('Confirma que desea abrir el proyecto...? '))
                                                                              return false;"
                                                                title="#{msgs['sia.contrato.tooltip.abrir.proyecto']}"
-                                                               actionListener="#{proyectoOTBean.abrirProyectoOT(event)}" styleClass="link"/>
+                                                               action="#{proyectoOTBean.abrirProyectoOT(event)}" styleClass="link"/>
                                                 <p:commandLink value="#{msgs['sia.proyecto.ot.cerrar']}" rendered="#{data.abierto eq 'True'}" 
                                                                onclick="if (!confirm('Confirma que desea cerrar el proyecto...? '))
                                                                              return false;"
-                                                               actionListener="#{proyectoOTBean.cerrarProyectoOT(event)}" styleClass="link"/>
+                                                               action="#{proyectoOTBean.cerrarProyectoOT(event)}" styleClass="link"/>
                                             </p:column>
                                             <p:column>
                                                 <p:commandLink value="#{msgs['sistema.seleccionar']}" rendered="#{data.abierto eq 'True'}" 
                                                                title="#{msgs['sistema.seleccionar.toottip.proyecto.ot']}"
-                                                               actionListener="#{proyectoOTBean.seleccionarProyectoOT(event)}" 
+                                                               action="#{proyectoOTBean.seleccionarProyectoOT(event)}" 
                                                                styleClass="link"/>
                                             </p:column>
                                         </my:dataGrid>
@@ -119,7 +110,7 @@
                                     </tr>
                                     <tr>
                                         <td align="left" class="bordePanelGrid">                                                
-                                            <p:dataTable id="relGerencia" value="#{proyectoOTBean.traerRelacionProyectoGerencia}" 
+                                            <p:dataTable size="small" stripedRows="true" showGridlines="true" id="relGerencia" value="#{proyectoOTBean.traerRelacionProyectoGerencia}" 
                                                          var="rel" >
 
                                                 <p:column style="text-align: center;">
@@ -129,13 +120,13 @@
 
                                                 <p:column style="text-align: center;">
                                                     <f:facet name="header"><h:outputText value="#{msgs['sistema.eliminar']}"/></f:facet>
-                                                    <p:commandLink value="Eliminar" actionListener="#{proyectoOTBean.eliminarRelacionGerencia(event)}" styleClass="link"/>
+                                                    <p:commandLink value="Eliminar" action="#{proyectoOTBean.eliminarRelacionGerencia(event)}" styleClass="link"/>
                                                     <p:confirmDialog id="pnlConf" message="#{msgs['sia.mensaje.relacion.proyecto.ot.gerencia']}"
                                                                      header="Confirmación de operación"/>
                                                 </p:column>
                                                 <p:column style="text-align: center;">
                                                     <f:facet name="header"><h:outputText value="#{msgs['sistema.eliminar']}"/></f:facet>
-                                                    <p:commandLink value="Seleccionar" actionListener="#{proyectoOTBean.seleccionarGerencia(event)}" styleClass="link"/>
+                                                    <p:commandLink value="Seleccionar" action="#{proyectoOTBean.seleccionarGerencia(event)}" styleClass="link"/>
                                                 </p:column>
                                             </p:dataTable>
 
@@ -168,7 +159,7 @@
                         </tr>
                         <tr>
                             <td align="left" class="bordePanelGrid">
-                                <p:dataTable id="dtTipoObra" value="#{proyectoOTBean.traerRelacionProyectoUnidadCosto}" 
+                                <p:dataTable size="small" stripedRows="true" showGridlines="true" id="dtTipoObra" value="#{proyectoOTBean.traerRelacionProyectoUnidadCosto}" 
                                              var="tipoO" > 
 
                                     <p:column style="text-align: center;">
@@ -176,14 +167,14 @@
                                         <h:outputText value="#{tipoO.unidadCosto}"/>
                                     </p:column>
                                     <p:column style="text-align: center;">
-                                        <p:commandLink value="#{msgs['sistema.eliminar']}" actionListener="#{proyectoOTBean.eliminarRelacionUnidadCosto(event)}"
+                                        <p:commandLink value="#{msgs['sistema.eliminar']}" action="#{proyectoOTBean.eliminarRelacionUnidadCosto(event)}"
                                                        />
                                         <p:confirmDialog id="panelCon" 
                                                          header="Confirmación de operación"
                                                          message="La operación va a eliminar el tipo de tarea. ¿Está seguro?" />
                                     </p:column>                                                     
                                     <p:column style="text-align: center;">
-                                        <p:commandLink value="Seleccionar" actionListener="#{proyectoOTBean.seleccionarTipoTarea(event)}" styleClass="link"/>                                                        
+                                        <p:commandLink value="Seleccionar" action="#{proyectoOTBean.seleccionarTipoTarea(event)}" styleClass="link"/>                                                        
                                     </p:column>                                                     
                                 </p:dataTable>
                             </td>
@@ -212,7 +203,7 @@
                         </tr>
                         <tr>
                             <td align="left" class="bordePanelGrid">
-                                <p:dataTable id="dtTipoObraTarea" value="#{proyectoOTBean.traerTareas}" 
+                                <p:dataTable size="small" stripedRows="true" showGridlines="true" id="dtTipoObraTarea" value="#{proyectoOTBean.traerTareas}" 
                                              var="tipoO" > 
                                     <p:column style="text-align: center;">
                                         <f:facet name="header"> <h:outputText value="Código"/></f:facet>
@@ -223,7 +214,7 @@
                                         <h:outputText value="#{tipoO.nombreTarea}"/>
                                     </p:column>
                                     <p:column style="text-align: center;">
-                                        <p:commandLink value="#{msgs['sistema.eliminar']}" actionListener="#{proyectoOTBean.eliminarTarea(event)}" 
+                                        <p:commandLink value="#{msgs['sistema.eliminar']}" action="#{proyectoOTBean.eliminarTarea(event)}" 
                                                        />
                                         <p:confirmDialog id="panelConTarea" 
                                                          header="Confirmación de operación"
@@ -251,8 +242,8 @@
                                     <h:outputText value="#{msgs['presupuesto.nuevos.campoProyectoOt']}"/>
                                     <p:inputTextarea value="#{proyectoOTBean.proyectoOtVo.nombre}" cols="65" rows="2"/>
                                     <p:commandButton value="#{msgs['sistema.guardar']}" styleClass="btn btn-default" 
-                                                     actionListener="#{proyectoOTBean.completarModificacion(event)}" />
-                                    <p:commandButton value="#{msgs['sistema.cancelar']}" styleClass="btn btn-default" actionListener="#{proyectoOTBean.cerrar(event)}" title="Cerrar ventana..." immediate="true"/>
+                                                     action="#{proyectoOTBean.completarModificacion(event)}" />
+                                    <p:commandButton value="#{msgs['sistema.cancelar']}" styleClass="btn btn-default" action="#{proyectoOTBean.cerrar(event)}" title="Cerrar ventana..." immediate="true"/>
 
                                 </p:panelGrid>
                                 <h:messages style="color: maroon; font-size: x-small; font-weight: normal;"/>
@@ -281,9 +272,9 @@
                             </p:panelGrid>
                             <p:inputText id="cuentaTxt" value="#{proyectoOTBean.cuentaContable}" />
                             <h:commandButton  id="btnGuardar" styleClass="btn btn-info" style="display: none;  "
-                                              actionListener="#{proyectoOTBean.guardarProyectoOT(event)}"/>
+                                              action="#{proyectoOTBean.guardarProyectoOT(event)}"/>
                             <h:commandButton id="btnCerrarAltaProyectoOT" style="display: none;"
-                                             actionListener="#{proyectoOTBean.cerrarPupupAltaProyectoOt(event)}" />
+                                             action="#{proyectoOTBean.cerrarPupupAltaProyectoOt(event)}" />
                         </p:panelGrid>
                     </h:form>
                 </div>
@@ -297,10 +288,10 @@
                                 <f:selectItem itemLabel="Seleccione . . ." itemValue="-1"/>
                                 <f:selectItems value="#{proyectoOTBean.traerGerencia}"/>
                             </p:selectOneMenu>
-                            <h:commandLink id="btnGuardarRel" 
-                                           actionListener="#{proyectoOTBean.guardarRelacionGerencia(event)}" 
+                            <p:commandLink id="btnGuardarRel" 
+                                           action="#{proyectoOTBean.guardarRelacionGerencia(event)}" 
                                            style="display: none;"/>
-                            <h:commandLink id="btnCerrarRel" actionListener="#{proyectoOTBean.ocultarPanelRelGerencia(event)}" style="display: none;"/>
+                            <p:commandLink id="btnCerrarRel" action="#{proyectoOTBean.ocultarPanelRelGerencia(event)}" style="display: none;"/>
 
                         </p:panelGrid>
                     </h:form>
@@ -319,11 +310,11 @@
                                         <f:selectItem itemLabel="#{msgs['sistema.seleccione']}" itemValue="-1"/>
                                         <f:selectItems value="#{proyectoOTBean.traerTipoObra}"/>
                                     </p:selectOneMenu>
-                                    <h:commandLink value="+" style="font-weight:  bold; font-size: 13px; color: #4F82DF; background-color: background;"  actionListener="#{proyectoOTBean.mostrarAgregarTipoObra(event)}"
+                                    <p:commandLink value="+" style="font-weight:  bold; font-size: 13px; color: #4F82DF; background-color: background;"  action="#{proyectoOTBean.mostrarAgregarTipoObra(event)}"
                                                    onclick="return mostrarDialogoUnaCaja('dialogoAgregarObra', 'frmAgregarObra', 'btnCerrarTipoObra', 'btnGuardarTipoObra', 'obra')"/>
                                 </p:panelGrid>                                           
-                                <h:commandButton id="btnGuardarPTO" actionListener="#{proyectoOTBean.guardarRelacionTipoObra(event)}" style="display: none;"/>
-                                <h:commandButton id="btnCerrarPTO" actionListener="#{proyectoOTBean.ocultarAgregarRelProyObra(event)}" style="display: none;"/>
+                                <h:commandButton id="btnGuardarPTO" action="#{proyectoOTBean.guardarRelacionTipoObra(event)}" style="display: none;"/>
+                                <h:commandButton id="btnCerrarPTO" action="#{proyectoOTBean.ocultarAgregarRelProyObra(event)}" style="display: none;"/>
                             </p:panelGrid>
                         </h:panelGroup>
                     </h:form>
@@ -334,8 +325,8 @@
                         <p:panelGrid columns="2">
                             <h:outputText value="#{msgs['sia.proyecto.ot.tipo.obra']}"/>
                             <p:inputText id="obra" value="#{proyectoOTBean.nombreTipoObra}" size="45"/>
-                            <h:commandLink id="btnGuardarTipoObra" actionListener="#{proyectoOTBean.guardarTipoObra(event)}" style="display: none;"/>
-                            <h:commandLink id="btnCerrarTipoObra" action="proyectoOT" actionListener="#{proyectoOTBean.ocultarPanelTipoObra(event)}" style="display: none;"/>
+                            <p:commandLink id="btnGuardarTipoObra" action="#{proyectoOTBean.guardarTipoObra(event)}" style="display: none;"/>
+                            <p:commandLink id="btnCerrarTipoObra" action="proyectoOT" action="#{proyectoOTBean.ocultarPanelTipoObra(event)}" style="display: none;"/>
                         </p:panelGrid>
                     </h:form>
                 </div>

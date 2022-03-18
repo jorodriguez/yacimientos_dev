@@ -36,6 +36,7 @@ public class ModuloBeanModel implements Serializable {
     private SiModuloImpl moduloService;
     @Inject
     private SiOpcionImpl opcionService;
+    @Inject
     private Sesion sesion;
     private DataModel<SiModulo> modulosDataModel = null;
     private String nombreModulo;

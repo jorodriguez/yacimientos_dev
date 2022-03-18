@@ -8,17 +8,14 @@
       xmlns:f="http://xmlns.jcp.org/jsf/core">
     <body>
         <ui:composition template="./../../WEB-INF/facelets/templates/templateGrupos.xhtml">
-            <h:panelGroup  rendered="#{empty sesion.usuario}" styleClass="altura">
-                <ui:include src="./../../login.xhtml"/>
-            </h:panelGroup> 
             <ui:define name="contenido">
                 <div id="Page">
                     <div class="row">
-                        <ui:include src="./menuRecursos.xhtml" rendered="#{not empty sesion.usuario}" />
+                        <ui:include src="./menuRecursos.xhtml" />
                     </div>
                     <div class="row"> 
                         <h:form  styleClass="textoIzquierda" id="frmDoctoRh">
-                            <p:dataTable  value="#{documentosProveedoresRhBean.proveedores}" var="dataDoc"
+                            <p:dataTable size="small" stripedRows="true" showGridlines="true"  value="#{documentosProveedoresRhBean.proveedores}" var="dataDoc"
                                             paginator="true" paginatorAlwaysVisible="true"
                                             rows="15" paginatorPosition="bottom">                                
                                 <p:column headerText="RFC" filterBy="#{dataDoc.rfc}" 
@@ -31,12 +28,12 @@
                                     <h:outputText value="#{dataDoc.nombre}"/>
                                 </p:column>
                                 <p:column >
-                                    <h:commandLink title="Ver contratos" actionListener="#{documentosProveedoresRhBean.verContratos}">
+                                    <p:commandLink title="Ver contratos" action="#{documentosProveedoresRhBean.verContratos}">
                                         <i class="fa fa-eye text-primary"/>
                                         <f:param name="proveedorId" value="#{dataDoc.idProveedor}"/>
                                         <f:param name="proveedorRfc" value="#{dataDoc.rfc}"/>
                                         <f:param name="proveedorNombre" value="#{dataDoc.nombre}"/>
-                                    </h:commandLink>
+                                    </p:commandLink>
                                 </p:column>
                             </p:dataTable>
                         </h:form>
@@ -62,7 +59,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <p:dataTable value="#{documentosProveedoresRhBean.contratosProveedor}"
+                                    <p:dataTable size="small" stripedRows="true" showGridlines="true" value="#{documentosProveedoresRhBean.contratosProveedor}"
                                                    var="dataC" rowIndexVar="index" >
                                         <p:column headerText="Número" style="text-align: left;" sortBy="#{dataC.numero}"
                                                     >
@@ -91,15 +88,15 @@
                                             <h:outputText value="#{dataC.moneda}"/>
                                         </p:column>
                                         <p:column >
-                                            <h:commandLink actionListener="#{documentosProveedoresRhBean.verDoctosPorContrato}">
+                                            <p:commandLink action="#{documentosProveedoresRhBean.verDoctosPorContrato}">
                                                 <i class="fa fa-eye text-primary"/>
                                                 <f:param name="indice" value="#{index}"/>
-                                            </h:commandLink>
+                                            </p:commandLink>
                                         </p:column>
                                     </p:dataTable>
                                 </div>
                                 <div class="modal-footer">
-                                    <h:commandLink value="Cerrar" onclick="$(dialogoContratosProveedor).modal('hide');" 
+                                    <p:commandLink value="Cerrar" onclick="$(dialogoContratosProveedor).modal('hide');" 
                                                    immediate="true"/>
                                 </div>
                             </h:form>
@@ -135,7 +132,7 @@
                                     </div>
                                     <p:tabView >
                                         <p:tab title="Documentos periodicos">
-                                            <p:dataTable id="dtDoctosPerRh" 
+                                            <p:dataTable size="small" stripedRows="true" showGridlines="true" id="dtDoctosPerRh" 
                                                            value="#{documentosProveedoresRhBean.doctosRhPeriodicos}" var="dataPer">
                                                 <p:column headerText="Documento" style="text-align: left;">
                                                     <h:outputText value="#{dataPer.documento}"/>
@@ -153,10 +150,10 @@
                                                     </h:outputLabel>
                                                 </p:column>
                                                 <p:column>
-                                                    <h:commandLink actionListener="#{documentosProveedoresRhBean.inicioEnviarObservacion}"
+                                                    <p:commandLink action="#{documentosProveedoresRhBean.inicioEnviarObservacion}"
                                                                    value="Nota" styleClass="btn btn-default"> 
                                                         <f:param name="doctoRhId" value="#{dataPer.id}"/>
-                                                    </h:commandLink>
+                                                    </p:commandLink>
                                                 </p:column>
                                             </p:dataTable>
                                             <p:dataExporter fileName="DocumentosPeriodicosRh" target="dtDoctosPerRh" type="xls">
@@ -164,7 +161,7 @@
                                             </p:dataExporter>
                                         </p:tab>
                                         <p:tab title="Documentos NO periodicos">
-                                            <p:dataTable id="dtDoctosNoPer" value="#{documentosProveedoresRhBean.doctosRhNoPeriodicos}" var="dataNoPer">
+                                            <p:dataTable size="small" stripedRows="true" showGridlines="true" id="dtDoctosNoPer" value="#{documentosProveedoresRhBean.doctosRhNoPeriodicos}" var="dataNoPer">
                                                 <p:column headerText="Documento" style="text-align: left;">
                                                     <h:outputText value="#{dataNoPer.documento}"/>
                                                 </p:column>
@@ -176,10 +173,10 @@
                                                     </h:outputLink>
                                                 </p:column>
                                                 <p:column>
-                                                    <h:commandLink actionListener="#{documentosProveedoresRhBean.inicioEnviarObservacion}"
+                                                    <p:commandLink action="#{documentosProveedoresRhBean.inicioEnviarObservacion}"
                                                                    value="Nota" styleClass="btn btn-default">
                                                         <f:param name="doctoRhId" value="#{dataNoPer.id}"/>
-                                                    </h:commandLink>
+                                                    </p:commandLink>
                                                 </p:column>
                                             </p:dataTable>
                                             <p:dataExporter fileName="DocumentosNoPeriodicos" target="dtDoctosNoPer" type="xls">
@@ -189,7 +186,7 @@
                                     </p:tabView>
                                 </div>
                                 <div class="modal-footer">
-                                    <h:commandLink value="Cerrar" onclick="$(dialogoDoctosProveedor).modal('hide');" immediate="true"/>
+                                    <p:commandLink value="Cerrar" onclick="$(dialogoDoctosProveedor).modal('hide');" immediate="true"/>
                                 </div>
                             </h:form>
                         </div>
@@ -222,7 +219,7 @@
                                         <div class="form-row">
                                             <div class="col-lg-6">	
                                                 <!--rowSelectListener="#{documentosProveedoresRhBean.seleccionarContacto}"-->
-                                                <p:dataTable value="#{documentosProveedoresRhBean.contactosProveedor}" var="data"
+                                                <p:dataTable size="small" stripedRows="true" showGridlines="true" value="#{documentosProveedoresRhBean.contactosProveedor}" var="data"
                                                                selectionMode="single" styleClass="table table-responsive"
                                                                
                                                                rows="5" paginatorAlwaysVisible="false" paginator="true" paginatorPosition="bottom"
@@ -240,18 +237,18 @@
                                                 </p:dataTable>
                                             </div>
                                             <div class="col-lg-6">	
-                                                <p:dataTable value="#{documentosProveedoresRhBean.listaCorreo}" var="data"
+                                                <p:dataTable size="small" stripedRows="true" showGridlines="true" value="#{documentosProveedoresRhBean.listaCorreo}" var="data"
                                                                style="font-size: 1em;" rowIndexVar="index">
                                                     <f:facet name="header" >Correo para</f:facet>
                                                     <p:column headerText="Nombre" style="text-align: left;">
                                                         <h:outputText value="#{data.nombre}"/>
                                                     </p:column>
                                                     <p:column >
-                                                        <h:commandLink actionListener="#{documentosProveedoresRhBean.quitarUsuarioCorreo}" 
+                                                        <p:commandLink action="#{documentosProveedoresRhBean.quitarUsuarioCorreo}" 
                                                                        immediate="true">
                                                             <i class="fa fa-trash text text-danger"/>
                                                             <f:param name="indice" value="#{index}"/>						
-                                                        </h:commandLink>
+                                                        </p:commandLink>
                                                     </p:column>
                                                 </p:dataTable>
                                             </div>
@@ -259,10 +256,10 @@
                                     </div>
                                 </div>
                                 <div class="modal-footer">
-                                    <h:commandLink value="Cerrar" onclick="$(dialogoEnviarNotaDoctosProveedor).modal('hide');" 
+                                    <p:commandLink value="Cerrar" onclick="$(dialogoEnviarNotaDoctosProveedor).modal('hide');" 
                                                    immediate="true" styleClass="btn btn-default"/>
-                                    <h:commandLink value="Enviar"  styleClass="btn btn-primary"
-                                                   actionListener="#{documentosProveedoresRhBean.enviarObservacion}"/>
+                                    <p:commandLink value="Enviar"  styleClass="btn btn-primary"
+                                                   action="#{documentosProveedoresRhBean.enviarObservacion}"/>
                                 </div>
                             </h:form>
                         </div>

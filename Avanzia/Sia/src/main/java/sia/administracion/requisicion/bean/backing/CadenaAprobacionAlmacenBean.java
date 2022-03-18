@@ -24,6 +24,7 @@ import sia.inventarios.service.InvCadenaAprobacionImpl;
 import sia.modelo.cadena.aprobacion.vo.CadenaAprobacionVo;
 import sia.modelo.usuario.vo.UsuarioVO;
 import sia.servicios.campo.nuevo.impl.ApCampoUsuarioRhPuestoImpl;
+import sia.sistema.bean.backing.Sesion;
 import sia.sistema.bean.support.FacesUtils;
 import sia.util.UtilLog4j;
 
@@ -42,7 +43,7 @@ public class CadenaAprobacionAlmacenBean implements Serializable {
     }
 
     @Inject
-    private UsuarioBean usuarioBean;
+    private Sesion sesion;
 
     private List<CadenaAprobacionVo> cadenas;
 
@@ -63,11 +64,11 @@ public class CadenaAprobacionAlmacenBean implements Serializable {
         //
         llenar();
         //
-        listaUsuaarios = apCampoUsuarioRhPuestoImpl.traerUsuarioCampo(usuarioBean.getUsuarioVO().getIdCampo());
+        listaUsuaarios = apCampoUsuarioRhPuestoImpl.traerUsuarioCampo(sesion.getUsuarioVo().getIdCampo());
     }
 
     private void llenar() {
-        cadenas = cadenaAprobacionLocal.traerPorCampo(usuarioBean.getUsuarioVO().getIdCampo());
+        cadenas = cadenaAprobacionLocal.traerPorCampo(sesion.getUsuarioVo().getIdCampo());
     }
 
     public void crearCadena() {
@@ -119,7 +120,7 @@ public class CadenaAprobacionAlmacenBean implements Serializable {
         if (cadenaAprobacionVo.getIdSolicita() != null && !cadenaAprobacionVo.getIdSolicita().isEmpty()) {
             if (cadenaAprobacionVo.getIdAprueba() != null && !cadenaAprobacionVo.getIdAprueba().isEmpty()) {
                 //
-                cadenaAprobacionLocal.guardar(getCadenaAprobacionVo(), usuarioBean.getUsuarioVO().getIdCampo(), usuarioBean.getUsuarioVO().getId());
+                cadenaAprobacionLocal.guardar(getCadenaAprobacionVo(), sesion.getUsuarioVo().getIdCampo(), sesion.getUsuarioVo().getId());
                 //
                 llenar();
                 //
@@ -135,17 +136,12 @@ public class CadenaAprobacionAlmacenBean implements Serializable {
     public void eliminarCadena() {
         int idCad = Integer.parseInt(FacesUtils.getRequestParameter("idCad"));
         //
-        cadenaAprobacionLocal.eliminar(idCad, usuarioBean.getUsuarioVO().getId());
+        cadenaAprobacionLocal.eliminar(idCad, sesion.getUsuarioVo().getId());
         //
         llenar();
     }
 
-    /**
-     * @param usuarioBean the usuarioBean to set
-     */
-    public void setUsuarioBean(UsuarioBean usuarioBean) {
-        this.usuarioBean = usuarioBean;
-    }
+
 
     /**
      * @return the cadenas

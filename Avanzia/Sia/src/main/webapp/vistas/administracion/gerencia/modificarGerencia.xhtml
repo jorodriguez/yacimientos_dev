@@ -4,20 +4,12 @@
       xmlns:ui="http://xmlns.jcp.org/jsf/facelets"    
       xmlns:h="http://xmlns.jcp.org/jsf/html"
       xmlns:p="http://primefaces.org/ui"  
-      
+
       xmlns:f="http://xmlns.jcp.org/jsf/core">
     <body>
-        <ui:composition template="./../../../WEB-INF/facelets/templates/templateSistema.xhtml">
-            <ui:define name="menu" rendered="#{not empty sesion.usuario}">
-                <h:form rendered="#{not empty sesion.usuario}">                
-                    <ui:include src="../menuAdministracion.xhtml"/>
-                </h:form> 
-            </ui:define>
+        <ui:composition template="./../../../WEB-INF/facelets/templates/templateGrupos.xhtml">
             <ui:define name="contenido">
-                <h:panelGroup  rendered="#{empty sesion.usuario}" styleClass="altura">
-                    <ui:include src="./../../../login.xhtml"/>
-                </h:panelGroup> 
-                <h:form rendered="#{not empty sesion.usuario}" styleClass="textoIzquierda" id="frmUser">
+                <h:form styleClass="textoIzquierda" id="frmUser">
                     <br/>
                     <center>
                         <p:panelGrid columns="1">
@@ -30,48 +22,48 @@
                         <p:panelGrid columns="5">
                             <p:panelGrid>
                                 <p:commandLink title="Regresar" styleClass="btn btn-default" 
-                                                 actionListener="#{usuarioBean.cancelarModificacionUuario(event)}" action="consultaUsuario">
+                                               action="#{usuarioBean.cancelarModificacionUuario(event)}" action="consultaUsuario">
                                     <p:graphicImage url="./resources/imagenes/regresar.png" styleClass="imagenSinBorde" />
                                 </p:commandLink>
-                                <p:commandLink  styleClass="linkPequenio" value="Regresar" title="Regresar" action="consultaUsuario" actionListener="#{usuarioBean.cancelarModificacionUuario(event)}"/>    
+                                <p:commandLink  styleClass="linkPequenio" value="Regresar" title="Regresar" action="consultaUsuario" action="#{usuarioBean.cancelarModificacionUuario(event)}"/>    
                             </p:panelGrid>
                             <p:panelGrid>
-                                <p:commandLink title="Eliminar usuario" actionListener="#{usuarioBean.eiminarUsuario(event)}" styleClass="btn btn-default" 
-                                                 rendered="#{usuarioBean.usuarioVOAlta.activo eq 'True'}">
+                                <p:commandLink title="Eliminar usuario" action="#{usuarioBean.eiminarUsuario(event)}" styleClass="btn btn-default" 
+                                               rendered="#{usuarioBean.usuarioVOAlta.activo eq 'True'}">
                                     <p:graphicImage url="./resources/imagenes/eliminar.png" styleClass="imagenSinBorde" />
                                 </p:commandLink>
                                 <p:commandLink  styleClass="linkPequenio" value="Desactivar" title="Eliminar usuario" 
-                                                  rendered="#{usuarioBean.usuarioVOAlta.activo eq 'True'}" actionListener="#{usuarioBean.eiminarUsuario(event)}"/>    
+                                                rendered="#{usuarioBean.usuarioVOAlta.activo eq 'True'}" action="#{usuarioBean.eiminarUsuario(event)}"/>    
                             </p:panelGrid>
                             <p:panelGrid>
-                                <p:commandLink title="Activar usuario" actionListener="#{usuarioBean.activarUsuario(event)}" styleClass="btn btn-default" 
-                                                 rendered="#{usuarioBean.usuarioVOAlta.activo eq 'False'}">                                        
+                                <p:commandLink title="Activar usuario" action="#{usuarioBean.activarUsuario(event)}" styleClass="btn btn-default" 
+                                               rendered="#{usuarioBean.usuarioVOAlta.activo eq 'False'}">                                        
                                     <p:graphicImage url="./resources/imagenes/check-mark.png" styleClass="imagenSinBorde" />
                                 </p:commandLink>
-                                <p:commandLink title="Activar usuario" actionListener="#{usuarioBean.activarUsuario(event)}" styleClass="linkPequenio" 
-                                                 rendered="#{usuarioBean.usuarioVOAlta.activo eq 'False'}"/>
+                                <p:commandLink title="Activar usuario" action="#{usuarioBean.activarUsuario(event)}" styleClass="linkPequenio" 
+                                               rendered="#{usuarioBean.usuarioVOAlta.activo eq 'False'}"/>
                             </p:panelGrid>
                             <p:panelGrid>
                                 <p:commandLink title="Reinicio clave" action="#{usuarioBean.reinicioClave}" styleClass="btn btn-default"
-                                                 >
+                                               >
                                     <p:graphicImage url="./resources/imagenes/envioClave.jpg" styleClass="imagenSinBorde" />
                                 </p:commandLink>
                                 <p:commandLink  styleClass="linkPequenio" value="Reinicio de clave" 
-                                                  action="#{usuarioBean.reinicioClave}" />
+                                                action="#{usuarioBean.reinicioClave}" />
                             </p:panelGrid>
                             <p:panelGrid>
                                 <p:commandLink title="Asignar campo" action="#{usuarioBean.agregarUsuaroACampo()}" styleClass="btn btn-default" >                                        
                                     <p:graphicImage url="./resources/imagenes/" styleClass="imagenSinBorde" />
                                 </p:commandLink>
                                 <p:commandLink  styleClass="linkPequenio" value="Asignar campo" 
-                                                  action="#{usuarioBean.agregarUsuaroACampo()}" />
+                                                action="#{usuarioBean.agregarUsuaroACampo()}" />
                             </p:panelGrid>
                             <p:confirmDialog  id="pcClave"
-                                                   message="La operación va a reiniciar la clave del usuario, ¿está seguro?">
+                                              message="La operación va a reiniciar la clave del usuario, ¿está seguro?">
 
                             </p:confirmDialog>
                             <p:confirmDialog id="pcUserAc"
-                                                   message="La operación va a activar al usuario: #{usuarioBean.usuario.nombre}, ¿esta seguro?">
+                                             message="La operación va a activar al usuario: #{usuarioBean.usuario.nombre}, ¿esta seguro?">
 
                             </p:confirmDialog>
                         </p:panelGrid>
@@ -159,16 +151,16 @@
                             </p:panelGrid>
                             <p:panelGrid columns="2" style="text-align: right;">
                                 <p:commandButton style="text-align: right;" styleClass="btn btn-default" value="Actualizar"  
-                                                   action="#{usuarioBean.modificarUsuario()}" title="Modificar usuario"/>
-                                <p:commandButton styleClass="btn btn-default" value="Cancelar" action="consultaUsuario" actionListener="#{usuarioBean.cancelarModificacionUuario(event)}"/>
+                                                 action="#{usuarioBean.modificarUsuario()}" title="Modificar usuario"/>
+                                <p:commandButton styleClass="btn btn-default" value="Cancelar" action="consultaUsuario" action="#{usuarioBean.cancelarModificacionUuario(event)}"/>
                             </p:panelGrid>
                             <h:outputText/>
                         </p:panelGrid>
                         <br/>
                         <p:panelGrid  rendered="#{usuarioBean.traerCadenaMando.rowCount gt 0}">
                             <f:facet name="header"><h:outputText value="Cadenas de aprobación de requisiciones"/></f:facet>
-                            <p:dataTable id="dtCad" value="#{usuarioBean.traerCadenaMando}" var="cadUser"  rows="10"
-                                           styleClass="contenidoTabla">
+                            <p:dataTable size="small" stripedRows="true" showGridlines="true" id="dtCad" value="#{usuarioBean.traerCadenaMando}" var="cadUser"  rows="10"
+                                         styleClass="contenidoTabla">
                                 <p:column>
                                     <f:facet name="header"><h:outputText value="Solicita"/></f:facet>
                                     <h:outputText value="#{cadUser.usuario.nombre}"/>
@@ -183,7 +175,7 @@
                                 </p:column>
                             </p:dataTable>
                             <center>
-                                
+
                             </center>
                             <p:panelGrid style="float: right;">
                                 <p:panelGrid columns="2" style="float: right; margin-right: 20px;">

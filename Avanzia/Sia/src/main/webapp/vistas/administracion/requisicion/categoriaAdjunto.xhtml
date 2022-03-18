@@ -9,38 +9,30 @@
 
     <body>
 
-        <ui:composition template="./../../../WEB-INF/facelets/templates/templateSistema.xhtml">
-            <ui:define name="menu" rendered="#{not empty sesion.usuario}">
-                <h:form rendered="#{not empty sesion.usuario}">                
-                    <ui:include src="../menuAdministracion.xhtml"/>
-                </h:form>
-            </ui:define>
+        <ui:composition template="./../../../WEB-INF/facelets/templates/templateGrupos.xhtml">
             <ui:define name="contenido">
-                <h:panelGroup  rendered="#{empty sesion.usuario}" styleClass="altura">
-                    <ui:include src="./../../../login.xhtml"/>
-                </h:panelGroup>  
-                <h:form id="frmCatAdj" rendered="#{not empty sesion.usuario}" styleClass="textoIzquierda">
+                <h:form id="frmCatAdj"   styleClass="textoIzquierda">
                     <h:outputText value="Categoría Adjunto" styleClass="tituloPagina"/>
                     <hr/>
                     <h:panelGrid columns="2">
                         <h:outputLabel value="Campo"/>
                         <p:panelGrid columns="1" style="text-align: center;" styleClass="bordePanelGrid" >
                             <p:selectOneRadio value="#{devolucionRequisicion.idBloque}" 
-                                                valueChangeListener="#{devolucionRequisicion.cambiarValorCampo}" 
-                                                 layout="lineDirection" >
+                                              valueChangeListener="#{devolucionRequisicion.cambiarValorCampo}" 
+                                              layout="lineDirection" >
                                 <f:selectItems value="#{devolucionRequisicion.listaCampo}"/> 
                             </p:selectOneRadio>
                         </p:panelGrid>
                     </h:panelGrid>
                     <p:panelGrid >
                         <p:fileUpload id="fileEntryComp"
-                                       title="Archivo"
-                                       listener="#{devolucionRequisicion.subirArchivo}"/>
+                                      title="Archivo"
+                                      listener="#{devolucionRequisicion.subirArchivo}"/>
                         <h:commandButton id="uploadFile" value="Subir" styleClass="btn btn-default" 
-                                         onclick="return validaCategoriaAdjunto('frmCatAdj','cmbGerencia', 'cmbCategoria');"/>                            
+                                         onclick="return validaCategoriaAdjunto('frmCatAdj', 'cmbGerencia', 'cmbCategoria');"/>                            
                     </p:panelGrid>
                     <h:panelGrid>
-                        <p:dataTable value="#{devolucionRequisicion.traerAdjunto}" var="data">
+                        <p:dataTable size="small" stripedRows="true" showGridlines="true" value="#{devolucionRequisicion.traerAdjunto}" var="data">
                             <p:column headerText="Nombre">
                                 <h:outputText value="#{data.nombre}"/>
                             </p:column>
@@ -52,16 +44,16 @@
                             </p:column>
                             <p:column >
                                 <p:commandLink value="#{data.requerido eq 'True' ? 'Si' : 'No'}" 
-                                                 onclick="confirmar('Cambiar la opción a requerido \'Si\', implica que no se podrá solicitar requisiciones con sin agregar este formato. ¿Está seguro?');"
-                                                 actionListener="#{devolucionRequisicion.cambiarRequerido(e)}"
-                                                 style="color: blue; text-decoration:  underline;">
+                                               onclick="confirmar('Cambiar la opción a requerido \'Si\', implica que no se podrá solicitar requisiciones con sin agregar este formato. ¿Está seguro?');"
+                                               action="#{devolucionRequisicion.cambiarRequerido(e)}"
+                                               style="color: blue; text-decoration:  underline;">
                                     <f:param name="idAdj" value="#{data.id}"/> 
                                     <f:param name="req" value="#{data.requerido}"/> 
                                 </p:commandLink>
                             </p:column>
                             <p:column >
-                                <p:commandLink value="Elimiar" actionListener="#{devolucionRequisicion.eliminarArchivo(e)}"
-                                                 style="color: blue; text-decoration:  underline;">
+                                <p:commandLink value="Elimiar" action="#{devolucionRequisicion.eliminarArchivo(e)}"
+                                               style="color: blue; text-decoration:  underline;">
                                     <f:param name="idAdj" value="#{data.id}"/> 
                                 </p:commandLink>
                             </p:column>

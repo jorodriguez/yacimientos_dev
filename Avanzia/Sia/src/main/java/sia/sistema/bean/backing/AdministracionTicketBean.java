@@ -80,15 +80,13 @@ public class AdministracionTicketBean implements Serializable {
         getIncidencias().addAll(incidenciaLocal.traerPorStatus(TicketEstadoEnum.ASIGNADO.getId()));
     }
 
-    public void mostrarAdjuntos() {
-        int idT = Integer.parseInt(FacesUtils.getRequestParameter("idTicket"));
+    public void mostrarAdjuntos(int idT) {
         incidenciaVo = incidenciaLocal.buscarPorId(idT);
         incidenciasAdjunto = incidenciaAdjuntoLocal.traerArchivoPorIncidencia(idT);
         PrimeFaces.current().executeScript("$(dialogoAdjuntosTickt).modal('show');");
     }
 
-    public void inicioAsignarTickect() {
-        int idT = Integer.parseInt(FacesUtils.getRequestParameter("idTicket"));
+    public void inicioAsignarTickect(int idT) {
         incidenciaVo = incidenciaLocal.buscarPorId(idT);
         //
         PrimeFaces.current().executeScript("$(dialogoAsignarTickt).modal('show');");
@@ -101,8 +99,7 @@ public class AdministracionTicketBean implements Serializable {
         PrimeFaces.current().executeScript("$(dialogoAsignarTickt).modal('hide');");
     }
 
-    public void inicioFinalizarTickect() {
-        int idT = Integer.parseInt(FacesUtils.getRequestParameter("idTicket"));
+    public void inicioFinalizarTickect(int idT) {
         incidenciaVo = incidenciaLocal.buscarPorId(idT);
         //
         PrimeFaces.current().executeScript("$(dialogoFinalizarTickt).modal('show');");
@@ -116,8 +113,7 @@ public class AdministracionTicketBean implements Serializable {
         PrimeFaces.current().executeScript("$(dialogoFinalizarTickt).modal('hide');");
     }
 
-    public void inicioEscalarTicket() {
-        int idT = Integer.parseInt(FacesUtils.getRequestParameter("idTicket"));
+    public void inicioEscalarTicket(int idT) {
         incidenciaVo = incidenciaLocal.buscarPorId(idT);
         //
         PrimeFaces.current().executeScript("$(dialogoEscalarTickt).modal('show');");

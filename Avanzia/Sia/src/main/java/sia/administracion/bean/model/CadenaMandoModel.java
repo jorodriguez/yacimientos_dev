@@ -24,6 +24,7 @@ import sia.servicios.campo.nuevo.impl.ApCampoImpl;
 import sia.servicios.campo.nuevo.impl.ApCampoUsuarioRhPuestoImpl;
 import sia.servicios.catalogos.impl.UsuarioImpl;
 import sia.servicios.requisicion.impl.CadenasMandoImpl;
+import sia.sistema.bean.backing.Sesion;
 import sia.sistema.bean.support.SoporteProveedor;
 import sia.util.UtilLog4j;
 
@@ -36,7 +37,7 @@ import sia.util.UtilLog4j;
 public class CadenaMandoModel implements Serializable {
 
     @Inject
-    private UsuarioBean usuarioBean;
+    private Sesion sesion;
     @Inject
     private CadenasMandoImpl cadenasMandoServicioRemoto;
     @Inject
@@ -70,7 +71,7 @@ public class CadenaMandoModel implements Serializable {
     
     public void iniciar(){
         if(getIdCampo() <= 0){
-           setIdCampo(usuarioBean.getUsuarioVO().getIdCampo()); 
+           setIdCampo(sesion.getUsuarioVo().getIdCampo()); 
         }
         
         setListaCadena(new ListDataModel(cadenasMandoServicioRemoto.traerCadenaAprobacion(null, getIdCampo(), 1, false, false ,false)));
@@ -87,7 +88,7 @@ public class CadenaMandoModel implements Serializable {
         List<SelectItem> l = new ArrayList<SelectItem>();
         List<CampoUsuarioPuestoVo> lc;
         try {
-            lc = apCampoUsuarioRhPuestoImpl.getAllPorUsurio(usuarioBean.getUsuarioVO().getId());
+            lc = apCampoUsuarioRhPuestoImpl.getAllPorUsurio(sesion.getUsuarioVo().getId());
             for (CampoUsuarioPuestoVo ca : lc) {
                 SelectItem item = new SelectItem(ca.getIdCampo(), ca.getCampo());
                 l.add(item);
@@ -134,18 +135,18 @@ public class CadenaMandoModel implements Serializable {
     }
 
     public boolean registroCadenaMando() {
-        return this.cadenasMandoServicioRemoto.registroCadenaMando(getIdCampo(), getUsuario(), getRevisa(), getAprueba(), usuarioBean.getUsuarioVO().getId());
+        return this.cadenasMandoServicioRemoto.registroCadenaMando(getIdCampo(), getUsuario(), getRevisa(), getAprueba(), sesion.getUsuarioVo().getId());
     }
 
     public boolean completarModificacion() {
         UtilLog4j.log.info(this, "Solicita: " + getUsuario());
         UtilLog4j.log.info(this, "REvisa: " + getRevisa());
         UtilLog4j.log.info(this, "Aprueba: " + getAprueba());
-        return this.cadenasMandoServicioRemoto.completarModificacion(getCadenaAprobacionVo().getId(), getRevisa(), getAprueba(), usuarioBean.getUsuarioVO().getId());
+        return this.cadenasMandoServicioRemoto.completarModificacion(getCadenaAprobacionVo().getId(), getRevisa(), getAprueba(), sesion.getUsuarioVo().getId());
     }
 
     public void eliminarCadena() {
-        this.cadenasMandoServicioRemoto.eliminar(getCadenaAprobacionVo().getId(), usuarioBean.getUsuarioVO().getId());
+        this.cadenasMandoServicioRemoto.eliminar(getCadenaAprobacionVo().getId(), sesion.getUsuarioVo().getId());
     }
 
 
@@ -286,13 +287,7 @@ public class CadenaMandoModel implements Serializable {
         this.cadenaAprobacionVo = cadenaAprobacionVo;
     }
 
-    /**
-     * @param usuarioBean the usuarioBean to set
-     */
-    public void setUsuarioBean(UsuarioBean usuarioBean) {
-        this.usuarioBean = usuarioBean;
-    }
-
+ 
     /**
      * @return the idCampo
      */

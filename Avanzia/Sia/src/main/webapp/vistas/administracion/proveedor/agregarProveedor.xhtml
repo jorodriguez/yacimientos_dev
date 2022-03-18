@@ -8,9 +8,6 @@
       >
     <body>
         <ui:composition template="./../../../WEB-INF/facelets/templates/templateGrupos.xhtml">
-            <h:panelGroup  rendered="#{empty sesion.usuario}" styleClass="altura">
-                <ui:include src="./../../../login.xhtml"/>
-            </h:panelGroup>
             <ui:define name="contenido">
                 <script type="text/javascript">
                     $(document).ready(function () {
@@ -18,11 +15,8 @@
                     });
                 </script>
                 <div id="Pa">
-                    <div class="row">
-                        <ui:include src="../menuAdministracion.xhtml" rendered="#{not empty sesion.usuario}" />
-                    </div>
                     <div class="col-lg-12"> 
-                        <h:form id="frmRelRegProveedor" rendered="#{not empty sesion.usuario}" styleClass="textoIzquierda">
+                        <h:form id="frmRelRegProveedor"  styleClass="textoIzquierda">
                             <div class="col-lg-12">
                                 <div class="input-group ">
                                     <p:fileUpload  styleClass="form-control"
@@ -39,22 +33,22 @@
                                 <div class="col-lg-12">
                                     <div class="input-group">
                                         <div class="col-lg-2">
-                                            <h:commandLink value="Todos" class="btn btn-default" actionListener="#{agregarProveedorBean.traerTodos(event)}">
+                                            <p:commandLink value="Todos" class="btn btn-default" action="#{agregarProveedorBean.traerTodos(event)}">
                                                 <f:ajax execute="@form" render="@all"/>
-                                            </h:commandLink>
+                                            </p:commandLink>
                                         </div>
                                         <div class="form-group  col-lg-8">
                                             <h:inputText id="nombreP" class="form-control" value="#{agregarProveedorBean.nombre}" />
                                         </div>
                                         <div class="col-lg-2">
-                                            <h:commandLink value="Buscar" class="btn btn-default" actionListener="#{agregarProveedorBean.buscarProveedor(event)}">
+                                            <p:commandLink value="Buscar" class="btn btn-default" action="#{agregarProveedorBean.buscarProveedor(event)}">
                                                 <f:ajax execute="@form" render="@all"/>
-                                            </h:commandLink>
+                                            </p:commandLink>
                                         </div>
                                     </div>
                                 </div>
                                 <!--rowSelectListener="#{agregarProveedorBean.seleccionar}"-->
-                                <p:dataTable value="#{agregarProveedorBean.listaProveedor}" var="data" paginator="true" paginatorPosition="bottom"
+                                <p:dataTable size="small" stripedRows="true" showGridlines="true" value="#{agregarProveedorBean.listaProveedor}" var="data" paginator="true" paginatorPosition="bottom"
                                                paginatorAlwaysVisible="true" rows="20"
                                                selectionMode="single" >
                                     <f:facet name="header">Proveedores</f:facet>
@@ -136,11 +130,11 @@
                                                     </div>
                                                 </div>
                                                 <div class="card-footer">
-                                                    <h:commandLink value="Editar" actionListener="#{agregarProveedorBean.editarProveedor(event)}"
+                                                    <p:commandLink value="Editar" action="#{agregarProveedorBean.editarProveedor(event)}"
                                                                    class="btn btn-default" immediate="true" rendered="#{agregarProveedorBean.proveedor.editar eq false}">
                                                         <i class="fa fa-edit text-primary"/>
-                                                    </h:commandLink>
-                                                    <h:commandLink value="Guardar" actionListener="#{agregarProveedorBean.guardarDatosGenerales(event)}"
+                                                    </p:commandLink>
+                                                    <p:commandLink value="Guardar" action="#{agregarProveedorBean.guardarDatosGenerales(event)}"
                                                                    class="btn btn-primary text-primary"/>
                                                 </div>
                                             </div>
@@ -149,7 +143,7 @@
                                     <p:tab title="Contactos">
                                         <h:form id="frmContacto" styleClass="textoIzquierda">
                                             <div class="modal-body">     
-                                                <p:dataTable value="#{agregarProveedorBean.listaContactoProveedor}" var="dataC"
+                                                <p:dataTable size="small" stripedRows="true" showGridlines="true" value="#{agregarProveedorBean.listaContactoProveedor}" var="dataC"
                                                                rowIndexVar="indice">
                                                     <p:column headerText="Nombre">
                                                         <h:outputText value="#{dataC.nombre}" rendered="#{dataC.editar eq false}"/>
@@ -164,23 +158,23 @@
                                                         <h:inputText value="#{dataC.correo}" rendered="#{dataC.editar}" class="form-control"/>
                                                     </p:column>
                                                     <p:column >
-                                                        <h:commandLink actionListener="#{agregarProveedorBean.iniciarModificarContacto(event)}"
+                                                        <p:commandLink action="#{agregarProveedorBean.iniciarModificarContacto(event)}"
                                                                        rendered="#{dataC.editar eq false}">
                                                             <i class="fa fa-edit text-primary"></i>
                                                             <f:param name="idContacto" value="#{indice}"/>
-                                                        </h:commandLink>
+                                                        </p:commandLink>
 
-                                                        <h:commandLink actionListener="#{agregarProveedorBean.modificarContacto(event)}"
+                                                        <p:commandLink action="#{agregarProveedorBean.modificarContacto(event)}"
                                                                        rendered="#{dataC.editar}">
                                                             <i class="fa fa-check text-primary"></i>
                                                             <f:param name="idContacto" value="#{indice}"/>
-                                                        </h:commandLink>
+                                                        </p:commandLink>
                                                     </p:column>
                                                     <p:column >
-                                                        <h:commandLink actionListener="#{agregarProveedorBean.eliminarContacto(event)}">
+                                                        <p:commandLink action="#{agregarProveedorBean.eliminarContacto(event)}">
                                                             <i class="fa fa-trash text-danger"></i>
                                                             <f:param name="idContacto" value="#{indice}"/>
-                                                        </h:commandLink>
+                                                        </p:commandLink>
                                                     </p:column>
                                                 </p:dataTable>
                                             </div>    
@@ -190,7 +184,7 @@
                             </div>
                             <div class="modal-footer">
                                 <h:form>
-                                    <h:commandLink value="Cerrar" actionListener="#{agregarProveedorBean.cerrarContacto(event)}"
+                                    <p:commandLink value="Cerrar" action="#{agregarProveedorBean.cerrarContacto(event)}"
                                                    class="btn btn-default" immediate="true"/>
                                 </h:form>
                             </div>

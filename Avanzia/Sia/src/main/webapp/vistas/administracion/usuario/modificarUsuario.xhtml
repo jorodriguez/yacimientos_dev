@@ -9,14 +9,8 @@
       xmlns:my="http://www.mytags.com/schema/mytags">
     <body>
         <ui:composition template="./../../../WEB-INF/facelets/templates/templateGrupos.xhtml">
-	    <h:panelGroup  rendered="#{empty sesion.usuario}" styleClass="altura">
-		<ui:include src="./../../../login.xhtml"/>
-	    </h:panelGroup>
             <ui:define name="contenido">
 		<div id="Pa">
-		    <div class="row">
-			<ui:include src="../menuAdministracion.xhtml" rendered="#{not empty sesion.usuario}" />
-		    </div>
 		    <div class="row"> 
 			<h:form rendered="#{not empty sesion.usuario}" styleClass="textoIzquierda" id="frmUser">
 
@@ -31,18 +25,18 @@
 				<p:panelGrid columns="5" >
 				    <p:panelGrid>
 					<p:commandLink title="Regresar" styleClass="btn btn-default" 
-							 actionListener="#{usuarioBean.cancelarModificacionUuario(event)}" action="consultaUsuario" immediate="true">
+							 action="#{usuarioBean.cancelarModificacionUuario(event)}" action="consultaUsuario" immediate="true">
 					    <p:graphicImage url="./resources/imagenes/regresar.png" styleClass="imagenSinBorde" />
 					</p:commandLink>
 					<p:commandLink  styleClass="linkPequenio" value="Regresar" title="Regresar" action="consultaUsuario" immediate="true"
-							  actionListener="#{usuarioBean.cancelarModificacionUuario(event)}"/>    
+							  action="#{usuarioBean.cancelarModificacionUuario(event)}"/>    
 				    </p:panelGrid>
 				    <p:panelGrid>
-					<p:commandLink title="Eliminar usuario" actionListener="#{usuarioBean.eiminarUsuario(event)}" styleClass="btn btn-default" >
+					<p:commandLink title="Eliminar usuario" action="#{usuarioBean.eiminarUsuario(event)}" styleClass="btn btn-default" >
 					    <p:graphicImage url="./resources/imagenes/eliminar.png" styleClass="imagenSinBorde" />
 					</p:commandLink>
 					<p:commandLink  styleClass="linkPequenio" value="Desactivar" title="Eliminar usuario" 
-							  rendered="#{usuarioBean.usuarioVOAlta.activo eq 'True'}" actionListener="#{usuarioBean.eiminarUsuario(event)}"/>    
+							  rendered="#{usuarioBean.usuarioVOAlta.activo eq 'True'}" action="#{usuarioBean.eiminarUsuario(event)}"/>    
 				    </p:panelGrid>
 				    <p:panelGrid>
 					<p:commandLink title="Reinicio clave" action="#{usuarioBean.reinicioClave}" 
@@ -129,7 +123,7 @@
 					<p:commandButton style="text-align: right;" styleClass="btn btn-info" value="Actualizar"  
 							   action="#{usuarioBean.modificarUsuario()}" title="Modificar usuario"/>
 					<p:commandButton styleClass="btn btn-default" value="Cancelar" action="consultaUsuario" 
-							   actionListener="#{usuarioBean.cancelarModificacionUuario(event)}" immediate="true"/>
+							   action="#{usuarioBean.cancelarModificacionUuario(event)}" immediate="true"/>
 				    </p:panelGrid>
 				</div>
 
@@ -138,7 +132,7 @@
 			    <div class="row"> 
 				<p:panelGrid rendered="#{usuarioBean.traerCadenaMando.rowCount gt 0}">
 				    <f:facet name="header"><h:outputText value="Cadenas de aprobación de requisiciones"/></f:facet>
-				    <p:dataTable id="dtCad" value="#{usuarioBean.traerCadenaMando}" 
+				    <p:dataTable size="small" stripedRows="true" showGridlines="true" id="dtCad" value="#{usuarioBean.traerCadenaMando}" 
 						   var="cadUser"  rows="10"
 						   styleClass="table table-striped table-bordered">
 					<p:column>

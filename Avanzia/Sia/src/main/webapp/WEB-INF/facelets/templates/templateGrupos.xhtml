@@ -23,6 +23,8 @@
         <link rel="stylesheet" href="/sia/resources/css/all.min.css" />
         <!-- Theme style -->
         <link rel="stylesheet" href="/sia/resources/css/adminlte.min.css" />
+        <!-- overlayScrollbars -->
+        <link rel="stylesheet" href="/sia/resources/css/OverlayScrollbars.min.css"/>
 
         <!-- Google Font -->
         <link rel="stylesheet"
@@ -71,9 +73,15 @@
                                 <span class="fa fa-user img-circle elevation-2"/>                                     
                             </div>
                             <div class="info">
-                                <a href="#" class="d-block">#{sesion.usuarioVo.nombre}</a>
-                                <a href="#">#{sesion.usuarioVo.puesto} - 
-                                    #{sesion.usuarioVo.gerencia}</a>
+                                <div class="font-weight-bold text-white">
+                                    #{sesion.usuarioVo.nombre}
+                                </div>
+                                <div class="font-weight-bold text-white">
+                                    #{sesion.usuarioVo.puesto}
+                                </div>
+                                <div class="font-weight-bold text-white">
+                                    #{sesion.usuarioVo.gerencia}
+                                </div>
                             </div>
                         </div>
                         <!-- Sidebar Menu -->
@@ -81,9 +89,26 @@
                             <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
                                 <!-- Add icons to the links using the .nav-icon class
                                      with font-awesome or any other icon font library -->
-                                <li class="nav-item menu-open">
-                                    Dashboard v1
-                                </li>
+                                <ui:repeat value="#{usuarioBean.listaMenu}" var="menu" >
+                                    <li class="nav-item">
+                                        <a href="#" class="nav-link">
+                                            <i class="nav-icon fas fa-copy"></i>
+                                            <p>
+                                                #{menu.padre.nombre}
+                                                <i class="fas fa-angle-left right"></i>
+                                            </p></a>
+                                        <ul class="nav nav-treeview">
+                                            <ui:repeat value="#{menu.hijos}" var="hijo">
+                                                <li class="nav-item">
+                                                    <p:commandLink action="#{sesion.sustituirArrancarModulo(hijo.pagina)}"
+                                                                   class="nav-link">
+                                                        <i class="far fa-circle nav-icon"></i>#{hijo.nombre}
+                                                    </p:commandLink>
+                                                </li>
+                                            </ui:repeat>
+                                        </ul>
+                                    </li>
+                                </ui:repeat>
                             </ul>
                         </nav>
                     </div>
@@ -124,7 +149,7 @@
                             </div>
                             <h:form id="frmCampoUsuario">
                                 <div class="modal-body">				   
-                                    <p:dataTable value="#{sesion.camposPorUsuario}" var="data"
+                                    <p:dataTable size="small" stripedRows="true" showGridlines="true" value="#{sesion.camposPorUsuario}" var="data"
                                                  rowStyleClass="table table-bordered table-striped"
                                                  >
                                         <p:column style="text-align: left;">
@@ -154,16 +179,23 @@
             </c:if>
             <ui:include src="sessionTimeOut.xhtml" />
         </div>
+
         <!-- jQuery -->
         <script src="/sia/resources/js/jquery.min.js"></script>
         <!-- jQuery UI 1.11.4 -->
+        <script>
+                                                       $.noConflict(true);
+                                                       // Code that uses other library's $ can follow here.
+        </script>
         <script src="/sia/resources/js/jquery-ui.min.js"></script>
         <!-- Resolve conflict in jQuery UI tooltip with Bootstrap tooltip -->
         <script>
-                                             $.widget.bridge('uibutton', $.ui.button)
+                                                       $.widget.bridge('uibutton', $.ui.button)
         </script>
         <!-- Bootstrap 4 -->
         <script src="/sia/resources/js/bootstrap.bundle.min.js"></script>
+        <!-- overlayScrollbars -->
+        <script src="/sia/resources/js/jquery.overlayScrollbars.min.js"></script>
         <!-- AdminLTE App -->
         <script src="/sia/resources/js/adminlte.js"></script>
     </h:body>

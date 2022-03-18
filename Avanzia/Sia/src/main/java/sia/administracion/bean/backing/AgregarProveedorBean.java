@@ -26,6 +26,7 @@ import sia.modelo.proveedor.Vo.ContactoProveedorVO;
 import sia.modelo.proveedor.Vo.ProveedorVo;
 import sia.servicios.proveedor.impl.ContactoProveedorImpl;
 import sia.servicios.proveedor.impl.ProveedorServicioImpl;
+import sia.sistema.bean.backing.Sesion;
 import sia.sistema.bean.support.FacesUtils;
 import sia.util.ProveedorEnum;
 import sia.util.UtilLog4j;
@@ -44,7 +45,7 @@ public class AgregarProveedorBean implements Serializable {
     public AgregarProveedorBean() {
     }
     @Inject
-    private UsuarioBean usuarioBean;
+    private Sesion sesion;
     //
     @Inject
     private ProveedorServicioImpl proveedorImpl;
@@ -62,18 +63,18 @@ public class AgregarProveedorBean implements Serializable {
     public void iniciar() {
         proveedor = new ProveedorVo();
         listaProveedor = new ArrayList<>();
-        if (usuarioBean.getUsuarioVO() != null) {
-            listaProveedor = proveedorImpl.traerProveedorEstatus(usuarioBean.getUsuarioVO().getId(), ProveedorEnum.ACTIVO.getId(), 80);
+        if (sesion.getUsuarioVo() != null) {
+            listaProveedor = proveedorImpl.traerProveedorEstatus(sesion.getUsuarioVo().getId(), ProveedorEnum.ACTIVO.getId(), 80);
         }
     }
 
     public void traerTodos() {
-        listaProveedor = proveedorImpl.traerProveedorEstatus(usuarioBean.getUsuarioVO().getId(), ProveedorEnum.ACTIVO.getId(), 80);
+        listaProveedor = proveedorImpl.traerProveedorEstatus(sesion.getUsuarioVo().getId(), ProveedorEnum.ACTIVO.getId(), 80);
     }
 
     public void buscarProveedor() {
         if (getNombre().length() > 3) {
-            listaProveedor = proveedorImpl.traerProveedorPorParteNombre(getNombre(), usuarioBean.getUsuarioVO().getId(), ProveedorEnum.ACTIVO.getId());
+            listaProveedor = proveedorImpl.traerProveedorPorParteNombre(getNombre(), sesion.getUsuarioVo().getId(), ProveedorEnum.ACTIVO.getId());
         } else {
             FacesUtils.addInfoMessage("Agregue más información del proveedor.");
         }
@@ -88,9 +89,9 @@ public class AgregarProveedorBean implements Serializable {
                 try (FileOutputStream outputStream = new FileOutputStream(fileTmp)) {
                     outputStream.write(file.getContent());
                 }
-                proveedorImpl.guardarProveedorDesdeArchivo(fileTmp, usuarioBean.getUsuarioVO().getId());
+                proveedorImpl.guardarProveedorDesdeArchivo(fileTmp, sesion.getUsuarioVo().getId());
                 //
-                listaProveedor = proveedorImpl.traerProveedorEstatus(usuarioBean.getUsuarioVO().getId(), ProveedorEnum.ACTIVO.getId(), 80);
+                listaProveedor = proveedorImpl.traerProveedorEstatus(sesion.getUsuarioVo().getId(), ProveedorEnum.ACTIVO.getId(), 80);
             }
 
             FacesUtils.addInfoMessage("Se agregaron los proveedores");
@@ -113,10 +114,10 @@ public class AgregarProveedorBean implements Serializable {
     }
 
     public void guardarDatosGenerales() {
-        proveedorImpl.modificarDatos(proveedor, usuarioBean.getUsuarioVO().getId());
+        proveedorImpl.modificarDatos(proveedor, sesion.getUsuarioVo().getId());
         proveedor.setEditar(Constantes.BOOLEAN_FALSE);
         //
-        proveedor = proveedorImpl.traerProveedor(proveedor.getIdProveedor(), usuarioBean.getUsuarioVO().getRfcEmpresa());
+        proveedor = proveedorImpl.traerProveedor(proveedor.getIdProveedor(), sesion.getUsuarioVo().getRfcEmpresa());
     }
 
     public void iniciarModificarContacto() {
@@ -128,14 +129,14 @@ public class AgregarProveedorBean implements Serializable {
         int id = Integer.parseInt(FacesUtils.getRequestParameter("idContacto"));
         ContactoProveedorVO contactoProveedorVO = listaContactoProveedor.get(id);
         contactoProveedorImpl.actualizarContacto(contactoProveedorVO.getIdContactoProveedor(), contactoProveedorVO.getNombre(),
-                contactoProveedorVO.getCorreo(), contactoProveedorVO.getTelefono(), Boolean.FALSE, usuarioBean.getUsuarioVO().getId());
+                contactoProveedorVO.getCorreo(), contactoProveedorVO.getTelefono(), Boolean.FALSE, sesion.getUsuarioVo().getId());
         listaContactoProveedor.get(id).setEditar(Constantes.BOOLEAN_FALSE);
 
     }
 
     public void eliminarContacto() {
         int id = Integer.parseInt(FacesUtils.getRequestParameter("idContacto"));
-        contactoProveedorImpl.eliminarContacto(listaContactoProveedor.get(id).getIdContactoProveedor(), usuarioBean.getUsuarioVO().getId());
+        contactoProveedorImpl.eliminarContacto(listaContactoProveedor.get(id).getIdContactoProveedor(), sesion.getUsuarioVo().getId());
         listaContactoProveedor.remove(id);
     }
 
@@ -144,12 +145,6 @@ public class AgregarProveedorBean implements Serializable {
 
     }
 
-    /**
-     * @param usuarioBean the usuarioBean to set
-     */
-    public void setUsuarioBean(UsuarioBean usuarioBean) {
-        this.usuarioBean = usuarioBean;
-    }
 
     /**
      * @return the listaProveedor

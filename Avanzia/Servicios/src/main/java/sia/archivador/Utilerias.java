@@ -12,7 +12,7 @@ import org.apache.tika.io.TikaInputStream;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.mime.MediaType;
 import sia.constantes.Constantes;
-import sia.util.UtilLog4j;
+import sia.util.UtilLog4j;  
 
 /**
  * Utilerias para archivos anexos.

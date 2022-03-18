@@ -20,6 +20,8 @@ import javax.faces.event.AjaxBehaviorEvent;
 import javax.faces.model.SelectItem;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
+import lombok.Getter;
+import lombok.Setter;
 import org.primefaces.PrimeFaces;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.model.file.UploadedFile;
@@ -105,6 +107,9 @@ public class IncidenciaBean implements Serializable {
     private String tieneCodigo;
     private CategoriaIncidenciaVo categoriaIncidenciaVo;
     private int idTieneCod;
+    @Getter
+    @Setter
+    private UploadedFile file;
 
     //    
     @PostConstruct
@@ -245,26 +250,27 @@ public class IncidenciaBean implements Serializable {
     }
 
     public void subirAdjunto(FileUploadEvent event) {
-        UploadedFile fileInfo = event.getFile();
+        file = event.getFile();
         ValidadorNombreArchivo validadorNombreArchivo = new ValidadorNombreArchivo();
         try {
 
             AlmacenDocumentos almacenDocumentos
                     = proveedorAlmacenDocumentos.getAlmacenDocumentos();
 
-            boolean addArchivo = validadorNombreArchivo.isNombreValido(fileInfo.getFileName());
+            boolean addArchivo = validadorNombreArchivo.isNombreValido(file.getFileName());
 
             if (addArchivo) {
-                DocumentoAnexo documentoAnexo = new DocumentoAnexo(fileInfo.getContent());
+                DocumentoAnexo documentoAnexo = new DocumentoAnexo(file.getContent());
                 documentoAnexo.setRuta(uploadDirectoryTicket());
-                documentoAnexo.setNombreBase(fileInfo.getFileName());
+                documentoAnexo.setNombreBase(file.getFileName());
+                documentoAnexo.setTipoMime(file.getContentType());
                 almacenDocumentos.guardarDocumento(documentoAnexo);
 
                 SiAdjunto adj = adjuntoImpl.save(documentoAnexo.getNombreBase(),
                         new StringBuilder()
                                 .append(documentoAnexo.getRuta())
                                 .append(File.separator).append(documentoAnexo.getNombreBase()).toString(),
-                        fileInfo.getContentType(), fileInfo.getSize(), sesion.getUsuario().getId());
+                        file.getContentType(), file.getSize(), sesion.getUsuario().getId());
                 //
                 incidenciaAdjuntoLocal.agregarArchivoIncidencia(incidenciaVo.getIdIncidencia(), sesion.getUsuario().getId(), adj.getId());
                 //
@@ -277,12 +283,9 @@ public class IncidenciaBean implements Serializable {
                         .toString());
             }
 
-            fileInfo.delete();
+            file.delete();
 
-        } catch (IOException e) {
-            UtilLog4j.log.error(e);
-            FacesUtils.addInfoMessage("Ocurrió un problema al cargar el archivo, por favor contacte al equipo de soporte SIA (soportesia@ihsa.mx)");
-        } catch (SIAException e) {
+        } catch (IOException | SIAException e) {
             UtilLog4j.log.error(e);
             FacesUtils.addInfoMessage("Ocurrió un problema al cargar el archivo, por favor contacte al equipo de soporte SIA (soportesia@ihsa.mx)");
         }
@@ -331,8 +334,7 @@ public class IncidenciaBean implements Serializable {
         PrimeFaces.current().executeScript("$(dialogoNuevoTickts).modal('hide');");
     }
 
-    public void inicioCerrarTicket() {
-        int idT = Integer.parseInt(FacesUtils.getRequestParameter("idTicket"));
+    public void inicioCerrarTicket(int idT) {
         incidenciaVo = incidenciaLocal.buscarPorId(idT);
         //
         PrimeFaces.current().executeScript("$(dialogoCierreTickt).modal('show');");
@@ -346,15 +348,13 @@ public class IncidenciaBean implements Serializable {
         PrimeFaces.current().executeScript("$(dialogoCierreTickt).modal('hide');");
     }
 
-    public void inicioReenviarTicket() {
-        int idT = Integer.parseInt(FacesUtils.getRequestParameter("idTicket"));
+    public void inicioReenviarTicket(int idT) {
         incidenciaVo = incidenciaLocal.buscarPorId(idT);
         //
         PrimeFaces.current().executeScript("$(dialogoComplementoTickt).modal('show');");
     }
 
-    public void agregarAdjunto() {
-        int idT = Integer.parseInt(FacesUtils.getRequestParameter("idTicket"));
+    public void agregarAdjunto(int idT) {
         incidenciaVo = incidenciaLocal.buscarPorId(idT);
         incidenciasAdjunto = incidenciaAdjuntoLocal.traerArchivoPorIncidencia(idT);
         //
