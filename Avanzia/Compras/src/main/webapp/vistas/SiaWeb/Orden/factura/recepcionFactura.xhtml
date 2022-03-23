@@ -1,0 +1,81 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      
+      >
+    <body>
+        <ui:composition template="./../../templates/template.xhtml">
+            <ui:define name="tituloPagina">
+                Recepcion de facturas
+            </ui:define>
+            <ui:define name="content">
+                <h:form>
+                    <div class="row">
+                        <div class="col-lg-6" >
+                            <p:commandLink value="Aceptar" class="btn btn-primary"
+                                           action="#{facturaBean.aceptarFactura(event)}"/>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="table table-responsive">
+                            <!--<!-- rowSelectListener="#{facturaBean.seleccionarFactura}" -->
+                            <p:dataTable size="small" stripedRows="true" showGridlines="true" id="facturas" value="#{facturaBean.listaFactura}" var="dataFac" 
+                                           rows="15" paginatorAlwaysVisible="true"
+                                           paginatorPosition="bottom" paginator="true" style="font-size: 1.0em;"
+                                           styleClass="table-striped"
+                                           selectionMode="single" >
+                                <p:column >
+                                    <h:selectBooleanCheckbox value="#{dataFac.selected}"/>
+                                </p:column>
+                                <p:column headerText="Pedido" >
+                                    <h:outputText value="#{dataFac.pedidoNav}" style="#{dataFac.leida ? '' : 'font-weight: bold;'}"/>
+                                </p:column>
+                                <p:column headerText="Oc/s" >
+                                    <h:outputText value="#{dataFac.codigoOrden}" style="#{dataFac.leida ? '' : 'font-weight: bold;'}"/>
+                                </p:column>
+                                <p:column headerText="Proveedor" >
+                                    <h:outputText value="#{dataFac.proveedor}" style="#{dataFac.leida ? '' : 'font-weight: bold;'}"/>
+                                </p:column>
+                                <p:column headerText="Factura">
+                                    <h:outputText value="#{dataFac.folio}" style="#{dataFac.leida ? '' : 'font-weight: bold;'}"/>
+                                </p:column>
+                                <p:column headerText="Monto" style="text-align: right;">
+                                    <h:outputText value="#{dataFac.monto}" style="#{dataFac.leida ? '' : 'font-weight: bold;'}">
+                                        <f:convertNumber groupingUsed="true" maxFractionDigits="4" type="currency"
+                                                         pattern="#,###.0000"/>
+                                    </h:outputText>
+                                </p:column>                        
+                                <p:column headerText="Moneda" >
+                                    <h:outputText value="#{dataFac.moneda}" style="#{dataFac.leida ? '' : 'font-weight: bold;'}"/>
+                                </p:column>
+                                <p:column headerText="CCN">
+                                    <h:outputLink   style="color: blue;"
+                                                    target="_blank"  
+                                                    id="abrirReq"
+                                                    title="Click aqui para abrir el archivo..." 
+                                                    value="/Compras/AbrirArchivo?ZWZ2W=#{dataFac.idAdjunto}&amp;ZWZ3W=#{dataFac.uuId}"
+                                                    rendered="#{dataFac.idAdjunto gt 0}">                                        
+                                        <h:outputText value=" Abrir"/>
+                                    </h:outputLink>
+                                </p:column>
+                            </p:dataTable>
+                        </div>         
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-10"></div>
+                        <div class="col-lg-2">
+                            <p:dataExporter fileName="FacturaRecibidas" type="xls" target="facturas" pageOnly="false" >
+                                Exportar tabla
+                            </p:dataExporter>
+                        </div>
+                    </div>
+                </h:form>
+                <ui:include src="popFactura.xhtml"/>
+            </ui:define>
+        </ui:composition>
+    </body>    
+</html>

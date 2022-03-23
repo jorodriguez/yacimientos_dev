@@ -510,7 +510,7 @@ public class Constantes {
      */
     public static final String URL_REL_SIA_SIGN_OUT = "/Sia/SingOut";
     public static final String URL_REL_SIA_PRINCIPAL = "/Sia";
-    public static final String URL_REL_SIA_WEB = "/Compras/";
+    public static final String URL_REL_SIA_WEB = "/Compras";
     public static final String URL_REL_SERVICIOS_GENERALES = "/ServiciosGenerales";
     public static final String URL_REL_PROVEEDOR_INTERNO = "/ProveedorInterno";
     public static final String URL_REL_CONTROL_OFICIOS = "/ControlOficios";

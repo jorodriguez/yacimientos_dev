@@ -1,0 +1,113 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      
+      >
+    <body>
+        <ui:composition template="./../../templates/template.xhtml">
+            <ui:define name="header">
+                <ui:include src="/vistas/SiaWeb/templates/cabeceraOrden.xhtml"/>
+            </ui:define>
+            <ui:define name="tituloPagina">
+                <h:form>
+                    <div class="form-group col-lg-10">
+                        <div class="col-lg-6 control-label">
+                            #{msgs['orden.reporte.compra']}
+                        </div>
+                        <ui:fragment rendered="#{reporteBean.listaCombo ne null}">
+                            <div class="col-lg-4">
+                                <h:selectOneMenu  styleClass="form-control"  
+                                                    valueChangeListener="#{reporteBean.actualizarGerenciaCompra}"                                                
+                                                    value="#{reporteBean.idGerenciaCopra}">
+                                    <f:selectItems value="#{reporteBean.listaCombo}"/>
+                                    <!--f:ajax execute="@form" /-->
+                                </h:selectOneMenu>
+                            </div>
+                        </ui:fragment>
+                    </div>
+                </h:form>
+            </ui:define>
+            <ui:define name="content">
+                <script>
+                    $(function () {
+                        $("#tabs").tabs();
+                    });
+                </script>
+                <div id="tabs">
+                    <ul>
+                        <li><a href="#comprador" onclick="limpiarLista('frmReporte');">#{msgs['orden.solicitada.por.analista']}</a></li>
+                        <li><a href="#finanza" onclick="limpiarLista('frmReporteConta');">#{msgs['requisiciones.en.finanza']}</a></li>                        
+                        <li><a href="#sinSolicitar" onclick="limpiarLista('frmReporteSinSol');">#{msgs['requisiciones.sin.solicitar']}</a></li>
+                        <li><a href="#ocsGerenicia" onclick="limpiarLista('frmReporteOCSGerencia');">#{msgs['orden.por.gerencias']}</a></li>
+                        <li><a href="#ocsPorProveedor" onclick="limpiarListaLlenarJsonProveedor('frmReporteOCSPorProveedor', 'btnLlenarProveedor');">#{msgs['orden.por.proveedor']}</a></li>
+                        <li><a href="#ocsPorStatus" onclick="limpiarLista('frmReporteOCSPorStatus');">#{msgs['orden.por.status']}</a></li>
+                        <li><a href="#ocsProveedorContra" onclick="limpiarLista('frmOCSProvCont');">Proveedores</a></li>
+                        <li><a href="#ocsSolDevCan" onclick="limpiarLista('frmOCSSolDevCan');">Estadística</a></li>
+                        <li><a href="#reqProceso" onclick="limpiarLista('frmOReqProceso');">Req. Proceso</a></li>
+                        <li><a href="#ocsRecepcion" onclick="limpiarLista('frmOcsRecepcion');">Recepción oc/s</a></li>
+                        <!-- li><a href="#ocsAprobaciones" onclick="limpiarLista('frmOcsAprobaciones');">Aprobaciones</a></li -->
+                    </ul>
+                    <div id="comprador">
+                        <h:form id="frmReporte" styleClass="textoIzquierda">
+                            <ui:include src="/vistas/SiaWeb/Orden/reporte/fragmento/comprador.xhtml"/>
+                        </h:form>
+                    </div>
+                    <div id="finanza">
+                        <h:form id="frmReporteConta" styleClass="textoIzquierda">
+                            <ui:include src="/vistas/SiaWeb/Orden/reporte/fragmento/finanzas.xhtml"/>
+                        </h:form>
+                    </div>
+                    <div id="sinSolicitar">
+                        <h:form id="frmReporteSinSol" styleClass="textoIzquierda">
+                            <ui:include src="/vistas/SiaWeb/Orden/reporte/fragmento/requisicionSinSolicitar.xhtml"/>
+                        </h:form>
+                    </div>
+                    <div id="ocsGerenicia">
+                        <h:form id="frmReporteOCSGerencia" styleClass="textoIzquierda">
+                            <ui:include src="/vistas/SiaWeb/Orden/reporte/fragmento/ordenesGerencia.xhtml"/>
+                        </h:form>
+                    </div>
+                    <div id="ocsPorProveedor">
+                        <h:form id="frmReporteOCSPorProveedor" styleClass="textoIzquierda">
+                            <ui:include src="/vistas/SiaWeb/Orden/reporte/fragmento/reportePorProveedor.xhtml"/>
+                        </h:form>
+                    </div>                    
+                    <div id="ocsPorStatus">
+                        <h:form id="frmReporteOCSPorStatus" styleClass="textoIzquierda">
+                            <ui:include src="/vistas/SiaWeb/Orden/reporte/fragmento/reporteOCSPorStatus.xhtml"/>
+                        </h:form>
+                    </div>
+                    <div id="ocsProveedorContra">
+                        <h:form id="frmOCSProvCont" styleClass="textoIzquierda">
+                            <ui:include src="/vistas/SiaWeb/Orden/reporte/fragmento/reporteProveedorContrato.xhtml"/>
+                        </h:form>
+                    </div>                    
+                    <div id="ocsSolDevCan">
+                        <h:form id="frmOCSSolDevCan" styleClass="textoIzquierda">
+                            <ui:include src="/vistas/SiaWeb/Orden/reporte/fragmento/reporteSolDev.xhtml"/>
+                        </h:form>
+                    </div>                 
+                    <div id="reqProceso">
+                        <h:form id="frmOReqProceso" styleClass="textoIzquierda">
+                            <ui:include src="/vistas/SiaWeb/Orden/reporte/fragmento/reporteReqProceso.xhtml"/>
+                        </h:form>
+                    </div>
+                    <div id="ocsRecepcion">
+                        <h:form id="frmOcsRecepcion" styleClass="textoIzquierda">
+                            <ui:include src="fragmento/reporteOcsEntregadas.xhtml"/>
+                        </h:form>
+                    </div>
+                    <!-- div id="ocsAprobaciones">
+                        <h:form id="frmOcsAprobaciones" styleClass="textoIzquierda">
+                            <ui:include src="fragmento/reporteOcsAprobaciones.xhtml"/>
+                        </h:form>
+                    </div -->
+                </div>
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

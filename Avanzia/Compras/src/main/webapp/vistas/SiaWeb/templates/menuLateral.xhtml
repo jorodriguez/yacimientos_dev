@@ -1,0 +1,573 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                >
+    <li class="nav-item">
+        <a href="#" class="nav-link">
+            <i class="nav-icon fas fa-copy"></i>
+            <p>
+                Requisiciones
+                <i class="fas fa-angle-left right"></i>
+            </p></a>
+        <ul class="nav nav-treeview">
+            <li class="nav-item">        
+                <p:commandLink  id="btnCrearReq" 
+                                action="/vistas/SiaWeb/Requisiciones/CrearRequisicion.xhtml?faces-redirect=true"
+                                title="Clic aquí para solicitar requisiciones..."
+                                onclick="regresar('divTabla', 'divDatos', 'divOperacion', 'divAutoriza');"
+                                >
+                    <i class="far fa-circle nav-icon"></i>Solicitar
+                    <span class="badge badge-warning">#{contarBean.mapaTotal.get('reqsinSolicitar')}</span>
+                </p:commandLink>
+            </li>
+            <ui:fragment rendered="#{usuarioBean.mapaRoles.get('Visto Bueno Costos')}">
+                <li class="nav-item">
+                    <div class="btn">
+                        <p:commandLink  
+                            action="/vistas/SiaWeb/Requisiciones/vistoBuenoCosto.xhtml?faces-redirect=true"
+                            title="Clic aquí para revisar las requisiciones . . ."
+                            onclick="regresar('divTabla', 'divDatos', 'divOperacion', 'divAutoriza');">
+                            <span class="far fa-circle nav-icon"></span>Costos
+                            <span class="badge badge-warning">#{contarBean.mapaTotal.get('reqsinVistoBueno')}</span>
+                        </p:commandLink>
+                    </div>
+                </li>
+                <li class="nav-item">
+                    <p:commandLink  
+                        action="/vistas/SiaWeb/admin/tarea/adminTarea.xhtml?faces-redirect=true"
+                        title="Clic aquí para administrar tarea . . .">
+                        <span class="far fa-circle nav-icon"></span>Admin. Tarea
+                    </p:commandLink>
+                </li>
+            </ui:fragment>
+            <ui:fragment rendered="#{usuarioBean.mapaRoles.get('Visto Bueno Contabilidad')}">
+                <li class="nav-item">
+                    <p:commandLink  
+                        action="/vistas/SiaWeb/Requisiciones/vistoBuenoContabilidad.xhtml?faces-redirect=true"
+                        title="Clic aquí para revisar las requisiciones . . ."
+                        onclick="regresar('divTabla', 'divDatos', 'divOperacion', 'divAutoriza');">
+                        <span class="far fa-circle nav-icon"></span>Contabilidad
+                        <span class="badge badge-warning">#{contarBean.mapaTotal.get('reqsinVoBoConta')}</span>
+                        <f:param name="myParam" value=""/>
+                    </p:commandLink>
+                </li>
+                <li class="nav-item">
+                    <p:commandLink  
+                        action="/vistas/SiaWeb/Sistema/activoFijo.xhtml?faces-redirect=true"
+                        title="Clic aquí para Gerencia Activo Fijo. . .">
+                        <span class="far fa-circle nav-icon"></span>Admin. Activo Fijo
+                        <f:param name="myParam" value=""/>
+                    </p:commandLink>
+                </li>
+            </ui:fragment>
+            <ui:fragment rendered="#{contarBean.mapaTotal.get('reqsinRevisar') gt 0}">
+                <li class="nav-item">
+                    <p:commandLink  
+                        action="/vistas/SiaWeb/Requisiciones/RevisarRequisicion.xhtml?faces-redirect=true"
+                        title="Clic aquí para revisar requisiciones..."
+                        onclick="regresar('divTabla', 'divDatos', 'divOperacion', 'divAutoriza');">
+                        <span class="far fa-circle nav-icon"></span>Revisar
+                        <span class="badge badge-warning">#{contarBean.mapaTotal.get('reqsinRevisar')}</span>                        
+                        <f:param name="myParam" value=""/>
+                    </p:commandLink>
+                </li>
+            </ui:fragment>
+            <ui:fragment rendered="#{contarBean.mapaTotal.get('reqsinAprobar') gt 0}">
+                <li class="nav-item">
+                    <p:commandLink  
+                        action="/vistas/SiaWeb/Requisiciones/AprobarRequisicion.xhtml?faces-redirect=true"
+                        title="Clic aquí para aprobar requisiciones..."
+                        onclick="regresar('divTabla', 'divDatos', 'divOperacion', 'divAutoriza');">
+                        <span class="far fa-circle nav-icon"></span>Aprobar
+                        <span class="badge badge-warning">#{contarBean.mapaTotal.get('reqsinAprobar')}</span>
+                        <f:param name="myParam" value=""/>
+                    </p:commandLink>
+                </li>
+            </ui:fragment>
+            <ui:fragment rendered="#{contarBean.mapaTotal.get('notaReqInv') gt 0}">
+                <li class="nav-item">
+                    <p:commandLink  
+                        action="/vistas/SiaWeb/Requisiciones/NotasRequisicion.xhtml?faces-redirect=true"
+                        title="Clic aquí para ver y responder notas de las requisiciones..." 
+                        onclick="regresar('divTabla', 'divDatos', 'divOperacion', 'divAutoriza');">
+                        <span class="far fa-circle nav-icon"></span>Notas
+                        <span class="badge badge-warning">#{contarBean.mapaTotal.get('notaReqInv')}</span>
+                        <f:param name="myParam" value=""/>
+                    </p:commandLink>
+                </li>
+            </ui:fragment>
+            <ui:fragment rendered="#{contarBean.mapaTotal.get('reqsinAsignar') gt 0}">
+                <li class="nav-item">
+                    <p:commandLink  
+                        action="/vistas/SiaWeb/Requisiciones/AsignarRequisicion.xhtml?faces-redirect=true" 
+                        title="Clic aquí para asignar requisiciones..."
+                        onclick="regresar('divTabla', 'divDatos', 'divOperacion', 'divAutoriza');">
+                        <span class="far fa-circle nav-icon"></span>Asignar
+                        <span class="badge badge-warning">#{contarBean.mapaTotal.get('reqsinAsignar')}</span>
+                        <f:param name="myParam" value=""/>
+                    </p:commandLink>
+                </li>
+            </ui:fragment>
+            <ui:fragment rendered="#{contarBean.mapaTotal.get('reqenEspera') gt 0}">
+                <li class="nav-item">
+                    <p:commandLink  value="En Espera"
+                                    action="/vistas/SiaWeb/Requisiciones/RequisicionEspera.xhtml?faces-redirect=true" 
+                                    title="Clic aquí para ver requisiciones en espera..."
+                                    onclick="regresar('divTabla', 'divDatos', 'divOperacion', 'divAutoriza');">
+                        <span class="far fa-circle nav-icon"></span>En Espera
+                        <span class="badge badge-warning">#{contarBean.mapaTotal.get('reqenEspera')}</span>
+                        <f:param name="myParam" value=""/>
+                    </p:commandLink>
+                </li>
+            </ui:fragment>
+            <ui:fragment rendered="#{contarBean.mapaTotal.get('reqenEsperaAdm') gt 0}">
+                <li class="nav-item">
+                    <p:commandLink  
+                        action="/vistas/SiaWeb/Requisiciones/RequisicionEspera.xhtml?faces-redirect=true" 
+                        title="Clic aquí para ver requisiciones en espera..."
+                        onclick="regresar('divTabla', 'divDatos', 'divOperacion', 'divAutoriza');">
+                        <span class="far fa-circle nav-icon"></span>En Espera
+                        <span class="badge badge-warning">#{contarBean.mapaTotal.get('reqenEsperaAdm')}</span>
+                        <f:param name="myParam" value=""/>
+                    </p:commandLink>
+                </li>
+            </ui:fragment>
+            <li class="nav-item">
+                <p:commandLink  
+                    action="/vistas/SiaWeb/Requisiciones/HistorialRequisicion.xhtml?faces-redirect=true"
+                    title="Clic aquí para ver historial de las requisiciones..."
+                    onclick="regresar('divTabla', 'divDatos', 'divOperacion', 'divAutoriza');">
+                    <span class="far fa-circle nav-icon"></span>Historial
+                    <f:param name="myParam" value=""/>
+                </p:commandLink>
+            </li>
+        </ul>
+    </li>
+    <li class="nav-item">
+        <a href="#" class="nav-link">
+            <i class="nav-icon fas fa-copy"></i>
+            <p>
+                Orden OC/S
+                <i class="fas fa-angle-left right"></i>
+            </p></a>
+        <ul class="nav nav-treeview">
+            <ui:fragment rendered="#{contarBean.mapaTotal.get('reqSinDisgregar') gt 0 }">
+                <li class="nav-item">
+                    <p:commandLink  value="Requisición"
+                                    action="/vistas/SiaWeb/Orden/RecepcionRequisicion.xhtml?faces-redirect=true"
+                                    onclick="regresar('divTabla', 'divDatos', 'divOperacion', 'divAutoriza');"
+                                    title="Clic aquí para generar ordenes de compras...">
+                        <span class="far fa-circle nav-icon"></span>Requisición
+                        <span class="badge badge-warning">#{contarBean.mapaTotal.get('reqSinDisgregar')}</span>
+                        <f:param name="myParam" value=""/>
+                    </p:commandLink>
+                </li>
+            </ui:fragment>
+            <ui:fragment rendered="#{contarBean.mapaTotal.get('ocsSinSolicitar') gt 0}">
+                <li class="nav-item">
+                    <p:commandLink  
+                        action="/vistas/SiaWeb/Orden/OrdenCompra.xhtml?faces-redirect=true"
+                        onclick="regresar('divTabla', 'divDatos', 'divOperacion', 'divAutoriza');"
+                        title="Clic aquí para solicitar ordenes de compras...">
+                        <span class="far fa-circle nav-icon"></span>Solicitar
+                        <span class="badge badge-warning">#{contarBean.mapaTotal.get('ocsSinSolicitar')}</span>
+                        <f:param name="myParam" value=""/>
+                    </p:commandLink>
+                </li>
+            </ui:fragment>
+            <ui:fragment rendered="#{contarBean.mapaTotal.get('ocsSinAprobar') gt 0}">
+                <li class="nav-item">
+                    <p:commandLink 
+                        action="/vistas/SiaWeb/Orden/AprobarOrdenCompra.xhtml?faces-redirect=true"
+                        onclick="regresar('divTabla', 'divDatos', 'divOperacion', 'divAutoriza');"
+                        title="Clic aquí para dar visto bueno a la orden de compra...">
+                        <span class="far fa-circle nav-icon"></span>Visto Bueno
+                        <span class="badge badge-warning">#{contarBean.mapaTotal.get('ocsSinAprobar')}</span>
+                        <f:param name="myParam" value=""/>
+                    </p:commandLink>
+                </li>
+            </ui:fragment>
+            <ui:fragment rendered="#{contarBean.mapaTotal.get('ocsSinAutorizarMPG') gt 0}">
+                <li class="nav-item">
+                    <p:commandLink  
+                        onclick="regresar('divTabla', 'divDatos', 'divOperacion', 'divAutoriza');"
+                        action="/vistas/SiaWeb/Orden/AutorizacionMpg.xhtml?faces-redirect=true"
+                        title="Clic aquí para revisar orden de compra...">
+                        <span class="far fa-circle nav-icon"></span>Revisar
+                        <span class="badge badge-warning">#{contarBean.mapaTotal.get('ocsSinAutorizarMPG')}</span>
+                        <f:param name="myParam" value=""/>
+                    </p:commandLink>
+                </li>
+            </ui:fragment>
+            <ui:fragment rendered="#{contarBean.mapaTotal.get('ocsSinAutorizaFinanzas') gt 0}">
+                <li class="nav-item">
+                    <p:commandLink 
+                        onclick="regresar('divTabla', 'divDatos', 'divOperacion', 'divAutoriza');"
+                        action="/vistas/SiaWeb/Orden/autorizaFinanza.xhtml?faces-redirect=true"
+                        title="Clic aquí para aprobar la orden de compra...">
+                        <span class="far fa-circle nav-icon"></span>Aprobar
+                        <span class="badge badge-warning">#{contarBean.mapaTotal.get('ocsSinAutorizaFinanzas')}</span>
+                        <f:param name="myParam" value=""/>
+                    </p:commandLink>
+                </li>
+            </ui:fragment>
+            <ui:fragment rendered="#{contarBean.mapaTotal.get('ocsSinAutorizarIHSA') gt 0 }">
+                <li class="nav-item"> 
+                    <p:commandLink  
+                        onclick="regresar('divTabla', 'divDatos', 'divOperacion', 'divAutoriza');"
+                        action="/vistas/SiaWeb/Orden/AutorizacionIhsa.xhtml?faces-redirect=true"
+                        title="Clic aquí para aprobar orden de compra...">
+                        <span class="far fa-circle nav-icon"></span>Aprobar
+                        <span class="badge badge-warning">#{contarBean.mapaTotal.get('ocsSinAutorizarIHSA')}</span>
+                        <f:param name="myParam" value=""/>
+                    </p:commandLink>
+                </li>
+            </ui:fragment>
+
+            <ui:fragment rendered="#{contarBean.mapaTotal.get('ocsSinAutorizaSocio') gt 0}">
+                <li style="display: #{usuarioBean.mapaRoles.get('Socio') ? 'bloque' : 'none'}" >
+                    <p:commandLink  
+                        onclick="regresar('divTabla', 'divDatos', 'divOperacion', 'divAutoriza');"
+                        action="/vistas/SiaWeb/Orden/AutorizaSocio.xhtml?faces-redirect=true"
+                        title="Clic aquí para aprobar la orden de compra...">
+                        <span class="far fa-circle nav-icon"></span>Aprobar
+                        <span class="badge badge-warning">#{contarBean.mapaTotal.get('ocsSinAutorizaSocio')}</span>
+                        <f:param name="myParam" value=""/>
+                    </p:commandLink>
+                </li>
+            </ui:fragment>
+            <ui:fragment rendered="#{contarBean.mapaTotal.get('ocsSinAutorizaCompras') gt 0}">
+                <li class="nav-item">
+                    <p:commandLink  
+                        onclick="regresar('divTabla', 'divDatos', 'divOperacion', 'divAutoriza');"
+                        action="/vistas/SiaWeb/Orden/AutorizaCompras.xhtml?faces-redirect=true"
+                        title="Clic aquí para autorizar orden de compra...">
+                        <span class="far fa-circle nav-icon"></span>Autorizar
+                        <span class="badge badge-warning">#{contarBean.mapaTotal.get('ocsSinAutorizaCompras')}</span>
+                        <f:param name="myParam" value=""/>
+                    </p:commandLink>
+                </li>
+            </ui:fragment>
+
+            <ui:fragment rendered="#{contarBean.mapaTotal.get('ocsSinAutoComprasLicita') gt 0}">
+                <li class="nav-item">
+                    <p:commandLink  
+                        onclick="regresar('divTabla', 'divDatos', 'divOperacion', 'divAutoriza');"
+                        action="/vistas/SiaWeb/Orden/AutorizaLicitacion.xhtml?faces-redirect=true"
+                        title="Clic aquí para autorizar compra de SM...">
+                        <span class="far fa-circle nav-icon"></span>Autorizar SM
+                        <span class="badge badge-warning">#{contarBean.mapaTotal.get('ocsSinAutoComprasLicita')}</span>
+                        <f:param name="myParam" value=""/>
+                    </p:commandLink>
+                </li>
+            </ui:fragment>
+
+            <ui:fragment rendered="#{contarBean.mapaTotal.get('ocsSinAautoComprasTarea') gt 0}">
+                <li class="nav-item">
+                    <p:commandLink 
+                        onclick="regresar('divTabla', 'divDatos', 'divOperacion', 'divAutoriza');"
+                        action="/vistas/SiaWeb/Orden/AutorizaTarea.xhtml?faces-redirect=true"
+                        title="Clic aquí para enviar orden...">
+                        <span class="far fa-circle nav-icon"></span>Enviar PDF
+                        <span class="badge badge-warning">#{contarBean.mapaTotal.get('ocsSinAautoComprasTarea')}</span>
+                        <f:param name="myParam" value=""/>
+                    </p:commandLink>
+                </li>
+            </ui:fragment>
+
+            <ui:fragment rendered="#{usuarioBean.mapaRoles.get('Comprador') or usuarioBean.mapaRoles.get('Recepción de oc/s')}">
+                <li class="nav-item">    
+                    <p:commandLink   
+                        action="/vistas/SiaWeb/Orden/recepcionOrden.xhtml?faces-redirect=true"
+                        title="Clic aquí para recibir ordenes de compra..." >
+                        <span class="far fa-circle nav-icon"></span>Recepción oc/s
+                        <span class="badge badge-warning">#{contarBean.mapaTotal.get('ocsSinRecibir')}</span>
+                        <f:param name="myParam" value=""/>
+                    </p:commandLink>
+                </li>
+            </ui:fragment>
+            <ui:fragment rendered="#{usuarioBean.mapaRoles.get('Revisores REPSE')}">
+                <li class="nav-item">    
+                    <p:commandLink  action="/vistas/SiaWeb/Orden/repse/revisarRepse.xhtml?faces-redirect=true"
+                                    title="Clic aquí para revisar archivos REPSE..." >
+                        <span class="far fa-circle nav-icon"></span>REPSE
+                        <span class="badge badge-warning">#{contarBean.mapaTotal.get('totalPorRevREPSE')}</span>
+                    </p:commandLink>
+                </li>        
+            </ui:fragment>
+            <ui:fragment rendered="#{usuarioBean.mapaRoles.get('REPSE Reporte')}">
+                <li class="nav-item">   
+                    <p:commandLink  action="/vistas/SiaWeb/Orden/repse/reporteREPSE"
+                                    title="Clic aquí para revisar reporte REPSE..." >      
+                        <span class="far fa-circle nav-icon"></span>REPSE Reporte                 
+                    </p:commandLink>
+                </li>        
+            </ui:fragment>
+            <ui:fragment rendered="#{usuarioBean.mapaRoles.get('Revisa Contenido Nacional')}">
+                <li class="nav-item">  
+                    <p:commandLink  action="/vistas/SiaWeb/Orden/factura/recepcionFactura.xhtml?faces-redirect=true"
+                                    title="Clic aquí para recibir facturas de compra..." >
+                        <span class="far fa-circle nav-icon"></span>Facturas / CN
+                        <span class="badge badge-warning">#{contarBean.mapaTotal.get('totalFacSinProc')}</span>
+                    </p:commandLink>
+                </li>
+                <li class="nav-item">
+                    <p:commandLink  
+                        action="/vistas/SiaWeb/Sistema/reporte/panelContenido.xhtml?faces-redirect=true"
+                        title="Clic aquí para ver reporte de contenido nacional . . . ">
+                        <span class="far fa-circle nav-icon"></span>Reporte CN
+                        <f:param name="myParam" value=""/>
+                    </p:commandLink>
+                </li>
+            </ui:fragment>
+            <ui:fragment rendered="#{usuarioBean.mapaRoles.get('Enviar Facturas CNH')}">
+                <li class="nav-item">  
+                    <p:commandLink  action="/vistas/SiaWeb/Orden/factura/enviarFactura.xhtml?faces-redirect=true"
+                                    title="Clic aquí para enviar las facturas a CNH..." >
+                        <span class="far fa-circle nav-icon"></span>Enviar Facturas CNH
+                        <span class="badge badge-warning">#{contarBean.mapaTotal.get('totalFacSinEnviar')}</span>
+                    </p:commandLink>
+                </li>        
+            </ui:fragment>
+            <ui:fragment rendered="#{contarBean.mapaTotal.get('notasInvitado') gt 0}">
+                <li class="nav-item">
+                    <p:commandLink  
+                        action="/vistas/SiaWeb/Orden/NotasOrden.xhtml?faces-redirect=true"
+                        title="Clic aquí para ver y responder a notas de las OC/S ...">
+                        <span class="far fa-circle nav-icon"></span>Nota(s)
+                        <span class="badge badge-warning">#{contarBean.mapaTotal.get('notasInvitado')}</span>
+                        <f:param name="myParam" value=""/>
+                    </p:commandLink>
+                </li>
+            </ui:fragment>
+            <ui:fragment rendered="#{usuarioBean.mapaRoles.get('Comprador')}">
+                <li class="nav-item">
+                    <p:commandLink  
+                        action="/vistas/SiaWeb/Orden/solicitarProveedor.xhtml?faces-redirect=true"
+                        title="Clic aquí solicitar registro de proveedor...">
+                        <span class="far fa-circle nav-icon"></span>Solicitar Proveedor
+                        <f:param name="myParam" value=""/>
+                    </p:commandLink>
+                </li>
+            </ui:fragment>
+            <ui:fragment rendered="#{usuarioBean.mapaRoles.get('Integra OC/S SIA-NAVISION')}">
+                <li class="nav-item">
+                    <p:commandLink  
+                        action="/vistas/SiaWeb/Orden/integraSIANAVISION.xhtml?faces-redirect=true"
+                        title="Clic aquí para integrar la SIA-NAVISION . . . ">
+                        <span class="far fa-circle nav-icon"></span>SIA-NAVISION
+                        <f:param name="myParam" value=""/>
+                    </p:commandLink>
+                </li>
+            </ui:fragment>
+            <li class="nav-item"> 
+                <p:commandLink  
+                    action="/vistas/SiaWeb/Orden/HistorialOrden.xhtml?faces-redirect=true"
+                    title="Clic aquí para ver el historial de las ordenes...">
+                    <span class="far fa-circle nav-icon"></span>Historial
+                    <f:param name="myParam" value=""/>
+                </p:commandLink>
+            </li>
+            <ui:fragment rendered="#{usuarioBean.mapaRoles.get('Consulta reporte compras')}">
+                <li class="nav-item">
+                    <p:commandLink  
+                        action=".xhtml?faces-redirect=true"
+                        title="Clic aquí para generar el reporte de compradores . . . ">
+                        <span class="far fa-circle nav-icon"></span>Reporte
+                        <f:param name="myParam" value="/vistas/SiaWeb/Orden/reporte/reporte.xhtml?faces-redirect=true"/>
+                    </p:commandLink>
+                </li>       
+            </ui:fragment>
+            <ui:fragment rendered="#{usuarioBean.mapaRoles.get('Reportes BI')}">
+                <li class="nav-item">
+                    <p:commandLink  
+                        action="/vistas/SiaWeb/Orden/reporte/reporteBI.xhtml?faces-redirect=true"
+                        title="Clic aquí para generar el reporte de compradores . . . ">
+                        <span class="far fa-circle nav-icon"></span>Reporte BI
+                        <f:param name="myParam" value=""/>
+                    </p:commandLink>
+                </li>       
+            </ui:fragment>
+            <ui:fragment rendered="#{usuarioBean.mapaRoles.get('Consulta formatos entrada')}">
+                <li class="nav-item"> 
+                    <p:commandLink   action="/vistas/SiaWeb/Orden/almacen/formatosEntrada"
+                                     title="Clic aquí para consultar los formatos de entrada en el almacén ..." >
+                        <span class="far fa-circle nav-icon"></span>Formatos Entrada
+                    </p:commandLink>
+                </li>
+            </ui:fragment>
+        </ul>
+    </li>
+    <li class="nav-item">
+        <a href="#" class="nav-link">
+            <i class="nav-icon fas fa-copy"></i>
+            <p>
+                Facturas
+                <i class="fas fa-angle-left right"></i>
+            </p></a>
+        <ul class="nav nav-treeview">
+            <ui:fragment rendered="#{usuarioBean.mapaRoles.get('Revisa Contenido Nacional')
+                                     or usuarioBean.mapaRoles.get('Rep. Contenido Nacional')}">
+                <li class="nav-item">     
+                    <p:commandLink   action="/vistas/SiaWeb/Orden/factura/recepcionFactura.xhtml?faces-redirect=true"
+                                     title="Clic aquí para recibir facturas de compra..." >
+                        <span class="far fa-circle nav-icon"></span>Facturas / CN
+                        <span class="badge badge-warning">#{contarBean.mapaTotal.get('totalFacSinProc')}</span>
+                    </p:commandLink>
+                </li>
+                <li class="nav-item">
+                    <p:commandLink   action="/vistas/SiaWeb/factura/devolverFactura.xhtml?faces-redirect=true"
+                                     title="Clic aquí para devolver facturas ..." >
+                        <span class="far fa-circle nav-icon"></span>Devolver
+                    </p:commandLink>
+                </li>        
+            </ui:fragment>
+            <ui:fragment rendered="#{usuarioBean.mapaRoles.get('Rep. Contenido Nacional')}">
+                <li class="nav-item">
+                    <p:commandLink  
+                        action="/vistas/SiaWeb/Sistema/reporte/panelContenido.xhtml?faces-redirect=true"
+                        title="Clic aquí para ver reporte de contenido nacional . . . ">
+                        <span class="far fa-circle nav-icon"></span>Reporte CN
+                        <f:param name="myParam" value=""/>
+                    </p:commandLink>
+                </li>
+            </ui:fragment>
+
+            <ui:fragment rendered="#{usuarioBean.mapaRoles.get('Revisa Contenido Nacional')
+                                     or usuarioBean.mapaRoles.get('Historial facturas')}">        
+                <li class="nav-item">
+                    <p:commandLink  
+                        action="/vistas/SiaWeb/factura/historiarFacturas.xhtml?faces-redirect=true"
+                        title="Clic aquí para aceptar o rechazar la factura . . . ">
+                        <span class="far fa-circle nav-icon"></span>Procesar
+                    </p:commandLink>
+                </li>
+            </ui:fragment>
+
+            <ui:fragment rendered="#{usuarioBean.mapaRoles.get('Comprobante Pago')}">
+                <li class="nav-item">
+                    <p:commandLink  
+                        action="/vistas/SiaWeb/factura/comprobantePago.xhtml?faces-redirect=true"
+                        title="Clic aquí para cargar el comprobante de pago . . . ">
+                        <span class="far fa-circle nav-icon"></span>Comprobante Pago
+                    </p:commandLink>
+                </li>
+            </ui:fragment>
+
+            <ui:fragment rendered="#{usuarioBean.mapaRoles.get('Consultar facturas')}">
+                <li class="nav-item">
+                    <p:commandLink  
+                        action="/vistas/SiaWeb/factura/consultaFactura.xhtml?faces-redirect=true"
+                        title="Clic aquí para consultar facturas . . . ">
+                        <span class="far fa-circle nav-icon"></span>Consultar
+                    </p:commandLink>
+                </li>
+            </ui:fragment>
+
+            <ui:fragment rendered="#{usuarioBean.mapaRoles.get('Exportar Facturas')}">
+                <li class="nav-item">
+                    <p:commandLink  
+                        action="/vistas/SiaWeb/factura/exportarFacturas.xhtml?faces-redirect=true"
+                        title="Clic aquí para exportar facturas . . . ">
+                        <span class="far fa-circle nav-icon"></span>Exportar Facturas
+                    </p:commandLink>
+                </li>
+            </ui:fragment>
+        </ul>
+    </li>
+
+    <li class="nav-item">
+        <a href="#" class="nav-link">
+            <i class="nav-icon fas fa-copy"></i>
+            <p>
+                Evaluaciones
+                <i class="fas fa-angle-left right"></i>
+            </p></a>
+        <ul class="nav nav-treeview">
+            <ui:fragment rendered="#{usuarioBean.mapaRoles.get('Historial Evaluaciones') or usuarioBean.mapaRoles.get('Evaluador')}">
+                <ui:fragment rendered="#{contarBean.mapaTotal.get('totalEvaluaciones') gt 0 and usuarioBean.mapaRoles.get('Evaluador')}">
+                    <li class="nav-item"> 
+                        <p:commandLink  
+                            onclick="regresar('divTabla', 'divDatos', 'divOperacion', 'divAutoriza');"
+                            action="/vistas/SiaWeb/evaluaciones/EvaluacionProveedor.xhtml?faces-redirect=true"
+                            title="Clic aquí para contestar evaluaciones...">
+                            <span class="far fa-circle nav-icon"></span>Evaluaciones
+                            <span class="badge badge-warning">#{contarBean.mapaTotal.get('totalEvaluaciones')}</span>
+                            <f:param name="myParam" value=""/>
+                        </p:commandLink>
+
+                    </li>
+                </ui:fragment>
+
+                <ui:fragment rendered="#{contarBean.mapaTotal.get('totalHistEvaluaciones') gt 0 and usuarioBean.mapaRoles.get('Historial Evaluaciones')}">
+                    <li class="nav-item"> 
+                        <p:commandLink  value="Hist. Evaluaciones"                                    
+                                        action="/vistas/SiaWeb/evaluaciones/HistEvaluaciones.xhtml?faces-redirect=true"
+                                        title="Clic aquí para consultar evaluaciones...">   
+                            <span class="far fa-circle nav-icon"></span>Hist. Evaluaciones                     
+                            <f:param name="myParam" value=""/>
+                        </p:commandLink>
+                    </li>
+                </ui:fragment>
+
+            </ui:fragment>
+
+            <ui:fragment rendered="#{usuarioBean.mapaRoles.get('Consulta Reporte Gastos')}">
+                <li class="nav-item">
+                    <p:commandLink  
+                        action="/vistas/SiaWeb/Sistema/reporte/panelContabilidad.xhtml?faces-redirect=true"
+                        title="Clic aquí para ver reporte de compras . . . ">
+                        <span class="far fa-circle nav-icon"></span>Compras
+                    </p:commandLink>
+                </li>
+            </ui:fragment>
+        </ul>
+    </li>
+    <li class="nav-item">
+        <a href="#" class="nav-link">
+            <i class="nav-icon fas fa-copy"></i>
+            <p>
+                Otros bloques
+                <i class="fas fa-angle-left right"></i>
+            </p></a>
+        <ul class="nav nav-treeview">
+            <ui:repeat value="#{contarBean.listaModulo}" var="entry">
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="nav-icon fas fa-copy"></i>
+                        <p>
+                            #{entry.campo}
+                            <i class="fas fa-angle-left right"></i>
+                        </p></a>
+                    <ul class="nav-item">
+                        <ui:repeat value="#{entry.listaOpcion.entrySet().toArray()}" var="modulo">
+                            <li class="nav-item">
+                                <a href="#" class="nav-link">
+                                    <i class="nav-icon fas fa-copy"></i>
+                                    <p>
+                                        <b>#{modulo.key}</b>
+                                        <i class="fas fa-angle-left right"></i>
+                                    </p></a>
+                                <ul class="nav nav-treeview">
+                                    <ui:repeat value="#{entry.listaOpcion.get(modulo.key)}" var="opc">
+                                        <li class="nav-item">
+                                            <p:commandLink action="${opc.pagina}.xhtml?faces-redirect=true"
+                                                           onclick="regresar('divTabla', 'divDatos', 'divOperacion', 'divAutoriza');"
+                                                           title="#{opc.nombre}"     >       
+                                                <i class="nav-icon fas fa-copy"></i>
+                                                #{opc.nombre} <i class="badge" style="background-color: orange;">#{opc.total}</i>
+                                            </p:commandLink>
+                                        </li>
+                                    </ui:repeat>
+                                </ul>
+                            </li>
+                        </ui:repeat>
+                    </ul>
+                </li>
+            </ui:repeat>    
+        </ul>
+    </li>    
+</ui:composition>
+

@@ -66,7 +66,7 @@ import sia.util.UtilLog4j;
  *
  * @author Héctor
  */
-@Named
+@Named(value = "sesion")
 @SessionScoped
 public class Sesion implements Serializable {
 

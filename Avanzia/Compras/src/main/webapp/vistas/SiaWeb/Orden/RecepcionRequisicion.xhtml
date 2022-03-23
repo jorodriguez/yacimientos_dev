@@ -1,0 +1,896 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      
+      xmlns:h="http://xmlns.jcp.org/jsf/html">
+    <body>
+        <ui:composition template="./../templates/template.xhtml">
+            <ui:define name="tituloPagina">
+                Requisiciones recibidas
+            </ui:define>
+            <ui:define name="content">
+                <style>
+                    .iceDatTblCol1 {    
+                        text-align: center;
+                    }                   
+                </style>                
+                <script>
+                    $(document).ready(function () {
+                        $("#tipoRequisiciones").tabs({active: 0});
+                    });
+                </script>
+                <!-- Modal Panel Popup Rechazo -->
+                <div class="modal fade" id="dialogoDevRecepReq" data-backdrop="static" data-keyboard="false">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h4 class="modal-title">Devolver requisición</h4>
+                            </div>
+
+                            <h:form id="frmDevRecep">
+                                <div class="modal-body">
+                                    <div class="row">
+                                        <div class="col-lg-12">
+                                            <div class="input-group panel panel-default" ><br/>
+                                                <div class="form-group col-lg-12" >
+                                                    <h:outputLabel class="col-lg-3 control-label" value="Requisición:" /> 
+                                                    <div class="col-lg-9">
+                                                        <h:outputText  value="#{recepcionRequisicionBean.requisicionActual.consecutivo}"/>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group col-lg-12" >
+                                                    <h:outputLabel class="col-lg-3 control-label" value="ProyectoOT:"/>
+                                                    <div class="col-lg-9">
+                                                        <h:outputText  value="#{recepcionRequisicionBean.requisicionActual.proyectoOt.nombre}"/>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group col-lg-12">
+                                                    <h:outputLabel class="col-lg-3 control-label" value="Fecha Solicita:" />
+                                                    <div class="col-lg-9"><h:outputText  value="#{recepcionRequisicionBean.requisicionActual.fechaSolicito}" >
+                                                            <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                                        </h:outputText>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="form-group panel">
+                                            <h:outputLabel class="col-lg-3 control-label" value="Introduzca el motivo:"/>
+                                            <div class="col-lg-9">
+                                                <h:inputTextarea  id="motivoCancelo"  value="#{recepcionRequisicionBean.motivoDevolucion}" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <h:commandButton id="buttonAceptar"
+                                                     value="Aceptar"
+                                                     styleClass="btn btn-info"
+                                                     action="#{recepcionRequisicionBean.terminarDevolverRequisicion(actionEvent)}"
+                                                     onclick="return validaCancelar('frmDevRecep', 'motivoCancelo', 'La operación devolverá la requisición. ¿Está seguro?', 'Es necesario agregar el motivo.')"/>
+                                    <p:commandButton id="buttonCancelar"
+                                                       value="Cancelar"
+                                                       styleClass="btn btn-default"
+                                                       onclick="cerrarDialogoModal(dialogoDevRecepReq);"
+                                                       title="Cerrar ventana..." />
+                                </div>
+                            </h:form>
+                        </div>
+                    </div>
+                </div>
+                <!--FINALIZAR REQ-->
+                <div class="modal fade" id="dialogoFinRecepReq" data-backdrop="static" data-keyboard="false">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h4 class="modal-title">Finalizar requisición</h4>
+                            </div>
+
+                            <h:form id="frmFinRecep">
+                                <div class="modal-body">
+                                    <div class="row">
+                                        <div class="col-lg-12">
+                                            <div class="input-group panel panel-default" ><br/>
+                                                <div class="form-group col-lg-12" >
+                                                    <h:outputLabel class="col-lg-3 control-label" value="Requisición:" /> 
+                                                    <div class="col-lg-9">
+                                                        <h:outputText  value="#{recepcionRequisicionBean.requisicionActual.consecutivo}"/>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group col-lg-12" >
+                                                    <h:outputLabel class="col-lg-3 control-label" value="ProyectoOT:"/>
+                                                    <div class="col-lg-9">
+                                                        <h:outputText  value="#{recepcionRequisicionBean.requisicionActual.proyectoOt.nombre}"/>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group col-lg-12">
+                                                    <h:outputLabel class="col-lg-3 control-label" value="Fecha Solicita:" />
+                                                    <div class="col-lg-9"><h:outputText  value="#{recepcionRequisicionBean.requisicionActual.fechaSolicito}" >
+                                                            <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                                        </h:outputText>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="form-group panel">
+                                            <h:outputLabel class="col-lg-3 control-label" value="Introduzca el motivo:"/>
+                                            <div class="col-lg-9">
+                                                <h:inputTextarea  id="motivoCancelo"  
+                                                                  value="#{recepcionRequisicionBean.motivoFinalizacion}" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <h:commandButton id="buttonAceptar"
+                                                     value="Aceptar"
+                                                     styleClass="btn btn-info"
+                                                     action="#{recepcionRequisicionBean.terminarFinalizarRequisicion(actionEvent)}"
+                                                     onclick="return validaCancelar('frmFinRecep', 'motivoCancelo', 'La operación devolverá la requisición. ¿Está seguro?', 'Es necesario agregar el motivo.')"/>
+                                    <p:commandButton id="buttonCancelar"
+                                                       value="Cancelar"
+                                                       styleClass="btn btn-default"
+                                                       onclick="cerrarDialogoModal(dialogoFinRecepReq);"                                                           
+                                                       title="Cerrar ventana..." />
+
+                                </div>
+                            </h:form>
+                        </div>
+                    </div>
+                </div>
+
+                <!--PONER EN ESPERA REQ-->
+                <div class="modal fade" id="dialogoEsperaReq" data-backdrop="static" data-keyboard="false">
+                    <div class="modal-dialog" style="width: 70%;">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h4 class="modal-title">Poner en espera la requisición</h4>
+                            </div>
+
+                            <h:form id="frmEsperaRecep">
+                                <div class="modal-body">
+                                    <div class="row">
+                                        <div class="col-lg-12">
+                                            <div class="input-group panel panel-default" >
+                                                <div class="form-group col-lg-12" >
+                                                    <h:outputLabel class="col-lg-3 control-label" value="Requisición:" /> 
+                                                    <div class="col-lg-9">
+                                                        <h:outputText  value="#{recepcionRequisicionBean.requisicionActual.consecutivo}"/>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group col-lg-12" >
+                                                    <h:outputLabel class="col-lg-3 control-label" value="Gerencia:" /> 
+                                                    <div class="col-lg-9">
+                                                        <h:outputText  value="#{recepcionRequisicionBean.requisicionActual.gerencia.nombre}"/>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group col-lg-12" >
+                                                    <h:outputLabel class="col-lg-3 control-label" value="ProyectoOT:"/>
+                                                    <div class="col-lg-9">
+                                                        <h:outputText  value="#{recepcionRequisicionBean.requisicionActual.proyectoOt.nombre}"/>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group col-lg-12">
+                                                    <h:outputLabel class="col-lg-3 control-label" value="Fecha Solicita:" />
+                                                    <div class="col-lg-9"><h:outputText  value="#{recepcionRequisicionBean.requisicionActual.fechaSolicito}" >
+                                                            <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                                        </h:outputText>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-lg-12">
+                                            <div class="form-group panel">
+                                                <div class="form-group col-lg-12" >
+                                                    <h:outputLabel class="col-lg-3 control-label" value="Motivo:"/>
+                                                    <div class="col-lg-9">
+                                                        <h:inputTextarea  id="motivoEspera" cols="70"  
+                                                                          value="#{recepcionRequisicionBean.motivoFinalizacion}" />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <h:commandButton id="buttonAceptarEspera"
+                                                     value="Aceptar"
+                                                     styleClass="btn btn-info"
+                                                     action="#{recepcionRequisicionBean.esperaRequisicion(actionEvent)}"
+                                                     onclick="return validaCancelar('frmEsperaRecep', 'motivoEspera', 'La operación pondra en espera la requisición. ¿Está seguro?', 'Es necesario agregar el motivo.')"/>
+                                    <p:commandButton id="buttonCancelarEspera"
+                                                       value="Cancelar"
+                                                       styleClass="btn btn-default"
+                                                       onclick="cerrarDialogoModal(dialogoEsperaReq);"                                                           
+                                                       title="Cerrar ventana..." />
+
+                                </div>
+                            </h:form>
+                        </div>
+                    </div>
+                </div>
+
+                <!--HISTORIAL COMPRA REQ-->
+
+                <div class="modal fade" id="dialogoHistorialCompraReq" data-backdrop="static" data-keyboard="false">
+                    <div class="modal-dialog"  style="width: 80%;">
+                        <h:form id="frmHistorialCompraReq">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h4 class="modal-title">Historial Compras</h4>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="row">
+                                        <small> ** Se mostrarán sólo las últimas 5 compras.</small>
+                                    </div>
+                                    <p:dataTable size="small" stripedRows="true" showGridlines="true" value="#{recepcionRequisicionBean.historicoVentas}" var="data" style="font-size: 1.0em;">
+                                        <p:column headerText="Fecha" style="text-align: justify;">
+                                            <h:outputText value="#{data.fecha}">
+                                                <f:convertDateTime dateStyle="default" pattern="dd/MM/yyyy"/>
+                                            </h:outputText>
+                                        </p:column>
+                                        <p:column headerText="OCs" style="text-align: justify;">
+                                            <h:outputText value="#{data.consecutivo}"/>
+                                        </p:column>
+                                        <p:column headerText="Proveedor" style="text-align: justify;">
+                                            <h:outputText value="#{data.proveedor}"/>
+                                        </p:column>
+                                        <p:column headerText="Unidad" style="text-align: justify;">
+                                            <h:outputText value="#{data.unidad}"/>
+                                        </p:column>
+                                        <p:column headerText="Precio Unitario" style="text-align: justify;">
+                                            <h:outputText value="#{data.precioU}"/>
+                                        </p:column>
+                                        <p:column headerText="Moneda" style="text-align: justify;">
+                                            <h:outputText value="#{data.moneda}"/>
+                                        </p:column>
+                                    </p:dataTable>
+                                </div>
+                                <div class="modal-footer">                                                            
+                                    <p:commandButton id="buttonCerrarHistorico"
+                                                       value="Cerrar"
+                                                       styleClass="btn btn-default"
+                                                       onclick="cerrarDialogoModal(dialogoHistorialCompraReq);"                                                           
+                                                       title="Cerrar ventana..." />
+
+                                </div>
+                            </div>
+                        </h:form>
+                    </div>
+                </div>
+
+                <h:form id="form1">
+                    <div class="row">                        
+                        <div id="divOperacion" class="btn-group" style="text-align: left; display: none;">
+                            <p:commandLink value="Regresar" 
+                                           action="#{ordenBean.iniciarLimpiar(actionEvent)}"
+                                           onclick="regresar('divTabla', 'divDatos', 'divOperacion', 'divAutoriza')"
+                                           styleClass="btn btn-default"/>
+
+                            <p:commandLink value="Generar OC/S" title="Clic aquí para generar la orden de compra..." 
+                                           action="#{recepcionRequisicionBean.generarOrdenCompra(actionEvent)}"
+                                           style="display: #{recepcionRequisicionBean.requisicionActual.contrato eq false ? 'block' : 'none'}"
+                                           styleClass="btn btn-default"/>
+
+                            <p:commandLink value="Devolver" title="Clic aquí para devolver la orden de compra..."                                            
+                                           action="#{recepcionRequisicionBean.devolverRequisicion(event)}"
+                                           styleClass="btn btn-default"/>
+
+                            <p:commandLink value="Finalizar" title="Clic aquí para finalizar la requisicion..." 
+                                           onclick="$(dialogoFinRecepReq).modal('show');"
+                                           styleClass="btn btn-default"/>                            
+                            <p:commandLink value="En Espera" title="Clic aquí par poner en espera la requisicion..." 
+                                           onclick="$(dialogoEsperaReq).modal('show');"
+                                           styleClass="btn btn-default"/>                            
+                        </div>
+                    </div>
+                    <div id="divTabla" class="row">   
+                        <div id="tipoRequisiciones">
+                            <p:tabView >
+                                <p:tab title="Requisiciones sin contrato ( #{recepcionRequisicionBean.listaRequisiciones.rowCount} )">
+                                    <div id="divAutoriza" class="btn-group" style="text-align: left;">
+                                        <p:commandLink id="btnGenerarOcs" value="Generar OC/S" styleClass="btn btn-default" 
+                                                       action="#{recepcionRequisicionBean.generarOCS(event)}"
+                                                       onclick="return validaGenerarOrden('form1', 'seleccion', 'Se generaran las ordenes de las requisiciones seleccionadas. ¿está seguro?');"/>
+                                    </div>
+                                    <div class="table table-responsive">
+                                        <p:dataTable size="small" stripedRows="true" showGridlines="true" id="ReqSinDisgregar" rows="15"
+                                                       value="#{recepcionRequisicionBean.listaRequisiciones}"
+                                                       var="currentRow" styleClass="table table-striped"
+                                                       paginator="true" paginatorPosition="bottom"
+                                                       style="font-size: 1.2em;">
+                                            <f:facet name="header"><h:outputLabel value="Requisiciones asignadas"/></f:facet>
+                                            <ui:include src="../Orden/fragmento/columanRecepcionRequisicion.xhtml"/>
+                                            <p:column>
+                                                <p:commandLink value="Seleccionar" style="color: blue;"
+                                                               action="#{recepcionRequisicionBean.seleccionarRequisicion(actionEvent)}"
+                                                               title="Clic aquí para ver los ítems de la requisición..."
+                                                               onclick="activarTab('tabsRecepReq', 0, 'divDatos', 'divTabla', 'divOperacion', 'divAutoriza');"/>
+                                            </p:column>
+                                        </p:dataTable>
+                                    </div>
+                                    <div style="float: right;">
+                                        <p:dataExporter fileName="requisicionesAsignadaSinContrato"
+                                                          target="ReqSinDisgregar" type="xls"  pageOnly="flase"
+                                                          >
+                                        </p:dataExporter>
+                                    </div>
+                                </p:tab>
+                                <p:tab title="Requisiciones con contrato ( #{recepcionRequisicionBean.listaRequisicionContrato.size()} )">
+                                    <div id="divAutoriza" class="btn-group" style="text-align: left;">
+                                        <p:commandLink id="btnGenerarOcsConv" value="Generar OC/S" styleClass="btn btn-default" 
+                                                       action="#{recepcionRequisicionBean.generarOCSConvenio(event)}"
+                                                       onclick="return validaGenerarOrden('form1', 'seleccionConConv', 'Se generaran las ordenes de las requisiciones seleccionadas. ¿está seguro?');"/>
+                                    </div>
+                                    <div class="table table-responsive">
+                                        <p:dataTable size="small" stripedRows="true" showGridlines="true" id="reqSinDisgregarConConv"  rows="15"
+                                                       value="#{recepcionRequisicionBean.listaRequisicionContrato}" 
+                                                       var="currentRow" styleClass="table table-striped"
+                                                       paginator="true" paginatorPosition="bottom"
+                                                       style="font-size: 1.2em;">
+                                            <f:facet name="header"><h:outputLabel value="Requisiciones asignadas"/></f:facet>
+                                            <p:column>
+                                                <f:facet name="header">
+                                                    <h:selectBooleanCheckbox class="todosConConv" onchange="seleccionarGeneralConConvenio('todosConConv', 'seleccionConConv')"/>
+                                                </f:facet>
+                                                <h:selectBooleanCheckbox value="#{currentRow.selected}" class="seleccionConConv" onclick="mostrarDiv('divAutoriza');"/>
+                                            </p:column>
+                                            <p:column>
+                                                <h:outputText  value="#{currentRow['consecutivo']}"/>
+                                                <f:facet name="header">
+                                                    <h:outputText value="Código"/>
+                                                </f:facet>
+                                            </p:column>
+                                            <p:column headerText="Gerencia">
+                                                <h:outputText value="#{currentRow.gerencia}"/>
+                                            </p:column>
+                                            <p:column>
+                                                <h:outputText value="#{currentRow['referencia']}"/>
+                                                <f:facet name="header">
+                                                    <h:outputText value="Referencia"/>
+                                                </f:facet>
+                                            </p:column>
+                                            <p:column >
+                                                <h:outputText value="#{currentRow['proveedor']}"/>
+                                                <f:facet name="header">
+                                                    <h:outputText value="Proveedor"/>
+                                                </f:facet>
+                                            </p:column>
+                                            <p:column>
+                                                <h:outputText value="#{currentRow['fechaSolicitada']}">
+                                                    <f:convertDateTime dateStyle="default" pattern="dd/MM/yyyy"/>
+                                                </h:outputText>
+                                                <f:facet name="header">
+                                                    <h:outputText value="Solicitada"/>
+                                                </f:facet>
+                                            </p:column>
+                                            <p:column>
+                                                <h:outputText value="#{currentRow['fechaRequerida']}">
+                                                    <f:convertDateTime dateStyle="default" pattern="dd/MM/yyyy"/>
+                                                </h:outputText>
+                                                <f:facet name="header">
+                                                    <h:outputText value="Requerida"/>
+                                                </f:facet>
+                                            </p:column>
+                                            <p:column>
+                                                <p:commandLink value="Seleccionar" style="color: blue;"
+                                                               action="#{recepcionRequisicionBean.seleccionarRequisicionConvenio(actionEvent)}"
+                                                               title="Clic aquí para ver los ítems de la requisición..."
+                                                               onclick="activarTab('tabsRecepReq', 0, 'divDatos', 'divTabla', 'divOperacion', 'divAutoriza');">
+                                                    <f:param name="idReq" value="#{currentRow.id}"/> 
+                                                </p:commandLink>
+                                            </p:column>
+                                        </p:dataTable>
+                                    </div>
+                                    <div style="float: right;">
+                                        <p:dataExporter fileName="reqConConvenio" 
+                                                          target="reqSinDisgregarConConv" type="xls" pageOnly="flase"  
+                                                          >
+                                        </p:dataExporter>
+                                    </div>
+                                </p:tab>
+                            </p:tabView>
+                        </div>
+                    </div><br/>
+                    <div id="divDatos" class="row" style="display: none;">
+                        <div class="container-fluid">
+                            <h:outputText value="Requisición: "/>
+                            <h:outputLabel value="#{recepcionRequisicionBean.requisicionActual.consecutivo}"/>
+                        </div>
+                        <script>
+                            $(function () {
+                                $("#tabsRecepReq").tabs();
+                                $("#tabsRecepReqOCS").tabs();
+                            });
+                        </script>
+                        <div id="tabsRecepReq">
+                            <ul>
+                                <li ><a href="#Datos">Datos requisición</a></li>
+                                <li><a href="#ETSRecpReq" >ETS</a></li>                        
+                                <li><a href="#EstatusRecep">Autorizaciones</a></li>
+                                <li><a href="#OCSRecep">Ordenes de compra</a></li>
+
+                            </ul>
+                            <div id="Datos" class="textoIzquierda">
+                                <!-- Panel layout que contiene todo lo del tap mas información -->
+                                <div id="container">
+                                    <div class="row" style="margin-top: 15px;">
+                                        <div class="col-lg-12 col-xs-12">
+                                            <div scope="colgroup" colspan="7" class="iceDatTblHdr tableHdr table-stripedHdr" style="font-weight: normal;"><span>Inf. de la OC/S</span></div>
+                                            <div class="input-group panel panel-default" style="border: white; border-style: solid; border-width: 1px;">
+
+                                                <div class="form-group col-lg-12 col-xs-12" style="margin-top: 10px; border: white; border-bottom: #eee; border-top: white;  border-style: solid; border-width: 2px;">                    
+                                                    <h:outputLabel class="col-lg-2 control-label" style="text-align: left;" value="Prioridad:"/>
+                                                    <div class="col-lg-4">
+                                                        <h:outputText    value="#{recepcionRequisicionBean.requisicionActual.prioridad.nombre}"/>                    
+                                                    </div>
+
+                                                    <h:outputLabel class="col-lg-2 control-label" value="Proveedor:"/>
+                                                    <div class="col-lg-4">
+                                                        <h:outputText    value="#{recepcionRequisicionBean.requisicionActual.proveedor}"/>
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-group col-lg-12 col-xs-12" style="margin-top: 10px; border: white; border-bottom: #eee; border-top: white;  border-style: solid; border-width: 2px;">                    
+                                                    <h:outputLabel class="col-lg-2 control-label" value="Requerida:"/>                    
+                                                    <div class="col-lg-4">
+                                                        <h:outputText   value="#{recepcionRequisicionBean.requisicionActual.fechaRequerida}">
+                                                            <f:convertDateTime dateStyle="default" pattern="dd/MM/yyyy"/>
+                                                        </h:outputText>
+                                                    </div>                                                
+                                                    <h:outputLabel class="col-lg-2 control-label" value="Contrato:"/>
+                                                    <div class="col-lg-4">
+                                                        <h:outputText   value="#{recepcionRequisicionBean.requisicionActual.contrato ? 'CON CONTRATO' : 'SIN CONTRATO'}"/>
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-group col-lg-12 col-xs-12" style="margin-top: 10px; border: white; border-bottom: #eee; border-top: white;  border-style: solid; border-width: 2px;">                    
+                                                    <h:outputLabel class="col-lg-2 control-label"  value="Dpto. Sol:"/>
+                                                    <div class="col-lg-4">
+                                                        <h:outputText    value="#{recepcionRequisicionBean.requisicionActual.gerencia.nombre}"/>
+                                                    </div>                                                
+                                                    <h:outputLabel class="col-lg-2 control-label" value="Elaboro:"/>
+                                                    <div class="col-lg-4">
+                                                        <h:outputText    value="#{recepcionRequisicionBean.requisicionActual.solicita.nombre}"/>
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-group col-lg-12 col-xs-12" style="margin-top: 10px; border: white; border-bottom: #eee; border-top: white;  border-style: solid; border-width: 2px;">                    
+                                                    <h:outputLabel class="col-lg-2 control-label"  value="ProyectoOT:"/>
+
+                                                    <div class="col-lg-4">
+                                                        <ui:fragment rendered="#{recepcionRequisicionBean.requisicionActual.multiproyecto eq 'False'}">
+                                                            <h:outputText    value="#{recepcionRequisicionBean.requisicionActual.proyectoOt.nombre}"/>
+                                                        </ui:fragment>
+                                                        <ui:fragment rendered="#{recepcionRequisicionBean.requisicionActual.multiproyecto eq 'True'}">
+                                                            <h:outputText value="Multiproyecto OT"/>
+                                                        </ui:fragment>
+                                                    </div>                                                
+                                                    <h:outputLabel class="col-lg-2 control-label"  value="Destino:"/>
+                                                    <div class="col-lg-4">
+                                                        <h:outputText    value="#{recepcionRequisicionBean.requisicionActual.lugarEntrega}"/>
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-group col-lg-12 col-xs-12" style="margin-top: 10px; border: white; border-bottom: #eee; border-top: white;  border-style: solid; border-width: 2px;">                    
+                                                    <h:outputLabel class="col-lg-2 control-label"  value="Tipo requisicion:"/>
+                                                    <div class="col-lg-4">
+                                                        <h:outputText    value="#{recepcionRequisicionBean.requisicionActual.tipo eq 'AF' ? 'Activo Fijo' : 'Producto/Servicio'}" />
+                                                    </div>
+                                                    <div class="col-lg-6"></div>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-12 input-group panel panel-default" style="border: white; border-style: solid; border-width: 1px;">
+                                                <div class="form-group col-lg-12 col-xs-12" style="margin-top: 10px; border: white; border-bottom: #eee; border-top: white;  border-style: solid; border-width: 2px;">
+                                                    <div class="col-lg-2 col-xs-12" style="text-align: left;" >
+                                                        <strong><h:outputText styleClass="control-label"    value="Observación:"/></strong>
+                                                    </div>
+                                                    <div class="col-lg-10 col-xs-12">
+                                                        <h:outputText styleClass="control-label" rendered="#{recepcionRequisicionBean.requisicionActual.observaciones != null}" value="#{recepcionRequisicionBean.requisicionActual.observaciones}"/>
+                                                        <h:outputText styleClass="control-label" rendered="#{recepcionRequisicionBean.requisicionActual.observaciones == null}" value=" "/>
+                                                    </div>  
+                                                </div>
+                                            </div>
+
+
+
+                                        </div>
+                                    </div>
+                                </div>
+                                <ui:fragment rendered="#{recepcionRequisicionBean.requisicionActual ne null}">
+                                    <div class="container-fluid">
+                                        <h:outputText value="Ítems de la requisición:" />&nbsp;
+                                        <h:outputLabel value="#{recepcionRequisicionBean.requisicionActual.consecutivo}"/> &nbsp;
+                                        <p:commandLink value="Generar Orden con los Ítems seleccionados" styleClass="btn-link" style="color: blue;"
+                                                       action="#{recepcionRequisicionBean.generarOrdenCompraDeSeleccion(actionEvent)}"
+                                                       onclick=" return validaGenerarOrden('form1', 'seleccion', 'Se generará una orden de compra sin contrato con los Ítems seleccionados. ¿Deseas continuar?');"
+                                                       title="Clic aqui para generar una Orden de Compra o Servicio sin contrato con los Ítems seleccionados..."
+                                                       rendered="#{recepcionRequisicionBean.requisicionActual.contrato}"
+                                                       >
+                                        </p:commandLink>
+                                        <p:commandLink value="Generar Orden con los Ítems seleccionados" styleClass="btn-link" style="color: blue;"
+                                                       action="#{recepcionRequisicionBean.generarOrdenCompraDeSeleccion(actionEvent)}"
+                                                       onclick=" return validaGenerarOrden('form1', 'seleccion', 'Se generará una orden con los Ítems seleccionados.');"
+                                                       title="Clic aqui para generar una Orden de Compra o Servicio con los Ítems seleccionados..."
+                                                       rendered="#{!recepcionRequisicionBean.requisicionActual.contrato}"
+                                                       >
+                                        </p:commandLink>
+                                    </div>
+                                </ui:fragment>
+                                <div class="container-fluid">
+                                    <div class="table table-responsive">                                        
+                                        <p:dataTable size="small" stripedRows="true" showGridlines="true" id="itemsOrden" 
+                                                       value="#{recepcionRequisicionBean.itemsNativo}"                                                       
+                                                       var="currentRow"                                                        
+                                                       style="font-size: 1.0em;"
+                                                       styleClass="table table-striped"                                                       
+                                                       >
+                                            <f:facet name="header"><h:outputLabel value="Items"/></f:facet>
+                                            <p:column>
+                                                <h:selectBooleanCheckbox value="#{currentRow['selected']}" class="seleccion"/>
+                                            </p:column>
+                                            <p:column>
+                                                <p:commandLink value="#{currentRow['artNumeroParte']}" style="color: blue;"
+                                                               action="#{recepcionRequisicionBean.historyItem(actionEvent)}"
+                                                               title="Clic aquí para ver historial de compras...">                                                    
+                                                    <f:param name="idInv" value="#{currentRow['artID']}"/>
+                                                    <f:param name="idCampo" value="#{recepcionRequisicionBean.requisicionActual.apCampo.id}"/>
+                                                </p:commandLink>                                                
+                                                <f:facet name="header">
+                                                    <h:outputText value="Número parte"/>
+                                                </f:facet>
+                                            </p:column>
+                                            <p:column rendered="#{recepcionRequisicionBean.requisicionActual.tipo eq 'PS'}">
+                                                <f:facet name="header">
+                                                    <h:outputText value="Tarea"/>
+                                                </f:facet>
+                                                <h:outputLabel value="#{currentRow['nombreTarea']}" style="color: #1d876b;"/>
+                                            </p:column>
+                                            <p:column>
+                                                <h:outputText value="#{currentRow['cantidadAutorizada']}">
+                                                    <f:convertNumber maxFractionDigits="3"/>
+                                                </h:outputText>
+                                                <f:facet name="header">
+                                                    <h:outputText value="Cantidad Autorizada"/>
+                                                </f:facet>
+                                            </p:column>
+                                            <p:column>
+                                                <h:outputText value="#{currentRow['artUnidad']}"/>
+                                                <f:facet name="header">
+                                                    <h:outputText value="Unidad"/>
+                                                </f:facet>
+                                            </p:column>
+                                            <p:column headerText="Descripción" style="text-align: justify;">
+                                                <h:outputText  value="#{currentRow['artDescripcion']}"/>
+                                                <p:commandLink value=" Ver inventario" style="color: blue" styleClass="text-capitalize"
+                                                               rendered="#{currentRow.totalInventario gt 0}"
+                                                               action="#{recepcionRequisicionBean.mostrarInventario(event)}">
+                                                    <f:param name="idArt" value="#{currentRow.artID}"/>
+                                                </p:commandLink>
+                                            </p:column>
+                                            <p:column>
+                                                <h:outputText value="#{currentRow['observacion']}"/>
+                                                <f:facet name="header">
+                                                    <h:outputText value="Observaciones"/>
+                                                </f:facet>
+                                            </p:column>
+                                        </p:dataTable>
+                                    </div>
+                                </div>
+                                <div style="float: right;">
+                                    <p:dataExporter target="itemsOrden" fileName="ItemsReq" 
+                                                      type="xls"/>
+                                </div>
+                            </div>
+                            <div id="ETSRecpReq" class="textoIzquierda">
+                                <div class="table table-responsive">
+                                    <p:dataTable size="small" stripedRows="true" showGridlines="true" value="#{recepcionRequisicionBean.listaEts}" var="ets" styleClass="table table-striped">
+                                        <f:facet name="header">
+                                            <h:outputLabel value="Especificaciones técnicas"/>
+                                        </f:facet>
+                                        <p:column>
+                                            <f:facet name="header">
+                                                <h:outputLabel value="Nombre"/>
+                                            </f:facet>
+                                            <h:outputText value="#{ets['siAdjunto'].nombreSinUUID}"/>
+                                        </p:column>
+                                        <p:column>
+                                            <f:facet name="header">
+                                                <h:outputLabel value="Tamaño"/>
+                                            </f:facet>
+                                            <h:outputText  value="#{ets['siAdjunto'].peso}"/>
+                                        </p:column>
+                                        <p:column>
+                                            <f:facet name="header">
+                                                <h:outputLabel value="Tipo de contenido"/>
+                                            </f:facet>
+                                            <h:outputText value="#{ets['siAdjunto'].tipoArchivo}"/>
+                                        </p:column>
+                                        <p:column>
+                                            <f:facet name="header">
+                                                <h:outputLabel value="Fecha"/>
+                                            </f:facet>
+                                            <h:outputText value="#{ets['siAdjunto'].fechaGenero}">
+                                                <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                            </h:outputText>
+                                        </p:column>
+                                        <p:column>
+                                            <f:facet name="header">
+                                                <h:outputLabel value="Descripción"/>
+                                            </f:facet>
+                                            <h:inputText value="#{ets['siAdjunto'].descripcion}"/>
+                                        </p:column>
+                                        <p:column>
+                                            <h:outputLink target="_blank"  value="/Compras/AbrirArchivo?ZWZ2W=#{ets['siAdjunto'].id}&amp;ZWZ3W=#{ets['siAdjunto'].uuid}"
+                                                            style="color: blue;">
+                                                <h:outputText value=" Abrir"/>
+                                            </h:outputLink>
+                                        </p:column>
+                                    </p:dataTable>
+                                </div>
+                            </div>
+                            <div id="EstatusRecep" class="textoIzquierda">
+                                <div class="container-fluid ">                                    
+                                    <div scope="colgroup" colspan="6" class="iceDatTblHdr tableHdr table-stripedHdr"><label id="" class="iceOutLbl" style="font-weight: normal;">Autorizaciones</label></div>
+                                    <div class="panel input-group form-control">                                        
+                                        <div class="col-lg-12">                                            
+                                            <div class="input-group panel panel-default" style="border: white; border-style: solid; border-width: 1px;"><br/>                                            
+                                                <div class="form-group col-lg-12" style="border: white; border-bottom: #eee; border-top: white;  border-style: solid; border-width: 2px;">
+                                                    <strong><h:outputText styleClass="col-lg-2 control-label" value="Requisición:"/></strong>
+                                                    <div class="col-lg-2" style="text-align: left;">
+                                                        <h:outputText styleClass="control-label" value="#{recepcionRequisicionBean.requisicionActual.consecutivo}"/>
+                                                    </div>
+                                                    <strong><h:outputText styleClass="col-lg-3 control-label" value="Estatus Actual:"/></strong>
+                                                    <div class="col-lg-3" style="text-align: left;">
+                                                        <h:outputText styleClass="control-label" value="#{recepcionRequisicionBean.requisicionActual.estatus.nombre}"/>
+                                                    </div>
+                                                </div>
+                                                <!-- aqui va la informacion del resto del estatus de la requisición -->
+                                                <div class="form-group col-lg-12" style="border: white; border-bottom: #eee; border-top: white; border-style: solid; border-width: 2px;">
+                                                    <strong><h:outputText styleClass="col-lg-2 control-label" value="Solicitada el:"/></strong>
+                                                    <div class="col-lg-2" style="text-align: left;">
+                                                        <h:outputText styleClass="control-label" value="#{recepcionRequisicionBean.requisicionActual.fechaSolicito}">
+                                                            <f:convertDateTime dateStyle="default" pattern="dd/MM/yyyy"/>
+                                                        </h:outputText>
+                                                    </div>
+                                                    <strong><h:outputText styleClass="col-lg-1 control-label" value="  hora: "/></strong>
+                                                    <div class="col-lg-2">
+                                                        <h:outputText styleClass="control-label" value="#{recepcionRequisicionBean.requisicionActual.horaSolicito}">
+                                                            <f:convertDateTime pattern="hh:mm" timeStyle="default" type="time"/>
+                                                        </h:outputText>
+                                                    </div>
+                                                    <strong><h:outputText styleClass="col-lg-1 control-label" value="Por:"/></strong>
+                                                    <div class="col-lg-4" style="text-align: left;">
+                                                        <h:outputText styleClass="control-label" value="#{recepcionRequisicionBean.requisicionActual.solicita.nombre}"/>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group col-lg-12" style="border: white; border-bottom: #eee; border-top: white; border-style: solid; border-width: 2px;">
+                                                    <strong><h:outputText styleClass="col-lg-2 control-label" value="Revisada el:"/></strong>
+                                                    <div class="col-lg-2" style="text-align: left;">
+                                                        <h:outputText styleClass="control-label" value="#{recepcionRequisicionBean.requisicionActual.fechaReviso}">
+                                                            <f:convertDateTime dateStyle="default" pattern="dd/MM/yyyy"/>
+                                                        </h:outputText>
+                                                    </div>
+                                                    <strong><h:outputText styleClass="col-lg-1 control-label" value="  hora: "/></strong>
+
+                                                    <div class="col-lg-2">
+                                                        <h:outputText styleClass="control-label" value="#{recepcionRequisicionBean.requisicionActual.horaReviso}">
+                                                            <f:convertDateTime pattern="hh:mm" timeStyle="default" type="time"/>
+                                                        </h:outputText>
+                                                    </div>
+                                                    <strong><h:outputText styleClass="col-lg-1 control-label" value="Por:"/></strong>
+                                                    <div class="col-lg-4" style="text-align: left;">
+                                                        <h:outputText styleClass="control-label" value="#{recepcionRequisicionBean.requisicionActual.revisa.nombre}"/>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group col-lg-12" style="border: white; border-bottom: #eee; border-top: white; border-style: solid; border-width: 2px;">
+                                                    <strong><h:outputText styleClass="col-lg-2 control-label" value="Aprobada el:"/></strong>
+                                                    <div class="col-lg-2" style="text-align: left;">
+                                                        <h:outputText styleClass="control-label" value="#{recepcionRequisicionBean.requisicionActual.fechaAprobo}">
+                                                            <f:convertDateTime dateStyle="default" pattern="dd/MM/yyyy" />
+                                                        </h:outputText> 
+                                                    </div>
+                                                    <strong><h:outputText styleClass="col-lg-1 control-label" value="  hora: "/></strong>
+
+                                                    <div class="col-lg-2">
+                                                        <h:outputText styleClass="control-label" value="#{recepcionRequisicionBean.requisicionActual.horaAprobo}">
+                                                            <f:convertDateTime pattern="hh:mm" timeStyle="default" type="time"/>
+                                                        </h:outputText>
+                                                    </div>
+                                                    <strong><h:outputText styleClass="col-lg-1 control-label" value="Por:"/></strong>
+                                                    <div class="col-lg-4" style="text-align: left;">
+                                                        <h:outputText  styleClass="control-label" value="#{recepcionRequisicionBean.requisicionActual.aprueba.nombre}"/>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group col-lg-12" style="border: white; border-bottom: #eee; border-top: white; border-style: solid; border-width: 2px;">
+                                                    <strong><h:outputText styleClass="col-lg-2 control-label" value="Asignada el:"/></strong>
+                                                    <div class="col-lg-2" style="text-align: left;">
+                                                        <h:outputText styleClass="control-label" value="#{recepcionRequisicionBean.requisicionActual.fechaAsigno}">
+                                                            <f:convertDateTime dateStyle="default" pattern="dd/MM/yyyy"/>
+                                                        </h:outputText>
+                                                    </div>
+                                                    <strong><h:outputText styleClass="col-lg-1 control-label" value="  hora: "/></strong>
+                                                    <div class="col-lg-2">
+                                                        <h:outputText styleClass="control-label" value="#{recepcionRequisicionBean.requisicionActual.horaAsigno}">
+                                                            <f:convertDateTime pattern="hh:mm" timeStyle="default" type="time"/>
+                                                        </h:outputText>
+                                                    </div>
+                                                    <strong><h:outputText styleClass="col-lg-1 control-label" value="Por:"/></strong>
+                                                    <div class="col-lg-4" style="text-align: left;">
+                                                        <h:outputText styleClass="control-label" value="#{recepcionRequisicionBean.requisicionActual.asigna.nombre}"/>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="OCSRecep" class="textoIzquierda">
+                                <div class="col-lg-pull-10">
+                                    <div class="table table-responsive">
+                                        <p:dataTable size="small" stripedRows="true" showGridlines="true" value="#{recepcionRequisicionBean.listaOrden}" var="data" styleClass="table table-striped">
+                                            <p:column>
+                                                <h:outputText value="#{data.consecutivo ne 'null' ? data.consecutivo : data.id}"/>
+                                                <f:facet name="header">
+                                                    <h:outputText value="Código"/>
+                                                </f:facet>
+                                            </p:column>
+                                            <p:column>
+                                                <h:outputText value="#{data.estatus}"/>
+                                                <f:facet name="header">
+                                                    <h:outputText value="Estatus Actual"/>
+                                                </f:facet>
+                                            </p:column>
+                                            <p:column>
+                                                <h:outputText  value="#{data.compania}"/>
+                                                <f:facet name="header">
+                                                    <h:outputText value="Compañia"/>
+                                                </f:facet>
+                                            </p:column>
+                                            <p:column>
+                                                <p:commandLink action="#{recepcionRequisicionBean.seleccionarOrden(actionEvent)}" styleClass="link"
+                                                                 style="color:  blue;"
+                                                                 title="Clic aquí para ver más información..." value="Seleccionar">
+                                                    <f:param name="idOrdenReq" value="#{data.id}"/>
+                                                </p:commandLink>
+                                            </p:column>
+                                        </p:dataTable>
+                                    </div>
+                                </div>
+                                <hr/>
+                                <div id="container" class="textoIzquierda" >
+                                    <h:outputText value="Orden Seleccionada: "/>
+                                    <h:outputLabel value="#{ordenBean.ordenActual.consecutivo eq null ? ordenBean.ordenActual.id : ordenBean.ordenActual.consecutivo}"/><br/>
+                                    <div id="tabsRecepReqOCS">
+                                        <ul>
+                                            <li><a href="#DatosOCS">Datos OC/S</a></li>
+                                            <li><a href="#DevRecpReqOCS" >Devoluciones</a></li>                        
+                                            <li><a href="#NotasRecepOCS">Notas</a></li>
+                                            <li><a href="#CanRecepOCS">Cancelaciones</a></li>
+                                        </ul>
+                                        <div id="DatosOCS" class="textoIzquierda">
+                                            <ui:include src="/vistas/SiaWeb/Orden/fragmento/masInformacionOrden.xhtml"/>
+                                        </div>
+                                        <div id="DevRecpReqOCS" class="textoIzquierda">
+                                            <div class="table table-responsive">
+                                                <p:dataTable size="small" stripedRows="true" showGridlines="true"  value="#{ordenBean.listaRechazos}" var="currentRow" styleClass="table table-striped">
+                                                    <p:column rendered="false">
+                                                        <h:outputText value="#{currentRow['id']}"/>
+                                                        <f:facet name="header">
+                                                            <h:outputText value="id"/>
+                                                        </f:facet>
+                                                    </p:column>
+                                                    <p:column>
+                                                        <h:outputText value="#{currentRow['rechazo'].nombreSolicito}"/>
+                                                        <f:facet name="header">
+                                                            <h:outputText value="Devolvió"/>
+                                                        </f:facet>
+                                                    </p:column>
+                                                    <p:column>
+                                                        <h:outputText value="#{currentRow['fecha']}">
+                                                            <f:convertDateTime dateStyle="default" pattern="dd/MM/yyyy"/>
+                                                        </h:outputText>
+                                                        <f:facet name="header">
+                                                            <h:outputText value="Fecha"/>
+                                                        </f:facet>
+                                                    </p:column>
+                                                    <p:column>
+                                                        <h:outputText value="#{currentRow['hora']}">
+                                                            <f:convertDateTime pattern="hh:mm" timeStyle="default" type="time"/>
+                                                        </h:outputText>
+                                                        <f:facet name="header">
+                                                            <h:outputText value="Hora"/>
+                                                        </f:facet>
+                                                    </p:column>
+                                                    <p:column>
+                                                        <h:inputTextarea cols="145" readonly="true" rows="3" value="#{currentRow['motivo']}"/>
+                                                        <f:facet name="header">
+                                                            <h:outputText value="Motivo"/>
+                                                        </f:facet>
+                                                    </p:column>
+                                                </p:dataTable>
+                                            </div>
+                                        </div>
+                                        <div id="NotasRecepOCS" class="textoIzquierda">
+                                            <ui:include src="/vistas/SiaWeb/Orden/fragmento/noticia.xhtml"/>
+                                        </div>
+                                        <div id="CanRecepOCS" class="textoIzquierda">
+                                            <div id="container" class="row">
+                                                <div class="col-lg-6">
+                                                    <h:panelGrid >
+                                                        <!-- aqui va la informacion de cancelado -->
+                                                        <h:outputText value="Cancelada el:"/>
+                                                        <h:outputText  value="#{ordenBean.ordenActual.autorizacionesOrden.fechaCancelo}">
+                                                            <f:convertDateTime dateStyle="default" pattern="dd/MM/yyyy"/>
+                                                        </h:outputText>
+                                                        <h:outputText  value="#{ordenBean.ordenActual.autorizacionesOrden.horaCancelo}">
+                                                            <f:convertDateTime pattern="hh:mm" timeStyle="default" type="time"/>
+                                                        </h:outputText>
+                                                        <h:outputText value="Por:"/>
+                                                        <h:outputText  value="#{ordenBean.ordenActual.autorizacionesOrden.cancelo.nombre}"/>
+                                                    </h:panelGrid>
+                                                    <br/>
+                                                    <h:outputText value="Motivo:"/>
+                                                    <div class="bordePanelGrid"><h:outputText   value="#{ordenBean.ordenActual.autorizacionesOrden.motivoCancelo}"/></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </h:form>
+                <div class="modal fade" id="dialogoMostrarInventario" data-backdrop="static" data-keyboard="false">
+                    <div class="modal-dialog" style="width: 60%;">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h4 class="modal-title">Inventario</h4>
+                            </div>
+                            <h:form id="frmInv">
+                                <div class="modal-body">
+                                    <p:dataTable size="small" stripedRows="true" showGridlines="true" value="#{recepcionRequisicionBean.inventario}" var="dataInv" 
+                                                   style="font-size: 1.0em;">
+                                        <p:column headerText="Almacen">
+                                            #{dataInv.almacenNombre}
+                                        </p:column>
+                                        <p:column headerText="Mínimo">
+                                            #{dataInv.minimoUnidades}
+                                        </p:column>
+                                        <p:column headerText="Máximo">
+                                            #{dataInv.maximoDeInventario}
+                                        </p:column>
+                                        <p:column headerText="Disponible">
+                                            #{dataInv.numeroUnidades}
+                                        </p:column>
+                                        <p:column headerText="Nota">
+                                            #{dataInv.notasInventario}
+                                        </p:column>
+                                    </p:dataTable>
+                                </div>
+                                <div class="modal-footer">
+                                    <p:commandButton value="Cerrar"
+                                                       styleClass="btn btn-default"
+                                                       onclick="cerrarDialogoModal(dialogoMostrarInventario);"
+                                                       title="Cerrar ventana..." 
+                                                       immediate="true"/>
+                                </div>
+                            </h:form>
+                        </div>
+                    </div>
+                </div>
+            </ui:define>
+
+        </ui:composition>
+
+    </body>
+</html>

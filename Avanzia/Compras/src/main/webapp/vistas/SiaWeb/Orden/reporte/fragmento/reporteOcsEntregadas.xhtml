@@ -1,0 +1,103 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                >    
+    <p:commandLink id="btnLimpiar" value="#{msgs['orden.boton.limpiar']}" style="display: none" 
+                   action="#{reporteBean.limiarListaEntregada(event)}"  styleClass="btn btn-sm btn-info"/>
+    <div class="row">
+        <h:selectOneRadio value="#{reporteBean.opcioSeleccionada}">
+            <f:selectItem itemLabel="En proceso de aprobación" itemValue="1"/>
+            <f:selectItem itemLabel="Enviada a proveedor" itemValue="2"/>
+        </h:selectOneRadio>
+
+        <h:inputText  value="#{reporteBean.inicio}" id="fecha" size="12"/>
+        <script>
+            $(function () {
+                $("#frmOcsRecepcion\\:fecha").datepicker({
+                    showOn: "button",
+                    buttonImage: "./resources/Imagenes/cal_button.gif",
+                    buttonImageOnly: true,
+                    dateFormat: "dd/mm/yy",
+                    onSelect: function (date) {
+                        fecha = date;
+                    }
+                });
+            });
+        </script>
+        <p:commandLink value="Buscar" action="#{reporteBean.buscarOcsEntregadas(e)}" styleClass="btn btn-primary btn-sm"/>
+    </div>
+    <div class="row">
+        <p:dataTable size="small" stripedRows="true" showGridlines="true" id="dtCompraEnt" value="#{reporteBean.lista}" var="data"
+                       rows="10" styleClass="dataPaginatorDataTable" 
+                       paginator="true"  
+                       paginatorPosition="bottom" 
+                       style="font-size: 0.9em; width: 100%" >
+            <f:facet name="header"><h5>Oc/s pendientes de recibir</h5></f:facet>            
+            <p:column headerText="Req." style="text-align: left;">
+                <h:outputText value="#{data.requisicion}"
+                              style="color: #{((data.totalRecibidos lt data.totalItems) and data.totalRecibidos gt 0) ? 'orange' : '' }"/>
+            </p:column>            
+            <p:column headerText="OC/S" style="text-align: left;">
+                <h:outputText value="#{data.consecutivo}"
+                              style="color: #{((data.totalRecibidos lt data.totalItems) and data.totalRecibidos gt 0) ? 'orange' : '' }"/>
+            </p:column>            
+            <p:column headerText="Analista" style="text-align: left;">
+                <h:outputText value="#{data.analista}" 
+                              style="color: #{((data.totalRecibidos lt data.totalItems) and data.totalRecibidos gt 0) ? 'orange' : '' }"/>
+            </p:column>
+            <p:column headerText="#{msgs['orden.gerencia.nombre']}" style="text-align: left;"
+                         >
+                <h:outputText value="#{data.gerencia}"
+                              style="color: #{((data.totalRecibidos lt data.totalItems) and data.totalRecibidos gt 0) ? 'orange' : '' }"/>
+            </p:column>
+            <p:column headerText="#{msgs['requisicion.referencia']}" style="text-align: left;">
+                <h:outputText value="#{data.referencia}"
+                              style="color: #{((data.totalRecibidos lt data.totalItems) and data.totalRecibidos gt 0) ? 'orange' : '' }"/>
+            </p:column>
+            <p:column headerText="#{msgs['orden.proveedor']}" style="text-align: left;">
+                <h:outputText value="#{data.proveedor}"
+                              style="color: #{((data.totalRecibidos lt data.totalItems) and data.totalRecibidos gt 0) ? 'orange' : '' }"/>
+            </p:column>
+            <p:column headerText="#{msgs['requisicion.solicito']}" style="text-align: left;">
+                <h:outputText value="#{data.fechaSolicita}"
+                              style="color: #{((data.totalRecibidos lt data.totalItems) and data.totalRecibidos gt 0) ? 'orange' : '' }">
+                    <f:convertDateTime pattern="dd/MM/yyyy"/>
+                </h:outputText>
+            </p:column>
+            <p:column headerText="Autorizada" style="text-align: left;">
+                <h:outputText value="#{data.fechaAutoriza}"
+                              style="color: #{((data.totalRecibidos lt data.totalItems) and data.totalRecibidos gt 0) ? 'orange' : '' }">
+                    <f:convertDateTime pattern="dd/MM/yyyy"/>
+                </h:outputText>
+            </p:column>
+            <p:column headerText="Entrega estimada" style="text-align: left;">
+                <h:outputText value="#{data.fechaEntrega}" 
+                              style="color: #{((data.totalRecibidos lt data.totalItems) and data.totalRecibidos gt 0) ? 'orange' : '' }">
+                    <f:convertDateTime pattern="dd/MM/yyyy"/>
+                </h:outputText>
+            </p:column>                   
+            <p:column headerText="Recibido" style="text-align: left;">
+                <h:outputText value="#{data.totalRecibidos}"
+                              style="color: #{((data.totalRecibidos lt data.totalItems) and data.totalRecibidos gt 0) ? 'orange' : '' }">
+                    <f:convertNumber maxFractionDigits="2"/>
+                </h:outputText>/
+                <h:outputText value="#{data.totalItems}"
+                              style="color: #{((data.totalRecibidos lt data.totalItems) and data.totalRecibidos gt 0) ? 'orange' : '' }">
+                    <f:convertNumber maxFractionDigits="2"/>
+                </h:outputText>
+            </p:column>                         
+            <p:column headerText="Días" style="text-align: left;">
+                <h:outputText value="#{data.diasEntrega}"
+                              style="color: #{data.diasEntrega lt 0 ? 'red' : '' }">
+                </h:outputText>
+            </p:column>
+        </p:dataTable>
+        <p:dataExporter fileName="OcsEntregada" type="xls" target="dtCompraEnt" />
+    </div>
+    <div class="row">
+        <font style="color: orange">* Recepción parcial</font>
+    </div>
+</ui:composition>

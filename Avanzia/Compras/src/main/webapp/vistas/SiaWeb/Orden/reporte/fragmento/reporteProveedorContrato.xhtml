@@ -1,0 +1,154 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                >
+    <p:panel  style="margin-left: 0%; margin-top: 20px; border-bottom: 1px solid #333;" 
+		   >
+        <h:outputText value="#{msgs['sistema.fecha.inicio']}"/>
+        <p:panel  >
+            <script>
+		$(function () {
+		    $("#frmOCSProvCont\\:inicio").datepicker({
+			showOn: "button",
+			buttonImage: "./resources/Imagenes/cal_button.gif",
+			buttonImageOnly: true,
+			dateFormat: "dd/mm/yy",
+			dateTime: regresaFechaInicioMes("frmOCSProvCont", "inicio"),
+			onSelect: function (date) {
+			    inicio = date;
+			}
+		    });
+		});
+            </script>
+            <h:inputText  value="#{reporteBean.inicio}" id="inicio" size="10"/>
+        </p:panel> 
+        <h:outputText value="#{msgs['sistema.fecha.fin']}" />
+        <p:panel  >
+            <script>
+		$(function () {
+		    $("#frmOCSProvCont\\:fin").datepicker({
+			showOn: "button",
+			buttonImage: "./resources/Imagenes/cal_button.gif",
+			buttonImageOnly: true,
+			dateFormat: "dd/mm/yy",
+			maxDate: new Date(new Date()),
+			onSelect: function (date) {
+			    fin = date;
+			},
+			onClose: function (selectedDate) {
+			    $("#frmOCSProvCont\\:inicio").datepicker("option", "maxDate", selectedDate);
+			}
+		    });
+		});
+            </script>
+            <h:inputText  value="#{reporteBean.fin}" id="fin" size="10"/>            
+        </p:panel>
+        <p:panel >
+            <h:selectOneRadio id="radioPanel" value="#{reporteBean.conContrato}" >
+                <f:selectItem itemValue="Si" itemLabel="Con contrato"/>
+                <f:selectItem itemValue="No" itemLabel="Sin contrato"/>
+            </h:selectOneRadio>
+	</p:panel>
+	<p:panel> 
+            <h:selectOneRadio id="radioMoneda" value="#{reporteBean.idMoneda}" >
+                <f:selectItems value="#{reporteBean.listaMoneda}"/>
+            </h:selectOneRadio>            
+        </p:panel>
+        <p:commandLink value="#{msgs['sistema.buscar']}" 
+                       action="#{reporteBean.traerOCSProveedorContrato(event)}"
+                       styleClass="btn btn-sm btn-info"
+		       style="float: right;"
+                       onclick="return validaBuscarProveedor('frmOCSProvCont\\:inicio', 'frmOCSProvCont\\:fin', 'frmOCSProvCont\\:autocomplete', 'frmOCSProvCont\\:radioPanel');"/>
+    </p:panel>
+    <br/>
+    <p:commandLink id="btnLimpiar" value="#{msgs['orden.boton.limpiar']}" style="display: none" action="#{reporteBean.limiarLista(event)}" 
+                   styleClass="btn btn-sm btn-info"/>
+    <p:dataTable size="small" stripedRows="true" showGridlines="true" id="dtProveedorCont" value="#{reporteBean.lista}" var="data"
+                   rows="20" styleClass="dataPaginatorDataTable" 
+                   paginator="true"  
+                   paginatorPosition="bottom" 
+                   style="font-size: 1em; width: 80%" >
+        <p:column id="exp">
+            <p:rowToggler/>
+        </p:column>
+        <p:column headerText="#{msgs['orden.proveedor']}" style="text-align: left;">
+            <h:outputText value="#{data.proveedor}"/>
+        </p:column>
+        <p:column headerText="Ordenes">
+            <h:outputText value="#{data.totalOrdenes}"/>
+        </p:column>
+        <p:column headerText="#{msgs['orden.subtotal']}" style="text-align: right; width: 13%;">
+            <h:outputText value="#{data.subTotal}">
+                <f:convertNumber pattern="$ #,##0.0000" locale="es-MX"/>
+            </h:outputText>
+        </p:column>
+        <p:column headerText="IVA" style="text-align: right; width: 12%;">
+            <h:outputText value="#{data.iva}">
+                <f:convertNumber pattern="$ #,##0.00" locale="es-MX"/>
+            </h:outputText>
+        </p:column>
+        <p:column headerText="Total" style="text-align: right; width: 13%;">
+            <h:outputText value="#{data.total}">
+                <f:convertNumber pattern="$ #,##0.0000" locale="es-MX"/>
+            </h:outputText>
+        </p:column>
+        <p:column headerText="Moneda" style="text-align: right;">
+            <h:outputText value="#{data.moneda}"/>
+        </p:column> 
+        <p:rowExpansion >
+	    <p:dataTable size="small" stripedRows="true" showGridlines="true"  value="#{data.listaOrden}" var="lo">
+		<h:column >
+                    <f:facet name="header">Requisición</f:facet>
+                    <h:outputText value="#{lo.requisicion}"/>
+                </h:column>
+                <h:column >
+                    <f:facet name="header">Consecutivo</f:facet>
+                    <h:outputText value="#{lo.consecutivo}"/>
+                </h:column>
+                <h:column >
+                    <f:facet name="header">Comprador</f:facet>
+                    <h:outputText value="#{lo.analista}"/>
+                </h:column>
+                <h:column >
+                    <f:facet name="header">Referencia</f:facet>
+                    <h:outputText value="#{lo.referencia}"/>
+                </h:column>
+                <h:column >
+                    <f:facet name="header">Solicitada</f:facet>
+                    <h:outputText value="#{lo.fechaSolicita}">
+                        <f:convertDateTime pattern="dd/MM/yyyy"/>
+                    </h:outputText>
+                </h:column>
+                <h:column >
+                    <f:facet name="header">Estado</f:facet>
+                    <h:outputText value="#{lo.estatus}"/>
+                </h:column>
+                <h:column >
+                    <f:facet name="header">SubTotal</f:facet>
+                    <h:outputText value="#{lo.subTotal}">
+                        <f:convertNumber maxFractionDigits="2"/>
+                    </h:outputText>
+                </h:column>
+                <h:column >
+                    <f:facet name="header">I.V.A.</f:facet>
+                    <h:outputText value="#{lo.iva}">
+                        <f:convertNumber maxFractionDigits="2"/>
+                    </h:outputText>
+                </h:column>
+                <h:column >
+                    <f:facet name="header">Total</f:facet>
+                    <h:outputText value="#{lo.total}">
+                        <f:convertNumber maxFractionDigits="2"/>
+                    </h:outputText>
+                </h:column>
+            </p:dataTable>
+        </p:rowExpansion>
+    </p:dataTable>
+    <p:dataExporter fileName="Proveedor" type="xls" target="dtProveedorCont" />
+
+    <br/>
+    <hr/>
+</ui:composition>

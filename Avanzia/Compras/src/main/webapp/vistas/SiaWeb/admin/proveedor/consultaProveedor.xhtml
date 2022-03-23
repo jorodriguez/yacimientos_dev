@@ -1,0 +1,622 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      >
+    <body>
+        <ui:composition template="./../../templates/template.xhtml">
+            <ui:define name="tituloPagina">
+                Proveedores
+            </ui:define>
+            <ui:define name="content">
+                <script type="text/javascript">
+                    $(document).ready(function () {
+                        $('#frmConsProve\\:nombreP').attr('placeholder', 'Nombre o parte del nombre');
+                    });
+                </script>
+                <h:form id="frmConsProve">
+                    <div id="divGeneral" class="btn-group" style="text-align: left;">
+                        <div class="col-lg-12">
+                            <div class="input-group">
+                                <div class="col-lg-2">
+                                    <p:commandLink value="Todos" class="btn btn-default" action="#{consultaProveedorBean.traerTodos(event)}">
+                                        <f:ajax execute="@form" render="@all"/>
+                                    </p:commandLink>
+                                </div>
+                                <div class="form-group  col-lg-8">
+                                    <h:inputText id="nombreP" class="form-control" value="#{consultaProveedorBean.nombre}" />
+                                </div>
+                                <div class="col-lg-2">
+                                    <p:commandLink value="Buscar" class="btn btn-default" action="#{consultaProveedorBean.buscarProveedor(event)}">
+                                    </p:commandLink>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-12">
+                            <small>*Para reducir la busqueda agrega al menos 3 letras del nombre del proveedor </small>
+                        </div>
+                        <div class="col-lg-12">
+                            <!--<!-- rowSelectListener="#{consultaProveedorBean.seleccionar}" -->
+                            <p:dataTable size="small" stripedRows="true" showGridlines="true" value="#{consultaProveedorBean.listaProveedor}" var="data" paginator="true"
+                                           paginatorPosition="bottom"
+                                           paginatorAlwaysVisible="true" rows="20" 
+                                           selectionMode="single" 
+                                           >
+                                <f:facet name="header">Proveedores</f:facet>
+                                <p:column headerText="RFC" filterBy="#{data.rfc}" filterMatchMode="contains"
+                                            style="width: 20%;">
+                                    #{data.rfc}
+                                </p:column>
+                                <p:column headerText="Nombre"  filterBy="#{data.nombre}" filterMatchMode="contains"
+                                            style="text-align: left;">
+                                    #{data.nombre}
+                                </p:column >
+                                <p:column headerText="Dirección"  filterBy="#{data.calle}" filterMatchMode="contains"
+                                            style="text-align: left;">
+                                    #{data.calle} #{data.numero} #{data.colonia} #{data.estado} #{data.pais}
+                                </p:column>
+                            </p:dataTable>
+                        </div>
+                    </div>
+                </h:form>
+                <div id="divDatosGenerales" style="text-align: left; display: none;">  
+                    <h:form>
+                        <div class="col-lg-12">
+                            <div class="col-lg-2">
+                                <p:commandLink value="Regresar" onclick="regresar('divGeneral', '', 'divDatosGenerales', '');"
+                                               styleClass="btn btn-default"/>
+                            </div>
+                            <div class="col-lg-10">
+                                <h4>#{consultaProveedorBean.proveedorVo.nombre}</h4>
+                            </div>
+                        </div>
+                    </h:form>
+                    <div class="col-lg-12">
+                        <h:form id="frmAdminProveedor">
+                            <p:tabView >
+                                <p:tab title="Datos Generales">
+                                    <div class="modal-body">
+                                        <div class="panel panel-primary">
+                                            <div class="panel-heading">
+                                                <h1 class="panel-title">Datos generales proveedor / Prestador de Servicio / Contratista</h1>
+                                            </div>
+                                            <div class="panel-body">
+                                                <div class="col-lg-12 col-xs-12">
+                                                    <div class="input-group col-lg-12 col-xs-12">
+                                                        <div class="row form-group ">                           
+                                                            <h:outputText class="col-lg-2 consultaProveedorBeanol-label" value="Nombre: "/>
+                                                            <div class="col-lg-10">
+                                                                <h:outputLabel value="#{consultaProveedorBean.proveedorVo.nombre}"/>
+                                                            </div>
+                                                        </div>                        
+                                                        <div class="row form-group">            
+                                                            <h:outputText class="col-lg-2 consultaProveedorBeanol-label" value="Extranjera/Nacional: "/>
+                                                            <div class="col-lg-4">
+                                                                <h:outputLabel value="#{consultaProveedorBean.proveedorVo.nacional eq 'True' ? 'Nacional' : 'Extranjera'}"/>
+                                                            </div>
+                                                            <h:outputText class="col-lg-2 consultaProveedorBeanol-label" value="P. Fisica/Moral: " 
+                                                                          style="display: #{consultaProveedorBean.proveedorVo.nacional eq 'True' ? 'block' : 'none'};"/>
+                                                            <div class="col-lg-4"
+                                                                 style="display: #{consultaProveedorBean.proveedorVo.nacional eq 'True' ? 'block' : 'none'};">
+                                                                <h:outputLabel value="#{consultaProveedorBean.proveedorVo.personaTxt}"/>
+                                                            </div>				                            
+                                                        </div>
+                                                        <div class="row form-group">                           
+                                                            <h:outputText class="col-lg-1 consultaProveedorBeanol-label" value="RFC: "/>
+                                                            <div class="col-lg-3">
+                                                                <h:outputLabel value="#{consultaProveedorBean.proveedorVo.rfc}"/>
+                                                            </div>                                    
+                                                            <h:outputText class="col-lg-1 consultaProveedorBeanol-label" value="idCIF: "
+                                                                          style="display: #{consultaProveedorBean.proveedorVo.nacional eq 'True' ? 'block' : 'none'};"/>
+                                                            <div class="col-lg-3" style="display: #{consultaProveedorBean.proveedorVo.nacional eq 'True' ? 'block' : 'none'};">
+                                                                <h:outputLabel value="#{consultaProveedorBean.proveedorVo.idCIF}"/>
+                                                            </div>
+                                                            <h:outputText class="col-lg-1 consultaProveedorBeanol-label" value="CURP: "
+                                                                          style="display: #{consultaProveedorBean.proveedorVo.nacional eq 'True' and consultaProveedorBean.proveedorVo.persona eq '2' ? 'block' : 'none'};"/>
+                                                            <div class="col-lg-3" style="display: #{consultaProveedorBean.proveedorVo.nacional eq 'True' and consultaProveedorBean.proveedorVo.persona eq '2' ? 'block' : 'none'};">
+                                                                <h:outputLabel value="#{consultaProveedorBean.proveedorVo.curp}"/>
+                                                            </div>
+
+                                                        </div>
+                                                        <div class="row form-group">                           
+                                                            <h:outputText class="col-lg-1 consultaProveedorBeanol-label" value="Giro: "/>
+                                                            <div class="col-lg-11">
+                                                                <h:outputLabel value="#{consultaProveedorBean.proveedorVo.giro}"/>
+                                                            </div>
+                                                        </div>                        
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class = "panel-group">
+                                            <div class="panel panel-primary" id="panel1">
+                                                <div class="panel-heading">                        
+                                                    <h4 class="panel-title">
+                                                        <a data-toggle="collapse"  href="#collapseOneP">
+                                                            Domicilio Fiscal
+                                                        </a>
+                                                    </h4>
+                                                </div>
+                                                <div id="collapseOneP" class="panel-collapse collapse in">
+                                                    <div class="panel-body" >
+                                                        <div class="col-lg-12 col-xs-12">
+                                                            <div class="input-group col-lg-12 col-xs-12">                                
+                                                                <div class="row form-group">                           
+                                                                    <h:outputText class="col-lg-1 consultaProveedorBeanol-label" value="Calle: "/>
+                                                                    <div class="col-lg-5">
+                                                                        <h:outputLabel value="#{consultaProveedorBean.proveedorVo.calle}"/>
+                                                                    </div>
+                                                                    <h:outputText class="col-lg-1 consultaProveedorBeanol-label" value="No.Ext: "/>
+                                                                    <div class="col-lg-2">
+                                                                        <h:outputLabel value="#{consultaProveedorBean.proveedorVo.numero}"/>
+                                                                    </div>
+                                                                    <h:outputText class="col-lg-1 consultaProveedorBeanol-label" value="No.Int: "/>
+                                                                    <div class="col-lg-2">
+                                                                        <h:outputLabel value="#{consultaProveedorBean.proveedorVo.numeroInt}"/>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="row form-group">                           
+                                                                    <h:outputText class="col-lg-1 consultaProveedorBeanol-label" value="Colonia: "/>
+                                                                    <div class="col-lg-5">
+                                                                        <h:outputLabel value="#{consultaProveedorBean.proveedorVo.colonia}"/>
+                                                                    </div>
+                                                                    <h:outputText class="col-lg-1 consultaProveedorBeanol-label" value="Estado: "/>
+                                                                    <div class="col-lg-5">
+                                                                        <h:outputLabel value="#{consultaProveedorBean.proveedorVo.estado}"/>
+                                                                    </div>                                     
+                                                                </div>
+
+                                                                <div class="row form-group">                           
+                                                                    <h:outputText class="col-lg-1 consultaProveedorBeanol-label" value="C.P.: "/>
+                                                                    <div class="col-lg-5">
+                                                                        <h:outputLabel value="#{consultaProveedorBean.proveedorVo.codigoPostal}"/>
+                                                                    </div>
+                                                                    <h:outputText class="col-lg-1 consultaProveedorBeanol-label" value="Municipio "/>
+                                                                    <div class="col-lg-5">
+                                                                        <h:outputLabel value="#{consultaProveedorBean.proveedorVo.ciudad}"/>
+                                                                    </div>                                     
+                                                                </div>				
+
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="panel panel-primary" id="panel2">
+                                                <div class="panel-heading">
+
+                                                    <h4 class="panel-title">
+                                                        <a data-toggle="collapse"  href="#collapseTwoP">
+                                                            Registros
+                                                        </a>
+                                                    </h4>
+                                                </div>
+                                                <div id="collapseTwoP" class="panel-collapse collapse">
+                                                    <div class="panel-body">                                                        
+                                                        <div class="col-lg-12 col-xs-12">
+                                                            <div class="input-group col-lg-12 col-xs-12">                                
+
+                                                                <div class="row form-group">                                                               
+                                                                    <h:outputText class="col-lg-3 consultaProveedorBeanol-label" value="No.Registro Patronal IMSS: "/>
+                                                                    <div class="col-lg-3">
+                                                                        <h:outputLabel value="#{consultaProveedorBean.proveedorVo.imssPatronal}"/>
+                                                                    </div>                                
+                                                                    <h:outputText class="col-lg-3 consultaProveedorBeanol-label" value="No.Notaría Publica/Ciudad: "/>
+                                                                    <div class="col-lg-3">
+                                                                        <h:outputLabel value="#{consultaProveedorBean.proveedorVo.noNotaria}"/>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="row form-group"> 
+                                                                    <h:outputText class="col-lg-3 consultaProveedorBeanol-label" value="No.Boleta de Inscripción: "/>
+                                                                    <div class="col-lg-3">
+                                                                        <h:outputLabel value="#{consultaProveedorBean.proveedorVo.noBoleta}"/>
+                                                                    </div>                                
+                                                                    <h:outputText class="col-lg-4 consultaProveedorBeanol-label" value="Escritura Acta Constitutiva No.: "/>
+                                                                    <div class="col-lg-2">
+                                                                        <h:outputLabel value="#{consultaProveedorBean.proveedorVo.noActa}"/>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="row form-group"> 
+                                                                    <h:outputText class="col-lg-3 consultaProveedorBeanol-label" value="Sede del Registro Publico: "/>
+                                                                    <div class="col-lg-3">
+                                                                        <h:outputLabel value="#{consultaProveedorBean.proveedorVo.sede}"/>
+                                                                    </div>    
+                                                                </div>
+
+                                                                <div class="row form-group">                                                                                               
+                                                                    <h:outputText class="col-lg-3 consultaProveedorBeanol-label" value="Nombre Notario Publico: "/>
+                                                                    <div class="col-lg-9">
+                                                                        <h:outputLabel value="#{consultaProveedorBean.proveedorVo.nombreNot}"/>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="row form-group">                                                                                               
+                                                                    <h:outputText class="col-lg-4 consultaProveedorBeanol-label" value="Fecha Emisión Escritura Publica: "/>
+                                                                    <div class="col-lg-2">
+                                                                        <h:outputLabel value="#{consultaProveedorBean.proveedorVo.emision}">
+                                                                            <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                                                        </h:outputLabel>
+                                                                    </div>
+                                                                    <h:outputText class="col-lg-4 consultaProveedorBeanol-label" value="Fecha Inscripción Registro Publico: "/>
+                                                                    <div class="col-lg-2">
+                                                                        <h:outputLabel value="#{consultaProveedorBean.proveedorVo.inscripcion}">
+                                                                            <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                                                        </h:outputLabel>
+                                                                    </div>
+                                                                </div>
+
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="panel panel-primary" id="panel3">
+                                                <div class="panel-heading">                        
+                                                    <h4 class="panel-title">
+                                                        <a data-toggle="collapse"  href="#collapseThreeP">
+                                                            Datos Bancarios
+                                                        </a>
+                                                    </h4>
+                                                </div>
+                                                <div id="collapseThreeP" class="panel-collapse collapse">
+                                                    <div class="panel-body">                                                        
+                                                        <div class="col-lg-12 col-xs-12">
+                                                            <div class="input-group col-lg-12 col-xs-12">                                
+
+                                                                <div class="table table-responsive" style="margin-bottom: 0px;">
+                                                                    <p:dataTable size="small" stripedRows="true" showGridlines="true" id="bancos" rows="10" 
+                                                                                   value="#{consultaProveedorBean.proveedorVo.cuentas}" var="currentRow" styleClass="table table-striped"
+                                                                                   style="font-size:12px; color: black;">                                                                                  
+                                                                        <p:column style="width: 40%">
+                                                                            <h:outputText value="#{currentRow.banco}"/>
+                                                                            <f:facet name="header">
+                                                                                <h:outputText value="Banco"/>
+                                                                            </f:facet>
+                                                                        </p:column>
+                                                                        <p:column style="width: 30%">
+                                                                            <h:outputText value="#{currentRow.cuenta}"/>
+                                                                            <f:facet name="header">
+                                                                                <h:outputText value="Cuenta"/>
+                                                                            </f:facet>
+                                                                        </p:column>
+                                                                        <p:column style="width: 10%">
+                                                                            <h:outputText value="#{currentRow.moneda}"/>
+                                                                            <f:facet name="header">
+                                                                                <h:outputText value="Moneda"/>
+                                                                            </f:facet>
+                                                                        </p:column>
+                                                                    </p:dataTable>                                                                
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="panel panel-primary" id="panel4">
+                                                <div class="panel-heading">                        
+                                                    <h4 class="panel-title">
+                                                        <a data-toggle="collapse"  href="#collapseFourP">
+                                                            Datos Representante Legal
+                                                        </a>
+                                                    </h4>
+                                                </div>
+                                                <div id="collapseFourP" class="panel-collapse collapse">
+                                                    <div class="panel-body">                                                        
+                                                        <div class="col-lg-12 col-xs-12">
+                                                            <div class="input-group col-lg-12 col-xs-12">                                
+                                                                <div class="table table-responsive" style="margin-bottom: 0px;">
+                                                                    <p:dataTable size="small" stripedRows="true" showGridlines="true" id="rpL" rows="10" 
+                                                                                   value="#{consultaProveedorBean.proveedorVo.lstRL}" var="currentRow" styleClass="table table-striped"
+                                                                                   style="font-size:12px; color: black;">                                                                                  
+                                                                        <p:column style="width: 50%">
+                                                                            <h:outputText value="#{currentRow.nombre}"/>
+                                                                            <f:facet name="header">
+                                                                                <h:outputText value="Nombre"/>
+                                                                            </f:facet>
+                                                                        </p:column>
+                                                                        <p:column style="width: 40%">
+                                                                            <h:outputText value="#{currentRow.curp}"/>
+                                                                            <f:facet name="header">
+                                                                                <h:outputText value="CURP"/>
+                                                                            </f:facet>
+                                                                        </p:column>                  
+                                                                        <p:column style="width: 40%" headerText="Correo">
+                                                                            <h:outputText value="#{currentRow.correo}"/>
+                                                                        </p:column>                               
+                                                                        <p:column style="width: 40%" headerText="Teléfono">
+                                                                            <h:outputText value="#{currentRow.telefono}"/>
+                                                                        </p:column>                                          
+                                                                    </p:dataTable>                                                                
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="panel panel-primary" id="panel5">
+                                                <div class="panel-heading">                        
+                                                    <h4 class="panel-title">
+                                                        <a data-toggle="collapse"  href="#collapseFiveP">
+                                                            Datos Representante Tecnico
+                                                        </a>
+                                                    </h4>
+                                                </div>
+                                                <div id="collapseFiveP" class="panel-collapse collapse">
+                                                    <div class="panel-body">                                                      
+                                                        <div class="col-lg-12 col-xs-12">
+                                                            <div class="input-group col-lg-12 col-xs-12">                                
+                                                                <div class="table table-responsive" style="margin-bottom: 0px;">
+                                                                    <p:dataTable size="small" stripedRows="true" showGridlines="true" id="rpT" rows="10" 
+                                                                                   value="#{consultaProveedorBean.proveedorVo.lstRT}" var="currentRow" styleClass="table table-striped"
+                                                                                   style="font-size:12px; color: black;">                                                                                  
+                                                                        <p:column style="width: 50%">
+                                                                            <h:outputText value="#{currentRow.nombre}"/>
+                                                                            <f:facet name="header">
+                                                                                <h:outputText value="Nombre"/>
+                                                                            </f:facet>
+                                                                        </p:column>
+                                                                        <p:column style="width: 40%">
+                                                                            <h:outputText value="#{currentRow.curp}"/>
+                                                                            <f:facet name="header">
+                                                                                <h:outputText value="CURP"/>
+                                                                            </f:facet>
+                                                                        </p:column>                  
+                                                                        <p:column style="width: 40%" headerText="Correo">
+                                                                            <h:outputText value="#{currentRow.correo}"/>
+                                                                        </p:column>                               
+                                                                        <p:column style="width: 40%" headerText="Teléfono">
+                                                                            <h:outputText value="#{currentRow.telefono}"/>
+                                                                        </p:column>                                       
+                                                                    </p:dataTable>                                                                
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="panel panel-primary" id="panel6">
+                                                <div class="panel-heading">                        
+                                                    <h4 class="panel-title">
+                                                        <a data-toggle="collapse"  href="#collapseSixP">
+                                                            Datos de Contacto
+                                                        </a>
+                                                    </h4>
+                                                </div>
+                                                <div id="collapseSixP" class="panel-collapse collapse">
+                                                    <div class="panel-body">                                                       
+                                                        <div class="col-lg-12 col-xs-12">
+                                                            <div class="input-group col-lg-12 col-xs-12">                                
+                                                                <div class="table table-responsive" style="margin-bottom: 0px;">
+                                                                    <p:dataTable size="small" stripedRows="true" showGridlines="true" id="cntcs" rows="10" 
+                                                                                   value="#{consultaProveedorBean.proveedorVo.contactos}" var="currentRow" styleClass="table table-striped"
+                                                                                   style="font-size:12px; color: black;">                                                                                  
+                                                                        <p:column style="width: 50%">
+                                                                            <h:outputText value="#{currentRow.nombre}"/>
+                                                                            <f:facet name="header">
+                                                                                <h:outputText value="Nombre"/>
+                                                                            </f:facet>
+                                                                        </p:column>
+                                                                        <p:column style="width: 40%">
+                                                                            <h:outputText value="#{currentRow.curp}"/>
+                                                                            <f:facet name="header">
+                                                                                <h:outputText value="CURP"/>
+                                                                            </f:facet>
+                                                                        </p:column>                  
+                                                                        <p:column style="width: 40%" headerText="Correo">
+                                                                            <h:outputText value="#{currentRow.correo}"/>
+                                                                        </p:column>                               
+                                                                        <p:column style="width: 40%" headerText="Teléfono">
+                                                                            <h:outputText value="#{currentRow.telefono}"/>
+                                                                        </p:column>                                        
+                                                                    </p:dataTable>                                                               
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>                        
+                                            </div>
+                                            <div class="panel panel-primary" id="panel7">
+                                                <div class="panel-heading">
+                                                    <h4 class="panel-title">
+                                                        <a data-toggle="collapse" data-parent ="#accordion" href="#collapseSeven">
+                                                            Documentación
+                                                        </a>
+                                                    </h4>
+                                                </div>
+                                                <div id="collapseSeven" class="panel-collapse collapse">
+                                                    <div class="panel-body">                                                       
+                                                        <div class="table table-responsive">
+                                                            <p:dataTable size="small" stripedRows="true" showGridlines="true" id="dtDoctos" value="#{consultaProveedorBean.proveedorVo.lstDocsProveedor}"
+                                                                           var="data" style="width: 100%; font-size: 1.0em;"
+                                                                           styleClass="table  table-striped"
+                                                                           paginator="true"  
+                                                                           paginatorPosition="bottom" 
+                                                                           rows="5">
+                                                                <p:column headerText="Documento">
+                                                                    <h:outputText value="#{data.documento}" />
+                                                                </p:column>
+                                                                <p:column headerText="Oblig.">
+                                                                    <h:outputText value="#{data.obligatoria ? 'Si' : 'No'}" />
+                                                                </p:column>
+                                                                <p:column headerText="Recibida">
+                                                                    <h:outputText value="#{data.fechaEntrega}">
+                                                                        <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                                                    </h:outputText>
+                                                                </p:column>
+                                                                <p:column headerText="Inicio">
+                                                                    <h:outputText value="#{data.inicioVigencia}" >
+                                                                        <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                                                    </h:outputText>
+                                                                </p:column>
+                                                                <p:column headerText="Fin">
+                                                                    <h:outputText value="#{data.finVigencia}" >
+                                                                        <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                                                    </h:outputText>
+                                                                </p:column>
+                                                                <p:column headerText="Validado">
+                                                                    <h:outputText value="#{data.valido eq 'True' ? 'Si'  : 'No'}"/>				    
+                                                                </p:column>
+                                                                <p:column>
+                                                                    <h:outputLink target="_blank"  
+                                                                                  value="/Sia/AbrirArchivo?ZWZ2W=#{data.adjuntoVO.id}&amp;ZWZ3W=#{data.adjuntoVO.uuid}"
+                                                                                  rendered="#{data.adjuntoVO.id gt 0}">
+                                                                        <span class="text-info" style="font-weight: bold;"> #{data.adjuntoVO.nombre}</span>
+                                                                    </h:outputLink>
+                                                                </p:column>                           
+                                                            </p:dataTable>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>            
+                                        </div>
+                                    </div>     
+                                </p:tab>
+                                <p:tab title="Compras">
+                                    <p:dataTable size="small" stripedRows="true" showGridlines="true" id="tblCompras" value="#{consultaProveedorBean.proveedorDatos.get('compras')}"
+                                                   var="data" style="width: 100%; font-size: 1.0em;"
+                                                   styleClass="table  table-striped"
+                                                   paginator="true"  
+                                                   paginatorPosition="bottom" 
+                                                   rows="10">
+                                        <p:column headerText="Consecutivo">
+                                            <h:outputText value="#{data.consecutivo}" />
+                                        </p:column>
+                                        <p:column headerText="Pedido">
+                                            <h:outputText value="#{data.navCode}" />
+                                        </p:column>
+                                        <p:column headerText="Solicitó">
+                                            <h:outputText value="#{data.analista}"/>
+                                        </p:column>
+                                        <p:column headerText="Solicitó">
+                                            <h:outputText value="#{data.fecha}" >
+                                                <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                            </h:outputText>
+                                        </p:column>
+                                        <p:column headerText="Gerencia">
+                                            <h:outputText value="#{data.gerencia}" />
+                                        </p:column>
+                                        <p:column headerText="Total">
+                                            <h:outputText value="#{data.total}">
+                                                <f:convertNumber maxFractionDigits="2" type="currency"/>
+                                            </h:outputText>
+                                        </p:column>
+                                        <p:column headerText="Moneda">
+                                            <h:outputText value="#{data.monedaSiglas}"/>
+                                        </p:column>
+                                        <p:column headerText="PDF requisición">
+                                            <h:outputLink target="_blank"  
+                                                          style="color: blue;"
+                                                          value="#{data.urlRequisicion}"
+                                                          rendered="#{not empty data.urlRequisicion}">
+                                                Abrir
+                                            </h:outputLink>
+                                        </p:column>
+                                        <p:column headerText="PDF orden">
+                                            <h:outputLink target="_blank"  
+                                                          style="color: blue;"
+                                                          value="#{data.url}" rendered="#{not empty data.url}">
+                                                Abrir
+                                            </h:outputLink>
+                                        </p:column>
+                                        <p:column headerText="Estado">
+                                            <h:outputText value="#{data.estatus}"/>
+                                        </p:column>
+                                    </p:dataTable>
+                                    <p:dataExporter  fileName="Compras" target="tblCompras"
+                                                      type="xls" ></p:dataExporter>
+                                </p:tab>
+                                <p:tab title="Convenios">
+                                    <p:dataTable size="small" stripedRows="true" showGridlines="true" id="tblConvenio" value="#{consultaProveedorBean.proveedorDatos.get('contratos')}"
+                                                   var="data" style="width: 100%; font-size: 1.0em;"
+                                                   styleClass="table  table-striped"
+                                                   paginator="true"  
+                                                   paginatorPosition="bottom"
+                                                   rows="10">
+                                        <p:column headerText="Código"  style="text-align: left;">
+                                            <h:outputText value="#{data.numero}" />
+                                        </p:column>
+                                        <p:column headerText="Nombre" style="text-align: left;">
+                                            <h:outputText value="#{data.nombre}" />
+                                        </p:column>
+                                        <p:column headerText="Inicio">
+                                            <h:outputText value="#{data.fechaInicio}">
+                                                <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                            </h:outputText>
+                                        </p:column>
+                                        <p:column headerText="Vencimiento">
+                                            <h:outputText value="#{data.fechaVencimiento}" >
+                                                <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                            </h:outputText>
+                                        </p:column>
+                                        <p:column headerText="Monto"  style="text-align: right;">
+                                            <h:outputText value="#{data.monto}">
+                                                <f:convertNumber maxFractionDigits="2" type="currency"/>
+                                            </h:outputText>
+                                        </p:column>
+                                        <p:column headerText="Moneda">
+                                            <h:outputText value="#{data.moneda}"/>
+                                        </p:column>
+                                        <p:column>
+                                            <h:outputText value="#{data.estado}"/>
+                                        </p:column>
+                                        <p:column>
+                                            <p:commandLink value="Abrir" action="#{consultaProveedorBean.llenarListaConvenio(e)}"
+                                                           style="color: blue;">
+                                                <f:param name="id" value="#{data.id}"/>
+                                            </p:commandLink>
+                                        </p:column>
+                                    </p:dataTable>
+                                    <p:dataExporter  fileName="Convenio" target="tblConvenio"
+                                                      type="xls" ></p:dataExporter>
+                                </p:tab>                  
+                            </p:tabView>
+                        </h:form>
+                    </div>
+                </div>
+
+                <!-- contratos-->
+                <div class="modal fade" id="dlgContratos" data-backdrop="static" data-keyboard="false">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h4 class="modal-title">Contratos</h4>
+                            </div>
+                            <h:form id="formContratoOrden" >
+                                <div class="modal-body panel panel-body">
+                                    <div class="container-fluid">
+                                        <div class="form-group panel row">
+                                            <p:dataTable size="small" stripedRows="true" showGridlines="true" value="#{consultaProveedorBean.proveedorDatos.get('archivo')}"
+                                                           rows="5" var="data"
+                                                           paginator="true"  
+                                                           paginatorPosition="bottom" 
+                                                           style="font-size: 0.9em;">
+                                                <p:column headerText="Nombre" style="text-align: left;">
+                                                    <h:outputLabel value="#{data.nombre}"/>
+                                                </p:column>
+
+                                                <p:column headerText="Archivo">
+                                                    <h:outputLink value="/Compras/AbrirArchivo?ZWZ2W=#{data.id}&amp;ZWZ3W=#{data.uuid}"
+                                                                     target="_blank" 
+                                                                     style="color: blue;">
+                                                        Abrir
+                                                    </h:outputLink>
+                                                </p:column>
+                                            </p:dataTable>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <h:commandButton id="buttonCancelar" title="Cerrar ventana..." value="Cerrar"
+                                                         onclick="$(dlgContratos).modal('hide');"
+                                                         styleClass="btn btn-default" immediate="true"/>
+                                    </div>
+                                </div>
+                            </h:form>
+                        </div>
+                    </div>
+                </div>
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

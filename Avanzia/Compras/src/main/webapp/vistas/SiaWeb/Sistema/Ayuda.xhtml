@@ -1,0 +1,47 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html  xmlns="http://www.w3.org/1999/xhtml"
+       xmlns:f="http://xmlns.jcp.org/jsf/core"
+       xmlns:p="http://primefaces.org/ui"
+       xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+       xmlns:h="http://xmlns.jcp.org/jsf/html">
+    <body>
+        <ui:composition template="./../templates/template.xhtml">
+            <ui:define name="tituloPagina">
+                Ayuda del Sistema
+            </ui:define>
+            <ui:define name="content">
+                <h:form id="form1">
+                    <p:tabView activeIndex="0"  >
+                        <p:tab title="Contactos"  >
+                            <p:panel >
+                                <ui:include  src="/vistas/SiaWeb/templates/fragmentos/cabecera/ayudaFragmento.xhtml"/>
+                            </p:panel>
+                        </p:tab>
+                        <p:tab title="Ayuda del Sistema"  >                                
+                            <p:panel id="panelGridArbolAyudas" style="margin-left: 10px" >
+                                <p:tree value="#{arbolAyudasBean.arbolAyudas}"
+                                          var="node">
+                                    <p:treeNode >
+                                        <f:facet name="icon">
+                                            <h:graphicImage value="#{node.userObject.icon}" alt="#{node.userObject.tooltip}"/>
+                                        </f:facet>
+                                        <f:facet name="content">
+                                            <h:outputLink value="/Compras/AbrirArchivo?ZWZ2W=#{node.userObject.idArchivo}&amp;ZWZ3W=#{node.userObject.uuidArchivo}" rendered="#{!empty node.userObject.url and node.userObject.text eq 'Documento'}" target="_blank">
+                                                <h:outputText value="#{node.userObject.text}" />
+                                            </h:outputLink>
+                                            <h:outputLink value="/Sia/AbrirVideo?a=#{node.userObject.idArchivo}" rendered="#{!empty node.userObject.url and node.userObject.text eq 'Vídeo'}" target="_blank">
+                                                <h:outputText value="#{node.userObject.text}" />
+                                            </h:outputLink>                                            
+                                            <h:outputText value="#{node.userObject.text}" rendered="#{empty node.userObject.url}"/>
+                                        </f:facet>
+                                    </ice:treeNode>
+                                </ice:tree>
+                            </p:panel>
+                        </p:tab>
+                    </p:tabView>
+                </h:form>
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

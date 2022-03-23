@@ -1,0 +1,156 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      >
+    <body>
+        <ui:composition template="./../templates/template.xhtml">
+            <ui:define name="tituloPagina">
+                Recepcion orden de compra
+            </ui:define>
+            <ui:define name="content">
+                <p:tabView >
+                    <p:tab title="Por recibir ( #{recibirOrdenBean.listaOrden.size()} )">
+                        <h:form id="frmRecOcs" styleClass="textIzquierda">
+                            <p:dataTable size="small" stripedRows="true" showGridlines="true" var="data" rows="15" 
+                                           value="#{recibirOrdenBean.listaOrden}"
+                                           paginator="true" paginatorPosition="bottom"
+                                           style="font-size: 0.98em;" rowIndexVar="indice">
+                                <f:facet name="header"><h:outputLabel value="OC/S sin terminar "/> 
+                                </f:facet>
+                                <p:column headerText="Código"  style="text-align: left;" >
+                                    <h:outputText value="#{data['consecutivo']}"/>
+                                </p:column>
+                                <p:column headerText="Pedido" style="text-align: left;" filterBy="#{data.navCode}" filterMatchMode="contains">
+                                    <h:outputText value="#{data.navCode}"/>
+                                </p:column>
+                                <p:column headerText="Referencia"  style="text-align: left;" filterBy="#{data.referencia}" filterMatchMode="contains">
+                                    <h:outputText value="#{data['referencia']}"/>
+                                </p:column>
+                                <p:column headerText="Solicitó" style="text-align: left;" filterBy="#{data.analista}" filterMatchMode="contains">
+                                    <h:outputText value="#{data['analista']}"/>
+                                </p:column>                                                                                                      
+                                <p:column headerText="Proveedor" style="text-align: left;" filterBy="#{data.proveedor}" filterMatchMode="contains">
+                                    <h:outputText value="#{data['proveedor']}"/>
+                                </p:column>
+                                <p:column style="text-align: right;" >
+                                    <h:outputText value="#{data['total']}">
+                                        <f:convertNumber maxFractionDigits="2"/>
+                                    </h:outputText>
+                                </p:column>
+                                <p:column headerText="Moneda">
+                                    <h:outputText value="#{data['monedaSiglas']}"/>
+                                </p:column>   
+                                <p:column headerText="Excel">
+                                    <h:outputLink  target="_blank"  value="/Compras/generarExcel?ZWZ2W=#{data['id']}">
+                                        <i id="btnDesc#{data.id}" class="glyphicon glyphicon-download btn #{data.leida eq 'False' ?  'btn-warning' : 'btn-primary'} btn-sm" 
+                                           title="Se genera el archivo EXCEL de la orden para NAVISION" onclick="cambiarColor('btnDesc#{data.id}');"></i>
+                                    </h:outputLink>
+                                </p:column>
+                                <p:column headerText="Recibir">
+                                    <p:commandLink value="Recibir" action="#{recibirOrdenBean.seleccionarOrdenRecibida(event)}"
+                                                   style=" color: blue;" title="Recepción de ordenes de compra">
+                                        <f:param name="idOcs" value="#{data.id}"/>
+                                    </p:commandLink>
+                                </p:column>
+                            </p:dataTable>
+                        </h:form>
+                    </p:tab>
+                    <p:tab title="Recibidas parcial ( #{recibirOrdenBean.listaOrdenParcial.size()} )">
+                        <h:form id="frmRecOcsPar" styleClass="textIzquierda">
+                            <p:dataTable size="small" stripedRows="true" showGridlines="true" var="dataPar" rows="15" 
+                                           value="#{recibirOrdenBean.listaOrdenParcial}"
+                                           paginator="true" paginatorPosition="bottom" 
+                                           style="font-size: 0.98em;" rowIndexVar="indice">
+                                <f:facet name="header"><h:outputLabel value="OC/S sin terminar "/> 
+                                </f:facet>
+                                <p:column headerText="Código"  style="text-align: left;" >
+                                    <h:outputText value="#{dataPar['consecutivo']}"/>
+                                </p:column>
+                                <p:column headerText="Pedido" style="text-align: left;" filterBy="#{dataPar.navCode}" filterMatchMode="contains">
+                                    <h:outputText value="#{dataPar.navCode}"/>
+                                </p:column>
+                                <p:column headerText="Referencia"  style="text-align: left;" filterBy="#{dataPar.referencia}" filterMatchMode="contains">
+                                    <h:outputText value="#{dataPar['referencia']}"/>
+                                </p:column>
+                                <p:column headerText="Solicitó" style="text-align: left;" filterBy="#{dataPar.analista}" filterMatchMode="contains">
+                                    <h:outputText value="#{dataPar['analista']}"/>
+                                </p:column>                                                                                                      
+                                <p:column headerText="Proveedor" style="text-align: left;" filterBy="#{dataPar.proveedor}" filterMatchMode="contains">
+                                    <h:outputText value="#{dataPar['proveedor']}"/>
+                                </p:column>
+                                <p:column style="text-align: right;" >
+                                    <h:outputText value="#{dataPar['total']}">
+                                        <f:convertNumber maxFractionDigits="2"/>
+                                    </h:outputText>
+                                </p:column>
+                                <p:column headerText="Moneda">
+                                    <h:outputText value="#{dataPar['monedaSiglas']}"/>
+                                </p:column>   
+                                <p:column headerText="Excel">
+                                    <h:outputLink  target="_blank"  value="/Compras/generarExcel?ZWZ2W=#{dataPar['id']}">
+                                        <i id="btnDesc#{dataPar.id}" class="glyphicon glyphicon-download btn #{dataPar.leida eq 'False' ?  'btn-warning' : 'btn-primary'} btn-sm" 
+                                           title="Se genera el archivo EXCEL de la orden para NAVISION" onclick="cambiarColor('btnDesc#{dataPar.id}');"></i>
+                                    </h:outputLink>
+                                </p:column>
+                                <p:column headerText="Recibir">
+                                    <p:commandLink value="Recibir" action="#{recibirOrdenBean.seleccionarOrdenRecibida(event)}"
+                                                   style=" color: blue;" title="Recepción de ordenes de compra">
+                                        <f:param name="idOcs" value="#{dataPar.id}"/>
+                                    </p:commandLink>
+                                </p:column>
+                            </p:dataTable>
+                        </h:form>
+                    </p:tab>
+                    <p:tab rendered="#{recibirOrdenBean.puedeEliminar}" 
+                           title="Recibidas parcial eliminar partidas ( #{recibirOrdenBean.listaOrdenParcialEliminar.size()} )">
+                        <h:form id="frmRecOcsParEl" styleClass="textIzquierda">
+                            <p:dataTable size="small" stripedRows="true" showGridlines="true" var="dataPar" rows="15" 
+                                           value="#{recibirOrdenBean.listaOrdenParcialEliminar}"
+                                           paginator="true" paginatorPosition="bottom" 
+                                           style="font-size: 0.98em;" rowIndexVar="indice">
+                                <f:facet name="header"><h:outputLabel value="OC/S sin terminar "/> 
+                                </f:facet>
+                                <p:column headerText="Código"  style="text-align: left;" >
+                                    <h:outputText value="#{dataPar['consecutivo']}"/>
+                                </p:column>
+                                <p:column headerText="Pedido" style="text-align: left;" filterBy="#{dataPar.navCode}" filterMatchMode="contains">
+                                    <h:outputText value="#{dataPar.navCode}"/>
+                                </p:column>
+                                <p:column headerText="Referencia"  style="text-align: left;" filterBy="#{dataPar.referencia}" filterMatchMode="contains">
+                                    <h:outputText value="#{dataPar['referencia']}"/>
+                                </p:column>
+                                <p:column headerText="Solicitó" style="text-align: left;" filterBy="#{dataPar.analista}" filterMatchMode="contains">
+                                    <h:outputText value="#{dataPar['analista']}"/>
+                                </p:column>                                                                                                      
+                                <p:column headerText="Proveedor" style="text-align: left;" filterBy="#{dataPar.proveedor}" filterMatchMode="contains">
+                                    <h:outputText value="#{dataPar['proveedor']}"/>
+                                </p:column>
+                                <p:column style="text-align: right;" >
+                                    <h:outputText value="#{dataPar['total']}">
+                                        <f:convertNumber maxFractionDigits="2"/>
+                                    </h:outputText>
+                                </p:column>
+                                <p:column headerText="Moneda">
+                                    <h:outputText value="#{dataPar['monedaSiglas']}"/>
+                                </p:column>                                   
+                                <p:column headerText="Eliminar">
+                                    <p:commandLink value="Eliminar Partidas" action="#{recibirOrdenBean.seleccionarOrdenRecibidaEliminar(event)}"
+                                                   style=" color: blue;" title="Recepción de ordenes de compra">
+                                        <f:param name="idOcs" value="#{dataPar.id}"/>
+                                    </p:commandLink>
+                                </p:column>
+                            </p:dataTable>
+                        </h:form>
+                    </p:tab>
+                </p:tabView>
+
+                <!-- Popup -->
+                <ui:include src="../Orden/fragmento/popupRecepcioOrden.xhtml"/>
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

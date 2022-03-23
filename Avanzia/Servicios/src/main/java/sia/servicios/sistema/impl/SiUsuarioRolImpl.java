@@ -275,7 +275,7 @@ public class SiUsuarioRolImpl extends AbstractFacade<SiUsuarioRol>{
             return list;
         } catch (Exception e) {
             UtilLog4j.log.fatal(this, "Excepcion al traer el rol por usuario y modulo " + e.getMessage());
-            return new ArrayList<UsuarioRolVo>();
+            return new ArrayList<>();
         }
     }
 

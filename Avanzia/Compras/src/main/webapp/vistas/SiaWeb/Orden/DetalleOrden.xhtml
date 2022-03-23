@@ -1,0 +1,382 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+    <body>
+        <ui:composition template="./../templates/template.xhtml">
+            <ui:define name="tituloPagina">
+                Datos de la Orden de Compra y/o Servicios
+            </ui:define>
+            <ui:define name="content">
+                <script>
+                    $(document).ready(function () {
+                        $("#TabsOCSHist").tabs({active: 0});
+                    });
+                </script>
+                <div  class="row">
+                    <h:form id="form1">
+                        <div class="row">
+                            <div class="col-lg-8 ">
+                                <p:commandLink value="Regresar o ir al Historial"                                                
+                                               styleClass="btn btn-default"
+                                               style="font-weight:  bold;"
+                                               action="HistorialOrden">
+                                </p:commandLink>
+
+
+                                <p:commandLink value="Búsqueda avanzada" 
+                                               styleClass="btn btn-default" 
+                                               style="font-weight:  bold;"
+                                               action="/vistas/SiaWeb/Orden/buscarAvanzada">                        
+                                </p:commandLink>
+
+                                <p:link value="/Compras/generarExcel?ZWZ2W=#{ordenBean.ordenActual.id}" 
+                                                rendered="#{ordenBean.ordenActual.autorizacionesOrden.estatus.id gt 150}">
+                                    <h:outputText value="Generar excel" 
+                                                    styleClass="btn btn-default"
+                                                    />
+                                </p:link >
+                            </div>
+                            <div class="col-lg-4"></div>
+                        </div>
+                        <div class="row ">
+                            <div class="col-lg-6">
+                                <div class="input-group " ><br/>
+                                    <div class="form-group col-lg-12" >
+                                        <h:outputLabel class="col-lg-3 control-label"  value="Compañia: "/>
+                                        <div class="col-lg-9">
+                                            <h:outputText   value="#{ordenBean.ordenActual.compania.nombre}"/>
+                                        </div>
+                                    </div>
+                                    <div class="form-group col-lg-12" >
+                                        <h:outputLabel  class="col-lg-3 control-label"  value="Bloque:"/>
+                                        <div class="col-lg-9">
+                                            <h:outputText  value="#{ordenBean.ordenActual.apCampo.nombre}"/>
+                                        </div>
+                                    </div>                                        
+                                </div>
+                            </div>
+                            <div class="col-lg-6">  
+                                <div class="input-group"><br/>
+                                    <div class="form-group col-lg-12" >
+                                        <h:outputLabel class="col-lg-3 control-label" value="Estatus:"/>
+                                        <div class="col-lg-9">
+                                            <h:outputText  value="#{ordenBean.ordenActual.autorizacionesOrden.estatus.nombre}"/>
+                                        </div>
+                                    </div>
+                                    <div class="form-group col-lg-12" >
+                                        <h:outputLabel class="col-lg-3 control-label" value="Entrega en:"/>
+                                        <div class="col-lg-9">                        
+                                            <h:outputText value="#{ordenBean.ordenActual.destino}"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>                    
+                        <div class="row">
+                            <div class="col-lg-12">  
+                                <div id="TabsOCSHist" style="width: 100%;">
+                                    <ul>
+                                        <li><a href="#InfOrden">Inf. Orden</a></li>
+                                        <li><a href="#EtsOCs" title="Especificación Técnica de Suministro.">ETS OC/S</a></li>
+                                        <li><a href="#InfRequi">Inf. Requisición</a></li>
+                                        <li><a href="#InfMovi">Inf. Movimientos</a></li>
+                                        <li><a href="#InfNotas">Inf. Notas</a></li>
+                                        <!--li><a href="#OcsCancel">Si el estatus es cancelada, ver detalle</a></li-->
+                                        <li><a href="#tablaComparativa">Tabla Comparativa</a></li>
+                                        <li><a href="#formatoOrden">Formatos entrada</a></li>
+                                        <ui:fragment rendered="#{usuarioBean.mapaRoles.get('Consulta OCS Factura')}">
+                                            <li><a href="#factura">Facturas</a></li>
+                                        </ui:fragment>
+                                    </ul>                    
+                                    <div id="InfOrden" class="textoIzquierda">  
+                                        <div class="container-fluid">
+                                            <div class="col-lg-12 col-xs-12" style="margin-top: 15px;"> 
+                                                <div scope="colgroup" colspan="8" class="iceDatTblHdr tableHdr table-stripedHdr" style="font-weight: normal;"><label id="" class="iceOutLbl" style="font-weight: normal;">Inf. Orden</label></div>
+                                                <div class="input-group panel panel-default" style="border: white; border-style: solid; border-width: 1px;">
+                                                    <div class="form-group col-lg-12 col-xs-12" style="border: white; border-bottom: #eee; border-top: white;  border-style: solid; border-width: 2px;">
+                                                        <h:outputLabel styleClass="col-lg-2 col-xs-12 control-label"  value="Termino de pago:"/>
+                                                        <div class="col-lg-4 col-xs-12">
+                                                            <h:outputText  value="#{ordenBean.ordenActual.ocTerminoPago.nombre}"/>
+                                                        </div>                                                
+                                                        <h:outputLabel styleClass="col-lg-2 col-xs-12 control-label" value="Elaboro:"/>
+                                                        <div class="col-lg-4 col-xs-12">
+                                                            <h:outputText  value="#{ordenBean.ordenActual.analista.nombre}"/>
+                                                        </div>
+                                                    </div>                                                
+                                                    <div class="form-group col-lg-12 col-xs-12" style="border: white; border-bottom: #eee; border-top: white;  border-style: solid; border-width: 2px;">
+                                                        <h:outputLabel styleClass="col-lg-2 col-xs-12 control-label"  value="Dpto. Solicitante:"/>
+                                                        <div class="col-lg-4 col-xs-12">
+                                                            <h:outputText  value="#{ordenBean.ordenActual.gerencia.nombre}"/>
+                                                        </div>                                                
+                                                        <h:outputLabel styleClass="col-lg-2 col-xs-12 control-label" value="Proveedor:"/>
+                                                        <div class="col-lg-4 col-xs-12">                        
+                                                            <h:outputText  value="#{ordenBean.ordenActual.proveedor.nombre}"/>
+                                                        </div>
+                                                    </div>                                                
+                                                    <div class="form-group col-lg-12 col-xs-12" style="border: white; border-bottom: #eee; border-top: white;  border-style: solid; border-width: 2px;">
+                                                        <h:outputLabel styleClass="col-lg-2 col-xs-12 control-label"  value="Responsable:"/>
+                                                        <div class="col-lg-4 col-xs-12">
+                                                            <h:outputText  value="#{ordenBean.ordenActual.responsableGerencia.nombre}"/>
+                                                        </div>                                                
+                                                        <h:outputLabel styleClass="col-lg-2 col-xs-12 control-label" value="Contrato:"/>
+                                                        <div class="col-lg-4 col-xs-12">
+                                                            <h:outputText  value="#{ordenBean.ordenActual.contrato}"/>
+                                                        </div>
+                                                    </div>                                                
+                                                    <div class="form-group col-lg-12 col-xs-12" style="border: white; border-bottom: #eee; border-top: white;  border-style: solid; border-width: 2px;">
+                                                        <h:outputLabel styleClass="col-lg-2 col-xs-12 control-label"  value="ProyectoOT:"/>
+                                                        <div class="col-lg-4">
+                                                            <h:outputText  value="#{ordenBean.ordenActual.proyectoOt.nombre}"/>
+                                                        </div>                                                
+                                                        <h:outputLabel styleClass="col-lg-2 control-label" value="Revisa:" style="font-weight: bold; "/>
+                                                        <div class="col-lg-4">
+                                                            <h:outputText  value="#{ordenBean.ordenActual.autorizacionesOrden.autorizaMpg.nombre}"/>
+                                                        </div>
+                                                    </div>                                                
+                                                    <div class="form-group col-lg-12 col-xs-12" style="border: white; border-bottom: #eee; border-top: white;  border-style: solid; border-width: 2px;">
+                                                        <h:outputLabel styleClass="col-lg-2 col-xs-12 control-label"   value="Destino:"/>
+                                                        <div class="col-lg-4 col-xs-12">
+                                                            <h:outputText  value="#{ordenBean.ordenActual.destino}"/>
+                                                        </div>
+                                                        <div class="col-lg-2 col-xs-12" style="text-align: left;" >
+                                                            <strong><h:outputLabel styleClass="control-label" value="Tipo de orden:"/></strong>
+                                                        </div>
+                                                        <ui:fragment rendered="#{ordenBean.ordenActual.tipo eq 'PS'}">
+                                                            <div class="col-lg-4 col-xs-12">
+                                                                <h:outputText styleClass="control-label" value="Producto / Servicio"/>
+                                                            </div>
+                                                        </ui:fragment>
+                                                        <ui:fragment rendered="#{ordenBean.ordenActual.tipo eq 'AF'}">
+                                                            <div class="col-lg-4 col-xs-12">
+                                                                <h:outputText styleClass="control-label" value="Activo Fijo"/>
+                                                            </div>
+                                                        </ui:fragment>
+                                                        <ui:fragment rendered="#{ordenBean.ordenActual.tipo eq 'AI'}">
+                                                            <div class="col-lg-2 col-xs-12">
+                                                                <h:outputText styleClass="control-label" value="Antes de integración" />
+                                                            </div>
+                                                        </ui:fragment>
+                                                    </div>
+                                                    <ui:fragment rendered="#{usuarioBean.usuarioConectado.apCampo.cartaIntencion eq true}">
+                                                        <div class="form-group col-lg-12 col-xs-12" style="border: white; border-bottom: #eee; border-top: white;  border-style: solid; border-width: 2px;">
+                                                            <div class="col-lg-2 col-xs-12" style="text-align: left;" >
+                                                                <strong><h:outputLabel styleClass="control-label"    value="REPSE:"/></strong>
+                                                            </div>
+                                                            <div class="col-lg-4 col-xs-12">
+                                                                <h:outputText styleClass="control-label"  value="#{ordenBean.ordenActual.repse eq true ? 'Si' : 'No'} "/>
+                                                            </div>          
+                                                        </div>
+                                                    </ui:fragment>    
+                                                </div>
+                                            </div>                                        
+                                            <div class="col-lg-12 col-xs-12">
+                                                <div class="col-lg-12 col-xs-12 input-group panel panel-default" style="border: white; border-style: solid; border-width: 1px;"><br/>
+                                                    <div class="form-group col-lg-12 col-xs-12" style="border: white; border-bottom: #eee; border-top: white;  border-style: solid; border-width: 2px;">
+                                                        <strong><h:outputText styleClass="col-lg-2 col-xs-12 control-label" value="Comentarios Int.:" /></strong> 
+                                                        <div class="col-lg-10 col-xs-12">
+                                                            <h:outputText styleClass="control-label" value="#{ordenBean.ordenActual.observaciones}"/>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="form-group col-lg-12 col-xs-12" style="border: white; border-bottom: #eee; border-top: white;  border-style: solid; border-width: 2px;">
+                                                        <strong><h:outputText styleClass="col-lg-2 col-xs-12 control-label" value="Observ proveedor:" /></strong> 
+                                                        <div class="col-lg-10 col-xs-12">
+                                                            <h:outputText styleClass="control-label" value="#{ordenBean.ordenActual.nota}"/>
+                                                        </div>
+                                                    </div>
+
+                                                </div>        
+                                            </div>    
+                                            <div class="col-lg-12 col-xs-12">
+                                                <h:outputLabel for="estatus" value="Autorizaciones"/>
+                                            </div>
+                                            <ui:include src="/vistas/SiaWeb/Orden/fragmento/autorizaciones.xhtml"/>
+
+                                            <div class="col-lg-12 col-xs-12">                                          
+                                                <div class="col-lg-12 col-xs-12">                                      
+                                                    <ui:include src="../../SiaWeb/Orden/fragmento/itemsOrden.xhtml"/>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-12 col-sm-12 col-xs-12 mm">
+                                                <div class="col-lg-10 col-sm-8 col-xs-8" style="text-align: right;">
+                                                    <strong><h:outputLabel styleClass="control-label" value="SubTotal:"/></strong>
+                                                </div>
+                                                <div class="col-lg-2 col-sm-4 col-xs-4 mm" style="text-align: right;">
+                                                    <h:outputLabel value="#{ordenBean.ordenActual.subtotal}">
+                                                        <f:convertNumber pattern="$ #,##0.00" locale="es-MX"/>
+                                                    </h:outputLabel>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-12 col-sm-12 col-xs-12 mm">
+                                                <div class="col-lg-10 col-sm-8 col-xs-8" style="text-align: right;">
+                                                    <strong><h:outputLabel styleClass="control-label" value="IVA:"/></strong>
+                                                </div>
+                                                <div class="col-lg-2 col-sm-4 col-xs-4 mm" style="text-align: right;">
+                                                    <h:outputLabel value="#{ordenBean.ordenActual.iva}">
+                                                        <f:convertNumber pattern="$ #,##0.00" locale="es-MX"/>
+                                                    </h:outputLabel>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-12 col-sm-12 col-xs-12 mm">
+                                                <div class="col-lg-10 col-sm-8 col-xs-8" style="text-align: right;">
+                                                    <strong><h:outputLabel styleClass="control-label" value="Total:"/></strong>
+                                                </div>
+                                                <div class="col-lg-2 col-sm-4 col-xs-4 mm" style="text-align: right;">
+                                                    <h:outputLabel value="#{ordenBean.ordenActual.total}">
+                                                        <f:convertNumber pattern="$ #,##0.00" locale="es-MX"/>
+                                                    </h:outputLabel>
+                                                </div>                
+                                            </div>
+                                            <div class="col-lg-12 col-sm-12 col-xs-12 mm">
+                                                <div class="col-lg-10 col-sm-8 col-xs-8" style="text-align: right;">
+                                                    <strong><h:outputLabel styleClass="control-label" value="Moneda:"/></strong>
+                                                </div>
+                                                <div class="col-lg-2 col-sm-4 col-xs-4 mm" style="text-align: right;">
+                                                    <h:outputLabel value="#{ordenBean.ordenActual.moneda.siglas}"/>
+                                                </div>                
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div id="EtsOCs" class="textoIzquierda">
+                                        <!-- Panel layout que contiene todo lo del tap tap -->
+                                        <h:outputLabel style="font-size:14px; font-weight: bold;" value="Especificación Técnica de Suministro"/>
+                                        <ui:include src="/vistas/SiaWeb/Orden/fragmento/especificacionTecnica.xhtml"/>
+                                    </div>
+                                    <div id="InfRequi" class="textoIzquierda">
+                                        <h:panelGrid >
+                                            <h:outputText value="Analista asignado para realizar la compra:"/>
+                                            <h:outputText  value="#{ordenBean.ordenActual.requisicion.compra.nombre}"/>                            
+                                        </h:panelGrid><br/>
+                                        <ui:include src="/vistas/SiaWeb/Orden/fragmento/infRequisicion.xhtml"/>                            
+                                    </div>
+                                    <div id="InfMovi" class="textoIzquierda">
+                                        <div class="container-fluid">
+                                            <div class="table table-responsive">
+                                                <p:dataTable size="small" stripedRows="true" showGridlines="true"  value="#{ordenBean.listaRechazos}" var="currentRow" styleClass="table table-striped">
+                                                    <p:column>
+                                                        <h:outputText value="#{currentRow['nombreSolicito']}"/>
+                                                        <f:facet name="header">
+                                                            <h:outputText value="Devolvió"/>
+                                                        </f:facet>
+                                                    </p:column>
+                                                    <p:column>
+                                                        <h:outputText value="#{currentRow['fechaGenero']}">
+                                                            <f:convertDateTime pattern="dd/MM/yyyy" type="date"/>
+                                                        </h:outputText>
+                                                        <f:facet name="header">
+                                                            <h:outputText value="Fecha"/>
+                                                        </f:facet>
+                                                    </p:column>
+                                                    <p:column>
+                                                        <h:outputText value="#{currentRow['horaGenero']}">
+                                                            <f:convertDateTime pattern="hh:mm" timeStyle="default" type="time"/>
+                                                        </h:outputText>
+                                                        <f:facet name="header">
+                                                            <h:outputText value="Hora"/>
+                                                        </f:facet>
+                                                    </p:column>
+                                                    <p:column>
+                                                        <h:outputText value="#{currentRow['operacion']}"/>
+                                                        <f:facet name="header">
+                                                            <h:outputText value="Operación"/>
+                                                        </f:facet>
+                                                    </p:column>
+                                                    <p:column>
+                                                        <h:outputText value="#{currentRow['motivo']}"/>
+                                                        <f:facet name="header">
+                                                            <h:outputText value="Motivo"/>
+                                                        </f:facet>
+                                                    </p:column>
+                                                </p:dataTable>
+                                            </div>
+                                        </div>
+                                    </div>                                
+                                    <div id="InfNotas" class="textoIzquierda">
+                                        <ui:include src="/vistas/SiaWeb/Orden/fragmento/historialNoticia.xhtml"/>
+                                    </div>                        
+                                    <!--div id="OcsCancel" class="textoIzquierda">
+                                        <p:panel  width="90%">
+                                            <p:dataTable size="small" stripedRows="true" showGridlines="true" id="dtCancelOCS" var="dataCan" value="#{ordenBean.traerCancelacion}"
+                                                           style="width: 80%;">
+                                                <p:column headerText="Solicitó">
+                                                    <h:outputText value="#{dataCan.nombreSolicito ne data.genero ?  dataCan.nombreSolicito : ''}"/>
+                                                </p:column>
+                                                <p:column headerText="Generó">
+                                                    <h:outputText value="#{dataCan.genero}"/>
+                                                </p:column>
+                                                <p:column headerText="Fecha">
+                                                    <h:outputText value="#{dataCan.fechaGenero}"/>						
+                                                </p:column>
+                                                <p:column headerText="Hora">
+                                                    <h:outputText value="#{dataCan.horaGenero}"/>						
+                                                </p:column>
+                                                <p:column headerText="Motivo">
+                                                    <h:outputText value="#{dataCan.motivo}"/>
+                                                </p:column>
+                                            </p:dataTable>
+                                        </p:panel>
+                                    </div-->  
+                                    <div id="tablaComparativa" class="textoIzquierda">
+                                        <ui:include src="/vistas/SiaWeb/Orden/fragmento/tablaComparativa.xhtml"/>
+                                    </div>
+                                    <div id="formatoOrden" class="textoIzquierda">
+                                        <c:choose>
+                                            <c:when test="#{usuarioBean.mapaRoles.get('Consulta formatos entrada') or usuarioBean.mapaRoles.get('Comprador')}">
+                                                <p:dataTable size="small" stripedRows="true" showGridlines="true" id="dtCancelOCS" var="dataF" value="#{ordenBean.formatosEntrada}"
+                                                               style="width: 80%;" >
+                                                    <p:column headerText="Pedido">
+                                                        <h:outputText value="#{dataF.pedido}"/>
+                                                    </p:column>
+                                                    <p:column headerText="Referencia">
+                                                        <h:outputText value="#{dataF.referencia}"/>
+                                                    </p:column>
+                                                    <p:column headerText="Fecha">
+                                                        <h:outputText value="#{dataF.fechaGenero}"/>						
+                                                    </p:column>
+                                                    <p:column headerText="Proveedor">
+                                                        <h:outputText value="#{dataF.proveedor}"/>						
+                                                    </p:column>
+                                                    <p:column headerText="Archivo">
+                                                        <h:outputLink target="_blank"  value="/Compras/AbrirArchivo?ZWZ2W=#{dataF.idAdjunto}&amp;ZWZ3W=#{dataF.uuId}"
+                                                                      style="color: blue;">
+                                                            <h:outputText value=" Abrir"/>
+                                                        </h:outputLink>
+                                                    </p:column>
+                                                </p:dataTable>
+                                            </c:when>
+                                            <c:otherwise>
+                                                <div class="col-lg-12">
+                                                    <h:outputText value="No tienes el permiso necesario para ver esta información" style="font-style: italic;" />
+                                                </div>
+                                            </c:otherwise>
+                                        </c:choose>
+
+                                    </div>
+                                    <ui:fragment rendered="#{usuarioBean.mapaRoles.get('Consulta OCS Factura')}">
+                                        <div id="factura" class="textoIzquierda">
+                                            <ui:include src="/vistas/SiaWeb/Orden/facturaTab.xhtml"/>
+                                        </div>
+                                    </ui:fragment>
+                                </div>
+                            </div>
+                        </div>                    
+                    </h:form>
+                </div>
+
+                <ui:fragment rendered="#{usuarioBean.mapaRoles.get('Consulta OCS Factura')}">
+                    <ui:include src="/vistas/SiaWeb/Orden/facturaTabPopup.xhtml"/>
+                </ui:fragment>
+
+
+            </ui:define>   
+
+        </ui:composition>
+
+    </body>
+</html>

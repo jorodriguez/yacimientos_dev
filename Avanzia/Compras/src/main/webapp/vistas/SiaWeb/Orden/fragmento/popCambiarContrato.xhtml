@@ -1,0 +1,94 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                >
+    <div class="modal fade" id="dialogoCambiarContrato" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog"  style="width: 80%;">
+            <h:form id="frmCambiarContrato">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title">Cambiar contrato</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <small>*Se crearan órdenes de compra/servicio de acuerdo a los distintos contratos seleccionados</small>
+                        </div>
+                        
+                        <p:dataTable size="small" stripedRows="true" showGridlines="true" value="#{ordenCompraBean.listaItems}" var="data" style="font-size: 1.0em;">
+                            <p:column headerText="Contrato">
+                                <h:selectOneMenu id="cmbConvenio" value="#{data.idConvenio}" class="form-control"
+                                                 disabled="#{data.idAgrupador eq 0 and data.idRequisicionDetalle eq 0}">
+                                    <f:selectItem itemValue="0" itemLabel=" "/>
+                                    <f:selectItem itemValue="-1" itemLabel="OCS SIN CONTRATO"/>
+                                    <f:selectItems value="#{data.convenios}"/>
+                                </h:selectOneMenu>
+                            </p:column>
+                            <p:column headerText="Artículo" style="text-align: justify;">
+                                <h:outputText value="#{data.artNombre}"/>
+                            </p:column>
+                        </p:dataTable>
+                    </div>
+                    <div class="modal-footer">
+                        <h:commandButton action="#{ordenCompraBean.agregarContratoOrden(event)}"                                                               
+                                         value="Guardar" title="Clic para generar las oc/s con el o los contratos seleccionados"
+                                         styleClass="btn btn-primary">
+                        </h:commandButton>
+                        <h:commandButton action="#{ordenCompraBean.cerrarContratoOrden(event)}"                                                               
+                                         value="Cancelar" title="Clic para generar las oc/s con el o los contratos seleccionados"
+                                         styleClass="btn btn-default" >
+                        </h:commandButton>
+                    </div>
+                </div>
+            </h:form>
+        </div>
+    </div>
+
+    <div class="modal fade" id="dialogoHistorialCompra" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog"  style="width: 80%;">
+            <h:form id="frmHistorialCompra">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title">Historial Compras</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <small> ** Se mostrarán sólo las últimas 5 compras.</small>
+                        </div>
+                        <p:dataTable size="small" stripedRows="true" showGridlines="true" value="#{ordenCompraBean.historicoVentas}" var="data" style="font-size: 1.0em;">
+                            <p:column headerText="Fecha" style="text-align: justify;">
+                                <h:outputText value="#{data.fecha}">
+                                    <f:convertDateTime dateStyle="default" pattern="dd/MM/yyyy"/>
+                                </h:outputText>
+                            </p:column>
+                            <p:column headerText="OCs" style="text-align: justify;">
+                                <h:outputText value="#{data.consecutivo}"/>
+                            </p:column>
+                            <p:column headerText="Proveedor" style="text-align: justify;">
+                                <h:outputText value="#{data.proveedor}"/>
+                            </p:column>
+                            <p:column headerText="Unidad" style="text-align: justify;">
+                                <h:outputText value="#{data.unidad}"/>
+                            </p:column>
+                            <p:column headerText="Precio Unitario" style="text-align: justify;">
+                                <h:outputText value="#{data.precioU}"/>
+                            </p:column>
+                            <p:column headerText="Moneda" style="text-align: justify;">
+                                <h:outputText value="#{data.moneda}"/>
+                            </p:column>
+                        </p:dataTable>
+                    </div>
+                    <div class="modal-footer">                        
+                        <h:commandButton action="#{ordenCompraBean.cerrarHistoryItem(event)}"                                                               
+                                         value="Cerrar" 
+                                         title="Clic para cerrar ventana"
+                                         styleClass="btn btn-default" >
+                        </h:commandButton>
+                    </div>
+                </div>
+            </h:form>
+        </div>
+    </div>
+</ui:composition>

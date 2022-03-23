@@ -1,0 +1,290 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      >
+    <body>
+        <ui:composition template="./../../templates/template.xhtml">
+
+            <style>
+                .errorSIA {
+                    border-color: #FF4040;    
+                }    
+                .existe{
+                    color: #004085;
+                    background-color: #d4edda;
+                    border-color: #b8daff;
+
+                }
+                .noExiste{
+                    color: #155724;
+                    background-color: #f8d7da;
+                    border-color: #c3e6cb;
+                }
+            </style>
+             
+
+            <ui:define name="tituloPagina">
+                Administrar Tareas
+            </ui:define>
+            <ui:define name="content">
+                <script>
+                    function pintarOpaa() {                        
+                        $(".ui-widget-content").css({
+                            "opacity": "1.0"
+                        });                        
+                        return true;
+                    }
+                </script>
+
+                <div class="row-fluid"> 
+                    <div id="divAutoriza" class="btn-group">
+                        <h:form>
+                            <div class="row-fluid">
+                                <p:commandLink value="Cargar tareas" class="btn btn-primary"
+                                               action="#{adminTareaBean.cargarTareas(event)}"
+                                               title="Cargar tareas desde el archivo de tareas"/>                                
+                            </div>
+                        </h:form>
+                    </div>
+                    <div id="divOperacion" class="btn-group" style="display: none;">
+                        <h:form>
+                            <div class="row-fluid">
+                                <p:commandLink value="Regresar" class="btn btn-primary"
+                                               action="#{adminTareaBean.regresarTareas(event)}"/>
+                                <ui:fragment rendered="#{adminTareaBean.tareasTemp.size() gt 0}">
+                                    <p:commandLink value="Guardar" 
+                                                   class="btn btn-primary"
+                                                   onclick="if (!confirm('La operación guardara en el sistema las nuevas tareas. ¿Está seguro?'))
+                                                               return false;"
+                                                   action="#{adminTareaBean.guardarTareas(event)}"/>
+                                </ui:fragment>
+                            </div>
+                        </h:form>
+                    </div>
+                </div>
+
+                <div id="divTabla" style="padding-top: 5px;" class="container-fluid"> 
+                    <h:form>
+                        <p:tabView >
+                            <p:tab title="Proyectos OT">
+                                <div class="col-lg-8">
+                                    <div>
+                                        <p:commandLink styleClass="btn btn-info" action="#{adminTareaBean.eliminarOt(event)}"
+                                                         value="Eliminar">
+                                        </p:commandLink>
+                                    </div>
+                                    <!-- rowSelectListener="#{adminTareaBean.seleccionarOt}" -->
+                                    <p:dataTable size="small" stripedRows="true" showGridlines="true" value="#{adminTareaBean.listaProyecto}" var="data" rows="20" 
+                                                   paginatorPosition="bottom" paginator="true" style="font-size: 1.1em;"
+                                                   selectionMode="single" >
+                                        <p:ajax event="select" process="@this" update="@all"/>
+                                        <p:column>
+                                            <h:selectBooleanCheckbox value="#{data.selected}"/>
+                                        </p:column>
+                                        <p:column headerText="Nombre" style="text-align: left;">
+                                            <h:outputText value="#{data.nombre}"/>
+                                        </p:column>
+                                        <p:column headerText="Ot">
+                                            <h:outputText value="#{data.cuentaContable}"/>
+                                        </p:column>
+                                    </p:dataTable>
+                                </div>
+                            </p:tab>
+                            <p:tab title="Gerencias">
+                                <div class="row form-group">
+                                    <h:outputLabel value="Proyecto: "/><h:outputLabel value="#{adminTareaBean.proyectoOtVo.nombre}"/> -
+                                    <h:outputLabel value="#{adminTareaBean.proyectoOtVo.cuentaContable}"/>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div>
+                                        <p:commandLink styleClass="btn btn-info" action="#{adminTareaBean.eliminarGerencia(event)}"
+                                                         value="Eliminar">
+                                        </p:commandLink>
+                                    </div>
+                                    <!--<!-- rowSelectListener="#{adminTareaBean.seleccionarGerencia}" -->
+                                    <p:dataTable size="small" stripedRows="true" showGridlines="true" value="#{adminTareaBean.listaGerencia}" var="data" rows="20" 
+                                                   paginatorPosition="bottom" paginator="true" style="font-size: 1.1em;"
+                                                   selectionMode="true" >
+                                        <p:column headerText="">
+                                            <h:selectBooleanCheckbox value="#{data.selected}"></h:selectBooleanCheckbox>
+                                        </p:column>
+                                        <p:column headerText="Nombre" style="text-align: left;">
+                                            <h:outputText value="#{data.gerencia}"/>
+                                        </p:column>
+                                        <p:column id="exp">
+                                            <p:rowToggler />
+                                        </p:column>
+                                        <p:rowExpansion >
+                                            <p:dataTable size="small" stripedRows="true" showGridlines="true" value="#{data.listaGerencia}" var="ger">
+                                                <p:column headerText="Gerencia" style="text-align: left;">
+                                                    <h:outputText value="#{ger.nombre}"/>
+                                                </p:column>
+                                            </p:dataTable>
+                                        </p:rowExpansion>
+                                    </p:dataTable>
+                                </div>
+                            </p:tab>
+                            <p:tab title="Tipos de tarea">
+                                <div class="row input-group">
+                                    <div class="col-lg-6 form-group">
+                                        <h:outputLabel value="Proyecto: "/><h:outputLabel value="#{adminTareaBean.proyectoOtVo.nombre}"/> -
+                                        <h:outputLabel value="#{adminTareaBean.proyectoOtVo.cuentaContable}"/>
+                                    </div>
+                                    <div class="col-lg-4 form-group">
+                                        <h:outputLabel value=" Gerencia:"/> <h:outputLabel value="#{adminTareaBean.tareaVo.gerencia}"/> 
+                                    </div>
+                                </div>
+                                <div class="col-lg-8">
+                                    <div >
+                                        <p:commandLink styleClass="btn btn-info" action="#{adminTareaBean.eliminarTipoTarea(event)}"
+                                                         value="Eliminar">
+                                        </p:commandLink>
+                                    </div>
+                                    <!--<!-- rowSelectListener="#{adminTareaBean.seleccionarTipoTarea}" -->
+                                    <p:dataTable size="small" stripedRows="true" showGridlines="true" value="#{adminTareaBean.listaTipoTarea}" var="data" rows="20" 
+                                                   paginatorPosition="bottom" paginator="true" style="font-size: 1.1em;"
+                                                   selectionMode="single" >
+                                        <p:column headerText="">
+                                            <h:selectBooleanCheckbox value="#{data.selected}"></h:selectBooleanCheckbox>
+                                        </p:column>
+                                        <p:column headerText="Nombre" style="text-align: left;">
+                                            <h:outputText value="#{data.unidadCosto}"/>
+                                        </p:column>
+                                    </p:dataTable>
+                                </div>
+                            </p:tab>
+                            <p:tab title="Tareas">
+                                <div class="row input-group">
+                                    <div class="col-lg-4 form-group">
+                                        <h:outputLabel value="Proyecto: "/><h:outputLabel value="#{adminTareaBean.proyectoOtVo.nombre}"/> -
+                                        <h:outputLabel value="#{adminTareaBean.proyectoOtVo.cuentaContable}"/> 
+                                    </div>
+                                    <div class="col-lg-2 form-group">
+                                        <h:outputLabel value="Gerencia:"/> <h:outputLabel value="#{adminTareaBean.tareaVo.gerencia}"/>
+                                    </div>
+                                    <div class="col-lg-3 form-group">
+                                        <h:outputLabel value="Tipo de tarea:"/> <h:outputLabel value="#{adminTareaBean.tareaVo.unidadCosto}"/> 
+                                    </div>
+                                </div>
+                                <div class="col-lg-8">
+                                    <div>
+                                        <p:commandLink styleClass="btn btn-info" action="#{adminTareaBean.eliminarTarea(event)}"
+                                                         value="Eliminar">
+                                        </p:commandLink>
+                                    </div>
+                                    <p:dataTable size="small" stripedRows="true" showGridlines="true" value="#{adminTareaBean.listaTarea}" var="data" rows="20" 
+                                                   paginatorPosition="bottom" paginator="true" style="font-size: 1.1em;">
+                                        <p:column headerText="">
+                                            <h:selectBooleanCheckbox value="#{data.selected}"></h:selectBooleanCheckbox>
+                                        </p:column>
+                                        <p:column headerText="Nombre" style="text-align: left;">
+                                            <h:outputText value="#{data.nombreTarea}"/>
+                                        </p:column>
+                                        <p:column headerText="Código" style="text-align: left;">
+                                            <h:outputText value="#{data.codigoTarea}"/>
+                                        </p:column>
+                                    </p:dataTable>
+                                </div>
+                            </p:tab>
+                        </p:tabView>
+                    </h:form>
+                </div>
+                <div id="divDatos"  style="padding-top: 15px;display: none;">                        
+                    <h:form id="frmDivDatosTareas">
+                        <div class="col-lg-12 col-xs-12">
+                            <div class="row">
+                                <div class="col-lg-2 col-xs-6">
+                                    <h4>Cargar Tareas</h4>
+                                </div>
+                                <ui:fragment rendered="#{adminTareaBean.tareasTemp.size() gt 0}">
+                                    <div class="col-lg-1 col-xs-6" style="height: 20px; width: 20px; background-color: #f8d7da; color: #155724; border-color: #c3e6cb;"></div>                                
+                                    <div class="col-lg-4 col-xs-6">
+                                        Tareas que no serán registradas, ya existen en el SIA.
+                                    </div>                                
+                                    <div class="col-lg-1 col-xs-6" style="height: 20px; width: 20px; background-color: #d4edda; color: #004085; border-color: #b8daff;"></div>
+                                    <div class="col-lg-4 col-xs-6" >
+                                        Tareas que serán registradas en el SIA.
+                                    </div>
+                                </ui:fragment>
+                            </div>
+
+                            <div class="col-lg-12 col-xs-12">
+                                <ui:fragment rendered="#{adminTareaBean.tareasTemp.size() eq 0}">                                    
+                                    <div class="panel">
+                                        <p:dataTable size="small" stripedRows="true" showGridlines="true" value="#{adminTareaBean.listaCampo}" var="data">
+                                            <f:facet name="header">Campos</f:facet>
+                                            <p:column>
+                                                <h:selectBooleanCheckbox value="#{data.selected}"/>
+                                            </p:column>
+                                            <p:column style="text-align: left;">
+                                                <h:outputLabel value="#{data.nombre}"/>
+                                            </p:column>
+                                        </p:dataTable> 
+                                    </div>
+                                    <div class="row">
+                                        <h4>
+                                            <h:outputLabel value="Archivo de tareas"/>
+                                        </h4>
+                                    </div>
+                                    <div class="col-lg-12 col-xs-12" style="font-size:12px; margin-top: 10px;">                                                                                                                                    
+                                        <p:fileUpload id="fileEntryCompTareas" 
+                                                       styleClass="btn btn-default"
+                                                       label="Archivo"
+                                                       listener="#{adminTareaBean.uploadFile}" />
+                                        <h:commandButton  styleClass="btn btn-default" onclick="areaBlockCSS();" id="uploadFile" value="Subir"/>
+                                    </div>
+                                </ui:fragment>
+                                <ui:fragment rendered="#{adminTareaBean.tareasTemp.size() gt 0}">
+                                    <p:tabView>
+                                        <c:forEach items="#{adminTareaBean.tareasTemp}" var="apCampo">
+                                            <p:tab title="#{apCampo.key}">
+                                                <div class="table table-responsive">
+                                                    <p:dataTable size="small" stripedRows="true" showGridlines="true" id="TareasDetID" 
+                                                                   value="#{apCampo.value}" var="data"
+                                                                                                                      
+                                                                   style="font-size: 1em; width: 100%"  >                                                                                        
+                                                        <p:column style="width: 25%;#{data.existeTarea and data.idProyectoOt gt 0 and data.idcodigoTarea gt 0 and data.idNombreTarea gt 0 and data.idUnidadCosto gt 0 and data.idGerencia gt 0 ? 'background-color: #f8d7da;' : 'background-color: #d4edda;'}">
+                                                            <h:outputText value="#{data['campo']}" styleClass="#{data.existeTarea and data.idProyectoOt gt 0 and data.idcodigoTarea gt 0 and data.idNombreTarea gt 0 and data.idUnidadCosto gt 0 and data.idGerencia gt 0 ? 'existe' : 'noExiste'};"/>
+                                                            <f:facet name="header"><h:outputText value="Campo"/></f:facet>
+                                                        </p:column>
+                                                        <p:column style="width: 10%;#{data.existeTarea and data.idProyectoOt gt 0 and data.idcodigoTarea gt 0 and data.idNombreTarea gt 0 and data.idUnidadCosto gt 0 and data.idGerencia gt 0 ? 'background-color: #f8d7da;' : 'background-color: #d4edda;'}">
+                                                            <h:outputText value="#{data['cuentaContable']}" styleClass="#{data.existeTarea and data.idProyectoOt gt 0 and data.idcodigoTarea gt 0 and data.idNombreTarea gt 0 and data.idUnidadCosto gt 0 and data.idGerencia gt 0 ? 'existe' : 'noExiste'};"/>
+                                                            <f:facet name="header"><h:outputText value="Nº proyecto"/></f:facet>
+                                                        </p:column>
+                                                        <p:column style="width: 10%;#{data.existeTarea and data.idProyectoOt gt 0 and data.idcodigoTarea gt 0 and data.idNombreTarea gt 0 and data.idUnidadCosto gt 0 and data.idGerencia gt 0 ? 'background-color: #f8d7da;' : 'background-color: #d4edda;'}">
+                                                            <h:outputText value="#{data['codigoTarea']}" styleClass="#{data.existeTarea and data.idProyectoOt gt 0 and data.idcodigoTarea gt 0 and data.idNombreTarea gt 0 and data.idUnidadCosto gt 0 and data.idGerencia gt 0 ? 'existe' : 'noExiste'};"/>
+                                                            <f:facet name="header"><h:outputText value="Nº tarea proyecto"/></f:facet>
+                                                        </p:column>
+                                                        <p:column style="width: 40%;#{data.existeTarea and data.idProyectoOt gt 0 and data.idcodigoTarea gt 0 and data.idNombreTarea gt 0 and data.idUnidadCosto gt 0 and data.idGerencia gt 0 ? 'background-color: #f8d7da;' : 'background-color: #d4edda;'}">
+                                                            <h:outputText value="#{data['nombreTarea']}" styleClass="#{data.existeTarea and data.idProyectoOt gt 0 and data.idcodigoTarea gt 0 and data.idNombreTarea gt 0 and data.idUnidadCosto gt 0 and data.idGerencia gt 0 ? 'existe' : 'noExiste'};"/>
+                                                            <f:facet name="header">
+                                                                <h:outputText value="Nombre tarea"/>
+                                                            </f:facet>
+                                                        </p:column>                                    
+                                                        <p:column style="width: 15%;#{data.existeTarea and data.idProyectoOt gt 0 and data.idcodigoTarea gt 0 and data.idNombreTarea gt 0 and data.idUnidadCosto gt 0 and data.idGerencia gt 0 ? 'background-color: #f8d7da;' : 'background-color: #d4edda;'}">
+                                                            <h:outputText value="#{data['gerencia']}" styleClass="#{data.existeTarea and data.idProyectoOt gt 0 and data.idcodigoTarea gt 0 and data.idNombreTarea gt 0 and data.idUnidadCosto gt 0 and data.idGerencia gt 0 ? 'existe' : 'noExiste'};"/>
+                                                            <f:facet name="header">
+                                                                <h:outputText value="Gerencia"/>
+                                                            </f:facet>
+                                                        </p:column>                                    
+                                                    </p:dataTable>
+                                                </div>
+
+                                            </p:tab>
+                                        </c:forEach>
+                                    </p:tabView>
+                                </ui:fragment>
+                            </div>     
+                        </div>
+                    </h:form>
+                </div>
+
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

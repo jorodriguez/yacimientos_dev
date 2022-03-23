@@ -1,0 +1,272 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      
+      xmlns:h="http://xmlns.jcp.org/jsf/html">
+
+    <body>
+
+        <ui:composition template="./../templates/template.xhtml">
+            <ui:define name="tituloPagina">
+                Asignar Requisiciones
+            </ui:define>
+            <ui:define name="content">                
+                <script>
+                    $(document).ready(function () {
+                        seleccionarFila("form1\\:dataTable1");
+                        $("#tabsRequi").tabs();
+                    });
+                </script>
+                <ui:include src="/vistas/SiaWeb/Requisiciones/fragmentos/popUpRequisicion.xhtml"/>      
+
+                <h:form id="form1">                    
+                    <!--h:outputText id="outputText0" value="Seleccione una requisición de la lista para ver sus Items por favor..."/-->                    
+                    <div class="row">
+                        <div id="divOperacion" class="btn-group col-lg-3" style="text-align: left; display: none;">                                
+                            <div class="col-lg-4">                            
+                                <p:commandLink value="Regresar" styleClass="btn btn-default" action="#{requisicionBean.limpiarRequisicion(actionEvent)}"
+                                               onclick="regresar('divTabla', 'divDatos', 'divOperacion', 'divAutoriza')"/>                                                                
+                            </div>
+                            <div class="col-lg-8">                            
+                                <p:commandLink value="Devolver" styleClass="btn btn-default" 
+                                               action="#{requisicionBean.devolverRequisicion(actionEvent)}"
+                                               title="Clic aquí para devolver la requisición..."
+                                               onclick="$('#msgAsignaRequisicion').text('');
+                                                       return true;"/>                                                                
+                            </div>
+                        </div>                            
+                        <div id="divAutorizaa" class="form-group col-lg-9" style="text-align: center;">
+                            <strong><h:outputText class="col-lg-3 control-label" style="padding-top: 8px;" value="Elija un Analista:"/></strong>
+                            <div class="col-lg-4">                            
+                                <h:selectOneMenu styleClass="form-control" id="listaAnalistas" value="#{requisicionBean.idAnalista}">
+                                    <f:selectItem itemLabel="Seleccione . . ." itemValue="-1"/>
+                                    <f:selectItems id="SelectAnalistaItems" value="#{requisicionBean.listaAnalista}"/>
+                                </h:selectOneMenu>                                        
+                            </div>   
+                            <div class="col-md-5">                            
+                                <ui:fragment rendered="#{requisicionBean.requisicionActual == null}">
+                                    <p:commandLink value="Asignar" 
+                                                   styleClass="btn btn-default"
+                                                   style="font-weight: bold;"
+                                                   action="#{requisicionBean.asignarRequisicion(actionEvent)}"
+                                                   onclick="return validaAsignarRequi('form1', 'seleccion');"
+                                                   disabled="#{requisicionBean.requisicionesSinAsignar.rowCount lt 1}"/>
+                                    <p:commandLink value="Devolver" styleClass="btn btn-default"
+                                                   onclick="return validaDevRequi('form1', 'seleccion');"
+                                                   disabled="#{requisicionBean.requisicionesSinRevisar.rowCount lt 1}"
+                                                   style="font-weight: bold;"/>
+                                    <p:commandLink value="Cancelar" styleClass="btn btn-default"
+                                                   onclick="return validaCancelRequi('form1', 'seleccion');"
+                                                   disabled="#{requisicionBean.requisicionesSinRevisar.rowCount lt 1}"
+                                                   style="font-weight: bold;"/>
+                                </ui:fragment>
+                                <ui:fragment rendered="#{requisicionBean.requisicionActual != null}">
+                                    <h:commandButton value="Asignar" 
+                                                     styleClass="btn btn-default"
+                                                     style="font-weight: bold;"
+                                                     action="#{requisicionBean.asignarRequisicion(actionEvent)}"                                                     
+                                                     onclick="return validaAsignarRRequi('form1');"
+                                                     disabled="#{requisicionBean.requisicionesSinAsignar.rowCount lt 1}"/>                                        
+                                </ui:fragment>
+                            </div>   
+                        </div>
+
+                    </div>                        
+                    <div id="divTabla" class="container-fluid"> 
+                        <div>
+                            <span id="msgAsignaRequisicion" style="color: red;" class="textoRojo"></span>
+                        </div>
+                        <div>
+                            <h:message for="msgAsignaRequisicion" style="color: red;" infoClass="infoMessage" errorClass="errorMessage" />
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="table table-responsive">
+                                    <!-- tabChangeListener="#{requisicionBean.seleccionarTabAsignarRequisicion(event)}"-->
+                                    <p:tabView   
+                                        tabindex="#{requisicionBean.indexTab}" style="font-size: 1em;">
+                                        <p:tab title="Requisiciones" >
+                                            <p:dataTable size="small" stripedRows="true" showGridlines="true"  id="dataTableAsignar" value="#{requisicionBean.requisicionesSinAsignar}" 
+                                                           var="currentRow" styleClass="table table-striped">
+                                                <p:column style="text-align: left; width: 3%;">
+                                                    <f:facet name="header">
+                                                        <h:selectBooleanCheckbox  class="todos" onchange="seleccionarGeneral('todos', 'seleccion', 'divAutoriza')"/>
+                                                    </f:facet>
+                                                    <h:selectBooleanCheckbox value="#{currentRow.selected}" class="seleccion" onclick="mostrarDiv('divRevisa');"/>
+                                                </p:column>                                        
+                                                <p:column style="text-align: center; width: 10%;">
+                                                    <h:outputText value="#{currentRow['consecutivo']}"/>
+                                                    <f:facet name="header">
+                                                        <h:outputText value="Código"/>
+                                                    </f:facet>
+                                                </p:column>                        
+                                                <p:column>
+                                                    <h:outputText value="#{currentRow['solicita']}"/>
+                                                    <f:facet name="header">
+                                                        <h:outputText value="Solicita"/>
+                                                    </f:facet>
+                                                </p:column>                        
+                                                <p:column style="text-align: center; width: 15%;">
+                                                    <h:outputText value="#{currentRow['gerencia']}"/>
+                                                    <f:facet name="header">
+                                                        <h:outputText value="Gerencia"/>
+                                                    </f:facet>
+                                                </p:column>
+                                                <p:column>
+                                                    <h:outputText value="#{currentRow['referencia']}"/>
+                                                    <f:facet name="header">
+                                                        <h:outputText value="Referencia"/>
+                                                    </f:facet>
+                                                </p:column>
+                                                <p:column style="text-align: center; width: 5%;">
+                                                    <h:outputText value="#{currentRow['fechaSolicitada']}">
+                                                        <f:convertDateTime dateStyle="default" type="date"/>
+                                                    </h:outputText>
+                                                    <f:facet name="header">
+                                                        <h:outputText value="Solicitada"/>
+                                                    </f:facet>
+                                                </p:column>
+                                                <p:column style="text-align: center; width: 5%;">
+                                                    <h:outputText value="#{currentRow['fechaRequerida']}">
+                                                        <f:convertDateTime dateStyle="default" type="date"/>
+                                                    </h:outputText>
+                                                    <f:facet name="header">
+                                                        <h:outputText value="Requerida"/>
+                                                    </f:facet>
+                                                </p:column>
+                                                <p:column style="text-align: center; width: 5%;">
+                                                    <h:outputText value="#{currentRow['prioridad']}"/>
+                                                    <f:facet name="header">
+                                                        <h:outputText value="Prioridad"/>
+                                                    </f:facet>
+                                                </p:column>
+                                                <p:column style="text-align: center; width: 5%;">
+                                                    <p:commandLink value="Seleccionar" style="color: blue" 
+                                                                   action="#{requisicionBean.seleccionarRequisicion(actionEvent)}"
+                                                                   title="Clic aquí para ver los items de la requisición..."
+                                                                   onclick="$('#msgAsignaRequisicion').text('');
+                                                                           return true;">
+                                                        <f:param name="idReqEs" value="#{currentRow.id}"/>
+                                                    </p:commandLink>
+                                                </p:column>
+                                            </p:dataTable>
+                                        </p:tab>
+                                        <p:tab title="Con inventario (#{requisicionBean.totalReqConInventario}) "
+                                                     rendered="#{requisicionBean.totalReqConInventario gt 0}">
+                                            <p:dataTable size="small" stripedRows="true" showGridlines="true"   value="#{requisicionBean.requisicionesSinAsignar}" 
+                                                           var="currentRow" styleClass="table table-striped">
+                                                <p:column style="text-align: center; width: 3%;">
+                                                    <f:facet name="header">
+                                                        <h:selectBooleanCheckbox  class="todos" onchange="seleccionarGeneral('todos', 'seleccion', 'divAutoriza')"/>
+                                                    </f:facet>
+                                                    <h:selectBooleanCheckbox value="#{currentRow.selected}" class="seleccion" onclick="mostrarDiv('divRevisa');"/>
+                                                </p:column>                                        
+                                                <p:column style="text-align: center; width: 10%;">
+                                                    <h:outputText value="#{currentRow['consecutivo']}"/>
+                                                    <f:facet name="header">
+                                                        <h:outputText value="Código"/>
+                                                    </f:facet>
+                                                </p:column>                        
+                                                <p:column>
+                                                    <h:outputText value="#{currentRow['solicita']}"/>
+                                                    <f:facet name="header">
+                                                        <h:outputText value="Solicita"/>
+                                                    </f:facet>
+                                                </p:column>                        
+                                                <p:column style="text-align: center; width: 15%;">
+                                                    <h:outputText value="#{currentRow['gerencia']}"/>
+                                                    <f:facet name="header">
+                                                        <h:outputText value="Gerencia"/>
+                                                    </f:facet>
+                                                </p:column>
+                                                <p:column>
+                                                    <h:outputText value="#{currentRow['referencia']}"/>
+                                                    <f:facet name="header">
+                                                        <h:outputText value="Referencia"/>
+                                                    </f:facet>
+                                                </p:column>
+                                                <p:column style="text-align: center; width: 5%;">
+                                                    <h:outputText value="#{currentRow['fechaSolicitada']}">
+                                                        <f:convertDateTime dateStyle="default" type="date"/>
+                                                    </h:outputText>
+                                                    <f:facet name="header">
+                                                        <h:outputText value="Solicitada"/>
+                                                    </f:facet>
+                                                </p:column>
+                                                <p:column style="text-align: center; width: 5%;">
+                                                    <h:outputText value="#{currentRow['fechaRequerida']}">
+                                                        <f:convertDateTime dateStyle="default" type="date"/>
+                                                    </h:outputText>
+                                                    <f:facet name="header">
+                                                        <h:outputText value="Requerida"/>
+                                                    </f:facet>
+                                                </p:column>
+                                                <p:column style="text-align: center; width: 5%;">
+                                                    <h:outputText value="#{currentRow['prioridad']}"/>
+                                                    <f:facet name="header">
+                                                        <h:outputText value="Prioridad"/>
+                                                    </f:facet>
+                                                </p:column>
+                                                <p:column style="text-align: center; width: 5%;">
+                                                    <p:commandLink value="Seleccionar" style="color: blue;" 
+                                                                   action="#{requisicionBean.seleccionarRequisicion(actionEvent)}"
+                                                                   title="Clic aquí para ver los items de la requisición..."
+                                                                   onclick="$('#msgAsignaRequisicion').text('');
+                                                                           return true;">
+                                                        <f:param name="idReqEs" value="#{currentRow.id}"/>
+                                                    </p:commandLink>
+                                                </p:column>
+                                            </p:dataTable>
+                                        </p:tab>
+                                    </p:tabView>
+
+                                </div>
+                            </div>  
+                        </div>   
+                        <!-- aqui va el panel oculto de mas informacion de la requisición -->
+                    </div>
+
+                    <div id="divDatos" style="display: none;">
+                        <div class="col-lg-5" style="padding-top: 5px;">
+                            <h:outputText value="Más información de la requisición: "/>
+                            <h:outputText value="#{requisicionBean.requisicionActual.consecutivo}" style="font-weight:  bold;"/>
+                        </div><br/>
+                        <div class="container-fluid" style="padding-top: 45px;">
+                            <div id="tabsRequi">
+                                <ul>
+                                    <li><a href="#infRequi" >Más información</a></li>
+                                    <li><a href="#ETSRequi">ETS</a></li>
+                                    <li><a href="#EstatusRequii" >Estatus</a></li>     
+                                    <li><a href="#DevRequi">Inf. Devolución</a></li>                                 
+                                </ul>
+                                <div id="infRequi" class="textoIzquierda10pts">
+                                    <div class="container-fluid">
+                                        <ui:include src="/vistas/SiaWeb/Requisiciones/fragmentos/masInfoNoAccion.xhtml"/>
+                                    </div>
+                                </div>
+                                <div id="ETSRequi" class="textoIzquierda">
+                                    <div class="container-fluid">
+                                        <ui:include src="/vistas/SiaWeb/Requisiciones/verETS.xhtml"/>
+                                    </div>
+                                </div>
+                                <div id="EstatusRequii" class="textoIzquierda" style="display: none;">
+                                    <div class="container-fluid">
+                                        <ui:include src="/vistas/SiaWeb/Requisiciones/verEstatus.xhtml"/>
+                                    </div>
+                                </div>
+                                <div id="DevRequi" class="textoIzquierda" style="display: none;">
+                                    <div class="container-fluid">
+                                        <ui:include src="../Requisiciones/verDevoluciones.xhtml"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>                      
+                    </div>
+                </h:form>
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

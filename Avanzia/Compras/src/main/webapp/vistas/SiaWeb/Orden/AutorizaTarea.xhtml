@@ -1,0 +1,454 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      >
+
+    <body>
+
+        <ui:composition template="./../templates/template.xhtml">
+            <ui:define name="tituloPagina">
+                Enviar a proveedor #{msgs['orden.titulo']}
+            </ui:define>
+            <ui:define name="content">
+                <script>
+                    $(document).ready(function () {
+                        $("#tabOCSProcTarea").tabs({active: 0});
+                        $("#tipoTarea").tabs({active: 0});
+                    });
+                </script>
+
+                <h:form id="form1">
+                    <p:commandLink id="btnLimpiar" value="" action="#{ordenBean.limpiarTab(actionEvent)}" style="display: none;"/>
+                    <div class="row">
+                        <div id="tipoTarea">
+                            <ul>
+                                <li><a href="#prodServ" onclick="ejecutarFiltros('form1', 'btnLimpiar');">Producto/Servicios ( #{ordenBean.ordenesAutorizaTareaOP.rowCount})</a></li>
+                                <li><a href="#actFijo" onclick="ejecutarFiltros('form1', 'btnLimpiar');">Activos Fijos ( #{ordenBean.ordenesAutorizaTareaAF.rowCount} )</a></li>
+                            </ul>
+                            <div id="prodServ" class="textoIzquierda">
+                                <div class="table table-responsive">
+                                    <p:dataTable size="small" stripedRows="true" showGridlines="true" id="OrdenesOP" rows="10" 
+                                                   value="#{ordenBean.ordenesAutorizaTareaOP}" var="currentRow" 
+                                                   styleClass="table table-striped"
+                                                   style="font-size:12px" paginatorAlwaysVisible="true" paginator="true"
+                                                   paginatorPosition="bottom">                              
+                                        <f:facet name="header"><h:outputLabel value="OC/S sin terminar "/></f:facet>                                
+                                        <p:column>
+                                            <h:outputText value="#{currentRow['consecutivo']}"/>
+                                            <f:facet name="header">
+                                                <h:outputText value="Código Interno"/>
+                                            </f:facet>
+                                        </p:column>
+                                        <p:column>
+                                            <h:outputText value="#{currentRow['referencia']}"/>
+                                            <f:facet name="header">
+                                                <h:outputText value="Referencia"/>
+                                            </f:facet>
+                                        </p:column>
+                                        <p:column>
+                                            <h:outputText value="#{currentRow['requisicion']}"/>
+                                            <f:facet name="header">
+                                                <h:outputText value="Requisición"/>
+                                            </f:facet>
+                                        </p:column>
+                                        <p:column>
+                                            <center>
+                                                <h:outputText value="#{currentRow['fecha']}">
+                                                    <f:convertDateTime dateStyle="default" type="date"/>
+                                                </h:outputText>
+                                            </center>
+                                            <f:facet name="header">
+                                                <h:outputText value="F. Ingreso"/>
+                                            </f:facet>
+                                        </p:column>
+                                        <p:column style="width: 12%;">
+                                            <h:outputText value="#{currentRow['total']}">
+                                                <f:convertNumber pattern="$ #,##0.00" locale="es-MX"/>
+                                            </h:outputText>
+                                            <f:facet name="header">
+                                                <h:outputText value="Monto Total"/>
+                                            </f:facet>
+                                        </p:column>
+                                        <p:column>
+                                            <h:outputText value="#{currentRow['moneda']}"/>
+                                            <f:facet name="header">
+                                                <h:outputText value="$"/>
+                                            </f:facet>
+                                        </p:column>                                
+                                        <p:column>
+                                            <h:outputText value="#{currentRow['proveedor']}"/>
+                                            <f:facet name="header">
+                                                <h:outputText value="Proveedor"/>
+                                            </f:facet>
+                                        </p:column>
+                                        <p:column>
+                                            <h:outputText value="#{currentRow.contratoVO.nombre}"/>
+                                            <f:facet name="header">
+                                                <h:outputText value="Contrato"/>
+                                            </f:facet>
+                                        </p:column>
+                                        <p:column >
+                                            <p:commandLink styleClass="link" action="#{ordenBean.completarOrdenOP(actionEvent)}"                                                   
+                                                           title="Clic aqui para completar la orden de compra..." value="Enviar OC/S"
+                                                           style="color: blue;"/>
+                                        </p:column>
+                                        <p:column >
+                                            <p:commandLink styleClass="link" action="#{ordenBean.seleccionarOrdenOP(actionEvent)}"
+                                                           onclick="iniciarTab('tabOCSProcTarea', 0);"
+                                                           style="color: blue;"  title="Clic aqui para ver Items..." value="Seleccionar"/>
+                                        </p:column>
+                                    </p:dataTable>
+                                </div>
+                            </div>
+                            <div id="actFijo" class="textoIzquierda">
+                                <div class="table table-responsive">
+                                    <p:dataTable size="small" stripedRows="true" showGridlines="true" id="OrdenesAF" rows="20" 
+                                                   value="#{ordenBean.ordenesAutorizaTareaAF}" var="currentRow" styleClass="table table-striped"
+                                                   style="font-size:12px" paginator="true" paginatorPosition="button">                              
+                                        <f:facet name="header"><h:outputLabel value="OC/S sin terminar "/></f:facet>                                
+                                        <p:column>
+                                            <h:outputText value="#{currentRow['consecutivo']}" />
+                                            <f:facet name="header">
+                                                <h:outputText value="Código Interno"/>
+                                            </f:facet>
+                                        </p:column>
+                                        <p:column>
+                                            <h:outputText value="#{currentRow['referencia']}" />
+                                            <f:facet name="header">
+                                                <h:outputText value="Referencia"/>
+                                            </f:facet>
+                                        </p:column>
+                                        <p:column>
+                                            <h:outputText value="#{currentRow['requisicion']}"
+                                                            />
+                                            <f:facet name="header">
+                                                <h:outputText value="Requisición"/>
+                                            </f:facet>
+                                        </p:column>
+                                        <p:column>
+                                            <center>
+                                                <h:outputText value="#{currentRow['fecha']}"
+                                                                >
+                                                    <f:convertDateTime dateStyle="default" type="date"/>
+                                                </h:outputText>
+                                            </center>
+                                            <f:facet name="header">
+                                                <h:outputText value="F. Ingreso"/>
+                                            </f:facet>
+                                        </p:column>
+                                        <p:column style="width: 12%;">
+                                            <h:outputText value="#{currentRow['total']}">
+                                                <f:convertNumber pattern="$ #,##0.00" locale="es-MX"/>
+                                            </h:outputText>
+                                            <f:facet name="header">
+                                                <h:outputText value="Monto Total"/>
+                                            </f:facet>
+                                        </p:column>
+                                        <p:column>
+                                            <h:outputText value="#{currentRow['moneda']}"
+                                                            />
+                                            <f:facet name="header">
+                                                <h:outputText value="$"/>
+                                            </f:facet>
+                                        </p:column>                                
+                                        <p:column>
+                                            <h:outputText value="#{currentRow['proveedor']}"
+                                                            />
+                                            <f:facet name="header">
+                                                <h:outputText value="Proveedor"/>
+                                            </f:facet>
+                                        </p:column>
+                                        <p:column>
+                                            <h:outputText value="#{currentRow.contratoVO.numero}"
+                                                            />
+                                            <f:facet name="header">
+                                                <h:outputText value="Contrato"/>
+                                            </f:facet>
+                                        </p:column>
+
+                                        <p:column >
+                                            <p:commandLink styleClass="link" action="#{ordenBean.completarOrdenAF(actionEvent)}"                                                   
+                                                           title="Clic aqui para completar la orden de compra..." value="Enviar OC/S"
+                                                           style="color: blue;"/>
+                                        </p:column>
+
+                                        <p:column >
+                                            <p:commandLink styleClass="link" action="#{ordenBean.seleccionarOrdenAF(actionEvent)}"
+                                                           title="Clic aqui para ver Items..." value="Seleccionar"
+                                                           onclick="iniciarTab('tabOCSProcTarea', 0);"
+                                                           style="color: blue;"/>  
+                                        </p:column>
+                                    </p:dataTable>
+                                </div>
+                            </div>
+                        </div>
+                    </div><br/>
+                    <div class="col-lg-5">
+                        <h:outputText value="OC/S: "/>
+                        <h:outputText value="#{ordenBean.ordenActual.consecutivo}" style="font-weight:  bold;"/>
+                    </div><br/>
+                    <div class="row">
+                        <div id="tabOCSProcTarea">
+                            <ul>
+                                <li><a href="#infOrden" >Inf. de la OC/S</a></li>
+                                <li><a href="#ETSOCS" >Especificación Técnica</a></li>                        
+                                <li><a href="#infRequisicion">Requisición</a></li>
+                                <li><a href="#notasOCS">Notas</a></li>
+                            </ul>
+                            <div id="infOrden" class="textoIzquierda">
+                                <div class="container-fluid">
+                                    <div class="col-lg-12 col-xs-12" style="margin-top: 15px;"> 
+                                        <div scope="colgroup" colspan="8" class="iceDatTblHdr tableHdr table-stripedHdr" style="font-weight: normal;"><label id="" class="iceOutLbl" style="font-weight: normal;">Inf. de la OC/S</label></div>
+                                        <div class="input-group panel panel-default" style="border: white; border-style: solid; border-width: 1px;">
+                                            <div class="form-group col-lg-12 col-xs-12" style="border: white; border-bottom: #eee; border-top: white;  border-style: solid; border-width: 2px;">
+                                                <div class="col-lg-6 col-xs-12" >
+                                                    <h:outputLabel styleClass="col-lg-3 col-xs-12 control-label"  value="Compañia: "/>
+                                                    <div class="col-lg-9 col-xs-12">
+                                                        <h:outputText value="#{ordenBean.ordenActual.compania.nombre}"/>
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-6 col-xs-12" >
+                                                    <h:outputLabel styleClass="col-lg-4 col-xs-12 control-label"  value="Bloque:"/>
+                                                    <div class="col-lg-8 col-xs-12">
+                                                        <h:outputText value="#{ordenBean.ordenActual.apCampo.nombre}"/>
+                                                    </div>
+                                                </div>             
+                                            </div>
+                                            <div class="form-group col-lg-12 col-xs-12" style="border: white; border-bottom: #eee; border-top: white;  border-style: solid; border-width: 2px;">
+                                                <div class="col-lg-6 col-xs-12" >
+                                                    <h:outputLabel styleClass="col-lg-3  col-xs-12control-label" value="Estatus:"/>
+                                                    <div class="col-lg-9 col-xs-12">
+                                                        <h:outputText value="#{ordenBean.ordenActual.autorizacionesOrden.estatus.nombre}"/>
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-6 col-xs-12" >
+                                                    <h:outputLabel styleClass="col-lg-4 col-xs-12 control-label" value="Entregar en:"/>
+                                                    <div class="col-lg-8 col-xs-12">                        
+                                                        <h:outputText value="#{ordenBean.ordenActual.destino}"/>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-12 col-xs-12">     
+                                        <div class="input-group panel panel-default" style="border: white; border-style: solid; border-width: 1px;">
+                                            <div class="form-group col-lg-12 col-xs-12" style="border: white; border-bottom: #eee; border-top: white;  border-style: solid; border-width: 2px;">
+                                                <h:outputLabel styleClass="col-lg-2 col-xs-12 control-label"  value="Pago:"/>
+                                                <div class="col-lg-4 col-xs-12">
+                                                    <h:outputText value="#{ordenBean.ordenActual.ocTerminoPago.nombre}"/>
+                                                </div>                                                    
+                                                <h:outputLabel styleClass="col-lg-2 col-xs-12 control-label" value="Elaboro:"/>
+                                                <div class="col-lg-4 col-xs-12">
+                                                    <h:outputText value="#{ordenBean.ordenActual.analista.nombre}"/>
+                                                </div>
+                                            </div>                                                    
+                                            <div class="form-group col-lg-12 col-xs-12" style="border: white; border-bottom: #eee; border-top: white;  border-style: solid; border-width: 2px;">
+                                                <h:outputLabel styleClass="col-lg-2 col-xs-12 control-label"  value="Dpto. Sol:"/>
+                                                <div class="col-lg-4 col-xs-12">
+                                                    <h:outputText value="#{ordenBean.ordenActual.gerencia.nombre}"/>
+                                                </div>                                                    
+                                                <h:outputLabel styleClass="col-lg-2 col-xs-12 control-label" value="Proveedor:"/>
+                                                <div class="col-lg-4 col-xs-12">                        
+                                                    <h:outputText value="#{ordenBean.ordenActual.proveedor.nombre}"/>
+                                                </div>
+                                            </div>                                                    
+                                            <div class="form-group col-lg-12 col-xs-12" style="border: white; border-bottom: #eee; border-top: white;  border-style: solid; border-width: 2px;">
+                                                <h:outputLabel styleClass="col-lg-2 col-xs-12 control-label"  value="Responsable:"/>
+                                                <div class="col-lg-4 col-xs-12">
+                                                    <h:outputText value="#{ordenBean.ordenActual.responsableGerencia.nombre}"/>
+                                                </div>                                                    
+                                                <h:outputLabel styleClass="col-lg-2 col-xs-12 control-label" value="Contrato:"/>
+                                                <div class="col-lg-4 col-xs-12">
+                                                    <h:outputText value="#{ordenBean.ordenActual.contrato}"/>
+                                                </div>
+                                            </div>                                                    
+                                            <div class="form-group col-lg-12 col-xs-12" style="border: white; border-bottom: #eee; border-top: white;  border-style: solid; border-width: 2px;">
+                                                <ui:fragment rendered="#{ordenBean.ordenActual.apCampo.tipo eq 'N'}">
+                                                <h:outputLabel styleClass="col-lg-2 col-xs-12 control-label"  value="ProyectoOT:"/>
+                                                <div class="col-lg-4 col-xs-12">
+                                                    <h:outputText value="#{ordenBean.ordenActual.proyectoOt.nombre}"/>
+                                                </div>
+                                                </ui:fragment>
+                                                <ui:fragment rendered="#{ordenBean.ordenActual.apCampo.tipo eq 'C'}">                                                
+                                                <div class="col-lg-6 col-xs-12">
+                                                    &nbsp;
+                                                </div>
+                                                </ui:fragment>
+                                                <h:outputLabel styleClass="col-lg-2 col-xs-12 control-label" value="Revisa:" style="font-weight: bold; "/>
+                                                <div class="col-lg-4 col-xs-12">
+                                                    <h:outputText value="#{ordenBean.ordenActual.autorizacionesOrden.autorizaMpg.nombre}"/>
+                                                </div>
+                                            </div>                                                    
+                                            <div class="form-group col-lg-12 col-xs-12" style="border: white; border-bottom: #eee; border-top: white;  border-style: solid; border-width: 2px;">
+                                                <h:outputLabel styleClass="col-lg-2 col-xs-12 control-label"   value="Destino:"/>
+                                                <div class="col-lg-4 col-xs-12">
+                                                    <h:outputText value="#{ordenBean.ordenActual.destino}"/>
+                                                </div>
+
+                                                <ui:fragment rendered="#{ordenBean.ordenActual.tipo eq 'PS'}">
+                                                    <h:outputLabel styleClass="col-lg-2 col-xs-12 control-label"  value="Tipo tarea:"/>
+                                                    <div class="col-lg-4 col-xs-12">
+                                                        <h:outputText value="#{ordenBean.ordenActual.ocUnidadCosto.nombre}"/>
+                                                    </div>
+                                                </ui:fragment>
+                                                <ui:fragment rendered="#{ordenBean.ordenActual.tipo eq 'AF'}">                                                    
+                                                    <h:outputLabel styleClass="col-lg-2 col-xs-12 control-label"  value="Tipo orden:"/>
+                                                    <div class="col-lg-4 col-xs-12">
+                                                        <h:outputText value="Activo Fijo"/>
+                                                    </div>
+                                                </ui:fragment>
+                                                <ui:fragment rendered="#{ordenBean.ordenActual.tipo eq 'AI'}">                                                    
+                                                    <h:outputLabel styleClass="col-lg-2 col-xs-12 control-label"  value="Tipo orden:"/>
+                                                    <div class="col-lg-4 col-xs-12">
+                                                        <h:outputText  value="Antes de integración" />
+                                                    </div>
+                                                </ui:fragment>                                                        
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-12 col-xs-12"> 
+                                        <div class="col-lg-12 col-xs-12 input-group panel panel-default" style="border: white; border-style: solid; border-width: 1px;">                                                
+                                            <div class="form-group col-lg-12 col-xs-12" style="border: white; border-bottom: #eee; border-top: white;  border-style: solid; border-width: 2px;">
+                                                <strong><h:outputText styleClass="col-lg-2 col-xs-12 control-label" value="Obsv. de la Requisición:" /></strong> 
+                                                <div class="col-lg-10 col-xs-12">
+                                                    <h:outputText styleClass="control-label" value="#{ordenBean.ordenActual.requisicion.observaciones}"/>
+                                                </div>                                                        
+                                            </div>
+                                            <div class="form-group col-lg-12 col-xs-12" style="border: white; border-bottom: #eee; border-top: white;  border-style: solid; border-width: 2px;">
+                                                <strong><h:outputText styleClass="col-lg-2 col-xs-12 control-label" value="Coment Internos:" /></strong> 
+                                                <div class="col-lg-10 col-xs-12">
+                                                    <h:outputText styleClass="control-label" value="#{ordenBean.ordenActual.observaciones}"/>
+                                                </div>                                                        
+                                            </div>
+                                            <div class="form-group col-lg-12 col-xs-12" style="border: white; border-bottom: #eee; border-top: white;  border-style: solid; border-width: 2px;">
+                                                <strong><h:outputText styleClass="col-lg-2 col-xs-12 control-label" value="Obsv. al proveedor:" /></strong> 
+                                                <div class="col-lg-10 col-xs-12">
+                                                    <h:outputText styleClass="control-label" value="#{ordenBean.ordenActual.nota}"/>
+                                                </div>
+                                            </div>                                                
+                                        </div>
+                                    </div>
+
+                                    <div class="col-lg-12 col-xs-12" style="margin-top: 15px;"> 
+                                        <h:outputText value="Items de la orden de compra: "/>
+                                        <h:outputLabel  value="#{ordenBean.ordenActual.consecutivo}  "/>&nbsp;
+                                        <p:commandLink styleClass="link" action="#{ordenBean.detAFPS(actionEvent)}"  rendered="#{ordenBean.ordenActual.tipo eq 'AF'}"
+                                                         style="color:  blue;"
+                                                         onclick="$(dialogoPedidoActivo).modal('show');"                                                         
+                                                         title="Click aqui para capturar Activo Fijo para la orden de compra" value="Capturar Activos Fijos"/>
+
+                                        <p:commandLink styleClass="link" action="#{ordenBean.detAFPS(actionEvent)}"    
+                                                         rendered="#{ordenBean.ordenActual.tipo eq 'PS'}"
+                                                         style="color:  blue;"
+                                                         onclick="$(dialogoPedidoActivo).modal('show');"
+                                                         title="Click aqui para capturar un producto para la orden de compra" value="Capturar Productos"/>
+                                    </div>
+                                    <div class="table table-responsive">
+                                        <p:dataTable size="small" stripedRows="true" showGridlines="true" value="#{ordenBean.itemsPorOrdenTarea}" var="currentRow" 
+                                                       styleClass="table table-striped" style="font-size:12px;"
+                                                       rowIndexVar="indice">    
+                                            <p:column >
+                                                <h:outputText value="#{currentRow['artNumeroParte']}"/>
+                                                <f:facet name="header">
+                                                    <h:outputText value="Núm. de parte"/>
+                                                </f:facet>
+                                            </p:column>
+                                            <p:column>
+                                                <h:outputText value="#{currentRow['cantidad']}"/>
+                                                <f:facet name="header">
+                                                    <h:outputText value="Cantidad"/>
+                                                </f:facet>
+                                            </p:column>
+                                            <p:column>
+                                                <h:outputText value="#{currentRow['artUnidad']}"/>
+                                                <f:facet name="header">
+                                                    <h:outputText value="Unidad"/>
+                                                </f:facet>
+                                            </p:column>
+                                            <p:column>
+                                                <h:outputText  value="#{currentRow['artDescripcion']}"/>
+                                                <f:facet name="header">
+                                                    <h:outputText value="Descripción"/>
+                                                </f:facet>
+                                            </p:column>
+                                            <p:column rendered="false">
+                                                <h:outputText value="#{currentRow['moneda']}"/>
+                                                <f:facet name="header">
+                                                    <h:outputText value="Moneda"/>
+                                                </f:facet>
+                                            </p:column>
+                                            <p:column style="width: 8%;">
+                                                <h:outputText value="#{currentRow['precioUnitario']}">
+                                                    <f:convertNumber pattern="$ #,##0.00" locale="es-MX"/>
+                                                </h:outputText>
+                                                <f:facet name="header">
+                                                    <h:outputText value="Precio Unitario"/>
+                                                </f:facet>
+                                            </p:column>
+                                            <p:column style="width: 8%;">
+                                                <h:outputText value="#{currentRow['importe']}">
+                                                    <f:convertNumber pattern="$ #,##0.00" locale="es-MX"/>
+                                                </h:outputText>
+                                                <f:facet name="header">
+                                                    <h:outputText value="Importe"/>
+                                                </f:facet>
+                                            </p:column>
+                                            <p:column rendered="#{ordenBean.ordenActual.tipo eq 'AF' and usuarioBean.mapaRoles.get('Comprador')}">
+                                                <p:commandLink styleClass="link" action="#{ordenBean.detActivosFijo(actionEvent)}"  style="color: blue;"                                                                         
+                                                                 title="Click aqui para capturar el codigo de NAVISION" value="Capturar Códigos">
+                                                    <f:param name="id" value="#{indice}"/>
+                                                </p:commandLink>
+
+                                            </p:column>
+
+                                            <p:column rendered="#{ordenBean.ordenActual.tipo eq 'PS' and usuarioBean.mapaRoles.get('Comprador')}">
+                                                <h:selectOneMenu id="ordenProductoID" 
+                                                                 value="#{currentRow['ocProductoID']}" 
+                                                                 styleClass="form-control"                                                                 
+                                                                 disabled="#{ordenBean.ordenActual.multiproyecto}">
+                                                    <f:selectItem itemValue="0" itemLabel="Seleccione . . . "/>
+                                                    <f:selectItems value="#{ordenBean.ocProductos}" />
+                                                    <f:ajax event="change" listener="#{ordenBean.guardarItemOCProducto(currentRow)}" execute="ordenProductoID">
+                                                    </f:ajax>  
+                                                </h:selectOneMenu>                                                                             
+                                                <f:facet name="header">
+                                                    <h:outputText value="Producto"/>
+                                                </f:facet>
+                                            </p:column>
+                                        </p:dataTable>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="ETSOCS" class="textoIzquierda">
+                                <div class="container-fluid">
+                                    <ui:include src="/vistas/SiaWeb/Orden/VerEts.xhtml"/>
+                                </div>
+                            </div>
+                            <div id="infRequisicion" class="textoIzquierda" style="display: none;">
+                                <div class="container-fluid">
+                                    <ui:include src="/vistas/SiaWeb/Orden/fragmento/infRequisicion.xhtml"/>
+                                </div>
+                            </div>
+                            <div id="notasOCS" class="textoIzquierda">
+                                <div class="container-fluid">
+                                    <ui:include src="/vistas/SiaWeb/Orden/fragmento/noticia.xhtml"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </h:form>
+                <!-- Forma para los paneles emergentes -->
+                <!-- Popup -->
+                <ui:include src="/vistas/SiaWeb/Orden/fragmento/popUpGeneralOrden.xhtml"/>
+                <ui:include src="/vistas/SiaWeb/Orden/fragmento/popUpNoticia.xhtml"/>
+            </ui:define>
+
+        </ui:composition>
+
+    </body>
+</html>

@@ -1,0 +1,148 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                >  
+    <!-- Modal Panel Popup Rechazo -->
+    <div class="modal fade" id="dialogoDevReq" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Devolver requisición</h4>
+                </div>
+
+                <h:form id="frmDev">
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="input-group panel panel-default" ><br/>
+                                    <div class="form-group col-lg-12 col-xs-12" style="margin-top: 10px; border: white; border-bottom: #eee; border-top: white;  border-style: solid; border-width: 2px;">
+                                        <strong><h:outputText styleClass="col-lg-5 control-label" value="Gerencia:" /> </strong>
+                                        <div class="col-lg-7">
+                                            <h:outputText styleClass="control-label" value="#{vistoBuenoContabilidad.requisicionActual.gerencia.nombre}"/>
+                                        </div>
+                                    </div>                                    
+                                    <div class="form-group col-lg-12 col-xs-12" style="margin-top: 10px; border: white; border-bottom: #eee; border-top: white;  border-style: solid; border-width: 2px;">
+                                        <strong><h:outputText styleClass="col-lg-5 control-label" value="Fecha Solicita:" /></strong>
+                                        <div class="col-lg-7"><h:outputText styleClass="control-label" value="#{vistoBuenoContabilidad.requisicionActual.fechaSolicito}" >
+                                                <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                            </h:outputText>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group panel">
+                                <strong><h:outputText class="col-lg-2 control-label" value="Introduzca el motivo:"/></strong>
+                                <div class="col-lg-10">
+                                    <h:inputTextarea styleClass="form-control" id="motivoCancelo"  value="#{vistoBuenoContabilidad.motivo}" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <p:commandButton value="Aceptar"
+                                           styleClass="btn btn-info"
+                                           action="#{vistoBuenoContabilidad.rechazarRequisicion(actionEvent)}"
+                                           onclick="return validaCancelar('frmDev', 'motivoCancelo', 'La operación devolverá la requisición. ¿Está seguro?', 'Es necesario agregar el motivo.');"/>
+                        <p:commandButton value="Cancelar"
+                                           styleClass="btn btn-default"
+                                           onclick="cerrarDialogoModal(dialogoDevReq);"
+                                           title="Cerrar ventana..." 
+                                           immediate="true"/>
+                    </div>
+                </h:form>
+            </div>
+        </div>
+    </div>
+    <!-- cancelar requisiciones -->
+    <div class="modal fade" id="dialogoCancelarVariasReq" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Cancelar requisición</h4>
+                </div>
+
+                <h:form id="frmCanReqV">
+                    <div class="modal-body panel panel-footer">
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="modal-body"><br/>
+                                    <h:outputText style="text-align: center; color: red; font-weight: bold" 
+                                                  value="Se cancelarán todas las Requisiciones con el mismo motivo"/>
+                                </div>                                
+                            </div>
+                        </div>
+                        <div class="container-fluid">
+                            <div class="form-group panel">
+                                <h:outputText styleClass="col-lg-2 control-label" style="padding-top: 5%;" value="Motivo:"/>
+                                <div class="col-lg-10">
+                                    <h:inputTextarea styleClass="form-control" id="motivoCancelo" rows="3" value="#{popupBean.requisicion.motivoCancelo}"/> 
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <p:commandButton id="buttonAceptar"
+                                           value="Aceptar"
+                                           styleClass="btn btn-info"
+                                           action="#{vistoBuenoContabilidad.cancelarVariasRequisicion(actionEvent)}"
+                                           onclick="return validaCancelar('frmCanReqV', 'motivoCancelo', 'La operación cancelará la requisición. ¿Está seguro?', 'Es necesario agregar el motivo.');"/>
+                        <p:commandButton id="buttonCancelar"
+                                           value="Cancelar"
+                                           styleClass="btn btn-cancelar"
+                                           onclick="cerrarDialogoModal(dialogoCancelarVariasReq);"
+                                           title="Cerrar ventana sin cancelar la requisición..." 
+                                           immediate="true"/>
+                    </div>
+                </h:form>
+            </div>
+        </div>
+    </div> <!-- Modal Panel Popup Rechazo -->
+    <div class="modal fade" id="dialogoDevVariasReq" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Devolver requisición(es)</h4>
+                </div>
+
+                <h:form id="frmDevV">
+                    <div class="modal-body panel panel-footer">
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="modal-body"><br/>
+                                    <h:outputText style="text-align: center; color: red; font-weight: bold" 
+                                                  value="Se devolverán todas las Requisiciones con el mismo motivo"/>
+                                </div>                                
+                            </div>
+                        </div>
+                        <div class="container-fluid">
+                            <div class="form-group panel">
+                                <h:outputText styleClass="col-lg-2 control-label" style="padding-top: 5%;" value="Motivo:"/>
+                                <div class="col-lg-10">
+                                    <h:inputTextarea styleClass="form-control" id="motivoRechazo" rows="3" 
+                                                       value="#{vistoBuenoContabilidad.motivo}"/> 
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <p:commandButton value="Aceptar"
+                                           styleClass="btn btn-info"
+                                           action="#{vistoBuenoContabilidad.devolverVariasRequisicion(actionEvent)}"
+                                           onclick="return validaCancelar('frmDevV', 'motivoRechazo', 'La operación devolverá la requisición. ¿Está seguro?', 'Es necesario agregar el motivo.');"/>
+                        <p:commandButton value="Cancelar"
+                                           styleClass="btn btn-default"
+                                           onclick="cerrarDialogoModal(dialogoDevVariasReq);"
+                                           title="Cerrar ventana..." 
+                                           immediate="true"/>
+                    </div>
+                </h:form>
+            </div>
+        </div>
+    </div>
+
+</ui:composition>

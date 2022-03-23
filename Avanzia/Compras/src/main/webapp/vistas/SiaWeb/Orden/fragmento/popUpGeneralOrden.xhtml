@@ -1,0 +1,558 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                >
+    <!-- Modal Panel Popup Rechazo -->
+    <div class="modal fade" id="dialogoModOCS" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog" style="width: 60%;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Modificar Orden de compra</h4>
+                </div>
+                <h:form id="frmModReq">
+                    <div class="modal-body panel panel-footer">
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="col-lg-12 input-group panel panel-default" ><br/>
+                                    <div class="form-group col-lg-12" >
+                                        <h:outputText styleClass="col-lg-2 control-label" value="Orden:" /> 
+                                        <div class="col-lg-10">
+                                            <h:outputText styleClass="form-control" value="#{ordenBean.ordenActual.id}"/>
+                                        </div>
+                                    </div>
+                                    <div class="form-group col-lg-12">
+                                        <h:outputText styleClass="col-lg-2 control-label" value="Gerencia:" />
+                                        <div class="col-lg-10"><h:outputText styleClass="form-control" value="#{ordenBean.ordenActual.gerencia.nombre}" />
+                                        </div>
+                                    </div>
+                                    <ui:fragment rendered="#{ordenBean.ordenActual.apCampo.tipo eq 'N'}">
+                                        <div class="form-group col-lg-12" >
+                                            <h:outputText styleClass="col-lg-2 control-label" value="ProyectoOT:"/>
+                                            <div class="col-lg-10">
+                                                <h:outputText styleClass="form-control" value="#{ordenBean.ordenActual.proyectoOt.nombre}"/>
+                                            </div>
+                                        </div>
+                                    </ui:fragment>
+                                </div>
+                            </div>
+                            <b>Modificaciones</b>
+                            <div class="col-lg-12">
+                                <div class="input-group panel panel-default" ><br/>
+                                    <div class="form-group col-lg-12" >
+                                        <h:outputText styleClass="col-lg-2 control-label" value="Lugar de entrega:"/>
+                                        <div class="col-lg-10">
+                                            <h:inputText class="form-control" value="#{ordenBean.ordenActual.destino}"/>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group col-lg-12" >
+                                        <h:outputText styleClass="col-lg-2 control-label" value="Observaciones al proveedor:"/>
+                                        <div class="col-lg-10">
+                                            <h:inputTextarea class="form-control" value="#{ordenBean.ordenActual.nota}"/>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group col-lg-12" >
+                                        <h:outputText styleClass="col-lg-2 control-label" value="Comentarios Internos de la OC/S:"/>
+                                        <div class="col-lg-10">
+                                            <h:inputTextarea class="form-control" value="#{ordenBean.ordenActual.observaciones}"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>                                    
+                    </div>
+                    <div class="modal-footer">
+                        <p:commandButton  value="Actualizar" action="#{ordenBean.completarActualizacionOrden}"                                                           
+                                            styleClass="btn btn-info"/>
+                        <p:commandButton  value="Cancelar"
+                                            styleClass="btn btn-default"
+                                            onclick="$(dialogoModOCS).modal('hide');"
+                                            title="Cerrar ventana sin modificar..."/>                                    
+                    </div>
+                </h:form>
+            </div>
+        </div>
+    </div>
+    <!-- NOTA -->
+    <div class="modal fade" id="dialogoNotaOrden" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header" >
+                    <h4 class="modal-title">#{notaOrdenBean.operacion} Nota</h4>
+                </div>
+
+                <h:form id="frmNotasOCS">
+                    <div class="modal-body panel panel-footer">
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="input-group" ><br/>
+                                    <div class="form-group col-lg-12" >
+                                        <strong><h:outputText styleClass="col-lg-2 control-label" value="Orden:" /></strong>
+                                        <div class="col-lg-10">
+                                            <h:outputText styleClass="control-label" value="#{ordenBean.ordenActual.consecutivo}"/>
+                                        </div>
+                                    </div>
+                                    <div class="form-group col-lg-12" >
+                                        <strong><h:outputText styleClass="col-lg-2 control-label" value="Gerencia:"/></strong>
+                                        <div class="col-lg-10">
+                                            <h:outputText styleClass="control-label" value="#{ordenBean.ordenActual.gerencia.nombre}"/>
+                                        </div>
+                                    </div>
+                                    <div class="form-group col-lg-12">
+                                        <strong><h:outputText styleClass="col-lg-2 control-label" value="Proveedor:" /></strong>
+                                        <div class="col-lg-10"><h:outputText styleClass="control-label" value="#{ordenBean.ordenActual.proveedor.nombre}" >
+                                                <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                            </h:outputText>
+                                        </div>
+                                    </div>
+                                    <div class="form-group col-lg-12" >
+                                        <strong><h:outputText styleClass="col-lg-2 control-label" value="Proyecto OT:"/></strong>
+                                        <div class="col-lg-10">
+                                            <h:outputText styleClass="control-label" value="#{ordenBean.ordenActual.proyectoOt.nombre}"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="container-fluid">
+                            <div class="form-group panel">
+                                <strong><h:outputText styleClass="col-lg-2 control-label" style="padding-top: 5%;" value="Nota:*"/></strong>
+                                <div class="col-lg-10">
+                                    <h:inputTextarea id="nota" styleClass="form-control" value="#{notaOrdenBean.textoNoticia}"/> 
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <h:commandButton action="#{ordenBean.completarCrearNota}" value="Aceptar"
+                                         onclick="return validaNotasOCS('frmNotasOCS')"
+                                         styleClass="btn btn-info"/>
+                        <h:commandButton immediate="true"
+                                         onclick="$(dialogoNotaOrden).modal('hide');"
+                                         styleClass="btn btn-default" title="Cerrar ventana..." value="Cancelar"/>
+                    </div>
+                </h:form>
+            </div>
+        </div>
+    </div>
+    <!-- DEVOLVER -->
+    <div class="modal fade" id="dialogoDevolverOCS" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Devolver OC/S</h4>
+                </div>
+
+                <h:form id="frmDevOCS">
+                    <div class="modal-body panel panel-footer">
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="input-group panel panel-default" ><br/>
+                                    <div class="form-group col-lg-12 col-xs-12" style="margin-top: 10px; border: white; border-bottom: #eee; border-top: white;  border-style: solid; border-width: 2px;">
+                                        <strong><h:outputText styleClass="col-lg-2 control-label" value="Orden:" /></strong>
+                                        <div class="col-lg-10">
+                                            <h:outputText styleClass="control-label" value="#{ordenBean.ordenActual.consecutivo}"/>
+                                        </div>
+                                    </div>
+                                    <div class="form-group col-lg-12 col-xs-12" style="margin-top: 10px; border: white; border-bottom: #eee; border-top: white;  border-style: solid; border-width: 2px;">
+                                        <strong><h:outputText styleClass="col-lg-2 control-label" value="Gerencia:"/></strong>
+                                        <div class="col-lg-10">
+                                            <h:outputText styleClass="control-label" value="#{ordenBean.ordenActual.gerencia.nombre}"/>
+                                        </div>
+                                    </div>
+                                    <div class="form-group col-lg-12 col-xs-12" style="margin-top: 10px; border: white; border-bottom: #eee; border-top: white;  border-style: solid; border-width: 2px;">
+                                        <strong><h:outputText styleClass="col-lg-2 control-label" value="Proveedor:" /></strong>
+                                        <div class="col-lg-10"><h:outputText styleClass="control-label" value="#{ordenBean.ordenActual.proveedor.nombre}" >
+                                            </h:outputText>
+                                        </div>
+                                    </div>
+                                    <div class="form-group col-lg-12 col-xs-12" style="margin-top: 10px; border: white; border-bottom: #eee; border-top: white;  border-style: solid; border-width: 2px;">
+                                        <strong><h:outputText styleClass="col-lg-2 control-label" value="Proyecto OT:"/></strong>
+                                        <div class="col-lg-10">
+                                            <h:outputText styleClass="control-label" value="#{ordenBean.ordenActual.proyectoOt.nombre}"/>
+                                        </div>
+                                    </div>
+                                </div>                                
+                            </div>
+                        </div>
+                        <div class="container-fluid">
+                            <div class="form-group panel">
+                                <h:outputText styleClass="col-lg-2 control-label" style="padding-top: 5%;" value="Motivo:"/>
+                                <div class="col-lg-10">
+                                    <h:inputTextarea styleClass="form-control" id="motivoRechazo" rows="3" value="#{ordenBean.motivoDevolucion}"/> 
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <h:commandButton action="#{ordenBean.completarDevolverOrden}"
+                                         styleClass="btn btn-info"
+                                         onclick="return validaCancelar('frmDevOCS', 'motivoRechazo', 'La operación va a devolver la OC/S al comprador. ¿Está seguro?', 'Es necesario agregar un motivo')" value="Aceptar"/>
+                        <h:commandButton onclick="$(dialogoDevolverOCS).modal('hide');"
+                                         styleClass="btn btn-default" title="Cerrar ventana..." value="Cancelar"/>
+                    </div>
+                </h:form>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- CANCELAR -->
+    <div class="modal fade" id="dialogoCancelOCS" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Cancelar OC/S</h4>
+                </div>
+
+                <h:form id="frmCancelOCS">
+                    <div class="modal-body panel panel-footer">
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="input-group panel panel-default" ><br/>
+                                    <div class="form-group col-lg-12" >
+                                        <h:outputText styleClass="col-lg-2 control-label" value="Orden:" /> 
+                                        <div class="col-lg-10">
+                                            <h:outputText styleClass="form-control" value="#{ordenBean.ordenActual.consecutivo}"/>
+                                        </div>
+                                    </div>
+                                    <div class="form-group col-lg-12" >
+                                        <h:outputText styleClass="col-lg-2 control-label" value="Gerencia:"/>
+                                        <div class="col-lg-10">
+                                            <h:outputText styleClass="form-control" value="#{ordenBean.ordenActual.gerencia.nombre}"/>
+                                        </div>
+                                    </div>
+                                    <div class="form-group col-lg-12">
+                                        <h:outputText styleClass="col-lg-2 control-label" value="Proveedor:" />
+                                        <div class="col-lg-10"><h:outputText styleClass="form-control" value="#{ordenBean.ordenActual.proveedor.nombre}" >
+                                            </h:outputText>
+                                        </div>
+                                    </div>
+                                    <div class="form-group col-lg-12" >
+                                        <h:outputText styleClass="col-lg-2 control-label" value="Proyecto OT:"/>
+                                        <div class="col-lg-10">
+                                            <h:outputText styleClass="form-control" value="#{ordenBean.ordenActual.proyectoOt.nombre}"/>
+                                        </div>
+                                    </div>
+                                </div>                                
+                            </div>
+                        </div>
+                        <div class="container-fluid">
+                            <div class="form-group panel">
+                                <h:outputText styleClass="col-lg-2 control-label" style="padding-top: 5%;" value="Motivo:"/>
+                                <div class="col-lg-10">
+                                    <h:inputTextarea styleClass="form-control" id="motivoRechazo" rows="3" value="#{ordenBean.motivoCancelacion}"/> 
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <h:commandButton action="#{ordenBean.completarCancelarOrden(actionEvent)}"
+                                         styleClass="btn btn-info"
+                                         onclick="return validaCancelar('frmCancelOCS', 'motivoRechazo', 'La operación va a cancelar la orden de compra. ¿Está seguro?', 'Es necesario agregar un motivo')" value="Aceptar"/>
+                        <h:commandButton onclick="$(dialogoCancelOCS).modal('hide');"
+                                         styleClass="btn btn-default" title="Cerrar ventana..." value="Cancelar"/>
+                    </div>
+                </h:form>
+            </div>
+        </div>
+    </div>
+    <!-- - - - - - - - - - - - - - - - - -->
+    <!-- Enviar a proveedor -->
+    <div class="modal fade" id="dialogoEnviarProveedor" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Enviar OC/S a proveedor</h4>
+                </div>
+
+                <h:form id="formPopupCompletarOrden">
+                    <div class="modal-body panel panel-footer">
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="input-group panel panel-default" ><br/>
+                                    <div class="form-group col-lg-12 col-xs-12" style="border: white; border-bottom: #eee; border-top: white;  border-style: solid; border-width: 2px;">
+                                        <strong><h:outputText styleClass="col-lg-3 control-label" value="Orden:" /> </strong>
+                                        <div class="col-lg-9">
+                                            <h:outputText styleClass="control-label" value="#{ordenBean.ordenActual.consecutivo}"/>
+                                        </div>
+                                    </div>
+                                    <div class="form-group col-lg-12 col-xs-12" style="border: white; border-bottom: #eee; border-top: white;  border-style: solid; border-width: 2px;">
+                                        <strong><h:outputText styleClass="col-lg-3 control-label" value="Gerencia:"/></strong>
+                                        <div class="col-lg-9">
+                                            <h:outputText styleClass="control-label" value="#{ordenBean.ordenActual.gerencia.nombre}"/>
+                                        </div>
+                                    </div>
+                                    <div class="form-group col-lg-12 col-xs-12" style="border: white; border-bottom: #eee; border-top: white;  border-style: solid; border-width: 2px;">
+                                        <strong><h:outputText styleClass="col-lg-3 control-label" value="Proveedor:" /></strong>
+                                        <div class="col-lg-9"><h:outputText styleClass="control-label" value="#{ordenBean.ordenActual.proveedor.nombre}" >
+                                            </h:outputText>
+                                        </div>
+                                    </div>
+                                </div>                                
+                            </div>
+                        </div>
+                        <div class="container-fluid">
+                            <div class="form-group panel">
+                                <strong><h:outputText styleClass="col-lg-2 control-label"  value="Pedido NAVISION:"/></strong>
+                                <div class="col-lg-10">
+                                    <h:inputText styleClass="form-control" value="#{ordenBean.ordenActual.navCode}" id="navCodeID"/>                                    
+                                    <small class="form-text text-muted alert-danger">
+                                    <h:outputText styleClass="col-lg-12 control-label"  value="El Pedido que se captura debe tener el Prefijo '#{ordenBean.ordenActual.apCampo.compania.navPrefijo}' que pertenece a la compañia '#{ordenBean.ordenActual.apCampo.compania.nombre}'. "/>
+                                </small>
+                                </div>
+                            </div>                            
+                        </div>
+                        <div class="modal-footer">
+                            <h:commandButton action="#{ordenBean.completarTarea(actionEvent)}" id="buttonAceptar1"
+                                             styleClass="btn btn-info"
+                                             onclick="return validarNavCode();" value="Aceptar"/>
+
+                            <h:commandButton id="buttonCancelar" title="Cerrar ventana..." value="Cancelar"
+                                             onclick="$(dialogoEnviarProveedor).modal('hide');"
+                                             styleClass="btn btn-default"/>
+                        </div>
+                    </div>
+                </h:form>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Captura pedido, activo fijo -->
+    <div class="modal fade" id="dialogoPedidoActivo" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog" style="width: 70%;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h:outputText styleClass="popupHeaderText" value="Capturar códigos de NAVISION para los Activos Fijos: " rendered="#{ordenBean.ordenActual.tipo eq 'AF'}"/>
+                    <h:outputText styleClass="popupHeaderText" value="Capturar códigos de NAVISION para los Productos: " rendered="#{ordenBean.ordenActual.tipo eq 'PS'}"/>
+                </div>
+
+                <h:form id="formPopup2">
+                    <div class="modal-body panel panel-footer">
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="input-group panel panel-default" >
+                                    <div class="form-group col-lg-12" style="margin-top: 10px; border: white; border-bottom: #eee; border-top: white;  border-style: solid; border-width: 2px;">                                        
+                                        <h:outputLabel styleClass="col-lg-2 col-xs-12 control-label"  value="Orden:"/>
+                                        <div class="col-lg-10">
+                                            <h:outputText styleClass="control-label" value="#{ordenBean.ordenActual.consecutivo}"/>
+                                        </div>
+                                    </div>
+                                    <ui:fragment rendered="#{not popupCompletarActivoFijoBean.applyAll}">
+                                        <div class="form-group col-lg-12" style="margin-top: 10px; border: white; border-bottom: #eee; border-top: white;  border-style: solid; border-width: 2px;">                                        
+                                            <h:outputLabel styleClass="col-lg-2 col-xs-12 control-label"  value="Núm. de parte:"/>
+                                            <div class="col-lg-10">
+                                                <h:outputText styleClass="control-label" value="#{popupCompletarActivoFijoBean.linea.artNumeroParte}"/>
+                                            </div>
+                                        </div>
+                                        <div class="form-group col-lg-12" style="margin-top: 10px; border: white; border-bottom: #eee; border-top: white;  border-style: solid; border-width: 2px;">                                        
+                                            <h:outputLabel styleClass="col-lg-2 col-xs-12 control-label"  value="Cantidad:" />
+                                            <div class="col-lg-10"><h:outputText styleClass="control-label" value="#{popupCompletarActivoFijoBean.linea.cantidad}" >
+                                                </h:outputText>
+                                            </div>
+                                        </div>
+                                        <div class="form-group col-lg-12" style="margin-top: 10px; border: white; border-bottom: #eee; border-top: white;  border-style: solid; border-width: 2px;">                                        
+                                            <h:outputLabel styleClass="col-lg-2 col-xs-12 control-label"  value="Descripción:"/>
+                                            <div class="col-lg-10">
+                                                <h:outputText styleClass="control-label" value="#{popupCompletarActivoFijoBean.linea.artDescripcion}"/>
+                                            </div>
+                                        </div>
+                                    </ui:fragment>
+                                    <ui:fragment rendered="#{ordenBean.ordenActual.tipo eq 'AF'}">
+
+                                        <c:if test="#{popupCompletarActivoFijoBean.applyAll}">
+                                            <div class="form-group col-lg-12" >
+                                                <h:outputText styleClass="col-lg-2 control-label" value="Código AF:"/>
+                                                <div class="col-lg-10">
+                                                    <h:inputText id="afForAllID" styleClass="form-control" value="#{popupCompletarActivoFijoBean.afValue}" />                                        
+                                                </div>
+                                            </div>
+                                        </c:if>
+                                        <c:if test="#{not popupCompletarActivoFijoBean.applyAll}">
+                                            <ui:repeat var="item" value="#{popupCompletarActivoFijoBean.linea.navCodes}" >
+                                                <div class="form-group" >
+                                                    <div class="col-lg-4">
+                                                        <h:inputText value="#{item['codigo']}" styleClass="form-control itemAFClean"/>
+                                                    </div>
+                                                </div>
+                                            </ui:repeat>
+                                        </c:if>
+
+                                    </ui:fragment> 
+                                    <ui:fragment  rendered="#{ordenBean.ordenActual.tipo eq 'PS'}">
+                                        <div class="form-group col-lg-12">
+                                            <h:outputText styleClass="col-lg-2 control-label" value="Producto:"/>
+                                            <div class="col-lg-10">
+                                                <h:selectOneMenu id="PpUpProductoID" class="form-control" value="#{popupCompletarActivoFijoBean.popUpocProductoID}">
+                                                    <f:selectItem itemValue="0" itemLabel="Seleccione . . . "/>
+                                                    <f:selectItems value="#{popupCompletarActivoFijoBean.ocProductos}"/>                                        
+                                                </h:selectOneMenu> 
+                                            </div>
+                                        </div>
+                                    </ui:fragment>                                
+                                </div>                                
+                            </div>
+                        </div>                        
+                        <div class="modal-footer">
+                            <p:commandLink action="#{ordenBean.completarAFPS(actionEvent)}" 
+                                           id="buttonAceptar2"
+                                           styleClass="btn btn-info"                                                         
+                                           onclick="return validarPopUpPS('formPopup2', 'PpUpProductoID', '¿Está usted seguro de querer guardar los cambios? ', 'Por favor seleccione un producto.');" 
+                                           value="Aceptar" 
+                                           rendered="#{popupCompletarActivoFijoBean.applyAll and ordenBean.ordenActual.tipo eq 'PS'}"/>
+                            <p:commandLink action="#{ordenBean.completarAFPS(actionEvent)}" 
+                                           id="buttonAceptar4"
+                                           styleClass="btn btn-info"
+                                           onclick="return validarPopUpAF('formPopup2', 'afForAllID', '¿Está usted seguro de querer guardar los cambios? ', 'Por favor de capturar el código para los Activos Fijos.');" 
+                                           value="Aceptar" 
+                                           rendered="#{popupCompletarActivoFijoBean.applyAll and ordenBean.ordenActual.tipo eq 'AF'}"/>
+                            <p:commandLink action="#{ordenBean.completarActivosFijo(actionEvent)}" id="buttonAceptar3"
+                                           styleClass="btn btn-info"
+                                           onclick="return confirmar('formPopup2', '¿Está usted seguro de querer guardar los cambios? ');" 
+                                           value="Aceptar" rendered="#{not popupCompletarActivoFijoBean.applyAll}"/>
+                            <p:commandLink id="buttonLimpiar3"
+                                           styleClass="btn btn-info"
+                                           onclick="limpiarCampos();" 
+                                           value="Limpiar" rendered="#{not popupCompletarActivoFijoBean.applyAll}"/>
+                            <p:commandLink  id="buttonCancelar" title="Cerrar ventana..." value="Cancelar"
+
+                                            onclick="$(dialogoPedidoActivo).modal('hide');"
+                                            styleClass="btn btn-default"/>
+                        </div>
+                    </div>
+                </h:form>
+            </div>
+        </div>
+    </div>
+
+    <!-- contratos-->
+    <div class="modal fade" id="dialogoContratos" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Contratos</h4>
+                </div>
+                <h:form id="formContratoOrden" >
+                    <div class="modal-body panel panel-body">
+                        <div class="container-fluid">
+                            <div class="form-group panel row">
+                                <p:dataTable size="small" stripedRows="true" showGridlines="true" value="#{ordenBean.listaArchivoConvenio}"
+                                               rows="5" var="data"
+                                               paginator="true"  
+                                               paginatorPosition="bottom" 
+                                               style="font-size: 0.9em; width: 100%"  >
+                                    <p:column headerText="Tipo">
+                                        <h:outputLabel value="#{data.tipo}"/>
+                                    </p:column>
+                                    <p:column headerText="Nombre">
+                                        <h:outputLabel value="#{data.nombre}"/>
+                                    </p:column>
+
+                                    <p:column headerText="Archivo">
+                                        <p:link  href="/Compras/AbrirArchivo?ZWZ2W=#{data.adjuntoVO.id}&amp;ZWZ3W=#{data.adjuntoVO.uuid}"
+                                                         target="_blank" value="Abrir"
+                                                         style="color: blue;">
+                                        </p:link>
+                                    </p:column>
+                                    <p:column headerText="Vencimiento">
+                                        <h:outputLabel value="#{data.fechaVencimiento}">
+                                            <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                        </h:outputLabel>
+                                    </p:column>
+                                </p:dataTable>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <h:commandButton id="buttonCancelar" title="Cerrar ventana..." value="Cerrar"
+                                             onclick="$(dialogoContratos).modal('hide');"
+                                             action="#{ordenBean.limpiarListaConvenio}"
+                                             styleClass="btn btn-default"/>
+                        </div>
+                    </div>
+                </h:form>
+            </div>
+        </div>
+    </div>
+    <!-- DEVOLVER -->
+    <div class="modal fade" id="dialogoDevolverVariasOCS" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Devolver OC/S</h4>
+                </div>
+
+                <h:form id="frmDevsOCS">
+                    <div class="modal-body panel panel-footer">
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="modal-body"><br/>
+                                    <h:outputText style="text-align: center; color: red; font-weight: bold" 
+                                                  value="Se devolverán todas las OC/S con el mismo motivo"/>
+                                </div>                                
+                            </div>
+                        </div>
+                        <div class="container-fluid">
+                            <div class="form-group panel">
+                                <h:outputText styleClass="col-lg-2 control-label" style="padding-top: 5%;" value="Motivo:"/>
+                                <div class="col-lg-10">
+                                    <h:inputTextarea styleClass="form-control" id="motivoRechazo" rows="3" value="#{ordenBean.motivoDevolucion}"/> 
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <h:commandButton action="#{ordenBean.devolverOrdenCompras(event)}"
+                                         styleClass="btn btn-info"
+                                         onclick="return validaCancelar('frmDevsOCS', 'motivoRechazo', 'La operación va a devolver la(s) OC/S al comprador. ¿Está seguro?', 'Es necesario agregar un motivo')" value="Aceptar"/>
+                        <h:commandButton onclick="$(dialogoDevolverVariasOCS).modal('hide');"
+                                         styleClass="btn btn-default" title="Cerrar ventana..." value="Cancelar"/>
+                    </div>
+                </h:form>
+            </div>
+        </div>
+    </div>
+
+    <!-- CANCELAR VARIAS -->
+    <div class="modal fade" id="dialogoCancelarVariasOCS" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Cancelar OC/S</h4>
+                </div>
+
+                <h:form id="frmCancelVarOCS">
+                    <div class="modal-body panel panel-footer">
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="modal-body"><br/>
+                                    <h:outputText style="text-align: center; color: red; font-weight: bold" 
+                                                  value="Se cancelarán todas las OC/S con el mismo motivo"/>
+                                </div>                                
+                            </div>
+                        </div>
+                        <div class="container-fluid">
+                            <div class="form-group panel">
+                                <h:outputText styleClass="col-lg-2 control-label" style="padding-top: 5%;" value="Motivo:"/>
+                                <div class="col-lg-10">
+                                    <h:inputTextarea styleClass="form-control" id="motivoRechazo" rows="3" value="#{ordenBean.motivoDevolucion}"/> 
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <h:commandButton action="#{ordenBean.cancelarOrdenCompras}"
+                                         styleClass="btn btn-info"
+                                         onclick="return validaCancelar('frmCancelVarOCS', 'motivoRechazo', 'La operación va a cancelar la(s) OC/S. ¿Está seguro?', 'Es necesario agregar un motivo')" value="Aceptar"/>
+                        <h:commandButton onclick="$(dialogoCancelarVariasOCS).modal('hide');"
+                                         styleClass="btn btn-default" title="Cerrar ventana..." value="Cancelar"/>
+                    </div>
+                </h:form>
+            </div>
+        </div>
+    </div>
+</ui:composition>

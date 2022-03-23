@@ -1,0 +1,173 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      >
+    <body>
+        <ui:composition template="./../templates/template.xhtml">
+            <ui:define name="tituloPagina">
+                Búsqueda avanzada de OC/S
+            </ui:define>
+            <ui:define name="content">
+                <div class="row">
+		    <h:form id="form1">
+			<div class="row bordePanelGrid">
+			    <div class="col-lg-12" >
+				<div class="col-lg-3">
+				    <br/>
+				    <h:outputLabel value="Con Fecha"/>
+				    <div class="col-lg-12 col-xs-12">
+					<h:selectOneRadio id="agregarFecha" class="control-label text text-uppercase" 
+							  onclick="validaOcultaFecha('form1\\:agregarFecha');"
+							  value="#{buscarBean.agregarFecha}" >
+					    <f:selectItem itemLabel="Si" itemValue="Si" />
+					    <f:selectItem itemLabel="No" itemValue="No" />
+					</h:selectOneRadio>
+				    </div>
+				    <div class="col-lg-12 col-xs-12">
+
+					<div id="divConFecha" class="row">
+					    <p:panel  >
+						<h:outputLabel value="De:"/>
+						<h:inputText  value="#{buscarBean.fechaInicio}" class="form-control-sm" id="inicio" size="8"/>
+						<script>
+						    $(function () {
+							$("#form1\\:inicio").datepicker({
+							    showOn: "button",
+							    buttonImage: "./resources/Imagenes/cal_button.gif",
+							    buttonImageOnly: true,
+							    dateFormat: "dd/mm/yy",
+							    dateTime: regresaFechaInicioMes("form1", "inicio"),
+							    onSelect: function (date) {
+								inicio = date;
+							    }
+							});
+						    });
+						    function regresaFechaInicioMes(frm, componente) {
+							var hoy = new Date();
+							var mes = (hoy.getMonth() + 1
+								);
+							var completoMes;
+							if (mes >= 10) {
+							    completoMes = mes;
+							} else {
+							    completoMes = '0' + me
+							    s;
+							}
+							var fechaInicioMes = '01' + '/' + completoMes + '/' + hoy.getFullYear();
+							$("#" + frm + "\\:" + componente).val(fechaInicioMes);
+						    }
+						</script>
+						<h:outputLabel value="A: "/>
+						<h:inputText  value="#{buscarBean.fechaFin}" id="fin" size="8"/>
+						<script>
+						    $(function () {
+							$("#form1\\:fin").datepicker({
+							    showOn: "button",
+							    buttonImage: "./resources/Imagenes/cal_button.gif",
+							    buttonImageOnly: true,
+							    dateFormat: "dd/mm/yy",
+							    maxDate: new Date(new Date()),
+							    onSelect: function (date) {
+								fin = date;
+							    },
+							    onClose: function (selectedDate) {
+								$("#form1\\:inicio").datepicker("option", "maxDate", selectedDate)
+									;
+							    }
+							});
+						    });
+						</script>
+					    </p:panel>
+					</div>
+				    </div>
+				    <br/>
+				    <h:outputLabel value="Gerencia"/>
+				    <div class="col-lg-12" style="margin-bottom: 10px;">
+					<h:selectOneMenu value="#{buscarBean.idGerencia}" class="form-control" 
+							 onchange="ejecutarFiltros('form1', 'btnBuscar');">
+					    <f:selectItem itemLabel="Seleccione . . . . . " itemValue="-1"/>
+					    <f:selectItems value="#{buscarBean.listaGerencia}"/>
+					</h:selectOneMenu>
+				    </div>
+				    <div style="margin-top: 5px;">
+					<h:outputLabel value="Moneda"/>
+				    </div>
+				    <div style="padding-left: 5%; padding-bottom: 10px;">
+					<h:selectOneRadio layout="pageDirection" style="color: grey;" 
+							  value="#{buscarBean.idMoneda}" onclick="ejecutarFiltros('form1', 'btnBuscar');">					    
+                                            <f:selectItems value="#{buscarBean.listaMoneda}"/>
+					</h:selectOneRadio>
+				    </div>
+				    <div>
+					<h:outputLabel value="Monto"/>
+				    </div>
+				    <div style="padding-left: 5%; padding-bottom: 10px;">
+					<h:selectOneRadio  layout="pageDirection" value="#{buscarBean.rango}" style="color: grey;"
+							   onclick="ejecutarFiltros('form1', 'btnBuscar');"> 
+					    <f:selectItems value="#{buscarBean.listaMonto}" var="m">
+						#{m.valor}
+					    </f:selectItems>
+					</h:selectOneRadio>
+				    </div>
+				    <div>
+					<h:outputLabel value="Compra"/>
+				    </div>
+				    <div style="padding-left: 5%; padding-bottom: 10px;">
+					<h:selectOneRadio style="color: grey;" layout="pageDirection" value="#{buscarBean.tipo}" 
+							  onclick="ejecutarFiltros('form1', 'btnBuscar');" >
+					    <f:selectItems value="#{buscarBean.listaTipo}"/>
+					</h:selectOneRadio>
+				    </div>
+				    <div style="padding-bottom: 5px;">
+					<p:commandLink id="btnBuscar" value="Buscar" class="btn btn-info" 
+						       onclick="return validaBuscarAvanzada('form1\\:agregarFecha', 'form1\\:inicio', 'form1\\:fin');"
+						       action="#{buscarBean.buscarOCS(event)}"
+						       >
+					</p:commandLink>
+				    </div>
+				</div>
+				<div class="col-lg-9"  style="height: 550px; border-left: 1px solid #CCCCCC;">
+				    <br/>
+				    <div class="table table-responsive">
+					<p:dataTable size="small" stripedRows="true" showGridlines="true" style="font-size: 0.99em" value="#{buscarBean.listaOrden}" 
+						       rows="20" var="data"
+						       paginator="true"   
+						       paginatorPosition="bottom" 
+						       styleClass="table table-striped">
+					    <p:column style="width: 20%" headerText="Código" 
+							filterBy="#{data.consecutivo}" filterMatchMode="contains">
+						<p:commandLink  value="#{data.consecutivo}" styleClass="link" 
+								style="color: blue;" 
+								action="#{ordenBean.verDetalleOrden()}">
+						    <f:param name="idOrden" value="#{data.id}"/>
+						</p:commandLink>
+					    </p:column>
+					    <p:column headerText="Proveedor"
+							filterBy="#{data.proveedor}" filterMatchMode="contains">
+						<p:commandLink value="#{data.proveedor}" styleClass="link" style="color: blue;"
+							       action="#{ordenBean.verDetalleOrden()}">
+						    <f:param name="idOrden" value="#{data.id}"/>
+						</p:commandLink>
+					    </p:column>
+					    <p:column headerText="Referencia"
+							filterBy="#{data.referencia}" filterMatchMode="contains">
+						<p:commandLink value="#{data.referencia}" styleClass="link" style="color: blue;"
+							       action="#{ordenBean.verDetalleOrden()}">
+						    <f:param name="idOrden" value="#{data.id}"/>
+						</p:commandLink>
+					    </p:column>
+					</p:dataTable>
+				    </div>
+				</div>
+			    </div>
+			</div>
+		    </h:form>
+		</div>
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

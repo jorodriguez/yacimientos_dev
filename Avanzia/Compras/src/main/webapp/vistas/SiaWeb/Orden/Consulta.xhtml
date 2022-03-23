@@ -1,0 +1,105 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+      xmlns:h="http://xmlns.jcp.org/jsf/html">
+
+    <body>
+
+        <ui:composition template="./../templates/template.xhtml">
+            <ui:define name="tituloPagina">
+                #{menuBarBean.paginaActual}
+            </ui:define>
+            <ui:define name="content">
+                <h:form id="form1">
+                    <h:panelGroup id="panelGroup1" style=" position: relative;">
+                        <!--   Ponga todo su codigo aqui... -->
+                        <!--   Ponga todo su codigo aqui... -->
+                        <p:tabView id="panelTabSet1" activeIndex="0" >
+                            <p:tab id="panelTabRequisicionesAsignadas" title="Requisiciones Asignadas" >
+                                    <p:panel >
+                                        <p:dataTable size="small" stripedRows="true" showGridlines="true"  id="dataTableRequisicionesAsignadas" rows="10" 
+                                                       value="#{requisicionBean.consultaRequisicionesAsignadas}" var="currentRow" >
+                                            <p:column rendered="false">
+                                                <h:outputText value="#{currentRow['id']}"/>
+                                                <f:facet name="header">
+                                                    <h:outputText value="Id"/>
+                                                </f:facet>
+                                            </p:column>
+                                            <p:column>
+                                                <h:outputText style="width: 80px" value="#{currentRow['consecutivo']}"/>
+                                                <f:facet name="header">
+                                                    <h:outputText value="Código"/>
+                                                </f:facet>
+                                            </p:column>
+                                            <p:column>
+                                                <h:outputText value="#{currentRow['fechaAsigno']}">
+                                                    <f:convertDateTime type="date" dateStyle="default"/>
+                                                </h:outputText>
+                                                <f:facet name="header">
+                                                    <h:outputText value="Asignada"/>
+                                                </f:facet>
+                                            </p:column>
+                                            <p:column>
+                                                <h:outputText value="#{currentRow['fechaRequerida']}">
+                                                    <f:convertDateTime type="date" dateStyle="default"/>
+                                                </h:outputText>
+                                                <f:facet name="header">
+                                                    <h:outputText value="Requerida"/>
+                                                </f:facet>
+                                            </p:column>
+                                            <p:column>
+                                                <h:outputText value="#{currentRow['prioridad'].nombre}"/>
+                                                <f:facet name="header">
+                                                    <h:outputText value="Prioridad"/>
+                                                </f:facet>
+                                            </p:column>
+                                            <p:column>
+                                                <h:outputText style="width: 280px" value="#{currentRow['compania'].nombre}"/>
+                                                <f:facet name="header">
+                                                    <h:outputText value="Compañia"/>
+                                                </f:facet>
+                                            </p:column>
+
+                                            <p:column>
+                                                <h:outputText value="#{currentRow['estatus'].nombre}"/>
+                                                <f:facet name="header">
+                                                    <h:outputText value="Estatus actual"/>
+                                                </f:facet>
+                                            </p:column>
+                                            <p:column>
+                                                <!-- si pongo un boton no toma los 2 parametros -->
+                                                <p:commandLink action="#{menuBarBean.accionMenu}"
+                                                                 value="Ver detalle"
+                                                                 action="#{requisicionBean.seleccionarRequisicion(actionEvent)}"
+                                                                 title="Click aqui para ver mas información...">
+                                                    <f:param name="myParam" value="detalleConsulta"/>
+                                                    <!-- este parametro es para tomar la requisición solo asi lo puedo ver cuando uso botones -->
+                                                    <f:facet name="ParametroAdicional">
+                                                        <f:param name="commandButtonParam" value="#{currentRow['id']}"/>
+                                                    </f:facet>
+                                                </p:commandLink>
+                                            </p:column>
+                                        </p:dataTable>
+                                        <h:panelGroup styleClass="clearer"/> <!-- Paginador -->
+                                        <!-- Set up the buttons and links for browsing through the table
+                                             fastStep means No. of pages to fast forward or rewind: 3
+                                             paginatorMaxPages means No. of direct links to pages: 4 -->
+                                        <h:panelGroup>
+                                            
+                                        </h:panelGroup>
+                                    </p:panel> <!--  Termina requisiciones Asignadas -->
+                            </p:tab>
+                        </p:tabView>
+                    </h:panelGroup>
+                </h:form>
+            </ui:define>
+
+        </ui:composition>
+
+    </body>
+</html>

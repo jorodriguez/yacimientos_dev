@@ -1,0 +1,153 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <body>
+        <ui:composition template="./../../templates/template.xhtml">
+            <ui:define name="tituloPagina">
+                Panel de Contenido Nacional
+            </ui:define>
+            <ui:define name="content">
+                <style type="text/css">
+                    .list-group-item{
+                        padding: 5px 5px;
+                    }
+                </style>
+                <h:form id="frmRepoCn">
+                    <div class="input-group col-lg-6">
+                        <div class="col-lg-1">
+                            <h4>Año: </h4>
+                        </div>
+                        <div class="col-lg-4">
+                            <h:selectOneMenu value="#{reporteContenidoBean.idAnio}" styleClass="form-control">
+                                <f:selectItems value="#{reporteContenidoBean.mapaSeleccion.get('selAnio')}"/>   
+                                <f:ajax listener="#{reporteContenidoBean.cambiarAnio}" render="@all"/> 
+                            </h:selectOneMenu>
+                        </div>
+                    </div>
+                    <div class="panel"></div>
+                    <div class="row">
+                        <div class="col-lg-4">
+                            <div class="panel panel-primary" data-target="#">
+                                <div class="panel-heading">
+                                    <div class="input-group col-lg-12">
+                                        <div class="col-lg-8">
+                                            <h4> <a data-toggle="collapse" href="#totalocs"  style="color: white;"><b>Total oc/s</b></a></h4>
+                                        </div>
+                                        <div class="col-lg-4">
+                                            <h:selectOneMenu value="#{reporteContenidoBean.idMonOcs}" styleClass="form-control">
+                                                <f:selectItems value="#{reporteContenidoBean.mapaSeleccion.get('monOcs')}"/>
+                                                <f:ajax listener="#{reporteContenidoBean.buscarTotalOcs}" render="@all"/>
+                                            </h:selectOneMenu>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="panel-body collapse" id="totalocs">
+                                    <ul class="list-group">
+                                        <ui:repeat value="#{reporteContenidoBean.mapaTotales.get('ocs')}" var="totOcs">
+                                            <li class="list-group-item">
+                                                #{totOcs.bloque} : 
+                                                <h:outputLabel value="#{totOcs.total}">
+                                                    <f:convertNumber type="currency"/>
+                                                </h:outputLabel>
+                                            </li>
+                                        </ui:repeat>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="panel panel-primary">
+                                <div class="panel-heading">   
+                                    <div class="input-group col-lg-12">
+                                        <div class="col-lg-8">
+                                            <h4> <a data-toggle="collapse" href="#totalfac"  style="color: white;"><b>Total facturado</b></a></h4>
+                                        </div>
+                                        <div class="col-lg-4">
+                                            <h:selectOneMenu value="#{reporteContenidoBean.idMonFac}" styleClass="form-control">
+                                                <f:selectItems value="#{reporteContenidoBean.mapaSeleccion.get('monFac')}"/>
+                                                <f:ajax listener="#{reporteContenidoBean.buscarTotalFac}" render="@all"/>
+                                            </h:selectOneMenu>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="panel-body collapse" id="totalfac">
+                                    <ul class="list-group">
+                                        <ui:repeat value="#{reporteContenidoBean.mapaTotales.get('factura')}" var="totFac">
+                                            <li class="list-group-item">
+                                                #{totFac.campo} : 
+                                                <h:outputLabel value="#{totFac.monto}"
+                                                               style="text-align: right;">
+                                                    <f:convertNumber type="currency"/>
+                                                </h:outputLabel>                                      
+                                            </li>
+                                        </ui:repeat>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="panel panel-primary" data-toggle="collapse" data-target="#totalcn">
+                                <div class="panel-heading"><b>Total Contenido Nacional</b></div>
+                                <div class="panel-body collapse" id="totalcn">
+                                    <ul class="list-group">
+                                        <ui:repeat value="#{reporteContenidoBean.mapaTotales.get('cn')}" var="totCN">
+                                            <li class="list-group-item">
+                                                #{totCN.campo} : 
+                                                <h:outputLabel value="#{totCN.monto}"
+                                                               style="text-align: right;">
+                                                    <f:convertNumber type="currency"/>
+                                                </h:outputLabel>
+                                            </li>
+                                        </ui:repeat>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div id="graficaTotalOcs" class="col-lg-4"></div>
+                        <div id="graficaTotalFac" class="col-lg-4"></div>
+                        <div id="graficaTotalCn" class="col-lg-4"></div>
+                    </div>
+                    <div class="panel"></div>
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="panel panel-primary">
+                                <div class="panel-heading">
+                                    <div class="input-group col-lg-12">
+                                        <div class="col-lg-8">
+                                            <h4> <b>Proveedores</b></h4>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="panel-body">
+                                    <div id="graficaProveedoresTop"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!--div class="row">
+                        <div class="col-lg-12">
+                            <div class="panel panel-primary">
+                                <div class="panel-heading">
+                                    <div class="input-group col-lg-12">
+                                        <div class="col-lg-8">
+                                            <h4> <b>Contenido Nacional</b></h4>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="panel-body">
+                                    <div id="graficaProveedoresTop"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div-->
+                </h:form>
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

@@ -1,0 +1,1274 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                >  
+    <style >
+        .iceSelInpTxtList{
+            background-color: whitesmoke;                        
+            z-index: 99999;
+        }            
+
+        .itemNom{
+            width: 62%;    
+            text-align: left;
+        }    
+        .itemCod{
+            width: 25%;    
+            text-align: left;
+        }    
+        .itemUni{
+            width: 13%;    
+            text-align: left;
+        }    
+
+        .itemfooter{
+            background: yellow;
+        }    
+
+    </style>
+    <style >
+        .clickable{
+            cursor: pointer;   
+        }
+
+        .panel-heading span {
+            margin-top: -20px;
+            font-size: 15px;
+        } 
+        .panel-body {
+            padding: 5px;
+        }
+        .resultadoBdaNombre {}
+        .resultadoBdaCodigo {}
+        .mytable2 {}
+        .mpIDSt{}
+    </style>
+
+    <div class="modal fade" id="dialogoCancelarReq" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Cancelar requisición</h4>
+                </div>
+
+                <h:form id="frmCanReq">
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="input-group panel panel-default" ><br/>
+                                    <div class="form-group col-lg-12" >
+                                        <h:outputText class="col-lg-2 control-label" value="Gerencia:" /> 
+                                        <div class="col-lg-10">
+                                            <h:outputText class="form-control" value="#{popupBean.requisicion.gerencia.nombre}"/>
+                                        </div>
+                                    </div>
+                                    <div class="form-group col-lg-12" >
+                                        <h:outputText class="col-lg-2 control-label" value="ProyectoOT:"/>
+                                        <div class="col-lg-10">
+                                            <h:outputText class="form-control" value="#{popupBean.requisicion.proyectoOt.nombre}"/>
+                                        </div>
+                                    </div>
+                                    <div class="form-group col-lg-12">
+                                        <h:outputText class="col-lg-2 control-label" value="Fecha Solicita" />
+                                        <div class="col-lg-10"><h:outputText class="form-control" value="#{popupBean.requisicion.fechaSolicito}" >
+                                                <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                            </h:outputText>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group panel">
+                                <h:outputText class="col-lg-2 control-label" value="Introduzca el motivo:"/>
+                                <div class="col-lg-10">
+                                    <h:inputTextarea styleClass="form-control" id="motivoCancelo"  value="#{popupBean.requisicion.motivoCancelo}" />                                
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <p:commandButton id="buttonAceptar"
+                                           value="Aceptar"
+                                           styleClass="btn btn-info"
+                                           action="#{requisicionBean.cancelarRequisicion(actionEvent)}"
+                                           onclick="return validaCancelar('frmCanReq', 'motivoCancelo', 'La operación cancelará la requisición. ¿Está seguro?', 'Es necesario agregar el motivo.');"/>
+                        <p:commandButton id="buttonCancelar"
+                                           value="Cancelar"
+                                           styleClass="btn btn-cancelar"
+                                           onclick="cerrarDialogoModal(dialogoCancelarReq);"
+                                           title="Cerrar ventana sin cancelar la requisición..." 
+                                           immediate="true"/>
+                    </div>
+                </h:form>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Modal Panel Popup Rechazo -->
+    <div class="modal fade" id="dialogoDevReq" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Devolver requisición</h4>
+                </div>
+
+                <h:form id="frmDev">
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="input-group panel panel-default" ><br/>
+                                    <div class="form-group col-lg-12 col-xs-12" style="margin-top: 10px; border: white; border-bottom: #eee; border-top: white;  border-style: solid; border-width: 2px;">
+                                        <strong><h:outputText styleClass="col-lg-5 control-label" value="Gerencia:" /> </strong>
+                                        <div class="col-lg-7">
+                                            <h:outputText styleClass="control-label" value="#{popupBean.requisicion.gerencia.nombre}"/>
+                                        </div>
+                                    </div>                                    
+                                    <div class="form-group col-lg-12 col-xs-12" style="margin-top: 10px; border: white; border-bottom: #eee; border-top: white;  border-style: solid; border-width: 2px;">
+                                        <strong><h:outputText styleClass="col-lg-5 control-label" value="Fecha Solicita:" /></strong>
+                                        <div class="col-lg-7"><h:outputText styleClass="control-label" value="#{popupBean.requisicion.fechaSolicito}" >
+                                                <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                            </h:outputText>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group panel">
+                                <strong><h:outputText class="col-lg-2 control-label" value="Introduzca el motivo:"/></strong>
+                                <div class="col-lg-10">
+                                    <h:inputTextarea styleClass="form-control" id="motivoCancelo"  value="#{popupBean.rechazo.motivo}" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <p:commandButton value="Aceptar"
+                                           styleClass="btn btn-info"
+                                           action="#{requisicionBean.rechazarRequisicion(actionEvent)}"
+                                           onclick="return validaCancelar('frmDev', 'motivoCancelo', 'La operación devolverá la requisición. ¿Está seguro?', 'Es necesario agregar el motivo.');"/>
+                        <p:commandButton value="Cancelar"
+                                           styleClass="btn btn-default"
+                                           onclick="cerrarDialogoModal(dialogoDevReq);"
+                                           title="Cerrar ventana..." 
+                                           immediate="true"/>
+                    </div>
+                </h:form>
+            </div>
+        </div>
+    </div>
+    <!--NOTAS-->
+    <!-- Modal Panel Popup Rechazo -->
+    <div class="modal fade" id="dialogoNotaReq" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Crear nota</h4>
+                </div>
+
+                <h:form id="frmNotaReq">
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="input-group panel panel-default" ><br/>
+                                    <div class="form-group col-lg-12" >
+                                        <strong><h:outputText class="col-lg-2 control-label" value="Gerencia:" /></strong>
+                                        <div class="col-lg-10">
+                                            <h:outputText class="control-label" value="#{requisicionBean.requisicionActual.gerencia.nombre }"/>
+                                        </div>
+                                    </div>
+                                    <div class="form-group col-lg-12" >
+                                        <strong><h:outputText class="col-lg-2 control-label" value="ProyectoOT:"/></strong>
+                                        <div class="col-lg-10">
+                                            <h:outputText class="control-label" value="#{requisicionBean.requisicionActual.proyectoOt.nombre}"/>
+                                        </div>
+                                    </div>
+                                    <div class="form-group col-lg-12">
+                                        <strong><h:outputText class="col-lg-2 control-label" value="Fecha Solicita:" /></strong>
+                                        <div class="col-lg-10"><h:outputText class="control-label" value="#{requisicionBean.requisicionActual.fechaSolicito}" >
+                                                <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                            </h:outputText>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="container-fluid">
+                            <div class="form-group panel">
+                                <strong><h:outputText class="col-lg-2 control-label" value="Nota:"/></strong>
+                                <div class="col-lg-10">
+                                    <h:inputTextarea styleClass="form-control" id="nota"  value="#{notaRequisicionBean.textoNoticia}" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <h:commandButton action="#{requisicionBean.completarCreacionNota(actionEvent)}" 
+                                         onclick="return validaNotasOCS('frmNotaReq')"
+                                         styleClass="btn btn-info" value="Aceptar"/>
+                        <h:commandButton action="#{popupCrearNotaBean.toggleModal(event)}" 
+                                         onclick="cerrarDialogoModal(dialogoNotaReq);"
+                                         styleClass="btn btn-default" title="Cerrar ventana..." value="Cancelar"
+                                         immediate="true"/>
+                    </div>
+                </h:form>
+            </div>
+        </div>
+    </div>
+
+    <!-- CREAR Y EDITAR REQUISICION  -->
+    <div class="modal fade" id="dialogoCrearNewReq" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <strong><h4 class="modal-title">Crear requisición</h4></strong>
+                </div>
+
+                <h:form id="frmCrearRequisicion">
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="input-group panel panel-default" ><br/>
+                                    <div class="iceSelOneRbihsa" style="width: 100%;">
+                                        <center>
+                                            <strong>
+                                                <h:selectOneRadio id="tipoReq" value="#{popupRequisicionBean.tipoRequisicion}"
+                                                                    valueChangeListener="#{requisicionBean.cambiarTipoRequisicion}"
+                                                                     styleClass="radio-inline" style="padding-bottom: 10px; width: 100%;"
+                                                                    >                                        
+                                                    <f:selectItems 
+                                                        value="#{popupRequisicionBean.listaTipoRequisicion}" 
+                                                        />
+                                                </h:selectOneRadio >
+                                            </strong>
+                                        </center>
+                                    </div>
+                                    <div class="form-group col-lg-12" >
+                                        <strong><h:outputText class="col-lg-2 control-label" value="Gerencia:"/></strong>
+                                        <div class="col-lg-10">                                            
+                                            <h:selectOneMenu id="idGerencia" styleClass="form-control"
+                                                               value="#{popupRequisicionBean.idGerencia}"
+                                                               valueChangeListener="#{popupRequisicionBean.cambiarValorGerencia}"                                                       
+                                                               >
+                                                <f:selectItem itemValue="0" itemLabel="Seleccione . . . "/>
+                                                <f:selectItems value="#{popupRequisicionBean.listaG}"/>
+                                            </h:selectOneMenu>
+                                        </div>
+                                    </div> 
+                                    <ui:fragment rendered="#{requisicionBean.requisicionActual.apCampo.tipo eq 'N'}" >                                        
+                                        <div class="form-group col-lg-12" >
+                                            <strong><h:outputText class="col-lg-2 control-label" value="Proyecto OT:"/></strong>
+                                            <div class="col-lg-10">
+                                                <h:selectOneMenu id="idProyectoOt" styleClass="form-control" value="#{popupRequisicionBean.idProyectoOT}"
+                                                                   valueChangeListener="#{popupRequisicionBean.cambiarValorProyectoOt}"
+                                                                   >
+                                                    <f:selectItem itemValue="0" itemLabel="Seleccione . . . "/>
+                                                    <f:selectItems value="#{popupRequisicionBean.listaProyectosOT}"/>
+                                                </h:selectOneMenu>
+                                            </div>
+                                        </div>
+                                        <ui:fragment rendered="#{popupRequisicionBean.tipoRequisicion eq 'PS'}">
+                                            <div class="form-group col-lg-12">
+                                                <strong><h:outputText class="col-lg-2 control-label" value="Tipo de Tarea:"/></strong>
+                                                <div class="col-lg-10">                                            
+                                                    <h:selectOneMenu id="unidaCosto" styleClass="form-control" value="#{popupRequisicionBean.idUnidadCosto}">
+                                                        <f:selectItem itemValue="0" itemLabel="Seleccione . . . "/>
+                                                        <f:selectItems value="#{popupRequisicionBean.listaUnidadCosto}"/>
+                                                    </h:selectOneMenu>
+                                                </div>
+                                            </div>
+                                        </ui:fragment>
+                                    </ui:fragment>
+                                    <div class="form-group col-lg-12" >
+                                        <strong><h:outputText class="col-lg-2 control-label" value="Revisa:"/></strong>
+                                        <div class="col-lg-10">
+                                            <h:selectOneMenu id="userRevisa" styleClass="form-control" value="#{popupRequisicionBean.idRevisa}"
+                                                               valueChangeListener="#{popupRequisicionBean.cambiarValorRevisa}"
+                                                               >
+                                                <f:selectItem itemLabel="Seleccione . . . " itemValue="revisa"/>
+                                                <f:selectItems value="#{popupRequisicionBean.listaRevisan}"/>
+                                            </h:selectOneMenu>
+                                        </div>
+                                    </div>
+                                    <div class="form-group col-lg-12" >
+                                        <strong><h:outputText class="col-lg-2 control-label" value="Aprueba:"/></strong>
+                                        <div class="col-lg-10">
+                                            <h:selectOneMenu id="userAAprueba" styleClass="form-control"  value="#{popupRequisicionBean.idAprueba}">
+                                                <f:selectItem itemLabel="Seleccione . . . " itemValue="aprueba"/>
+                                                <f:selectItems   value="#{popupRequisicionBean.listaAprueban}"/>
+                                            </h:selectOneMenu>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group panel">
+                                <strong><h:outputText class="col-lg-2 control-label" value="Observaciones:"/></strong>
+                                <br/>
+                                <div class="col-lg-12">
+                                    <h:inputTextarea style="width: 100%;" styleClass="form-control" id="motivoCancelo"  value="#{popupRequisicionBean.requisicion.observaciones}" />                                
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <p:commandButton id="buttonAceptar"
+                                           value="#{requisicionBean.operacionRequisicion}"
+                                           styleClass="btn btn-info"
+                                           action="#{requisicionBean.completarActualizacionRequisicion(actionEvent)}"
+                                           onclick="return validaRequisicion('frmCrearRequisicion');"
+                                           />
+                        <ui:fragment rendered="#{popupRequisicionBean.operacion eq 'Crear'}">
+                            <h:commandButton id="buttonCancelarCrear"
+                                             value="Cancelar"
+                                             styleClass="btn btn-cancelar"                                           
+                                             action="#{requisicionBean.cancelarModificaRequisicion(event)}"
+                                             title="Cerrar ventana sin cancelar la requisición..." 
+                                             immediate="true"/>
+                        </ui:fragment>
+                        <ui:fragment rendered="#{popupRequisicionBean.operacion eq 'Actualizar'}">
+                            <h:commandButton id="buttonCancelarUpd" 
+                                             value="Cancelar"
+                                             styleClass="btn btn-cancelar"                                                                                      
+                                             title="Cerrar ventana sin cancelar la requisición..." 
+                                             onclick="cerrarDialogoModal(dialogoCrearNewReq);"
+                                             immediate="true"/>
+                        </ui:fragment>
+                    </div>
+                </h:form>
+            </div>
+        </div>
+    </div>
+    <!-- CREAR Y EDITAR REQUISICION  -->
+    <!-- ITEMS REQUISICION  -->
+    <div class="modal fade" id="dialogoItemsRequi" data-backdrop="static" data-keyboard="false" draggable="true">
+        <div class="modal-dialog" style="width: 90%;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">#{requisicionBean.operacionItem} Ítem</h4>
+                </div>                
+                <h:form id="frmItemReq">
+                    <div class="modal-body">
+                        <div class="row">
+                            <div id="panelCrearArticuloReq" class="col-lg-12">
+                                <div class="panel panel-default col-lg-12" >                                    
+                                    <div class="form-group col-lg-12" style="margin-top: 15px;" >
+                                        <div class="col-lg-12" style="margin-bottom: 0px;" >                                        
+                                            <div class="panel panel-primary" id="PanelArtFre"> 
+                                                <div class="panel-heading" onclick="colapsarPanel('artFrecImg', 'collapsePanelArtFre');">
+                                                    <h3 class="panel-title">
+                                                        <strong>Articulos Frecuentes</strong>
+                                                    </h3>
+                                                    <span class="pull-right clickable panel-collapsed"><i id="artFrecImg" class="glyphicon glyphicon-plus"></i></span>                                                    
+                                                </div>
+                                                <div id="collapsePanelArtFre" class="panel-collapse collapse">
+                                                    <div class="panel-body">
+                                                        <!--rowSelectListener="#{requisicionBean.seleccionarArtFrecuente}"-->
+                                                        <p:dataTable size="small" stripedRows="true" showGridlines="true" value="#{requisicionBean.articulosFrecuentes}" var="artF"
+                                                                       rowStyleClass="table table-bordered table-striped"
+                                                                       rows="10" paginator="true"  
+                                                                       paginatorPosition="bottom" 
+                                                                       selectionMode="single"
+                                                                       >
+                                                            <p:column style="text-align: left;">
+                                                                <h:outputText value="#{artF.numParte} - #{artF.nombre.length() > 200 ? artF.nombre.substring(0,200) : artF.nombre}" 
+                                                                              title="#{artF.nombre}"/>
+                                                            </p:column>                                                
+                                                        </p:dataTable>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+
+                                        <div class="form-group col-lg-12" style="margin-bottom: 0px;" > 
+                                            <div class="panel panel-primary" id="panelBusquedaAvanzada"> 
+                                                <div class="panel-heading"  onclick="colapsarPanel('busAvaImg', 'collapsePanelBusquedaAvanzada');">
+                                                    <h3 class="panel-title">                                                        
+                                                        <strong>Búsqueda Asistida</strong>
+                                                    </h3>
+                                                    <span class="pull-right clickable panel-collapsed"><i id="busAvaImg" class="glyphicon glyphicon-plus"></i></span>                                                    
+                                                </div>
+                                                <div id="collapsePanelBusquedaAvanzada" class="panel-collapse collapse">
+                                                    <div class="panel-body">
+
+                                                        <div class="form-group col-lg-12" style="margin-bottom: 0px;" >
+                                                            <ui:repeat value="#{requisicionBean.categoriasSeleccionadas}" var="data"
+                                                                       varStatus="indice">
+                                                                <p:commandLink  style="padding-left: 2%;"
+                                                                                  action="#{requisicionBean.seleccionarCategoriaCabecera(event)}"
+                                                                                  styleClass="text text-primary">
+                                                                    <i class="glyphicon glyphicon-arrow-right"
+                                                                       style="display: #{requisicionBean.categoriasSeleccionadas.size() gt 0} ? 'block' : 'none'"></i>
+                                                                    #{data.nombre} 
+                                                                                    <!--f:param name="idCatSelecionada" value="#{data.id}"/-->
+                                                                    <f:param name="indiceCatSel" value="#{indice.index}"/>
+                                                                </p:commandLink>
+                                                            </ui:repeat>
+
+                                                        </div>                                                        
+                                                        <ui:fragment rendered="#{!(requisicionBean.itemActual.invArticulo.id gt 0)}">
+                                                            <div class="col-lg-12" id="tablaCategorias">
+                                                                <!--rowSelectListener="#{requisicionBean.seleccionarCategoria}"-->
+                                                                <p:dataTable size="small" stripedRows="true" showGridlines="true" value="#{requisicionBean.listaCatPrin}" var="data"
+                                                                               rowStyleClass="table table-bordered table-striped"
+                                                                               rows="20" paginator="true"  
+                                                                               paginatorPosition="bottom" 
+                                                                               selectionMode="single"
+                                                                               >
+                                                                    <p:column headerText="Código" style="width: 10%;">
+                                                                        <h:outputText value="#{data.codigo}"/>
+                                                                    </p:column>
+                                                                    <p:column headerText="Nombre" style="text-align: left;">
+                                                                        <h:outputText value="#{data.nombre}"/>
+                                                                    </p:column>                                                
+                                                                </p:dataTable>
+                                                            </div>                                                                                                                  
+                                                            <div class="form-group col-lg-12" style="margin-top: 10px; margin-bottom: 10px;" >
+                                                                <strong><h:outputText style="padding-top: 3px;" class="col-lg-1 control-label" value="Filtro:" /></strong>
+                                                                <div class="col-lg-9">                                            
+                                                                    <!--textChangeListener="#{requisicionBean.traerArticulosItemsListener}"-->
+                                                                    <p:autoComplete id="idBusquedaAvArticulos"                                                                 
+                                                                                         value="#{requisicionBean.articuloTx}" 
+                                                                                         
+                                                                                         styleClass="campoFiltro"                                                                                         
+                                                                                         style="margin: 0px 0 0 0px; width: 100%; height: 25px; background-color: #d9edf7; border: 1px solid #ccc; border-radius: 4px; box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset;">                                                                                                                                                                        
+                                                                    </p:autoComplete> 
+                                                                </div>
+                                                                <div class="col-lg-2">                                                                                    
+                                                                    <strong><h:outputText
+                                                                            value="#{requisicionBean.articulosResultadoBqda.size()} Artículos"/>
+                                                                    </strong>
+
+                                                                </div>
+                                                            </div>                                                            
+                                                            <div class="form-group col-lg-12">
+                                                                <div class="col-lg-12" id="tablaResBusquedaAv">
+                                                                    <p:dataTable size="small" stripedRows="true" showGridlines="true" value="#{requisicionBean.articulosResultadoBqda}" var="dataRBA"
+                                                                                   id="tablaResBusquedaAvTABLE"                                                                                   
+                                                                                   rowStyleClass="table table-bordered table-striped"
+                                                                                   rows="20" paginator="true"  
+                                                                                   paginatorPosition="bottom" 
+                                                                                   selectionMode="single"
+                                                                                   >
+                                                                        <!--rowSelectListener="#{requisicionBean.seleccionarResultadoBA}"-->
+                                                                        <p:column headerText="Código" style="width: 15%;" styleClass="resultadoBdaCodigo">
+                                                                            <h:outputText value="#{dataRBA.value.numParte}"/>
+                                                                        </p:column>
+                                                                        <p:column headerText="Nombre" style="text-align: left; width: 85%" styleClass="resultadoBdaNombre">
+                                                                            <h:outputText value="#{dataRBA.value.nombre}"/>
+                                                                        </p:column> 
+                                                                        <p:ajax event="page" process="@this" oncomplete="marcarBusqueda();"></ace:ajax>
+                                                                    </p:dataTable>
+                                                                </div>                 
+                                                            </div>
+                                                        </ui:fragment>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group col-lg-12" style="margin-top: 5px; margin-bottom: 5px;" >
+                                            <div class="col-lg-2"></div>                                                                
+                                            <div class="col-lg-9">
+                                                <strong><h:outputText style="padding-top: 5px; padding-bottom: 5px; padding-right: 5px;" class="col-lg-10 control-label" 
+                                                                      value="Si el artículo no fue encontrado, favor de solicitar el registro del nuevo artículo. " /></strong>
+                                                <h:commandButton value="Solicitar" styleClass="btn btn-info col-lg-2"
+                                                                 onclick="return enviarNuevoItemReg();"
+                                                                 style="padding: 1px 1px; font-size: 13px;"/>                                                                    
+                                            </div>
+                                            <div class="col-lg-1"></div>
+
+                                        </div>
+                                    </div>                                    
+                                    <ui:fragment rendered="#{requisicionBean.itemActual.invArticulo.id gt 0 or 
+                                                             requisicionBean.itemActual.id gt 0}">
+
+                                        <ui:fragment rendered="#{(requisicionBean.requisicionActual.apCampo.tipo eq 'C') or (requisicionBean.requisicionActual.apCampo.tipo eq 'N' and requisicionBean.requisicionActual.tipo eq 'PS')}">
+                                            <div class="form-group col-lg-6" >
+                                                <ui:fragment rendered="#{requisicionBean.requisicionActual.apCampo.tipo eq 'C'}">
+                                                    <div class="form-group col-lg-12" >
+                                                        <strong><h:outputText class="col-lg-3 control-label" value="Presupuesto:"/></strong>
+                                                        <div class="col-lg-9">                                            
+                                                            <h:selectOneMenu id="idPresupuesto" styleClass="form-control"
+                                                                             value="#{requisicionBean.idPresupuesto}"
+                                                                             >
+                                                                <f:selectItem itemValue="0" itemLabel="Seleccione . . . "/>
+                                                                <f:selectItems value="#{requisicionBean.lstPresupuesto}"/>
+                                                                <f:ajax event="change" render="@all" listener="#{requisicionBean.actualizaPresupuesto}"/>  
+                                                            </h:selectOneMenu>
+                                                        </div>
+                                                    </div>                                            
+                                                    <div class="form-group col-lg-12" >
+                                                        <strong><h:outputText class="col-lg-3 control-label" value="Año Presupuesto:"/></strong>
+                                                        <div class="col-lg-3">                                            
+                                                            <h:selectOneMenu id="anioPresupuesto" styleClass="form-control"
+                                                                             value="#{requisicionBean.anioPresupuesto}"
+                                                                             >
+                                                                <f:selectItem itemValue="0" itemLabel="Seleccione . . . "/>
+                                                                <f:selectItems value="#{requisicionBean.lstAnioPresupuesto}"/>
+                                                                <f:ajax event="change" render="@all" listener="#{requisicionBean.actualizaAnio}"/>  
+                                                            </h:selectOneMenu>
+                                                        </div>
+
+                                                        <strong><h:outputText class="col-lg-3 control-label" value="Mes Presupuesto:"/></strong>
+                                                        <div class="col-lg-3">                                            
+                                                            <h:selectOneMenu id="mesPresupuesto" styleClass="form-control"
+                                                                             value="#{requisicionBean.mesPresupuesto}"
+                                                                             >
+                                                                <f:selectItem itemValue="0" itemLabel="Seleccione . . . "/>
+                                                                <f:selectItems value="#{requisicionBean.lstMesPresupuesto}"/>
+                                                                <f:ajax event="change" render="@all" listener="#{requisicionBean.actualizaMes}"/>  
+                                                            </h:selectOneMenu>
+                                                        </div>
+                                                    </div>                                            
+                                                    <div class="form-group col-lg-12" >
+                                                        <strong><h:outputText class="col-lg-3 control-label" value="Actividad:"/></strong>
+                                                        <div class="col-lg-9">                                            
+                                                            <h:selectOneMenu id="idActividad" styleClass="form-control"
+                                                                             value="#{requisicionBean.idActPetrolera}"
+                                                                             >
+                                                                <f:selectItem itemValue="0" itemLabel="Seleccione . . . "/>
+                                                                <f:selectItems value="#{requisicionBean.lstActividad}"/>
+                                                                <f:ajax event="change" render="@all" listener="#{requisicionBean.actualizaActividadPetrolera}"/>  
+                                                            </h:selectOneMenu>
+                                                        </div>
+                                                    </div>                                            
+                                                    <div class="form-group col-lg-12" >
+                                                        <strong><h:outputText class="col-lg-3 control-label" value="Proyecto OT:"/></strong>
+                                                        <div class="col-lg-9">                                                            
+                                                            <h:selectOneMenu id="idProyectoOtDt" styleClass="form-control"                                                                        
+                                                                             value="#{requisicionBean.idProyectoOt}"
+                                                                             >
+                                                                <f:selectItem itemValue="0" itemLabel="Seleccione . . . "/>
+                                                                <f:selectItems value="#{requisicionBean.listaProyectosOT}" var="itemOT" itemValue="#{itemOT.id}" itemLabel="#{itemOT.nombre}"/>
+                                                                <f:ajax event="change" render="@all" listener="#{requisicionBean.actualizaProyectoOT}"/>  
+                                                            </h:selectOneMenu>                                                                
+                                                        </div>
+                                                    </div>
+                                                </ui:fragment>
+
+
+                                                <ui:fragment rendered="#{requisicionBean.requisicionActual.apCampo.tipo eq 'C'}">
+                                                    <div class="form-group col-lg-12">
+                                                        <strong><h:outputText class="col-lg-3 control-label" value="Subactividad:"/></strong>
+                                                        <div class="col-lg-9">                                            
+                                                            <h:selectOneMenu id="unidaCostoDtll" styleClass="form-control"                                                                            
+                                                                             value="#{requisicionBean.idTipoTarea}">
+                                                                <f:selectItem itemValue="0" itemLabel="Seleccione . . . "/>
+                                                                <f:selectItems value="#{requisicionBean.listaUnidadCosto}"/>
+                                                                <f:ajax event="change" render="@all" listener="#{requisicionBean.actualizaTipoTarea}"/>  
+                                                            </h:selectOneMenu>
+                                                        </div>
+                                                    </div>                                                                                            
+                                                </ui:fragment>
+                                                <ui:fragment rendered="#{requisicionBean.requisicionActual.apCampo.tipo eq 'C' or (requisicionBean.requisicionActual.apCampo.tipo eq 'N' and requisicionBean.requisicionActual.tipo eq 'PS')}">
+                                                    <div class="form-group col-lg-12" >
+                                                        <strong><h:outputText class="col-lg-3 control-label" value="Tarea:" /> </strong>
+                                                        <div class="col-lg-9">                                            
+                                                            <h:selectOneMenu id="nombreTipoObraDt"  
+                                                                             value="#{requisicionBean.idTarea}" 
+                                                                             styleClass="form-control">
+                                                                <f:selectItem itemValue="0" itemLabel="Seleccione . . . "/>
+                                                                <f:selectItems value="#{requisicionBean.listaTO}"/>
+                                                                <f:ajax event="change" render="@all" listener="#{requisicionBean.actualizaTarea}" />  
+                                                            </h:selectOneMenu>
+                                                            <p:commandLink value="#{msgs['orden.ayuda.tarea']}" rendered="#{requisicionBean.requisicionActual.gerencia.abrev.startsWith('PER')}"
+                                                                           styleClass="link" style="font-size: 12px; font-weight: bold; text-decoration: underline;"
+                                                                           title="Datos para crear items " 
+                                                                           onclick="dialogoAyudaRequisicion('dialogoAyudaItem')">                                              
+                                                            </p:commandLink>
+                                                        </div>
+                                                    </div>
+                                                </ui:fragment>
+                                                <h:panelGroup id="centroCostoPanelID" rendered="#{requisicionBean.requisicionActual.apCampo.tipo eq 'C' and requisicionBean.lstCentroCosto.size() gt 0}">
+                                                    <div class="form-group col-lg-12" >
+                                                        <strong><h:outputText class="col-lg-3 control-label" value="Subtarea:" /> </strong>
+                                                        <div class="col-lg-9">         
+                                                            <ui:fragment rendered="#{!requisicionBean.multiProyecto}">
+                                                                <h:selectOneMenu id="centroCostoID"  value="#{requisicionBean.idCentroCosto}" styleClass="form-control">
+                                                                    <f:selectItem itemValue="-1" itemLabel="Seleccione . . . "/>
+                                                                    <f:selectItems value="#{requisicionBean.lstCentroCosto}"/>                                                                        
+                                                                </h:selectOneMenu>
+                                                            </ui:fragment>
+                                                            <ui:fragment rendered="#{requisicionBean.multiProyecto}">
+                                                                <h:selectOneMenu id="centroCosto2ID"  value="#{requisicionBean.idCentroCosto}" styleClass="form-control">
+                                                                    <f:selectItem itemValue="-1" itemLabel="Seleccione . . . "/>
+                                                                    <f:selectItems value="#{requisicionBean.lstCentroCosto}"/>                                                                        
+                                                                    <f:ajax event="change" render="@all" listener="#{requisicionBean.actualizaSubTarea}" />  
+                                                                </h:selectOneMenu>
+                                                            </ui:fragment>
+                                                        </div>
+                                                    </div>
+                                                </h:panelGroup>                                            
+
+                                            </div>
+                                        </ui:fragment>
+                                        <div class="form-group col-lg-6" >
+                                            <div class="form-group col-lg-12" >
+                                                <strong><h:outputText class="col-lg-3 control-label" value="Núm. de parte:" /></strong>
+                                                <div class="col-lg-9">
+                                                    <h:inputText id="codigo" size="50" class="form-control" readonly="true" value="#{requisicionBean.itemActual.invArticulo.codigoInt}"/>
+                                                </div>
+                                            </div>                                            
+                                            <ui:fragment rendered="#{requisicionBean.itemActual.invArticulo.id > 0}">
+                                                <div class="form-group col-lg-12" >
+                                                    <strong><h:outputText class="col-lg-3 control-label" value="Nombre: " /></strong>
+                                                    <div class="col-lg-9">
+                                                        <h:inputTextarea id="nombre" readonly="true" style="width: 100%;" rows="3" class="form-control" value="#{requisicionBean.itemActual.invArticulo.nombre}"/>
+                                                    </div>
+                                                </div>
+                                            </ui:fragment>
+                                            <ui:fragment rendered="#{requisicionBean.itemActual.invArticulo == null}">
+                                                <div class="form-group col-lg-12" >
+                                                    <strong><h:outputText class="col-lg-3 control-label" value="Descripción: " /></strong>
+                                                    <div class="col-lg-9">
+                                                        <h:inputTextarea id="descripcion" readonly="true" rows="3" style="width: 100%;" class="form-control" value="#{requisicionBean.itemActual.invArticulo.descripcion}"/>
+                                                    </div>
+                                                </div>
+                                            </ui:fragment>
+                                            <div class="form-group col-lg-12" >
+                                                <strong><h:outputText class="col-lg-2 control-label" value="Unidad:" /></strong>
+                                                <div class="col-lg-4">
+                                                    <h:inputText id="nombreUnidad" size="50" class="form-control" readonly="true" value="#{requisicionBean.itemActual.invArticulo.unidad.nombre}"/>                                                    
+                                                </div>                                            
+                                                <strong><h:outputText class="col-lg-2 control-label" value="Cantidad:" /></strong>
+                                                <div class="col-lg-4">
+                                                    <h:inputText id="cantidad" class="form-control" value="#{requisicionBean.itemActual.cantidadSolicitada}"/>
+                                                </div>
+                                            </div>                                           
+                                        </div>
+                                        <div class="form-group col-lg-12" >
+                                            <div class="col-lg-6" >
+                                                <strong><h:outputText class="col-lg-12 control-label" value="Observaciones Navision:"/><br/></strong>
+                                                <div class="col-lg-12">
+                                                    <h:inputTextarea styleClass="form-control"   value="#{requisicionBean.itemActual.textNav}" />
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-6" >
+                                                <strong><h:outputText class="col-lg-12 control-label" value="Observaciones:"/><br/></strong>
+                                                <div class="col-lg-12">
+                                                    <h:inputTextarea styleClass="form-control"   value="#{requisicionBean.itemActual.observaciones}" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </ui:fragment>
+                                </div>
+                            </div>
+                            <ui:fragment rendered="#{requisicionBean.idTarea > 0}">
+                                <div id="panelCrearArticuloMulti" style="display: none;" class="col-lg-12 col-xs-12">
+                                    <div class="col-lg-12">                                        
+                                        <strong><h:outputText class="col-lg-12 control-label" value="Selección multiple de proyectos OTs"/><br/></strong>                                        
+                                    </div>
+                                    <div class="col-lg-12">
+                                        <div class="col-lg-12">
+                                            <div class="col-lg-3">
+                                                <h:selectBooleanCheckbox onchange="seleccionarGeneralReq('todosMM', 'proyOTM');" class="todosMM form-control" style="height:24px; margin-top: -3px;"/>
+                                            </div>                                        
+                                            <div class="col-lg-9">
+                                                <strong><h:outputText class="col-lg-12 control-label" value="Seleccionar todos"/></strong>                                            
+                                            </div> 
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-12">
+                                        <ui:repeat value="#{requisicionBean.listaProyectosOTMulti}" var="proyOT" varStatus="indiceOT">
+                                            <ui:fragment rendered="#{requisicionBean.listaProyectosOTMulti.size() lt 13}">
+                                                <div class="col-lg-12" style="margin-top: 5px;">
+                                                    <div class="col-lg-3" style="text-align: right;">                                                                                                                
+                                                        <h:selectBooleanCheckbox onchange="changeMultiItemReq('todosMM');" value="#{proyOT.selected}" class="proyOTM form-control" style="height:24px; margin-top: -3px;"/>
+                                                    </div>
+                                                    <div class="col-lg-9">
+                                                        <strong><h:outputText class="col-lg-12 control-label" value="#{proyOT.nombre}"/></strong>
+                                                    </div>                                            
+                                                </div>                                                 
+                                            </ui:fragment>
+                                            <ui:fragment rendered="#{requisicionBean.listaProyectosOTMulti.size() gt 12}">
+                                                <div class="col-lg-3">
+                                                    <div class="col-lg-3" style="text-align: right;">                                                        
+                                                        <h:selectBooleanCheckbox onchange="changeMultiItemReq('todosMM');" value="#{proyOT.selected}" class="proyOTM form-control" style="height:24px; margin-top: -3px;"/>                                                        
+                                                    </div>
+                                                    <div class="col-lg-9">
+                                                        <strong><h:outputText class="col-lg-12 control-label" value="#{proyOT.nombre}"/></strong>
+                                                    </div>                                            
+                                                </div> 
+                                            </ui:fragment>                                                                                                                                         
+                                        </ui:repeat>
+                                    </div>
+
+                                </div>
+                            </ui:fragment>
+                        </div>
+
+                    </div>
+                    <div class="modal-footer">
+                        <div class="col-lg-9"></div>
+                        <div class="col-lg-3">
+                            <div id="btnfrmItemReq" class="col-lg-4">                                
+                                <h:commandButton value="#{requisicionBean.operacionItem}"
+                                                 styleClass="btn btn-info"                                         
+                                                 action="#{requisicionBean.completarActualizacionItemCrearRequisicion(actionEvent)}"
+                                                 onclick="return validaItemReqProyOT('frmItemReq', '#{requisicionBean.requisicionActual.tipo}', '#{requisicionBean.requisicionActual.apCampo.tipo}')"
+                                                 rendered="#{requisicionBean.itemActual.invArticulo.id gt 0 or 
+                                                             requisicionBean.itemActual.id gt 0}"/>
+                            </div>
+                            <div id="btnfrmItemReqCont" class="col-lg-4" style="display: none;">
+                                <h:commandButton value="#{requisicionBean.operacionItem}"
+                                                 styleClass="btn btn-info" 
+                                                 onclick="return validateMultiItemReq('proyOTM');"
+                                                 action="#{requisicionBean.completarActualizacionItemCrearRequisicion(actionEvent)}"                                                 
+                                                 rendered="#{requisicionBean.itemActual.invArticulo.id gt 0 or requisicionBean.itemActual.id gt 0}"/>
+                            </div>
+                            <div class="col-lg-4">
+                                <p:commandButton value="Cancelar"
+                                                   styleClass="btn btn-default"
+                                                   onclick="cerrarDialogoModal(dialogoItemsRequi);"
+                                                   title="Cerrar ventana..." 
+                                                   immediate="true"/>                                    
+                            </div>
+                        </div>
+                    </div>
+                </h:form>
+            </div>
+        </div>
+    </div>
+    <!-- ITEMS REQUISICION  -->
+
+
+    <div class="modal fade" id="dialogoItemsRequiNewArt" data-backdrop="static" data-keyboard="false" draggable="true">
+        <div class="modal-dialog" style="width: 80%;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Solicitud de registro de un nuevo artículo</h4>
+                </div>
+
+                <h:form id="frmItemReqNewArt">
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="panel panel-default col-lg-12" >                                    
+                                    <div class="form-group col-lg-12" >
+                                        <div class="col-lg-12" style="margin-bottom: 0px;" >                                        
+                                            <div class="form-group col-lg-12" style="margin-top: 10px;">
+                                                <strong><h:outputText class="col-lg-12 control-label" style="text-align: left;" value="Categoría a la que se integrará el nuevo Artículo o nueva Categoría "/></strong>
+                                                <div class="form-group col-lg-12" style="margin-bottom: 0px;" >
+                                                    <ui:repeat value="#{requisicionBean.categoriasSeleccionadas}" var="data"
+                                                               varStatus="indice">
+                                                        <p:commandLink  style="padding-left: 2%;"
+                                                                          action="#{requisicionBean.seleccionarCategoriaCabecera(event)}"
+                                                                          styleClass="text text-primary">
+                                                            <i class="glyphicon glyphicon-arrow-right"
+                                                               style="display: #{requisicionBean.categoriasSeleccionadas.size() gt 0} ? 'block' : 'none'"></i>
+                                                            #{data.nombre} 
+                                                                            <!--f:param name="idCatSelecionada" value="#{data.id}"/-->
+                                                            <f:param name="indiceCatSel" value="#{indice.index}"/>
+                                                        </p:commandLink>
+                                                    </ui:repeat>
+                                                </div>                                                                                                                
+                                                <div class="col-lg-12" id="tablaCategorias">
+                                                    <!<!-- rowSelectListener="#{requisicionBean.seleccionarCategoria}" -->
+                                                    <p:dataTable size="small" stripedRows="true" showGridlines="true" value="#{requisicionBean.listaCatPrin}" var="data"
+                                                                   rendered="#{requisicionBean.listaCatPrin.size() gt 0}"
+                                                                   rowStyleClass="table table-bordered table-striped"
+                                                                   rows="20" paginator="true"  
+                                                                   paginatorPosition="bottom" 
+                                                                   selectionMode="single"
+                                                                   >
+                                                        <p:column headerText="Código" style="width: 10%;">
+                                                            <h:outputText value="#{data.codigo}"/>
+                                                        </p:column>
+                                                        <p:column headerText="Nombre" style="text-align: left;">
+                                                            <h:outputText value="#{data.nombre}"/>
+                                                        </p:column>                                                
+                                                    </p:dataTable>
+                                                </div>
+                                                <strong><h:outputText class="col-lg-12 control-label" style="text-align: left; margin-top: 10px;" 
+                                                                      value="Si es necesario agregar nuevas categorías, especifique el nombre y jerarquía de las categorías. Ej. OBRA > CIVIL"/></strong>                                                
+                                                <div class="col-lg-12">
+                                                    <h:inputText id="descNewArtUso" styleClass="form-control" value="#{requisicionBean.newArticuloTextUso}"/>
+                                                </div>
+                                            </div>
+                                            <div class="form-group col-lg-12" style="margin-top: 10px;" >                                                            
+                                                <strong><h:outputText class="col-lg-4 control-label" style="text-align: left;" value="Nombre del nuevo artículo"/></strong>
+                                                <div class="col-lg-8"></div>
+                                                <div class="col-lg-12" style="margin-bottom: 10px;">
+                                                    <h:inputTextarea id="descNewArt" styleClass="form-control" value="#{requisicionBean.newArticuloText}"/>
+                                                </div>
+                                            </div>                                            
+                                            <div class="form-group col-lg-12" >
+                                                <strong><h:outputText class="col-lg-4 control-label" value="Unidad de medida:" /></strong>
+                                                <div class="col-lg-8"></div>
+                                                <div class="col-lg-12">                                                
+                                                    <h:selectOneMenu id="idUnidad" value="#{requisicionBean.unidadMedida}" styleClass="form-control">
+                                                        <f:selectItem itemValue="0" itemLabel="Seleccione . . ."/>
+                                                        <f:selectItems value="#{requisicionBean.listaUnidad}"/>
+                                                    </h:selectOneMenu>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>                                                                        
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer"> 
+                        <h:commandButton value="Enviar"
+                                         styleClass="btn btn-info"  
+                                         onclick="return validarDescArticulo();"
+                                         action="#{requisicionBean.enviarSolicitudAltaArticulo(actionEvent)}"
+                                         />
+                        <p:commandButton value="Cancelar"
+                                           styleClass="btn btn-default"
+                                           onclick="cancelarNuevoItemReg();"
+                                           title="Cerrar ventana..." 
+                                           immediate="true"/>                                    
+                    </div>
+                </h:form>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Autorizar ITEMS REQUISICION  -->
+    <div class="modal fade" id="AutorizaCantidadItemsRequi" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog" style="width: 80%;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">#{requisicionBean.operacionItem} Ítem</h4>
+                </div>
+                <h:form id="frmAutCantidad">
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="input-group panel panel-default" ><br/>
+
+                                    <div class="form-group col-lg-12" >
+                                        <strong><h:outputText class="col-lg-2 control-label" value="Núm. de parte:" /></strong>
+                                        <div class="col-lg-10">
+                                            <h:inputText disabled="true" size="50" class="form-control" value="#{popupBean.item.invArticulo != null ? popupBean.item.invArticulo.codigo : popupBean.item.numeroParte}"/>
+                                        </div>
+                                    </div>
+                                    <ui:fragment rendered="#{requisicionBean.requisicionActual.tipo eq 'PS'}">
+                                        <div class="form-group col-lg-12" >
+                                            <strong><h:outputText class="col-lg-2 control-label" value="Tarea:" /> </strong>
+                                            <div class="col-lg-10">                                                                                            
+                                                <h:inputText disabled="true" size="50" class="form-control" value="#{popupBean.item.ocTarea.ocNombreTarea.nombre}"/>
+                                            </div>
+                                        </div>
+                                    </ui:fragment>
+
+                                    <div class="form-group col-lg-12" >
+                                        <strong><h:outputText class="col-lg-2 control-label" value="Unidad:" /></strong>
+                                        <div class="col-lg-10">
+                                            <h:inputText disabled="true" size="50" class="form-control" value="#{popupBean.item.invArticulo != null ? popupBean.item.invArticulo.unidad.nombre : popupBean.item.siUnidad.nombre}"/>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group col-lg-12" >
+                                        <strong><h:outputText class="col-lg-2 control-label" value="Descripción: " /></strong>
+                                        <div class="col-lg-10">
+                                            <h:inputTextarea disabled="true" style="width: 100%;" class="form-control" value='#{popupBean.descItem}'/>
+                                        </div>
+                                    </div>
+
+                                    <!-- div class="form-group col-lg-12" >
+                                        <strong><h:outputText class="col-lg-2 control-label" value="Precio Unitario:" /></strong>
+                                        <div class="col-lg-10">
+                                            <h:inputText disabled="true" class="form-control" value="#{popupBean.item.precioUnitario}"/>
+                                        </div>
+                                    </div -->
+
+                                    <!-- div class="form-group col-lg-12" >
+                                        <strong><h:outputText class="col-lg-2 control-label" value="Moneda:" /></strong>
+                                        <div class="col-lg-10">                                                        
+                                            <h:inputText disabled="true" class="form-control" value="#{popupBean.item.moneda.nombre}"/>
+                                        </div>
+                                    </div -->
+
+                                    <div class="form-group col-lg-12" >
+                                        <strong><h:outputText class="col-lg-2 control-label" value="Cantidad Solicitada:" /></strong>
+                                        <div class="col-lg-10">
+                                            <h:inputText disabled="true" class="form-control" value="#{popupBean.item.cantidadSolicitada}"/>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group col-lg-12" >
+                                        <strong><h:outputText class="col-lg-2 control-label" value="Cantidad Solicitada:" /></strong>
+                                        <div class="col-lg-10">
+                                            <h:inputText disabled="true" class="form-control" value="#{popupBean.item.cantidadSolicitada}"/>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group col-lg-12" >
+                                        <strong><h:outputText class="col-lg-2 control-label" value="Cantidad Autorizada:"/></strong>
+                                        <div class="col-lg-10">
+                                            <h:inputText class="form-control" value="#{popupBean.item.cantidadAutorizada}"/>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group panel">
+                                <strong><h:outputText class="col-lg-2 control-label" value="Observaciones:"/><br/></strong>
+                                <div class="col-lg-12">
+                                    <h:inputTextarea styleClass="form-control" rows="3" value="#{requisicionBean.itemActual.observaciones}" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <h:commandButton value="#{requisicionBean.operacionItem}" id="buttonAceptar2" 
+                                         styleClass="btn btn-info"
+                                         action="#{requisicionBean.completarActualizacionItem(actionEvent)}"/>
+                        <p:commandButton value="Cancelar" id="buttonCancelar2" 
+                                           styleClass="btn btn-default"
+                                           onclick="cerrarDialogoModal(AutorizaCantidadItemsRequi);"
+                                           title="Cerrar ventana..." 
+                                           immediate="true"/>                                    
+                    </div>
+                </h:form>
+            </div>
+        </div>
+    </div>
+    <!-- Autorizar ITEMS REQUISICION  -->
+
+    <!-- ITEMS CATEGORIA  -->
+
+    <!-- ITEMS CATEGORIA  -->
+
+    <!--Nueva Requi desde otra -->    
+    <!--div id="dialogoCrearReq" style="display: none; width: 800px; font-size: 12px; z-index: 1101;"  title="Crear requisición desde otra" -->
+    <div class="modal fade" id="dialogoCrearReq" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog" style="width: 999px;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Crear requisición desde otra</h4>
+                </div>
+                <h:form id="frmDialogoCrearReq">
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="input-group panel panel-default" >
+                                    <div class="form-group col-lg-12" >                            
+                                        <div class="col-lg-3">
+                                            <h:inputText value="#{requisicionBean.codigo}" class="form-control"/>
+                                        </div>
+                                        <div class="col-lg-1">                                            
+                                            <p:commandLink value="Buscar" styleClass="btn btn-info"
+                                                           action="#{requisicionBean.buscarRequisicionPorConsecutivoBloque(event)}"/>
+                                        </div>
+                                        <div class="col-lg-1">                                            
+                                            <p:commandLink id="btnLimpiar" styleClass="btn btn-default" action="#{requisicionBean.limpiar(event)}"
+                                                           value="Limpiar"/>
+                                        </div>                                        
+                                        <div class="col-lg-7">                                            
+                                            <p:commandLink value="#{msgs['sistema.genera.nueva.requision']} #{requisicionBean.requisicionVO.consecutivo}"
+                                                           style="font-size: 12px; font-weight: bold; color: blue; text-decoration: underline;"
+                                                           title="#{msgs['sistema.tooltip.genera.nueva.requision']} "
+                                                           rendered="#{requisicionBean.requisicionVO != null}"
+                                                           action="#{requisicionBean.generarRequisicion(actionEvent)}"
+                                                           styleClass="btn btn-default"
+                                                           />                                                                           
+                                        </div>
+                                    </div>
+                                    <div class="form-group col-lg-12" > 
+                                        <h:messages id="noEncontro" style="color: red; font-family: 'Arial','Helvetica',sans-serif;"/>
+                                    </div>
+                                    <div class="form-group col-lg-12">
+                                        <strong><h:outputText class="col-lg-2 control-label" value="Requisición:"/></strong>
+                                        <div class="col-lg-3">                                            
+                                            <h:inputText disabled="true" class="form-control" value="#{requisicionBean.requisicionVO.consecutivo}"/>
+                                        </div>
+                                        <strong><h:outputText class="col-lg-2 control-label" value="Compañia:"/></strong>
+                                        <div class="col-lg-5">
+                                            <h:inputText disabled="true" size="40" class="form-control" value="#{requisicionBean.requisicionVO.compania}"/>
+                                        </div>
+                                    </div>
+                                    <div class="form-group col-lg-12">
+                                        <strong><h:outputText class="col-lg-2 control-label" value="Campo:"/></strong>
+                                        <div class="col-lg-3">
+                                            <h:inputText disabled="true" class="form-control" value="#{requisicionBean.requisicionVO.bloque}"/>
+                                        </div>
+                                        <strong><h:outputText class="col-lg-2 control-label" value="Estatus:"/></strong>
+                                        <div class="col-lg-5">
+                                            <h:inputText disabled="true" class="form-control" value="#{requisicionBean.requisicionVO.estatus}"/>
+                                        </div>                                        
+                                    </div>                                    
+                                    <div class="form-group col-lg-12" >    
+                                        <strong><h:outputText class="col-lg-2 control-label" value="Fecha en que se requiere:"/></strong>
+                                        <div class="col-lg-3">
+                                            <h:inputText disabled="true" class="form-control" value="#{requisicionBean.requisicionVO.fechaRequerida}" size="12">
+                                                <f:convertDateTime dateStyle="default" type="date"/>
+                                            </h:inputText>
+                                        </div>                                            
+                                        <strong><h:outputText class="col-lg-2 control-label" value="Lugar de entrega:"/></strong>
+                                        <div class="col-lg-5">
+                                            <h:inputText disabled="true" class="form-control" size="30" value="#{requisicionBean.requisicionVO.lugarEntrega}"/>
+                                        </div>
+                                    </div>
+                                    <div class="form-group col-lg-12" >                                        
+                                        <strong><h:outputText class="col-lg-7 control-label" value="Analista asignado para colocar la orden de compra y/o servicio:"/></strong>
+                                        <div class="col-lg-5">
+                                            <h:outputText value="#{requisicionBean.requisicionVO.comprador}"/>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group col-lg-12" >
+                                        <strong><h:outputText class="col-lg-2 control-label" value="Gerencia:"/></strong>
+                                        <div class="col-lg-4">
+                                            <h:inputText disabled="true" class="form-control" size="40" value="#{requisicionBean.requisicionVO.gerencia}"/>
+                                        </div>
+                                        <strong><h:outputText class="col-lg-2 control-label" value="ProyectoOT:"/></strong>
+                                        <div class="col-lg-4">
+                                            <h:inputText disabled="true" class="form-control" size="40" value="#{requisicionBean.requisicionVO.proyectoOT}"/>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group col-lg-12" >    
+                                        <c:if test="#{requisicionBean.requisicionVO.idTarea eq 0}">
+                                            <strong><h:outputText class="col-lg-2 control-label" value="Tipo de Obra:"/></strong>
+                                            <div class="col-lg-4">
+                                                <h:inputText disabled="true" class="form-control" size="40" value="#{requisicionBean.requisicionVO.tipoObra}"/>
+                                            </div>
+                                        </c:if>
+                                        <c:if test="#{requisicionBean.requisicionVO.idTarea ne 0}">
+                                            <strong><h:outputText class="col-lg-2 control-label" value="Tarea:"/></strong>
+                                            <div class="col-lg-4">
+                                                <h:inputText disabled="true" class="form-control" size="40" value="#{requisicionBean.requisicionVO.nombreTarea}"/>
+                                            </div>
+                                        </c:if>
+                                        <!--h:outputText value="Tipo de Obra:"/>
+                                        <h:inputText disabled="true" size="40" value="#{requisicionBean.requisicionVO.tipoObra}"/-->
+                                        <strong><h:outputText class="col-lg-2 control-label" value="Proveedor:"/></strong>
+                                        <div class="col-lg-4">
+                                            <h:inputText disabled="true" class="form-control" size="40" value="#{requisicionBean.requisicionVO.proveedor}"/>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group col-lg-12" >  
+                                        <strong><h:outputText class="col-lg-2 control-label" value="Observaciones:"/></strong>
+                                        <div class="col-lg-10">
+                                            <h:inputTextarea rendered="#{requisicionBean.requisicionVO.observaciones != nul}" style="width: 100%;" styleClass="form-control" value="#{requisicionBean.requisicionVO.observaciones}"/>
+                                        </div>
+                                    </div>                                    
+                                    <div class="form-group col-lg-12" >   
+                                        <strong><h:outputText class="col-lg-12 control-label" value="Items"/></strong>
+                                        <p:dataTable size="small" stripedRows="true" showGridlines="true"  value="#{requisicionBean.requisicionVO.listaDetalleRequision}"
+                                                       var="currentRow" >
+                                            <p:column >
+                                                <h:selectBooleanCheckbox  value="#{currentRow['selected']}"/>
+                                            </p:column>
+                                            <p:column>
+                                                <h:outputText value="#{currentRow['artNumeroParte']}"/>
+                                                <f:facet name="header">
+                                                    <h:outputText value="Número parte"/>
+                                                </f:facet>
+                                            </p:column>
+                                            <p:column>
+                                                <h:outputText style="width: 30px" value="#{currentRow['cantidadSolicitada']}"/>
+                                                <f:facet name="header">
+                                                    <h:outputText value="Cantidad Solicitada"/>
+                                                </f:facet>
+                                            </p:column>
+                                            <p:column>
+                                                <h:outputText value="#{currentRow['cantidadAutorizada']}"/>
+                                                <f:facet name="header">
+                                                    <h:outputText value="Cantidad Autorizada"/>
+                                                </f:facet>
+                                            </p:column>
+                                            <p:column>
+                                                <h:outputText value="#{currentRow['artUnidad']}"/>
+                                                <f:facet name="header">
+                                                    <h:outputText value="Unidad"/>
+                                                    <!--h:outputText value="Unidad"/-->
+                                                </f:facet>
+                                            </p:column>
+                                            <p:column>
+                                                <h:outputText value="#{currentRow['artNombre']}"/>
+                                                <f:facet name="header">
+                                                    <h:outputText value="Descripción"/>
+                                                </f:facet>
+                                            </p:column>
+                                            <p:column style="width: 12%;">
+                                                <h:outputText value="#{currentRow['precioUnitario']}">
+                                                    <f:convertNumber pattern="$ #,##0.00" locale="es-MX"/>
+                                                </h:outputText>
+                                                <f:facet name="header">
+                                                    <h:outputText value="Precio Unitario"/>
+                                                </f:facet>
+                                            </p:column>
+                                            <p:column style="width: 12%;">
+                                                <h:outputText value="#{currentRow['importe']}">
+                                                    <f:convertNumber pattern="$ #,##0.00" locale="es-MX"/>
+                                                </h:outputText>
+                                                <f:facet name="header">
+                                                    <h:outputText value="Importe"/>
+                                                </f:facet>
+                                            </p:column>
+                                            <p:column>
+                                                <h:outputText value="#{currentRow['moneda']}"/>
+                                                <f:facet name="header">
+                                                    <h:outputText value="Moneda"/>
+                                                </f:facet>
+                                            </p:column>
+                                            <p:column>
+                                                <h:outputText value="#{currentRow['autorizado']}"/>
+                                                <f:facet name="header">
+                                                    <h:outputText value="Autorizado"/>
+                                                </f:facet>
+                                            </p:column>
+                                        </p:dataTable>
+                                    </div>
+                                    <div class="form-group col-lg-12" >
+                                        <center>
+                                            <p:commandLink id="btnCerrar" styleClass="btn btn btn-primary col-lg-1"
+                                                           onclick="$(dialogoCrearReq).modal('hide');"
+                                                           action="#{requisicionBean.limpiar(event)}"
+                                                           value="Cerrar"/>
+                                        </center>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </h:form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="dialogoCancelarVariasReq" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Cancelar requisición</h4>
+                </div>
+
+                <h:form id="frmCanReqV">
+                    <div class="modal-body panel panel-footer">
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="modal-body"><br/>
+                                    <h:outputText style="text-align: center; color: red; font-weight: bold" 
+                                                  value="Se cancelarán todas las Requisiciones con el mismo motivo"/>
+                                </div>                                
+                            </div>
+                        </div>
+                        <div class="container-fluid">
+                            <div class="form-group panel">
+                                <h:outputText styleClass="col-lg-2 control-label" style="padding-top: 5%;" value="Motivo:"/>
+                                <div class="col-lg-10">
+                                    <h:inputTextarea styleClass="form-control" id="motivoCancelo" rows="3" value="#{popupBean.requisicion.motivoCancelo}"/> 
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <p:commandButton id="buttonAceptar"
+                                           value="Aceptar"
+                                           styleClass="btn btn-info"
+                                           action="#{requisicionBean.cancelarVariasRequisicion(actionEvent)}"
+                                           onclick="return validaCancelar('frmCanReqV', 'motivoCancelo', 'La operación cancelará la requisición. ¿Está seguro?', 'Es necesario agregar el motivo.');"/>
+                        <p:commandButton id="buttonCancelar"
+                                           value="Cancelar"
+                                           styleClass="btn btn-cancelar"
+                                           onclick="cerrarDialogoModal(dialogoCancelarVariasReq);"
+                                           title="Cerrar ventana sin cancelar la requisición..." 
+                                           immediate="true"/>
+                    </div>
+                </h:form>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Modal Panel Popup Rechazo -->
+    <div class="modal fade" id="dialogoDevVariasReq" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Devolver requisición(es)</h4>
+                </div>
+
+                <h:form id="frmDevV">
+                    <div class="modal-body panel panel-footer">
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="modal-body"><br/>
+                                    <h:outputText style="text-align: center; color: red; font-weight: bold" 
+                                                  value="Se devolverán todas las Requisiciones con el mismo motivo"/>
+                                </div>                                
+                            </div>
+                        </div>
+                        <div class="container-fluid">
+                            <div class="form-group panel">
+                                <h:outputText styleClass="col-lg-2 control-label" style="padding-top: 5%;" value="Motivo:"/>
+                                <div class="col-lg-10">
+                                    <h:inputTextarea styleClass="form-control" id="motivoRechazo" rows="3" value="#{popupBean.rechazo.motivo}"/> 
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <p:commandButton value="Aceptar"
+                                           styleClass="btn btn-info"
+                                           action="#{requisicionBean.devolverVariasRequisicion(actionEvent)}"
+                                           onclick="return validaCancelar('frmDevV', 'motivoRechazo', 'La operación devolverá la requisición. ¿Está seguro?', 'Es necesario agregar el motivo.');"/>
+                        <p:commandButton value="Cancelar"
+                                           styleClass="btn btn-default"
+                                           onclick="cerrarDialogoModal(dialogoDevVariasReq);"
+                                           title="Cerrar ventana..." 
+                                           immediate="true"/>
+                    </div>
+                </h:form>
+            </div>
+        </div>
+    </div>
+
+    <!--Nueva Requi desde otra -->
+    <!-- Modal Panel Popup Rechazo -->
+    <div class="modal fade" id="dialogoMostrarInventario" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog" style="width: 60%;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Inventario</h4>
+                </div>
+                <h:form id="frmInv">
+                    <div class="modal-body">
+                        <p:dataTable size="small" stripedRows="true" showGridlines="true" value="#{requisicionBean.inventario}" var="dataInv" 
+                                       style="font-size: 1.0em;">
+                            <p:column headerText="Almacen">
+                                #{dataInv.almacenNombre}
+                            </p:column>
+                            <p:column headerText="Mínimo">
+                                #{dataInv.minimoUnidades}
+                            </p:column>
+                            <p:column headerText="Máximo">
+                                #{dataInv.maximoDeInventario}
+                            </p:column>
+                            <p:column headerText="Disponible">
+                                #{dataInv.numeroUnidades}
+                            </p:column>
+                            <p:column headerText="Nota">
+                                #{dataInv.notasInventario}
+                            </p:column>
+                        </p:dataTable>
+                    </div>
+                    <div class="modal-footer">
+                        <p:commandButton value="Cerrar"
+                                           styleClass="btn btn-default"
+                                           onclick="cerrarDialogoModal(dialogoMostrarInventario);"
+                                           title="Cerrar ventana..." 
+                                           immediate="true"/>
+                    </div>
+                </h:form>
+            </div>
+        </div>
+    </div>
+</ui:composition>
