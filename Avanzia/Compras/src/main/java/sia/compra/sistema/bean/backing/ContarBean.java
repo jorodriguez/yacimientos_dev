@@ -14,7 +14,6 @@ import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import sia.compra.requisicion.bean.backing.FacesUtilsBean;
 import sia.compra.requisicion.bean.backing.UsuarioBean;
 import sia.constantes.Constantes;
 import sia.constantes.TipoRequisicion;
@@ -37,7 +36,7 @@ import sia.util.UtilLog4j;
  *
  * @author ihsa
  */
-@Named (value = "contarBean")
+@Named(value = "contarBean")
 @ViewScoped
 public class ContarBean implements Serializable {
 
@@ -63,7 +62,8 @@ public class ContarBean implements Serializable {
     @Inject
     CvEvaluacionImpl cvEvaluacionImpl;
     ///
-    private final UsuarioBean usuarioBean = (UsuarioBean) FacesUtilsBean.getManagedBean("usuarioBean");
+    @Inject
+    private UsuarioBean usuarioBean;
 ///
     private List<CampoOrden> campoOrden;
     private List<CampoUsuarioPuestoVo> listaModulo;
@@ -74,10 +74,10 @@ public class ContarBean implements Serializable {
     //REQUISISCIONES
     @PostConstruct
     public void iniciar() {
-        mapaTotal = new HashMap<>();
-        taerPendiente();
-        //
         if (usuarioBean.getUsuarioConectado() != null) {
+            mapaTotal = new HashMap<>();
+            taerPendiente();
+            //
             llenarTotales();
         }
     }
@@ -184,31 +184,31 @@ public class ContarBean implements Serializable {
                         Constantes.REQUISICION_EN_ESPERA,
                         Constantes.ROL_REQUISICION_ESPERA_ADM));
             }
-            
-             if (null != usuarioBean.getMapaRoles().get("Revisores REPSE")) {
-                mapaTotal.put("totalPorRevREPSE", autorizacionesOrdenImpl.totalOrdenesStatusCampo(OrdenEstadoEnum.POR_REVISAR_REPSE.getId()
-                        , usuarioBean.getUsuarioConectado().getApCampo().getId()));
+
+            if (null != usuarioBean.getMapaRoles().get("Revisores REPSE")) {
+                mapaTotal.put("totalPorRevREPSE", autorizacionesOrdenImpl.totalOrdenesStatusCampo(OrdenEstadoEnum.POR_REVISAR_REPSE.getId(),
+                        usuarioBean.getUsuarioConectado().getApCampo().getId()));
             }
 
         } catch (RuntimeException ex) {
             LOGGER.fatal(this, "Ocurrio un error al contar : : : : : " + ex.getMessage(), ex);
         }
     }
-    
+
     public void llenarReqEnEspera() {
-         mapaTotal.put("reqenEspera", requisicionImpl.getTotalRequisicionesEnEspera(
-                        usuarioBean.getUsuarioConectado().getId(),
-                        usuarioBean.getUsuarioConectado().getApCampo().getId(),
-                        Constantes.REQUISICION_EN_ESPERA,
-                        Constantes.ROL_REQUISICION_ESPERA));
+        mapaTotal.put("reqenEspera", requisicionImpl.getTotalRequisicionesEnEspera(
+                usuarioBean.getUsuarioConectado().getId(),
+                usuarioBean.getUsuarioConectado().getApCampo().getId(),
+                Constantes.REQUISICION_EN_ESPERA,
+                Constantes.ROL_REQUISICION_ESPERA));
     }
-    
+
     public void llenarReqEnEsperaAdm() {
         mapaTotal.put("reqenEsperaAdm", requisicionImpl.getTotalRequisicionesSinAsignar(
-                        usuarioBean.getUsuarioConectado().getId(),
-                        usuarioBean.getUsuarioConectado().getApCampo().getId(),
-                        Constantes.REQUISICION_EN_ESPERA,
-                        Constantes.ROL_REQUISICION_ESPERA_ADM));
+                usuarioBean.getUsuarioConectado().getId(),
+                usuarioBean.getUsuarioConectado().getApCampo().getId(),
+                Constantes.REQUISICION_EN_ESPERA,
+                Constantes.ROL_REQUISICION_ESPERA_ADM));
     }
 
     public void llenarReqSinSolicitar() {

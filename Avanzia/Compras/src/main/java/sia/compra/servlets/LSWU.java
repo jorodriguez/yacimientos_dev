@@ -103,6 +103,7 @@ public class LSWU extends HttpServlet {
                     //
                     usuarioBean.llenarRoles();
                     //
+                    
                     response.sendRedirect(Constantes.URL_REL_SIA_WEB + usuarioBean.getPaginaInicial());
                 } else {
                     response.sendRedirect(Constantes.URL_REL_SIA_PRINCIPAL);
