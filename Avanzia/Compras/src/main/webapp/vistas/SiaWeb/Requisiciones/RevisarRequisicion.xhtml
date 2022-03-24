@@ -10,18 +10,12 @@
             <ui:define name="tituloPagina">
                 Revisar Requisiciones
             </ui:define>
-            <ui:define name="content">                
-                <script>
-                    $( document ).ready(function() {
-                        seleccionarFila("form1\\:dataTable1");
-                        $( "#tabsRequi" ).tabs();
-                    });
-                </script>
+            <ui:define name="contenido">                
                 <!-- Forma para los paneles emergentes -->
                 <!--pOP PARA REQUISICIONES-->
-                <ui:include src="/vistas/SiaWeb/Requisiciones/fragmentos/popUpRequisicion.xhtml"/>
+                <ui:include src="../Requisiciones/fragmentos/popUpRequisicion.xhtml"/>
                 <!--Noticias ss s  ss  s-->
-                <ui:include src="/vistas/SiaWeb/Requisiciones/fragmentos/popUpNoticiaRequisicion.xhtml"/>
+                <ui:include src="../Requisiciones/fragmentos/popUpNoticiaRequisicion.xhtml"/>
                 <h:form id="form1">
                     <div class="col-lg-12">
                         <div class="row"> 
@@ -32,12 +26,12 @@
                                                title="Clic aqui para marcar como revisada la requisición..."
                                                disabled="#{requisicionBean.requisicionesSinRevisar.rowCount lt 1}"
                                                style="font-weight: bold;"/>
-                                 <p:commandLink value="Devolver" styleClass="btn btn-default"
+                                <p:commandLink value="Devolver" styleClass="btn btn-default"
                                                onclick="return validaDevRequi('form1', 'seleccion');"
                                                title="Clic aqui para devolver la(s) requisición(es)"
                                                disabled="#{requisicionBean.requisicionesSinRevisar.rowCount lt 1}"
                                                style="font-weight: bold;"/>
-                                  <p:commandLink value="Cancelar" styleClass="btn btn-default"
+                                <p:commandLink value="Cancelar" styleClass="btn btn-default"
                                                onclick="return validaCancelRequi('form1', 'seleccion');"
                                                title="Clic aqui para cancelar la(s) requisición(es)"
                                                disabled="#{requisicionBean.requisicionesSinRevisar.rowCount lt 1}"
@@ -70,7 +64,7 @@
                         <div id="divTabla" class="container-fluid"> 
                             <div class="table table-responsive">
                                 <p:dataTable size="small" stripedRows="true" showGridlines="true"  id="dataTable1" value="#{requisicionBean.requisicionesSinRevisar}" var="currentRow" styleClass="table table-striped"
-                                               rows="10">
+                                             rows="10">
                                     <p:column style="width: 3%;">
                                         <f:facet name="header">
                                             <h:selectBooleanCheckbox  class="todos" onchange="seleccionarGeneral('todos', 'seleccion', 'divAutoriza')"/>
@@ -120,8 +114,8 @@
                                     </p:column>                                    
                                     <p:column style="text-align: center; width: 5%;">
                                         <p:commandLink action="#{requisicionBean.seleccionarRequisicion(actionEvent)}" 
-                                                         styleClass="link" value="Seleccionar"                                                     
-                                                         title="Clic aqui para ver y modificar los items de la requisición..." >
+                                                       styleClass="link" value="Seleccionar"                                                     
+                                                       title="Clic aqui para ver y modificar los items de la requisición..." >
                                             <f:param name="idReqEs" value="#{currentRow.id}"/>
                                         </p:commandLink>
                                     </p:column>
@@ -134,41 +128,24 @@
                             <h:outputText value="Más información de la requisición: "/>
                             <h:outputText value="#{requisicionBean.requisicionActual.consecutivo}" style="font-weight:  bold;"/>
                         </div><br/>
-                        <div class="container-fluid" style="padding-top: 50px;">
-                            <div id="tabsRequi">
-                                <ul>
-                                    <li><a href="#infRequi" >Más información</a></li>
-                                    <li><a href="#ETSRequi">ETS</a></li>
-                                    <li><a href="#EstatusRequii" >Estatus</a></li>  
-                                    <li><a href="#NotasRequi">Notas</a></li>
-                                    <li><a href="#DevRequi">Inf. Devolución</a></li>
-                                </ul>
-                                <div id="infRequi" class="textoIzquierda10pts">
-                                    <div class="container-fluid">
-                                        <ui:include src="/vistas/SiaWeb/Requisiciones/fragmentos/masInformacionRequisicion.xhtml"/>
-                                    </div>
-                                </div>
-                                <div id="ETSRequi" class="textoIzquierda">
-                                    <div class="container-fluid">
-                                        <ui:include src="/vistas/SiaWeb/Requisiciones/verETS.xhtml"/>
-                                    </div>
-                                </div>
-                                <div id="EstatusRequii" class="textoIzquierda10pts" style="display: none;">
-                                    <div class="container-fluid">
-                                        <ui:include src="/vistas/SiaWeb/Requisiciones/verEstatus.xhtml"/>
-                                    </div>
-                                </div>
-                                <div id="NotasRequi" class="textoIzquierda">
-                                    <div class="container-fluid">
-                                        <ui:include src="/vistas/SiaWeb/Requisiciones/verNotas.xhtml"/>
-                                    </div>
-                                </div>
-                                <div id="DevRequi" class="textoIzquierda">
-                                    <div class="container-fluid">
-                                        <ui:include src="../Requisiciones/verDevoluciones.xhtml"/>
-                                    </div>
-                                </div>
-                            </div>
+                        <div class="container-fluid" >
+                            <p:tabView activeIndex="0" >
+                                <p:tab title="Más información">
+                                    <ui:include src="../../SiaWeb/Requisiciones/fragmentos/masInformacionRequisicion.xhtml"/>
+                                </p:tab>
+                                <p:tab title="ETS">
+                                    <ui:include src="../../SiaWeb/Requisiciones/verETS.xhtml"/>
+                                </p:tab>
+                                <p:tab title="Estatus">
+                                    <ui:include src="../../SiaWeb/Requisiciones/verEstatus.xhtml"/>
+                                </p:tab>
+                                <p:tab title="Notas">
+                                    <ui:include src="../../SiaWeb/Requisiciones/verNotas.xhtml"/>
+                                </p:tab>
+                                <p:tab title="Devoluciones">
+                                    <ui:include src="../Requisiciones/verDevoluciones.xhtml"/>
+                                </p:tab>
+                            </p:tabView>
                         </div>
                     </div>                    
                 </h:form>

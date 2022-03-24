@@ -2,7 +2,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-      
+
       xmlns:p="http://primefaces.org/ui"
       xmlns:f="http://xmlns.jcp.org/jsf/core"
       xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
@@ -14,14 +14,8 @@
             <ui:define name="tituloPagina">
                 Autorizar #{msgs['orden.titulo']}
             </ui:define>
-            <ui:define name="content">
-                <script>
-		    $(document).ready(function () {
-			$("#tabOCSProcCompras").tabs({active: 0});
-		    });
-                </script>
+            <ui:define name="contenido">
                 <h:form id="form1">
-
                     <div class="row">
                         <div id="divAutoriza" class="btn-group" style="text-align: left;">                            
                             <p:commandLink onclick="return validaAutorizar('form1', 'seleccion');" 
@@ -69,32 +63,32 @@
                     </div>
                     <br/>
                     <div id="divTabla" class="row"> 
-			<p  style="float: right; color: #E79E19;"><i class="glyphicon glyphicon-asterisk"/>Ordenes con contrato vencido</p>
+                        <p  style="float: right; color: #E79E19;"><i class="glyphicon glyphicon-asterisk"/>Ordenes con contrato vencido</p>
                         <div scope="colgroup" colspan="7" class="iceDatTblHdr tableHdr table-stripedHdr" style="font-weight: normal;"><span>Ordenes de compra pendientes de autorizar</span></div>
                         <div class="table table-responsive">                            
                             <p:dataTable size="small" stripedRows="true" showGridlines="true" id="Ordenes"   value="#{ordenBean.ordenesAutorizaCompras}" var="data" 
-                                           styleClass="table table-striped" rows="20" 
-                                           paginator="true"  
-                                           paginatorPosition="bottom" 
-                                           style="font-size: 1em; width: 100%" >
+                                         styleClass="table table-striped" rows="20" 
+                                         paginator="true"  
+                                         paginatorPosition="bottom" 
+                                         style="font-size: 1em; width: 100%" >
                                 <p:column styleClass="#{data.leida eq 'False' ? 'filaConSombra': 'filaSinSombra'}">
                                     <f:facet name="header">
                                         <h:selectBooleanCheckbox  class="todos" 
                                                                   onchange="seleccionarTodo('todos', 'seleccion')"
-								  style="#{data.contratoActivo gt 0  ? 'color: #E79E19' : ''}"/>
+                                                                  style="#{data.contratoActivo gt 0  ? 'color: #E79E19' : ''}"/>
                                     </f:facet>
                                     <h:selectBooleanCheckbox value="#{data.selected}" class="seleccion"/>
                                 </p:column>
                                 <p:column styleClass="#{data.leida eq 'False' ? 'filaConSombra': 'filaSinSombra'}" style="width: 9%">
                                     <h:outputText value="#{data['consecutivo']}"
-                                                    style="#{data['superaMonto'] eq 'True' ? 'color: maroon;' : ''}"/>
+                                                  style="#{data['superaMonto'] eq 'True' ? 'color: maroon;' : ''}"/>
                                     <f:facet name="header">
                                         <h:outputText value="Código"/>
                                     </f:facet>
                                 </p:column>
                                 <p:column styleClass="#{data.leida eq 'False' ? 'filaConSombra': 'filaSinSombra'}">
                                     <h:outputText value="#{data['referencia']}"
-                                                    style="#{data['superaMonto'] eq 'True' ? 'color: maroon;' : ''}"/>
+                                                  style="#{data['superaMonto'] eq 'True' ? 'color: maroon;' : ''}"/>
                                     <f:facet name="header">
                                         <h:outputText value="Referencia"/>
                                     </f:facet>
@@ -125,20 +119,20 @@
                                 </p:column>
                                 <p:column styleClass="#{data.leida eq 'False' ? 'filaConSombra': 'filaSinSombra'}">
                                     <h:outputText value="#{data['moneda']}"
-                                                    style="#{data['superaMonto'] eq 'True' ? 'color: maroon;' : ''}"/>
+                                                  style="#{data['superaMonto'] eq 'True' ? 'color: maroon;' : ''}"/>
                                     <f:facet name="header">
                                         <h:outputText value="$"/>
                                     </f:facet>
                                 </p:column>                                
                                 <p:column styleClass="#{data.leida eq 'False' ? 'filaConSombra': 'filaSinSombra'}">
                                     <h:outputText value="#{data['proveedor']}"
-                                                    style="#{data['superaMonto'] eq 'True' ? 'color: maroon;' : ''}"/>
+                                                  style="#{data['superaMonto'] eq 'True' ? 'color: maroon;' : ''}"/>
                                     <f:facet name="header">
                                         <h:outputText value="Proveedor"/>
                                     </f:facet>
                                 </p:column>
                                 <p:column headerText="Contrato"
-                                            styleClass="#{data.leida eq 'False' ? 'filaConSombra': 'filaSinSombra'}">	
+                                          styleClass="#{data.leida eq 'False' ? 'filaConSombra': 'filaSinSombra'}">	
                                     <h:panelGroup  rendered="#{data.contratoVO.id gt 0}">
                                         <p:commandLink value="#{data.contratoVO.numero}" action="#{ordenBean.llenarListaConvenio(event)}"
                                                        onclick="$(dialogoContratos).modal('show');"
@@ -153,8 +147,8 @@
                                 <p:column headerText="Tabulación" styleClass="#{data.leida eq 'False' ? 'filaConSombra': 'filaSinSombra'}">
                                     <h:panelGroup  rendered="#{data.adjuntoETS.id gt 0}">
                                         <p:link href="/Compras/AbrirArchivo?ZWZ2W=#{data.adjuntoETS.id}&amp;ZWZ3W=#{data.adjuntoETS.uuid}"
-                                                         target="_blank"
-                                                         value="">
+                                                target="_blank"
+                                                value="">
                                             <h:graphicImage url="./resources/Imagenes/Documento.gif" 
                                                             style="cursor: pointer;"
                                                             title="Abrir la tabla #{data.adjuntoETS.nombre}"/>
@@ -164,8 +158,8 @@
                                         <ui:repeat value="#{data.listaETS}" var="lista" >
                                             <div align="left">
                                                 <p:link  href="/Compras/AbrirArchivo?ZWZ2W=#{lista.id}&amp;ZWZ3W=#{lista.uuid}"
-                                                                 target="_blank"
-                                                                 value="" style="margin: 0px; padding: 0px;">
+                                                         target="_blank"
+                                                         value="" style="margin: 0px; padding: 0px;">
                                                     <h:graphicImage url="./resources/Imagenes/Documento.gif" style="cursor: pointer;"
                                                                     title="Abrir la tabla #{lista.nombre}"/>
                                                 </p:link>
@@ -175,9 +169,9 @@
                                 </p:column>
                                 <p:column styleClass="#{data.leida eq 'False' ? 'filaConSombra': 'filaSinSombra'}">
                                     <p:commandLink action="#{ordenBean.seleccionarOrden(actionEvent)}"
-                                                     style="#{data.errorEnvio eq 'True' ? 'color: red' : 'color : blue'}"
-                                                     title="Clic aqui para ver Items..." value="Seleccionar"
-                                                     onclick="activarTab('tabOCSProc', 0, 'divDatos', 'divTabla', 'divOperacion', 'divAutoriza');"/>
+                                                   style="#{data.errorEnvio eq 'True' ? 'color: red' : 'color : blue'}"
+                                                   title="Clic aqui para ver Items..." value="Seleccionar"
+                                                   onclick="activarTab('tabOCSProc', 0, 'divDatos', 'divTabla', 'divOperacion', 'divAutoriza');"/>
                                 </p:column>
                             </p:dataTable>
                         </div>
@@ -189,58 +183,31 @@
                             <h:outputText value="Información de la OC/S: "/>
                             <h:outputText value="#{ordenBean.ordenActual.consecutivo}" style="font-weight:  bold;"/>
                         </div>
-                        <div id="tabOCSProcCompras" style="padding-top: 45px;">
-                            <ul>
-                                <li><a href="#infOrden" >Inf. de la OC/S</a></li>
-                                <li><a href="#ETSOCS" >Especificación Técnica</a></li> 
-                                <li><a href="#ESTATUS" >Estatus</a></li> 
-                                <li><a href="#tablaComparativa">Tabulación</a></li>                       
-                                <li><a href="#infRequisicion">Requisición</a></li>
-                                <li><a href="#notasOCS">Notas</a></li>
-                            </ul>
-                            <div id="infOrden" class="textoIzquierda">
-                                <div class="container-fluid">
-                                    <ui:include src="/vistas/SiaWeb/Orden/fragmento/masInformacionOrden.xhtml"/>
-                                </div>
-                            </div>
-                            <div id="ETSOCS" class="textoIzquierda">
-                                <div class="container-fluid">
-                                    <ui:include src="/vistas/SiaWeb/Orden/fragmento/especificacionTecnica.xhtml"/>
-
-                                </div>
-                            </div>
-                            <div id="ESTATUS" class="textoIzquierda">
-                                <div class="container-fluid">                                    
-                                    <ui:include src="/vistas/SiaWeb/Orden/fragmento/autorizaciones.xhtml"/>                                
-                                </div>
-                            </div>    
-                            <div id="tablaComparativa" class="textoIzquierda">
-                                <div class="container-fluid">
-                                    <h3>Tabla comparativa</h3>
-                                    <div class="container-fluid">
-                                        <div class="table table-responsive">
-                                            <ui:include src="/vistas/SiaWeb/Orden/fragmento/tablaComparativa.xhtml"/>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div id="infRequisicion" class="textoIzquierda"  style="display: none;">
-                                <div class="container-fluid">
-                                    <ui:include src="/vistas/SiaWeb/Orden/fragmento/infRequisicion.xhtml"/>
-                                </div>
-                            </div>
-                            <div id="notasOCS" class="textoIzquierda">
-                                <div class="container-fluid">
-                                    <ui:include src="/vistas/SiaWeb/Orden/fragmento/noticia.xhtml"/>
-                                </div>
-                            </div>
-                        </div>
+                        <p:tabView>
+                            <p:tab title="Información de la compra">
+                                <ui:include src="../Orden/fragmento/masInformacionOrden.xhtml"/>				                                </p:tab>
+                            <p:tab title="Espercificación Técnica">
+                                <ui:include src="../Orden/fragmento/especificacionTecnica.xhtml"/>
+                            </p:tab>
+                            <p:tab title="Estatus">
+                                <ui:include src="../Orden/fragmento/autorizaciones.xhtml"/>
+                            </p:tab>
+                            <p:tab title="Tabulación">
+                                <ui:include src="../Orden/fragmento/tablaComparativa.xhtml"/>
+                            </p:tab>
+                            <p:tab title="Requisición">
+                                <ui:include src="../Orden/fragmento/infRequisicion.xhtml"/>
+                            </p:tab>
+                            <p:tab title="Notas">
+                                <ui:include src="../Orden/fragmento/noticia.xhtml"/>                                    
+                            </p:tab>
+                        </p:tabView>
                     </div>
                 </h:form>
                 <!-- Forma para los paneles emergentes -->
                 <!-- Popup -->
-                <ui:include src="/vistas/SiaWeb/Orden/fragmento/popUpGeneralOrden.xhtml"/>
-                <ui:include src="/vistas/SiaWeb/Orden/fragmento/popUpNoticia.xhtml"/>
+                <ui:include src="../Orden/fragmento/popUpGeneralOrden.xhtml"/>
+                <ui:include src="../Orden/fragmento/popUpNoticia.xhtml"/>
             </ui:define>
         </ui:composition>
 
