@@ -41,7 +41,7 @@ import sia.util.UtilLog4j;
  * @author @version 1.0
  * @author-mail
  */
-@Stateless 
+@Stateless
 public class RequisicionDetalleImpl {
 
     private final static UtilLog4j LOGGER = UtilLog4j.log;
@@ -59,33 +59,27 @@ public class RequisicionDetalleImpl {
      *
      * @param requisicionDetalle
      */
-    
     public void create(RequisicionDetalle requisicionDetalle) {
         em.persist(requisicionDetalle);
     }
 
-    
     public void edit(RequisicionDetalle requisicionDetalle) {
         em.merge(requisicionDetalle);
     }
 
-    
     public void remove(RequisicionDetalle requisicionDetalle) {
         em.remove(em.merge(requisicionDetalle));
     }
 
-    
     public RequisicionDetalle find(Object id) {
         return em.find(RequisicionDetalle.class, id);
     }
 
-    
     public List<RequisicionDetalle> findAll() {
         return em.createQuery("select object(o) from RequisicionDetalle as o").getResultList();
     }
 
     //Recupera Items por JPA
-    
     public List<RequisicionDetalle> getItemsPorRequisicion(Object idRequisicion, int agrupadorID) {
         //Crea una instancia de Query
         String s = "SELECT r FROM RequisicionDetalle r WHERE r.requisicion.id = :idRequisicion ";
@@ -96,13 +90,14 @@ public class RequisicionDetalleImpl {
         Query query = em.createQuery(s);
         //Fijar los parámetros proporcionados en la consulta
         query.setParameter("idRequisicion", idRequisicion);
-        query.setParameter("idMultiproyecto", agrupadorID);
+        if (agrupadorID > 0) {
+            query.setParameter("idMultiproyecto", agrupadorID);
+        }
         //Retorna el resultado del Query en este caso una lista
-        return query.getResultList();
+        return query.getResultList();   
     }
 
     //Recupera Items por Consulta nativa
-    
     public List<RequisicionDetalleVO> getItemsPorRequisicionConsultaNativaMulti(Object idRequisicion, boolean autorizdo, boolean seleccionado) {
         //Crea una instancia de Query
         String s = "SELECT "
@@ -218,7 +213,7 @@ public class RequisicionDetalleImpl {
         o.setPresupuestoNombre(objects[25] != null ? (String) objects[25] : "");
         o.setPresupuestoCodigo(objects[26] != null ? (String) objects[26] : "");
         o.setAnioPresupuesto((Integer) (objects[27]) != null ? (Integer) (objects[27]) : 0);
-        o.setTotalInventario(objects[28] != null ? ((BigDecimal)objects[28]).doubleValue() : 0);
+        o.setTotalInventario(objects[28] != null ? ((BigDecimal) objects[28]).doubleValue() : 0);
         return o;
     }
 
@@ -242,7 +237,6 @@ public class RequisicionDetalleImpl {
     }
 
     //Recupera Items por Consulta nativa
-    
     public List<RequisicionDetalleVO> getItemsPorRequisicionConsultaNativa(int idRequisicion, boolean autorizdo, boolean seleccionado) {
         //Crea una instancia de Query
         StringBuilder sb = new StringBuilder();
@@ -264,14 +258,12 @@ public class RequisicionDetalleImpl {
         return lo;
     }
 
-    
     public List<RequisicionDetalle> getItemsAnalista(Object idRequisicion) {
         return em.createQuery(
                 "SELECT r FROM RequisicionDetalle r WHERE r.requisicion.id = :idRequisicion AND r.autorizado = :autorizado"
                 + " AND r.disgregado = :disgregado ORDER BY r.id ASC").setParameter("idRequisicion", idRequisicion).setParameter("autorizado", Constantes.BOOLEAN_TRUE).setParameter("disgregado", "No").getResultList();
     }
 
-    
     public List<RequisicionDetalleVO> getItemsAnalistaNativa(int idRequisicion, boolean seleccionado) {
         //Crea una instancia de Query
         StringBuilder sb = new StringBuilder();
@@ -293,7 +285,6 @@ public class RequisicionDetalleImpl {
         return lo;
     }
 
-    
     public List<RequisicionDetalleVO> getItemsAnalistaNativaMulti(Object idRequisicion, boolean seleccionado) {
         //Crea una instancia de Query
         String s = "SELECT "
@@ -453,12 +444,11 @@ public class RequisicionDetalleImpl {
         o.setPresupuestoNombre((String) objects[37]);
         o.setPresupuestoCodigo((String) objects[38]);
         o.setAnioPresupuesto((Integer) (objects[39]) != null ? (Integer) (objects[39]) : 0);
-        o.setTotalInventario(objects[40] != null ? ((BigDecimal)(objects[40])).doubleValue() : 0);
+        o.setTotalInventario(objects[40] != null ? ((BigDecimal) (objects[40])).doubleValue() : 0);
 
         return o;
     }
 
-    
     public void crearDetalleRequisicion(String idSesion, RequisicionDetalleVO requisicionDetalleVO, int idRequision) {
         RequisicionDetalle requisicionDetalle = new RequisicionDetalle();
         requisicionDetalle.setRequisicion(new Requisicion(idRequision));
@@ -491,7 +481,6 @@ public class RequisicionDetalleImpl {
         create(requisicionDetalle);
     }
 
-    
     public void cambiarDisgregadoItemRequisicion(RequisicionDetalleVO requisicionDetalleVO, String idSesion, boolean disgregado) {
         if (requisicionDetalleVO != null) {
             if (requisicionDetalleVO.getIdRequisicionDetalle() > 0) {
@@ -516,7 +505,6 @@ public class RequisicionDetalleImpl {
         edit(requisicionDetalle);
     }
 
-    
     public void limpiarTareaItems(int idRequisicionDetalle, int proyOTID, int ocUnidadCID, String idSesion) {
         RequisicionDetalle requisicionDetalle = find(idRequisicionDetalle);
         if (proyOTID > 0) {
@@ -543,7 +531,6 @@ public class RequisicionDetalleImpl {
         edit(requisicionDetalle);
     }
 
-    
     public boolean tieneInvArticulo(Object idRequisicion, boolean onlyInvArticulo) {
         boolean tiene = false;
         try {
@@ -565,7 +552,6 @@ public class RequisicionDetalleImpl {
         return tiene;
     }
 
-    
     public boolean articuloEnRequisicion(int idArt) {
         boolean tiene = false;
         try {
@@ -581,7 +567,6 @@ public class RequisicionDetalleImpl {
         return tiene;
     }
 
-    
     public List<RequisicionDetalleVO> getItemPorIdConsultaNativa(Object idRequisicionDet, int idAgrupador) {
         //Crea una instancia de Query
         StringBuilder sb = new StringBuilder();
@@ -636,7 +621,6 @@ public class RequisicionDetalleImpl {
         return s;
     }
 
-    
     public Map<String, List<RequisicionDetalleVO>> traerPartidasConConvenio(int idRequisicion, int idCampo) {
         String c = "SELECT DISTINCT contrato, articulo, req_det, multi, requ from (\n"
                 + "SELECT c.codigo as contrato,  a.codigo as articulo, rd.id as req_det, rd.multiproyecto_id as multi, rd.requisicion as requ, sum(ca.precio_unitario) from requisicion_detalle rd\n"
@@ -709,7 +693,6 @@ public class RequisicionDetalleImpl {
         return mapa;
     }
 
-    
     public boolean validarPartidas(Object idRequisicion) {
         boolean continuar = false;
         try {

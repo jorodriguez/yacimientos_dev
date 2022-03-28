@@ -4,7 +4,7 @@
       xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
       xmlns:p="http://primefaces.org/ui"
       xmlns:f="http://xmlns.jcp.org/jsf/core"
-      
+
       xmlns:h="http://xmlns.jcp.org/jsf/html">
     <body>
         <ui:composition template="./../templates/template.xhtml">
@@ -16,75 +16,62 @@
                 <h:form id="form1">
                     <div id="containerHist" >
                         <div class="row">
-                            <div class="col-lg-3 col-xs-12"></div>
-                            <div class="col-lg-6 col-xs-12" style="text-align: center;">
-                                <center>
-				    <div class="row" style="text-align: center;">
-					<h:selectOneRadio style="padding: 2px 0 1px 0; font-size: 14px;  font-weight: bold;
-							    font-size: 14px; margin-left: 0%;" 
-							    layout="lineDirection" value="#{requisicionBean.tipoFiltro}"
-							    valueChangeListener="#{requisicionBean.cambiarFiltroHistorial}">
-					    <f:selectItem itemLabel="Mis Requisiciones" itemValue="filtro"/>
-					    <f:selectItem itemLabel="Por palabra" itemValue="palabra"/>
-					    <f:selectItem itemLabel="Gerencia: #{usuarioBean.usuarioConectado.gerencia.nombre}" itemValue="gerencia"/>
-					</h:selectOneRadio>
-				    </div>
-				    <hr/>
-				    <p:panel  >
-                                        <!<!-- selectedPanel="#{requisicionBean.tipoFiltro}" -->
-					<p:panel >
-					    <h:panelGroup id="filtro">
-						<p:panel >
-						    <ui:include src="/vistas/SiaWeb/Requisiciones/fragmentos/filtroRequisicion.xhtml"/>   
-						</p:panel>
-					    </h:panelGroup>
-					    <h:panelGroup id="palabra">
-						<p:panel  >
-						    <ui:include src="/vistas/SiaWeb/Requisiciones/fragmentos/filtroPorPalabra.xhtml"/>    
-						</p:panel>
-					    </h:panelGroup>
-					    <h:panelGroup id="gerencia">
-						<p:panel >
-						    <ui:include src="/vistas/SiaWeb/Requisiciones/fragmentos/filtroGerencia.xhtml"/>   
-						</p:panel>
-					    </h:panelGroup>
-					</p:panel>
-					<p:panel style="margin-top: 15px;">
-					    <p:commandLink id="btnBuscar" value="Buscar" action="#{requisicionBean.filtrarRequisicion(event)}" 
-							   class="btn btn-default btn-sm"/>
-					</p:panel>
-				    </p:panel>
+                            <div class="col-3 col-xs-12"></div>
+                            <div class="col-6 col-xs-12" style="text-align: center;">
+                                <div class="row" style="text-align: center;">
+                                    <p:selectOneRadio value="#{requisicionBean.tipoFiltro}"
+                                                      >
+                                        <f:selectItem itemLabel="Mis Requisiciones"  itemValue="filtro" />
+                                        <f:selectItem itemLabel="Por palabra" itemValue="palabra"/>
+                                        <f:selectItem itemLabel="Gerencia: #{usuarioBean.usuarioConectado.gerencia.nombre}" 
+                                                      itemValue="gerencia"/>
+                                        <p:ajax listener="#{requisicionBean.cambiarFiltroHistorial}"/>
+                                    </p:selectOneRadio>
+                                </div>
+                                <hr/>
+                                <p:panel id="pnlFiltro" visible="true">
+                                    <ui:include src="../Requisiciones/fragmentos/filtroRequisicion.xhtml"/>   
+                                </p:panel>
+                                <p:panel id="pnlPalabra">
+                                    <ui:include src="../Requisiciones/fragmentos/filtroPorPalabra.xhtml"/>    
+                                </p:panel>
+                                <p:panel id="pnlGerencia">
+                                    <ui:include src="../Requisiciones/fragmentos/filtroGerencia.xhtml"/>   
+                                </p:panel>
+                                <p:panel style="margin-top: 15px;">
+                                    <p:commandLink id="btnBuscar" value="Buscar" action="#{requisicionBean.filtrarRequisicion}" 
+                                                   class="btn btn-default btn-sm" process="@this" update="form1:dtreq"/>
+                                </p:panel>
 
-				    <hr size="1"  style="color: gray; padding: 0px;"/>
-				    <p:panel  >
-					<h:outputText value="*La consulta por palabra se realiza en las partidas de las Requisiciones." styleClass="f11gris"/>
-					<!--h:panelGrid >
-					    <h:outputText value="*La consulta por palabra se realiza solo en las Requisiciones solicitadas por: " styleClass="f11gris"/>
-					    <h:outputLabel value="#{usuarioBean.usuarioConectado.nombre}" styleClass="f11"/>
-					</h:panelGrid-->
-				    </p:panel>   
-                                </center>
+                                <hr size="1"  style="color: gray; padding: 0px;"/>
+                                <p:panel  >
+                                    <h:outputText value="*La consulta por palabra se realiza en las partidas de las Requisiciones." styleClass="f11gris"/>
+                                    <!--h:panelGrid >
+                                        <h:outputText value="*La consulta por palabra se realiza solo en las Requisiciones solicitadas por: " styleClass="f11gris"/>
+                                        <h:outputLabel value="{usuarioBean.usuarioConectado.nombre}" styleClass="f11"/>
+                                    </h:panelGrid-->
+                                </p:panel>   
                             </div>
                         </div>
-                        <div class="col-lg-3 col-xs-12"></div>
+                        <div class="col-3 col-xs-12"></div>
                     </div>
                     <hr/>
-                    <div class="col-lg-12 col-xs-12">
+                    <div class="col-12 col-xs-12">
                         <h:messages errorClass="errorMessage" fatalClass="fatalMessage" 
-                                      infoClass="infoMessage"
-                                      style="color: rgb(204, 0, 0);width: 214px" 
-                                      warnClass="warnMessage"/>
+                                    infoClass="infoMessage"
+                                    style="color: rgb(204, 0, 0);width: 214px" 
+                                    warnClass="warnMessage"/>
                     </div>
 
                     <div class="row">
                         <div class="table table-responsive">
-                            <p:dataTable size="small" stripedRows="true" showGridlines="true" id="dataTableRequisicionesSolicitadas" 
-                                           rows="10" 
-                                           value="#{requisicionBean.requisicionesSolicitadas}"
-                                           var="currentRow" paginator="true"  
-                                           paginatorPosition="bottom" 
-                                           style="font-size: 1em;"
-                                           styleClass="table table-striped"> 
+                            <p:dataTable id="dtreq" size="small" stripedRows="true" showGridlines="true" 
+                                         rows="10" 
+                                         value="#{requisicionBean.requisicionesSolicitadas}"
+                                         var="currentRow" paginator="true"  
+                                         paginatorPosition="bottom" 
+                                         style="font-size: 1em;"
+                                         styleClass="table table-striped"> 
                                 <f:facet name="header">
                                     <h:panelGroup style="font-size: 14px; text-align: center;" >
                                         <h:outputText value="#{msgs['titulo.tabla.historial.requisicion']} "/>
@@ -94,12 +81,12 @@
                                     <h:outputText style="width: 80px" value="#{currentRow['consecutivo']}"/>
                                 </p:column>
                                 <p:column  headerText="#{msgs['requisicion.referencia']}"
-                                            filterMatchMode="contains"
-                                            filterBy="#{currentRow.referencia}" >
+                                           filterMatchMode="contains"
+                                           filterBy="#{currentRow.referencia}" >
                                     <h:outputText style="width: 180px" value="#{currentRow['referencia']}"/>
                                 </p:column>
                                 <p:column headerText="#{msgs['requisicion.solicito']}"   filterMatchMode="contains"
-                                            filterBy="#{currentRow.solicita}">
+                                          filterBy="#{currentRow.solicita}">
                                     <h:outputText value="#{currentRow['solicita']}"/>
                                 </p:column>
                                 <p:column headerText="#{msgs['requisicion.solicitada']}">
@@ -116,11 +103,11 @@
                                     <h:outputText  value="#{currentRow.compania}"/>
                                 </p:column>
                                 <p:column  headerText="#{msgs['orden.proveedor']}" filterMatchMode="contains"
-                                            filterBy="#{currentRow.proveedor}" >
+                                           filterBy="#{currentRow.proveedor}" >
                                     <h:outputText value="#{currentRow['proveedor']}"/>
                                 </p:column>                                                            
                                 <p:column  headerText="#{msgs['estatus.actual']}" filterMatchMode="contains"
-                                            filterBy="#{currentRow.estatus}" >
+                                           filterBy="#{currentRow.estatus}" >
                                     <h:outputText value="#{currentRow['estatus']}"/>
                                 </p:column>                                                         
                                 <p:column headerText="OT">
@@ -134,22 +121,20 @@
                                 </p:column>                   
                                 <p:column headerText="Pesos">
                                     <h:outputText value="#{currentRow['montoPesos']}">
-					<f:convertNumber type="currency" maxFractionDigits="2"/>
-				    </h:outputText>
+                                        <f:convertNumber type="currency" maxFractionDigits="2"/>
+                                    </h:outputText>
                                 </p:column>                   
                                 <p:column headerText="Dólares">
                                     <h:outputText value="#{currentRow['montoTotalDolares']}">
-					<f:convertNumber type="currency" maxFractionDigits="2"/>
-				    </h:outputText>
+                                        <f:convertNumber type="currency" maxFractionDigits="2"/>
+                                    </h:outputText>
                                 </p:column>
                                 <p:column>
                                     <!-- si pongo un boton no toma los 2 parametros -->
-                                    <p:commandLink value="#{msgs['sistema.ver.detalle']}" style="color: blue;"   
-                                                     styleClass="link"
-                                                     action="/vistas/SiaWeb/Requisiciones/DetalleHistorial"   
-                                                     action="#{requisicionBean.verDetalle(actionEvent)}"
-                                                     title="Clic aqui para ver mas información...">
-                                        <f:param name="idReq" value="#{currentRow.id}"/>
+                                    <p:commandLink value="#{msgs['sistema.ver.detalle']}" 
+                                                   styleClass="btn btn-default"
+                                                   action="#{requisicionBean.verDetalle(currentRow.id)}"
+                                                   title="Clic aqui para ver mas información...">
                                     </p:commandLink>
                                 </p:column>                                                            
                             </p:dataTable>

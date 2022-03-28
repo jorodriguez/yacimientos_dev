@@ -915,8 +915,7 @@ public class AutorizacionesOrdenImpl extends AbstractFacade<AutorizacionesOrden>
                         BigDecimal solicitada = new BigDecimal(ordenDetalle.getCantidad());
                         BigDecimal recibida = new BigDecimal(ordenDetalle.getUnidadesRecibidas());
 
-                        if (solicitada.setScale(2, BigDecimal.ROUND_HALF_EVEN).compareTo(recibida.setScale(2, BigDecimal.ROUND_HALF_EVEN)) == 0) {
-                            //if (ordenDetalle.getCantidad().compareTo(ordenDetalle.getUnidadesRecibidas()) == 0) {
+                        if (solicitada.setScale(2, RoundingMode.HALF_EVEN).compareTo(recibida.setScale(2, RoundingMode.HALF_EVEN)) == 0) {
                             ordenDetalle.setRecibido(Constantes.BOOLEAN_TRUE);
                             ordenDetalle.setUnidadesRecibidas(ordenDetalle.getCantidad());
                         } else {

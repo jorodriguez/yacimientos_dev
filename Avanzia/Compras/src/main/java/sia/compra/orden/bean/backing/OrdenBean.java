@@ -19,6 +19,7 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.annotation.PostConstruct;
+import javax.faces.context.FacesContext;
 
 import javax.faces.event.ValueChangeEvent;
 import javax.faces.model.DataModel;
@@ -27,6 +28,7 @@ import javax.faces.model.SelectItem;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.servlet.http.HttpServletRequest;
 import lombok.Getter;
 import lombok.Setter;
 import org.primefaces.PrimeFaces;
@@ -183,30 +185,16 @@ public class OrdenBean implements Serializable {
     @Inject
     private NotaOrdenBean notaOrdenBean;
     // - - - - - - - - - -
-    @Getter
-    @Setter
-    List<OrdenVO> voBoOcs;
-    @Getter
-    @Setter
-    List<OrdenVO> revisaOcs;
-    @Getter
-    @Setter
-    List<OrdenVO> apruebaOcs;
-    @Getter
-    @Setter
-    List<OrdenVO> autorizaOcs;
-    @Getter
-    @Setter
-    List<OrdenVO> socioOcs;
-    @Getter
-    @Setter
-    List<OrdenVO> licitacionOcs;
-    
+
+    //  private Map<String, List<OrdenVO>> mapaOrdenes;
     private List<OrdenDetalleVO> listaItems; //almacena la lista de Items de la Orden de compra
 //    private DataModel listaRechazos; //almacena la lista de Rechazos de la Orden de compra
     @Getter
     @Setter
     private List<RequisicionEtsVo> listaEts; //almacena la lista de Espeficicacion tecnica de suministro
+    @Getter
+    @Setter
+    private List<RequisicionDetalle> itemsRequisicion;
     //----------------------
     private Orden ordenActual;
     private List<SelectItem> ocProductos;
@@ -226,9 +214,6 @@ public class OrdenBean implements Serializable {
     private String motivoDevolucion = Constantes.VACIO;
     private String operacionItem, aprueba, revisa;
     private boolean mostrar;
-    private boolean actualizar;
-    private boolean actualizarAF;
-    private boolean actualizarOP;
     private boolean actualizarExcel;
     private String paginaAtras;
     private int panelSeleccionado;
@@ -281,6 +266,9 @@ public class OrdenBean implements Serializable {
     @Getter
     @Setter
     private List<OrdenVO> ordenesDevCan;
+    @Getter
+    @Setter
+    private List<OrdenVO> ocs;
 
     public OrdenBean() {
     }
@@ -289,10 +277,58 @@ public class OrdenBean implements Serializable {
      */
     @PostConstruct
     public void iniciarLimpiar() {
+        //  mapaOrdenes = new HashMap<>();
         setOrdenActual(null);
         notaOrdenBean.setFiltrar(false);
-        actualizar = false;
-        ordenesApruebaGerenciaSolicitante();
+        llenarCompras();
+    }
+
+    private void llenarCompras() {
+        ocs = new ArrayList<>();
+        //VoBo
+        FacesContext ctx = FacesContext.getCurrentInstance();
+        HttpServletRequest servletRequest = (HttpServletRequest) ctx.getExternalContext().getRequest(); // returns something like "/myapplication/home.faces" 
+        String fullURI = servletRequest.getRequestURI();
+        if (fullURI.endsWith("AprobarOrdenCompra.xhtml")) { //110
+            ocs = ordenServicioRemoto.getOrdenesApruebaGerenciaSolicitante(usuarioBean.getUsuarioConectado().getId(),
+                    usuarioBean.getUsuarioConectado().getApCampo().getId());
+        } else if (fullURI.endsWith("AutorizaCompras.xhtml")) { //140
+            ocs = ordenServicioRemoto.getOrdenesAutorizaCompras(usuarioBean.getUsuarioConectado().getId(),
+                    usuarioBean.getUsuarioConectado().getApCampo().getId());
+        } else if (fullURI.endsWith("AutorizaLicitacion.xhtml")) { //151
+            ocs = ordenServicioRemoto.getOrdenesAutorizaLicitacion(usuarioBean.getUsuarioConectado().getId(),
+                    usuarioBean.getUsuarioConectado().getApCampo().getId());
+        } else if (fullURI.endsWith("AutorizaSocio.xhtml")) { //135
+            ocs = ordenServicioRemoto.getOrdenesAutorizaSocio(usuarioBean.getUsuarioConectado().getId(),
+                    usuarioBean.getUsuarioConectado().getApCampo().getId());
+        } else if (fullURI.endsWith("AutorizacionIhsa.xhtml")) { //130
+            ocs = ordenServicioRemoto.getOrdenesAutorizaIHSA(usuarioBean.getUsuarioConectado().getId(),
+                    usuarioBean.getUsuarioConectado().getApCampo().getId());
+        } else if (fullURI.endsWith("AutorizacionMpg.xhtml")) { //120
+            ocs = ordenServicioRemoto.getOrdenesAutorizaMPG(usuarioBean.getUsuarioConectado().getId(),
+                    usuarioBean.getUsuarioConectado().getApCampo().getId());
+        } else if (fullURI.endsWith("autorizaFinanza.xhtml")) {  //autorizaFinanza
+            ocs = ordenServicioRemoto.getOrdenesAutorizaFinanzas(usuarioBean.getUsuarioConectado().getId(),
+                    usuarioBean.getUsuarioConectado().getApCampo().getId());
+        } else {
+            ocs = new ArrayList<>();
+        }
+        /*
+        mapaOrdenes.put("vobo", ordenServicioRemoto.getOrdenesApruebaGerenciaSolicitante(usuarioBean.getUsuarioConectado().getId(),
+                usuarioBean.getUsuarioConectado().getApCampo().getId()));
+        mapaOrdenes.put("revisa", ordenServicioRemoto.getOrdenesAutorizaMPG(usuarioBean.getUsuarioConectado().getId(),
+                usuarioBean.getUsuarioConectado().getApCampo().getId()));
+        mapaOrdenes.put("aprueba", ordenServicioRemoto.getOrdenesAutorizaIHSA(usuarioBean.getUsuarioConectado().getId(),
+                usuarioBean.getUsuarioConectado().getApCampo().getId()));
+        mapaOrdenes.put("autoriza", ordenServicioRemoto.getOrdenesAutorizaCompras(usuarioBean.getUsuarioConectado().getId(),
+                usuarioBean.getUsuarioConectado().getApCampo().getId()));
+        mapaOrdenes.put("socio", ordenServicioRemoto.getOrdenesAutorizaSocio(usuarioBean.getUsuarioConectado().getId(),
+                usuarioBean.getUsuarioConectado().getApCampo().getId()));
+        mapaOrdenes.put("finanzas", ordenServicioRemoto.getOrdenesAutorizaFinanzas(usuarioBean.getUsuarioConectado().getId(),
+                usuarioBean.getUsuarioConectado().getApCampo().getId()));
+        mapaOrdenes.put("licitacion", ordenServicioRemoto.getOrdenesAutorizaLicitacion(usuarioBean.getUsuarioConectado().getId(),
+                usuarioBean.getUsuarioConectado().getApCampo().getId()));
+         */
     }
 
     public void etsPorRequisicion() {
@@ -318,7 +354,7 @@ public class OrdenBean implements Serializable {
         getOrdenActual().setLeida(Constantes.BOOLEAN_TRUE);
         ordenServicioRemoto.editarOrden(ordenActual);
         notaOrdenBean.setFiltrar(true);
-        setActualizar(true);
+
         itemsPorOrden();
         notasPorOrden();
         CargaEtsBean cargaEtsBean = (CargaEtsBean) FacesUtilsBean.getManagedBean("cargaEtsBean");
@@ -332,6 +368,8 @@ public class OrdenBean implements Serializable {
         //
         rechazos();
         //
+        itemsRequisicion = new ArrayList<>();
+        itemsPorRequisicion();
 
     }
 
@@ -663,7 +701,7 @@ public class OrdenBean implements Serializable {
             this.setItemActual(ordenDetalleImpl.find(odvo.getId()));
             this.ordenServicioRemoto.eliminarItem(getItemActual());
             setOrdenActual(ordenServicioRemoto.find(getOrdenActual().getId()));
-            setActualizar(true);
+
             FacesUtilsBean.addInfoMessage("Se eliminó correctamente el Ítem");
             itemsPorOrden();
         } catch (Exception ex) {
@@ -673,28 +711,6 @@ public class OrdenBean implements Serializable {
 
     public void cambiarValorProyectoOt(ValueChangeEvent event) {
         this.getOrdenActual().setProyectoOt(this.proyectoOtBean.buscarPorNombre(event.getNewValue(), getOrdenActual().getCompania().getNombre()));
-    }
-
-    /**
-     */
-    public void ordenesApruebaGerenciaSolicitante() {
-        try {
-            voBoOcs =ordenServicioRemoto.getOrdenesApruebaGerenciaSolicitante(usuarioBean.getUsuarioConectado().getId(),
-                            this.usuarioBean.getUsuarioConectado().getApCampo().getId());
-        } catch (Exception ex) {
-            LOGGER.fatal(this, ex.getMessage());
-        }
-    }
-
-    /**
-     */
-    public void ordenesAutorizaMPG() {
-        try {
-            revisaOcs =ordenServicioRemoto.getOrdenesAutorizaMPG(this.usuarioBean.getUsuarioConectado().getId(), this.usuarioBean.getUsuarioConectado().getApCampo().getId());
-            
-        } catch (Exception ex) {
-            LOGGER.fatal(this, ex.getMessage());
-        }
     }
 
     /**
@@ -713,60 +729,6 @@ public class OrdenBean implements Serializable {
             }
         }
         return nombreSocio;
-    }
-
-    public void ordenesAutorizaFinanzas() {
-        try {
-         //   finanzasOcs = ordenServicioRemoto.getOrdenesAutorizaFinanzas(this.usuarioBean.getUsuarioConectado().getId(), this.usuarioBean.getUsuarioConectado().getApCampo().getId());
-            
-        } catch (Exception ex) {
-            LOGGER.fatal(this, ex.getMessage());
-        }
-    }
-
-    /**
-     * @return Lista de ordenes de compra Sin autorizar por el socio ccampo
-     * finanzas
-     */
-    public void ordenesAutorizaSocio() {
-        try {
-            socioOcs = ordenServicioRemoto.getOrdenesAutorizaSocio(this.usuarioBean.getUsuarioConectado().getId(), this.usuarioBean.getUsuarioConectado().getApCampo().getId());
-            
-        } catch (Exception ex) {
-            LOGGER.fatal(this, ex.getMessage());
-        }
-    }
-
-    /**
-     * @return Lista de ordenes de compra Sin autorizar por la direccion de IHSA
-     */
-    public void ordenesAutorizaIHSA() {
-        try {
-            apruebaOcs = this.ordenServicioRemoto.getOrdenesAutorizaIHSA(this.usuarioBean.getUsuarioConectado().getId(),
-                    usuarioBean.getUsuarioConectado().getApCampo().getId());
-
-        } catch (Exception ex) {
-            LOGGER.fatal(this, ex.getMessage());
-        }
-    }
-
-    /**
-     * @return Lista de ordenes de compra que tiene q autorizar compras
-     */
-    public void ordenesAutorizaCompras() {
-        try {
-            autorizaOcs  = this.ordenServicioRemoto.getOrdenesAutorizaCompras(this.usuarioBean.getUsuarioConectado().getId(), this.usuarioBean.getUsuarioConectado().getApCampo().getId());
-        } catch (Exception ex) {
-            LOGGER.fatal(this, ex.getMessage());
-        }
-    }
-
-    public void ordenesAutorizaLicitacion() {
-        try {
-            licitacionOcs = this.ordenServicioRemoto.getOrdenesAutorizaLicitacion(this.usuarioBean.getUsuarioConectado().getId(), this.usuarioBean.getUsuarioConectado().getApCampo().getId());
-        } catch (Exception ex) {
-            LOGGER.fatal(this, ex.getMessage());
-        }
     }
 
     public void ordenesAutorizaTareaAF() {
@@ -791,7 +753,7 @@ public class OrdenBean implements Serializable {
                 o.setSelected(false);
                 lo.add(o);
             }
-            
+
             //mapaOrdenes.put("autorizaTareaAF", lo);
         } catch (Exception ex) {
             LOGGER.fatal(this, ex.getMessage());
@@ -820,7 +782,7 @@ public class OrdenBean implements Serializable {
                 o.setSelected(false);
                 lo.add(o);
             }
-          //  mapaOrdenes.put("autorizaTareaOP", lo);
+            //  mapaOrdenes.put("autorizaTareaOP", lo);
         } catch (Exception ex) {
             LOGGER.fatal(this, ex.getMessage());
         }
@@ -830,7 +792,7 @@ public class OrdenBean implements Serializable {
         try {
             if (actualizarExcel) {
                 List<OrdenVO> l = ordenServicioRemoto.traerOrdenStatusUsuarioRol(Constantes.ESTATUS_ENVIADA_PROVEEDOR, usuarioBean.getUsuarioConectado().getApCampo().getId(), usuarioBean.getUsuarioConectado().getId(), Constantes.ROL_INTEGRA_SIA_NAV);
-             //   mapaOrdenes.put("integrarSIA", l);
+                //   mapaOrdenes.put("integrarSIA", l);
             }
             actualizarExcel = false;
         } catch (Exception ex) {
@@ -862,7 +824,7 @@ public class OrdenBean implements Serializable {
                 o.setSelected(false);
                 lo.add(o);
             }
-         //   mapaOrdenes.put("autorizaTarea", lo);
+            //   mapaOrdenes.put("autorizaTarea", lo);
         } catch (Exception ex) {
             LOGGER.fatal(this, ex.getMessage());
         }
@@ -955,38 +917,37 @@ public class OrdenBean implements Serializable {
         StringBuilder noAprobadasSB = new StringBuilder();
         try {
             if (getOrdenActual() == null) {
-                for (OrdenVO ord : apruebaOcs) {
-                    if (ord.isSelected()) {
-                        lo.add(ord);
-                    }
-                }
-                for (OrdenVO ordVo : lo) {
-                    boolean v = ordenServicioRemoto.aprobarOrdenGerenciaSolicitante(ordVo.getId(), usuarioBean.getUsuarioConectado().getId(), usuarioBean.getUsuarioConectado().getEmail());
-                    if (v) {
-                        if (aprobadasSB.toString().isEmpty()) {
-                            aprobadasSB.append(ordVo.getConsecutivo());
+                try {
+                    Preconditions.checkArgument(ocs.stream().anyMatch(OrdenVO::isSelected), "Seleccione al menos una orden de compra");
+                    ocs.stream().filter(OrdenVO::isSelected).forEach(ordVo -> {
+                        boolean v = ordenServicioRemoto.aprobarOrdenGerenciaSolicitante(ordVo.getId(), usuarioBean.getUsuarioConectado().getId(), usuarioBean.getUsuarioConectado().getEmail());
+                        if (v) {
+                            if (aprobadasSB.toString().isEmpty()) {
+                                aprobadasSB.append(ordVo.getConsecutivo());
+                            } else {
+                                aprobadasSB.append(", ").append(ordVo.getConsecutivo());
+                            }
                         } else {
-                            aprobadasSB.append(", ").append(ordVo.getConsecutivo());
+                            if (noAprobadasSB.toString().isEmpty()) {
+                                noAprobadasSB.append(ordVo.getConsecutivo());
+                            } else {
+                                noAprobadasSB.append(", ").append(ordVo.getConsecutivo());
+                            }
+                            //noAprobadas += "  " + ordVo.getConsecutivo();
+                            ordenServicioRemoto.enviarExcepcionSia(usuarioBean.getUsuarioConectado().getId(), correoExcepcion(), MSG_COMPRAS, "Visto Bueno", ordVo.getConsecutivo(), ordVo.getId());
+                            LOGGER.fatal(this, "Ocurrio un error en el proceso de Visto Bueno a  la OC/S : ");
                         }
-                        //aprobadas += "  " + ordVo.getConsecutivo();
-                        //FacesUtilsBean.addInfoMessage("Se enviaron las OC/S, seleccionadas . . . ");
-                    } else {
-                        if (noAprobadasSB.toString().isEmpty()) {
-                            noAprobadasSB.append(ordVo.getConsecutivo());
-                        } else {
-                            noAprobadasSB.append(", ").append(ordVo.getConsecutivo());
-                        }
-                        //noAprobadas += "  " + ordVo.getConsecutivo();
-                        ordenServicioRemoto.enviarExcepcionSia(usuarioBean.getUsuarioConectado().getId(), correoExcepcion(), MSG_COMPRAS, "Visto Bueno", ordVo.getConsecutivo(), ordVo.getId());
-                        LOGGER.fatal(this, "Ocurrio un error en el proceso de Visto Bueno a  la OC/S : ");
-                    }
+                    });
+
+                    //mostrar los mensajes de error
+                    mostrarMensaje(aprobadasSB.toString(), noAprobadasSB.toString());
+                    mostrar = false;
+
+                    String jsMetodo = JS_METHOD_LIMPIAR_TODOS;
+                    PrimeFaces.current().executeScript(jsMetodo);
+                } catch (Exception e) {
+                    FacesUtilsBean.addErrorMessage(e.getMessage());
                 }
-                //mostrar los mensajes de error
-                mostrarMensaje(aprobadasSB.toString(), noAprobadasSB.toString());
-                mostrar = false;
-                actualizar = true;
-                String jsMetodo = JS_METHOD_LIMPIAR_TODOS;
-                PrimeFaces.current().executeScript(jsMetodo);
             } else {
                 boolean v = ordenServicioRemoto.aprobarOrdenGerenciaSolicitante(getOrdenActual().getId(), usuarioBean.getUsuarioConectado().getId(), usuarioBean.getUsuarioConectado().getEmail());
                 if (v) {
@@ -1010,7 +971,7 @@ public class OrdenBean implements Serializable {
                 //mostrar los mensajes de error
                 mostrarMensaje(aprobadasSB.toString(), noAprobadasSB.toString());
                 mostrar = false;
-                actualizar = true;
+
                 setOrdenActual(null);
                 String jsMetodo = JS_METHOD_REGRESAR_DIV_AUTORIZA;
                 PrimeFaces.current().executeScript(jsMetodo);
@@ -1066,7 +1027,7 @@ public class OrdenBean implements Serializable {
                 //mostrar los mensajes de error
                 mostrarMensajeDevolver(devolverSB.toString(), noDevolverSB.toString());
                 mostrar = false;
-                actualizar = true;
+
                 String jsMetodo = JS_METHOD_LIMPIAR_TODOS;
                 PrimeFaces.current().executeScript(jsMetodo);
                 PrimeFaces.current().executeScript(";cerrarDialogoModal(dialogoDevolverVariasOCS);");
@@ -1098,7 +1059,7 @@ public class OrdenBean implements Serializable {
                 PrimeFaces.current().executeScript(";cerrarDialogoModal(dialogoDevolverVariasOCS);");
                 //$(dialogoDevolverVariasOCS).modal('hide');
                 mostrar = false;
-                actualizar = true;
+
                 setOrdenActual(null);
                 String jsMetodo = JS_METHOD_REGRESAR_DIV_AUTORIZA;
                 PrimeFaces.current().executeScript(jsMetodo);
@@ -1121,28 +1082,25 @@ public class OrdenBean implements Serializable {
         }
     }
 
-    public void inicioCancelarOrdenComprasRevisa() {
-        try {
+    public void inicioDevolverOrdenCompras() {
+        if (ocs.stream().anyMatch(OrdenVO::isSelected)) {
             ordenesDevCan = new ArrayList<>();
-//            mapaOrdenes.get("revisaOrdenes").stream().filter(OrdenVO::isSelected).forEach(o -> {
-//                ordenesDevCan.add(o);
-//            });
-            Preconditions.checkArgument(!ordenesDevCan.isEmpty(), "Es necesario seleccionar al menos una OC/S");
-        } catch (IllegalArgumentException e) {
-            FacesUtilsBean.addErrorMessage(e.getMessage());
+            ocs.stream().filter(OrdenVO::isSelected).forEach(ordenesDevCan::add);
+            //
+            PrimeFaces.current().executeScript("$(dialogoDevolverVariasOCS).modal('show');");
+        } else {
+            FacesUtilsBean.addErrorMessage("Es necesario seleccionar al menos una OC/S");
         }
     }
 
-    public void inicioCancelarOrdenComprasAprueba() {
-        try {
+    public void inicioCancelarOrdenCompras() {
+        if (ocs.stream().anyMatch(OrdenVO::isSelected)) {
             ordenesDevCan = new ArrayList<>();
-//            mapaOrdenes.get("aprobarOrdenes").stream().filter(OrdenVO::isSelected).forEach(o -> {
-//                ordenesDevCan.add(o);
-//            });
-            Preconditions.checkArgument(!ordenesDevCan.isEmpty(), "Es necesario seleccionar al menos una OC/S");
-            PrimeFaces.current().executeInitScript("$(dialogoCancelarVariasOCS).modal('show');");
-        } catch (IllegalArgumentException e) {
-            FacesUtilsBean.addErrorMessage(e.getMessage());
+            ocs.stream().filter(OrdenVO::isSelected).forEach(ordenesDevCan::add);
+            //
+            PrimeFaces.current().executeScript("$(dialogoCancelarVariasOCS).modal('show');");
+        } else {
+            FacesUtilsBean.addErrorMessage("Es necesario seleccionar al menos una OC/S");
         }
     }
 
@@ -1195,7 +1153,7 @@ public class OrdenBean implements Serializable {
                 //mostrar los mensajes de error
                 mostrarMensajeCancelar(devolverSB.toString(), noDevolverSB.toString());
                 mostrar = false;
-                actualizar = true;
+
                 String jsMetodo = JS_METHOD_LIMPIAR_TODOS;
                 ordenesDevCan = new ArrayList<>();
                 PrimeFaces.current().executeScript(jsMetodo);
@@ -1243,7 +1201,7 @@ public class OrdenBean implements Serializable {
                 PrimeFaces.current().executeScript(";cerrarDialogoModal(dialogoCancelarVariasOCS);");
                 //$(dialogoDevolverVariasOCS).modal('hide');
                 mostrar = false;
-                actualizar = true;
+
                 setOrdenActual(null);
                 String jsMetodo = JS_METHOD_REGRESAR_DIV_AUTORIZA;
                 PrimeFaces.current().executeScript(jsMetodo);
@@ -1295,7 +1253,7 @@ public class OrdenBean implements Serializable {
                 }
                 mostrarMensaje(aprobadasSB.toString(), noAprobadasSB.toString());
                 mostrar = false;
-                actualizar = true;
+
                 String jsMetodo = JS_METHOD_LIMPIAR_TODOS;
                 PrimeFaces.current().executeScript(jsMetodo);
             } else {
@@ -1319,7 +1277,7 @@ public class OrdenBean implements Serializable {
                 }
                 mostrarMensaje(aprobadasSB.toString(), noAprobadasSB.toString());
                 mostrar = false;
-                actualizar = true;
+
                 setOrdenActual(null);
                 String jsMetodo = JS_METHOD_REGRESAR_DIV_AUTORIZA;
                 PrimeFaces.current().executeScript(jsMetodo);
@@ -1368,7 +1326,7 @@ public class OrdenBean implements Serializable {
                 }
                 mostrarMensaje(aprobadasSB.toString(), noAprobadasSB.toString());
                 mostrar = false;
-                actualizar = true;
+
                 String jsMetodo = JS_METHOD_LIMPIAR_TODOS;
                 PrimeFaces.current().executeScript(jsMetodo);
             } else {
@@ -1392,7 +1350,7 @@ public class OrdenBean implements Serializable {
                 }
                 mostrarMensaje(aprobadasSB.toString(), noAprobadasSB.toString());
                 mostrar = false;
-                actualizar = true;
+
                 setOrdenActual(null);
                 String jsMetodo = JS_METHOD_REGRESAR_DIV_AUTORIZA;
                 PrimeFaces.current().executeScript(jsMetodo);
@@ -1442,7 +1400,7 @@ public class OrdenBean implements Serializable {
         contarBean.llenarOcsSinAutoFinanzas();
         mostrarMensaje(aprobadasSB.toString(), noAprobadasSB.toString());
         mostrar = false;
-        actualizar = true;
+
     }
 
     public void aprobarOrdenComprasSocio() {
@@ -1479,7 +1437,7 @@ public class OrdenBean implements Serializable {
                 }
                 mostrarMensaje(aprobadasSB.toString(), noAprobadasSB.toString());
                 mostrar = false;
-                actualizar = true;
+
                 String jsMetodo = JS_METHOD_LIMPIAR_TODOS;
                 PrimeFaces.current().executeScript(jsMetodo);
             } else {
@@ -1503,7 +1461,7 @@ public class OrdenBean implements Serializable {
                 }
                 mostrarMensaje(aprobadasSB.toString(), noAprobadasSB.toString());
                 mostrar = false;
-                actualizar = true;
+
                 setOrdenActual(null);
                 String jsMetodo = JS_METHOD_REGRESAR_DIV_AUTORIZA;
                 PrimeFaces.current().executeScript(jsMetodo);
@@ -1584,7 +1542,7 @@ public class OrdenBean implements Serializable {
                 }
                 mostrarMensaje(aprobadasSB.toString(), noAprobadasSB.toString());
                 mostrar = false;
-                setActualizar(true); //Linea para recargar la lista de OC/S
+                //Linea para recargar la lista de OC/S
                 String jsMetodo = JS_METHOD_LIMPIAR_TODOS;
                 PrimeFaces.current().executeScript(jsMetodo);
             } else {
@@ -1629,7 +1587,7 @@ public class OrdenBean implements Serializable {
                 }
                 mostrarMensaje(aprobadasSB.toString(), noAprobadasSB.toString());
                 mostrar = false;
-                setActualizar(true); //Linea para recargar la lista de OC/S
+                //Linea para recargar la lista de OC/S
                 setOrdenActual(null);
                 String jsMetodo = JS_METHOD_REGRESAR_DIV_AUTO;
                 PrimeFaces.current().executeScript(jsMetodo);
@@ -1690,7 +1648,7 @@ public class OrdenBean implements Serializable {
                 }
                 mostrarMensaje(aprobadasSB.toString(), noAprobadasSB.toString());
                 mostrar = false;
-                setActualizar(true); //Linea para recargar la lista de OC/S
+                //Linea para recargar la lista de OC/S
                 String jsMetodo = JS_METHOD_LIMPIAR_TODOS;
                 PrimeFaces.current().executeScript(jsMetodo);
             } else {
@@ -1715,7 +1673,7 @@ public class OrdenBean implements Serializable {
 
                 mostrarMensaje(aprobadasSB.toString(), noAprobadasSB.toString());
                 mostrar = false;
-                setActualizar(true); //Linea para recargar la lista de OC/S
+                //Linea para recargar la lista de OC/S
                 setOrdenActual(null);
                 String jsMetodo = JS_METHOD_REGRESAR_DIV_AUTO;
                 PrimeFaces.current().executeScript(jsMetodo);
@@ -1830,7 +1788,7 @@ public class OrdenBean implements Serializable {
             AutorizacionesOrden autorizacionesOrden = this.autorizacionesOrdenImpl.buscarPorOrden(getOrdenActual().getId());
             autorizacionesOrden.setEstatus(this.estatusImpl.find(Constantes.ESTATUS_ENVIADA_PROVEEDOR)); // 160
             this.autorizacionesOrdenImpl.editar(autorizacionesOrden);
-            setActualizar(true); //Linea para actualizar la lista de OC/S
+            //Linea para actualizar la lista de OC/S
         } catch (Exception e) {
             LOGGER.info(this, e.getMessage());
             FacesUtilsBean.addErrorMessage(ERR_OPERACION);
@@ -1844,7 +1802,7 @@ public class OrdenBean implements Serializable {
             autorizacionesOrdenImpl.editar(autorizacionesOrden);
             setOrdenActual(null);
 //	    setIdUnidad(0);
-            setActualizar(true); //Linea para actualizar la lista de OC/S
+            //Linea para actualizar la lista de OC/S
         } catch (Exception e) {
             setOrdenActual(null);
             LOGGER.info(this, e.getMessage());
@@ -1892,7 +1850,7 @@ public class OrdenBean implements Serializable {
             disgregarEtsRequisicion(this.getOrdenActual().getRequisicion().getId());
             //Finaliza las noticias
             finalizarNoticiaOrden(usuarioBean.getUsuarioConectado().getId(), getOrdenActual().getId());
-            setActualizar(true); //Linea para actualizar la lista de OC/S
+            //Linea para actualizar la lista de OC/S
             FacesUtilsBean.addInfoMessage("Se canceló correctamente la orden de compra y/o servicio");
             quitarSeleccionOrden(false);
             PrimeFaces.current().executeScript(";cerrarDialogoModal(dialogoCancelOCS);");
@@ -1951,7 +1909,7 @@ public class OrdenBean implements Serializable {
                     //OrdenVO ordVo = ordenServicioRemoto.buscarOrdenPorId(getOrdenActual().getId(), ordenActual.getApCampo().getId(), false);
                     if (ordenServicioRemoto.autorizarOrdenCompras(this.getOrdenActual().getId(), usuarioBean.getUsuarioConectado().getId(), usuarioBean.getUsuarioConectado().getEmail())) {
                         LOGGER.info(this, "Se autorizó y envió la OC/S: " + getOrdenActual().getConsecutivo());
-                        setActualizar(true); //Linea para actualizar la lista de OC/S
+                        //Linea para actualizar la lista de OC/S
                         FacesUtilsBean.addInfoMessage("Se guardo correctamente la orden de compra y/o servicio");
                         this.quitarSeleccionOrden(false);
                     } else {
@@ -2071,7 +2029,7 @@ public class OrdenBean implements Serializable {
             this.ordenServicioRemoto.devolverOrden(this.getOrdenActual(), this.usuarioBean.getUsuarioConectado().getId(), this.usuarioBean.getUsuarioConectado().getId(), this.motivoDevolucion);
             //Finaliza las noticias
             finalizarNoticiaOrden(usuarioBean.getUsuarioConectado().getId(), getOrdenActual().getId());
-            setActualizar(true); //Linea para actualizar la lista de OC/S
+            //Linea para actualizar la lista de OC/S
             quitarSeleccionOrden(false);
             FacesUtilsBean.addInfoMessage("Se devolvió correctamente la orden de compra y/o servicio");
             PrimeFaces.current().executeScript(";cerrarDialogoModal(dialogoDevolverOCS);");
@@ -2096,7 +2054,7 @@ public class OrdenBean implements Serializable {
         List<OrdenDetalleVO> lo = new ArrayList<OrdenDetalleVO>();
 
         setListaItems((lo));
-        setActualizar(true);
+
         setConsecutivo(Constantes.VACIO);
         mostrar = false;
     }
@@ -2153,7 +2111,7 @@ public class OrdenBean implements Serializable {
     }
 
     public void limpiarListaOrdenesSolicitadas() {
-       // mapaOrdenes.put("ordenesSolicitadas", null);
+        // mapaOrdenes.put("ordenesSolicitadas", null);
     }
 
     public void listaOrdenesSolicitadas() {
@@ -2161,7 +2119,7 @@ public class OrdenBean implements Serializable {
             List<OrdenVO> lo = ordenServicioRemoto.getHistorialOrdenes(usuarioBean.getUsuarioConectado().getId(),
                     usuarioBean.getUsuarioConectado().getApCampo().getId(), siManejoFechaImpl.cambiarddmmyyyyAyyyymmaa(getFechaInicio()),
                     siManejoFechaImpl.cambiarddmmyyyyAyyyymmaa(getFechaFin()), Constantes.ORDENES_SIN_APROBAR);
-          //  mapaOrdenes.put("ordenesSolicitadas", lo);
+            //  mapaOrdenes.put("ordenesSolicitadas", lo);
         } catch (Exception ex) {
             Logger.getLogger(OrdenBean.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -2200,11 +2158,10 @@ public class OrdenBean implements Serializable {
     public String historialAction() {
         limpiarListaOrdenesSolicitadas();
         this.panelSeleccionado = 0;
-        return "/vistas/SiaWeb/Orden/HistorialOrden.xhtml";
+        return "/vistas/SiaWeb/Orden/HistorialOrden.xhtml?faces-redirect=true";
     }
 
-    public String verDetalleOrden() {
-        int idOrd = Integer.parseInt(FacesUtilsBean.getRequestParameter("idOrden"));
+    public String verDetalleOrden(int idOrd) {
         ordenActual = this.ordenServicioRemoto.find(idOrd);
         CargaEtsBean cargaEtsBean = (CargaEtsBean) FacesUtilsBean.getManagedBean("cargaEtsBean");
         cargaEtsBean.traerTablaComparativa();
@@ -2215,7 +2172,7 @@ public class OrdenBean implements Serializable {
         itemsPorOrden();
         //
         formatosEntradaOrden();
-        menuBarBean.procesarAccion("detalleOrden");
+        menuBarBean.procesarAccion("detalleOrden.xhtml?faces-redirect=true");
         if (usuarioBean.getMapaRoles().containsKey("Consulta OCS Factura")) {
             cargarFacturas(idOrd);
         }
@@ -2225,16 +2182,15 @@ public class OrdenBean implements Serializable {
     /**
      * @return Items de la requisición
      */
-    public RequisicionDetalle[] getItemsRequisicion() {
+    public void itemsPorRequisicion() {
         try {
             if (this.getOrdenActual() != null) {
-                List<RequisicionDetalle> tempList = this.requisicionServicioImpl.getItems(this.getOrdenActual().getRequisicion().getId(), 0);
-                return tempList.toArray(new RequisicionDetalle[tempList.size()]);
+                itemsRequisicion = requisicionServicioImpl.getItems(this.getOrdenActual().getRequisicion().getId(), 0);
+
             }
         } catch (Exception ex) {
             LOGGER.fatal(this, ex.getMessage());
         }
-        return new RequisicionDetalle[0];
     }
 
     public void itemsRequisicionConsultaNativas() {
@@ -2581,13 +2537,8 @@ public class OrdenBean implements Serializable {
         usuarioBean.setUsuarioConectado(usuarioImpl.find(usuarioBean.getUsuarioConectado().getId()));
         usuarioBean.setCompania(usuarioBean.getUsuarioConectado().getApCampo().getCompania());
         RequisicionBean requisicionBean = (RequisicionBean) FacesUtilsBean.getManagedBean("requisicionBean");
-        requisicionBean.setActualizar(true);
-        RecepcionRequisicionBean recepcionRequisicionBean = (RecepcionRequisicionBean) FacesUtilsBean.getManagedBean("recepcionRequisicionBean");
-        recepcionRequisicionBean.setActualizar(true);
         OrdenBean ordenBean = (OrdenBean) FacesUtilsBean.getManagedBean("ordenBean");
         ordenBean.setOrdenActual(null);
-        ordenBean.setActualizar(true);
-
         //Listas de historial
         requisicionBean.setRequisicionesSolicitadas(null);
         requisicionBean.setRequisicionesRevisadas(null);
@@ -2755,23 +2706,6 @@ public class OrdenBean implements Serializable {
      */
     public void setAprueba(String aprueba) {
         this.aprueba = aprueba;
-    }
-
-    /**
-     * @return the actualizar
-     */
-    public boolean isActualizar() {
-        return actualizar;
-    }
-
-    /**
-     * @param actualizar the actualizar to set
-     */
-    public void setActualizar(boolean actualizar) {
-        this.actualizar = actualizar;
-        this.actualizarAF = actualizar;
-        this.actualizarOP = actualizar;
-        this.actualizarExcel = actualizar;
     }
 
     /**
@@ -3034,13 +2968,8 @@ public class OrdenBean implements Serializable {
     /**
      * @return the listaArchivoConvenio
      */
-    public List getListaArchivoConvenio() {
-        List retVal = null;
-
-        if (!actualizar) {
-            retVal = listaArchivoConvenio;
-        }
-        return retVal;
+    public List<ContratoVO> getListaArchivoConvenio() {
+        return listaArchivoConvenio;
     }
 
 //    /**
@@ -3345,7 +3274,7 @@ public class OrdenBean implements Serializable {
         try {
 
             List<OrdenVO> lo = this.ordenServicioRemoto.traerOrdenPorRequisicion(idRequuisicion);
-         //   mapaOrdenes.put("ordenesRequisicion", lo);
+            //   mapaOrdenes.put("ordenesRequisicion", lo);
 
         } catch (Exception ex) {
             LOGGER.fatal(this, ex.getMessage());

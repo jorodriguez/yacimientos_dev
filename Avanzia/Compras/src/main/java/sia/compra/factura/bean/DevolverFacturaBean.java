@@ -65,8 +65,7 @@ public class DevolverFacturaBean implements Serializable {
         }
     }
 
-    public void seleccionar() {
-        int idFac = Integer.parseInt(FacesUtilsBean.getRequestParameter("idFactura"));
+    public void seleccionar(int idFac) {
         facturaVo = siFacturaImpl.buscarFactura(idFac);
     }
 

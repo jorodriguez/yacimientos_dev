@@ -453,11 +453,11 @@ public class SiModuloImpl extends AbstractFacade<SiModulo> {
 
             for (SiModuloVo vo : modulos) {
                 //PEndiente                
-                vo.setListaCampo(new ArrayList<CampoVo>());
+                vo.setListaCampo(new ArrayList<>());
                 List<CampoUsuarioPuestoVo> lca;
                 switch (vo.getId()) {
                     case Constantes.MODULO_REQUISICION:
-                        vo.setListaCampo(new ArrayList<CampoVo>());
+                        vo.setListaCampo(new ArrayList<>());
                         vo.setPendiente(requisicionRemote.totalRequisicionesPendientes(usuario, Constantes.CERO));
                         lca = apCampoUsuarioRhPuestoRemote.getAllPorUsurio(usuario);
                         vo.setMapOpcion(new HashMap<String, List<SiOpcionVo>>());

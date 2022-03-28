@@ -84,7 +84,6 @@ public class UsuarioBean implements Serializable {
     public UsuarioBean() {
     }
 
-    @PostConstruct
     public void iniciar() {
         direccionar();
     }
@@ -99,12 +98,10 @@ public class UsuarioBean implements Serializable {
 
         setCompania(usuarioConectado.getApCampo().getCompania());
         RequisicionBean requisicionBean = (RequisicionBean) FacesUtilsBean.getManagedBean("requisicionBean");
-        requisicionBean.setActualizar(true);
 //        RecepcionRequisicionBean recepcionRequisicionBean = (RecepcionRequisicionBean) FacesUtilsBean.getManagedBean("recepcionRequisicionBean");
 //        recepcionRequisicionBean.setActualizar(true);
         OrdenBean ordenBean = (OrdenBean) FacesUtilsBean.getManagedBean("ordenBean");
         ordenBean.setOrdenActual(null);
-        ordenBean.setActualizar(true);
 
         //Listas de historial
         requisicionBean.setRequisicionesSolicitadas(null);

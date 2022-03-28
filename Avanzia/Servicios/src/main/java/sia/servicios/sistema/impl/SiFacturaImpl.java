@@ -6,6 +6,7 @@ package sia.servicios.sistema.impl;
 
 import com.google.common.base.Strings;
 import com.google.common.base.Preconditions;
+import com.google.common.primitives.Doubles;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -512,9 +513,9 @@ public class SiFacturaImpl extends AbstractFacade<SiFactura>{
                     ordenDetVo.setCantidad(Double.valueOf(element.getAttribute("Cantidad")));
                     ordenDetVo.setCantidadPorFacturar(new BigDecimal(element.getAttribute("Cantidad")));
                     ordenDetVo.setArtNombre(element.getAttribute("Descripcion"));
-                    ordenDetVo.setPrecioUnitario(new Double(element.getAttribute("ValorUnitario")));
+                    ordenDetVo.setPrecioUnitario(Doubles.tryParse(element.getAttribute("ValorUnitario")));
                     //
-                    ordenDetVo.setImporte(new Double(element.getAttribute("Importe")));
+                    ordenDetVo.setImporte(Doubles.tryParse(element.getAttribute("Importe")));
 
                     //
                     partidas.add(ordenDetVo);

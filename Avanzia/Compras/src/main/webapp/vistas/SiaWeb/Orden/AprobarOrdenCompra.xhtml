@@ -15,23 +15,23 @@
             <ui:define name="contenido">
                 <h:form id="form1" styleClass="form-horizontal">                    
                     <div class="row">
-                        <div class="col-lg-12 col-xs-12">
+                        <div class="col-12 col-xs-12">
                             <div id="divAutoriza" class="btn-group" style="text-align: left;">                            
                                 <p:commandLink value="Visto Bueno" 
                                                class="btn btn-md btn-default"
-                                               style="font-weight: bold;"
                                                action="#{ordenBean.aprobarOrdenCompras}"
-                                               onclick="return validaAutorizar('form1', 'seleccion');"/> 
-
+                                               process="@this  form1:Ordenes" update="@form">
+                                    <p:confirm header="Confirmar" message="La operación va a autorizar la(s) OC/S seleccionada(s). ¿Está seguro?" 
+                                               icon="pi pi-exclamation-triangle"/>
+                                </p:commandLink>
                                 <p:commandLink value="Devolver"
                                                class="btn btn-md btn-default"
-                                               style="font-weight: bold"
-                                               action="#{ordenBean.inicioCancelarOrdenComprasAprueba}"
-                                               update="frmCancelVarOCS" process="@this"/>
+                                               action="#{ordenBean.inicioDevolverOrdenCompras}"
+                                               update="frmDevsOCS" process="@this form1:Ordenes"/>
                                 <p:commandLink value="Cancelar"
-                                               class="btn btn-md btn-default"
-                                               style="font-weight: bold"
-                                               onclick="return validarCancelacion('form1', 'seleccion');"/>
+                                               class="btn btn-md btn-default"                                                
+                                               action="#{ordenBean.inicioCancelarOrdenCompras}"
+                                               update="frmCancelVarOCS" process="@this form1:Ordenes"/>
                             </div>
                             <div id="divOperacion" class="btn-group" style="text-align: left;display: none;">                            
                                 <p:commandLink value="Regresar" action="#{ordenBean.iniciarLimpiar}"
@@ -42,36 +42,42 @@
                                                class="btn btn-md btn-default"                                               
                                                style="font-weight: bold;"
                                                action="#{ordenBean.aprobarOrdenCompras}"
-                                               onclick="return confirmar('form1', 'La operación va a autorizar la(s) OC/S seleccionada(s). ¿Está seguro?')"
-                                               />
+                                               process="@this" update="form1">
+                                    <p:confirm header="Confirmar" message="La operación va a autorizar la OC/S. ¿Está seguro?" 
+                                               icon="pi pi-exclamation-triangle"/>
+                                </p:commandLink>
 
                                 <p:commandLink 
                                     title="Clic aquí para cancelar la orden de compra..." value="Cancelar"
                                     onclick="$(dialogoCancelOCS).modal('show');"
-                                    styleClass="btn btn-default"/>
+                                    styleClass="btn btn-default" process="@this" update="frmCancelOCS"/>
 
                                 <p:commandLink     title="Clic aquí para devolver la orden de compra..." value="Devolver"
                                                    onclick="$(dialogoDevolverOCS).modal('show');"
-                                                   styleClass="btn btn-default"/>
+                                                   styleClass="btn btn-default" process="@this" update="frmDevOCS"/>
                                 <p:commandLink  action="#{ordenBean.crearNota}" 
                                                 title="Clic aquí para generar una Nota sobre la orden de compra..." value="Generar Nota"
                                                 onclick="$(dialogoNotaOrden).modal('show');"
-                                                styleClass="btn btn-default"/>                            
+                                                styleClass="btn btn-default" process="@this" update="frmNotasOCS"/>                            
                             </div>
+                            <p:confirmDialog global="true" showEffect="fade" hideEffect="fade" responsive="true" width="350">
+                                <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no ui-button-flat"/>
+                                <p:commandButton value="Si" type="button" styleClass="ui-confirmdialog-yes" />
+                            </p:confirmDialog>
                         </div>
                     </div>
                     <br/>
                     <div id="divTabla" class="row"> 
-                        <div class="col-lg-12 col-xs-12">
-                            <p  style="float: right; color: #E79E19;"><i class="glyphicon glyphicon-asterisk"/>Ordenes con contrato vencido</p>
-                            <div scope="colgroup" colspan="7" class="iceDatTblHdr tableHdr table-stripedHdr" style="font-weight: normal;"><span>Ordenes de compra pendientes de autorizar</span></div>
+                        <div class="col-12 col-xs-12">
+                            <p  style="float: right; color: #E79E19;"><i class="fa fa-asterisk"/>
+                                Ordenes con contrato vencido</p>                            
                             <div class="table table-responsive">
                                 <p:dataTable size="small" stripedRows="true" showGridlines="true" id="Ordenes" rows="15" 
-                                             value="#{ordenBean.apruebaOcs}" var="data"
+                                             value="#{ordenBean.ocs}" var="data"
                                              paginator="true"  
                                              paginatorPosition="bottom"  >
                                     <p:column style="text-align: right;" styleClass="#{data.leida eq 'False' ? 'filaConSombra': 'filaSinSombra'}"
-                                              width="35">
+                                              width="30">
                                         <f:facet name="header">
                                             <h:selectBooleanCheckbox  class="todos" onchange="seleccionarGeneral('todos', 'seleccion', 'divAutoriza')"/>
                                         </f:facet>
@@ -105,7 +111,7 @@
                                             <f:convertNumber pattern="$ #,##0.00" locale="es-MX"/>
                                         </h:outputText>
                                     </p:column>                            
-                                    <p:column headerText="$" styleClass="#{data.leida eq 'False' ? 'filaConSombra': 'filaSinSombra'}">
+                                    <p:column headerText="$" styleClass="#{data.leida eq 'False' ? 'filaConSombra': 'filaSinSombra'}" width="40">
                                         <h:outputText value="#{data['moneda']}" style=" #{data.contratoActivo gt 0  ? 'color: #E79E19' : ''}"/>                                    
                                     </p:column> 
                                     <p:column headerText="" styleClass="#{data.leida eq 'False' ? 'filaConSombra': 'filaSinSombra'}">
@@ -124,16 +130,18 @@
                                             <h:outputLabel value="#{data.contratoVO.numero}" style=" #{data.contratoActivo gt 0  ? 'color: #E79E19' : ''}"/>
                                         </h:panelGroup>                                    
                                     </p:column>                                    
-                                    <p:column styleClass="#{data.leida eq 'False' ? 'filaConSombra': 'filaSinSombra'}"
+                                    <p:column width="50" styleClass="#{data.leida eq 'False' ? 'filaConSombra': 'filaSinSombra'}"
                                               headerText="REPSE">
                                         <h:outputText value="#{(data.repse eq true) ? 'Si' : 'No'}"  style=" #{data.contratoActivo gt 0  ? 'color: #E79E19' : ''}"/>
                                     </p:column>
-                                    <p:column styleClass="#{data.leida eq 'False' ? 'filaConSombra': 'filaSinSombra'}">
+                                    <p:column width="40" styleClass="#{data.leida eq 'False' ? 'filaConSombra': 'filaSinSombra'}">
                                         <p:commandLink action="#{ordenBean.seleccionarOrden(data.id)}" 
                                                        style="#{data.errorEnvio eq 'True' ? 'color: red' : 'color : blue'}"
                                                        title="Clic aquí para ver Items..." 	
-                                                       value="Seleccionar"
-                                                       onclick="activarTab('tabOCSProc', 0, 'divDatos', 'divTabla', 'divOperacion', 'divAutoriza');"/>
+                                                       onclick="activarTab('tabOCSProc', 0, 'divDatos', 'divTabla', 'divOperacion', 'divAutoriza');"
+                                                       process="@this" update="form1:tbDatos form1:lblOcs">
+                                            <i class="fa fa-eye text-primary"/>
+                                        </p:commandLink>
                                     </p:column>
                                 </p:dataTable>
                             </div>
@@ -143,9 +151,9 @@
                     <div id="divDatos" class="row" style="display: none;">
                         <div class="container-fluid" style="padding-top: 5px;">
                             <h:outputText value="Información de la OC/S: "/>
-                            <h:outputLabel value="#{ordenBean.ordenActual.consecutivo}" style="font-weight:  bold;"/>
+                            <h:outputLabel id="lblOcs" value="#{ordenBean.ordenActual.consecutivo}" style="font-weight:  bold;"/>
                         </div>
-                        <p:tabView>
+                        <p:tabView id="tbDatos">
                             <p:tab title="Información de la compra">
                                 <ui:include src="../Orden/fragmento/masInformacionOrden.xhtml"/>				                                </p:tab>
                             <p:tab title="Espercificación Técnica">

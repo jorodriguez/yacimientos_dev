@@ -726,7 +726,7 @@ public class RequisicionEsperaBean implements Serializable {
         orden.setHoraGenero(new Date());
         orden.setEliminado(Constantes.NO_ELIMINADO);
         orden.setOcUnidadCosto(requisicionActual.getOcUnidadCosto());
-        orden.setTipo(requisicionActual.getTipo());
+        orden.setTipo(requisicionActual.getTipo().name());
         orden.setLeida(Constantes.BOOLEAN_FALSE);
         orden.setFechaEntrega(new Date());
         orden.setMultiproyecto(requisicionActual.isMultiproyecto());

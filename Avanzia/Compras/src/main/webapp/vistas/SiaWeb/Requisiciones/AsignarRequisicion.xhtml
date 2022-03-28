@@ -4,7 +4,7 @@
       xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
       xmlns:p="http://primefaces.org/ui"
       xmlns:f="http://xmlns.jcp.org/jsf/core"
-      
+
       xmlns:h="http://xmlns.jcp.org/jsf/html">
 
     <body>
@@ -13,36 +13,30 @@
             <ui:define name="tituloPagina">
                 Asignar Requisiciones
             </ui:define>
-            <ui:define name="contenido">                
-                <script>
-                    $(document).ready(function () {
-                        seleccionarFila("form1\\:dataTable1");
-                        $("#tabsRequi").tabs();
-                    });
-                </script>
-                <ui:include src="/vistas/SiaWeb/Requisiciones/fragmentos/popUpRequisicion.xhtml"/>      
+            <ui:define name="contenido">        
+                <ui:include src="../../SiaWeb/Requisiciones/fragmentos/popUpRequisicion.xhtml"/>      
 
                 <h:form id="form1">                    
                     <!--h:outputText id="outputText0" value="Seleccione una requisición de la lista para ver sus Items por favor..."/-->                    
                     <div class="row">
-                        <div id="divOperacion" class="btn-group col-lg-3" style="text-align: left; display: none;">                                
-                            <div class="col-lg-4">                            
-                                <p:commandLink value="Regresar" styleClass="btn btn-default" action="#{requisicionBean.limpiarRequisicion(actionEvent)}"
+                        <div id="divOperacion" class="btn-group col-3" style="text-align: left; display: none;">                                
+                            <div class="col-4">                            
+                                <p:commandLink value="Regresar" styleClass="btn btn-default" 
+                                               action="#{requisicionBean.limpiarRequisicion}"
                                                onclick="regresar('divTabla', 'divDatos', 'divOperacion', 'divAutoriza')"/>                                                                
                             </div>
-                            <div class="col-lg-8">                            
+                            <div class="col-8">                            
                                 <p:commandLink value="Devolver" styleClass="btn btn-default" 
-                                               action="#{requisicionBean.devolverRequisicion(actionEvent)}"
+                                               action="#{requisicionBean.devolverRequisicion}"
                                                title="Clic aquí para devolver la requisición..."
                                                onclick="$('#msgAsignaRequisicion').text('');
                                                        return true;"/>                                                                
                             </div>
                         </div>                            
-                        <div id="divAutorizaa" class="form-group col-lg-9" style="text-align: center;">
-                            <strong><h:outputText class="col-lg-3 control-label" style="padding-top: 8px;" value="Elija un Analista:"/></strong>
-                            <div class="col-lg-4">                            
+                        <div id="divAutorizaa" class="intput-group" style="text-align: center;">
+                            <div class="col-4">                            
                                 <h:selectOneMenu styleClass="form-control" id="listaAnalistas" value="#{requisicionBean.idAnalista}">
-                                    <f:selectItem itemLabel="Seleccione . . ." itemValue="-1"/>
+                                    <f:selectItem itemLabel="Analista de compras . . ." itemValue="-1"/>
                                     <f:selectItems id="SelectAnalistaItems" value="#{requisicionBean.listaAnalista}"/>
                                 </h:selectOneMenu>                                        
                             </div>   
@@ -51,7 +45,7 @@
                                     <p:commandLink value="Asignar" 
                                                    styleClass="btn btn-default"
                                                    style="font-weight: bold;"
-                                                   action="#{requisicionBean.asignarRequisicion(actionEvent)}"
+                                                   action="#{requisicionBean.asignarRequisicion}"
                                                    onclick="return validaAsignarRequi('form1', 'seleccion');"
                                                    disabled="#{requisicionBean.requisicionesSinAsignar.rowCount lt 1}"/>
                                     <p:commandLink value="Devolver" styleClass="btn btn-default"
@@ -64,10 +58,10 @@
                                                    style="font-weight: bold;"/>
                                 </ui:fragment>
                                 <ui:fragment rendered="#{requisicionBean.requisicionActual != null}">
-                                    <h:commandButton value="Asignar" 
+                                    <p:commandButton value="Asignar" 
                                                      styleClass="btn btn-default"
                                                      style="font-weight: bold;"
-                                                     action="#{requisicionBean.asignarRequisicion(actionEvent)}"                                                     
+                                                     action="#{requisicionBean.asignarRequisicion}"                                                     
                                                      onclick="return validaAsignarRRequi('form1');"
                                                      disabled="#{requisicionBean.requisicionesSinAsignar.rowCount lt 1}"/>                                        
                                 </ui:fragment>
@@ -83,14 +77,15 @@
                             <h:message for="msgAsignaRequisicion" style="color: red;" infoClass="infoMessage" errorClass="errorMessage" />
                         </div>
                         <div class="row">
-                            <div class="col-lg-12">
+                            <div class="col-12">
                                 <div class="table table-responsive">
                                     <!-- tabChangeListener="#{requisicionBean.seleccionarTabAsignarRequisicion(event)}"-->
                                     <p:tabView   
                                         tabindex="#{requisicionBean.indexTab}" style="font-size: 1em;">
                                         <p:tab title="Requisiciones" >
-                                            <p:dataTable size="small" stripedRows="true" showGridlines="true"  id="dataTableAsignar" value="#{requisicionBean.requisicionesSinAsignar}" 
-                                                           var="currentRow" styleClass="table table-striped">
+                                            <p:dataTable size="small" stripedRows="true" showGridlines="true"  id="dataTableAsignar" 
+                                                         value="#{requisicionBean.requisicionesSinAsignar}" 
+                                                         var="currentRow" styleClass="table table-striped">
                                                 <p:column style="text-align: left; width: 3%;">
                                                     <f:facet name="header">
                                                         <h:selectBooleanCheckbox  class="todos" onchange="seleccionarGeneral('todos', 'seleccion', 'divAutoriza')"/>
@@ -143,21 +138,19 @@
                                                         <h:outputText value="Prioridad"/>
                                                     </f:facet>
                                                 </p:column>
-                                                <p:column style="text-align: center; width: 5%;">
-                                                    <p:commandLink value="Seleccionar" style="color: blue" 
-                                                                   action="#{requisicionBean.seleccionarRequisicion(actionEvent)}"
+                                                <p:column width="50">
+                                                    <p:commandLink action="#{requisicionBean.seleccionarRequisicion(urrentRow.id)}"
                                                                    title="Clic aquí para ver los items de la requisición..."
-                                                                   onclick="$('#msgAsignaRequisicion').text('');
-                                                                           return true;">
-                                                        <f:param name="idReqEs" value="#{currentRow.id}"/>
+                                                                   >
+                                                        <i class="fa fa-eye-open text-primary"/>
                                                     </p:commandLink>
                                                 </p:column>
                                             </p:dataTable>
                                         </p:tab>
                                         <p:tab title="Con inventario (#{requisicionBean.totalReqConInventario}) "
-                                                     rendered="#{requisicionBean.totalReqConInventario gt 0}">
+                                               rendered="#{requisicionBean.totalReqConInventario gt 0}">
                                             <p:dataTable size="small" stripedRows="true" showGridlines="true"   value="#{requisicionBean.requisicionesSinAsignar}" 
-                                                           var="currentRow" styleClass="table table-striped">
+                                                         var="currentRow" styleClass="table table-striped">
                                                 <p:column style="text-align: center; width: 3%;">
                                                     <f:facet name="header">
                                                         <h:selectBooleanCheckbox  class="todos" onchange="seleccionarGeneral('todos', 'seleccion', 'divAutoriza')"/>
@@ -210,13 +203,11 @@
                                                         <h:outputText value="Prioridad"/>
                                                     </f:facet>
                                                 </p:column>
-                                                <p:column style="text-align: center; width: 5%;">
-                                                    <p:commandLink value="Seleccionar" style="color: blue;" 
-                                                                   action="#{requisicionBean.seleccionarRequisicion(actionEvent)}"
+                                                <p:column width="50">
+                                                    <p:commandLink action="#{requisicionBean.seleccionarRequisicion(currentRow.id)}"
                                                                    title="Clic aquí para ver los items de la requisición..."
-                                                                   onclick="$('#msgAsignaRequisicion').text('');
-                                                                           return true;">
-                                                        <f:param name="idReqEs" value="#{currentRow.id}"/>
+                                                                   process="@this" update="form1:tbReq">
+                                                        <i class="fa fa-eye-open text-primary"/>
                                                     </p:commandLink>
                                                 </p:column>
                                             </p:dataTable>
@@ -230,40 +221,24 @@
                     </div>
 
                     <div id="divDatos" style="display: none;">
-                        <div class="col-lg-5" style="padding-top: 5px;">
+                        <div class="col-5" style="padding-top: 5px;">
                             <h:outputText value="Más información de la requisición: "/>
                             <h:outputText value="#{requisicionBean.requisicionActual.consecutivo}" style="font-weight:  bold;"/>
                         </div><br/>
-                        <div class="container-fluid" style="padding-top: 45px;">
-                            <div id="tabsRequi">
-                                <ul>
-                                    <li><a href="#infRequi" >Más información</a></li>
-                                    <li><a href="#ETSRequi">ETS</a></li>
-                                    <li><a href="#EstatusRequii" >Estatus</a></li>     
-                                    <li><a href="#DevRequi">Inf. Devolución</a></li>                                 
-                                </ul>
-                                <div id="infRequi" class="textoIzquierda10pts">
-                                    <div class="container-fluid">
-                                        <ui:include src="/vistas/SiaWeb/Requisiciones/fragmentos/masInfoNoAccion.xhtml"/>
-                                    </div>
-                                </div>
-                                <div id="ETSRequi" class="textoIzquierda">
-                                    <div class="container-fluid">
-                                        <ui:include src="/vistas/SiaWeb/Requisiciones/verETS.xhtml"/>
-                                    </div>
-                                </div>
-                                <div id="EstatusRequii" class="textoIzquierda" style="display: none;">
-                                    <div class="container-fluid">
-                                        <ui:include src="/vistas/SiaWeb/Requisiciones/verEstatus.xhtml"/>
-                                    </div>
-                                </div>
-                                <div id="DevRequi" class="textoIzquierda" style="display: none;">
-                                    <div class="container-fluid">
-                                        <ui:include src="../Requisiciones/verDevoluciones.xhtml"/>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>                      
+                        <p:tabView id="tbReq" activeIndex="0">
+                            <p:tab title="Más Información">
+                                <ui:include src="../Requisiciones/fragmentos/masInfoNoAccion.xhtml"/>
+                            </p:tab>
+                            <p:tab title="ETS">
+                                <ui:include src="../Requisiciones/verETS.xhtml"/>
+                            </p:tab>
+                            <p:tab title="Estatus">
+                                <ui:include src="../Requisiciones/verEstatus.xhtml"/>
+                            </p:tab>
+                            <p:tab title="Devoluciones">
+                                <ui:include src="../Requisiciones/verDevoluciones.xhtml"/>
+                            </p:tab>
+                        </p:tabView>                                        
                     </div>
                 </h:form>
             </ui:define>

@@ -220,8 +220,9 @@ public class Orden implements Serializable {
     @Column(name = "NAVCODE")
     private String navCode;
 
+    @Size(max = 3)
     @Column(name = "TIPO")
-    private TipoRequisicion tipo;
+    private String tipo;
     //
     @JoinColumn(name = "OC_TERMINO_PAGO", referencedColumnName = "ID")
     @ManyToOne

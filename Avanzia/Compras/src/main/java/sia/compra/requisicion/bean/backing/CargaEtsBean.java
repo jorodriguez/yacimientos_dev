@@ -33,6 +33,7 @@ import sia.modelo.ReRequisicionEts;
 import sia.modelo.SiAdjunto;
 import sia.modelo.Usuario;
 import sia.modelo.orden.vo.OrdenEtsVo;
+import sia.modelo.requisicion.vo.RequisicionEtsVo;
 import sia.servicios.orden.impl.OcCategoriaEtsImpl;
 import sia.servicios.orden.impl.OcOrdenEtsImpl;
 import sia.servicios.orden.impl.OrdenImpl;
@@ -96,7 +97,7 @@ public class CargaEtsBean implements Serializable {
     private boolean seleccionarTodo;
     private int idCategoriaSelccionada = -1;
     private int idOrdenSeleccionada = -1;
-    private Map<Integer, Boolean> filasSeleccionadas = new HashMap<Integer, Boolean>();
+    private Map<Integer, Boolean> filasSeleccionadas = new HashMap<>();
     private String paginaRegreso = Constantes.VACIO;
     private String opcionSeleccionada;
     private String preDirectorio;
@@ -163,11 +164,10 @@ public class CargaEtsBean implements Serializable {
         return getListaEtsEspera();
     }
 
-    public void eliminarEts() {
+    public void eliminarEts(Object adjReq) {
         try {
-            //PrimeFaces.current().executeScript( ";mensajeEliminar();");
-            setEtsReRequisicion((ReRequisicionEts) getListaEts().getRowData());
-            etsActualAdjunto = getEtsReRequisicion().getSiAdjunto();
+            RequisicionEtsVo rq = (RequisicionEtsVo) adjReq;
+            etsActualAdjunto = servicioSiAdjuntoImpl.find(rq.getIdAdjunto());
 
             proveedorAlmacenDocumentos.getAlmacenDocumentos().borrarDocumento(etsActualAdjunto.getUrl());
             eliminarEtsComplemento();
@@ -538,6 +538,7 @@ public class CargaEtsBean implements Serializable {
         ValidadorNombreArchivo validadorNombreArchivo = new ValidadorNombreArchivo();
         try {
             fileInfo = uploadFile.getFile();
+            setRequi(Boolean.TRUE);                    
             AlmacenDocumentos almacenDocumentos
                     = proveedorAlmacenDocumentos.getAlmacenDocumentos();
 

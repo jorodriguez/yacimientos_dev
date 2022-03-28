@@ -17,7 +17,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
 import javax.annotation.PostConstruct;
-import javax.faces.bean.ManagedProperty;
 
 
 import javax.faces.event.AjaxBehaviorEvent;
@@ -378,7 +377,7 @@ public class OrdenCompraBean implements Serializable {
             } else {
                 int errorAux = recorreItems(getListaItems());
                 switch (ordenActual.getTipo()) {
-                    case PS:
+                    case "PS":
                         if (errorAux == 0) {
                             if (recorreItemsPS(getListaItems())) {
                                 return cambiarPagina();
@@ -407,7 +406,7 @@ public class OrdenCompraBean implements Serializable {
                             }
                         }
                         break;
-                    case AF:
+                    case "AF":
                         if (errorAux == 0) {
                             return cambiarPagina();
                         } else {
@@ -858,7 +857,7 @@ public class OrdenCompraBean implements Serializable {
             getItemActual().setOcUnidadCosto(new OcUnidadCosto());
             getItemActual().setObservaciones("");
             getItemActual().setDescuento(0.0);
-            if (TipoRequisicion.PS.equals(getOrdenActual().getTipo().PS)) {
+            if (TipoRequisicion.PS.toString().equals(getOrdenActual().getTipo())) {
                 getItemActual().setOcUnidadCosto(getOrdenActual().getOcUnidadCosto());
             }
             getItemActual().setProyectoOt(getOrdenActual().getProyectoOt());

@@ -154,14 +154,6 @@ public class GerenciaBean implements Serializable{
         try {
             int idGer = 0;
             GerenciaVo g = gerenciaImpl.buscarPorId(idGerencia);
-//            if (g.getAbrev().contains(";")) {
-//                String[] cad = g.getAbrev().split(";");
-//                UtilLog4j.log.debug(this, "Gerencia: " + g.getNombre() + "Cadena :   " + cad[0]);
-//                GerenciaVo ga = gerenciaImpl.traerGerenciaVOAbreviatura(cad[0]);
-//                idGer = ga.getId();
-//            } else {
-//                idGer = g.getId();
-//            }
             if (g != null && g.getId() > 0) {
                 idGer = g.getId();
             }

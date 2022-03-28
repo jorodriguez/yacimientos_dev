@@ -96,13 +96,13 @@ public class RequisicionDetalleVO {
 
     public double getCantidadSolicitadaFormato() {
         BigDecimal canA = BigDecimal.valueOf(this.cantidadSolicitada);
-        canA = canA.setScale(3, BigDecimal.ROUND_DOWN);
+        canA = canA.setScale(3, RoundingMode.DOWN);
         return canA.doubleValue();
     }
 
     public double getCantidadAutorizadaFormato() {
         BigDecimal canA = BigDecimal.valueOf(this.cantidadAutorizada);
-        canA = canA.setScale(3, BigDecimal.ROUND_DOWN);
+        canA = canA.setScale(3, RoundingMode.DOWN);
         return canA.doubleValue();
     }
 }

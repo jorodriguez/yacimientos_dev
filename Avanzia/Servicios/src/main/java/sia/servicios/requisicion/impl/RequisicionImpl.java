@@ -474,6 +474,8 @@ public class RequisicionImpl extends AbstractFacade<Requisicion> {
     }
 
     /**
+     * @param idRequisicion
+     * @param agrupadorID
      * @return La lista de items por JPA
      */
     

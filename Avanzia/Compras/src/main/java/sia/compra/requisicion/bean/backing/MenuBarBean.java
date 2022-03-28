@@ -180,13 +180,11 @@ public class MenuBarBean implements Serializable {
         NotaRequisicionBean notaRequisicionBean = (NotaRequisicionBean) FacesUtilsBean.getManagedBean("notaRequisicionBean");
         //-----Esto es para Quitar los datos de la requisicion seleccionada
         requisicionBean.setRequisicionActual(null);
-        requisicionBean.setActualizar(false);
 
         OrdenBean ordenBean = (OrdenBean) FacesUtilsBean.getManagedBean("ordenBean");
         //-----Esto es para Quitar los datos de la requisicion seleccionada
         ordenBean.setOrdenActual(null);
         ordenBean.setConsecutivo(null);
-        ordenBean.setActualizar(false);
 
         //-----Esto es para poner actualizar true y vaya por la lista
         RecepcionRequisicionBean recepcionRequisicionBean = (RecepcionRequisicionBean) FacesUtilsBean.getManagedBean("recepcionRequisicionBean");
@@ -226,13 +224,11 @@ public class MenuBarBean implements Serializable {
         NotaRequisicionBean notaRequisicionBean = (NotaRequisicionBean) FacesUtilsBean.getManagedBean("notaRequisicionBean");
         //-----Esto es para Quitar los datos de la requisicion seleccionada
         requisicionBean.setRequisicionActual(null);
-        requisicionBean.setActualizar(true);
 
         OrdenBean ordenBean = (OrdenBean) FacesUtilsBean.getManagedBean("ordenBean");
         //-----Esto es para Quitar los datos de la requisicion seleccionada
         ordenBean.setOrdenActual(null);
         ordenBean.setConsecutivo(null);
-        ordenBean.setActualizar(true);
 
         //-----Esto es para poner actualizar true y vaya por la lista
 //        RecepcionRequisicionBean recepcionRequisicionBean = (RecepcionRequisicionBean) FacesUtilsBean.getManagedBean("recepcionRequisicionBean");
@@ -281,7 +277,6 @@ public class MenuBarBean implements Serializable {
 
     public String regresaSolicitarRequisicion() {
         RequisicionBean requisicionBean = (RequisicionBean) FacesUtilsBean.getManagedBean("requisicionBean");
-        requisicionBean.setActualizar(true);
         requisicionBean.setRequisicionActual(null);
         paginaActual = "Solicitar Requisiciones";
         return "crearRequisicion";

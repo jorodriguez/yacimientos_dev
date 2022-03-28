@@ -4,34 +4,19 @@
                 xmlns:f="http://xmlns.jcp.org/jsf/core"
                 xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
                 xmlns:h="http://xmlns.jcp.org/jsf/html">
-    <style>                    
-        .col-lg-9, .col-lg-3, .col-lg-6, .col-lg-4, .col-lg-1, .col-lg-2{    
-            padding-left: 5px;                           
-            padding-right: 5px;
-        }    
-        .table {
-            margin-bottom: 5px;            
-        }
-        .mm{
-            padding-left: 5px;
-            padding-right: 5px;
-        }
-        .iceOutLbl {    
-            font-weight: normal;
-        }
-    </style>
+    
     <div class="row" style="margin-top: 10px;">
-        <div class="col-lg-12 col-xs-12">
+        <div class="col-12 col-xs-12">
             <div scope="colgroup" colspan="8" class="iceDatTblHdr tableHdr table-stripedHdr" style="font-weight: normal;"><label id="" class="iceOutLbl" style="font-weight: normal;">Inf. de la requisición</label></div>
-            <div class="col-lg-12 col-xs-12 input-group panel panel-default">
+            <div class="col-12 col-xs-12 input-group panel panel-default">
 
-                <div class="form-group col-lg-12 col-xs-12" style="margin-top: 10px; border: white; border-bottom: #eee; border-top: white;  border-style: solid; border-width: 2px;">
-                    <strong><h:outputText class="col-lg-2 col-xs-12 control-label" value="Gerencia:" /> </strong>
-                    <div class="col-lg-3 col-xs-12">
+                <div class="form-group col-12 col-xs-12" style="margin-top: 10px; border: white; border-bottom: #eee; border-top: white;  border-style: solid; border-width: 2px;">
+                    <strong><h:outputText class="col-2 col-xs-12 control-label" value="Gerencia:" /> </strong>
+                    <div class="col-3 col-xs-12">
                         <h:outputText class="control-label" value="#{requisicionBean.requisicionActual.gerencia.nombre}"/>
                     </div>                        
-                    <strong><h:outputText class="col-lg-2 col-xs-12 control-label" value="Observaciones:"/></strong>
-                    <div class="col-lg-5 col-xs-12">                            
+                    <strong><h:outputText class="col-2 col-xs-12 control-label" value="Observaciones:"/></strong>
+                    <div class="col-5 col-xs-12">                            
                         <h:outputText styleClass="control-label" rendered="#{requisicionBean.requisicionActual.observaciones != null}" value="#{requisicionBean.requisicionActual.observaciones}"/>
                         <h:outputText styleClass="control-label" rendered="#{requisicionBean.requisicionActual.observaciones == null}" value=" "/>
                     </div>                          
@@ -40,16 +25,16 @@
             </div>
         </div>        
     </div>    
-    <div class="col-lg-12 col-xs-12" style="margin-bottom: 5px; display: #{requisicionBean.requisicionActual != null ? 'bloque' : 'none'} ">        
-        <div class="col-lg-3 col-xs-12">
+    <div class="col-12 col-xs-12" style="margin-bottom: 5px; display: #{requisicionBean.requisicionActual != null ? 'bloque' : 'none'} ">        
+        <div class="col-3 col-xs-12">
             <h:outputText value="Items de la requisición: "/>
             <h:outputText value="#{requisicionBean.requisicionActual.id}" style="font-weight:  bold;"/>
         </div>
 
-        <div class="col-lg-2 col-xs-12">
+        <div class="col-2 col-xs-12">
             <p:commandLink value="Agregar Ítem" style="font-weight: bold; color: #0066ff;"
                              rendered="#{requisicionBean.crearItem}"
-                             action="#{requisicionBean.crearNuevoItem(actionEvent)}"
+                             action="#{requisicionBean.crearNuevoItem}"
                              title="Clic aqui para agregar un item..." 
                              >
             </p:commandLink>
@@ -57,67 +42,65 @@
 
     </div>
 
-    <div class="col-lg-12 col-xs-12 input-group panel panel-default" style="margin-bottom: 5px;">   
+    <div class="col-12 col-xs-12 input-group panel panel-default" style="margin-bottom: 5px;">   
         <ui:repeat rendered="#{requisicionBean.items.rowCount gt 0}" value="#{requisicionBean.items}" 
                    var="currentRow"
                    >
             <div class="form-group row" style="margin-top: 5px; border: #eee; border-style: solid; border-width: 2px;">
                 <div class="row">
-                    <div class="col-lg-12" style="margin-top: 5px; margin-bottom: 5px; text-align: right;">
+                    <div class="col-12" style="margin-top: 5px; margin-bottom: 5px; text-align: right;">
                         <ui:fragment rendered="#{requisicionBean.requisicionActual.multiproyecto  eq 'False'}">
-                            <p:commandLink action="#{requisicionBean.modificarItem(actionEvent)}"
+                            <p:commandLink action="#{requisicionBean.modificarItem(currentRow.idRequisicionDetalle)}"
                                              styleClass="btn btn-default"
                                              title="Clic aqui para modificar el item..." >
-                                <i class="glyphicon glyphicon-pencil"/>
+                                <i class="fa fa-pencil"/>
                                 <f:param name="idPartida" value="#{currentRow['idRequisicionDetalle']}"/>
                             </p:commandLink>
                         </ui:fragment>
-                        <p:commandLink action="#{requisicionBean.eliminarItem(actionEvent)}" 
+                        <p:commandLink action="#{requisicionBean.eliminarItem(currentRow.idRequisicionDetalle, currentRow.idAgrupador)}" 
                                          styleClass="btn btn-default"
                                          onclick="if (!confirm('Está seguro de eliminar el Ítem...? '))
                                                      return false;"
                                          title="Clic aqui para eliminar el item...">
-                            <i class="glyphicon glyphicon-trash"/>     
-                            <f:param name="idPartida" value="#{currentRow['idRequisicionDetalle']}"/>
-                            <f:param name="idAgrupador" value="#{currentRow['idAgrupador']}"/>
+                            <i class="fa fa-trash"/>     
                         </p:commandLink>
 
                     </div>                    
                 </div>
                 <ui:fragment rendered="#{currentRow['idpresupuesto']  gt 0}">
                     <div class="row">
-                        <div class="col-lg-3">
-                            <div class="col-lg-12">
+                        <div class="col-3">
+                            <div class="col-12">
                                 <strong><h:outputText styleClass="control-label" value="Presupuesto"/></strong>
                             </div>
 
-                            <div class="col-lg-12">                                
+                            <div class="col-12">                                
                                 <h:outputText styleClass="control-label" title="#{currentRow['presupuestoCodigo'] eq 'null' ? '' : currentRow['presupuestoCodigo']}" value="#{currentRow['presupuestoNombre'] eq 'null' ? '' : currentRow['presupuestoNombre']}"/>                                                                
                             </div>
                         </div>
 
-                        <div class="col-lg-2">
-                            <div class="col-lg-12">                                    
+                        <div class="col-2">
+                            <div class="col-12">                                    
                                 <strong><h:outputText styleClass="control-label" value="Presup Año y Mes"/></strong>
                             </div>
-                            <div class="col-lg-12">                                    
+                            <div class="col-12">                                    
                                 <h:outputText styleClass="control-label" value="Año #{currentRow['anioPresupuesto']} y" title="#{currentRow['anioPresupuesto']}"/>
                                 <h:outputText styleClass="control-label" value="  Mes #{currentRow['mesPresupuesto']}" title="#{currentRow['mesPresupuesto']}"/>                                
                             </div>
                         </div>
-                        <div class="col-lg-2">
-                            <div class="col-lg-12">                                    
+                        <div class="col-2">
+                            <div class="col-12">                                    
                                 <strong><h:outputText styleClass="control-label" value="Actividad"/></strong>
                             </div>
-                            <div class="col-lg-12">                                    
+                            <div class="col-12">                                    
                                 <h:outputText styleClass="control-label" value="#{currentRow['nombreActPedrolera']}"/>                                                                        
                             </div>
                         </div>   
-                        <div class="col-lg-5">
-                            <div class="col-lg-12">
+                        <div class="col-5">
+                            <div class="col-12">
                                 <strong><h:outputText styleClass="control-label" value="Proyecto OT"/></strong>
                             </div>
-                            <div class="col-lg-12">
+                            <div class="col-12">
                                 <ui:fragment rendered="#{requisicionBean.requisicionActual.multiproyecto  eq 'False'}">
                                     <h:outputText styleClass="control-label" title="#{currentRow['proyectoOtCC'] eq 'null' ? '' : currentRow['proyectoOtCC']}" value="#{currentRow['proyectoOt'] eq 'null' ? '' : currentRow['proyectoOt']}"/>
                                 </ui:fragment>
@@ -131,12 +114,12 @@
                 
                     <div class="row">
                         <ui:fragment rendered="#{currentRow['idpresupuesto']  lt 1}">
-                            <div class="col-lg-3">
-                                <div class="col-lg-12">
+                            <div class="col-3">
+                                <div class="col-12">
                                     <strong><h:outputText styleClass="control-label" value="Proyecto OT"/></strong>
                                 </div>
 
-                                <div class="col-lg-12">
+                                <div class="col-12">
                                     <ui:fragment rendered="#{requisicionBean.requisicionActual.multiproyecto  eq 'False'}">
                                         <h:outputText styleClass="control-label" title="#{currentRow['proyectoOtCC'] eq 'null' ? '' : currentRow['proyectoOtCC']}" value="#{currentRow['proyectoOt'] eq 'null' ? '' : currentRow['proyectoOt']}"/>
                                     </ui:fragment>
@@ -148,30 +131,30 @@
                         </ui:fragment>
                         <ui:fragment rendered="#{requisicionBean.requisicionActual.apCampo.tipo  eq 'C'}">
                             <ui:fragment rendered="#{currentRow['idpresupuesto']  lt 1}">
-                                <div class="col-lg-1">
-                                    <div class="col-lg-12">                                    
+                                <div class="col-1">
+                                    <div class="col-12">                                    
                                         <strong><h:outputText styleClass="control-label" value="Actividad"/></strong>
                                     </div>
-                                    <div class="col-lg-12">                                    
+                                    <div class="col-12">                                    
                                         <h:outputText styleClass="control-label" value="#{currentRow['nombreActPedrolera']}" title="#{currentRow['codigoActPedrolera']}"/>                                    
                                     </div>
                                 </div>
                             </ui:fragment>
-                            <div class="col-lg-3">
-                                <div class="col-lg-12">                                    
+                            <div class="col-3">
+                                <div class="col-12">                                    
                                     <strong><h:outputText styleClass="control-label" value="Subactividad"/></strong>
                                 </div>
-                                <div class="col-lg-12">
+                                <div class="col-12">
                                     <h:outputText styleClass="control-label" value="#{currentRow['tipoTarea']}"/>
                                 </div>
                             </div>
                         </ui:fragment>
                         <ui:fragment rendered="#{requisicionBean.requisicionActual.apCampo.tipo  eq 'N'}">
-                            <div class="col-lg-4">
-                                <div class="col-lg-12">                                    
+                            <div class="col-4">
+                                <div class="col-12">                                    
                                     <strong><h:outputText styleClass="control-label" value="Tipo de Tarea"/></strong>
                                 </div>
-                                <div class="col-lg-12">
+                                <div class="col-12">
                                     <ui:fragment rendered="#{requisicionBean.requisicionActual.tipo  eq 'PS'}">
                                         <h:outputText styleClass="control-label" value="#{currentRow['tipoTarea']}"/>
                                     </ui:fragment>
@@ -182,21 +165,21 @@
                             </div>
                         </ui:fragment>
                         <ui:fragment rendered="#{requisicionBean.requisicionActual.tipo  eq 'PS' or requisicionBean.requisicionActual.apCampo.tipo  eq 'C'}">
-                            <div class="col-lg-#{currentRow['idpresupuesto']  lt 1 ? 5 : 4}">
-                                <div class="col-lg-12">
+                            <div class="col-#{currentRow['idpresupuesto']  lt 1 ? 5 : 4}">
+                                <div class="col-12">
                                     <strong><h:outputText styleClass="control-label" value="Tarea"/></strong>
                                 </div>
-                                <div class="col-lg-12">
+                                <div class="col-12">
                                     <h:outputText styleClass="control-label" title="#{currentRow['codeTarea']}" value="#{currentRow['nombreTarea']}"/>                        
                                 </div>
                             </div>
                         </ui:fragment> 
                         <ui:fragment rendered="#{requisicionBean.requisicionActual.apCampo.tipo  eq 'C'}">
-                            <div class="col-lg-5">
-                                <div class="col-lg-12">
+                            <div class="col-5">
+                                <div class="col-12">
                                     <strong><h:outputText styleClass="control-label" value="Subtarea"/></strong>
                                 </div>
-                                <div class="col-lg-12">
+                                <div class="col-12">
                                     <h:outputText styleClass="control-label" title="#{currentRow['codigoSubTarea']}" value="#{currentRow['subTarea']}"/>                        
                                 </div>
                             </div>                
@@ -204,38 +187,38 @@
                     </div>
                 
                 <div class="row">
-                    <div class="col-lg-3">
-                        <div class="col-lg-12">
+                    <div class="col-3">
+                        <div class="col-12">
                             <strong><h:outputText styleClass="control-label" value="Número parte"/></strong>
                         </div>
-                        <div class="col-lg-12">
+                        <div class="col-12">
                             <h:outputText styleClass="control-label" value="#{currentRow['artNumeroParte'] eq 'null' ? '' : currentRow['artNumeroParte']}"/>
                         </div>
                     </div>
-                    <div class="col-lg-2">
-                        <div class="col-lg-12">
+                    <div class="col-2">
+                        <div class="col-12">
                             <strong><h:outputText styleClass="control-label" value="Cantidad"/></strong>
                         </div>
-                        <div class="col-lg-1"></div>
-                        <div class="col-lg-11">                            
+                        <div class="col-1"></div>
+                        <div class="col-11">                            
                             <h:outputText styleClass="control-label" value="#{currentRow['cantidadSolicitada']}">
                                 <f:convertNumber maxFractionDigits="3"/>
                             </h:outputText>
                         </div>
                     </div>                
-                    <div class="col-lg-2">
-                        <div class="col-lg-12">
+                    <div class="col-2">
+                        <div class="col-12">
                             <strong><h:outputText styleClass="control-label" value="Unidad" /></strong>
                         </div>
-                        <div class="col-lg-12">
+                        <div class="col-12">
                             <h:outputText styleClass="control-label" value="#{currentRow['artUnidad']}"/>
                         </div>
                     </div>
-                    <div class="col-lg-5">
-                        <div class="col-lg-12">
+                    <div class="col-5">
+                        <div class="col-12">
                             <strong><h:outputText styleClass="control-label" value="Descripción"/></strong>
                         </div>
-                        <div class="col-lg-12">
+                        <div class="col-12">
                             <h:outputText styleClass="control-label"  value="#{currentRow['artDescripcion']}"/>
                         </div>
                     </div>                    
