@@ -14,20 +14,27 @@
             <ui:define name="contenido">
                 <h:form id="form1">                    
                     <div class="row">
+                        <p:confirmDialog global="true" showEffect="fade" hideEffect="fade" responsive="true" width="350">
+                            <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no ui-button-flat"/>
+                            <p:commandButton value="Si" type="button" styleClass="ui-confirmdialog-yes" />
+                        </p:confirmDialog>
                         <div id="divAutoriza" class="btn-group" style="text-align: left;">                            
                             <p:commandLink value="Revisar" 
                                            styleClass="btn btn-default"
                                            style="font-weight: bold;"
-                                           action="#{ordenBean.aprobarOrdenComprasRevisa(event)}"
-                                           onclick="return validaAutorizar('form1', 'seleccion');"/>    
+                                           action="#{ordenBean.aprobarOrdenComprasRevisa}"
+                                           process="@this  form1:Ordenes" update="@form">
+                                <p:confirm header="Confirmar" message="La operación va a autorizar la(s) OC/S seleccionada(s). ¿Está seguro?" 
+                                           icon="pi pi-exclamation-triangle"/>
+                            </p:commandLink>
                             <p:commandLink value="Devolver"
-                                           class="btn btn-md btn-default"
-                                           style="font-weight: bold"
-                                           onclick="return validarDevolucion('form1', 'seleccion');"/>
+                                           class="btn btn-md btn-default"           
+                                           action="#{ordenBean.inicioDevolverOrdenCompras}"
+                                           update="frmDevsOCS" process="@this form1:Ordenes"/>
                             <p:commandLink value="Cancelar"
-                                           class="btn btn-md btn-default"
-                                           style="font-weight: bold"
-                                           onclick="return validarCancelacion('form1', 'seleccion');"/>
+                                           class="btn btn-md btn-default"                         
+                                           action="#{ordenBean.inicioCancelarOrdenCompras}"
+                                           update="frmCancelVarOCS" process="@this form1:Ordenes"/> 
                         </div>
                         <div id="divOperacion" class="btn-group" style="text-align: left; display: none;">                            
                             <p:commandLink value="Regresar" action="#{ordenBean.iniciarLimpiar(actionEvent)}"
@@ -38,20 +45,24 @@
                             <p:commandLink value="Revisar" 
                                            styleClass="btn btn-default"
                                            style="font-weight: bold;"
-                                           action="#{ordenBean.aprobarOrdenComprasRevisa(event)}"
-                                           onclick="return confirmar('form1', 'La operación va a autorizar la(s) OC/S seleccionada(s). ¿Está seguro?');"
-                                           />
+                                           action="#{ordenBean.aprobarOrdenComprasRevisa}"
+                                           process="@this" update="form1">
+                                <p:confirmDialog header="Confirmar" message="La operación va a autorizar la(s) OC/S seleccionada(s). ¿Está seguro?"/>
+                            </p:commandLink>
                             <p:commandLink 
                                 title="Clic aquí para cancelar la orden de compra..." value="Cancelar"
                                 onclick="$(dialogoCancelOCS).modal('show');"
-                                styleClass="btn btn-default"/>
+                                styleClass="btn btn-default"
+                                process="@this" update="frmCancelOCS"/>
                             <p:commandLink     title="Clic aquí para devolver la orden de compra..." value="Devolver"
                                                onclick="$(dialogoDevolverOCS).modal('show');"
-                                               styleClass="btn btn-default"/>
-                            <p:commandLink  action="#{ordenBean.crearNota(actionEvent)}" 
+                                               styleClass="btn btn-default"
+                                               process="@this" update="frmDevOCS"/>
+                            <p:commandLink  action="#{ordenBean.crearNota}" 
                                             title="Clic aquí para generar una Nota sobre la orden de compra..." value="Generar Nota"
                                             onclick="$(dialogoNotaOrden).modal('show');"
-                                            styleClass="btn btn-default"/>                            
+                                            styleClass="btn btn-default"
+                                            process="@this" update="frmNotasOCS"/>                            
                         </div>
                     </div>
                     <br/>
@@ -149,13 +160,12 @@
                                     </h:panelGroup>
                                 </p:column>
                                 <p:column styleClass="#{data.leida eq 'False' ? 'filaConSombra': 'filaSinSombra'}">
-                                    <p:commandLink action="#{ordenBean.seleccionarOrden(actionEvent)}" 
+                                    <p:commandLink action="#{ordenBean.seleccionarOrden(data.id)}" 
                                                    title="Clic aquí para ver Items..." 
                                                    style="#{data.errorEnvio eq 'True' ? 'color: red' : 'color : blue'}"
                                                    value="Seleccionar"
-                                                   onclick="activarTab('tabOCSProc', 0, 'divDatos', 'divTabla', 'divOperacion', 'divAutoriza');"/>
-                                    <!--   <span><i class="fa fa-eye-open text-primary" ></i></span>
-                                   </p:commandLink>-->
+                                                   onclick="activarTab('tabOCSProc', 0, 'divDatos', 'divTabla', 'divOperacion', 'divAutoriza');"
+                                                   process="@this" update="form1:tbOcs form1:lblOcs"/>
                                 </p:column>
                             </p:dataTable>                        
                         </div>
@@ -163,9 +173,9 @@
                     <div id="divDatos" style="display: none;" class="row">
                         <div class="col-5" style="padding-top: 5px; z-index: 999;">
                             <h:outputText value="Información de la OC/S: "/>
-                            <h:outputText value="#{ordenBean.ordenActual.consecutivo}" style="font-weight:  bold;"/>
+                            <h:outputText id="lblOcs" value="#{ordenBean.ordenActual.consecutivo}" style="font-weight:  bold;"/>
                         </div>
-                        <p:tabView>
+                        <p:tabView id="tbOcs">
                             <p:tab title="Información de la compra">
                                 <ui:include src="../Orden/fragmento/masInformacionOrden.xhtml"/>				                                </p:tab>
                             <p:tab title="Espercificación Técnica">

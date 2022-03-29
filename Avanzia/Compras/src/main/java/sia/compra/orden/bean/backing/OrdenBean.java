@@ -1479,43 +1479,12 @@ public class OrdenBean implements Serializable {
         StringBuilder aprobadasSB = new StringBuilder();
         StringBuilder noAprobadasSB = new StringBuilder();
         List<OrdenVO> lo = new ArrayList<>();
-        List<OrdenVO> loAI = new ArrayList<>();
         try {
             if (getOrdenActual() == null) {
-//                for (OrdenVO ord : mapaOrdenes.get("autorizaOrdenes")) {
-//                    if (ord.isSelected()) {
-//                        if (ord.getTipo().equals(TipoRequisicion.AI.name())) {
-//                            loAI.add(ord);
-//                        } else {
-//                            lo.add(ord);
-//                        }
-//                    }
-//                }
-
+                ocs.stream().filter(OrdenVO::isSelected).forEac(oc -> {
+                    lo.add(oc);
+                });
                 boolean v;
-                if (!loAI.isEmpty()) {
-                    for (OrdenVO ordVo : loAI) {
-                        v = ordenServicioRemoto.autorizarOrdenCompras(ordVo.getId(), usuarioBean.getUsuarioConectado().getId(), usuarioBean.getUsuarioConectado().getEmail());
-                        if (v) {
-                            if (aprobadasSB.toString().isEmpty()) {
-                                aprobadasSB.append(ordVo.getConsecutivo());
-                            } else {
-                                aprobadasSB.append(", ").append(ordVo.getConsecutivo());
-                            }
-                            //
-                        } else {
-                            if (noAprobadasSB.toString().isEmpty()) {
-                                noAprobadasSB.append(ordVo.getConsecutivo());
-                            } else {
-                                noAprobadasSB.append(", ").append(ordVo.getConsecutivo());
-                            }
-                            //
-                            ordenServicioRemoto.enviarExcepcionSia(usuarioBean.getUsuarioConectado().getId(), correoExcepcion(), MSG_COMPRAS, "Autorizar", ordVo.getConsecutivo(), ordVo.getId());
-                            LOGGER.fatal(this, ERR_MSG_OCS);
-                        }
-                    }
-                }
-                //System.out.println("hola bean orden");
                 //OC/S nuevas
                 if (!lo.isEmpty()) {
                     boolean val;
@@ -1546,45 +1515,25 @@ public class OrdenBean implements Serializable {
                 String jsMetodo = JS_METHOD_LIMPIAR_TODOS;
                 PrimeFaces.current().executeScript(jsMetodo);
             } else {
-                if (TipoRequisicion.AI.equals(getOrdenActual().getTipo())) {
-                    boolean v = ordenServicioRemoto.autorizarOrdenCompras(getOrdenActual().getId(), usuarioBean.getUsuarioConectado().getId(), usuarioBean.getUsuarioConectado().getEmail());
-                    if (v) {
-                        if (aprobadasSB.toString().isEmpty()) {
-                            aprobadasSB.append(getOrdenActual().getConsecutivo());
-                        } else {
-                            aprobadasSB.append(", ").append(getOrdenActual().getConsecutivo());
-                        }
-                        //
+                boolean val = ordenServicioRemoto.autorizarTareaCompra(getOrdenActual().getId(), usuarioBean.getUsuarioConectado().getId(), usuarioBean.getUsuarioConectado().getEmail(), Constantes.FALSE);
+                if (val) {
+                    if (aprobadasSB.toString().isEmpty()) {
+                        aprobadasSB.append(getOrdenActual().getConsecutivo());
                     } else {
-                        if (noAprobadasSB.toString().isEmpty()) {
-                            noAprobadasSB.append(getOrdenActual().getConsecutivo());
-                        } else {
-                            noAprobadasSB.append(", ").append(getOrdenActual().getConsecutivo());
-                        }
-                        //
-                        ordenServicioRemoto.enviarExcepcionSia(usuarioBean.getUsuarioConectado().getId(), correoExcepcion(), MSG_COMPRAS, "Autorizar", getOrdenActual().getConsecutivo(), getOrdenActual().getId().intValue());
-                        LOGGER.fatal(this, ERR_MSG_OCS);
+                        aprobadasSB.append(", ").append(getOrdenActual().getConsecutivo());
                     }
+                    //
                 } else {
-                    boolean val = ordenServicioRemoto.autorizarTareaCompra(getOrdenActual().getId(), usuarioBean.getUsuarioConectado().getId(), usuarioBean.getUsuarioConectado().getEmail(), Constantes.FALSE);
-                    if (val) {
-                        if (aprobadasSB.toString().isEmpty()) {
-                            aprobadasSB.append(getOrdenActual().getConsecutivo());
-                        } else {
-                            aprobadasSB.append(", ").append(getOrdenActual().getConsecutivo());
-                        }
-                        //
+                    if (noAprobadasSB.toString().isEmpty()) {
+                        noAprobadasSB.append(getOrdenActual().getConsecutivo());
                     } else {
-                        if (noAprobadasSB.toString().isEmpty()) {
-                            noAprobadasSB.append(getOrdenActual().getConsecutivo());
-                        } else {
-                            noAprobadasSB.append(", ").append(getOrdenActual().getConsecutivo());
-                        }
-                        //
-                        ordenServicioRemoto.enviarExcepcionSia(usuarioBean.getUsuarioConectado().getId(), usuarioBean.getUsuarioConectado().getEmail(), MSG_COMPRAS, MSG_APROBAR, getOrdenActual().getConsecutivo(), getOrdenActual().getId().intValue());
-                        LOGGER.fatal(this, ERR_MSG_OCS);
+                        noAprobadasSB.append(", ").append(getOrdenActual().getConsecutivo());
                     }
+                    //
+                    ordenServicioRemoto.enviarExcepcionSia(usuarioBean.getUsuarioConectado().getId(), usuarioBean.getUsuarioConectado().getEmail(), MSG_COMPRAS, MSG_APROBAR, getOrdenActual().getConsecutivo(), getOrdenActual().getId().intValue());
+                    LOGGER.fatal(this, ERR_MSG_OCS);
                 }
+
                 mostrarMensaje(aprobadasSB.toString(), noAprobadasSB.toString());
                 mostrar = false;
                 //Linea para recargar la lista de OC/S
@@ -3369,8 +3318,7 @@ public class OrdenBean implements Serializable {
         setListaFactura(siFacturaImpl.facturasPorOrden(ordenID));
     }
 
-    public void seleccionarFactura() {
-        int id = Integer.parseInt(FacesUtilsBean.getRequestParameter("idFac"));
+    public void seleccionarFactura(int id) {
         facturaVo = siFacturaImpl.buscarFactura(id);
         facturaVo.setDetalleFactura(new ArrayList<FacturaDetalleVo>());
         facturaVo.setDetalleFactura(siFacturaDetalleImpl.detalleFactura(id));

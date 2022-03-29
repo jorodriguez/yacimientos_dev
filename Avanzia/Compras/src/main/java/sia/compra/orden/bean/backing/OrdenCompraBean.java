@@ -734,10 +734,9 @@ public class OrdenCompraBean implements Serializable {
         return null;
     }
 
-    public void actualizarItem() {
+    public void actualizarItem(int id) {
         try {
             if (getOrdenActual() != null && getOrdenActual().isMultiproyecto()) {
-                int id = Integer.parseInt(FacesUtilsBean.getRequestParameter("idItem"));
                 OrdenDetalleVO odvo = listaItems.get(id);
                 odvo.setId(this.ordenDetalleImpl.itemsPorOrdenMultiID(this.getOrdenActual().getId(), odvo.getIdAgrupador()));
                 if (odvo.getId() > 0) {
@@ -759,11 +758,9 @@ public class OrdenCompraBean implements Serializable {
         }
     }
     
-    public void historyItem() {
+    public void historyItem(int idInv, int idCampo) {
         try {
             if (getOrdenActual() != null) {
-                int idInv = Integer.parseInt(FacesUtilsBean.getRequestParameter("idInv"));
-                int idCampo = Integer.parseInt(FacesUtilsBean.getRequestParameter("idCampo"));         
                 if(idInv > 0 && idCampo > 0){
                     this.setHistoricoVentas(this.ordenDetalleImpl.historicoDetalleOrden(idInv, idCampo));                
                 } else {
@@ -1087,9 +1084,8 @@ public class OrdenCompraBean implements Serializable {
         
     }
 
-    public void eliminarItem() {
+    public void eliminarItem(int id) {
         try {
-            int id = Integer.parseInt(FacesUtilsBean.getRequestParameter("idItem"));
             OrdenDetalleVO odvo = getListaItems().get(id);
             setItemActual(ordenDetalleImpl.find(odvo.getId()));
             ordenImpl.eliminarItem(getItemActual());

@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import javax.annotation.PostConstruct;
-import javax.faces.bean.ManagedProperty;
 
 
 import javax.faces.view.ViewScoped;
@@ -27,8 +26,6 @@ import sia.servicios.orden.impl.AutorizacionesOrdenImpl;
 import sia.servicios.orden.impl.OrdenDetalleImpl;
 import sia.servicios.orden.impl.OrdenImpl;
 import sia.servicios.sistema.impl.SiUsuarioRolImpl;
-import sia.util.OrdenEstadoEnum;
-import sia.util.UtilLog4j;
 
 /**
  *
@@ -107,9 +104,8 @@ public class RecibirOrdenBean implements Serializable {
         }
     }
 
-    public void seleccionarOrdenRecibida() {
+    public void seleccionarOrdenRecibida(int id) {
         //
-        int id = Integer.parseInt(FacesUtilsBean.getRequestParameter("idOcs"));
         ordenVO = ordenImpl.buscarOrdenPorId(id, sesion.getUsuarioConectado().getApCampo().getId(), false);
         getOrdenVO().setFecha(new Date());
         getOrdenVO().setDetalleOrden(new ArrayList<OrdenDetalleVO>());
@@ -118,8 +114,8 @@ public class RecibirOrdenBean implements Serializable {
         PrimeFaces.current().executeScript( ";abrirDialogoModal(dialogoRecibirOCS);");
     }
     
-    public void seleccionarOrdenRecibidaEliminar() {        
-        this.setIdOrdenPartidaCancelar(Integer.parseInt(FacesUtilsBean.getRequestParameter("idOcs")));
+    public void seleccionarOrdenRecibidaEliminar(int id) {        
+        this.setIdOrdenPartidaCancelar(id);
         ordenVO = ordenImpl.buscarOrdenPorId(this.getIdOrdenPartidaCancelar(), sesion.getUsuarioConectado().getApCampo().getId(), false);
         getOrdenVO().setFecha(new Date());
         getOrdenVO().setDetalleOrden(new ArrayList<OrdenDetalleVO>());
@@ -167,10 +163,10 @@ public class RecibirOrdenBean implements Serializable {
         }
     }
     
-    public void motivoEliminarPartida() {
+    public void motivoEliminarPartida(int idPar) {
         try {
             this.setMotivoCancelar("");
-            this.setIdPartidaCancelar(Integer.parseInt(FacesUtilsBean.getRequestParameter("idPartidaOcs")));            
+            this.setIdPartidaCancelar(idPar);            
         } catch (Exception e) {
             UtilLog4j.log.error(e);
             FacesUtilsBean.addErrorMessage("Ocurrio un error al eliminar la partida de la orden de compra");

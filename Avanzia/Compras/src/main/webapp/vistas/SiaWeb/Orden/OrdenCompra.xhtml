@@ -5,7 +5,6 @@
 
       xmlns:p="http://primefaces.org/ui"
       xmlns:f="http://xmlns.jcp.org/jsf/core"
-      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
       xmlns:h="http://xmlns.jcp.org/jsf/html"
       >
     <body>
@@ -17,58 +16,68 @@
                 <h:form id="form1" >
                     <div class="row">                        
                         <div id="divOperacion" class="btn-group" style="text-align: left; display: none;">
-                            <p:commandLink value="Regresar" action="#{ordenCompraBean.iniciarLimpiar(actionEvent)}"
+                            <p:commandLink value="Regresar" action="#{ordenCompraBean.iniciarLimpiar}"
                                            onclick="regresar('divTabla', 'divDatos', 'divOperacion', 'divAutoriza')"
                                            styleClass="btn btn-default"/>
                             <p:commandLink value="Solicitar" styleClass="btn btn-default"           
                                            action="#{ordenCompraBean.soliciarOCS()}"
                                            title="Clic aquí para modificar orden de compra..." >
                                 <f:param name="idOrdenSel" value="#{ordenCompraBean.ordenActual.id}"/>
-                                <f:param name="paginaOrigen" value="/vistas/SiaWeb/Orden/OrdenCompra"/>
+                                <f:param name="paginaOrigen" value="/vistas/SiaWeb/Orden/OrdenCompra.xhtml?faces-redirect=true"/>
                             </p:commandLink>
 
                             <p:commandLink value="#{msgs['sistema.modificar']}" styleClass="btn btn-default"                                                  
                                            onclick="$(dialogoModOCS).modal('show');"
-                                           title="Clic aquí para modificar orden de compra..." >
+                                           title="Clic aquí para modificar orden de compra..." 
+                                           process="@this" update="frmModReq">
                             </p:commandLink>
                             <p:commandLink value="Cargar ETS" 
                                            title="Clic aquí para agregar Especificación Tecnica de Suministro..." 
                                            styleClass="btn btn-default"
-                                           onclick="$(dialogoCargarEts).modal('show');">
+                                           onclick="$(dialogoCargarEts).modal('show');"
+                                           process="@this" update="form1Ets">
                             </p:commandLink>
                             <ui:fragment rendered="#{ordenCompraBean.ordenActual.multiproyecto eq false}">
                                 <p:commandLink value="Agregar Ítem" styleClass="btn btn-default"                                            
-                                               action="#{ordenCompraBean.crearItem(actionEvent)}"
+                                               action="#{ordenCompraBean.crearItem}"
                                                title="Clic aquí para crear ítem..."
                                                rendered="#{ordenCompraBean.ordenActual.conConvenio eq false}"
-                                               />
-                                <p:commandLink action="#{ordenCompraBean.agregarItemConvenio(actionEvent)}"
+                                               process="@this" update="frmItemOrden"/>
+                                <p:commandLink action="#{ordenCompraBean.agregarItemConvenio}"
                                                styleClass="btn btn-default"  title="Clic aquí para agregar item . . ."
-                                               style="display: #{ordenCompraBean.ordenActual.detalleProcesado eq true ? 'block' : 'none'}">
+                                               style="display: #{ordenCompraBean.ordenActual.detalleProcesado eq true ? 'block' : 'none'}"
+                                               process="@this" update="frmDialogoItemConvenio">
                                     Agregar Item
                                 </p:commandLink>
                                 <p:commandLink value="Agregar Ítem de otra OC/S" styleClass="btn btn-default"
                                                onclick="$(dialogoDetalleOCS).modal('show');"
                                                title="Clic aquí para traer items de otra OC/S ..."
-                                               rendered="#{ordenCompraBean.ordenActual.conConvenio eq false}"/>      
+                                               rendered="#{ordenCompraBean.ordenActual.conConvenio eq false}"
+                                               process="@this" update="frmDialogoDetalleOCS"/>      
                             </ui:fragment>
                             <p:commandLink value="Eliminar" 
                                            title="Clic aquí para eliminar orden de compra" 
                                            styleClass="btn btn-default text-danger"
-                                           action="#{ordenCompraBean.eliminarOrdenConContrato(event)}"
-                                           rendered="#{ordenCompraBean.ordenActual.conConvenio eq true}">
+                                           action="#{ordenCompraBean.eliminarOrdenConContrato}"
+                                           rendered="#{ordenCompraBean.ordenActual.conConvenio eq true}"
+                                           process="@this" update="form1">
                             </p:commandLink>
                         </div>
                     </div>
                     <br/>
                     <div id="divTabla" class="row">  
-                        <p:tabView >
+                        <p:tabView id="tbOcs">
                             <p:tab title="Ordenes sin contrato ( #{ordenCompraBean.listaOrden.size()} )">                            
                                 <div id="divAutoriza" class="btn-group" style="text-align: left;">
+                                    <p:confirmDialog global="true" showEffect="fade" hideEffect="fade" responsive="true" width="350">
+                                        <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no ui-button-flat"/>
+                                        <p:commandButton value="Si" type="button" styleClass="ui-confirmdialog-yes" />
+                                    </p:confirmDialog>
                                     <p:commandLink value="Eliminar OC/S" styleClass="btn btn-default" 
-                                                   action="#{ordenCompraBean.eliminarOrden(actionEvent)}"
-                                                   onclick="return validaGenerarOrden('form1', 'seleccion', 'Se eliminaran la o las ordenes de compra y regresaran a recepción de Requisiciones. ¿Está seguro?');"
-                                                   title="Clic aquí para eliminar una o más ordenes de compra..." >
+                                                   action="#{ordenCompraBean.eliminarOrden}"
+                                                   title="Clic aquí para eliminar una o más ordenes de compra..."
+                                                   process="@this" update="form1">
+                                        <p:confirmDialog header="Confirmar"message="Se eliminaran la o las ordenes de compra y regresaran a recepción de Requisiciones. ¿Está seguro?"/>
                                     </p:commandLink>
                                 </div>
                                 <div class="table table-responsive">
@@ -152,15 +161,14 @@
                                         </p:column>
                                         <p:column styleClass="#{data.leida eq 'False' ? 'filaConSombra': 'filaSinSombra'}">
                                             <p:commandLink value="#{msgs['sistema.seleccionar']}" styleClass="link" style="color: blue;"
-                                                           action="#{ordenCompraBean.seleccionarOrden(actionEvent)}"                                                         
-                                                           title="Clic aquí para ver Ítems...">
-                                                <f:param name="idOrden" value="#{data.id}"/>
+                                                           action="#{ordenCompraBean.seleccionarOrden(data.id)}"
+                                                           title="Clic aquí para ver Ítems..." process="@this" update="tbOcs">
                                             </p:commandLink>
                                         </p:column>
                                     </p:dataTable>
                                 </div>
                             </p:tab>
-                            <p:tab title="Ordenes con contrato ( #{ordenCompraBean.listaConContrato.size()} )">
+                            <p:tab id="tbOcsCon" title="Ordenes con contrato ( #{ordenCompraBean.listaConContrato.size()} )">
                                 <div class="table table-responsive">                             
                                     <p:dataTable size="small" stripedRows="true" showGridlines="true" id="ordenesConContrato" rows="18" value="#{ordenCompraBean.listaConContrato}"  var="data" 
                                                  paginator="true"  
@@ -235,9 +243,9 @@
                                         </p:column>
                                         <p:column styleClass="#{data.leida eq 'False' ? 'filaConSombra': 'filaSinSombra'}">
                                             <p:commandLink value="#{msgs['sistema.seleccionar']}" styleClass="link" style="color: blue;"
-                                                           action="#{ordenCompraBean.seleccionarOrden(actionEvent)}"                                                         
-                                                           title="Clic aquí para ver Ítems...">
-                                                <f:param name="idOrden" value="#{data.id}"/>
+                                                           action="#{ordenCompraBean.seleccionarOrden(data.id)}"                                                         
+                                                           title="Clic aquí para ver Ítems..."
+                                                           process="@this" update="tbOcsCon">
                                             </p:commandLink>
                                         </p:column>
                                     </p:dataTable>
@@ -327,9 +335,10 @@
                                     <div class="container">
                                         <div class="col-4">
                                             <ui:fragment  rendered="#{ordenCompraBean.ordenActual.conConvenio eq 'True'}">
-                                                <p:commandLink action="#{ordenCompraBean.mostrarContratoItem(event)}"
+                                                <p:commandLink action="#{ordenCompraBean.mostrarContratoItem}"
                                                                value="Seleccionar contrato"                                                                   
-                                                               title="Seleccionar contrato a las partidas" styleClass="btn btn-info">
+                                                               title="Seleccionar contrato a las partidas" 
+                                                               styleClass="btn btn-info" process="@this" update="frmCambiarContrato">
                                                 </p:commandLink>
                                             </ui:fragment>
                                         </div>
@@ -401,25 +410,22 @@
                                                         </div>
                                                     </ui:fragment>
                                                     <div class="#{currentRow['idpresupuesto'] > 0 ? 'col-3 form-group' : 'col-6 form-group'}" style="text-align: right;">                                                            
-                                                        <p:commandLink action="#{ordenCompraBean.actualizarItem(actionEvent)}"
+                                                        <p:commandLink action="#{ordenCompraBean.actualizarItem(indice.index)}"
                                                                        styleClass="btn btn-info"  title="Clic aquí para modificar item . . ."
                                                                        rendered="#{ordenCompraBean.ordenActual.conConvenio eq false}">
                                                             <i class="fa fa-pencil"/>
-                                                            <f:param name="idItem" value="#{indice.index}"/>
                                                         </p:commandLink>
-                                                        <p:commandLink action="#{ordenCompraBean.historyItem(actionEvent)}"
+                                                        <p:commandLink action="#{ordenCompraBean.historyItem(currentRow.artID, ordenCompraBean.ordenActual.apCampo.id)}"
                                                                        styleClass="btn btn-default"  
-                                                                       title="Clic aquí para mostrar historial . . .">
+                                                                       title="Clic aquí para mostrar historial . . ."
+                                                                       process="@this" update="frmHistorialCompra">
                                                             <i class="fa fa-header"/>
-                                                            <f:param name="idInv" value="#{currentRow['artID']}"/>
-                                                            <f:param name="idCampo" value="#{ordenCompraBean.ordenActual.apCampo.id}"/>
                                                         </p:commandLink>
                                                         <ui:fragment rendered="#{ordenCompraBean.ordenActual.multiproyecto eq false}">
                                                             <p:commandLink styleClass="btn btn-default"
-                                                                           action="#{ordenCompraBean.eliminarItem(actionEvent)}"
+                                                                           action="#{ordenCompraBean.eliminarItem(indice.index)}"
                                                                            title="Clic aquí para eliminar el item...">
                                                                 <i class="fa fa-trash text-danger"/>
-                                                                <f:param name="idItem" value="#{indice.index}"/>
                                                             </p:commandLink>
                                                         </ui:fragment>
                                                     </div>     

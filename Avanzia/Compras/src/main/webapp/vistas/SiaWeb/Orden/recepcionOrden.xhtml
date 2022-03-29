@@ -15,10 +15,10 @@
                 <p:tabView >
                     <p:tab title="Por recibir ( #{recibirOrdenBean.listaOrden.size()} )">
                         <h:form id="frmRecOcs" styleClass="textIzquierda">
-                            <p:dataTable size="small" stripedRows="true" showGridlines="true" var="data" rows="15" 
-                                           value="#{recibirOrdenBean.listaOrden}"
-                                           paginator="true" paginatorPosition="bottom"
-                                           style="font-size: 0.98em;" rowIndexVar="indice">
+                            <p:dataTable id="Ordenes" size="small" stripedRows="true" showGridlines="true" var="data" rows="15" 
+                                         value="#{recibirOrdenBean.listaOrden}"
+                                         paginator="true" paginatorPosition="bottom"
+                                         rowIndexVar="indice">
                                 <f:facet name="header"><h:outputLabel value="OC/S sin terminar "/> 
                                 </f:facet>
                                 <p:column headerText="Código"  style="text-align: left;" >
@@ -47,13 +47,14 @@
                                 <p:column headerText="Excel">
                                     <h:outputLink  target="_blank"  value="/Compras/generarExcel?ZWZ2W=#{data['id']}">
                                         <i id="btnDesc#{data.id}" class="fa fa-download btn #{data.leida eq 'False' ?  'btn-warning' : 'btn-primary'} btn-sm" 
-                                           title="Se genera el archivo EXCEL de la orden para NAVISION" onclick="cambiarColor('btnDesc#{data.id}');"></i>
+                                           title="Se genera el archivo EXCEL de la orden para NAVISION" 
+                                           onclick="cambiarColor('btnDesc#{data.id}');"></i>
                                     </h:outputLink>
                                 </p:column>
                                 <p:column headerText="Recibir">
-                                    <p:commandLink value="Recibir" action="#{recibirOrdenBean.seleccionarOrdenRecibida(event)}"
-                                                   style=" color: blue;" title="Recepción de ordenes de compra">
-                                        <f:param name="idOcs" value="#{data.id}"/>
+                                    <p:commandLink value="Recibir" action="#{recibirOrdenBean.seleccionarOrdenRecibida(data.id)}"
+                                                   title="Recepción de ordenes de compra">
+                                        <i class="fa fa-eye text-primary"/>
                                     </p:commandLink>
                                 </p:column>
                             </p:dataTable>
@@ -62,9 +63,9 @@
                     <p:tab title="Recibidas parcial ( #{recibirOrdenBean.listaOrdenParcial.size()} )">
                         <h:form id="frmRecOcsPar" styleClass="textIzquierda">
                             <p:dataTable size="small" stripedRows="true" showGridlines="true" var="dataPar" rows="15" 
-                                           value="#{recibirOrdenBean.listaOrdenParcial}"
-                                           paginator="true" paginatorPosition="bottom" 
-                                           style="font-size: 0.98em;" rowIndexVar="indice">
+                                         value="#{recibirOrdenBean.listaOrdenParcial}"
+                                         paginator="true" paginatorPosition="bottom" 
+                                         rowIndexVar="indice">
                                 <f:facet name="header"><h:outputLabel value="OC/S sin terminar "/> 
                                 </f:facet>
                                 <p:column headerText="Código"  style="text-align: left;" >
@@ -97,9 +98,8 @@
                                     </h:outputLink>
                                 </p:column>
                                 <p:column headerText="Recibir">
-                                    <p:commandLink value="Recibir" action="#{recibirOrdenBean.seleccionarOrdenRecibida(event)}"
+                                    <p:commandLink value="Recibir" action="#{recibirOrdenBean.seleccionarOrdenRecibida(dataPar.id)}"
                                                    style=" color: blue;" title="Recepción de ordenes de compra">
-                                        <f:param name="idOcs" value="#{dataPar.id}"/>
                                     </p:commandLink>
                                 </p:column>
                             </p:dataTable>
@@ -108,10 +108,10 @@
                     <p:tab rendered="#{recibirOrdenBean.puedeEliminar}" 
                            title="Recibidas parcial eliminar partidas ( #{recibirOrdenBean.listaOrdenParcialEliminar.size()} )">
                         <h:form id="frmRecOcsParEl" styleClass="textIzquierda">
-                            <p:dataTable size="small" stripedRows="true" showGridlines="true" var="dataPar" rows="15" 
-                                           value="#{recibirOrdenBean.listaOrdenParcialEliminar}"
-                                           paginator="true" paginatorPosition="bottom" 
-                                           style="font-size: 0.98em;" rowIndexVar="indice">
+                            <p:dataTable id="dtOcs" size="small" stripedRows="true" showGridlines="true" var="dataPar" rows="15" 
+                                         value="#{recibirOrdenBean.listaOrdenParcialEliminar}"
+                                         paginator="true" paginatorPosition="bottom" 
+                                         rowIndexVar="indice">
                                 <f:facet name="header"><h:outputLabel value="OC/S sin terminar "/> 
                                 </f:facet>
                                 <p:column headerText="Código"  style="text-align: left;" >
@@ -138,9 +138,9 @@
                                     <h:outputText value="#{dataPar['monedaSiglas']}"/>
                                 </p:column>                                   
                                 <p:column headerText="Eliminar">
-                                    <p:commandLink value="Eliminar Partidas" action="#{recibirOrdenBean.seleccionarOrdenRecibidaEliminar(event)}"
-                                                   style=" color: blue;" title="Recepción de ordenes de compra">
-                                        <f:param name="idOcs" value="#{dataPar.id}"/>
+                                    <p:commandLink value="Eliminar Partidas" action="#{recibirOrdenBean.seleccionarOrdenRecibidaEliminar(dataPar.id)}"
+                                                   style=" color: blue;" title="Recepción de ordenes de compra"
+                                                   process="@this" update="dtOcs">
                                     </p:commandLink>
                                 </p:column>
                             </p:dataTable>

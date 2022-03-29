@@ -17,14 +17,9 @@
                 <h:form id="form1">
                     <p:commandLink id="btnLimpiar" value="" action="#{ordenBean.limpiarTab(actionEvent)}" style="display: none;"/>
                     <div class="row">
-                        <div id="tipoTarea">
-                            <ul>
-                                <li><a href="#prodServ" onclick="ejecutarFiltros('form1', 'btnLimpiar');">Producto/Servicios ( #{ordenBean.ordenesAutorizaTareaOP.rowCount})</a></li>
-                                <li><a href="#actFijo" onclick="ejecutarFiltros('form1', 'btnLimpiar');">Activos Fijos ( #{ordenBean.ordenesAutorizaTareaAF.rowCount} )</a></li>
-                            </ul>
-                            <div id="prodServ" class="textoIzquierda">
-                                <div class="table table-responsive">
-                                    <p:dataTable size="small" stripedRows="true" showGridlines="true" id="OrdenesOP" rows="10" 
+                        <p:tabView activeIndex="0">
+                            <p:tab title="Producto/Servicio">
+                                <p:dataTable size="small" stripedRows="true" showGridlines="true" id="OrdenesOP" rows="10" 
                                                  value="#{ordenBean.ordenesAutorizaTareaOP}" var="currentRow" 
                                                  styleClass="table table-striped"
                                                  style="font-size:12px" paginatorAlwaysVisible="true" paginator="true"
@@ -85,21 +80,20 @@
                                             </f:facet>
                                         </p:column>
                                         <p:column >
-                                            <p:commandLink styleClass="link" action="#{ordenBean.completarOrdenOP(actionEvent)}"                                                   
+                                            <p:commandLink styleClass="text-primary" action="#{ordenBean.completarOrdenOP(currentRow.id)}"                                                   
                                                            title="Clic aqui para completar la orden de compra..." value="Enviar OC/S"
-                                                           style="color: blue;"/>
+                                                            process="@this" update="form1:lblOcs form1:tbOcs"/>
                                         </p:column>
                                         <p:column >
-                                            <p:commandLink styleClass="link" action="#{ordenBean.seleccionarOrdenOP(actionEvent)}"
+                                            <p:commandLink styleClass="text-primary" action="#{ordenBean.seleccionarOrdenOP(actionEvent)}"
                                                            onclick="iniciarTab('tabOCSProcTarea', 0);"
-                                                           style="color: blue;"  title="Clic aqui para ver Items..." value="Seleccionar"/>
+                                                           title="Clic aqui para ver Items..." value="Seleccionar"
+                                                           process="@this" update="form1:lblOcs form1:tbOcs"/>
                                         </p:column>
                                     </p:dataTable>
-                                </div>
-                            </div>
-                            <div id="actFijo" class="textoIzquierda">
-                                <div class="table table-responsive">
-                                    <p:dataTable size="small" stripedRows="true" showGridlines="true" id="OrdenesAF" rows="20" 
+                            </p:tab>
+                            <p:tab title="Activos FIjos">
+                                <p:dataTable size="small" stripedRows="true" showGridlines="true" id="OrdenesAF" rows="20" 
                                                  value="#{ordenBean.ordenesAutorizaTareaAF}" var="currentRow" styleClass="table table-striped"
                                                  style="font-size:12px" paginator="true" paginatorPosition="button">                              
                                         <f:facet name="header"><h:outputLabel value="OC/S sin terminar "/></f:facet>                                
@@ -164,29 +158,27 @@
                                         </p:column>
 
                                         <p:column >
-                                            <p:commandLink styleClass="link" action="#{ordenBean.completarOrdenAF(actionEvent)}"                                                   
+                                            <p:commandLink styleClass="text-primary" action="#{ordenBean.completarOrdenAF(currentRow.id)}"                                                   
                                                            title="Clic aqui para completar la orden de compra..." value="Enviar OC/S"
-                                                           style="color: blue;"/>
+                                                            process="@this" update="form1:lblOcs form1:tbOcs"/>
                                         </p:column>
 
                                         <p:column >
-                                            <p:commandLink styleClass="link" action="#{ordenBean.seleccionarOrdenAF(actionEvent)}"
+                                            <p:commandLink styleClass="text-primary" action="#{ordenBean.seleccionarOrdenAF(currentRow.id)}"
                                                            title="Clic aqui para ver Items..." value="Seleccionar"
                                                            onclick="iniciarTab('tabOCSProcTarea', 0);"
-                                                           style="color: blue;"/>  
+                                                            process="@this" update="form1:lblOcs form1:tbOcs"/>  
                                         </p:column>
                                     </p:dataTable>
-                                </div>
-                            </div>
-                        </div>
+                            </p:tab>
+                        </p:tabView>
                     </div><br/>
                     <div class="col-5">
                         <h:outputText value="OC/S: "/>
-                        <h:outputText value="#{ordenBean.ordenActual.consecutivo}" style="font-weight:  bold;"/>
+                        <h:outputText id="lblOcs" value="#{ordenBean.ordenActual.consecutivo}" style="font-weight:  bold;"/>
                     </div><br/>
-                    <p:tabView tabindex="0">
+                    <p:tabView id="tbOcs" tabindex="0">
                         <p:tab title="Datos de la compra">
-
                             <div class="container-fluid">
                                 <div class="col-12 col-xs-12" style="margin-top: 15px;"> 
                                     <div scope="colgroup" colspan="8" class="iceDatTblHdr tableHdr table-stripedHdr" style="font-weight: normal;"><label id="" class="iceOutLbl" style="font-weight: normal;">Inf. de la OC/S</label></div>
@@ -324,12 +316,12 @@
                                 <div class="col-12 col-xs-12" style="margin-top: 15px;"> 
                                     <h:outputText value="Items de la orden de compra: "/>
                                     <h:outputLabel  value="#{ordenBean.ordenActual.consecutivo}  "/>&nbsp;
-                                    <p:commandLink styleClass="link" action="#{ordenBean.detAFPS(actionEvent)}"  rendered="#{ordenBean.ordenActual.tipo eq 'AF'}"
+                                    <p:commandLink styleClass="text-primary" action="#{ordenBean.detAFPS(actionEvent)}"  rendered="#{ordenBean.ordenActual.tipo eq 'AF'}"
                                                    style="color:  blue;"
                                                    onclick="$(dialogoPedidoActivo).modal('show');"                                                         
                                                    title="Click aqui para capturar Activo Fijo para la orden de compra" value="Capturar Activos Fijos"/>
 
-                                    <p:commandLink styleClass="link" action="#{ordenBean.detAFPS(actionEvent)}"    
+                                    <p:commandLink styleClass="text-primary" action="#{ordenBean.detAFPS(actionEvent)}"    
                                                    rendered="#{ordenBean.ordenActual.tipo eq 'PS'}"
                                                    style="color:  blue;"
                                                    onclick="$(dialogoPedidoActivo).modal('show');"
@@ -386,7 +378,7 @@
                                             </f:facet>
                                         </p:column>
                                         <p:column rendered="#{ordenBean.ordenActual.tipo eq 'AF' and usuarioBean.mapaRoles.get('Comprador')}">
-                                            <p:commandLink styleClass="link" action="#{ordenBean.detActivosFijo(actionEvent)}"  style="color: blue;"                                                                         
+                                            <p:commandLink styleClass="text-primary" action="#{ordenBean.detActivosFijo(actionEvent)}"                                                                           
                                                            title="Click aqui para capturar el codigo de NAVISION" value="Capturar Códigos">
                                                 <f:param name="id" value="#{indice}"/>
                                             </p:commandLink>
