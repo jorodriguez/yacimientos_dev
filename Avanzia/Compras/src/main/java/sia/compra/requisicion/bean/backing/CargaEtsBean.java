@@ -180,10 +180,10 @@ public class CargaEtsBean implements Serializable {
         }
     }
 
-    public void eliminarEsperaEts() {
+    public void eliminarEsperaEts(ReRequisicionEts rre) {
         try {
             //PrimeFaces.current().executeScript( ";mensajeEliminar();");
-            setEtsReRequisicion((ReRequisicionEts) getListaEtsEspera().getRowData());
+            setEtsReRequisicion(rre);
             etsActualAdjunto = getEtsReRequisicion().getSiAdjunto();
 
             proveedorAlmacenDocumentos.getAlmacenDocumentos().borrarDocumento(etsActualAdjunto.getUrl());
@@ -538,7 +538,7 @@ public class CargaEtsBean implements Serializable {
         ValidadorNombreArchivo validadorNombreArchivo = new ValidadorNombreArchivo();
         try {
             fileInfo = uploadFile.getFile();
-            setRequi(Boolean.TRUE);                    
+            setRequi(Boolean.TRUE);
             AlmacenDocumentos almacenDocumentos
                     = proveedorAlmacenDocumentos.getAlmacenDocumentos();
 

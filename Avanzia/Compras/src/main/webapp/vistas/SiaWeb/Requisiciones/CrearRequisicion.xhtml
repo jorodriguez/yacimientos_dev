@@ -15,41 +15,6 @@
             <ui:define name="contenido">
                 <ui:include src="../Requisiciones/fragmentos/popUpRequisicion.xhtml"/>                
                 <ui:include src="../Requisiciones/SolicitarRequisicion.xhtml"/>                
-                <h:form> <!-- Inicia popup  -->
-                    <p:dialog
-                        visible="#{popupGeneralBean.modalRendered}"
-
-                        draggable="false" modal="true"
-                        styleClass="corePopup">
-                        <f:facet name="header">
-                            <h:panelGroup styleClass="popupHeaderWrapper">
-                                <p:panel  >
-                                    <h:outputText styleClass="popupHeaderText" value="Actualizar descripción"/>
-                                </p:panel>
-                            </h:panelGroup>
-                        </f:facet>
-                        <f:facet name="body">
-                            <h:panelGroup styleClass="popupBody" style="font-size:12px">
-                                <p:panel  >
-                                    <h:outputLabel value="Nombre:"/>
-                                    <h:outputText value="#{cargaEtsBean.etsActualAdjunto.nombre}"/>
-                                    <h:outputLabel value="Tamaño:"/>
-                                    <h:outputText value="#{cargaEtsBean.etsActualAdjunto.peso}"/>
-                                    <h:outputLabel value="Descripción:"/>
-                                    <h:inputTextarea cols="70"  value="#{cargaEtsBean.etsActualAdjunto.descripcion}"/>
-                                </p:panel>
-                                <center>
-                                    <p:panel >
-                                        <p:commandButton value="Actualizar" action="#{cargaEtsBean.completarActualizacionEts}"/>
-                                        <p:commandButton value="Cancelar"
-                                                         action="#{popupGeneralBean.toggleModal}"
-                                                         title="Cerrar ventana..."/>
-                                    </p:panel>
-                                </center>
-                            </h:panelGroup>
-                        </f:facet>
-                    </p:dialog>
-                </h:form> <!-- Termina popup -->
                 <h:form id="form1" >
                     <!--   Ponga todo su codigo aqui... -->                    
                     <div class="row">
@@ -75,27 +40,28 @@
                             <p:commandLink value="#{msgs['sistema.solicitar']}" styleClass="btn btn-default"
                                            action="#{requisicionBean.solicitarRequisicion()}"
                                            title="Click aqui para solicitar la requisición..."
-                                           style="font-weight: bold;"
+                                           style="font-weight: bold;" process="@this" update="form1SolicitandoRequi"
                                            >
                             </p:commandLink>
 
                             <p:commandLink value="#{msgs['sistema.modificar']}" styleClass="btn btn-default"
                                            action="#{requisicionBean.modificarRequisicion}"
                                            title="Click aqui para modificar la requisición..." 
-                                           >
+                                           process="@this" update="frmCrearRequisicion">
                             </p:commandLink>
 
                             <p:commandLink value="#{msgs['sistema.eliminar']}" styleClass="btn btn-default"
                                            action="#{requisicionBean.eliminarRequisicion}"
-                                           title="Click aqui para eliminar la requisiciòn..." >
-                                <p:confirmDialog header="Confirmar" message="Está seguro de Eliminar la requisición...? "/>
+                                           title="Click aqui para eliminar la requisiciòn..." 
+                                           process="@this" update="form1">
+                                <p:confirm header="Confirmar" message="Está seguro de Eliminar la requisición...? "/>
                             </p:commandLink>
 
                             <p:commandLink value="#{msgs['sistema.cargar.ets']}" 
                                            action="#{requisicionBean.cargarEts()}" 
                                            styleClass="btn btn-default"                                                   
                                            title="Clic aqui para agregar Especificación Tecnica de Suministro de la requisición..." 
-                                           >
+                                           process="@this">
                                 <f:param name="paginaOrigen" value="/vistas/SiaWeb/Requisiciones/CrearRequisicion.xhtml?faces-redirect=true"/>
                                 <f:param name="paginaDestino" value="/vistas/SiaWeb/Requisiciones/CargarETS.xhtml?faces-redirect=true"/>
                             </p:commandLink>    
@@ -148,11 +114,10 @@
                                     </f:facet>
                                 </p:column>                                
                                 <p:column>
-                                    <p:commandLink value="#{msgs['sistema.seleccionar']}"
-                                                   styleClass="link"                                                     
+                                    <p:commandLink value="#{msgs['sistema.seleccionar']}"                                                   
                                                    action="#{requisicionBean.seleccionarRequisicion(currentRow.id)}"
                                                    title="Click aqui para ver y agregar Items..." 
-                                                   update="form1:tbRequi" process="@this">
+                                                   update="form1:tbRequi form1:lblReq" process="@this">
                                     </p:commandLink>
                                 </p:column>
                             </p:dataTable>                            
@@ -162,7 +127,7 @@
                     <div id="divDatos" style="display: none;">
                         <div class="col-5" style="margin-top: 15px;">
                             <h:outputText value="Más información de la requisición: "/>
-                            <h:outputText value="#{requisicionBean.requisicionActual.id}" style="font-weight:  bold;"/>
+                            <h:outputText id="lblReq" value="#{requisicionBean.requisicionActual.id}" style="font-weight:  bold;"/>
                         </div><br/>
                         <div class="container-fluid" >
                             <p:tabView id="tbRequi" activeIndex="0">

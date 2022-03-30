@@ -90,7 +90,7 @@ public class LSWU extends HttpServlet {
                     //Verifica rol
                     SiOpcionVo siOpcionVo = ocUsuarioOpcionImpl.opcionPrincipal(usuario.getId());
                     if (siOpcionVo == null) {
-                        usuarioBean.setPaginaInicial("Principal");
+                        usuarioBean.setPaginaInicial("/Principal.xhtml");
                     } else {
                         UtilLog4j.log.info("Ruta inicial :  : : " + siOpcionVo.getPagina());
                         usuarioBean.setPaginaInicial(siOpcionVo.getPagina());

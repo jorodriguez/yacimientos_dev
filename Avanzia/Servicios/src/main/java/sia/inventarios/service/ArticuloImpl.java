@@ -69,9 +69,6 @@ public class ArticuloImpl extends AbstractFacade<InvArticulo>  {
     InvArticuloCampoImpl invArticuloCampoRemote;
 
     @Inject
-    ArticuloImpl articuloRemote;
-
-    @Inject
     ApCampoImpl  apCampoRemote;
 
     @Inject
@@ -149,7 +146,7 @@ public class ArticuloImpl extends AbstractFacade<InvArticulo>  {
     
     public ArticuloVO buscar(Integer id) throws SIAException {
         //InvArticuloCampo artCampo = invArticuloCampoRemote.find(id);
-        InvArticulo articulo = articuloRemote.find(id);
+        InvArticulo articulo = find(id);
         getEntityManager().refresh(articulo);
 
         SiUnidad unidad = articulo.getUnidad();

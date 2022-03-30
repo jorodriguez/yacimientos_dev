@@ -107,9 +107,9 @@ import sia.util.UtilLog4j;
  * @author Héctor Acosta Sierra
  * @version 1.0
  */
-@Named(value = RequisicionBean.BEAN_NAME)
+@Named(value = "requisicionBean")
 @ViewScoped
-public class RequisicionBean extends BaseBean implements Serializable {
+public class RequisicionBean implements Serializable {
 
     private static final UtilLog4j LOGGER = UtilLog4j.log;
 
@@ -222,116 +222,285 @@ public class RequisicionBean extends BaseBean implements Serializable {
     @Getter
     @Setter
     private String idAprueba;
+    @Getter
+    @Setter
+    private ArticuloVO articuloVo;
     //----------------------
+    @Getter
+    @Setter
     private Requisicion requisicionActual;
+    @Getter
+    @Setter
     private RequisicionDetalle itemActual;
 //    private Rechazo rechazoActual;
     //----------------------
+    @Getter
+    @Setter
     private DataModel listaRequisiciones = null; //almacena la lista de Ordenes de compra
+    @Getter
+    @Setter
     private DataModel listaItems = null; //almacena la lista de Items de la Orden de compra
+    @Getter
+    @Setter
     private DataModel requisicionesSolicitadas;
+    @Getter
+    @Setter
     private DataModel requisicionesRevisadas;
+    @Getter
+    @Setter
     private DataModel requisicionesAprobadas;
+    @Getter
+    @Setter
     private DataModel requisicionesAutorizadas;
+    @Getter
+    @Setter
     private DataModel requisicionesVistoBueno;
+    @Getter
+    @Setter
     private DataModel requisicionesAsignadas;
     //----------------------
     // Este Atributo almacena la actual operación de la modificación que se está llevando a cabo con
     // La Requisicion. Cuenta con 2 posibilidades "Actualizar" y "Crear"
+    @Getter
+    @Setter
     private String operacionRequisicion;
+    @Getter
+    @Setter
     private String operacionItem;
+    @Getter
+    @Setter
     int fila, numerofilas;
+    @Getter
+    @Setter
     private int totalRequisiciones;
+    @Getter
+    @Setter
     protected static final String UPDATE_OPERATION = "Actualizar";
+    @Getter
+    @Setter
     protected static final String CREATE_OPERATION = "Crear";
+    @Getter
+    @Setter
     private String copiasOcultass = "";
 
+    @Getter
+    @Setter
     private Calendar fechaActual = Calendar.getInstance();
+    @Getter
+    @Setter
     private Date fechaRequerida = (Date) fechaActual.getTime().clone();
+    @Getter
+    @Setter
     private boolean verAutoriza = false;
+    @Getter
+    @Setter
     private boolean verVistoBueno = false;
+    @Getter
+    @Setter
     private boolean crearItem = false;
+    @Getter
+    @Setter
     private boolean irInicio = false;
+    @Getter
+    @Setter
     private boolean error = false;
     //------------------------------
+    @Getter
+    @Setter
     private int panelSeleccionado;
     //------------------------------
+    @Getter
+    @Setter
     private String mensajeError;
+    @Getter
+    @Setter
     private int paginaSeleccionada = 1;
+    @Getter
+    @Setter
     private DataTable dataTable;
+    @Getter
+    @Setter
     private boolean selected;
     private Map<Integer, Boolean> filaSeleccionada = new HashMap<Integer, Boolean>();
     //
+    @Getter
+    @Setter
     private String fechaInicio;
+    @Getter
+    @Setter
     private String fechaFin = Constantes.FMT_ddMMyyy.format(new Date());
     //
+    @Getter
+    @Setter
     private String unidadMedida;
+    @Getter
+    @Setter
     private String tipoFiltro = "filtro";
+    @Getter
+    @Setter
     private String referencia;
     ///
+    @Getter
+    @Setter
     private String codigo;
     //
+    @Getter
+    @Setter
     private RequisicionVO requisicionVO;
+    @Getter
+    @Setter
     private RequisicionVO requiVO;
-    //
+    //v
+    @Getter
+    @Setter
     private List<SelectItem> listaTO;
     @Getter
     @Setter
     private List<SelectItem> proyectosOt = new ArrayList<>();
 //
+    @Getter
+    @Setter
     private int idGerenciaCompra;
+    @Getter
+    @Setter
     private String idAnalista;
+    @Getter
+    @Setter
     private List<SelectItem> lstArticulos = new ArrayList<>();
+    @Getter
+    @Setter
     private List<SelectItem> lstGEArticulos = new ArrayList<>();
+    @Getter
+    @Setter
     private List<SelectItem> lstCategorias = new ArrayList<>();
+    @Getter
+    @Setter
     private String articuloTx;
+    @Getter
+    @Setter
     private String articuloGETx;
+    @Getter
+    @Setter
     private String categoriaGETx;
 //    private String articuloValorTx;
 //    private String unidadTx;
+    @Getter
+    @Setter
     private int articuloID;
-
-    private List<CategoriaVo> categoriasSeleccionadas = new ArrayList<>();
-    private List<ArticuloVO> articulosFrecuentes = new ArrayList<>();
-    private List<SelectItem> articulosResultadoBqda = new ArrayList<>();
-    private List<SelectItem> articulosResultadoBqdaCat = new ArrayList<>();
-    private CategoriaVo categoriaVo;
-    private CategoriaVo categoriaVoInicial;
-    private String newArticuloText;
-    private String newArticuloTextUso;
-    private List<SelectItem> listaUnidad;
+    @Getter
+    @Setter
+    private List<CategoriaVo> categorias;
 
     @Getter
     @Setter
+    private List<CategoriaVo> categoriasSeleccionadas = new ArrayList<>();
+    @Getter
+    @Setter
+    private List<ArticuloVO> articulosFrecuentes = new ArrayList<>();
+    @Getter
+    @Setter
+    private List<SelectItem> articulosResultadoBqda = new ArrayList<>();
+    @Getter
+    @Setter
+    private List<SelectItem> articulosResultadoBqdaCat = new ArrayList<>();
+    
+    private CategoriaVo categoriaVo;
+    private CategoriaVo categoriaVoInicial;
+    @Getter
+    @Setter
+    private String newArticuloText;
+    @Getter
+    @Setter
+    private String newArticuloTextUso;
+    @Getter
+    @Setter
+    private List<SelectItem> listaUnidad;
+    @Getter
+    @Setter
     private List<ProyectoOtVo> listaProyectosOT = new ArrayList<>();
+    @Getter
+    @Setter
     private List<ProyectoOtVo> listaProyectosOTMulti = new ArrayList<>();
+    @Getter
+    @Setter
     private List<SelectItem> listaUnidadCosto = new ArrayList<>();
+    @Getter
+    @Setter
     private List<SelectItem> lstActividad = new ArrayList<>();
+    @Getter
+    @Setter
     private List<SelectItem> lstPresupuesto = new ArrayList<>();
+    @Getter
+    @Setter
     private List<SelectItem> lstCentroCosto = new ArrayList<>();
+    @Getter
+    @Setter
     private List<SelectItem> lstMesPresupuesto = new ArrayList<>();
+    @Getter
+    @Setter
     private List<SelectItem> lstAnioPresupuesto = new ArrayList<>();
+    @Getter
+    @Setter
     private int anioPresupuesto;
+    @Getter
+    @Setter
     private int mesPresupuesto;
+    @Getter
+    @Setter
     private int idActPetrolera;
+    @Getter
+    @Setter
     private int idPresupuesto;
+    @Getter
+    @Setter
     private int idProyectoOt;
+    @Getter
+    @Setter
     private int idTipoTarea;
+    @Getter
+    @Setter
     private int idTarea;
+    @Getter
+    @Setter
     private int idCentroCosto;
+    @Getter
+    @Setter
     private String devuelve = "";
+    @Getter
+    @Setter
     private boolean multiProyecto;
+    @Getter
+    @Setter
     private boolean mostrarMultiProyecto;
+    @Getter
+    @Setter
     private String codigoCentroCosto;
+    @Getter
+    @Setter
     private ProyectoOtVo proyOTMultiPrimero = null;
+    @Getter
+    @Setter
     private List<ProyectoOtVo> lstProyOTMultiResto = new ArrayList<>();
+    @Getter
+    @Setter
     private String multiProyectosEtiqueta;
+    @Getter
+    @Setter
     private List<Rechazo> listaRechazo;
-
+    @Getter
+    @Setter
     private int indexTab = 0;
+    @Getter
+    @Setter
     private int totalReqConInventario = 0;
+    @Getter
+    @Setter
     private List<InventarioVO> inventario;
+    @Getter
+    @Setter
     private RequisicionEsperaVO esperaVO;
+    @Getter
+    @Setter
     private String msgEspera;
     @Getter
     @Setter
@@ -342,6 +511,12 @@ public class RequisicionBean extends BaseBean implements Serializable {
     @Getter
     @Setter
     private int proyectoOtID = 0;
+    @Getter
+    @Setter
+    private CategoriaVo categoriaTempVo;
+    @Getter
+    @Setter
+    private SelectItem artSeleccionado;
 
     /**
      * Creates a new instance of ManagedBeanRequisiciones
@@ -351,9 +526,13 @@ public class RequisicionBean extends BaseBean implements Serializable {
 
     @PostConstruct
     public void inicializar() {
+        esperaVO = new RequisicionEsperaVO();
+        esperaVO.setMsgs(new ArrayList<>());
         requisicionActual = new Requisicion();
         requisicionVO = new RequisicionVO();
         requisicionVO.setListaDetalleRequision(new ArrayList<>());
+        categorias = new ArrayList<>();
+        listaRechazo = new ArrayList<>();
     }
 
     public List<SelectItem> getListaAnalista() {
@@ -415,7 +594,7 @@ public class RequisicionBean extends BaseBean implements Serializable {
                 resultList.add(item);
             }
             return resultList;
-        } catch (RuntimeException ex) {
+        } catch (Exception ex) {
             UtilLog4j.log.fatal(this, "Error  : :  :" + ex.getMessage());
         }
         return resultList;
@@ -460,7 +639,7 @@ public class RequisicionBean extends BaseBean implements Serializable {
                 SelectItem item = new SelectItem(lista.getId(), lista.getNombre());
                 resultList.add(item);
             }
-        } catch (RuntimeException ex) {
+        } catch (Exception ex) {
             UtilLog4j.log.fatal(this, "Error  : :  :" + ex.getMessage());
             resultList = new ArrayList<>();
         }
@@ -660,8 +839,6 @@ public class RequisicionBean extends BaseBean implements Serializable {
             //setRequisicionActual(requisicionServicioRemoto.find(r.getId()));
             operacionRequisicion = UPDATE_OPERATION;
             //
-            ProyectoOtBean proyectoOtBean = (ProyectoOtBean) FacesUtilsBean.getManagedBean("proyectoOtBean");
-            //
             int idGerAdm = 0;
 
             setIdGerencia(requisicionActual.getGerencia().getId());
@@ -691,8 +868,8 @@ public class RequisicionBean extends BaseBean implements Serializable {
                     idGerAdm = requisicionActual.getGerencia().getId();
                 }
                 //setIdGerencia(requisicionActual.getGerencia().getId());
-                setProyectosOt(proyectoOtBean.listaProyectoPorGerencia(idGerAdm, requisicionActual.getApCampo().getId()));
-                setListaUnidadCosto(proyectoOtBean.listaUnidadCosto(idGerAdm, getIdProyectoOT(), 0));
+                setProyectosOt(listaProyectoPorGerencia(idGerAdm, requisicionActual.getApCampo().getId()));
+                setListaUnidadCosto(listaUnidadCosto(idGerAdm, getIdProyectoOT(), 0));
                 //
             } else if (requisicionActual.getTipo() == TipoRequisicion.AF) {
                 setListaG(gerenciaBean.traerGereciaActivoFijo(requisicionActual.getApCampo().getId()));
@@ -798,12 +975,13 @@ public class RequisicionBean extends BaseBean implements Serializable {
 
     public void seleccionarRequisicion(int id) {
         try {
-            setRequisicionActual(requisicionServicioRemoto.find(id));
+            requisicionActual = requisicionServicioRemoto.find(id);
             crearItem = true;
+            System.out.println("Selección: " + requisicionActual.getCompania().getNombre());
             notaRequisicionBean.setFiltrar(true);
             getItemsActualizar();
             rechazosRequisicion();
-            if (Constantes.REQUISICION_EN_ESPERA == getRequisicionActual().getEstatus().getId()) {
+            if (Constantes.REQUISICION_EN_ESPERA == requisicionActual.getEstatus().getId()) {
                 enEsperaDet();
             }
             //
@@ -2534,8 +2712,8 @@ public class RequisicionBean extends BaseBean implements Serializable {
                                         && getItemActual().getInvArticulo().getSiCategoria() != null
                                         && getItemActual().getInvArticulo().getSiCategoria().getId() > 0) {
                                     iniciarCatSel();
-                                    categoriaVo = new CategoriaVo();
-                                    categoriaVo.setId(getItemActual().getInvArticulo().getSiCategoria().getId());
+                                    setCategoriaVo(new CategoriaVo());
+                                    getCategoriaVo().setId(getItemActual().getInvArticulo().getSiCategoria().getId());
                                     llenarCategoria(null);
                                 }
                                 PrimeFaces.current().executeScript(
@@ -3039,12 +3217,14 @@ public class RequisicionBean extends BaseBean implements Serializable {
             //----------------------------------------            
             setMostrarMultiProyecto(getRequisicionActual().isMultiproyecto()
                     || ((listaItems == null || listaItems.getRowCount() < 1)
-                    && TipoRequisicion.PS.equals(getRequisicionActual().getTipo()) && "C".equals(getRequisicionActual().getApCampo().getTipo())));
+                    && TipoRequisicion.PS.equals(getRequisicionActual().getTipo())
+                    && "C".equals(getRequisicionActual().getApCampo().getTipo())));
+
             switch (getRequisicionActual().getTipo()) {
                 case PS:
 //		if (getRequisicionActual().getOcUnidadCosto() != null) {
                     setItemActual(new RequisicionDetalle());
-                    getItemActual().setInvArticulo(new InvArticulo());
+                    itemActual.setInvArticulo(new InvArticulo());
                     operacionItem = CREATE_OPERATION;
                     setMultiProyecto(false);
                     if ("N".equals(getRequisicionActual().getApCampo().getTipo())) {
@@ -3060,8 +3240,9 @@ public class RequisicionBean extends BaseBean implements Serializable {
                     }
 
                     setIdNombreTarea(0);
-                    categoriaVoInicial = new CategoriaVo();
-                    categoriaVoInicial.setListaCategoria(invArticuloCampoImpl.traerCategoriaArticulo());
+                    setCategoriaVoInicial(new CategoriaVo());
+                    getCategoriaVoInicial().setListaCategoria(invArticuloCampoImpl.traerCategoriaArticulo());
+                    categorias = invArticuloCampoImpl.traerCategoriaArticulo();
                     setCategoriaVo(getCategoriaVoInicial());
                     setArticulosFrecuentes(
                             articuloImpl.articulosFrecuentes(
@@ -3083,15 +3264,7 @@ public class RequisicionBean extends BaseBean implements Serializable {
                                     null
                             )
                     );
-                    PrimeFaces.current().executeScript(
-                            ";crearNuevoItemJS();"
-                    );
-//		} else {
-//                        JavascriptContext.addJavascriptCall(
-//                                FacesContext.getCurrentInstance(), 
-//                                ";alertaGeneral('Es necesario modificar la requisición para agregar el tipo de tarea.');"
-//                        );
-//                    }   
+                    PrimeFaces.current().executeScript("$(dialogoItemsRequi).modal('show');");
                     break;
                 case AI:
                     PrimeFaces.current().executeScript(";alertaGeneral('Es necesario modificar la requisición para cambiar el tipo.');");
@@ -3101,8 +3274,8 @@ public class RequisicionBean extends BaseBean implements Serializable {
                     getItemActual().setInvArticulo(new InvArticulo());
                     operacionItem = CREATE_OPERATION;
                     setMultiProyecto(false);
-                    categoriaVoInicial = new CategoriaVo();
-                    categoriaVoInicial.setListaCategoria(invArticuloCampoImpl.traerCategoriaArticulo());
+                    setCategoriaVoInicial(new CategoriaVo());
+                    getCategoriaVoInicial().setListaCategoria(invArticuloCampoImpl.traerCategoriaArticulo());
                     setCategoriaVo(getCategoriaVoInicial());
                     setArticulosFrecuentes(
                             articuloImpl.articulosFrecuentes(
@@ -3124,7 +3297,7 @@ public class RequisicionBean extends BaseBean implements Serializable {
                     lstActividad = ocActividadPetroleraImpl.getActividadesItems();
                     resetPresupuesto();
                     setLstPresupuesto(ocPresupuestoImpl.getPresupuestoItems(getRequisicionActual().getApCampo().getId(), false));
-                    PrimeFaces.current().executeScript(";crearNuevoItemJS();");
+                    PrimeFaces.current().executeScript("$(dialogoItemsRequi).modal('show');");
                     break;
             }
             setListaUnidad(ocUnidadImpl.traerUnidadItems());
@@ -3347,307 +3520,6 @@ public class RequisicionBean extends BaseBean implements Serializable {
 
     }
 
-    /**
-     * @param requisicionActual the requisicionActual to set
-     */
-    public void setRequisicionActual(Requisicion requisicionActual) {
-        requisicionActual = requisicionActual;
-    }
-
-    /**
-     * @return the itemActual
-     */
-    public RequisicionDetalle getItemActual() {
-        return itemActual;
-    }
-
-    /**
-     * @param itemActual the itemActual to set
-     */
-    public void setItemActual(RequisicionDetalle itemActual) {
-        itemActual = itemActual;
-    }
-
-    /**
-     * @return the panelSeleccionado
-     */
-    public int getPanelSeleccionado() {
-        return panelSeleccionado;
-    }
-
-    /**
-     * @param panelSeleccionado the panelSeleccionado to set
-     */
-    public void setPanelSeleccionado(int panelSeleccionado) {
-        panelSeleccionado = panelSeleccionado;
-    }
-
-    /**
-     * @param requisicionesSolicitadas the requisicionesSolicitadas to set
-     */
-    public void setRequisicionesSolicitadas(DataModel requisicionesSolicitadas) {
-        requisicionesSolicitadas = requisicionesSolicitadas;
-    }
-
-    /**
-     * @param requisicionesRevisadas the requisicionesRevisadas to set
-     */
-    public void setRequisicionesRevisadas(DataModel requisicionesRevisadas) {
-        requisicionesRevisadas = requisicionesRevisadas;
-    }
-
-    /**
-     * @param requisicionesAprobadas the requisicionesAprobadas to set
-     */
-    public void setRequisicionesAprobadas(DataModel requisicionesAprobadas) {
-        requisicionesAprobadas = requisicionesAprobadas;
-    }
-
-    /**
-     * @param requisicionesAutorizadas the requisicionesAutorizadas to set
-     */
-    public void setRequisicionesAutorizadas(DataModel requisicionesAutorizadas) {
-        requisicionesAutorizadas = requisicionesAutorizadas;
-    }
-
-    /**
-     * @param requisicionesVistoBueno the requisicionesVistoBueno to set
-     */
-    public void setRequisicionesVistoBueno(DataModel requisicionesVistoBueno) {
-        requisicionesVistoBueno = requisicionesVistoBueno;
-    }
-
-    /**
-     * @param requisicionesAsignadas the requisicionesAsignadas to set
-     */
-    public void setRequisicionesAsignadas(DataModel requisicionesAsignadas) {
-        requisicionesAsignadas = requisicionesAsignadas;
-    }
-
-    /**
-     * @return the error
-     */
-    public boolean isError() {
-        return error;
-    }
-
-    /**
-     * @param error the error to set
-     */
-    public void setError(boolean error) {
-        error = error;
-    }
-
-    /**
-     * @return the mensajeError
-     */
-    public String getMensajeError() {
-        return mensajeError;
-    }
-
-    /**
-     * @param mensajeError the mensajeError to set
-     */
-    public void setMensajeError(String mensajeError) {
-        mensajeError = mensajeError;
-    }
-
-    /**
-     * @return the paginaSeleccionada
-     */
-    public int getPaginaSeleccionada() {
-        return paginaSeleccionada;
-    }
-
-    /**
-     * @param paginaSeleccionada the paginaSeleccionada to set
-     */
-    public void setPaginaSeleccionada(int paginaSeleccionada) {
-        paginaSeleccionada = paginaSeleccionada;
-    }
-
-    /**
-     * @return the dataTable
-     */
-    public DataTable getDataTable() {
-        return dataTable;
-    }
-
-    /**
-     * @param dataTable the dataTable to set
-     */
-    public void setDataTable(DataTable dataTable) {
-        dataTable = dataTable;
-    }
-
-    /**
-     * @return the filaSeleccionada
-     */
-    public Map<Integer, Boolean> getFilaSeleccionada() {
-        return filaSeleccionada;
-    }
-
-    /**
-     * @param filaSeleccionada the filaSeleccionada to set
-     */
-    public void setFilaSeleccionada(Map<Integer, Boolean> filaSeleccionada) {
-        filaSeleccionada = filaSeleccionada;
-    }
-
-    /**
-     * @return the fechaInicio
-     */
-    public String getFechaInicio() {
-        return fechaInicio;
-    }
-
-    /**
-     * @param fechaInicio the fechaInicio to set
-     */
-    public void setFechaInicio(String fechaInicio) {
-        fechaInicio = fechaInicio;
-    }
-
-    /**
-     * @return the fechaFin
-     */
-    public String getFechaFin() {
-        return fechaFin;
-    }
-
-    /**
-     * @param fechaFin the fechaFin to set
-     */
-    public void setFechaFin(String fechaFin) {
-        fechaFin = fechaFin;
-    }
-
-    /**
-     * @return the tipoFiltro
-     */
-    public String getTipoFiltro() {
-        return tipoFiltro;
-    }
-
-    /**
-     * @param tipoFiltro the tipoFiltro to set
-     */
-    public void setTipoFiltro(String tipoFiltro) {
-        tipoFiltro = tipoFiltro;
-    }
-
-    /**
-     * @return the referencia
-     */
-    public String getReferencia() {
-        return referencia;
-    }
-
-    /**
-     * @param referencia the referencia to set
-     */
-    public void setReferencia(String referencia) {
-        referencia = referencia;
-    }
-
-    /**
-     * @return the requisicionVO
-     */
-    public RequisicionVO getRequisicionVO() {
-        return requisicionVO;
-    }
-
-    /**
-     * @param requisicionVO the requisicionVO to set
-     */
-    public void setRequisicionVO(RequisicionVO requisicionVO) {
-        requisicionVO = requisicionVO;
-    }
-
-    /**
-     * @return the idNombreTarea
-     */
-    public int getIdNombreTarea() {
-        return idNombreTarea;
-    }
-
-    /**
-     * @param idNombreTarea the idNombreTarea to set
-     */
-    public void setIdNombreTarea(int idNombreTarea) {
-        idNombreTarea = idNombreTarea;
-    }
-
-    /**
-     * @return the unidadMedida
-     */
-    public String getUnidadMedida() {
-        return unidadMedida;
-    }
-
-    /**
-     * @param unidadMedida
-     */
-    public void setUnidadMedida(String unidadMedida) {
-        unidadMedida = unidadMedida;
-    }
-
-    /**
-     * @return the listaTO
-     */
-    public List<SelectItem> getListaTO() {
-        return listaTO;
-    }
-
-    /**
-     * @param listaTO the listaTO to set
-     */
-    public void setListaTO(List<SelectItem> listaTO) {
-        listaTO = listaTO;
-    }
-
-    /**
-     * @return the codigo
-     */
-    public String getCodigo() {
-        return codigo;
-    }
-
-    /**
-     * @param codigo the codigo to set
-     */
-    public void setCodigo(String codigo) {
-        codigo = codigo;
-    }
-
-    /**
-     * @return the idGerenciaCompra
-     */
-    public int getIdGerenciaCompra() {
-        return idGerenciaCompra;
-    }
-
-    /**
-     * @param idGerenciaCompra the idGerenciaCompra to set
-     */
-    public void setIdGerenciaCompra(int idGerenciaCompra) {
-        idGerenciaCompra = idGerenciaCompra;
-    }
-
-    /**
-     * @return the idAnalista
-     */
-    public String getIdAnalista() {
-        return idAnalista;
-    }
-
-    /**
-     * @param idAnalista the idAnalista to set
-     */
-    public void setIdAnalista(String idAnalista) {
-        idAnalista = idAnalista;
-    }
-
     public void limpiarRequisicion() {
         cambiarRequisicion(0);
     }
@@ -3769,34 +3641,6 @@ public class RequisicionBean extends BaseBean implements Serializable {
             LOGGER.fatal(this, "Ex : : : : " + ex.getMessage(), ex);
         }
         return ret;
-    }
-
-    /**
-     * @return the lstArticulos
-     */
-    public List<SelectItem> getLstArticulos() {
-        return lstArticulos;
-    }
-
-    /**
-     * @param lstArticulos the lstArticulos to set
-     */
-    public void setLstArticulos(List<SelectItem> lstArticulos) {
-        lstArticulos = lstArticulos;
-    }
-
-    /**
-     * @return the articuloTx
-     */
-    public String getArticuloTx() {
-        return articuloTx;
-    }
-
-    /**
-     * @param articuloTx the articuloTx to set
-     */
-    public void setArticuloTx(String articuloTx) {
-        articuloTx = articuloTx;
     }
 
     public void traerArticulosListener(String event) {
@@ -3938,7 +3782,6 @@ public class RequisicionBean extends BaseBean implements Serializable {
 
     public void cambiarArticulo() {
         try {
-            cambiarArticulo();
             if (getArticuloTx() != null && !getArticuloTx().isEmpty()) {
                 int aux = 2;
                 String codigoInt = getArticuloTx().substring(
@@ -3952,9 +3795,9 @@ public class RequisicionBean extends BaseBean implements Serializable {
                     setCategoriaVo(getCategoriaVoInicial());
                     categoriasSeleccionadas = new ArrayList<>();
                     iniciarCatSel();
-                    PrimeFaces.current().executeScript(
-                            ";minimizarPanel('artFrecImg', 'collapsePanelArtFre');minimizarPanel('busAvaImg', 'collapsePanelBusquedaAvanzada');"
-                    );
+//                    PrimeFaces.current().executeScript(
+//                            ";minimizarPanel('artFrecImg', 'collapsePanelArtFre');minimizarPanel('busAvaImg', 'collapsePanelBusquedaAvanzada');"
+//                    );
                 }
             }
         } catch (Exception e) {
@@ -3986,9 +3829,9 @@ public class RequisicionBean extends BaseBean implements Serializable {
                     setCategoriaVo(getCategoriaVoInicial());
                     categoriasSeleccionadas = new ArrayList<>();
                     iniciarCatSel();
-                    PrimeFaces.current().executeScript(
-                            ";minimizarPanel('artFrecImg', 'collapsePanelArtFre');minimizarPanel('busAvaImg', 'collapsePanelBusquedaAvanzada');"
-                    );
+//                    PrimeFaces.current().executeScript(
+//                            ";minimizarPanel('artFrecImg', 'collapsePanelArtFre');minimizarPanel('busAvaImg', 'collapsePanelBusquedaAvanzada');"
+//                    );
                 }
             }
         } catch (Exception e) {
@@ -3997,45 +3840,16 @@ public class RequisicionBean extends BaseBean implements Serializable {
         }
     }
 
-    /**
-     * @return the articuloID
-     */
-    public int getArticuloID() {
-        return articuloID;
-    }
-
-    /**
-     * @param articuloID the articuloID to set
-     */
-    public void setArticuloID(int articuloID) {
-        articuloID = articuloID;
-    }
-
-    /**
-     * @return the categoriasSeleccionadas
-     */
-    public List<CategoriaVo> getCategoriasSeleccionadas() {
-        return categoriasSeleccionadas;
-    }
-
-    /**
-     * @param categoriasSeleccionadas the categoriasSeleccionadas to set
-     */
-    public void setCategoriasSeleccionadas(List<CategoriaVo> categoriasSeleccionadas) {
-        categoriasSeleccionadas = categoriasSeleccionadas;
-    }
-
-    public void seleccionarCategoriaCabecera() {
-        int id = Integer.parseInt(FacesUtilsBean.getRequestParameter("indiceCatSel"));
+    public void seleccionarCategoriaCabecera(int id) {
         traerSubcategoria(id);
     }
 
-    public void seleccionarArtFrecuente(SelectEvent event) {
+    public void seleccionarArtFrecuente(SelectEvent<ArticuloVO> event) {
         try {
-            ArticuloVO artVO = (ArticuloVO) event.getObject();
-            if (artVO != null && artVO.getId() > 0) {
-                setArticuloTx(new StringBuilder().append(artVO.getNombre())
-                        .append("=>").append(artVO.getCodigoInt())
+            ArticuloVO artVo = event.getObject();
+            if (artVo != null && artVo.getId() > 0) {
+                setArticuloTx(new StringBuilder().append(artVo.getNombre())
+                        .append("=>").append(artVo.getCodigoInt())
                         .toString().toLowerCase());
                 cambiarArticulo();
             }
@@ -4045,7 +3859,7 @@ public class RequisicionBean extends BaseBean implements Serializable {
         }
     }
 
-    public void seleccionarResultadoBA(SelectEvent event) {
+    public void seleccionarResultadoBA(SelectEvent<SelectItem> event) {
         try {
             SelectItem artItem = (SelectItem) event.getObject();
             if (artItem != null && artItem.getValue() != null && ((ArticuloVO) artItem.getValue()).getId() > 0) {
@@ -4053,6 +3867,7 @@ public class RequisicionBean extends BaseBean implements Serializable {
                         .append("=>").append(((ArticuloVO) artItem.getValue()).getNumParte())
                         .toString().toLowerCase());
                 cambiarArticulo();
+
 //                resetActividadPetrolera();
             }
         } catch (Exception e) {
@@ -4064,6 +3879,7 @@ public class RequisicionBean extends BaseBean implements Serializable {
     private void traerSubcategoria(int indice) {
         CategoriaVo c = categoriasSeleccionadas.get(indice);
         if (indice == 0) {
+            categorias = categoriaVo.getListaCategoria();
             setCategoriaVo(getCategoriaVoInicial());
             categoriasSeleccionadas = new ArrayList<>();
             iniciarCatSel();
@@ -4091,304 +3907,66 @@ public class RequisicionBean extends BaseBean implements Serializable {
                         getCodigos(
                                 getCategoriasSeleccionadas().size() > 1
                                 ? getCategoriasSeleccionadas().subList(1, getCategoriasSeleccionadas().size())
-                                : new ArrayList<CategoriaVo>()
+                                : new ArrayList<>()
                         )
                 )
         );
         setLstArticulos(new ArrayList<>());
-        PrimeFaces.current().executeScript(
-                ";minimizarPanel('artFrecImg', 'collapsePanelArtFre');expandirPanel('busAvaImg', 'collapsePanelBusquedaAvanzada');"
-        );
+//        PrimeFaces.current().executeScript(
+//                ";minimizarPanel('artFrecImg', 'collapsePanelArtFre');expandirPanel('busAvaImg', 'collapsePanelBusquedaAvanzada');"
+//        );
     }
 
     private void iniciarCatSel() {
-        setCategoriasSeleccionadas(new ArrayList<CategoriaVo>());
+        setCategoriasSeleccionadas(new ArrayList<>());
         CategoriaVo c = new CategoriaVo();
         c.setNombre("PRINCIPALES");
         c.setId(Constantes.CERO);
         categoriasSeleccionadas.add(c);
     }
 
-    public List<CategoriaVo> getListaCatPrin() {
-        List<CategoriaVo> retVal = null;
+    public void seleccionarCategoria(SelectEvent<CategoriaVo> event) {
         try {
-            if (getCategoriaVo() != null) {
-                retVal = getCategoriaVo().getListaCategoria();
+            CategoriaVo con = (CategoriaVo) event.getObject();
+            //setCategoriaVo(con);
+            //
+            categoriaVo  = siRelCategoriaImpl.traerCategoriaPorCategoria(con.getId(), getSoloCodigos(categoriasSeleccionadas), usuarioBean.getUsuarioConectado().getApCampo().getId());
+            categorias = categoriaVo.getListaCategoria();
+            //
+            //llenarCategoria(getSoloCodigos(getCategoriasSeleccionadas()));
+            categoriasSeleccionadas.add(categoriaVo);
+            if (getCategoriasSeleccionadas() != null && getCategoriasSeleccionadas().size() > 1) {
+                setArticuloTx("");
+                setArticulosResultadoBqda(
+                        soporteArticulos.obtenerArticulosItems(
+                                getArticuloTx(),
+                                usuarioBean.getUsuarioConectado().getApCampo().getId(),
+                                0,
+                                getCodigos(
+                                        getCategoriasSeleccionadas().size() > 1
+                                        ? getCategoriasSeleccionadas().subList(1, getCategoriasSeleccionadas().size())
+                                        : new ArrayList<>()
+                                )
+                        )
+                );
             }
-        } catch (Exception ex) {
-            LOGGER.fatal(this, "", ex);
+        } catch (Exception e) {
+            System.out.println("Excp: " + e);
         }
-        return retVal;
-    }
-
-    /**
-     * @return the categoriaVo
-     */
-    public CategoriaVo getCategoriaVo() {
-        return categoriaVo;
-    }
-
-    /**
-     * @param categoriaVo the categoriaVo to set
-     */
-    public void setCategoriaVo(CategoriaVo categoriaVo) {
-        categoriaVo = categoriaVo;
-    }
-
-    public void seleccionarCategoria(SelectEvent event) {
-        CategoriaVo con = (CategoriaVo) event.getObject();
-        setCategoriaVo(con);
-        llenarCategoria(getSoloCodigos(getCategoriasSeleccionadas()));
-        if (getCategoriasSeleccionadas() != null && getCategoriasSeleccionadas().size() > 1) {
-            setArticuloTx("");
-            setArticulosResultadoBqda(
-                    soporteArticulos.obtenerArticulosItems(
-                            getArticuloTx(),
-                            usuarioBean.getUsuarioConectado().getApCampo().getId(),
-                            0,
-                            getCodigos(
-                                    getCategoriasSeleccionadas().size() > 1
-                                    ? getCategoriasSeleccionadas().subList(1, getCategoriasSeleccionadas().size())
-                                    : new ArrayList<CategoriaVo>()
-                            )
-                    )
-            );
-        }
-        PrimeFaces.current().executeScript(
-                ";minimizarPanel('artFrecImg', 'collapsePanelArtFre');expandirPanel('busAvaImg', 'collapsePanelBusquedaAvanzada');"
-        );
+//        PrimeFaces.current().executeScript(
+//                ";minimizarPanel('artFrecImg', 'collapsePanelArtFre');expandirPanel('busAvaImg', 'collapsePanelBusquedaAvanzada');"
+//        );
 
     }
 
     private void llenarCategoria(String catSeleccionadas) {
-        categoriaVo = siRelCategoriaImpl.traerCategoriaPorCategoria(
-                categoriaVo.getId(),
-                catSeleccionadas,
-                usuarioBean.getUsuarioConectado().getApCampo().getId()
-        );
-        categoriasSeleccionadas.add(categoriaVo);
-    }
-
-    /**
-     * @return the articulosFrecuentes
-     */
-    public List<ArticuloVO> getArticulosFrecuentes() {
-        return articulosFrecuentes;
-    }
-
-    /**
-     * @param articulosFrecuentes the articulosFrecuentes to set
-     */
-    public void setArticulosFrecuentes(List<ArticuloVO> articulosFrecuentes) {
-        articulosFrecuentes = articulosFrecuentes;
-    }
-
-    /**
-     * @return the categoriaVoInicial
-     */
-    public CategoriaVo getCategoriaVoInicial() {
-        return categoriaVoInicial;
-    }
-
-    /**
-     * @param categoriaVoInicial the categoriaVoInicial to set
-     */
-    public void setCategoriaVoInicial(CategoriaVo categoriaVoInicial) {
-        categoriaVoInicial = categoriaVoInicial;
-    }
-
-    /**
-     * @return the articulosResultadoBqda
-     */
-    public List<SelectItem> getArticulosResultadoBqda() {
-        return articulosResultadoBqda;
-    }
-
-    /**
-     * @param articulosResultadoBqda the articulosResultadoBqda to set
-     */
-    public void setArticulosResultadoBqda(List<SelectItem> articulosResultadoBqda) {
-        articulosResultadoBqda = articulosResultadoBqda;
-    }
-
-    /**
-     * @return the articuloGETx
-     */
-    public String getArticuloGETx() {
-        return articuloGETx;
-    }
-
-    /**
-     * @param articuloGETx the articuloGETx to set
-     */
-    public void setArticuloGETx(String articuloGETx) {
-        articuloGETx = articuloGETx;
-    }
-
-    /**
-     * @return the lstGEArticulos
-     */
-    public List<SelectItem> getLstGEArticulos() {
-        return lstGEArticulos;
-    }
-
-    /**
-     * @param lstGEArticulos the lstGEArticulos to set
-     */
-    public void setLstGEArticulos(List<SelectItem> lstGEArticulos) {
-        lstGEArticulos = lstGEArticulos;
-    }
-
-    /**
-     * @return the lstCategorias
-     */
-    public List<SelectItem> getLstCategorias() {
-        return lstCategorias;
-    }
-
-    /**
-     * @param lstCategorias the lstCategorias to set
-     */
-    public void setLstCategorias(List<SelectItem> lstCategorias) {
-        lstCategorias = lstCategorias;
-    }
-
-    /**
-     * @return the articulosResultadoBqdaCat
-     */
-    public List<SelectItem> getArticulosResultadoBqdaCat() {
-        return articulosResultadoBqdaCat;
-    }
-
-    /**
-     * @param articulosResultadoBqdaCat the articulosResultadoBqdaCat to set
-     */
-    public void setArticulosResultadoBqdaCat(List<SelectItem> articulosResultadoBqdaCat) {
-        articulosResultadoBqdaCat = articulosResultadoBqdaCat;
-    }
-
-    /**
-     * @return the categoriaGETx
-     */
-    public String getCategoriaGETx() {
-        return categoriaGETx;
-    }
-
-    /**
-     * @param categoriaGETx the categoriaGETx to set
-     */
-    public void setCategoriaGETx(String categoriaGETx) {
-        categoriaGETx = categoriaGETx;
-    }
-
-    /**
-     * @return the newArticuloText
-     */
-    public String getNewArticuloText() {
-        return newArticuloText;
-    }
-
-    /**
-     * @param newArticuloText the newArticuloText to set
-     */
-    public void setNewArticuloText(String newArticuloText) {
-        newArticuloText = newArticuloText;
-    }
-
-    /**
-     * @return the newArticuloTextUso
-     */
-    public String getNewArticuloTextUso() {
-        return newArticuloTextUso;
-    }
-
-    /**
-     * @param newArticuloTextUso the newArticuloTextUso to set
-     */
-    public void setNewArticuloTextUso(String newArticuloTextUso) {
-        newArticuloTextUso = newArticuloTextUso;
-    }
-
-    /**
-     * @param listaUnidad the listaUnidad to set
-     */
-    public void setListaUnidad(List<SelectItem> listaUnidad) {
-        listaUnidad = listaUnidad;
-    }
-
-    /**
-     * @return the listaUnidadCosto
-     */
-    public List<SelectItem> getListaUnidadCosto() {
-        return listaUnidadCosto;
-    }
-
-    /**
-     * @param listaUnidadCosto the listaUnidadCosto to set
-     */
-    public void setListaUnidadCosto(List<SelectItem> listaUnidadCosto) {
-        listaUnidadCosto = listaUnidadCosto;
-    }
-
-    /**
-     * @return the lstActividad
-     */
-    public List<SelectItem> getLstActividad() {
-        return lstActividad;
-    }
-
-    /**
-     * @param lstActividad the lstActividad to set
-     */
-    public void setLstActividad(List<SelectItem> lstActividad) {
-        lstActividad = lstActividad;
-    }
-
-    /**
-     * @return the idActPetrolera
-     */
-    public int getIdActPetrolera() {
-        return idActPetrolera;
-    }
-
-    /**
-     * @param idActPetrolera the idActPetrolera to set
-     */
-    public void setIdActPetrolera(int idActPetrolera) {
-        idActPetrolera = idActPetrolera;
-    }
-
-    /**
-     * @return the idTipoTarea
-     */
-    public int getIdTipoTarea() {
-        return idTipoTarea;
-    }
-
-    /**
-     * @param idTipoTarea the idTipoTarea to set
-     */
-    public void setIdTipoTarea(int idTipoTarea) {
-        idTipoTarea = idTipoTarea;
-    }
-
-    /**
-     * @return the idTarea
-     */
-    public int getIdTarea() {
-        return idTarea;
-    }
-
-    /**
-     * @param idTarea the idTarea to set
-     */
-    public void setIdTarea(int idTarea) {
-        idTarea = idTarea;
+        setCategoriaVo(siRelCategoriaImpl.traerCategoriaPorCategoria(getCategoriaVo().getId(), catSeleccionadas, usuarioBean.getUsuarioConectado().getApCampo().getId()));
+        categoriasSeleccionadas.add(getCategoriaVo());
     }
 
     public void actualizaActividadPetrolera() {
 //        idActPetrolera= (Integer) event.getNewValue();
-        setListaProyectosOT(new ArrayList<ProyectoOtVo>());
+        setListaProyectosOT(new ArrayList<>());
         if (getRequisicionActual() != null && getRequisicionActual().getGerencia() != null
                 && getRequisicionActual().getGerencia().getId() > 0) {
             if (getRequisicionActual().getTipo().name().equals(TipoRequisicion.PS.name())) {
@@ -4410,7 +3988,7 @@ public class RequisicionBean extends BaseBean implements Serializable {
                 setListaProyectosOT(ocGerenciaProyectoImpl.traerProyectoOt(getRequisicionActual().getGerencia().getId(), getRequisicionActual().getApCampo().getId()));
             }
         } else {
-            setListaProyectosOT(new ArrayList<ProyectoOtVo>());
+            setListaProyectosOT(new ArrayList<>());
         }
         setIdProyectoOT(-1);
         setIdTipoTarea(0);
@@ -4470,7 +4048,7 @@ public class RequisicionBean extends BaseBean implements Serializable {
         setIdTarea(0);
         setIdCentroCosto(-1);
         setIdActPetrolera(0);
-        setListaProyectosOT(new ArrayList<ProyectoOtVo>());
+        setListaProyectosOT(new ArrayList<>());
         setListaUnidadCosto(new ArrayList<>());
         setListaTO(new ArrayList<>());
         setLstCentroCosto(new ArrayList<>());
@@ -4485,7 +4063,7 @@ public class RequisicionBean extends BaseBean implements Serializable {
         setIdPresupuesto(0);
         setMesPresupuesto(0);
         setAnioPresupuesto(0);
-        setListaProyectosOT(new ArrayList<ProyectoOtVo>());
+        setListaProyectosOT(new ArrayList<>());
         setListaUnidadCosto(new ArrayList<>());
         setListaTO(new ArrayList<>());
         setLstCentroCosto(new ArrayList<>());
@@ -4598,144 +4176,6 @@ public class RequisicionBean extends BaseBean implements Serializable {
     }
 
     /**
-     * @return the lstCentroCosto
-     */
-    public List<SelectItem> getLstCentroCosto() {
-        return lstCentroCosto;
-    }
-
-    /**
-     * @param lstCentroCosto the lstCentroCosto to set
-     */
-    public void setLstCentroCosto(List<SelectItem> lstCentroCosto) {
-        lstCentroCosto = lstCentroCosto;
-    }
-
-    /**
-     * @return the idCentroCosto
-     */
-    public int getIdCentroCosto() {
-        return idCentroCosto;
-    }
-
-    /**
-     * @param idCentroCosto the idCentroCosto to set
-     */
-    public void setIdCentroCosto(int idCentroCosto) {
-        idCentroCosto = idCentroCosto;
-    }
-
-    /**
-     * @return the devuelve
-     */
-    public String getDevuelve() {
-        return devuelve;
-    }
-
-    /**
-     * @param devuelve the devuelve to set
-     */
-    public void setDevuelve(String devuelve) {
-        devuelve = devuelve;
-    }
-
-    public String getCopiasOcultas() {
-        return usuarioImpl.find("SIA").getEmail();
-    }
-
-    /**
-     * @return the multiProyecto
-     */
-    public boolean isMultiProyecto() {
-        return multiProyecto;
-    }
-
-    /**
-     * @param multiProyecto the multiProyecto to set
-     */
-    public void setMultiProyecto(boolean multiProyecto) {
-        multiProyecto = multiProyecto;
-    }
-
-    /**
-     * @return the mostrarMultiProyecto
-     */
-    public boolean isMostrarMultiProyecto() {
-        return mostrarMultiProyecto;
-    }
-
-    /**
-     * @param mostrarMultiProyecto the mostrarMultiProyecto to set
-     */
-    public void setMostrarMultiProyecto(boolean mostrarMultiProyecto) {
-        mostrarMultiProyecto = mostrarMultiProyecto;
-    }
-
-    /**
-     * @return the codigoCentroCosto
-     */
-    public String getCodigoCentroCosto() {
-        return codigoCentroCosto;
-    }
-
-    /**
-     * @param codigoCentroCosto the codigoCentroCosto to set
-     */
-    public void setCodigoCentroCosto(String codigoCentroCosto) {
-        codigoCentroCosto = codigoCentroCosto;
-    }
-
-    /**
-     * @return the listaProyectosOTMulti
-     */
-    public List<ProyectoOtVo> getListaProyectosOTMulti() {
-        return listaProyectosOTMulti;
-    }
-
-    /**
-     * @param listaProyectosOTMulti the listaProyectosOTMulti to set
-     */
-    public void setListaProyectosOTMulti(List<ProyectoOtVo> listaProyectosOTMulti) {
-        listaProyectosOTMulti = listaProyectosOTMulti;
-    }
-
-    /**
-     * @return the proyOTMultiPrimero
-     */
-    public ProyectoOtVo getProyOTMultiPrimero() {
-        return proyOTMultiPrimero;
-    }
-
-    /**
-     * @param proyOTMultiPrimero the proyOTMultiPrimero to set
-     */
-    public void setProyOTMultiPrimero(ProyectoOtVo proyOTMultiPrimero) {
-        proyOTMultiPrimero = proyOTMultiPrimero;
-    }
-
-    /**
-     * @return the lstProyOTMultiResto
-     */
-    public List<ProyectoOtVo> getLstProyOTMultiResto() {
-        return lstProyOTMultiResto;
-    }
-
-    /**
-     * @param lstProyOTMultiResto the lstProyOTMultiResto to set
-     */
-    public void setLstProyOTMultiResto(List<ProyectoOtVo> lstProyOTMultiResto) {
-        lstProyOTMultiResto = lstProyOTMultiResto;
-    }
-
-    public boolean isSelected() {
-        return selected;
-    }
-
-    public void setSelected(boolean selected) {
-        selected = selected;
-    }
-
-    /**
      * @return the multiProyectosEtiqueta
      */
     public String getMultiProyectosEtiqueta() {
@@ -4747,178 +4187,31 @@ public class RequisicionBean extends BaseBean implements Serializable {
     }
 
     /**
-     * @param multiProyectosEtiqueta the multiProyectosEtiqueta to set
+     * @return the categoriaVo
      */
-    public void setMultiProyectosEtiqueta(String multiProyectosEtiqueta) {
-        multiProyectosEtiqueta = multiProyectosEtiqueta;
+    public CategoriaVo getCategoriaVo() {
+        return categoriaVo;
     }
 
     /**
-     * @return the idPresupuesto
+     * @param categoriaVo the categoriaVo to set
      */
-    public int getIdPresupuesto() {
-        return idPresupuesto;
+    public void setCategoriaVo(CategoriaVo categoriaVo) {
+        this.categoriaVo = categoriaVo;
     }
 
     /**
-     * @param idPresupuesto the idPresupuesto to set
+     * @return the categoriaVoInicial
      */
-    public void setIdPresupuesto(int idPresupuesto) {
-        idPresupuesto = idPresupuesto;
+    public CategoriaVo getCategoriaVoInicial() {
+        return categoriaVoInicial;
     }
 
     /**
-     * @return the lstPresupuesto
+     * @param categoriaVoInicial the categoriaVoInicial to set
      */
-    public List<SelectItem> getLstPresupuesto() {
-        return lstPresupuesto;
-    }
-
-    /**
-     * @param lstPresupuesto the lstPresupuesto to set
-     */
-    public void setLstPresupuesto(List<SelectItem> lstPresupuesto) {
-        lstPresupuesto = lstPresupuesto;
-    }
-
-    /**
-     * @return the lstMesPresupuesto
-     */
-    public List<SelectItem> getLstMesPresupuesto() {
-        return lstMesPresupuesto;
-    }
-
-    /**
-     * @param lstMesPresupuesto
-     */
-    public void setLstMesPresupuesto(List<SelectItem> lstMesPresupuesto) {
-        lstMesPresupuesto = lstMesPresupuesto;
-    }
-
-    /**
-     * @return the mesPresupuesto
-     */
-    public int getMesPresupuesto() {
-        return mesPresupuesto;
-    }
-
-    /**
-     * @param mesPresupuesto the mesPresupuesto to set
-     */
-    public void setMesPresupuesto(int mesPresupuesto) {
-        mesPresupuesto = mesPresupuesto;
-    }
-
-    /**
-     * @return the lstAnioPresupuesto
-     */
-    public List<SelectItem> getLstAnioPresupuesto() {
-        return lstAnioPresupuesto;
-    }
-
-    /**
-     * @param lstAnioPresupuesto the lstAnioPresupuesto to set
-     */
-    public void setLstAnioPresupuesto(List<SelectItem> lstAnioPresupuesto) {
-        lstAnioPresupuesto = lstAnioPresupuesto;
-    }
-
-    /**
-     * @return the anioPresupuesto
-     */
-    public int getAnioPresupuesto() {
-        return anioPresupuesto;
-    }
-
-    /**
-     * @param anioPresupuesto the anioPresupuesto to set
-     */
-    public void setAnioPresupuesto(int anioPresupuesto) {
-        anioPresupuesto = anioPresupuesto;
-    }
-
-    /**
-     * @return the listaRechazo
-     */
-    public List<Rechazo> getListaRechazo() {
-        return listaRechazo;
-    }
-
-    /**
-     * @param listaRechazo the listaRechazo to set
-     */
-    public void setListaRechazo(List<Rechazo> listaRechazo) {
-        listaRechazo = listaRechazo;
-    }
-
-    /**
-     * @return the indexTab
-     */
-    public int getIndexTab() {
-        return indexTab;
-    }
-
-    /**
-     * @param indexTab the indexTab to set
-     */
-    public void setIndexTab(int indexTab) {
-        indexTab = indexTab;
-    }
-
-    /**
-     * @return the totalReqConInventario
-     */
-    public int getTotalReqConInventario() {
-        return totalReqConInventario;
-    }
-
-    /**
-     * @param totalReqConInventario the totalReqConInventario to set
-     */
-    public void setTotalReqConInventario(int totalReqConInventario) {
-        totalReqConInventario = totalReqConInventario;
-    }
-
-    /**
-     * @return the inventario
-     */
-    public List<InventarioVO> getInventario() {
-        return inventario;
-    }
-
-    /**
-     * @param inventario the inventario to set
-     */
-    public void setInventario(List<InventarioVO> inventario) {
-        inventario = inventario;
-    }
-
-    /**
-     * @return the esperaVO
-     */
-    public RequisicionEsperaVO getEsperaVO() {
-        return esperaVO;
-    }
-
-    /**
-     * @param esperaVO the esperaVO to set
-     */
-    public void setEsperaVO(RequisicionEsperaVO esperaVO) {
-        esperaVO = esperaVO;
-    }
-
-    /**
-     * @return the msgEspera
-     */
-    public String getMsgEspera() {
-        return msgEspera;
-    }
-
-    /**
-     * @param msgEspera the msgEspera to set
-     */
-    public void setMsgEspera(String msgEspera) {
-        msgEspera = msgEspera;
+    public void setCategoriaVoInicial(CategoriaVo categoriaVoInicial) {
+        this.categoriaVoInicial = categoriaVoInicial;
     }
 
 }

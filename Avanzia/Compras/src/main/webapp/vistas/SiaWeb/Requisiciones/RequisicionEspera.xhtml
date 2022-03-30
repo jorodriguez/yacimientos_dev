@@ -16,7 +16,7 @@
             <ui:define name="contenido">        
                 <!--MOTIVO REQ ESOERA-->
                 <div class="modal fade" id="dialogoMsgEsperaReq" data-backdrop="static" data-keyboard="false">
-                    <div class="modal-dialog" style="width: 70%;">
+                    <div class="modal-dialog modal-lg" >
                         <div class="modal-content">
                             <div class="modal-header">
                                 <h4 class="modal-title">Mensaje requisición en espera</h4>
@@ -54,7 +54,7 @@
 
                 <!--ADD Adjunto-->
                 <div class="modal fade" id="dialogoAdjuntoEsperaReq" data-backdrop="static" data-keyboard="false">
-                    <div class="modal-dialog" style="width: 70%;">
+                    <div class="modal-dialog modal-lg" >
                         <div class="modal-content">
                             <div class="modal-header">
                                 <h4 class="modal-title">Adjuntar archivo a requisición en espera</h4>
@@ -92,37 +92,40 @@
                         </div>
                     </div>
                 </div>
-
-
-
-                <ui:include src="../Requisiciones/fragmentos/popUpRequisicion.xhtml"/>      
-
                 <h:form id="form1">                    
                     <!--h:outputText id="outputText0" value="Seleccione una requisición de la lista para ver sus Items por favor..."/-->                    
                     <div class="row">
+
+                        <p:confirmDialog global="true" showEffect="fade" hideEffect="fade" responsive="true" width="350">
+                            <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no ui-button-flat"/>
+                            <p:commandButton value="Si" type="button" styleClass="ui-confirmdialog-yes" />
+                        </p:confirmDialog>
                         <div id="divOperacion" class="btn-group col-8" style="text-align: left; display: none;">                                
                             <div class="col-2">                            
                                 <p:commandLink value="Regresar" styleClass="btn btn-default" 
                                                action="#{requisicionBean.limpiarRequisicion}"
-                                               onclick="regresar('divTabla', 'divDatos', 'divOperacion', 'divAutoriza')"/>                                                                
+                                               onclick="regresar('divTabla', 'divDatos', 'divOperacion', 'divAutoriza')"
+                                               process="@form" update="form1"/>                                                                
                             </div>
                             <div class="col-3">                            
                                 <p:commandLink value="Activar Requisición" styleClass="btn btn-default" 
                                                action="#{requisicionBean.activarRequisicion}"
                                                title="Clic aquí para reactivar la requisición..."
-                                               onclick="return confirmar('form1', '¿Está usted seguro de querer reactivar la requisición? ');"/>                                                                
+                                               process="@form" update="form1">
+                                    <p:confirm header="Confirmar" message="¿Está usted seguro de querer reactivar la requisición? "/>
+                                </p:commandLink>
                             </div>
                             <div class="col-3">                            
                                 <p:commandLink value="Agregar mensaje" styleClass="btn btn-default" 
                                                action="#{requisicionBean.abrirMsgEspera}"
                                                title="Clic aquí para agregar comentario a espera de la requisición..."
-                                               />                                                                
+                                               process="@this" update="frmMsgEsperaRecep"/>                                                                
                             </div>
                             <div class="col-3">                            
                                 <p:commandLink value="Adjuntar Archivo" styleClass="btn btn-default" 
                                                action="#{requisicionBean.abrirAdjuntoEspera}"
                                                title="Clic aquí para adjuntar un archivo a la espera de la requisición..."
-                                               />                                                                
+                                               process="@this" update="frmAdjuntoEsperaRecep"/>                                                                
                             </div>
                         </div>                            
                         <div id="divAutorizaa" class="form-group col-9" style="text-align: center;">
@@ -176,7 +179,7 @@
                                                            title="Clic aquí para ver los items de la requisición..."
                                                            onclick="$('#msgAsignaRequisicion').text('');
                                                                    return true;"
-                                                           process="@this" update="form1:tbReqEsp form1.lblReq">
+                                                           process="@this" update="form1:tbReqEsp form1:lblReq">
                                             </p:commandLink>                                            
                                         </p:column>
                                     </p:dataTable>
@@ -191,7 +194,8 @@
                     <div id="divDatos" style="display: none;">
                         <div class="col-5" style="padding-top: 5px;">
                             <h:outputText value="Más información de la requisición: "/>
-                            <h:outputText id="lblReq" value="#{requisicionBean.requisicionActual.consecutivo}" style="font-weight:  bold;"/>
+                            <h:outputText id="lblReq" value="#{requisicionBean.requisicionActual.consecutivo}" 
+                                          style="font-weight:  bold;"/>
                         </div><br/>
                         <div class="container-fluid">
                             <p:tabView id="tbReqEsp" activeIndex="0">

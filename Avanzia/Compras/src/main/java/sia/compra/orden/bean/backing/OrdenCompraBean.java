@@ -748,7 +748,6 @@ public class OrdenCompraBean implements Serializable {
                     actualizarItemService();
                 }
             } else {
-                int id = Integer.parseInt(FacesUtilsBean.getRequestParameter("idItem"));
                 OrdenDetalleVO odvo = listaItems.get(id);
                 setItemActual(ordenDetalleImpl.find(odvo.getId()));
                 actualizarItemService();

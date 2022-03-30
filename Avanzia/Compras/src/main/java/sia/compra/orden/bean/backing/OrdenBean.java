@@ -1481,7 +1481,7 @@ public class OrdenBean implements Serializable {
         List<OrdenVO> lo = new ArrayList<>();
         try {
             if (getOrdenActual() == null) {
-                ocs.stream().filter(OrdenVO::isSelected).forEac(oc -> {
+                ocs.stream().filter(OrdenVO::isSelected).forEach(oc -> {
                     lo.add(oc);
                 });
                 boolean v;

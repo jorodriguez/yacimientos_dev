@@ -36,8 +36,7 @@ import sia.modelo.vo.inventarios.ArticuloVO;
 @Setter
 @ToString
 @NamedNativeQueries({
-    @NamedNativeQuery(name = "InvArticulo.ObtenerCodigoBarrasPorCodigoSKU", query = "SELECT CODIGO_EAN13 FROM INV_ARTICULO WHERE CODIGO = ?1 AND ELIMINADO = ?2")
-    ,
+    @NamedNativeQuery(name = "InvArticulo.ObtenerCodigoBarrasPorCodigoSKU", query = "SELECT CODIGO_EAN13 FROM INV_ARTICULO WHERE CODIGO = ?1 AND ELIMINADO = ?2"),
     @NamedNativeQuery(name = "InvArticulo.ExisteUnidadesEnInventario", query = "SELECT COUNT(0) FROM INV_INVENTARIO WHERE ARTICULO = ?1 AND NUMERO_UNIDADES > 1 AND ELIMINADO = ?2")
 })
 public class InvArticulo implements Serializable {
@@ -96,14 +95,12 @@ public class InvArticulo implements Serializable {
     @Column(name = "CATEGORIAS")
     private String categorias;
 
-    
     public int hashCode() {
         int hash = 0;
         hash += (id != null ? id.hashCode() : 0);
         return hash;
     }
 
-    
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof InvArticulo)) {
