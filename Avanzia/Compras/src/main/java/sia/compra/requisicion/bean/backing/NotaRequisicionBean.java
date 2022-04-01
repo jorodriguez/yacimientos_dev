@@ -25,7 +25,6 @@ import javax.inject.Named;
 import javax.naming.NamingException;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.commons.io.monitor.FileEntry;
 import org.primefaces.PrimeFaces;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.model.file.UploadedFile;
@@ -186,7 +185,7 @@ public class NotaRequisicionBean implements Serializable {
 
     public void eliminarNoticia() {
 	try {
-	    this.setIdNoticiaActiva(tomarIdNoticia());
+	    this.setIdNoticiaActiva(idNoticiaActiva);
 	    coNoticiaImpl.eliminarNoticia(idNoticiaActiva, usuarioBean.getUsuarioConectado().getId());
 	    UtilLog4j.log.fatal(this, "Noticia eliminado");
 	} catch (Exception e) {
@@ -194,10 +193,10 @@ public class NotaRequisicionBean implements Serializable {
 	}
     }
 
-    public void comentarNoticia() {
+    public void comentarNoticia(int idN) {
 	UtilLog4j.log.fatal(this, "comentar noticia");
 	try {
-	    this.setIdNoticiaActiva(tomarIdNoticia());
+	    this.setIdNoticiaActiva(idN);
 	    setComentar(true);
 	    //this.noticias = null; // refrescar la lista
 
@@ -245,9 +244,9 @@ public class NotaRequisicionBean implements Serializable {
 	}
     }
 
-    public void eliminarComentario() {
+    public void eliminarComentario(t idCom) {
 	try {
-	    this.idComentarioActivo = tomarIdComentario();
+	    this.idComentarioActivo = idCom;
 	    UtilLog4j.log.info(this, "idComentario " + idComentarioActivo);
 	    coNoticiaImpl.eliminarComentario(idComentarioActivo, usuarioBean.getUsuarioConectado().getId());
 	    UtilLog4j.log.info(this, "Comentario eliminado");
@@ -256,17 +255,17 @@ public class NotaRequisicionBean implements Serializable {
 	}
     }
 
-    public void meGustaComentario() {
-	this.idComentarioActivo = tomarIdComentario();
+    public void meGustaComentario(int idCom) {
+	this.idComentarioActivo = idCom;
 	UtilLog4j.log.info(this, "idComentario " + idComentarioActivo);
 	coNoticiaImpl.meGustaComentario(idComentarioActivo, usuarioBean.getUsuarioConectado().getId());
     }
 
-    public void yaNoMeGustaComentario() {
+    public void yaNoMeGustaComentario(int idCom, int idMG) {
 	UtilLog4j.log.info(this, "ya no me gusta el comentario...");
 	try {
-	    this.idComentarioActivo = Integer.parseInt(FacesUtilsBean.getRequestParameter("idComentario"));// tomarIdComentario();
-	    int idMeGusta = Integer.parseInt(FacesUtilsBean.getRequestParameter("idMeGusta"));//tomarIdMeGusta();
+	    this.idComentarioActivo = idCom;
+	    int idMeGusta = idMG;
 	    UtilLog4j.log.info(this, "idcomentario" + idComentarioActivo);
 	    UtilLog4j.log.info(this, "idMeGusta " + idMeGusta);
 	    coNoticiaImpl.yaNoMeGustaComentario(idComentarioActivo, idMeGusta, usuarioBean.getUsuarioConectado().getId());
@@ -336,10 +335,10 @@ public class NotaRequisicionBean implements Serializable {
         }
     }
 
-    public void eliminarArchivo() {
-	idAdjuntoActivo = Integer.parseInt(FacesUtilsBean.getRequestParameter("idArchivo"));
-	int idRelacion = Integer.parseInt(FacesUtilsBean.getRequestParameter("idCoNoticiaSiAdjunto"));
-	idNoticiaActiva = Integer.parseInt(FacesUtilsBean.getRequestParameter("idNoticia"));
+    public void eliminarArchivo(int idAr, int idNotAdj, int inN) {
+	idAdjuntoActivo = idArc;
+	idRelacion = idNotAdj;
+	idNoticiaActiva = idN;
 	//
 
 	if (!quitarArchivo(this.idNoticiaActiva, this.idAdjuntoActivo, idRelacion, usuarioBean.getUsuarioConectado().getId())) {
@@ -383,29 +382,18 @@ public class NotaRequisicionBean implements Serializable {
 	UtilLog4j.log.info(this, "upload");
     }
 
-    public void traerAdjuntosNoticia() {
+    public void traerAdjuntosNoticia(int idN) {
 	//recargar lista de adjuntos
-	setIdNoticiaActiva((int) tomarIdNoticia());
+	setIdNoticiaActiva(idN);
 	this.dataModel = new ListDataModel(coNoticiaImpl.getAdjuntosNoticia(idNoticiaActiva, usuarioBean.getUsuarioConectado().getId()));
     }
 
     /**
      * ***************************************************
      */
-    private Integer tomarIdComentario() {
-	return Integer.parseInt(FacesUtilsBean.getRequestParameter("idComentario"));
-    }
-
-    private Integer tomarIdNoticia() {
-	return Integer.parseInt(FacesUtilsBean.getRequestParameter("idNoticia"));
-    }
-
-    private Integer tomarMaxComments() {
-	return Integer.parseInt(FacesUtilsBean.getRequestParameter("maxComments"));
-    }
-
-    public void mostrarPopupModificarComentario() {
-	idComentarioActivo = Integer.parseInt(FacesUtilsBean.getRequestParameter("idComentario"));
+    
+    public void mostrarPopupModificarComentario(int idCom) {
+	idComentarioActivo = idCom;
 	this.setComentarioActual(coNoticiaImpl.buscarComentario(idComentarioActivo));
 	this.setMrPopupModificarComentario(true);
     }
@@ -415,8 +403,8 @@ public class NotaRequisicionBean implements Serializable {
 	this.setMrPopupModificarComentario(false);
     }
 
-    public void mostrarPopupModificarNoticia() {
-	this.setIdNoticiaActiva(Integer.parseInt(FacesUtilsBean.getRequestParameter("idNoticia")));
+    public void mostrarPopupModificarNoticia(int idN) {
+	this.setIdNoticiaActiva(idN);
 	setNoticiaActual(coNoticiaImpl.find(idNoticiaActiva));
 	this.setMrPopupModificarNoticia(true);
     }
@@ -431,8 +419,8 @@ public class NotaRequisicionBean implements Serializable {
 	setLikes(null);
     }
 
-    public void mostrarPopupSubirArchivo() {
-	this.setIdNoticiaActiva((int) tomarIdNoticia());
+    public void mostrarPopupSubirArchivo(int idN) {
+	this.setIdNoticiaActiva(idN);
 	setDirectorioPath(traerDirectorio(idNoticiaActiva));
 	UtilLog4j.log.info(this, "idNOticia" + idNoticiaActiva);
 	this.setMrSubirArchivo(true);
@@ -443,9 +431,9 @@ public class NotaRequisicionBean implements Serializable {
 	return "Comunicacion/Noticia/" + idNoticia;
     }
 
-    public String mostrarPaginaSubirArchivo() {
+    public String mostrarPaginaSubirArchivo(int idN) {
 	UtilLog4j.log.info(this, "mostrarpag");
-	this.setIdNoticiaActiva((int) tomarIdNoticia());
+	this.setIdNoticiaActiva(idN);
 	UtilLog4j.log.info(this, "idNOticia" + idNoticiaActiva);
 	return "vistas/comunicacion/adjuntarArchivo";
     }

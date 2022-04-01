@@ -151,8 +151,7 @@ public class HistorialFacturaBean implements Serializable{
         PrimeFaces.current().executeScript("ocultarDiv('divHistFacturas');mostrarDiv('divHistFacturasDesc');");
     }
 
-    public void seleccionar() {
-        int id = Integer.parseInt(FacesUtilsBean.getRequestParameter("idFac"));
+    public void seleccionar(int id) {
         facturaVo = siFacturaImpl.buscarFactura(id);
         facturaVo.setDetalleFactura(new ArrayList<FacturaDetalleVo>());
         facturaVo.setDetalleFactura(siFacturaDetalleImpl.detalleFactura(id));
@@ -167,8 +166,7 @@ public class HistorialFacturaBean implements Serializable{
         PrimeFaces.current().executeScript("$(dialogoDatosFacturaHistorial).modal('show');");
     }
 
-    public void seleccionarNotaCredito() {
-        int id = Integer.parseInt(FacesUtilsBean.getRequestParameter("idNotaCredito"));
+    public void seleccionarNotaCredito(int id) {
         //
         setListaArchivosNotaCredito(siFacturaAdjuntoImpl.traerSoporteFactura(id, Constantes.BOOLEAN_FALSE));
         PrimeFaces.current().executeScript("$(dialogoArchivosNotaCredito).modal('show');");

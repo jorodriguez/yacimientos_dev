@@ -36,7 +36,7 @@ import sia.util.UtilLog4j;
  * stores the modified id information in a String. MenuBarBean also controls the
  * orientation of the Menu Bar.</p>
  */
-@Named(value = MenuBarBean.BEAN_NAME)
+@Named(value = "menuBarBean")
 @CustomScoped(value = "#{window}")
 public class MenuBarBean implements Serializable {
 

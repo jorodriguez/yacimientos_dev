@@ -97,9 +97,7 @@ public class EvaluacionBean implements Serializable{
         this.lstEvaluaciones = lstEvaluaciones;
     }
 
-    public void seleccionarEvaluacion() {
-        int idConv = Integer.parseInt(FacesUtilsBean.getRequestParameter("idContrato"));
-        int idEva = Integer.parseInt(FacesUtilsBean.getRequestParameter("idEva"));
+    public void seleccionarEvaluacion(int idEva, int idConv) {
         if (idConv > 0 && idEva > 0) {
             setVo(cvEvaluacionImpl.traerEvaluacionDetID(idEva));
             PrimeFaces.current().executeScript(";activarTab('tabOCSProc', 0, 'divDatos', 'divTabla', 'divOperacion', 'divAutoriza');");

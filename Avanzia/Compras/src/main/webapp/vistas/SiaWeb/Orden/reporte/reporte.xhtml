@@ -5,7 +5,7 @@
       xmlns:p="http://primefaces.org/ui"
       xmlns:f="http://xmlns.jcp.org/jsf/core"
       xmlns:h="http://xmlns.jcp.org/jsf/html"
-      
+
       >
     <body>
         <ui:composition template="./../../templates/template.xhtml">
@@ -21,8 +21,8 @@
                         <ui:fragment rendered="#{reporteBean.listaCombo ne null}">
                             <div class="col-4">
                                 <h:selectOneMenu  styleClass="form-control"  
-                                                    valueChangeListener="#{reporteBean.actualizarGerenciaCompra}"                                                
-                                                    value="#{reporteBean.idGerenciaCopra}">
+                                                  valueChangeListener="#{reporteBean.actualizarGerenciaCompra}"                                                
+                                                  value="#{reporteBean.idGerenciaCopra}">
                                     <f:selectItems value="#{reporteBean.listaCombo}"/>
                                     <!--f:ajax execute="@form" /-->
                                 </h:selectOneMenu>
@@ -32,81 +32,38 @@
                 </h:form>
             </ui:define>
             <ui:define name="contenido">
-                <script>
-                    $(function () {
-                        $("#tabs").tabs();
-                    });
-                </script>
-                <div id="tabs">
-                    <ul>
-                        <li><a href="#comprador" onclick="limpiarLista('frmReporte');">#{msgs['orden.solicitada.por.analista']}</a></li>
-                        <li><a href="#finanza" onclick="limpiarLista('frmReporteConta');">#{msgs['requisiciones.en.finanza']}</a></li>                        
-                        <li><a href="#sinSolicitar" onclick="limpiarLista('frmReporteSinSol');">#{msgs['requisiciones.sin.solicitar']}</a></li>
-                        <li><a href="#ocsGerenicia" onclick="limpiarLista('frmReporteOCSGerencia');">#{msgs['orden.por.gerencias']}</a></li>
-                        <li><a href="#ocsPorProveedor" onclick="limpiarListaLlenarJsonProveedor('frmReporteOCSPorProveedor', 'btnLlenarProveedor');">#{msgs['orden.por.proveedor']}</a></li>
-                        <li><a href="#ocsPorStatus" onclick="limpiarLista('frmReporteOCSPorStatus');">#{msgs['orden.por.status']}</a></li>
-                        <li><a href="#ocsProveedorContra" onclick="limpiarLista('frmOCSProvCont');">Proveedores</a></li>
-                        <li><a href="#ocsSolDevCan" onclick="limpiarLista('frmOCSSolDevCan');">Estadística</a></li>
-                        <li><a href="#reqProceso" onclick="limpiarLista('frmOReqProceso');">Req. Proceso</a></li>
-                        <li><a href="#ocsRecepcion" onclick="limpiarLista('frmOcsRecepcion');">Recepción oc/s</a></li>
-                        <!-- li><a href="#ocsAprobaciones" onclick="limpiarLista('frmOcsAprobaciones');">Aprobaciones</a></li -->
-                    </ul>
-                    <div id="comprador">
-                        <h:form id="frmReporte" styleClass="textoIzquierda">
-                            <ui:include src="/vistas/SiaWeb/Orden/reporte/fragmento/comprador.xhtml"/>
-                        </h:form>
-                    </div>
-                    <div id="finanza">
-                        <h:form id="frmReporteConta" styleClass="textoIzquierda">
-                            <ui:include src="/vistas/SiaWeb/Orden/reporte/fragmento/finanzas.xhtml"/>
-                        </h:form>
-                    </div>
-                    <div id="sinSolicitar">
-                        <h:form id="frmReporteSinSol" styleClass="textoIzquierda">
-                            <ui:include src="/vistas/SiaWeb/Orden/reporte/fragmento/requisicionSinSolicitar.xhtml"/>
-                        </h:form>
-                    </div>
-                    <div id="ocsGerenicia">
-                        <h:form id="frmReporteOCSGerencia" styleClass="textoIzquierda">
-                            <ui:include src="/vistas/SiaWeb/Orden/reporte/fragmento/ordenesGerencia.xhtml"/>
-                        </h:form>
-                    </div>
-                    <div id="ocsPorProveedor">
-                        <h:form id="frmReporteOCSPorProveedor" styleClass="textoIzquierda">
-                            <ui:include src="/vistas/SiaWeb/Orden/reporte/fragmento/reportePorProveedor.xhtml"/>
-                        </h:form>
-                    </div>                    
-                    <div id="ocsPorStatus">
-                        <h:form id="frmReporteOCSPorStatus" styleClass="textoIzquierda">
-                            <ui:include src="/vistas/SiaWeb/Orden/reporte/fragmento/reporteOCSPorStatus.xhtml"/>
-                        </h:form>
-                    </div>
-                    <div id="ocsProveedorContra">
-                        <h:form id="frmOCSProvCont" styleClass="textoIzquierda">
-                            <ui:include src="/vistas/SiaWeb/Orden/reporte/fragmento/reporteProveedorContrato.xhtml"/>
-                        </h:form>
-                    </div>                    
-                    <div id="ocsSolDevCan">
-                        <h:form id="frmOCSSolDevCan" styleClass="textoIzquierda">
-                            <ui:include src="/vistas/SiaWeb/Orden/reporte/fragmento/reporteSolDev.xhtml"/>
-                        </h:form>
-                    </div>                 
-                    <div id="reqProceso">
-                        <h:form id="frmOReqProceso" styleClass="textoIzquierda">
-                            <ui:include src="/vistas/SiaWeb/Orden/reporte/fragmento/reporteReqProceso.xhtml"/>
-                        </h:form>
-                    </div>
-                    <div id="ocsRecepcion">
-                        <h:form id="frmOcsRecepcion" styleClass="textoIzquierda">
-                            <ui:include src="fragmento/reporteOcsEntregadas.xhtml"/>
-                        </h:form>
-                    </div>
-                    <!-- div id="ocsAprobaciones">
-                        <h:form id="frmOcsAprobaciones" styleClass="textoIzquierda">
-                            <ui:include src="fragmento/reporteOcsAprobaciones.xhtml"/>
-                        </h:form>
-                    </div -->
-                </div>
+                <p:tabView  onTabChange="#{reporteBean.limpiarLista}">
+                    <p:tab title="#{msgs['orden.solicitada.por.analista']}" >
+                        <ui:include src="/vistas/SiaWeb/Orden/reporte/fragmento/comprador.xhtml"/>
+                    </p:tab>
+                    <p:tab title="#{msgs['requisiciones.en.finanza']}" >
+                        <ui:include src="/vistas/SiaWeb/Orden/reporte/fragmento/finanzas.xhtml"/>
+                    </p:tab>
+                    <p:tab title="#{msgs['requisiciones.en.solicitar']}" >
+                        <ui:include src="/vistas/SiaWeb/Orden/reporte/fragmento/requisicionSinSolicitar.xhtml"/>
+                    </p:tab>
+                    <p:tab title="#{msgs['orden.por.gerencias']}" >
+                        <ui:include src="/vistas/SiaWeb/Orden/reporte/fragmento/ordenesGerencia.xhtml"/>
+                    </p:tab>
+                    <p:tab title="#{msgs['orden.por.proveedor']}" >
+                        <ui:include src="/vistas/SiaWeb/Orden/reporte/fragmento/reportePorProveedor.xhtml"/>
+                    </p:tab>
+                    <p:tab title="#{msgs['orden.por.status']}" >
+                        <ui:include src="/vistas/SiaWeb/Orden/reporte/fragmento/reporteOCSPorStatus.xhtml"/>
+                    </p:tab>
+                    <p:tab title="Proveedores" >
+                        <ui:include src="/vistas/SiaWeb/Orden/reporte/fragmento/reporteProveedorContrato.xhtml"/>
+                    </p:tab>
+                    <p:tab title="Estadística" >
+                        <ui:include src="/vistas/SiaWeb/Orden/reporte/fragmento/reporteSolDev.xhtml"/>
+                    </p:tab>
+                    <p:tab title="Req. Proceso" >
+                        <ui:include src="/vistas/SiaWeb/Orden/reporte/fragmento/reporteReqProceso.xhtml"/>
+                    </p:tab>
+                    <p:tab title="Recepción oo/s" >
+                        <ui:include src="fragmento/reporteOcsEntregadas.xhtml"/>
+                    </p:tab>
+                </p:tabView>
             </ui:define>
         </ui:composition>
     </body>

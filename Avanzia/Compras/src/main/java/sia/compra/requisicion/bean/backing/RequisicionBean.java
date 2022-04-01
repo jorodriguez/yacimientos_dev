@@ -1047,11 +1047,9 @@ public class RequisicionBean implements Serializable {
         }
     }
 
-    public void nuevoComentario() {
+    public void nuevoComentario(int idN, int campo) {
         if (!notaRequisicionBean.getComentario().getValue().toString().trim().equals("")) {
-            String idN = FacesUtilsBean.getRequestParameter("idNoticia");
-            notaRequisicionBean.setIdNoticiaActiva(Integer.parseInt(idN));
-            int campo = Integer.parseInt(FacesUtilsBean.getRequestParameter("idCampo"));
+            notaRequisicionBean.setIdNoticiaActiva(idN);
             notaRequisicionBean.agregarComentario(notaRequisicionBean.getIdNoticiaActiva(), campo);
         } else {
             FacesUtilsBean.addInfoMessage("Agregue un comentario a la noticia .  .  .  . ");

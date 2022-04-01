@@ -263,8 +263,7 @@ public class ExportarFacturaBean implements Serializable {
         //
     }
 
-    public void seleccionar() {
-        int idFactura = Integer.parseInt(FacesUtilsBean.getRequestParameter("idFac"));
+    public void seleccionar(int idFactura) {
         facturaVo = siFacturaImpl.buscarFactura(idFactura);
         facturaVo.setDetalleFactura(new ArrayList<FacturaDetalleVo>());
         listaArchivosFactura = new ArrayList<FacturaAdjuntoVo>();
@@ -279,8 +278,7 @@ public class ExportarFacturaBean implements Serializable {
         PrimeFaces.current().executeScript("$(dialogoConsultaFactura).modal('show');");
     }
 
-    public void seleccionarNotaCredito() {
-        int idFacNota = Integer.parseInt(FacesUtilsBean.getRequestParameter("idNotaCredito"));
+    public void seleccionarNotaCredito(int idFacNota) {
         //
         listaArchivosNotaCredito = new ArrayList<>();
         listaArchivosNotaCredito = siFacturaAdjuntoImpl.traerSoporteFactura(idFacNota, Boolean.FALSE);

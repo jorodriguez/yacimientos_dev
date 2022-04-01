@@ -13,8 +13,6 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.faces.bean.CustomScoped;
 
-import javax.faces.model.ArrayDataModel;
-import javax.faces.model.ListDataModel;
 import javax.faces.model.SelectItem;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -93,7 +91,7 @@ public class EstiloBean implements Serializable {
             } else {
                 UsuarioBean usuarioBean = (UsuarioBean) FacesUtilsBean.getManagedBean("usuarioBean");
                 if (this.seleccion.equals("REQUISICIÓN.")) {
-                    pagina = "/vistas/SiaWeb/Requisiciones/DetalleHistorial";
+                    pagina = "/vistas/SiaWeb/Requisiciones/DetalleHistorial.xhtml?faces-redirect=true";
                     Requisicion requisicion;
                     requisicion = requisicionImpl.buscarPorConsecutivoBloque(codigo.toUpperCase(), usuarioBean.getUsuarioConectado().getId());
                     //requisicion = requisicionImpl.buscarPorConsecutivoEmpresa(codigo.toUpperCase(), usuarioBean.getCompania().getRfc());
@@ -126,7 +124,7 @@ public class EstiloBean implements Serializable {
                       //  ordenBean.getMapaOrdenes().put("ordenRequisicion", ordenImpl.traerOrdenPorRequisicion(requisicion.getId()));
                     }
                 } else {
-                    pagina = "/vistas/SiaWeb/Orden/DetalleOrden";
+                    pagina = "/vistas/SiaWeb/Orden/DetalleOrden.xhtml?faces-redirect=true";
                     Orden orden = ordenImpl.buscarPorOrdenConsecutivo(codigo.toUpperCase().trim(), usuarioBean.getUsuarioConectado().getId());
                     if (orden == null) {
                         pagina = "";

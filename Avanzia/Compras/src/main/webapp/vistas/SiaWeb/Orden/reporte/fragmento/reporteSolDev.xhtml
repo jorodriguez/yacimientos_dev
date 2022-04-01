@@ -5,107 +5,72 @@
                 xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
                 xmlns:h="http://xmlns.jcp.org/jsf/html"
                 >
-    <p:panel  style="margin-left: 10%; margin-top: 20px; border-bottom: 1px solid #000;"
-		   >
-        <h:outputText value="#{msgs['sistema.fecha.inicio']}"/>
-        <p:panel  >
-            <script>
-		$(function () {
-		    $("#frmOCSSolDevCan\\:inicio").datepicker({
-			showOn: "button",
-			buttonImage: "./resources/Imagenes/cal_button.gif",
-			buttonImageOnly: true,
-			dateFormat: "dd/mm/yy",
-			dateTime: regresaFechaInicioMes("frmOCSSolDevCan", "inicio"),
-			onSelect: function (date) {
-			    inicio = date;
-			}
-		    });
-		});
-            </script>
-            <h:inputText  value="#{reporteBean.inicio}" id="inicio" size="12"/>
-            <h:message errorClass="errorMessage" fatalClass="fatalMessage" for="inicio" infoClass="infoMessage"
-                         style="color: rgb(204, 0, 0);width: 214px" warnClass="warnMessage"/>
-        </p:panel> 
+    <p:panel  >
+        <h:outputText value="#{msgs['sistema.fecha.inicio']}"/>      
+        <p:datePicker value="#{reporteBean.inicio}" pattern="dd/MM/yyyy"/>
+        <h:message errorClass="errorMessage" fatalClass="fatalMessage" for="inicio" infoClass="infoMessage"
+                   style="color: rgb(204, 0, 0);width: 214px" warnClass="warnMessage"/>
         <h:outputText value="#{msgs['sistema.fecha.fin']}" />
-        <p:panel  >
-            <script>
-		$(function () {
-		    $("#frmOCSSolDevCan\\:fin").datepicker({
-			showOn: "button",
-			buttonImage: "./resources/Imagenes/cal_button.gif",
-			buttonImageOnly: true,
-			dateFormat: "dd/mm/yy",
-			maxDate: new Date(new Date()),
-			onSelect: function (date) {
-			    fin = date;
-			},
-			onClose: function (selectedDate) {
-			    $("#frmOCSSolDevCan\\:inicio").datepicker("option", "maxDate", selectedDate);
-			}
-		    });
-		});
-            </script>
-            <h:inputText  value="#{reporteBean.fin}" id="fin" size="12" />
-            <h:message errorClass="errorMessage" fatalClass="fatalMessage" for="fin" infoClass="infoMessage"
-                         style="color: rgb(204, 0, 0);width: 214px" warnClass="warnMessage"/>
-        </p:panel>
-        <p:commandLink value="#{msgs['sistema.buscar']}" action="#{reporteBean.traerOCSSolDev(event)}" 
-                       styleClass="btn btn-sm btn-info"
-		       style="float: right;"
-                       onclick="return validaBuscar('frmOCSSolDevCan\\:inicio', 'frmOCSSolDevCan\\:fin');"/>
-    </p:panel> 
-    <br/>
-    <h:inputHidden id="hidenComprador" value="#{reporteBean.nombreUsuario}"/>
-    <h:inputHidden id="hidenTab" value="#{reporteBean.indiceTab}"/>
-    <p:commandLink id="btnBuscarPorComprador" value="Buscar" 
-                     action="#{reporteBean.traerOCSComprador(event)}"
-                     style="display: none;"/>
-    <!--Grafica-->                    
-    <div id="graficaSolDevCan" style="min-width: 500px; height: 400px; margin: 0 auto;" ></div>
-    <br/>
-    <script>
-	$(function () {
-	    $("#tabsol").tabs();
-	});
-    </script>
-    <div id="tabsol">
-        <!--ul>
-            <li id="sol"><a href="#solicitadas" onclick="cambiarTab('frmOCSSolDevCan', 'btnBuscarPorComprador', 'hidenTab', 1);">Ordenes de compra</a></li>
-            <li id="dev"><a href="#devueltas" onclick="cambiarTab('frmOCSSolDevCan', 'btnBuscarPorComprador','hidenTab', 2);">Devueltas</a></li>                        
-            <li id="can"><a href="#canceladas" onclick="cambiarTab('frmOCSSolDevCan', 'btnBuscarPorComprador','hidenTab', 3);">Canceladas</a></li>
+        <p:datePicker value="#{reporteBean.fin}" pattern="dd/MM/yyyy"/>
+        <h:message errorClass="errorMessage" fatalClass="fatalMessage" for="fin" infoClass="infoMessage"
+                   style="color: rgb(204, 0, 0);width: 214px" warnClass="warnMessage"/>
+    </p:panel>
+    <p:commandLink value="#{msgs['sistema.buscar']}" action="#{reporteBean.traerOCSSolDev(event)}" 
+                   styleClass="btn btn-sm btn-info"
+                   style="float: right;"
+                   onclick="return validaBuscar('frmOCSSolDevCan\\:inicio', 'frmOCSSolDevCan\\:fin');"/>
+</p:panel> 
+<br/>
+<h:inputHidden id="hidenComprador" value="#{reporteBean.nombreUsuario}"/>
+<h:inputHidden id="hidenTab" value="#{reporteBean.indiceTab}"/>
+<p:commandLink id="btnBuscarPorComprador" value="Buscar" 
+               action="#{reporteBean.traerOCSComprador(event)}"
+               style="display: none;"/>
+<!--Grafica-->                    
+<div id="graficaSolDevCan" style="min-width: 500px; height: 400px; margin: 0 auto;" ></div>
+<br/>
+<script>
+    $(function () {
+        $("#tabsol").tabs();
+    });
+</script>
+<div id="tabsol">
+    <!--ul>
+        <li id="sol"><a href="#solicitadas" onclick="cambiarTab('frmOCSSolDevCan', 'btnBuscarPorComprador', 'hidenTab', 1);">Ordenes de compra</a></li>
+        <li id="dev"><a href="#devueltas" onclick="cambiarTab('frmOCSSolDevCan', 'btnBuscarPorComprador','hidenTab', 2);">Devueltas</a></li>                        
+        <li id="can"><a href="#canceladas" onclick="cambiarTab('frmOCSSolDevCan', 'btnBuscarPorComprador','hidenTab', 3);">Canceladas</a></li>
 
-        </ul!-->
-        <!--div id="solicitadas" -->
+    </ul!-->
+    <!--div id="solicitadas" -->
 
-        <c:if test="#{reporteBean.indiceTab eq 1}">
-            <h:outputLabel value="OC/S Solicitadas" styleClass="textoTitulo" style="color: blue; margin-left: 40%;"/>
-            <ui:include src="/vistas/SiaWeb/Orden/reporte/fragmento/tabla/columnaOCSSolicitada.xhtml"/>
-        </c:if>
-        <c:if test="#{reporteBean.indiceTab eq 2}">
-            <h:outputLabel value="OC/S Devueltas" styleClass="textoTitulo" style="color: goldenrod; margin-left: 40%;"/>
-            <p:dataTable size="small" stripedRows="true" showGridlines="true" id="dtDevueltas" value="#{reporteBean.lista}" var="data"
-                           rows="20" styleClass="dataPaginatorDataTable" 
-                           paginator="true"  
-                           paginatorPosition="bottom" 
-                           style="font-size: 1em;" >
-                <f:facet name="header"><h:outputLabel value="#{reporteBean.nombreUsuario}"/></f:facet>
-                <ui:include src="/vistas/SiaWeb/Orden/reporte/fragmento/tabla/tablaOCSMovimiento.xhtml"/>
-            </p:dataTable>
-            <p:dataExporter fileName="dtOCSDevueltas" type="xls" target="dtDevueltas" />
-        </c:if>
-        <c:if test="#{reporteBean.indiceTab eq 3}">
-            <h:outputLabel value="OC/S Canceladas" styleClass="textoTitulo" style="color: red; margin-left: 40%;"/>
-            <p:dataTable size="small" stripedRows="true" showGridlines="true" id="dtOCSCancelada" value="#{reporteBean.lista}" var="data"
-                           rows="20" styleClass="dataPaginatorDataTable" 
-                           paginator="true"  
-                           paginatorPosition="bottom" 
-                           style="font-size: 1em;" >
-                <f:facet name="header"><h:outputLabel value="#{reporteBean.nombreUsuario}"/></f:facet>
-                <ui:include src="/vistas/SiaWeb/Orden/reporte/fragmento/tabla/tablaOCSMovimiento.xhtml"/>
-            </p:dataTable>
-            <p:dataExporter fileName="OCSCancelada" type="xls" target="dtOCSDevueltas" />
-        </c:if>
-    </div>
+    <c:if test="#{reporteBean.indiceTab eq 1}">
+        <h:outputLabel value="OC/S Solicitadas" styleClass="textoTitulo" style="color: blue; margin-left: 40%;"/>
+        <ui:include src="/vistas/SiaWeb/Orden/reporte/fragmento/tabla/columnaOCSSolicitada.xhtml"/>
+    </c:if>
+    <c:if test="#{reporteBean.indiceTab eq 2}">
+        <h:outputLabel value="OC/S Devueltas" styleClass="textoTitulo" style="color: goldenrod; margin-left: 40%;"/>
+        <p:dataTable size="small" stripedRows="true" showGridlines="true" id="dtDevueltas" value="#{reporteBean.lista}" var="data"
+                     rows="20" styleClass="dataPaginatorDataTable" 
+                     paginator="true"  
+                     paginatorPosition="bottom" 
+                     style="font-size: 1em;" >
+            <f:facet name="header"><h:outputLabel value="#{reporteBean.nombreUsuario}"/></f:facet>
+            <ui:include src="/vistas/SiaWeb/Orden/reporte/fragmento/tabla/tablaOCSMovimiento.xhtml"/>
+        </p:dataTable>
+        <p:dataExporter fileName="dtOCSDevueltas" type="xls" target="dtDevueltas" />
+    </c:if>
+    <c:if test="#{reporteBean.indiceTab eq 3}">
+        <h:outputLabel value="OC/S Canceladas" styleClass="textoTitulo" style="color: red; margin-left: 40%;"/>
+        <p:dataTable size="small" stripedRows="true" showGridlines="true" id="dtOCSCancelada" value="#{reporteBean.lista}" var="data"
+                     rows="20" styleClass="dataPaginatorDataTable" 
+                     paginator="true"  
+                     paginatorPosition="bottom" 
+                     style="font-size: 1em;" >
+            <f:facet name="header"><h:outputLabel value="#{reporteBean.nombreUsuario}"/></f:facet>
+            <ui:include src="/vistas/SiaWeb/Orden/reporte/fragmento/tabla/tablaOCSMovimiento.xhtml"/>
+        </p:dataTable>
+        <p:dataExporter fileName="OCSCancelada" type="xls" target="dtOCSDevueltas" />
+    </c:if>
+</div>
 
 </ui:composition>

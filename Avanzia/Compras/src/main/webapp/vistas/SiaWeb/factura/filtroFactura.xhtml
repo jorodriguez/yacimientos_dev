@@ -9,15 +9,16 @@
         <div class="col-10 col-xs-10" >
             <div class="col-10 col-xs-10"></div>
             <div class="col-1 col-xs-1" style="text-align: right; padding-top: 20px;">
-                <p:commandLink  action="#{consultaFacturaBean.limpiarBusqueda(event)}"
+                <p:commandLink  action="#{consultaFacturaBean.limpiarBusqueda}"
                                   styleClass="btn btn-warning"
                                   title="Limpiar filtros"
-                                  style="text-align: right; margin-left: 0px;">
+                                  style="text-align: right; margin-left: 0px;"
+                                  process="@this" update="@form">
                     <i class="fa fa-trash" aria-hidden="true"></i>
                 </p:commandLink>
             </div>
             <div class="col-1 col-xs-1" style="text-align: right; padding-top: 20px;">
-                <p:commandLink styleClass="btn btn-success" action="#{consultaFacturaBean.buscarFactura(event)}"
+                <p:commandLink styleClass="btn btn-success" action="#{consultaFacturaBean.buscarFactura}"
                                  style="text-align: right; margin-left: 0px;"
                                  title="Buscar facturas">
                     <i class="fa fa-search"/>
@@ -27,10 +28,8 @@
     </div>
     <div class="table-responsive">
         <div class="col-12 col-xs-12">
-            <p:dataTable size="small" stripedRows="true" showGridlines="true" id="tblFiltro" value="#{consultaFacturaBean.listaFiltro}" var="data" style="text-align: left;
-                           width: 85%; font-size: 1.2em" 
-                           styleClass="table table-bordered table-striped"
-                           rowStyleClass="table table-bordered table-striped">	    
+            <p:dataTable size="small" stripedRows="true" showGridlines="true" id="tblFiltro" 
+                         value="#{consultaFacturaBean.listaFiltro}" var="data">	    
                 <p:column headerText="Nexo" style="width: 6%;">
                     <h:selectOneMenu value="#{data.operadorLogicoSeleccionado}"
                                      styleClass="form-control"
@@ -87,16 +86,15 @@
                     </h:selectOneMenu>		
                 </p:column>	    
                 <p:column style="width: 2%;">
-                    <p:commandLink action="#{consultaFacturaBean.agregarNuevoFiltro(event)}"
+                    <p:commandLink action="#{consultaFacturaBean.agregarNuevoFiltro}"
                                      rendered="#{data.id eq consultaFacturaBean.listaFiltro.size()-1}">
                         <f:ajax execute="@form" render="@form"/> 
                         <i class="fa fa-plus text-primary"/>
                     </p:commandLink>
                 </p:column>
                 <p:column rendered="#{consultaFacturaBean.listaFiltro.size() gt 1}" style="width: 2%;">
-                    <p:commandLink action="#{consultaFacturaBean.quitarFiltro(event)}"
+                    <p:commandLink action="#{consultaFacturaBean.quitarFiltro(data.id)}"
                                      rendered="#{data.id gt 0}">
-                        <f:param name="indice" value="#{data.id}"/>
                         <i class="fa fa-minus text-warning"/>
                         <f:ajax render="@form" execute="@form"/>
                     </p:commandLink>

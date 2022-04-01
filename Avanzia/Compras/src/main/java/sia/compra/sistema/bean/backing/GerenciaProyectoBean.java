@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import javax.annotation.PostConstruct;
+import javax.enterprise.context.Dependent;
 import javax.faces.bean.ManagedProperty;
 
 
@@ -34,7 +35,7 @@ import sia.servicios.requisicion.impl.OcGerenciaProyectoImpl;
  * @author mluis
  */
 @Named (value = "gerenciaProyectoBean")
-@ViewScoped
+@Dependent
 public class GerenciaProyectoBean implements Serializable {
 
     /**
@@ -100,9 +101,7 @@ public class GerenciaProyectoBean implements Serializable {
         PrimeFaces.current().executeScript("$(dialogoGerProy).modal('hide');");
     }
 
-    public void eliminar() {
-        int ind = Integer.parseInt(FacesUtilsBean.getRequestParameter("indice"));
-        //
+    public void eliminar(int ind) {
         ocGerenciaProyectoImpl.remove(lista.get(ind));
         lista.remove(ind);
     }

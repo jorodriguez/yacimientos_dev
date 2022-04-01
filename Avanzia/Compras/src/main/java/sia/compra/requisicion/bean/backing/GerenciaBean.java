@@ -28,7 +28,7 @@ import sia.util.UtilLog4j;
  * @version 1.0 Modificado: Marino Luis 12/06/2014
  * @author-mail hacosta.0505@gmail.com @date 7/07/2009
  */
-@Named (value = GerenciaBean.BEAN_NAME)
+@Named (value = "gerenciaBean")
 @CustomScoped(value = "#{window}")
 public class GerenciaBean implements Serializable{
 

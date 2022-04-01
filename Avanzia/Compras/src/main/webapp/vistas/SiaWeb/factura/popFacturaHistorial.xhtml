@@ -3,11 +3,10 @@
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:f="http://xmlns.jcp.org/jsf/core"
                 xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
-                xmlns:h="http://xmlns.jcp.org/jsf/html"
-                >    
+                xmlns:h="http://xmlns.jcp.org/jsf/html">    
     <!-- Modal Panel para mostrar el detalle de la factura-->
     <div class="modal fade" id="dialogoDatosFacturaHistorial" data-backdrop="static" data-keyboard="false">
-        <div class="modal-dialog" style="width: 70%;">
+        <div class="modal-dialog modal-lg" >
             <h:form id="frmFactID">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -179,9 +178,9 @@
                                         </p:column>
                                         <p:column
                                             style="#{historialFacturaBean.facturaVo.idStatus eq 731 ? (dataNota.aceptaAvanzia ? 'background-color: green' : 'background-color: yellow') : ''};">
-                                            <p:commandLink action="#{historialFacturaBean.seleccionarNotaCredito(event)}">
+                                            <p:commandLink action="#{historialFacturaBean.seleccionarNotaCredito(dataNota.id)}"
+                                                           process="@this" update="frmNotaCredito">
                                                 <i class="fa fa-cog text-primary"/>
-                                                <f:param  name="idNotaCredito" value="#{dataNota.id}"/>
                                             </p:commandLink>
                                         </p:column>
                                     </p:dataTable>
@@ -201,7 +200,9 @@
                                             </div>
                                         </div>
                                         <div class="col-12">
-                                            <p:commandLink value="Rechazar" onclick="return validaCancelar('frmFactID', 'motivoInp', 'El proceso rechazará y devolverá la factura al proveedor. ¿Está seguro?', 'Es necesario agregar el motivo');" action="#{historialFacturaBean.devolverFactura(event)}" class="btn btn-info"/>
+                                            <p:commandLink value="Rechazar" onclick="return validaCancelar('frmFactID', 'motivoInp', 'El proceso rechazará y devolverá la factura al proveedor. ¿Está seguro?', 'Es necesario agregar el motivo');" 
+                                                           action="#{historialFacturaBean.devolverFactura}" class="btn btn-info"
+                                                           process="@this" update="frmFactID"/>
 
                                         </div>
                                     </div>
@@ -214,7 +215,9 @@
                                             </div>                                              
                                             <div class="col-12" style="margin-top: 5px; margin-bottom: 10px;">
                                                 <div class="col-6">
-                                                    <p:commandLink value="Enviar Factura" action="#{historialFacturaBean.aceptarFacturaAvanzia(event)}" class="btn btn-info"/>                                                
+                                                    <p:commandLink value="Enviar Factura" 
+                                                                   action="#{historialFacturaBean.aceptarFacturaAvanzia}" 
+                                                                   class="btn btn-info" process="@this" update="frmFactID"/>
                                                 </div>                                            
                                                 <div class="col-6">
                                                     <h:outputLabel rendered="#{historialFacturaBean.facturaVo.idStatus eq 731}" value="Ya fueron enviados los archivos XML y PDF de la factura a Navision." class="control-label col-12"/>
@@ -230,7 +233,8 @@
                                             </div>                                              
                                             <div class="col-12" style="margin-top: 5px; margin-bottom: 10px;">
                                                 <div class="col-6">
-                                                    <p:commandLink value="Aceptar" action="#{historialFacturaBean.aceptarFactura(event)}" class="btn btn-info"/>
+                                                    <p:commandLink value="Aceptar" action="#{historialFacturaBean.aceptarFactura}" class="btn btn-info"
+                                                                   proceess="@this" update="frmFactID" />
                                                 </div>
                                                 <div class="col-6">
 
@@ -271,7 +275,7 @@
     <!-- Modal Panel para mostrar el detalle de la factura-->
     <div class="modal fade" id="dialogoArchivosNotaCredito" data-backdrop="static" data-keyboard="false">
         <div class="modal-dialog">
-            <h:form>
+            <h:form  id="frmNotaCredito">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h4 class="modal-title">Archivos Nota de Crédito</h4>

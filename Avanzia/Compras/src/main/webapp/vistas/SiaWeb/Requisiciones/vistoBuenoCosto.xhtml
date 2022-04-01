@@ -7,26 +7,18 @@
       xmlns:h="http://xmlns.jcp.org/jsf/html"
       xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
       >
-
     <body>
-
         <ui:composition template="./../templates/template.xhtml">
             <ui:define name="tituloPagina">
                 Revisar Requisiciones Costos
             </ui:define>
-            <ui:define name="contenido">                
-                <script>
-                    $(document).ready(function () {
-                        seleccionarFila("form1\\:dataTable1");
-                        $("#tabsRequi").tabs();
-                    });
-                </script>                
+            <ui:define name="contenido">     
                 <h:form id="form1">    
                     <div class="col-12">
                         <div class="row">                                                
                             <div id="divAutoriza" class="btn-group"  style="text-align: left;">
                                 <p:commandLink value="Revisar" styleClass="btn btn-default"
-                                               action="#{vistoBuenoCostosBean.vistoBuenoCosto(actionEvent)}"
+                                               action="#{vistoBuenoCostosBean.vistoBuenoCosto}"
                                                onclick="return validaRevCostos('form1', 'seleccion');"                                               
                                                title="Clic aqui para revisar la requisición..." 
                                                style="font-weight: bold;"
@@ -61,8 +53,8 @@
                         <div id="divTabla" style="padding-top: 5px;" class="container-fluid"> 
                             <div class="table table-responsive">
                                 <p:dataTable size="small" stripedRows="true" showGridlines="true" id="dataTable1" rows="10" value="#{vistoBuenoCostosBean.listaRequisiciones}" 
-                                               var="currentRow" styleClass="table table-striped" paginator="true" paginatorPosition="bottom" paginatorAlwaysVisible="true" 
-                                               style="font-size: 1.05em;">
+                                             var="currentRow" styleClass="table table-striped" paginator="true" paginatorPosition="bottom" paginatorAlwaysVisible="true" 
+                                             >
                                     <p:column style="width: 1%; text-align: center;">
                                         <f:facet name="header">
                                             <h:selectBooleanCheckbox  class="todos" onchange="seleccionarGeneral('todos', 'seleccion', 'divAutoriza')"/>
@@ -71,7 +63,7 @@
                                                                  onclick="mostrarDiv('divRevisa');"/>
                                     </p:column>
                                     <p:column style="width: 20%; text-align: center;"                                                
-                                                rendered="#{usuarioBean.usuarioConectado.apCampo.compania ne '901066223-8'}">
+                                              rendered="#{usuarioBean.usuarioConectado.apCampo.compania ne '901066223-8'}">
                                         <f:facet name="header">
                                             <h:outputText value="Uso CFDI*"/>
                                         </f:facet>
@@ -127,15 +119,10 @@
                             </div>
                         </div>
                     </div>                    
-                    <div id="divDatos"  style="padding-top: 15px;display: none;">                        
-                        <div class="container-fluid" style="padding-top: 50px;">
-                            <div id="tabsRequi">
-                                <ul>
-                                    <li><a href="#infRequi" >ITEMS</a></li>
-                                    <li><a href="#ETSRequi">ETS</a></li>    
-                                    <li><a href="#DevRequi">Inf. Devolución</a></li>                                
-                                </ul>
-                                <div id="infRequi" class="textoIzquierda10pts" style="margin-top: 10px;">
+                    <div id="divDatos"  >
+                        <div class="container-fluid" >
+                            <p:tabView id="tbReq" activeIndex="0">
+                                <p:tab title="ITEMS">
 
                                     <div class="container-fluid">   
                                         <div class="col-6">
@@ -159,52 +146,49 @@
                                         </div>
                                     </div>
                                     <div class="container-fluid">   
-                                        <ui:include src="/vistas/SiaWeb/Requisiciones/verVBRequi.xhtml"/>
+                                        <ui:include src="../Requisiciones/verVBRequi.xhtml"/>
                                     </div>
-                                </div>
-                                <div id="ETSRequi" class="textoIzquierda">
-                                    <div class="container-fluid">
-                                        <ui:include src="/vistas/SiaWeb/Requisiciones/verETSCostos.xhtml"/>
-                                    </div>
-                                </div>
-                                <div id="DevRequi" class="textoIzquierda">
-                                    <div class="container-fluid">
-                                        <p:dataTable size="small" stripedRows="true" showGridlines="true"  value="#{vistoBuenoCostosBean.listaRechazo}" var="currentRow"   styleClass="table table-striped">
+                                </p:tab>
+                                <p:tab title="ETS">
+                                    <ui:include src="../Requisiciones/verETSCostos.xhtml"/>
+                                </p:tab>
+                                <p:tab title="Devoluciones">
+                                    <p:dataTable size="small" stripedRows="true" showGridlines="true"  value="#{vistoBuenoCostosBean.listaRechazo}" var="currentRow"   styleClass="table table-striped">
+                                        <f:facet name="header">
+                                            <h:outputLabel value="Información de Devolución"/>
+                                        </f:facet>
+                                        <p:column>
+                                            <h:outputText value="#{currentRow.rechazo.nombre}"/>
                                             <f:facet name="header">
-                                                <h:outputLabel value="Información de Devolución"/>
+                                                <h:outputText value="Devolvió"/>
                                             </f:facet>
-                                            <p:column>
-                                                <h:outputText value="#{currentRow.rechazo.nombre}"/>
-                                                <f:facet name="header">
-                                                    <h:outputText value="Devolvió"/>
-                                                </f:facet>
-                                            </p:column>
-                                            <p:column>
-                                                <h:outputText value="#{currentRow.fecha}">
-                                                    <f:convertDateTime dateStyle="default" type="date"/>
-                                                </h:outputText>
-                                                <f:facet name="header">
-                                                    <h:outputText value="Fecha"/>
-                                                </f:facet>
-                                            </p:column>
-                                            <p:column>
-                                                <h:outputText value="#{currentRow.hora}">
-                                                    <f:convertDateTime pattern="hh:mm" timeStyle="default" type="time"/>
-                                                </h:outputText>
-                                                <f:facet name="header">
-                                                    <h:outputText value="Hora"/>
-                                                </f:facet>
-                                            </p:column>
-                                            <p:column>
-                                                <h:outputText value="#{currentRow.motivo}"/>
-                                                <f:facet name="header">
-                                                    <h:outputText value="Motivo"/>
-                                                </f:facet>
-                                            </p:column>
-                                        </p:dataTable>
-                                    </div>
-                                </div>
-                            </div>
+                                        </p:column>
+                                        <p:column>
+                                            <h:outputText value="#{currentRow.fecha}">
+                                                <f:convertDateTime dateStyle="default" type="date"/>
+                                            </h:outputText>
+                                            <f:facet name="header">
+                                                <h:outputText value="Fecha"/>
+                                            </f:facet>
+                                        </p:column>
+                                        <p:column>
+                                            <h:outputText value="#{currentRow.hora}">
+                                                <f:convertDateTime pattern="hh:mm" timeStyle="default" type="time"/>
+                                            </h:outputText>
+                                            <f:facet name="header">
+                                                <h:outputText value="Hora"/>
+                                            </f:facet>
+                                        </p:column>
+                                        <p:column>
+                                            <h:outputText value="#{currentRow.motivo}"/>
+                                            <f:facet name="header">
+                                                <h:outputText value="Motivo"/>
+                                            </f:facet>
+                                        </p:column>
+                                    </p:dataTable>
+
+                                </p:tab>
+                            </p:tabView>
                         </div>
                     </div>
                 </h:form> 

@@ -5,63 +5,22 @@
                 xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
                 xmlns:h="http://xmlns.jcp.org/jsf/html"
                 >
-    <p:panel  style="margin-left: 10%; margin-top: 20px;  border-bottom: 1px solid #333;">
+    <p:panel  >
         <h:outputText value="#{msgs['sistema.fecha.inicio']}"/>
-        <p:panel  >
-            <script>
-		$(function () {
-		    $("#frmReporte\\:inicio").datepicker({
-			showOn: "button",
-			buttonImage: "./resources/Imagenes/cal_button.gif",
-			buttonImageOnly: true,
-			dateFormat: "dd/mm/yy",
-			dateTime: regresaFechaInicioMes("frmReporte", "inicio"),
-			onSelect: function (date) {
-			    inicio = date;
-			}
-		    });
-		});
-            </script>
-            <h:inputText  value="#{reporteBean.inicio}" id="inicio" size="12"/>
-            <h:message errorClass="errorMessage" fatalClass="fatalMessage" for="inicio" infoClass="infoMessage"
-                         style="color: rgb(204, 0, 0);width: 214px" warnClass="warnMessage"/>
-        </p:panel> 
+        <p:datePicker value="#{reporteBean.inicio}" pattern="dd/MM/yyyy"/>
         <h:outputText value="#{msgs['sistema.fecha.fin']}" />
-        <p:panel  >
-            <script>
-		$(function () {
-		    $("#frmReporte\\:fin").datepicker({
-			showOn: "button",
-			buttonImage: "./resources/Imagenes/cal_button.gif",
-			buttonImageOnly: true,
-			dateFormat: "dd/mm/yy",
-			maxDate: new Date(new Date()),
-			onSelect: function (date) {
-			    fin = date;
-			},
-			onClose: function (selectedDate) {
-			    $("#frmReporte\\:inicio").datepicker("option", "maxDate", selectedDate);
-			}
-		    });
-		});
-            </script>
-            <h:inputText  value="#{reporteBean.fin}" id="fin" size="12"/>
-            <h:message errorClass="errorMessage" fatalClass="fatalMessage" for="fin" infoClass="infoMessage"
-                         style="color: rgb(204, 0, 0);width: 214px" warnClass="warnMessage"/>
-        </p:panel>
+        <p:datePicker value="#{reporteBean.fin}" pattern="dd/MM/yyyy"/>
         <h:selectBooleanCheckbox  value="#{reporteBean.autorizada}" label="Autorizadas" disabled="true">
             Solicitadas
         </h:selectBooleanCheckbox>
-        <p:commandLink value="Buscar" action="#{reporteBean.traerDatosComprador(event)}" 
-                       styleClass="btn btn-sm btn-info"
-		       style="float: right;"
-                       onclick="return validaBuscar('frmReporte\\:inicio', 'frmReporte\\:fin');"/>
+        <p:commandLink value="Buscar" action="#{reporteBean.traerDatosComprador}" 
+                       styleClass="btn btn-sm btn-info"/>
     </p:panel>
     <p:panel style="text-align: right;" >
         <h:outputText value="#{msgs['orden.solicitada.analista']}"/> 
     </p:panel>
     <br/>
-    <p:commandLink id="btnLimpiar" value="#{msgs['orden.boton.limpiar']}" style="display: none" action="#{reporteBean.limiarLista(event)}" 
+    <p:commandLink id="btnLimpiar" value="#{msgs['orden.boton.limpiar']}" style="display: none" action="#{reporteBean.limiarLista}" 
                    styleClass="compartir"/>
     <!--Grafica-->                    
 
@@ -69,10 +28,10 @@
     <br/>
     <hr/>
     <p:dataTable size="small" stripedRows="true" showGridlines="true" id="dtCompra" value="#{reporteBean.lista}" var="data"
-                   rows="10" styleClass="dataPaginatorDataTable" 
-                   paginator="true"  
-                   paginatorPosition="bottom" 
-                   style="font-size: 1em; width: 50%" >
+                 rows="10" styleClass="dataPaginatorDataTable" 
+                 paginator="true"  
+                 paginatorPosition="bottom" 
+                 style="font-size: 1em; width: 50%" >
         <p:column headerText="#{msgs['orden.comprador.nombre']}" style="text-align: left;">
             <h:outputText value="#{data.analista}"/>
         </p:column>

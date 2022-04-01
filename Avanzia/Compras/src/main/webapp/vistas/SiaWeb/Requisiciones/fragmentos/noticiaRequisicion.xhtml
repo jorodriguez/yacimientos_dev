@@ -13,7 +13,7 @@
                 <p:column> 
                     <div class="col-10 bordePanelGrid">                    
                         <div class="col-1" style="padding:  0 3% 0 0;" >
-                            <p:graphicImage url="./resources/Imagenes/logo.png" width="50" height="40" 
+                            <p:graphicImage url="/sia/resources/img/logo.png" width="50" height="40" 
                                               />
                         </div>
                         <div class="col-10" style="border-left: 1px solid #cccccc">
@@ -33,10 +33,9 @@
                                     <div class="container-fluid">
                                         <h:outputLabel  value="#{data['titulo']}" styleClass="f12Negrita"/><br/>
                                         <ui:fragment rendered="#{data['genero'] eq usuarioBean.usuarioConectado.id}">
-                                            <p:commandLink value="#{msgs['sistema.modificar']}" action="#{notaRequisicionBean.mostrarPopupModificarNoticia(actionEvent)}"
+                                            <p:commandLink value="#{msgs['sistema.modificar']}" action="#{notaRequisicionBean.mostrarPopupModificarNoticia(data.id)}"
                                                              title="#{msgs['comunicacion.clic.aqui.para']} #{msgs['sistema.modificar']} #{msgs['comunicacion.esta']} #{msgs['comunicacion.publicacion']}"
                                                              style="color: blue;">
-                                                <f:param name="idNoticia" value="#{data['id']}"/>                                                    
                                             </p:commandLink>
                                             <h:outputText styleClass="f11gris" value=" - " />  
                                             <p:commandLink value="#{msgs['sistema.eliminar']}" 
@@ -44,14 +43,13 @@
                                                              onclick="if (!confirm('Está seguro de eliminar esta noticia ...? '))
 									 return false;"
                                                              style="color:  blue;"
-                                                             action="#{notaRequisicionBean.eliminarNoticia(actionEvent)}">
-                                                <f:param name="idNoticia" value="#{data['id']}"/>                                                    
+                                                             action="#{notaRequisicionBean.eliminarNoticia(data.id)}">
+                                                                                   
                                             </p:commandLink>
                                             <h:outputText style="color: graytext; font-size: 11px;" value=" - "/>                                                                                                
                                             <p:commandLink title="#{msgs['comunicacion.clic.agregar.archivos']}"                                                             
-                                                             action="#{notaRequisicionBean.mostrarPopupSubirArchivo(actionEvent)}"
+                                                             action="#{notaRequisicionBean.mostrarPopupSubirArchivo(data.id)}"
                                                              value="Adjuntar" style="color:  blue;">
-                                                <f:param name="idNoticia" value="#{data['id']}"/>
                                             </p:commandLink> 
                                         </ui:fragment>
                                     </div>                            
@@ -63,9 +61,7 @@
                                         <p:commandLink value="#{msgs['comunicacion.responder']}" 
                                                          styleClass="btn btn-info"
                                                          title="#{msgs['comunicacion.clic.para.guardar.respuesta']}" 
-                                                         action="#{requisicionBean.nuevoComentario(actionEvent)}">
-                                            <f:param  name="idNoticia" value="#{data['id']}"/>
-					    <f:param  name="idCampo" value="#{data['idCampo']}"/>
+                                                         action="#{requisicionBean.nuevoComentario(data.id, data.idCampo)}">
                                         </p:commandLink>
                                     </div>
                                 </div>
@@ -83,13 +79,10 @@
                                                     </h:outputLink>
                                                 </h:column>
                                                 <h:column rendered="#{data['genero'] eq usuarioBean.usuarioConectado.id}">                                        
-                                                    <p:commandLink value="#{msgs['sistema.eliminar']}" action="#{notaRequisicionBean.eliminarArchivo(event)}"                                                                 
+                                                    <p:commandLink value="#{msgs['sistema.eliminar']}" action="#{notaRequisicionBean.eliminarArchivo( arch.id, arch.idNoticiaAdjunto, data.id)}"
                                                                      onclick="if (!confirm('Está seguro de eliminar el archivo . . . ? '))
 										 return false;"
                                                                      style="color: blue;">
-                                                        <f:param name="idArchivo"  value="#{arch.id}"/>
-                                                        <f:param name="idCoNoticiaSiAdjunto" value="#{arch['idNoticiaAdjunto']}"/>
-                                                        <f:param name="idNoticia" value="#{data['id']}"/>
                                                     </p:commandLink>
                                                 </h:column>
                                             </h:dataTable>
@@ -123,19 +116,16 @@
                                                                                   style="font-style: italic;"/>
                                                                     <ui:fragment rendered="#{comentario.genero eq usuarioBean.usuarioConectado.id}">
                                                                         <div class="col-4">
-                                                                            <p:commandLink value="#{msgs['sistema.modificar']}" action="#{notaRequisicionBean.mostrarPopupModificarComentario(actionEvent)}"
+                                                                            <p:commandLink value="#{msgs['sistema.modificar']}" action="#{notaRequisicionBean.mostrarPopupModificarComentario(comentario.id)}"
                                                                                              title="#{msgs['comunicacion.clic.aqui.para']} #{msgs['sistema.modificar']} #{msgs['comunicacion.este']} #{msgs['comunicacion.comentario']}" 
-
                                                                                              style="color: blue;">
-                                                                                <f:param name="idComentario" value="#{comentario.id}"/>
                                                                             </p:commandLink>
                                                                             <h:outputText value=" | "/>
                                                                             <p:commandLink value="#{msgs['sistema.eliminar']}" title="#{msgs['comunicacion.clic.aqui.para']} #{msgs['sistema.eliminar']} #{msgs['comunicacion.este']} #{msgs['comunicacion.comentario']}" 
                                                                                              onclick="if (!confirm('Está seguro de eliminar el comentario ...? '))
 													 return false;"
-                                                                                             action="#{notaRequisicionBean.eliminarComentario(actionEvent)}"                                                                                              
+                                                                                             action="#{notaRequisicionBean.eliminarComentario(comentario.id)}"                                                                                              
                                                                                              style="color: blue;">
-                                                                                <f:param name="idComentario" value="#{comentario.id}"/>                                                    
                                                                             </p:commandLink>
                                                                         </div>
                                                                     </ui:fragment>
