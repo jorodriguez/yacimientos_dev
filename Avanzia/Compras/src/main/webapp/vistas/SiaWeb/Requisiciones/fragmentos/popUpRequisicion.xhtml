@@ -331,18 +331,19 @@
                                 <p:tab id="tbBuscar" title="Buscar" class="bg-primary">
                                     <div class="card">
                                         <div class="form-group" >
-                                            <ui:repeat id="rpCategorias" value="#{requisicionBean.categoriasSeleccionadas}" var="data"
-                                                       varStatus="indice">
-                                                <p:commandLink  action="#{requisicionBean.seleccionarCategoriaCabecera(indice.index)}"
-                                                                styleClass="text text-primary"
-                                                                process="frmItemReq:pnlAcord:rpCategorias" update="frmItemReq:pnlAcord:tbBuscar">
-                                                    <i class="fa fa-arrow-right"/>
-                                                    #{data.nombre} 
-                                                </p:commandLink>
-                                            </ui:repeat>
-
+                                            <p:panel id="pnlCat">
+                                                <ui:repeat id="rpCategorias" value="#{requisicionBean.categoriasSeleccionadas}" var="data"
+                                                           varStatus="indice">
+                                                    <p:commandLink  action="#{requisicionBean.seleccionarCategoriaCabecera(indice.index)}"
+                                                                    styleClass="text text-primary"
+                                                                    process="@this" 
+                                                                    update="frmItemReq:pnlAcord:dtCatPrin frmItemReq:pnlAcord:lblArtTotal frmItemReq:pnlAcord:tablaResBusquedaAvTABLE">
+                                                        <i class="fa fa-arrow-right"/>
+                                                        #{data.nombre} 
+                                                    </p:commandLink>
+                                                </ui:repeat>
+                                            </p:panel>
                                         </div>                                                        
-                                        <!--rowSelectListener="{requisicionBean.seleccionarCategoria}"-->
                                         <p:dataTable id="dtCatPrin"  size="small" stripedRows="true" showGridlines="true" 
                                                      value="#{requisicionBean.categorias}" var="data"
                                                      rows="20" paginator="true"  
@@ -350,8 +351,8 @@
                                                      selectionMode="single" rowKey="#{data.id}" 
                                                      selection="#{requisicionBean.categoriaTempVo}"                                                                             
                                                      >
-                                            <p:ajax event="rowSelect" listener="#{requisicionBean.seleccionarCategoria}" 
-                                                    update="frmItemReq:pnlAcord:tbBuscar"/>
+                                            <p:ajax event="rowSelect" listener="#{requisicionBean.seleccionarCategoria}" process="@this"
+                                                    update="frmItemReq:pnlAcord:pnlCat frmItemReq:pnlAcord:dtCatPrin frmItemReq:pnlAcord:lblArtTotal frmItemReq:pnlAcord:tablaResBusquedaAvTABLE"/>
                                             <p:column headerText="Código"  width="120">
                                                 <h:outputText value="#{data.codigo}"/>
                                             </p:column>
@@ -360,20 +361,8 @@
                                             </p:column>                                                
                                         </p:dataTable>
                                         <div class="input-group">
-                                            <div class="col-9">                                            
-                                                <!--textChangeListener="{requisicionBean.traerArticulosItemsListener}"-->
-                                                <p:autoComplete id="idBusquedaAvArticulos"  placeholder="Buscar Artículos"
-                                                                value="#{requisicionBean.articuloTx}" 
-                                                                completeMethod="#{requisicionBean.traerArticulosItemsListener}"
-                                                                style="width: 850px">
-                                                </p:autoComplete> 
-                                            </div>
-                                            <div class="col-2">                                                                                    
-                                                <strong><h:outputText
-                                                        value="#{requisicionBean.articulosResultadoBqda.size()} Artículos"/>
-                                                </strong>
-
-                                            </div>
+                                            <strong><h:outputText id="lblArtTotal" value="#{requisicionBean.articulosResultadoBqda.size()} Artículos"/>
+                                            </strong>
                                         </div>                                                            
                                         <div class="form-group">
                                             <p:dataTable size="small" stripedRows="true" showGridlines="true" 
@@ -381,18 +370,18 @@
                                                          id="tablaResBusquedaAvTABLE"
                                                          rows="20" paginator="true"  
                                                          paginatorPosition="bottom" 
-                                                         selectionMode="single" rowKey="#{dataRBA.value.id}"
-                                                         selection="#{requisicionBean.artSeleccionado}"
+                                                         selectionMode="single" rowKey="#{dataRBA.id}"
+                                                         selection="#{requisicionBean.articuloVo}"
                                                          >
                                                 <p:ajax event="rowSelect" listener="#{requisicionBean.seleccionarResultadoBA}" 
                                                         update="frmItemReq:pnlArticuloSeleccionado"/>
-                                                <p:column headerText="Código" width="240" styleClass="resultadoBdaCodigo">
-                                                    <h:outputText value="#{dataRBA.value.numParte}"/>
+                                                <p:column headerText="Código" width="240" styleClass="resultadoBdaCodigo"
+                                                          filterBy="#{dataRBA.numParte}" filterMatchMode="contains">
+                                                    <h:outputText value="#{dataRBA.numParte}"/>
                                                 </p:column>
-                                                <p:column headerText="Nombre" styleClass="resultadoBdaNombre">
-                                                    <h:outputText value="#{dataRBA.value.nombre}"/>
+                                                <p:column headerText="Nombre"  filterBy="#{dataRBA.nombre}" filterMatchMode="contains">
+                                                    <h:outputText value="#{dataRBA.nombre}"/>
                                                 </p:column> 
-                                                <p:ajax event="page" process="@this" oncomplete="marcarBusqueda();"/>
                                             </p:dataTable>
                                         </div>
                                     </div>
@@ -401,7 +390,7 @@
                         </div>
                         <p:panel id="pnlArticuloSeleccionado" >
                             <div class="card " >                                    
-                                <div class="form-group">
+                                <div class="input-group">
                                     <div class="col-12">
                                         <strong><h:outputText value="Si el artículo no fue encontrado, favor de solicitar el registro del nuevo artículo. " /></strong>
                                         <p:commandButton value="Solicitar" styleClass="btn btn-info"
@@ -501,10 +490,12 @@
                                                                 <f:selectItems value="#{requisicionBean.listaTO}"/>
                                                                 <p:ajax event="change" update="@form" listener="#{requisicionBean.actualizaTarea}" />  
                                                             </h:selectOneMenu>
-                                                            <p:commandLink value="#{msgs['orden.ayuda.tarea']}" rendered="#{requisicionBean.requisicionActual.gerencia.abrev.startsWith('PER')}"
-                                                                           styleClass="link" style="font-size: 12px; font-weight: bold; text-decoration: underline;"
+                                                            <p:commandLink value="#{msgs['orden.ayuda.tarea']}" 
+                                                                           rendered="#{requisicionBean.requisicionActual.gerencia.abrev.startsWith('PER')}"
+                                                                           styleClass="link" 
                                                                            title="Datos para crear items " 
-                                                                           onclick="dialogoAyudaRequisicion('dialogoAyudaItem')">                                              
+                                                                           onclick="dialogoAyudaRequisicion('dialogoAyudaItem')"
+                                                                           process="@this" update="frmCerrarAyuda">                                              
                                                             </p:commandLink>
                                                         </div>
                                                     </div>
@@ -632,7 +623,7 @@
                     </div>
                     <div class="modal-footer">
                         <div class="input-group">
-                            <div id="btnfrmItemReq" class="col-4">                                
+                            <div id="btnfrmItemReq" >                                
                                 <p:commandButton value="#{requisicionBean.operacionItem}"
                                                  styleClass="btn btn-info"                                         
                                                  action="#{requisicionBean.completarActualizacionItemCrearRequisicion}"
@@ -641,7 +632,7 @@
                                                              requisicionBean.itemActual.id gt 0}"
                                                  process="@form" update="form1:tbRequi"/>
                             </div>
-                            <div id="btnfrmItemReqCont" class="col-4" style="display: none;">
+                            <div id="btnfrmItemReqCont" style="display: none;">
                                 <p:commandButton value="#{requisicionBean.operacionItem}"
                                                  styleClass="btn btn-info" 
                                                  onclick="return validateMultiItemReq('proyOTM');"
@@ -649,13 +640,11 @@
                                                  rendered="#{requisicionBean.itemActual.invArticulo.id gt 0 or requisicionBean.itemActual.id gt 0}"
                                                  process="@form" update="form1:tbRequi"/>
                             </div>
-                            <div class="col-4">
-                                <p:commandLink value="Cancelar"
-                                               styleClass="btn btn-default"
-                                               onclick="cerrarDialogoModal(dialogoItemsRequi);"
-                                               title="Cerrar ventana..." 
-                                               immediate="true"/>                                    
-                            </div>
+                            <p:commandLink value="Cancelar"
+                                           styleClass="btn btn-default"
+                                           onclick="cerrarDialogoModal(dialogoItemsRequi);"
+                                           title="Cerrar ventana..." 
+                                           immediate="true"/>
                         </div>
                     </div>
                 </h:form>

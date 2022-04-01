@@ -37,7 +37,6 @@ import lombok.Setter;
 import org.primefaces.PrimeFaces;
 import org.primefaces.component.datatable.DataTable;
 import org.primefaces.event.SelectEvent;
-import sia.compra.busqueda.SoporteArticulos;
 import sia.compra.orden.bean.backing.OrdenBean;
 import sia.compra.sistema.bean.backing.ContarBean;
 import sia.constantes.Constantes;
@@ -174,8 +173,6 @@ public class RequisicionBean implements Serializable {
     private NotificacionMovilUsuarioImpl notificacionMovilImpl;
 
     //
-    @Inject
-    private SoporteArticulos soporteArticulos;
     @Inject
     private MonedaBean monedaBean;
 
@@ -399,11 +396,11 @@ public class RequisicionBean implements Serializable {
     private List<ArticuloVO> articulosFrecuentes = new ArrayList<>();
     @Getter
     @Setter
-    private List<SelectItem> articulosResultadoBqda = new ArrayList<>();
+    private List<ArticuloVO> articulosResultadoBqda = new ArrayList<>();
     @Getter
     @Setter
     private List<SelectItem> articulosResultadoBqdaCat = new ArrayList<>();
-    
+
     private CategoriaVo categoriaVo;
     private CategoriaVo categoriaVoInicial;
     @Getter
@@ -517,6 +514,9 @@ public class RequisicionBean implements Serializable {
     @Getter
     @Setter
     private SelectItem artSeleccionado;
+    @Getter
+    @Setter
+    private List<GereciaTareaVo> listaAyuda;
 
     /**
      * Creates a new instance of ManagedBeanRequisiciones
@@ -526,6 +526,7 @@ public class RequisicionBean implements Serializable {
 
     @PostConstruct
     public void inicializar() {
+        listaAyuda = new ArrayList<>();
         esperaVO = new RequisicionEsperaVO();
         esperaVO.setMsgs(new ArrayList<>());
         requisicionActual = new Requisicion();
@@ -2791,26 +2792,6 @@ public class RequisicionBean implements Serializable {
         }
     }
 
-    public List<GereciaTareaVo> getListaAyuda() {
-        try {
-            if ((requisicionActual != null && TipoRequisicion.PS.equals(requisicionActual.getTipo()))
-                    && itemActual != null) {
-                int idG = 0;
-                if (requisicionActual.getGerencia().getAbrev().contains(";")) {
-                    String cad[] = requisicionActual.getGerencia().getAbrev().split(";");
-                    GerenciaVo gvo = gerenciaImpl.traerGerenciaVOAbreviatura(cad[0]);
-                    idG = gvo.getId();
-                } else {
-                    idG = requisicionActual.getGerencia().getId();
-                }
-                return ocGerenciaTareaImpl.traerTareaTrabajo(idG, requisicionActual.getApCampo().getId());
-            }
-        } catch (Exception e) {
-            LOGGER.fatal(this, "Excepion al recuperar la ayuda de las requisiciones  : : : " + e.getMessage(), e);
-        }
-        return null;
-    }
-
     /**
      * Este metodo sirve para actualzar el Ítem desde el panel emergente
      *
@@ -3254,14 +3235,8 @@ public class RequisicionBean implements Serializable {
                     iniciarCatSel();
                     setLstArticulos(new ArrayList<>());
                     setArticuloTx("");
-                    setArticulosResultadoBqda(
-                            soporteArticulos.obtenerArticulos(
-                                    getArticuloTx(),
-                                    usuarioBean.getUsuarioConectado().getApCampo().getId(),
-                                    0,
-                                    null
-                            )
-                    );
+                    articulosResultadoBqda = articuloImpl.obtenerArticulos(null, usuarioBean.getUsuarioConectado().getApCampo().getId(), 0, null);
+
                     PrimeFaces.current().executeScript("$(dialogoItemsRequi).modal('show');");
                     break;
                 case AI:
@@ -3284,14 +3259,8 @@ public class RequisicionBean implements Serializable {
                     iniciarCatSel();
                     setArticuloTx(Constantes.VACIO);
                     setLstArticulos(new ArrayList<>());
-                    setArticulosResultadoBqda(
-                            soporteArticulos.obtenerArticulos(
-                                    getArticuloTx(),
-                                    usuarioBean.getUsuarioConectado().getApCampo().getId(),
-                                    0,
-                                    null
-                            )
-                    );
+                    articulosResultadoBqda = articuloImpl.obtenerArticulos(null, usuarioBean.getUsuarioConectado().getApCampo().getId(), 0, null);
+
                     lstActividad = ocActividadPetroleraImpl.getActividadesItems();
                     resetPresupuesto();
                     setLstPresupuesto(ocPresupuestoImpl.getPresupuestoItems(getRequisicionActual().getApCampo().getId(), false));
@@ -3299,6 +3268,16 @@ public class RequisicionBean implements Serializable {
                     break;
             }
             setListaUnidad(ocUnidadImpl.traerUnidadItems());
+            listaAyuda = new ArrayList<>();
+            int idG = 0;
+            if (requisicionActual.getGerencia().getAbrev().contains(";")) {
+                String cad[] = requisicionActual.getGerencia().getAbrev().split(";");
+                GerenciaVo gvo = gerenciaImpl.traerGerenciaVOAbreviatura(cad[0]);
+                idG = gvo.getId();
+            } else {
+                idG = requisicionActual.getGerencia().getId();
+            }
+            listaAyuda = ocGerenciaTareaImpl.traerTareaTrabajo(idG, requisicionActual.getApCampo().getId());
         } catch (Exception ex) {
             LOGGER.fatal(this, null, ex);
         }
@@ -3642,24 +3621,15 @@ public class RequisicionBean implements Serializable {
     }
 
     public void traerArticulosListener(String event) {
-        setLstArticulos(traerArticulos(event));
-    }
-
-    public void traerArticulosItemsListener(String event) {
-        String cadena = event;
-        if ((cadena != null && !cadena.isEmpty() && cadena.length() > 2)
-                || (cadena == null || cadena.isEmpty())) {
-            setArticulosResultadoBqda(traerArticulosItems(cadena));
-        }
-        PrimeFaces.current().executeScript(";marcarBusqueda();");
+        // setLstArticulos(traerArticulos(event));
     }
 
     public void traerCategoriasListener(String event) {
-        setLstCategorias(traerCategorias(event));
+        // setLstCategorias(traerCategorias(event));
     }
 
     public void traerGEArticulosListener(String event) {
-        setLstGEArticulos(traerGEArticulos(event));
+        //  setLstGEArticulos(traerGEArticulos(event));
     }
 
     private String filtrosCadena(String cadena) {
@@ -3676,72 +3646,55 @@ public class RequisicionBean implements Serializable {
         return cadenaNombre.toString() + "))";
     }
 
-    private List<SelectItem> traerArticulosItems(String cadena) {
-        List<SelectItem> list;
-        try {
-            cadena = filtrosCadena(cadena.replace(" ", "%"));
-            list = soporteArticulos.obtenerArticulosItems(cadena, usuarioBean.getUsuarioConectado().getApCampo().getId(),
-                    Constantes.CERO,
-                    getCodigos(getCategoriasSeleccionadas().size() > 1
-                            ? getCategoriasSeleccionadas().subList(1, getCategoriasSeleccionadas().size())
-                            : new ArrayList<CategoriaVo>()));
-        } catch (Exception e) {
-            list = new ArrayList<>();
-        }
-        return list;
-    }
-
-    private List<SelectItem> traerArticulos(String cadena) {
-        List<SelectItem> list;
-        try {
-            if (cadena != null && !cadena.isEmpty() && cadena.length() > 2) {
-                list = soporteArticulos.obtenerArticulos(cadena, usuarioBean.getUsuarioConectado().getApCampo().getId(),
-                        Constantes.CERO,
-                        getCodigos(getCategoriasSeleccionadas().size() > 2
-                                ? getCategoriasSeleccionadas().subList(2, getCategoriasSeleccionadas().size())
-                                : new ArrayList<CategoriaVo>()));
-            } else {
-                list = new ArrayList<>();
-            }
-        } catch (Exception e) {
-            LOGGER.error(this, "", e);
-            list = new ArrayList<>();
-        }
-        return list;
-    }
-
-    private List<SelectItem> traerCategorias(String cadena) {
-        List<SelectItem> list;
-        try {
-            if (cadena != null && !cadena.isEmpty() && cadena.length() > 2) {
-                list = soporteArticulos.obtenerCategorias(cadena, usuarioBean.getUsuarioConectado().getApCampo().getId());
-            } else {
-                list = new ArrayList<>();
-            }
-        } catch (Exception e) {
-            LOGGER.error(this, "", e);
-            list = new ArrayList<>();
-        }
-        return list;
-    }
-
-    private List<SelectItem> traerGEArticulos(String cadena) {
-        List<SelectItem> list;
-        try {
-            if (cadena != null && !cadena.isEmpty() && cadena.length() > 2) {
-                list = soporteArticulos.obtenerArticulos(cadena, usuarioBean.getUsuarioConectado().getApCampo().getId(),
-                        Constantes.CERO,
-                        null);
-            } else {
-                list = new ArrayList<>();
-            }
-        } catch (Exception e) {
-            LOGGER.error(this, "", e);
-            list = new ArrayList<>();
-        }
-        return list;
-    }
-
+//    private List<SelectItem> traerArticulos(String cadena) {
+//        List<SelectItem> list;
+//        try {
+//            if (cadena != null && !cadena.isEmpty() && cadena.length() > 2) {
+//                list = soporteArticulos.obtenerArticulos(cadena, usuarioBean.getUsuarioConectado().getApCampo().getId(),
+//                        Constantes.CERO,
+//                        getCodigos(getCategoriasSeleccionadas().size() > 2
+//                                ? getCategoriasSeleccionadas().subList(2, getCategoriasSeleccionadas().size())
+//                                : new ArrayList<CategoriaVo>()));
+//            } else {
+//                list = new ArrayList<>();
+//            }
+//        } catch (Exception e) {
+//            LOGGER.error(this, "", e);
+//            list = new ArrayList<>();
+//        }
+//        return list;
+//    }
+//    private List<SelectItem> traerCategorias(String cadena) {
+//        List<SelectItem> list;
+//        try {
+//            if (cadena != null && !cadena.isEmpty() && cadena.length() > 2) {
+//                list = soporteArticulos.obtenerCategorias(cadena, usuarioBean.getUsuarioConectado().getApCampo().getId());
+//            } else {
+//                list = new ArrayList<>();
+//            }
+//        } catch (Exception e) {
+//            LOGGER.error(this, "", e);
+//            list = new ArrayList<>();
+//        }
+//        return list;
+//    }
+//
+//    private List<SelectItem> traerGEArticulos(String cadena) {
+//        List<SelectItem> list;
+//        try {
+//            if (cadena != null && !cadena.isEmpty() && cadena.length() > 2) {
+//                list = soporteArticulos.obtenerArticulos(cadena, usuarioBean.getUsuarioConectado().getApCampo().getId(),
+//                        Constantes.CERO,
+//                        null);
+//            } else {
+//                list = new ArrayList<>();
+//            }
+//        } catch (Exception e) {
+//            LOGGER.error(this, "", e);
+//            list = new ArrayList<>();
+//        }
+//        return list;
+//    }
     private String getCodigos(List<CategoriaVo> categorias) {
         String codigosTxt = "";
         for (CategoriaVo cat : categorias) {
@@ -3765,9 +3718,11 @@ public class RequisicionBean implements Serializable {
     public void cambiarCategoria() {
         try {
             if (getCategoriaGETx() != null && !getCategoriaGETx().isEmpty()) {
-                setArticulosResultadoBqdaCat(soporteArticulos.obtenerArticulos("", usuarioBean.getUsuarioConectado().getApCampo().getId(),
-                        0,
-                        getCategoriaGETx()));
+                List<ArticuloVO> arts = articuloImpl.obtenerArticulos("", usuarioBean.getUsuarioConectado().getApCampo().getId(),
+                        0, getCategoriaGETx());
+                arts.stream().forEach(a -> {
+                    articulosResultadoBqdaCat.add(new SelectItem(a.getId(), a.getNombre()));
+                });
                 setCategoriaGETx("");
                 setLstCategorias(new ArrayList<>());
                 PrimeFaces.current().executeScript(";minimizarPanel('artFrecImg', 'collapsePanelArtFre');minimizarPanel('busAvaImg', 'collapsePanelBusquedaAvanzada');");
@@ -3784,7 +3739,7 @@ public class RequisicionBean implements Serializable {
                 int aux = 2;
                 String codigoInt = getArticuloTx().substring(
                         (getArticuloTx().lastIndexOf("=>") + aux));
-                List<ArticuloVO> articulos = soporteArticulos.getArticulosActivo(codigoInt, usuarioBean.getUsuarioConectado().getApCampo().getId(), 0, "");
+                List<ArticuloVO> articulos = articuloImpl.obtenerArticulos(codigoInt, usuarioBean.getUsuarioConectado().getApCampo().getId(), 0, "");
                 if (articulos != null && articulos.size() > 0) {
                     setArticuloID(articulos.get(0).getId());
                     getItemActual().setInvArticulo(articuloImpl.find(articulos.get(0).getId()));
@@ -3810,13 +3765,10 @@ public class RequisicionBean implements Serializable {
                 int aux = 2;
                 String codigoInt = getArticuloGETx().substring((getArticuloGETx().lastIndexOf("=>") + aux));
 
-                List<ArticuloVO> articulos
-                        = soporteArticulos.getArticulosActivo(
-                                codigoInt,
-                                usuarioBean.getUsuarioConectado().getApCampo().getId(),
-                                0,
-                                Constantes.VACIO
-                        );
+                List<ArticuloVO> articulos = articuloImpl.obtenerArticulos(
+                        codigoInt,
+                        usuarioBean.getUsuarioConectado().getApCampo().getId(),
+                        0, Constantes.VACIO);
                 if (articulos != null && articulos.size() > 0) {
                     setArticuloID(articulos.get(0).getId());
                     getItemActual().setInvArticulo(articuloImpl.find(articulos.get(0).getId()));
@@ -3857,12 +3809,12 @@ public class RequisicionBean implements Serializable {
         }
     }
 
-    public void seleccionarResultadoBA(SelectEvent<SelectItem> event) {
+    public void seleccionarResultadoBA(SelectEvent<ArticuloVO> event) {
         try {
-            SelectItem artItem = (SelectItem) event.getObject();
-            if (artItem != null && artItem.getValue() != null && ((ArticuloVO) artItem.getValue()).getId() > 0) {
-                setArticuloTx(new StringBuilder().append(((ArticuloVO) artItem.getValue()).getNombre())
-                        .append("=>").append(((ArticuloVO) artItem.getValue()).getNumParte())
+            ArticuloVO artItem = (ArticuloVO) event.getObject();
+            if (artItem != null && artItem.getId() > 0) {
+                setArticuloTx(new StringBuilder().append(artItem.getNombre())
+                        .append("=>").append(artItem.getNumParte())
                         .toString().toLowerCase());
                 cambiarArticulo();
 
@@ -3877,7 +3829,7 @@ public class RequisicionBean implements Serializable {
     private void traerSubcategoria(int indice) {
         CategoriaVo c = categoriasSeleccionadas.get(indice);
         if (indice == 0) {
-            categorias = categoriaVo.getListaCategoria();
+            categorias = invArticuloCampoImpl.traerCategoriaArticulo();
             setCategoriaVo(getCategoriaVoInicial());
             categoriasSeleccionadas = new ArrayList<>();
             iniciarCatSel();
@@ -3897,18 +3849,11 @@ public class RequisicionBean implements Serializable {
         }
         getItemActual().setInvArticulo(new InvArticulo());
         setArticuloTx("");
-        setArticulosResultadoBqda(
-                soporteArticulos.obtenerArticulosItems(
-                        getArticuloTx(),
-                        usuarioBean.getUsuarioConectado().getApCampo().getId(),
-                        0,
-                        getCodigos(
-                                getCategoriasSeleccionadas().size() > 1
-                                ? getCategoriasSeleccionadas().subList(1, getCategoriasSeleccionadas().size())
-                                : new ArrayList<>()
-                        )
-                )
-        );
+        articulosResultadoBqda = articuloImpl.obtenerArticulos(null, usuarioBean.getUsuarioConectado().getApCampo().getId(), 0,
+                getCodigos(
+                        getCategoriasSeleccionadas().size() > 1
+                        ? getCategoriasSeleccionadas().subList(1, getCategoriasSeleccionadas().size())
+                        : new ArrayList<>()));
         setLstArticulos(new ArrayList<>());
 //        PrimeFaces.current().executeScript(
 //                ";minimizarPanel('artFrecImg', 'collapsePanelArtFre');expandirPanel('busAvaImg', 'collapsePanelBusquedaAvanzada');"
@@ -3926,27 +3871,23 @@ public class RequisicionBean implements Serializable {
     public void seleccionarCategoria(SelectEvent<CategoriaVo> event) {
         try {
             CategoriaVo con = (CategoriaVo) event.getObject();
+            System.out.println("Categoría selec:" + con.getNombre());
             //setCategoriaVo(con);
             //
-            categoriaVo  = siRelCategoriaImpl.traerCategoriaPorCategoria(con.getId(), getSoloCodigos(categoriasSeleccionadas), usuarioBean.getUsuarioConectado().getApCampo().getId());
+            categoriaVo = siRelCategoriaImpl.traerCategoriaPorCategoria(con.getId(), getSoloCodigos(categoriasSeleccionadas), usuarioBean.getUsuarioConectado().getApCampo().getId());
+            System.out.println("Categoría rec: " + categoriaVo.getNombre() + " cats: " + categoriaVo.getListaCategoria());
             categorias = categoriaVo.getListaCategoria();
             //
+            System.out.println("Seleccionadas : " + categoriasSeleccionadas.size());
             //llenarCategoria(getSoloCodigos(getCategoriasSeleccionadas()));
             categoriasSeleccionadas.add(categoriaVo);
             if (getCategoriasSeleccionadas() != null && getCategoriasSeleccionadas().size() > 1) {
                 setArticuloTx("");
-                setArticulosResultadoBqda(
-                        soporteArticulos.obtenerArticulosItems(
-                                getArticuloTx(),
-                                usuarioBean.getUsuarioConectado().getApCampo().getId(),
-                                0,
-                                getCodigos(
-                                        getCategoriasSeleccionadas().size() > 1
-                                        ? getCategoriasSeleccionadas().subList(1, getCategoriasSeleccionadas().size())
-                                        : new ArrayList<>()
-                                )
-                        )
-                );
+                articulosResultadoBqda = articuloImpl.obtenerArticulos(
+                        null, usuarioBean.getUsuarioConectado().getApCampo().getId(),
+                        0, getCodigos(getCategoriasSeleccionadas().size() > 1
+                                ? getCategoriasSeleccionadas().subList(1, getCategoriasSeleccionadas().size())
+                                : new ArrayList<>()));
             }
         } catch (Exception e) {
             System.out.println("Excp: " + e);

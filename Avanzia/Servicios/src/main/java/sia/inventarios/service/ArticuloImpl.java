@@ -403,7 +403,7 @@ public class ArticuloImpl extends AbstractFacade<InvArticulo>  {
 
         LOGGER.info(this, "*** obtenerArticulos {0} - {1} - {2} - {3}", new Object[]{codigo, campoID, categoriaID, codigosCategorias});
 
-        List<ArticuloVO> lstArticulos = new ArrayList<ArticuloVO>();
+        List<ArticuloVO> lstArticulos = new ArrayList<>();
         StringBuilder sb = new StringBuilder();
         //                   0      1              2                        3         4
         sb.append(" select a.ID, a.CODIGO, a.CODIGO_EAN13 AS codigo_barras, a.NOMBRE, a.DESCRIPCION, "

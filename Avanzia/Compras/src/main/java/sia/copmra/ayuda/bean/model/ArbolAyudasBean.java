@@ -6,18 +6,16 @@ package sia.copmra.ayuda.bean.model;
 
 import java.io.Serializable;
 import java.util.List;
-import javax.enterprise.context.Conversation;
-import javax.enterprise.context.ConversationScoped;
+import javax.annotation.PostConstruct;
+import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
-import sia.constantes.Constantes;
 import sia.servicios.sistema.vo.SiAyudaAdjuntoVo;
 import sia.servicios.sistema.vo.SiAyudaVo;
 import sia.servicios.sistema.vo.SiModuloVo;
 import sia.servicios.sistema.vo.SiOpcionVo;
-import sia.compra.sistema.bean.support.ConversationsManager;
 import sia.servicios.sistema.impl.SiAyudaAdjuntoImpl;
 import sia.servicios.sistema.impl.SiAyudaImpl;
 import sia.servicios.sistema.impl.SiModuloImpl;
@@ -28,13 +26,9 @@ import sia.servicios.sistema.impl.SiOpcionImpl;
  * @author sluis
  */
 @Named
-@ConversationScoped
+@ViewScoped
 public class ArbolAyudasBean implements Serializable {
 
-    @Inject
-    private Conversation conversacion;
-    @Inject
-    private ConversationsManager conversationsManager;
     @Inject
     private SiAyudaImpl siAyudaImpl;
     @Inject
@@ -51,21 +45,8 @@ public class ArbolAyudasBean implements Serializable {
     public ArbolAyudasBean() {
     }
 
-    @Inject
-    public ArbolAyudasBean(Conversation conversacion, ConversationsManager conversationsManager, SiModuloImpl siModuloImpl,
-            SiOpcionImpl siOpcionImpl, SiAyudaImpl siAyudaImpl, SiAyudaAdjuntoImpl siAyudaAdjuntoImpl) {
-
-        this.conversacion = conversacion;
-        this.conversationsManager = conversationsManager;
-
-        this.conversationsManager.finalizeConversation(Constantes.CONVERSACION_ARBOL_AYUDAS); //Terminando todas las conversaciones abiertas hasta este momento
-        //Iniciando la conversación
-        this.conversationsManager.beginConversation(conversacion, Constantes.CONVERSACION_ARBOL_AYUDAS);
-        this.siModuloImpl = siModuloImpl;
-        this.siOpcionImpl = siOpcionImpl;
-        this.siAyudaImpl = siAyudaImpl;
-        this.siAyudaAdjuntoImpl = siAyudaAdjuntoImpl;
-
+    @PostConstruct
+    public void iniciar() {
         //Borrando el arbol anterior
         this.arbolAyudas = null;
         this.arbolAyudas = construirArbol();

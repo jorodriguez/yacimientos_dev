@@ -14,6 +14,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class GereciaTareaVo {
-private String tarea;
-private String trabajo;
+
+    private String tarea;
+    private String trabajo;
 }

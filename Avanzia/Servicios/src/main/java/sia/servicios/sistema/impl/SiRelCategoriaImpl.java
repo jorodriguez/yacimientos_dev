@@ -82,7 +82,7 @@ public class SiRelCategoriaImpl extends AbstractFacade<SiRelCategoria>{
         List<Object[]> lobj = em.createNativeQuery(sb).getResultList();
 	// llenamos el obj categoria	
         // buscamos la lista de categorias hijas
-        List<CategoriaVo> listaCat = new ArrayList<CategoriaVo>();
+        List<CategoriaVo> listaCat = new ArrayList<>();
         for (Object[] lobj1 : lobj) {
             CategoriaVo cv = new CategoriaVo();
             cv.setId((Integer) lobj1[0]);
