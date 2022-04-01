@@ -14,7 +14,6 @@ import javax.inject.Named;
  * @author hacosta
  */
 @Named (value="panelPopup")
-@SessionScoped
 public class PanelPopup {
     // render flags for both dialogs
     private boolean draggableRendered = false;

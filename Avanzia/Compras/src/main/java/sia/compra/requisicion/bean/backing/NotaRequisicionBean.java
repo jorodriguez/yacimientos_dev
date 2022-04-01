@@ -244,7 +244,7 @@ public class NotaRequisicionBean implements Serializable {
 	}
     }
 
-    public void eliminarComentario(t idCom) {
+    public void eliminarComentario(int idCom) {
 	try {
 	    this.idComentarioActivo = idCom;
 	    UtilLog4j.log.info(this, "idComentario " + idComentarioActivo);
@@ -335,9 +335,9 @@ public class NotaRequisicionBean implements Serializable {
         }
     }
 
-    public void eliminarArchivo(int idAr, int idNotAdj, int inN) {
-	idAdjuntoActivo = idArc;
-	idRelacion = idNotAdj;
+    public void eliminarArchivo(int idAr, int idNotAdj, int idN) {
+	idAdjuntoActivo = idAr;
+	int idRelacion = idNotAdj;
 	idNoticiaActiva = idN;
 	//
 
@@ -446,8 +446,8 @@ public class NotaRequisicionBean implements Serializable {
 	this.setMrVerAdjuntos(false);
     }
 
-    public void mostrarPopupVerAdjuntos() {
-	traerAdjuntosNoticia();
+    public void mostrarPopupVerAdjuntos(int idN) {
+	traerAdjuntosNoticia(idN);
 	this.setMrVerAdjuntos(true);
     }
 

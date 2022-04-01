@@ -7,13 +7,14 @@ package sia.compra.sistema.bean.backing;
 import java.io.Serializable;
 import javax.faces.bean.CustomScoped;
 import javax.faces.bean.ManagedBean;
+import javax.inject.Named;
 
 
 /**
  *
  * @author sluis
  */
-@ManagedBean
+@Named
 @CustomScoped(value = "#{window}")
 public class GenericPanelPopup implements Serializable {
     
