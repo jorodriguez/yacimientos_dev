@@ -33,7 +33,7 @@
                     </div>
                     <br/>
                     <div id="divTabla" class="row">                         
-                        <div scope="colgroup" colspan="7" class="iceDatTblHdr tableHdr table-stripedHdr" style="font-weight: normal;">
+                        <div scope="colgroup" colspan="7"  style="font-weight: normal;">
                             <span>Facturas pendientes por enviar a CNH</span></div>
                         <div class="table table-responsive">                            
                             <!<!-- rowSelectListener="#{facturaBean.seleccionarFacturaPago}" -->
@@ -141,12 +141,12 @@
                                             <div class="col-12">
                                                 <h:outputLabel value="No CN" style="font-style: italic;" 
                                                                rendered="#{facturaBean.facturaVo.idAdjunto eq 0}"/>
-                                                <h:outputLink   style="color: blue;"
-                                                                rendered="#{facturaBean.facturaVo.uuId ne null}"
-                                                                target="_blank"  
-                                                                id="abrirReq"
-                                                                title="Click aqui para abrir el archivo..." 
-                                                                value="/Compras/AbrirArchivo?ZWZ2W=#{facturaBean.facturaVo.idAdjunto}&amp;ZWZ3W=#{facturaBean.facturaVo.uuId}">
+                                                <h:outputLink   
+                                                    rendered="#{facturaBean.facturaVo.uuId ne null}"
+                                                    target="_blank"  
+                                                    id="abrirReq"
+                                                    title="Click aqui para abrir el archivo..." 
+                                                    value="/Compras/AbrirArchivo?ZWZ2W=#{facturaBean.facturaVo.idAdjunto}&amp;ZWZ3W=#{facturaBean.facturaVo.uuId}">
                                                     <h:outputText value=" Abrir"/>
                                                 </h:outputLink>
                                             </div>
@@ -209,8 +209,8 @@
                                         <div class="col-6">
                                             <div class="col-8">
                                                 <p:commandLink  class="btn btn-info col-12" 
-                                                                action="#{facturaBean.inicioCargaComplemento(event)}"
-                                                                >
+                                                                action="#{facturaBean.inicioCargaComplemento}"
+                                                                process="@this" update="frmArchivoFact">
                                                     <i class="fa fa-file"/> <b>Cargar Complemento de Pago</b>
                                                 </p:commandLink>
                                             </div>
@@ -218,8 +218,8 @@
                                         <div class="col-6">
                                             <div class="col-8">
                                                 <p:commandLink  class="btn btn-info col-12" 
-                                                                action="#{facturaBean.inicioCargaPago(event)}"
-                                                                >
+                                                                action="#{facturaBean.inicioCargaPago}"
+                                                                process="@this" update="frmArchivoFact">
                                                     <i class="fa fa-file"/> <b>Cargar Pago</b>
                                                 </p:commandLink>
                                             </div>
@@ -227,7 +227,8 @@
                                     </div>
                                 </div>
                                 <div class="container-fluid" style="margin-top: 10px;">
-                                    <p:dataTable size="small" stripedRows="true" showGridlines="true" value="#{facturaBean.listaArchivosFactura}" var="dataFac">
+                                    <p:dataTable id="dtArc" size="small" stripedRows="true" showGridlines="true" 
+                                                 value="#{facturaBean.listaArchivosFactura}" var="dataFac">
                                         <p:column headerText="Tipo">
                                             #{dataFac.tipo}
                                         </p:column>
@@ -235,21 +236,20 @@
                                             #{dataFac.adjuntoVo.nombre}
                                         </p:column>
                                         <p:column >
-                                            <h:outputLink   style="color: blue;"
-                                                            target="_blank"  
-                                                            id="abrirReq"
-                                                            title="Click aqui para abrir el archivo..." 
-                                                            value="/Compras/AbrirArchivo?ZWZ2W=#{dataFac.adjuntoVo.id}&amp;ZWZ3W=#{dataFac.adjuntoVo.uuid}">
+                                            <h:outputLink   
+                                                target="_blank"  
+                                                id="abrirReq"
+                                                title="Click aqui para abrir el archivo..." 
+                                                value="/Compras/AbrirArchivo?ZWZ2W=#{dataFac.adjuntoVo.id}&amp;ZWZ3W=#{dataFac.adjuntoVo.uuid}">
                                                 <h:outputText value=" Abrir"/>
                                             </h:outputLink>
                                         </p:column>
                                         <p:column >
                                             <p:commandLink 
                                                 rendered="#{dataFac.tipo eq 'COMPLEMENTO' or dataFac.tipo eq 'PAGO'}"
-                                                style="color: blue;"                                                
-                                                action="#{facturaBean.eliminarComplementoPago(event)}">
-                                                <h:outputText value=" Eliminar"/>
-                                                <f:param name="idFacturaSoporte" value="#{dataFac.id}"/>
+                                                value="Eliminar"                   
+                                                action="#{facturaBean.eliminarComplementoPago(dataFac.id)}"
+                                                process="@this" update="dtArc">
                                             </p:commandLink>
                                         </p:column>
                                     </p:dataTable>

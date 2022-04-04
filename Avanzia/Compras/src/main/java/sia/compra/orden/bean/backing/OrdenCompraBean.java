@@ -1267,8 +1267,8 @@ public class OrdenCompraBean implements Serializable {
 
     }
 
-    public void agregarDescuentoItem() {
-        OrdenDetalleVO odvo = listaItems.get(Integer.parseInt(FacesUtilsBean.getRequestParameter("idItemConv")));
+    public void agregarDescuentoItem(int indice) {
+        OrdenDetalleVO odvo = listaItems.get(indice);
         if (odvo.getIdAgrupador() == Constantes.CERO) {
             //
             double total = ordenActual.getTotal() - (odvo.getCantidad() * odvo.getPrecioUnitario());

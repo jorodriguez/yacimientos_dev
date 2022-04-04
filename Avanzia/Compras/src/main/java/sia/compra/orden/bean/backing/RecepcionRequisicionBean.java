@@ -399,11 +399,9 @@ public class RecepcionRequisicionBean implements Serializable {
         return this.listaItems;
     }
 
-    public void historyItem() {
+    public void historyItem(int idInv, int idCampo) {
         try {
             if (getRequisicionActual() != null) {
-                int idInv = Integer.parseInt(FacesUtilsBean.getRequestParameter("idInv"));
-                int idCampo = Integer.parseInt(FacesUtilsBean.getRequestParameter("idCampo"));
                 if (idInv > 0 && idCampo > 0) {
                     this.setHistoricoVentas(this.ordenDetalleImpl.historicoDetalleOrden(idInv, idCampo));
                 } else {
@@ -416,9 +414,8 @@ public class RecepcionRequisicionBean implements Serializable {
         }
     }
 
-    public void seleccionarRequisicion() {
-        RequisicionVO requisicionVO = ((RequisicionVO) this.getListaRequisiciones().getRowData());
-        setRequisicionActual(requisicionServicioRemoto.find(requisicionVO.getId()));
+    public void seleccionarRequisicion(int idR) {
+        setRequisicionActual(requisicionServicioRemoto.find(idR));
         setRequisicionActual(requisicionActual);
         if (this.getRequisicionActual().isMultiproyecto()) {
             listaItems = new ListDataModel(this.requisicionServicioRemoto.getItemsAnalistaNativaMulti(this.requisicionActual.getId(), false));
@@ -442,8 +439,7 @@ public class RecepcionRequisicionBean implements Serializable {
         }
     }
 
-    public void seleccionarRequisicionConvenio() {
-        int reqId = Integer.parseInt(FacesUtilsBean.getRequestParameter("idReq"));
+    public void seleccionarRequisicionConvenio(int reqId) {
         setRequisicionActual(requisicionServicioRemoto.find(reqId));
         if (this.getRequisicionActual().isMultiproyecto()) {
             listaItems = new ListDataModel(this.requisicionServicioRemoto.getItemsAnalistaNativaMulti(this.requisicionActual.getId(), false));
@@ -475,8 +471,7 @@ public class RecepcionRequisicionBean implements Serializable {
         }
     }
 
-    public void seleccionarOrden() {
-        int idOrden = Integer.parseInt(FacesUtilsBean.getRequestParameter("idOrdenReq"));
+    public void seleccionarOrden(int idOrden) {
         OrdenBean ordenBean = (OrdenBean) FacesUtilsBean.getManagedBean("ordenBean");
         ordenBean.setOrdenActual(ordenServicioRemoto.find(idOrden));
         itemsPorOrden(idOrden);
@@ -800,8 +795,7 @@ public class RecepcionRequisicionBean implements Serializable {
         this.mostrarOpcion = false;
     }
 
-    public void mostrarInventario() {
-        int idArt = Integer.parseInt(FacesUtilsBean.getRequestParameter("idArt"));
+    public void mostrarInventario(int idArt) {
         InventarioVO inventarioVO = new InventarioVO();
         inventarioVO.setArticuloId(idArt);
         setInventario(new ArrayList<InventarioVO>());

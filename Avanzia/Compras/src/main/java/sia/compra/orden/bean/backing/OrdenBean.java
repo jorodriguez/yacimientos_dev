@@ -373,8 +373,7 @@ public class OrdenBean implements Serializable {
 
     }
 
-    public void llenarListaConvenio() {
-        String idOr = FacesUtilsBean.getRequestParameter("codigo");
+    public void llenarListaConvenio(String idOr) {
         listaArchivoConvenio = cvConvenioAdjuntoImpl.traerPorConvenioPorNumero(idOr);
     }
 
@@ -3331,8 +3330,7 @@ public class OrdenBean implements Serializable {
         PrimeFaces.current().executeScript(";abrirDialogoModal(dogoDatosFacturaOrden);");
     }
 
-    public void seleccionarNCFactura() {
-        int id = Integer.parseInt(FacesUtilsBean.getRequestParameter("idNotaCredito"));
+    public void seleccionarNCFactura(int id) {
         setListaArchivosNotaCredito(siFacturaAdjuntoImpl.traerSoporteFactura(id, Constantes.BOOLEAN_FALSE));
         PrimeFaces.current().executeScript(";abrirDialogoModal(dogoArchNCFactOrden);");
     }
