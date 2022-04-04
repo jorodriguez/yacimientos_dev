@@ -486,14 +486,14 @@ public class SolicitarOrdenBean implements Serializable {
         // false selecciona la ultima orden d la lista si es q hay si no limpia todo...
         setOrdenActual(ordenImpl.find(0));
 
-        List<OrdenDetalleVO> lo = new ArrayList<OrdenDetalleVO>();
+        List<OrdenDetalleVO> lo = new ArrayList<>();
 
         setListaItems((lo));
         setConsecutivo(Constantes.VACIO);
     }
 
-    private void filtrarContactos() {
-        List<ContactoProveedorVO> l = new ArrayList<ContactoProveedorVO>();
+    public void filtrarContactos() {
+        List<ContactoProveedorVO> l = new ArrayList<>();
         for (ContactoProveedorVO sgV : getListaContactos()) {
             if (sgV.isSelected()) {
                 l.add(sgV);

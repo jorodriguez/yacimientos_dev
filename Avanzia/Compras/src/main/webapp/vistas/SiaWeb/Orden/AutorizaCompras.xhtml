@@ -40,7 +40,8 @@
                                            styleClass="btn btn-default" process="@this" update="form1"/>
                             <p:commandLink styleClass="btn btn-default"
                                            value="Autorizar"
-                                           action="#{ordenBean.autorizarOrdenCompras}">
+                                           action="#{ordenBean.autorizarOrdenCompras}"
+                                           process="@this  form1:Ordenes" update="@form">
                                 <p:confirmDialog header="Confirmar" message="La operación va a autorizar la(s) OC/S seleccionada(s). ¿Está seguro?"/>
                             </p:commandLink>
                             <p:commandLink 
@@ -67,7 +68,7 @@
                         <p  style="float: right; color: #E79E19;"><i class="fa fa-asterisk"/>Ordenes con contrato vencido</p>
                         <div scope="colgroup" colspan="7"  style="font-weight: normal;"><span>Ordenes de compra pendientes de autorizar</span></div>
                         <div class="table table-responsive">                            
-                            <p:dataTable size="small" stripedRows="true" showGridlines="true" id="Ordenes"   value="#{ordenBean.ordenesAutorizaCompras}" var="data" 
+                            <p:dataTable size="small" stripedRows="true" showGridlines="true" id="Ordenes"   value="#{ordenBean.ocs}" var="data" 
                                          styleClass="table table-striped" rows="20" 
                                          paginator="true"  
                                          paginatorPosition="bottom" 
@@ -138,8 +139,8 @@
                                         <p:commandLink value="#{data.contratoVO.numero}" 
                                                        action="#{ordenBean.llenarListaConvenio(data.contratoVO.numero)}"
                                                        onclick="$(dialogoContratos).modal('show');"
-                                                       >
-                                        </p:commandLink>
+                                                       process="@this" update="formContratoOrden">
+                                        </p:commandLink> 
                                     </h:panelGroup>
                                     <h:panelGroup rendered="#{data.contratoVO.id eq 0}">
                                         <h:outputLabel value="#{data.contratoVO.numero}"/>
@@ -161,18 +162,18 @@
                                                 <p:link  href="/Compras/AbrirArchivo?ZWZ2W=#{lista.id}&amp;ZWZ3W=#{lista.uuid}"
                                                          target="_blank"
                                                          value="" style="margin: 0px; padding: 0px;">
-                                                    <h:graphicImage url="/sia/resources/img/Documento.gif" style="cursor: pointer;"
-                                                                    title="Abrir la tabla #{lista.nombre}"/>
+                                                    <i class="fa fa-file" title="Abrir la tabla #{lista.nombre}"/>
                                                 </p:link>
                                             </div>
                                         </ui:repeat>
                                     </h:panelGroup>
                                 </p:column>
                                 <p:column styleClass="#{data.leida eq 'False' ? 'filaConSombra': 'filaSinSombra'}">
-                                    <p:commandLink action="#{ordenBean.seleccionarOrden(actionEvent)}"
+                                    <p:commandLink action="#{ordenBean.seleccionarOrden(data.id)}"
                                                    style="#{data.errorEnvio eq 'True' ? 'color: red' : 'color : blue'}"
                                                    title="Clic aqui para ver Items..." value="Seleccionar"
-                                                   onclick="activarTab('tabOCSProc', 0, 'divDatos', 'divTabla', 'divOperacion', 'divAutoriza');"/>
+                                                   onclick="activarTab('tabOCSProc', 0, 'divDatos', 'divTabla', 'divOperacion', 'divAutoriza');"
+                                                   process="@this" update="form1:tbDatos form1:lblOcs"/>
                                 </p:column>
                             </p:dataTable>
                         </div>
@@ -182,9 +183,9 @@
                     <div id="divDatos" style="display: none;" class="row">
                         <div class="col-5" style="padding-top: 5px; z-index: 999;">
                             <h:outputText value="Información de la OC/S: "/>
-                            <h:outputText value="#{ordenBean.ordenActual.consecutivo}" style="font-weight:  bold;"/>
+                            <h:outputText id="lblOcs" value="#{ordenBean.ordenActual.consecutivo}" style="font-weight:  bold;"/>
                         </div>
-                        <p:tabView>
+                        <p:tabView id="tbDatos">
                             <p:tab title="Información de la compra">
                                 <ui:include src="../Orden/fragmento/masInformacionOrden.xhtml"/>				                                </p:tab>
                             <p:tab title="Espercificación Técnica">

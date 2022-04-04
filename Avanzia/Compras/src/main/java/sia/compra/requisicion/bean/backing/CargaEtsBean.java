@@ -265,12 +265,11 @@ public class CargaEtsBean implements Serializable {
      *
      * @param
      */
-    public void eliminarEtsOrden() {
+    public void eliminarEtsOrden(int idRelacion) {
         try {
-            int idRelacionn = Integer.valueOf(FacesUtilsBean.getRequestParameter("idRelacionEliminar"));
-            LOGGER.info(String.format("rel : : : {0}%s", idRelacionn));
+            LOGGER.info(String.format("rel : : : {0}%s", idRelacion));
             // Buscar en ReRequicision
-            setEtsOcOrden(servicioOcOrdenEts.find(idRelacionn));
+            setEtsOcOrden(servicioOcOrdenEts.find(idRelacion));
             ReRequisicionEts reRequisicion
                     = servicioReRequisicion.buscarPorRequisicionAdjunto(
                             getEtsOcOrden().getOrden().getRequisicion(),

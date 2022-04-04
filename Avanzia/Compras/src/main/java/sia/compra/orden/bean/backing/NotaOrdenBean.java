@@ -337,9 +337,8 @@ public class NotaOrdenBean implements Serializable {
         }
     }
 
-    public void eliminarArchivo() {
-        idAdjuntoActivo = Integer.parseInt(FacesUtilsBean.getRequestParameter("idArchivo"));
-        int idRelacion = Integer.parseInt(FacesUtilsBean.getRequestParameter("idCoNoticiaSiAdjunto"));
+    public void eliminarArchivo(int idAr, int idRelacion) {
+        idAdjuntoActivo = idAr;
         idNoticiaActiva = Integer.parseInt(FacesUtilsBean.getRequestParameter("idNoticia"));
         //NoticiaAdjuntoVO no = (NoticiaAdjuntoVO) lista.getRowData();
         //Integer idRelacion = no.getIdNoticiaAdjunto();

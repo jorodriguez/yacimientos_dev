@@ -1243,8 +1243,7 @@ public class OrdenCompraBean implements Serializable {
 
     }
 
-    public void agregarCantidad() {
-        int index = Integer.parseInt(FacesUtilsBean.getRequestParameter("idItemCant"));
+    public void agregarCantidad(int index) {
         OrdenDetalleVO odvo = listaItems.get(index);
 
         odvo.setImporte(odvo.getCantidad() * odvo.getPrecioUnitario());

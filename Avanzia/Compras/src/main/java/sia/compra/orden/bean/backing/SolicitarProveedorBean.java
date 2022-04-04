@@ -194,9 +194,9 @@ public class SolicitarProveedorBean implements Serializable {
 
     }
 
-    public void nuevoDocumento() {
+    public void nuevoDocumento(int idP) {
         try {
-            setListaDocto(pvDocumentoImpl.traerDocFaltanteProveedor(proveedorVo.getIdProveedor(), Constantes.DOCUMENTO_TIPO_PROVEEDOR));
+            setListaDocto(pvDocumentoImpl.traerDocFaltanteProveedor(idP, Constantes.DOCUMENTO_TIPO_PROVEEDOR));
             PrimeFaces.current().executeScript(";abrirDialogoModal(dialogoAgregarDoctoProv);");
         } catch (Exception e) {
             UtilLog4j.log.fatal(this, e);
@@ -205,7 +205,7 @@ public class SolicitarProveedorBean implements Serializable {
     }
 
     public void agregarDocumentos() {
-        List<DocumentoVO> ltemp = new ArrayList<DocumentoVO>();
+        List<DocumentoVO> ltemp = new ArrayList<>();
         for (DocumentoVO voSelected : getListaDocto()) {
             if (voSelected.isSelected()) {
                 ltemp.add(voSelected);

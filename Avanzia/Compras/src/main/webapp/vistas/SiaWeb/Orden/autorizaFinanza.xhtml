@@ -2,7 +2,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-      
+
       xmlns:p="http://primefaces.org/ui"
       xmlns:f="http://xmlns.jcp.org/jsf/core"
       xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
@@ -16,26 +16,34 @@
             <ui:define name="contenido">
                 <h:form id="form1">
                     <div class="row" style="padding-bottom: 3px;">
+                        <p:confirmDialog global="true" showEffect="fade" hideEffect="fade" responsive="true" width="350">
+                            <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no ui-button-flat"/>
+                            <p:commandButton value="Si" type="button" styleClass="ui-confirmdialog-yes" />
+                        </p:confirmDialog>
                         <div id="divAutoriza" class="col-12">
                             <div class="col-1" style="text-align: left;">
                                 <p:commandLink value="Aprobar" 
                                                styleClass="btn btn-default"
                                                style="font-weight: bold;"
-                                               action="#{ordenBean.aprobarOrdenComprasFinanzas(event)}"
-                                               onclick="return validaAutorizar('form1', 'seleccion');"/>
+                                               action="#{ordenBean.aprobarOrdenComprasFinanzas}"
+                                               onclick="return validaAutorizar('form1', 'seleccion');"
+                                               process="@this  form1:Ordenes" update="@form">
+                                    <p:confirm header="Confirmar" message="La operación va a autorizar la(s) OC/S seleccionada(s). ¿Está seguro?" 
+                                               icon="pi pi-exclamation-triangle"/>
+                                </p:commandLink>
                                 <p:commandLink value="Devolver"
-                                               class="btn btn-md btn-default"
-                                               style="font-weight: bold"
-                                               onclick="return validarDevolucion('form1', 'seleccion');"/>
+                                               class="btn btn-md btn-default"       
+                                               action="#{ordenBean.inicioDevolverOrdenCompras}"
+                                               update="frmDevsOCS" process="@this form1:Ordenes"/>/>
                                 <p:commandLink value="Cancelar"
-                                               class="btn btn-md btn-default"
-                                               style="font-weight: bold"
-                                               onclick="return validarCancelacion('form1', 'seleccion');"/>
+                                               class="btn btn-md btn-default"                    
+                                               action="#{ordenBean.inicioCancelarOrdenCompras}"
+                                               update="frmCancelVarOCS" process="@this form1:Ordenes"/>
                             </div>
                         </div>
                         <div id="divOperacion" class="col-10" style="display: none; padding-bottom: 3px;">
                             <div class="col-1" style="width: 12%;">
-                                <p:commandLink value="Regresar" action="#{ordenBean.iniciarLimpiar(actionEvent)}"
+                                <p:commandLink value="Regresar" action="#{ordenBean.iniciarLimpiar}"
                                                onclick="regresar('divTabla', 'divDatos', 'divOperacion', 'divAutoriza')"
                                                styleClass="btn btn-default"/>
                             </div>
@@ -43,36 +51,31 @@
                                 <p:commandLink 
                                     title="Clic aquí para cancelar la orden de compra..." value="Cancelar"
                                     onclick="$(dialogoCancelOCS).modal('show');"
-                                    styleClass="btn btn-default"/>
+                                    styleClass="btn btn-default"
+                                    process="@this" update="frmCancelOCS"/>
                             </div>
                             <div class="col-1" style="width: 12%;">
                                 <p:commandLink     title="Clic aquí para devolver la orden de compra..." value="Devolver"
                                                    onclick="$(dialogoDevolverOCS).modal('show');"
-                                                   styleClass="btn btn-default"/>
+                                                   styleClass="btn btn-default"
+                                                   process="@this" update="frmDevOCS"/>
                             </div>
-                            <!--div class="col-1" style="width: 12%;">
-                                <p:commandLink value="Cargar ETS" action="#{menuBarBean.cargarEts()}"
-                                               title="Clic aquí para agregar Especificación Tecnica de Suministro..." 
-                                               styleClass="btn btn-default">
-                                    <f:param name="paginaOrigen" value="/vistas/SiaWeb/Orden/AutorizaFinanza"/>
-                                    <f:param name="paginaDestino" value="/vistas/SiaWeb/Orden/Ets"/>
-                                </p:commandLink>
-                            </div-->
                             <div class="col-1" style="width: 12%;">
-                                <p:commandLink  action="#{ordenBean.crearNota(actionEvent)}" 
+                                <p:commandLink  action="#{ordenBean.crearNota}" 
                                                 title="Clic aquí para generar una Nota sobre la orden de compra..." value="Generar Nota"
                                                 onclick="$(dialogoNotaOrden).modal('show');"
-                                                styleClass="btn btn-default"/>
+                                                styleClass="btn btn-default"
+                                                process="@this" update="frmNotasOCS"/>
                             </div>
                         </div>
                     </div>
                     <br/>
                     <div id="divTabla" class="row">
                         <p:dataTable size="small" stripedRows="true" showGridlines="true" id="Ordenes" rows="10"
-                                       value="#{ordenBean.ordenesAutorizaMPG}" var="data" 
-                                       paginator="true"  
-                                       paginatorPosition="bottom" 
-                                       style="font-size: 1em; width: 100%"  >
+                                     value="#{ordenBean.ocs}" var="data" 
+                                     paginator="true"  
+                                     paginatorPosition="bottom" 
+                                     style="font-size: 1em; width: 100%"  >
                             <p:column>
                                 <f:facet name="header">
                                     <h:selectBooleanCheckbox  class="todos" onchange="seleccionarGeneral('todos', 'seleccion', 'divAutoriza')"/>
@@ -116,22 +119,6 @@
                                     <f:convertNumber pattern="#,##0.00" locale="es-MX"/>
                                 </h:outputText>
                             </p:column>
-                            <!-- <p:column style="text-align: right;">
-                                 <f:facet name="header">
-                                     <h:outputText value="I.V.A."/>
-                                 </f:facet>
-                                 <h:outputText value="#{data['iva']}">
-                                     <f:convertNumber pattern="#,##0.00" locale="es-MX"/>
-                                 </h:outputText>
-                             </p:column>
-                             <p:column style="text-align: right;">
-                                 <h:outputText value="#{data['total']}" >
-                                     <f:convertNumber pattern="#,##0.00" locale="es-MX"/>
-                                 </h:outputText>
-                                 <f:facet name="header">
-                                     <h:outputText value="Monto Total"/>
-                                 </f:facet>
-                             </p:column>-->
                             <p:column styleClass="#{data.leida eq 'False' ? 'filaConSombra': 'filaSinSombra'}">
                                 <h:outputText value="#{data['moneda']}" />
                                 <f:facet name="header">
@@ -149,8 +136,8 @@
                             <p:column headerText="Tabulación" styleClass="#{data.leida eq 'False' ? 'filaConSombra': 'filaSinSombra'}">
                                 <h:panelGroup  rendered="#{data.adjuntoETS.id gt 0}">
                                     <p:link  href="/Compras/AbrirArchivo?ZWZ2W=#{data.adjuntoETS.id}&amp;ZWZ3W=#{data.adjuntoETS.uuid}"
-                                                     target="_blank"
-                                                     value="">
+                                             target="_blank"
+                                             value="">
                                         <h:graphicImage url="/sia/resources/img/Documento.gif" 
                                                         style="cursor: pointer;"
                                                         title="Abrir la tabla #{data.adjuntoETS.nombre}"/>
@@ -160,8 +147,8 @@
                                     <ui:repeat value="#{data.listaETS}" var="lista" >
                                         <div align="left">
                                             <p:link  href="/Compras/AbrirArchivo?ZWZ2W=#{lista.id}&amp;ZWZ3W=#{lista.uuid}"
-                                                             target="_blank"
-                                                             value="" style="margin: 0px; padding: 0px;">
+                                                     target="_blank"
+                                                     value="" style="margin: 0px; padding: 0px;">
                                                 <h:graphicImage url="/sia/resources/img/Documento.gif" style="cursor: pointer;"
                                                                 title="Abrir la tabla #{lista.nombre}"/>
                                             </p:link>
@@ -170,11 +157,12 @@
                                 </h:panelGroup>
                             </p:column>
                             <p:column styleClass="#{data.leida eq 'False' ? 'filaConSombra': 'filaSinSombra'}">
-                                <p:commandLink action="#{ordenBean.seleccionarOrden(actionEvent)}" 
-                                                 style="#{data.errorEnvio eq 'True' ? 'color: red' : 'color : blue'}"
-                                                 title="Clic aquí para ver Items..." 
-                                                 value="Seleccionar"
-                                                 onclick="activarTab('tab OCSProc', 0, 'divDatos', 'divTabla', 'divOperacion', 'divAutoriza');"/>
+                                <p:commandLink action="#{ordenBean.seleccionarOrden(data.id)}" 
+                                               style="#{data.errorEnvio eq 'True' ? 'color: red' : 'color : blue'}"
+                                               title="Clic aquí para ver Items..." 
+                                               value="Seleccionar"
+                                               onclick="activarTab('tab OCSProc', 0, 'divDatos', 'divTabla', 'divOperacion', 'divAutoriza');"
+                                               process="@this" update="form1:tbOcs form1:lblOcs"/>
                             </p:column>
                         </p:dataTable>
 
@@ -183,10 +171,10 @@
                     <div id="divDatos" style="display: none;" class="row">
                         <div class="col-5" style="padding-top: 5px; z-index: 999;">
                             <h:outputText value="Información de la OC/S: "/>
-                            <h:outputText value="#{ordenBean.ordenActual.consecutivo}" style="font-weight:  bold;"/>
+                            <h:outputText id="lblOcs" value="#{ordenBean.ordenActual.consecutivo}" style="font-weight:  bold;"/>
                         </div><br/>
-                        
-                        <p:tabView>
+
+                        <p:tabView id="tbDatos">
                             <p:tab title="Información de la compra">
                                 <ui:include src="../Orden/fragmento/masInformacionOrden.xhtml"/>				                                </p:tab>
                             <p:tab title="Espercificación Técnica">

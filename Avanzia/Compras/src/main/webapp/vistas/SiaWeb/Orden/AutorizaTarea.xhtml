@@ -15,10 +15,10 @@
             </ui:define>
             <ui:define name="contenido">
                 <h:form id="form1">
-                    <p:commandLink id="btnLimpiar" value="" action="#{ordenBean.limpiarTab(actionEvent)}" style="display: none;"/>
+                    <p:commandLink id="btnLimpiar" value="" style="display: none;"/>
                     <div class="row">
-                        <p:tabView activeIndex="0">
-                            <p:tab title="Producto/Servicio">
+                        <p:tabView activeIndex="0" onTabChange="#{ordenBean.limpiarTab}" > 
+                            <p:tab title="Producto/Servicio" >
                                 <p:dataTable size="small" stripedRows="true" showGridlines="true" id="OrdenesOP" rows="10" 
                                                  value="#{ordenBean.ordenesAutorizaTareaOP}" var="currentRow" 
                                                  styleClass="table table-striped"
@@ -85,7 +85,7 @@
                                                             process="@this" update="form1:lblOcs form1:tbOcs"/>
                                         </p:column>
                                         <p:column >
-                                            <p:commandLink styleClass="text-primary" action="#{ordenBean.seleccionarOrdenOP(actionEvent)}"
+                                            <p:commandLink styleClass="text-primary" action="#{ordenBean.seleccionarOrdenOP}"
                                                            onclick="iniciarTab('tabOCSProcTarea', 0);"
                                                            title="Clic aqui para ver Items..." value="Seleccionar"
                                                            process="@this" update="form1:lblOcs form1:tbOcs"/>
@@ -316,16 +316,18 @@
                                 <div class="col-12 col-xs-12" style="margin-top: 15px;"> 
                                     <h:outputText value="Items de la orden de compra: "/>
                                     <h:outputLabel  value="#{ordenBean.ordenActual.consecutivo}  "/>&nbsp;
-                                    <p:commandLink styleClass="text-primary" action="#{ordenBean.detAFPS(actionEvent)}"  rendered="#{ordenBean.ordenActual.tipo eq 'AF'}"
+                                    <p:commandLink styleClass="text-primary" action="#{ordenBean.detAFPS}"  rendered="#{ordenBean.ordenActual.tipo eq 'AF'}"
                                                    style="color:  blue;"
                                                    onclick="$(dialogoPedidoActivo).modal('show');"                                                         
-                                                   title="Click aqui para capturar Activo Fijo para la orden de compra" value="Capturar Activos Fijos"/>
+                                                   title="Click aqui para capturar Activo Fijo para la orden de compra" value="Capturar Activos Fijos"
+                                                   process="@this" update="formPopup2"/>
 
-                                    <p:commandLink styleClass="text-primary" action="#{ordenBean.detAFPS(actionEvent)}"    
+                                    <p:commandLink styleClass="text-primary" action="#{ordenBean.detAFPS}"    
                                                    rendered="#{ordenBean.ordenActual.tipo eq 'PS'}"
                                                    style="color:  blue;"
                                                    onclick="$(dialogoPedidoActivo).modal('show');"
-                                                   title="Click aqui para capturar un producto para la orden de compra" value="Capturar Productos"/>
+                                                   title="Click aqui para capturar un producto para la orden de compra" value="Capturar Productos"
+                                                   process="@this" update="formPopup2"/>
                                 </div>
                                 <div class="table table-responsive">
                                     <p:dataTable size="small" stripedRows="true" showGridlines="true" value="#{ordenBean.itemsPorOrdenTarea}" var="currentRow" 
@@ -378,9 +380,9 @@
                                             </f:facet>
                                         </p:column>
                                         <p:column rendered="#{ordenBean.ordenActual.tipo eq 'AF' and usuarioBean.mapaRoles.get('Comprador')}">
-                                            <p:commandLink styleClass="text-primary" action="#{ordenBean.detActivosFijo(actionEvent)}"                                                                           
-                                                           title="Click aqui para capturar el codigo de NAVISION" value="Capturar Códigos">
-                                                <f:param name="id" value="#{indice}"/>
+                                            <p:commandLink styleClass="text-primary" action="#{ordenBean.detActivosFijo(indice)}"                                                                           
+                                                           title="Click aqui para capturar el codigo de NAVISION" value="Capturar Códigos"
+                                                           process="@this" update="formPopup2">
                                             </p:commandLink>
 
                                         </p:column>

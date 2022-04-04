@@ -183,9 +183,9 @@ public class NotaRequisicionBean implements Serializable {
 	}
     }
 
-    public void eliminarNoticia() {
+    public void eliminarNoticia(int idN) {
 	try {
-	    this.setIdNoticiaActiva(idNoticiaActiva);
+	    this.setIdNoticiaActiva(idN);
 	    coNoticiaImpl.eliminarNoticia(idNoticiaActiva, usuarioBean.getUsuarioConectado().getId());
 	    UtilLog4j.log.fatal(this, "Noticia eliminado");
 	} catch (Exception e) {

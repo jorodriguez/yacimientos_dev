@@ -36,7 +36,7 @@ import sia.util.UtilLog4j;
  *
  * @author mluis
  */
-@Named (value = "vistoBuenoContabilidad")
+@Named(value = "vistoBuenoContabilidad")
 @ViewScoped
 public class VistoBuenoContabilidad implements Serializable {
 
@@ -56,7 +56,7 @@ public class VistoBuenoContabilidad implements Serializable {
     private OcUsoCFDIImpl ocUsoCFDIImpl;
     //
     @Inject
-    private UsuarioBean usuarioBean ;
+    private UsuarioBean usuarioBean;
 
     private DataModel listaRequisiciones;
     private Requisicion requisicionActual;
@@ -112,7 +112,7 @@ public class VistoBuenoContabilidad implements Serializable {
                 cambiarRequisicion(0);
                 //
                 String jsMetodo = ";limpiarTodos();";
-                PrimeFaces.current().executeScript( jsMetodo);
+                PrimeFaces.current().executeScript(jsMetodo);
             } else {
                 if (idCfdi > Constantes.CERO || requisicionActual.getCompania().getRfc().equals(Constantes.RFC_IHSA_CQ)) {
                     requisicionVO.setIdCfdi(idCfdi);
@@ -120,7 +120,7 @@ public class VistoBuenoContabilidad implements Serializable {
                     FacesUtilsBean.addInfoMessage("Se envió al proceso de aprobación . . . ");
                     this.cambiarRequisicion(0);
                     String jsMetodo = ";regresar('divTabla', 'divDatos', 'divOperacion', 'divAutoriza');";
-                    PrimeFaces.current().executeScript( jsMetodo);
+                    PrimeFaces.current().executeScript(jsMetodo);
                 } else {
                     FacesUtilsBean.addErrorMessage("Seleccione el Uso CFDI, para la requisición.");
                 }
@@ -160,7 +160,7 @@ public class VistoBuenoContabilidad implements Serializable {
 
     public void devolverRequisicion() {
         try {
-            PrimeFaces.current().executeScript( ";abrirDialogoModal(dialogoDevReq);");
+            PrimeFaces.current().executeScript(";abrirDialogoModal(dialogoDevReq);");
         } catch (Exception e) {
             LOGGER.fatal(this, e.getMessage(), e);
         }
@@ -175,8 +175,8 @@ public class VistoBuenoContabilidad implements Serializable {
                 }
             }
             String jsMetodo = ";limpiarTodos();";
-            PrimeFaces.current().executeScript( jsMetodo);
-            PrimeFaces.current().executeScript( ";cerrarDevolver();");
+            PrimeFaces.current().executeScript(jsMetodo);
+            PrimeFaces.current().executeScript(";cerrarDevolver();");
             //
             ContarBean contarBean = (ContarBean) FacesUtilsBean.getManagedBean("contarBean");
             contarBean.llenarReqSinVistoBueno();
@@ -198,10 +198,10 @@ public class VistoBuenoContabilidad implements Serializable {
             }
             requisicionVO = null;
             //
-            PrimeFaces.current().executeScript( ";cerrarDialogoModal(dialogoCancelarVariasReq);");
+            PrimeFaces.current().executeScript(";cerrarDialogoModal(dialogoCancelarVariasReq);");
             this.cambiarRequisicion(0);
             String jsMetodo = ";limpiarTodos();";
-            PrimeFaces.current().executeScript( jsMetodo);
+            PrimeFaces.current().executeScript(jsMetodo);
             //
 
             ContarBean contarBean = (ContarBean) FacesUtilsBean.getManagedBean("contarBean");
@@ -222,16 +222,15 @@ public class VistoBuenoContabilidad implements Serializable {
         //Esto es para Quitar las lineas seleccionadas
         this.cambiarRequisicion(0);
         //Esto es para cerrar el panel emergente de cancelar requisicion
-        PrimeFaces.current().executeScript( ";cerrarCancelar();");
+        PrimeFaces.current().executeScript(";cerrarCancelar();");
     }
 
-    public void seleccionarRequisicionCostosConta() {
+    public void seleccionarRequisicionCostosConta(int idCfId, int idReq) {
         try {
-            requisicionVO = ((RequisicionVO) this.listaRequisiciones.getRowData());
             //
-            idCfdi = requisicionVO.getIdCfdi();
+            idCfdi = idCfId;
             //
-            setRequisicionActual(requisicionRemoto.find(requisicionVO.getId()));
+            setRequisicionActual(requisicionRemoto.find(idReq));
             //
             itemsProcesoAprobar();
             //
@@ -239,7 +238,7 @@ public class VistoBuenoContabilidad implements Serializable {
             //
             rechazosRequisicion();
             String jsMetodo = ";activarTab('tabOCSProc',0, 'divDatos', 'divTabla', 'divOperacion', 'divAutoriza');";
-            PrimeFaces.current().executeScript( jsMetodo);
+            PrimeFaces.current().executeScript(jsMetodo);
         } catch (Exception e) {
             LOGGER.fatal(this, e.getMessage(), e);
         }
@@ -284,8 +283,8 @@ public class VistoBuenoContabilidad implements Serializable {
             contarBean.llenarReqSinVoBoConta();
             //
             String jsMetodo = ";limpiarTodos();";
-            PrimeFaces.current().executeScript( jsMetodo);
-            PrimeFaces.current().executeScript( ";cerrarDevolver();");
+            PrimeFaces.current().executeScript(jsMetodo);
+            PrimeFaces.current().executeScript(";cerrarDevolver();");
         } catch (Exception e) {
             UtilLog4j.log.error(e);
             FacesUtilsBean.addInfoMessage("Requisición(es) devuelta(s) correctamente...");
@@ -300,13 +299,15 @@ public class VistoBuenoContabilidad implements Serializable {
             LOGGER.fatal(this, null, ex);
         }
     }
-  public void rechazosRequisicion() {
+
+    public void rechazosRequisicion() {
         try {
             setListaRechazo(requisicionRemoto.getRechazosPorRequisicion(this.requisicionActual.getId()));
         } catch (RuntimeException ex) {
             LOGGER.fatal(this, ex.getMessage(), ex);
         }
     }
+
     /**
      * @return the listaRequisiciones
      */
