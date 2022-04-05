@@ -482,8 +482,7 @@ public class OrdenBean implements Serializable {
         }
     }
 
-    public void modificarItemOCProducto() {
-        int id = Integer.parseInt(FacesUtilsBean.getRequestParameter("id"));
+    public void modificarItemOCProducto(int id) {
         OrdenDetalleVO ordenDetalleVO = (OrdenDetalleVO) getListaItems().get(id);
         setItemActual(ordenDetalleImpl.find(ordenDetalleVO.getId()));
         List<OrdenDetalleVO> listaDetalleOCS = (List<OrdenDetalleVO>) this.getListaItems();
@@ -693,9 +692,8 @@ public class OrdenBean implements Serializable {
     }
 // Item 
 
-    public void eliminarItem() {
+    public void eliminarItem(int id) {
         try {
-            int id = Integer.parseInt(FacesUtilsBean.getRequestParameter("indice"));
             OrdenDetalleVO odvo = listaItems.get(id);
             this.setItemActual(ordenDetalleImpl.find(odvo.getId()));
             this.ordenServicioRemoto.eliminarItem(getItemActual());
@@ -2478,8 +2476,7 @@ public class OrdenBean implements Serializable {
         return retVal;
     }
 
-    public void cambiarCampoMenu() {
-        int idCampo = Integer.parseInt(FacesUtilsBean.getRequestParameter("campoSelec"));
+    public void cambiarCampoMenu(int idCampo) {
 
         usuarioImpl.cambiarCampoUsuario(usuarioBean.getUsuarioConectado().getId(), usuarioBean.getUsuarioConectado().getId(), idCampo);
         usuarioBean.setUsuarioConectado(usuarioImpl.find(usuarioBean.getUsuarioConectado().getId()));

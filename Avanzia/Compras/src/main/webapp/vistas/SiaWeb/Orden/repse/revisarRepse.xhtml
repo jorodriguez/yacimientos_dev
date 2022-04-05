@@ -13,12 +13,13 @@
                 Revisión de archivos Repse
             </ui:define>
             <ui:define name="contenido">
-                <h:form>
-                    <p:tabView >
+                <h:form id="frmRevRepse">
+                    <p:tabView id="tbRepse">
                         <p:tab title="Compras Sin REPSE ( #{revisaRepseBean.comprasSinRepse.size()} )">
                             <div>
                                 <p:commandLink value="Aceptar" class="btn btn-primary"
-                                               action="#{revisaRepseBean.aceptarRepseSinRepse(event)}"/>
+                                               action="#{revisaRepseBean.aceptarRepseSinRepse}"
+                                               process="@form" update="frmRevRepse::tbRepse:dtCompraSinRepse"/>
                             </div>
                             <div class="table table-responsive">                        
                                 <p:dataTable size="small" stripedRows="true" showGridlines="true" id="dtCompraSinRepse" value="#{revisaRepseBean.comprasSinRepse}" var="dataCom" 
@@ -51,25 +52,24 @@
                                         <h:outputText value="#{dataCom.monedaSiglas}"/>
                                     </p:column>
                                     <p:column rendered="#{usuarioBean.usuarioConectado.apCampo.cartaIntencion eq true}">
-                                        <p:commandLink action="#{revisaRepseBean.inicioRechazarSinRepse(e)}"
+                                        <p:commandLink action="#{revisaRepseBean.inicioRechazarSinRepse(index)}"
                                                        title="Rechazar el REPSE"
                                                        >
                                             <i class="fa fa-remove text-danger" />
-                                            <f:param name="indice" value="#{index}"/>
                                         </p:commandLink>
                                     </p:column>
                                     <p:column >
-                                        <p:commandLink action="#{revisaRepseBean.aceptarCompraSinRepse(e)}"
+                                        <p:commandLink action="#{revisaRepseBean.aceptarCompraSinRepse(index)}"
                                                        title="Aceptar la compra"
-                                                       onclick="return confirm('La operación va aceptar la compra, ¿Está seguro?')">
+                                                       onclick="return confirm('La operación va aceptar la compra, ¿Está seguro?')"
+                                                       >
                                             <i class="fa fa-check text-primary"/>
-                                            <f:param name="indice" value="#{index}"/>
                                         </p:commandLink>                                
                                     </p:column>
                                     <p:column >
-                                        <p:commandLink action="#{revisaRepseBean.seleccionarSinCompra(e)}">
+                                        <p:commandLink action="#{revisaRepseBean.seleccionarSinCompra(index)}"
+                                                       process="@this" update="frmDatosCompra">
                                             <i class="fa fa-eye-open text-primary"/>
-                                            <f:param name="indice" value="#{index}"/>
                                         </p:commandLink>                                
                                     </p:column>
                                 </p:dataTable>
@@ -78,7 +78,8 @@
                         <p:tab title="Compras Con REPSE ( #{revisaRepseBean.comprasConRepse.size()} )"> 
                             <div>
                                 <p:commandLink value="Aceptar" class="btn btn-primary"
-                                               action="#{revisaRepseBean.aceptarRepse(event)}"/>
+                                               action="#{revisaRepseBean.aceptarRepse}"
+                                               process="@form" update="frmRevRepse:tbRepse:dtComprasConRepse"/>
                             </div>
                             <div class="table table-responsive">                        
                                 <p:dataTable size="small" stripedRows="true" showGridlines="true" id="dtCompraConRepse" value="#{revisaRepseBean.comprasConRepse}" var="dataCom" 
@@ -430,11 +431,9 @@
                                                             </h:outputLink>
                                                         </p:column>
                                                         <p:column headerText="Abrir">
-                                                            <p:commandLink action="#{revisaRepseBean.mostrarDoctoProveedor(e)}"
-                                                                           value="Abrir" styleClass="btn btn-link">
-                                                                <f:param name="adjuntoId" value="#{dataDocPro.adjuntoVO.id}"/>
-                                                                <f:param name="adjuntoUuid" value="#{dataDocPro.adjuntoVO.uuid}"/>
-                                                                <f:param name="docto" value="#{dataDocPro.adjuntoVO.nombre}"/>
+                                                            <p:commandLink action="#{revisaRepseBean.mostrarDoctoProveedor(dataDocPro.adjuntoVO.id, dataDocPro.adjuntoVO.uuid, dataDocPro.adjuntoVO.nombre )}"
+                                                                           value="Abrir" styleClass="btn btn-link"
+                                                                           process="@this" update="qform">
                                                             </p:commandLink>
                                                         </p:column>
                                                     </p:dataTable>

@@ -68,12 +68,11 @@ dialogoModOCS<ui:composition xmlns="http://www.w3.org/1999/xhtml"
                                                                     <ui:repeat value="#{ordenCompraBean.categoriasSeleccionadas}" var="dataCat"
                                                                                varStatus="indice">
                                                                         <p:commandLink  style="padding-left: 2%;"
-                                                                                          action="#{ordenCompraBean.seleccionarCategoriaCabecera(event)}"
+                                                                                          action="#{ordenCompraBean.seleccionarCategoriaCabecera(indice.index)}"
                                                                                           styleClass="text text-primary">
                                                                             <i class="fa fa-arrow-right"
                                                                                style="display: #{ordenCompraBean.categoriasSeleccionadas.size() gt 0} ? 'block' : 'none'"></i>
                                                                             #{dataCat.nombre} 
-                                                                            <f:param name="indiceCatSel" value="#{indice.index}"/>
                                                                         </p:commandLink>
                                                                     </ui:repeat>
                                                                 </div>                                                        
@@ -378,7 +377,7 @@ dialogoModOCS<ui:composition xmlns="http://www.w3.org/1999/xhtml"
                                         </div>
                                         <div class="col-4 col-xs-12">
                                             <p:commandLink value="Buscar..." styleClass="btn btn-default"
-                                                             action="#{ordenCompraBean.buscarOrdenPorConsecutivoBloque(event)}"/>
+                                                             action="#{ordenCompraBean.buscarOrdenPorConsecutivoBloque}"/>
 
                                         </div>
                                     </div>
@@ -470,11 +469,13 @@ dialogoModOCS<ui:composition xmlns="http://www.w3.org/1999/xhtml"
                                        styleClass="btn btn-success"
                                        title="#{msgs['sistema.tooltip.orden.detalle.pasar']}"
                                        rendered="#{ordenCompraBean.ordenVO != null}"
-                                       action="#{ordenCompraBean.pasarItemsOrden(actionEvent)}">                                
+                                       action="#{ordenCompraBean.pasarItemsOrden}"
+                                       process="@form" update="form1">                                
                         </p:commandLink>
                         <p:commandLink id="btnLimpiar" styleClass="btn btn-default" value="Cerrar"  
-                                       action="#{ordenCompraBean.limpiar(event)}"
-                                       onclick="$(dialogoDetalleOCS).modal('hide');"/>
+                                       action="#{ordenCompraBean.limpiar}"
+                                       onclick="$(dialogoDetalleOCS).modal('hide');"
+                                       immediate="true"/>
                     </div>
                 </h:form>
             </div>
@@ -616,13 +617,14 @@ dialogoModOCS<ui:composition xmlns="http://www.w3.org/1999/xhtml"
                                                 <f:selectItems value="#{ordenCompraBean.listaCategoriaEts}" />
                                             </h:selectOneMenu>                        
                                             <p:commandButton value="Adjuntar lo seleccionado" 
-                                                               action="#{ordenCompraBean.guardarSeleccionEts(event)}"                                                           
+                                                               action="#{ordenCompraBean.guardarSeleccionEts}"                                                           
                                                                styleClass="btn btn-default"
-                                                               />
+                                                               update="formqEts"/>
                                             <p:commandButton 
                                                 value="Adjuntar todo" 
-                                                action="#{ordenCompraBean.guardarTodoEts(event)}" 
-                                                styleClass="btn btn-default"/>
+                                                action="#{ordenCompraBean.guardarTodoEts}" 
+                                                styleClass="btn btn-default"
+                                                immediate="true"/>
                                         </div>
                                     </h:panelGroup>
                                     <h:panelGroup id="ETSLocal">

@@ -5,16 +5,11 @@
                 xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
                 xmlns:h="http://xmlns.jcp.org/jsf/html"
                 >
-    <style type="text/css">
-        .hasDatepicker{
-            width: 80px;
-        }
-    </style>
     <div class="table-responsive">
         <div class="col-10 col-xs-10" >
             <div class="col-9 col-xs-9"></div>
             <div class="col-1 col-xs-1" style="text-align: right; padding-top: 20px;">
-                <p:commandLink  action="#{exportarFacturaBean.limpiarBusqueda(event)}"
+                <p:commandLink  action="#{exportarFacturaBean.limpiarBusqueda}"
                                   styleClass="btn btn-warning"
                                   title="Limpiar filtros"
                                   style="text-align: right; margin-left: 0px;">
@@ -29,11 +24,11 @@
                 </p:commandLink>
             </div>
             <div class="col-1 col-xs-1" style="text-align: right; padding-top: 20px;">
-                <p:commandLink action="#{exportarFacturaBean.exportarFactura(event)}" 
+                <p:commandLink action="#{exportarFacturaBean.exportarFactura}" 
                                class="btn btn-primary" 
                                title="Exportar Facturas"
                                onclick="return validaExportarZip('frmExpFact', 'seleccionEx');"
-                               >
+                               update="@form">
                     <i class="fa fa-export"/>                                        
                 </p:commandLink>
             </div>
@@ -102,18 +97,16 @@
                     </h:selectOneMenu>		
                 </p:column>	    
                 <p:column style="width: 2%;">
-                    <p:commandLink action="#{exportarFacturaBean.agregarNuevoFiltro(event)}"
-                                     rendered="#{data.id eq exportarFacturaBean.listaFiltro.size()-1}">
-                        <f:ajax execute="@form" render="@form"/> 
+                    <p:commandLink action="#{exportarFacturaBean.agregarNuevoFiltro}"
+                                     rendered="#{data.id eq exportarFacturaBean.listaFiltro.size()-1}"
+                                     process="@form" update="@form">
                         <i class="fa fa-plus text-primary"/>
                     </p:commandLink>
                 </p:column>
                 <p:column rendered="#{exportarFacturaBean.listaFiltro.size() gt 1}" style="width: 2%;">
-                    <p:commandLink action="#{exportarFacturaBean.quitarFiltro(event)}"
-                                     rendered="#{data.id gt 0}">
-                        <f:param name="indice" value="#{data.id}"/>
-                        <i class="fa fa-minus text-warning"/>
-                        <f:ajax render="@form" execute="@form"/>
+                    <p:commandLink action="#{exportarFacturaBean.quitarFiltro(data.id)}"
+                                     rendered="#{data.id gt 0}"
+                                     process="@form" update="@form">
                     </p:commandLink>
                 </p:column>
             </p:dataTable>

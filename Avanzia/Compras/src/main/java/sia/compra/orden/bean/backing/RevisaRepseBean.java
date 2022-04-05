@@ -163,8 +163,7 @@ public class RevisaRepseBean implements Serializable {
         }
     }
 
-    public void seleccionarSinCompra() {
-        int ind = Integer.parseInt(FacesUtilsBean.getRequestParameter("indice"));
+    public void seleccionarSinCompra(int ind) {
         ordenVo = comprasSinRepse.get(ind);
         //
         items = ordenImpl.itemsPorOrdenCompra(ordenVo.getId());
@@ -195,8 +194,7 @@ public class RevisaRepseBean implements Serializable {
         }
     }
 
-    public void aceptarCompraSinRepse() {
-        int ind = Integer.parseInt(FacesUtilsBean.getRequestParameter("indice"));
+    public void aceptarCompraSinRepse(int ind) {
         ordenVo = comprasSinRepse.get(ind);
         //
         ordenImpl.aceptarRepse(ordenVo.getId(), null, sesion.getUsuarioConectado().getId(), Boolean.TRUE);
@@ -204,8 +202,7 @@ public class RevisaRepseBean implements Serializable {
         comprasSinRepse.remove(ind);
     }
 
-    public void inicioRechazarSinRepse() {
-        int ind = Integer.parseInt(FacesUtilsBean.getRequestParameter("indice"));
+    public void inicioRechazarSinRepse(int ind) {
         ordenVo = new OrdenVO();
         ordenVo = comprasSinRepse.get(ind);
         //
@@ -213,8 +210,7 @@ public class RevisaRepseBean implements Serializable {
 
     }
 
-    public void seleccionarCompra() {
-        int ind = Integer.parseInt(FacesUtilsBean.getRequestParameter("indice"));
+    public void seleccionarCompra(int ind) {
         ordenVo = comprasConRepse.get(ind);
         //
         items = ordenImpl.itemsPorOrdenCompra(ordenVo.getId());
@@ -248,10 +244,7 @@ public class RevisaRepseBean implements Serializable {
         }
     }
 
-    public void mostrarDoctoProveedor() {
-        int adjId = Integer.parseInt(FacesUtilsBean.getRequestParameter("adjuntoId"));
-        String adjUuid = (FacesUtilsBean.getRequestParameter("adjuntoUuid"));
-        String docto = (FacesUtilsBean.getRequestParameter("docto"));
+    public void mostrarDoctoProveedor(int adjId, String adjUuid, String docto) {
         documentoVo = new ProveedorDocumentoVO();
         //
         if (docto.endsWith(".pdf")) {

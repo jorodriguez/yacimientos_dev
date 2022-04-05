@@ -231,8 +231,7 @@ public class ExportarFacturaBean implements Serializable {
         listaFiltro.add(filtroVo.getId(), filtroVo);
     }
 
-    public void quitarFiltro() {
-        int id = Integer.parseInt(FacesUtilsBean.getRequestParameter("indice"));
+    public void quitarFiltro(int id) {
         //
         reasiganarId(listaFiltro, id);
         // llenar la lista

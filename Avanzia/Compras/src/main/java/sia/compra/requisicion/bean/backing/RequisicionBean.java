@@ -1004,8 +1004,7 @@ public class RequisicionBean implements Serializable {
         }
     }
 
-    public void mostrarInventario() {
-        int idArt = Integer.parseInt(FacesUtilsBean.getRequestParameter("idArt"));
+    public void mostrarInventario(int idArt) {
         InventarioVO inventarioVO = new InventarioVO();
         inventarioVO.setArticuloId(idArt);
         inventario = new ArrayList<>();
