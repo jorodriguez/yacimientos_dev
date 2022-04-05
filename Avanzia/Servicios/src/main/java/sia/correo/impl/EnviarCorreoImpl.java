@@ -52,7 +52,7 @@ public class EnviarCorreoImpl {
 
     @Trace
     private List<String> getUniqueAddresses(final String addresses) {
-        final List<String> uniqueAddresses = new ArrayList<String>();
+        final List<String> uniqueAddresses = new ArrayList<>();
 
         if (!Strings.isNullOrEmpty(addresses)) {
             uniqueAddresses.addAll(
