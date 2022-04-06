@@ -155,7 +155,7 @@ public class MenuBarBean implements Serializable {
             if (siOpcionVo != null) {
                 ocUsuarioOpcionImpl.guardar(usuarioBean.getUsuarioConectado().getId(), siOpcionVo.getId());
             } else {
-                siOpcionVo = siOpcionImpl.buscarOpcion("/vistas/SiaWeb/Requisiciones/CrearRequisicion");
+                siOpcionVo = siOpcionImpl.buscarOpcion("/vistas/SiaWeb/Requisiciones/CrearRequisicion.xhtml");
                 ocUsuarioOpcionImpl.guardar(usuarioBean.getUsuarioConectado().getId(), siOpcionVo.getId());
                 //
             }

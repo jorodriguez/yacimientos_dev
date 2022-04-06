@@ -37,7 +37,8 @@ public class AbrirArchivo extends HttpServlet {
     private SiAdjuntoImpl servicioSiAdjuntoImpl;
     @Inject
     private ProveedorAlmacenDocumentos proveedorAlmacenDocumentos;
-
+    @Inject
+    UsuarioBean sesion;
     private final static UtilLog4j LOGGER = UtilLog4j.log;
 
     /**
@@ -51,77 +52,76 @@ public class AbrirArchivo extends HttpServlet {
      */
     @Trace(dispatcher = true)
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-	    throws ServletException, IOException {
+            throws ServletException, IOException {
 
-	ServletOutputStream servletoutputstream = null;
-	String fullFilePath = null;
-	AlmacenDocumentos almacenDocumentos = proveedorAlmacenDocumentos.getAlmacenDocumentos();
+        ServletOutputStream servletoutputstream = null;
+        String fullFilePath = null;
+        AlmacenDocumentos almacenDocumentos = proveedorAlmacenDocumentos.getAlmacenDocumentos();
 
-	boolean error = false;
+        boolean error = false;
 
-	try {
-	    // utilizar un managedbean
-	    final UsuarioBean sesion = (UsuarioBean) request.getSession().getAttribute("usuarioBean");
+        try {
+            // utilizar un managedbean
 
-	    if (sesion == null) {
-		response.sendRedirect(Configurador.urlSia() + "Sia");
-	    } else {
-		// si el managed bean usuario es diferente de null podemos verificar si ya inicio sesion
-		if (sesion.getUsuarioConectado() == null) {
-		    response.sendRedirect(Configurador.urlSia() + "Sia");
-		} else {
-		    // si inicio sesion buscar el convenio q viene en el parametro del servlet
-		    String SAId = request.getParameter("ZWZ2W");
-		    String SAUUID = request.getParameter("ZWZ3W");
-		    AdjuntoVO ets = servicioSiAdjuntoImpl.buscarArchivo(Integer.parseInt(SAId), SAUUID);
+            if (sesion == null) {
+                response.sendRedirect(Configurador.urlSia() + "Sia");
+            } else {
+                // si el managed bean usuario es diferente de null podemos verificar si ya inicio sesion
+                if (sesion.getUsuarioConectado() == null) {
+                    response.sendRedirect(Configurador.urlSia() + "Sia");
+                } else {
+                    // si inicio sesion buscar el convenio q viene en el parametro del servlet
+                    String SAId = request.getParameter("ZWZ2W");
+                    String SAUUID = request.getParameter("ZWZ3W");
+                    AdjuntoVO ets = servicioSiAdjuntoImpl.buscarArchivo(Integer.parseInt(SAId), SAUUID);
 
-		    fullFilePath = SAId + " - " + SAUUID;
+                    fullFilePath = SAId + " - " + SAUUID;
 
-		    if (ets == null) {
-			writeMessage(
-				response,
-				"<html><body><table><tr><td style=\"width:95%; text-align:center; padding:3px; background-color:#A8CEF0; color:#004181; font-size:15px\">"
-				+ "La solicitud que est&#225;s realizando es incorrecta. "
-				+ "</td></tr></table></body></html>"
-			);
-		    } else {
+                    if (ets == null) {
+                        writeMessage(
+                                response,
+                                "<html><body><table><tr><td style=\"width:95%; text-align:center; padding:3px; background-color:#A8CEF0; color:#004181; font-size:15px\">"
+                                + "La solicitud que est&#225;s realizando es incorrecta. "
+                                + "</td></tr></table></body></html>"
+                        );
+                    } else {
 
-			fullFilePath = ets.getNombreUUID();
-                                
-			DocumentoAnexo documento = almacenDocumentos.cargarDocumento(ets.getUrl());
+                        fullFilePath = ets.getNombreUUID();
 
-			response.setContentType(documento.getTipoMime());
-			response.setHeader("Content-Disposition", "attachment;filename=\"" + ets.getNombreUUID() + "\"");
-			response.setContentLength(documento.getContenido().length);
+                        DocumentoAnexo documento = almacenDocumentos.cargarDocumento(ets.getUrl());
 
-			servletoutputstream = response.getOutputStream();
-			servletoutputstream.write(documento.getContenido());
-			servletoutputstream.flush();
-		    }
-		}
-	    }
+                        response.setContentType(documento.getTipoMime());
+                        response.setHeader("Content-Disposition", "attachment;filename=\"" + ets.getNombreUUID() + "\"");
+                        response.setContentLength(documento.getContenido().length);
 
-	} catch (IOException e) {
-	    LOGGER.error("File : " + fullFilePath, e);
-	    error = true;
-	} catch (NumberFormatException e) {
-	    LOGGER.error("File : " + fullFilePath, e);
-	    error = true;
-	} catch (SIAException e) {
-	    LOGGER.error("File : " + fullFilePath, e);
-	    error = true;
-	} catch (Exception e) {
-	    LOGGER.error("File : " + fullFilePath, e);
-	    error = true;
-	} finally {
-	    if (servletoutputstream != null) {
-		servletoutputstream.close();
-	    }
-	}
+                        servletoutputstream = response.getOutputStream();
+                        servletoutputstream.write(documento.getContenido());
+                        servletoutputstream.flush();
+                    }
+                }
+            }
 
-	if (error) {
-	    writeMessage(response, "No fue posible recuperar el archivo solicitado.");
-	}
+        } catch (IOException e) {
+            LOGGER.error("File : " + fullFilePath, e);
+            error = true;
+        } catch (NumberFormatException e) {
+            LOGGER.error("File : " + fullFilePath, e);
+            error = true;
+        } catch (SIAException e) {
+            LOGGER.error("File : " + fullFilePath, e);
+            error = true;
+        } catch (Exception e) {
+            LOGGER.error("File : " + fullFilePath, e);
+            error = true;
+        } finally {
+            if (servletoutputstream != null) {
+                servletoutputstream.close();
+            }
+        }
+
+        if (error) {
+            writeMessage(response, "No fue posible recuperar el archivo solicitado.");
+        }
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
@@ -135,8 +135,8 @@ public class AbrirArchivo extends HttpServlet {
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
-	    throws ServletException, IOException {
-	processRequest(request, response);
+            throws ServletException, IOException {
+        processRequest(request, response);
     }
 
     /**
@@ -149,8 +149,8 @@ public class AbrirArchivo extends HttpServlet {
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
-	    throws ServletException, IOException {
-	processRequest(request, response);
+            throws ServletException, IOException {
+        processRequest(request, response);
     }
 
     /**
@@ -160,15 +160,15 @@ public class AbrirArchivo extends HttpServlet {
      */
     @Override
     public String getServletInfo() {
-	return "Short description";
+        return "Short description";
     }// </editor-fold>
 
     public void writeMessage(HttpServletResponse response, String message) {
-	try {
-	    response.setContentType("text/html");
-	    response.getWriter().println(message);
-	} catch (IOException ex) {
-	    LOGGER.fatal(Level.SEVERE, null, ex);
-	}
+        try {
+            response.setContentType("text/html");
+            response.getWriter().println(message);
+        } catch (IOException ex) {
+            LOGGER.fatal(Level.SEVERE, null, ex);
+        }
     }
 }
