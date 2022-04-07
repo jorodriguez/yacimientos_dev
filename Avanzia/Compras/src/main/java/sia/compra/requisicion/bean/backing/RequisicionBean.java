@@ -976,7 +976,7 @@ public class RequisicionBean implements Serializable {
         try {
             requisicionActual = requisicionServicioRemoto.find(id);
             crearItem = true;
-            System.out.println("Selección: " + requisicionActual.getCompania().getNombre());
+            //.println("Selección: " + requisicionActual.getCompania().getNombre());
             notaRequisicionBean.setFiltrar(true);
             getItemsActualizar();
             rechazosRequisicion();
