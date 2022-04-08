@@ -1,0 +1,54 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:ice="http://www.icesoft.com/icefaces/component"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:p="http://primefaces.org/ui">
+    <div class="modal fade" data-backdrop="static" id="dialogoCargaSoporte" 
+         data-keyboard="false" style="z-index: 100002;">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Documentación</h4>
+                </div>
+                <h:form id="frmSoporte">
+                    <div class="modal-body">
+                        <div class="form-row">
+                            <p:fileUpload id="fileEntrySop" 
+                                           label="Archivo "
+                                           listener="#{proveedorBean.cargarSoporte}"                                           
+                                           styleClass="col-lg-11 col-xs-12 btn btn-default"/>
+                            <h:message  id="msg-docto" for="fileEntrySop" styleClass="text-danger" showDetail="false" showSummary="true"/>
+                        </div>
+                        <div class="form-row">
+                            <p:dataTable value="#{proveedorBean.soportes}" var="data">
+                                <p:column headerText="Archivo">
+                                    <h:outputLink id="abrir" target="_blank" 
+                                                  style="color: blue;"
+                                                  title="Click aqui para abrir el archivo..." 
+                                                  value="/Proveedor/AbrirArchivo?ZWZ2W=#{data.adjuntoVo.id}&amp;ZWZ3W=#{data.adjuntoVo.uuid}">
+                                        <h:outputText value=" Abrir"/>
+                                    </h:outputLink> 
+                                </p:column>
+                                <p:column>
+                                    <h:commandLink >
+                                        <i class="fa fa-trash text-danger text-capitalize"/>
+                                        <f:param name="idFacturaSoporte" value="#{data.id}"/>
+                                    </h:commandLink>
+                                </p:column>
+                            </p:dataTable>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <h:commandButton id="uploadFile" 
+                                         value="Subir" 
+                                         styleClass="btn btn-primary"/>
+                        <h:commandButton value="Cerrar" class="btn btn-default" onclick="$(dialogoCargaSoporte).modal('hide');"
+                                         immediate="true"/>
+                    </div>
+                </h:form>
+            </div>
+        </div>
+    </div>
+</ui:composition>

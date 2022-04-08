@@ -1,0 +1,91 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core">
+    <body>
+        <ui:composition template="./../../WEB-INF/template/plantilla.xhtml">
+            <ui:define name="title">
+                #{msgs['sia.carta.intencion']}
+            </ui:define>
+            <ui:define name="content">
+                <h:form>
+                    <div >
+                        <div class="col-lg-6">
+                            <h:outputLabel value="#{msgs['sia.factura.mensaje.rojo.carta.intencion']}"
+                                           rendered="#{sesion.proveedorVo.repse eq true}" 
+                                           styleClass="small" style="color:  maroon;"
+                                           />
+                        </div>
+                        <div class="col-lg-6">
+                            <h:outputLabel >
+                                <i class="fa fa-file" /> #{msgs['sia.adjuntar.archivo.repse']}
+                            </h:outputLabel>
+                        </div>
+                    </div>
+                    <p:dataTable id="dtCompras" value="#{cartaIntencionBean.ordenes}" var="dataCarta"
+                                   rowIndexVar="index">
+                        <p:column headerText="Código" style="#{dataCarta.totalCartaIntencionRechazadas gt 0 ? 'color: maroon' : ''}">
+                            <h:outputText value="#{dataCarta.consecutivo}"/>
+                        </p:column>
+                        <p:column headerText="Referencia" style="#{dataCarta.totalCartaIntencionRechazadas gt 0 ? 'color: maroon' : ''}">
+                            <h:outputText value="#{dataCarta.referencia}"/>
+                        </p:column>
+                        <p:column headerText="Fecha de entrega" style="#{dataCarta.totalCartaIntencionRechazadas gt 0 ? 'color: maroon' : ''}"> 
+                            <h:outputText value="#{dataCarta.fechaEntrega}">
+                                <f:convertDateTime pattern="dd/MM/yyyy"/>
+                            </h:outputText>
+                        </p:column>
+                        <p:column headerText="Lugar de entrega" 
+                                    style="#{dataCarta.totalCartaIntencionRechazadas gt 0 ? 'color: maroon' : ''}">  
+                            <h:outputText value="#{dataCarta.destino}"/>
+                        </p:column>
+                        <p:column headerText="Término de pago" style="#{dataCarta.totalCartaIntencionRechazadas gt 0 ? 'color: maroon' : ''}"> 
+                            <h:outputText value="#{dataCarta.terminoPago}"/>
+                        </p:column>
+                        <p:column headerText="Monto" style="#{dataCarta.totalCartaIntencionRechazadas gt 0 ? 'color: maroon' : ''}"> 
+                            <h:outputText value="#{dataCarta.total}" >
+                                <f:convertNumber maxFractionDigits="2" pattern="#,###.##"/>
+                            </h:outputText>
+                        </p:column>
+                        <p:column headerText="Moneda" style="#{dataCarta.totalCartaIntencionRechazadas gt 0 ? 'color: maroon' : ''}"> 
+                            <h:outputText value="#{dataCarta.monedaSiglas}"/>
+                        </p:column>
+                        <p:column > 
+                            <h:commandLink actionListener="#{cartaIntencionBean.inicioRechazarCompra(e)}"
+                                           title="Rechazar la compra">
+                                <i class="fa fa-remove text-danger"/>
+                                <f:param name="indice" value="#{index}"/>
+                            </h:commandLink>
+                        </p:column>
+                        <p:column > 
+                            <h:commandLink actionListener="#{cartaIntencionBean.aceptarCompra(e)}"
+                                           title="Aceptar la compra"
+                                           onclick="return  confirm('La operación aceptará la Carta de Intención de Compra, ¿está seguro? ');">
+                                <i class="fa fa-check text-primary"/>                                
+                                <f:param name="indice" value="#{index}"/>
+                            </h:commandLink>
+                        </p:column>
+                        <p:column>
+                            <h:commandLink actionListener="#{cartaIntencionBean.agregarRepse(e)}"
+                                           title="Clic para subir el REPSE " >
+                                <i class="fa fa-file #{(dataCarta.repse eq true or sesion.proveedorVo.repse eq true)? 'text-warning' : 'text-success'}"/>
+                                <f:param name="indice" value="#{index}"/>
+                            </h:commandLink>
+                        </p:column>
+                        <p:column > 
+                            <h:commandLink actionListener="#{cartaIntencionBean.seleccionarCompra(e)}"
+                                           title="Ver datos de la compra">
+                                <i class="fa fa-eye text-primary"/>                                 
+                                <f:param name="indice" value="#{index}"/>
+                            </h:commandLink>
+                        </p:column>
+                    </p:dataTable>
+                </h:form>
+                <ui:include src="popCarta.xhtml"/>
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>
