@@ -224,9 +224,9 @@ public class VistoBuenoCostosBean implements Serializable {
         PrimeFaces.current().executeScript( ";cerrarCancelar();");
     }
 
-    public void seleccionarRequisicionCostosConta() {
+    public void seleccionarRequisicionCostosConta(RequisicionVO reqVo ) {
         try {
-            requisicionVO = ((RequisicionVO) this.listaRequisiciones.getRowData());
+            requisicionVO = reqVo;
             //
             idCfdi = requisicionVO.getIdCfdi();
             //

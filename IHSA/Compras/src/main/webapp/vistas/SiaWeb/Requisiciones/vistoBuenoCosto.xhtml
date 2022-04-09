@@ -15,7 +15,11 @@
             <ui:define name="contenido">     
                 <h:form id="form1">    
                     <div class="col-12">
-                        <div class="row">                                                
+                        <div class="row">     
+                            <p:confirmDialog global="true" showEffect="fade" hideEffect="fade" responsive="true" width="350">
+                                <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no ui-button-flat"/>
+                                <p:commandButton value="Si" type="button" styleClass="ui-confirmdialog-yes" />
+                            </p:confirmDialog>                                           
                             <div id="divAutoriza" class="btn-group"  style="text-align: left;">
                                 <p:commandLink value="Revisar" styleClass="btn btn-default"
                                                action="#{vistoBuenoCostosBean.vistoBuenoCosto}"
@@ -28,34 +32,38 @@
                                                onclick="return validaDevRequi('form1', 'seleccion');"
                                                title="Clic aqui para devolver la(s) requisición(es)"
                                                disabled="#{vistoBuenoCostosBean.listaRequisiciones.rowCount lt 1}"
-                                               style="font-weight: bold;"/>
+                                               style="font-weight: bold;" process="@this" update="frmDev"/>
                                 <p:commandLink value="Cancelar" styleClass="btn btn-default"
                                                onclick="return validaCancelRequi('form1', 'seleccion');"
                                                title="Clic aqui para cancelar la(s) requisición(es)"
                                                disabled="#{vistoBuenoCostosBean.listaRequisiciones.rowCount lt 1}"
-                                               style="font-weight: bold;"/>
+                                               style="font-weight: bold;" process="@this" update="frmCanReqV"/>
                             </div>
                             <div id="divOperacion" class="btn-group" style="text-align: left; display: none;">                                                                
                                 <p:commandLink value="Regresar" styleClass="btn btn-default" action="#{vistoBuenoCostosBean.limpiarRequisicion}"
                                                onclick="regresar('divTabla', 'divDatos', 'divOperacion', 'divAutoriza')"/>
 
                                 <p:commandLink value="Revisar" styleClass="btn btn-default"
-                                               onclick="return confirmar('form1', 'La operación pasará la requisición. ¿Está seguro?.');"
-                                               action="#{vistoBuenoCostosBean.vistoBuenoCosto(actionEvent)}"    
-                                               style="font-weight: bold;"
-                                               title="Clic aqui para revisar la requisición..." />
+                                               action="#{vistoBuenoCostosBean.vistoBuenoCosto}"    
+                                               title="Clic aqui para revisar la requisición..." 
+                                               process="@form" update="form1">
+                                    <p:confirm header="Confirmar" message="La operación pasará la requisición. ¿Está seguro?." 
+                                               icon="pi pi-exclamation-triangle"/>
+                                </p:commandLink>
 
                                 <p:commandLink value="Devolver" styleClass="btn btn-default"
-                                               action="#{vistoBuenoCostosBean.devolverRequisicion(actionEvent)}"
-                                               title="Clic aqui para devolver la requisición..." />                                                                                            
+                                               action="#{vistoBuenoCostosBean.devolverRequisicion}"
+                                               title="Clic aqui para devolver la requisición..." 
+                                               process="@this" update="frmDev"/>                                                                                            
                             </div>                            
                         </div>
                         <div id="divTabla" style="padding-top: 5px;" class="container-fluid"> 
                             <div class="table table-responsive">
-                                <p:dataTable size="small" stripedRows="true" showGridlines="true" id="dataTable1" rows="10" value="#{vistoBuenoCostosBean.listaRequisiciones}" 
-                                             var="currentRow" styleClass="table table-striped" paginator="true" paginatorPosition="bottom" paginatorAlwaysVisible="true" 
+                                <p:dataTable size="small" stripedRows="true" showGridlines="true" id="dataTable1" rows="10" 
+                                             value="#{vistoBuenoCostosBean.listaRequisiciones}" 
+                                             var="currentRow" paginator="true" paginatorPosition="bottom" paginatorAlwaysVisible="true" 
                                              >
-                                    <p:column style="width: 1%; text-align: center;">
+                                    <p:column  width="35">
                                         <f:facet name="header">
                                             <h:selectBooleanCheckbox  class="todos" onchange="seleccionarGeneral('todos', 'seleccion', 'divAutoriza')"/>
                                         </f:facet>
@@ -108,10 +116,11 @@
                                             <h:outputText value="Último rechazo"/>
                                         </f:facet>
                                     </p:column>
-                                    <p:column style="width: 5%; text-align: center;">
-                                        <p:commandLink value="#{msgs['sistema.seleccionar']}"  
-                                                       action="#{vistoBuenoCostosBean.seleccionarRequisicionCostosConta(actionEvent)}"                                                   
-                                                       title="Clic aqui para ver y modificar los items de la requisición...">
+                                    <p:column width="50">
+                                        <p:commandLink action="#{vistoBuenoCostosBean.seleccionarRequisicionCostosConta(currentRow)}"                                                   
+                                                       title="Clic aqui para ver y modificar los items de la requisición..."
+                                                       process="@this" update="form1:tbReq">
+                                            <i class="fa fa-eye text-primary"/>
                                         </p:commandLink>
 
                                     </p:column>
@@ -123,13 +132,12 @@
                         <div class="container-fluid" >
                             <p:tabView id="tbReq" activeIndex="0">
                                 <p:tab title="ITEMS">
-
-                                    <div class="container-fluid">   
+                                    <div class="row">   
                                         <div class="col-6">
-                                            <div class="col-2" style="text-align: right;">
+                                            <div class="col-12" >
                                                 <h:outputLabel value="USO CFDI: "/>
                                             </div>
-                                            <div class="col-10" style="text-align: left;">
+                                            <div >
                                                 <h:selectOneMenu value="#{vistoBuenoCostosBean.idCfdi}" styleClass="form-control fa-fa2x">
                                                     <f:selectItem itemValue="0" itemLabel="Seleccione . . ."/>
                                                     <f:selectItems value="#{vistoBuenoCostosBean.listaUso}"/>
@@ -137,15 +145,15 @@
                                             </div>
                                         </div>
                                         <div class="col-6">
-                                            <div class="col-3" style="text-align: right;">
+                                            <div class="col-12" >
                                                 <h:outputLabel value="Metodo de pago: "/>
                                             </div>
-                                            <div class="col-9">
+                                            <div >
                                                 <h:outputLabel value="#{vistoBuenoCostosBean.requisicionActual.ocMetodoPago.descripcion}"/>
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="container-fluid">   
+                                    <div class="row">   
                                         <ui:include src="../Requisiciones/verVBRequi.xhtml"/>
                                     </div>
                                 </p:tab>

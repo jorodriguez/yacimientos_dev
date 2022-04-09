@@ -781,7 +781,6 @@ public class RequisicionBean implements Serializable {
                     requisicionActual.setProveedor("Licitación por Depto. de Compras");
                     PrimeFaces.current().executeScript(";abrirDialogoModal(dialogoSolicitandoReq);");
                 } else {
-                    menuBarBean.procesarAccion("");
                     if ("C".equals(requisicionActual.getApCampo().getTipo())) {
                         PrimeFaces.current().executeScript(";alertaGeneral('Es necesario agregar Proyecto OT, Tipo tarea, Tarea, Actividad Petrolera, Datos del Presupuesto y Subtarea a los items de la requisición.');");
                     } else if (requisicionActual.getTipo().equals(TipoRequisicion.PS)) {
@@ -793,7 +792,6 @@ public class RequisicionBean implements Serializable {
                     }
                 }
             } else {
-                menuBarBean.procesarAccion("");
                 if (lrd != null && lrd.size() > 0 && !hasInvArticulo) {
                     PrimeFaces.current().executeScript(";alertaGeneral('Sólo se puede solicitar requisiciones que utilizan el catálogo de productos  . . . ');");
                 } else {
@@ -1696,6 +1694,7 @@ public class RequisicionBean implements Serializable {
                         cambiarRequisicion(0);
                         String jsMetodo = ";regresarSolitar();";
                         PrimeFaces.current().executeScript(jsMetodo);
+                        PrimeFaces.current().executeScript("$(dialogoSolicitandoReq).modal('hide');");
 
                     } //------- Si el correo no se pudo enviar  -----
                     else {
@@ -1724,6 +1723,7 @@ public class RequisicionBean implements Serializable {
                         cambiarRequisicion(0);
                         String jsMetodo = ";regresarSolitar();";
                         PrimeFaces.current().executeScript(jsMetodo);
+                        PrimeFaces.current().executeScript("$(dialogoSolicitandoReq).modal('hide');");
 
                     } //------- Si el correo no se pudo enviar  -----
                     else {
@@ -1747,7 +1747,6 @@ public class RequisicionBean implements Serializable {
             ContarBean contarBean = (ContarBean) FacesUtilsBean.getManagedBean("contarBean");
             contarBean.llenarReqSinSolicitar();
             //
-            menuBarBean.procesarAccion("crearRequisicion");
         } catch (Exception ex) {
             LOGGER.fatal(this, "Ex : : : : " + ex.getMessage(), ex);
         }
