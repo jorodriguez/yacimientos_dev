@@ -95,6 +95,7 @@ public class VistoBuenoCostosBean implements Serializable {
     public void vistoBuenoCosto() {
         try {
             if (this.getRequisicionActual() == null) {
+                
                 for (Object object : listaRequisiciones) {
                     RequisicionVO o = (RequisicionVO) object;
                     if (o.isSelected()) {
