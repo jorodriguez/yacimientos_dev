@@ -34,22 +34,27 @@
                                                />
                                 </p:commandLink>                                    
                                 <p:commandLink value="Devolver" styleClass="btn btn-default"
-                                               title="Clic aqui para devolver la(s) requisición(es)"
+                                               title="Clic aqui para devolver la(s) requisición(es)"  
+                                               onclick="return validaDevRequi('form1', 'seleccion');"                                             
                                                disabled="#{requisicionBean.requisicionesSinRevisar.rowCount lt 1}"
-                                               update="frmDevV" process="@this"/>
+                                               process="@this form1:dataTable1"
+                                               update="frmDevV"/>
+
                                 <p:commandLink value="Cancelar" styleClass="btn btn-default"
                                                title="Clic aqui para cancelar la(s) requisición(es)"
+                                               onclick="return validaCancelRequi('form1', 'seleccion');"
                                                disabled="#{requisicionBean.requisicionesSinRevisar.rowCount lt 1}"
-                                               process="@this" update="frmCanReqV"/>
+                                               process="@this form1:dataTable1" update="frmCanReqV"/>
                             </div>
                             <div id="divOperacion" class="btn-group" style="text-align: left; display: none;">                                                                
-                                <p:commandLink value="Regresar" styleClass="btn btn-default" action="#{requisicionBean.limpiarRequisicion(actionEvent)}"
+                                <p:commandLink value="Regresar" styleClass="btn btn-default" 
+                                               action="#{requisicionBean.limpiarRequisicion}"
                                                onclick="regresar('divTabla', 'divDatos', 'divOperacion', 'divAutoriza')"/>                                
 
                                 <p:commandLink value="Revisar" styleClass="btn btn-default"
                                                action="#{requisicionBean.revisarRequisicion}"
                                                title="Clic aqui para marcar como revisada la requisición..." 
-                                               >  
+                                               process="@this" update="form1">  
                                     <p:confirm header="Confirmar" 
                                                message="Está a punto de aprobar una requisición, ¿está seguro?." 
                                                icon="pi pi-exclamation-triangle"/>
@@ -65,7 +70,7 @@
                                                title="Clic aqui para cancelar la requisición..."
                                                process="@this" update="frmCanReq"/>                                    
 
-                                <p:commandLink action="#{requisicionBean.crearNota(actionEvent)}" styleClass="btn btn-default"
+                                <p:commandLink action="#{requisicionBean.crearNota}" styleClass="btn btn-default"
                                                onclick="$(dialogoNotaReq).modal('show');"
                                                title="Clic aqui para generar una Nota sobre la requisición..." 
                                                value="Generar Nota" process="@this" update="frmNotaReq" />
@@ -122,11 +127,12 @@
                                             <h:outputText value="Co."/>
                                         </f:facet>
                                     </p:column>                                    
-                                    <p:column style="text-align: center; width: 5%;">
+                                    <p:column style="text-align: center;" width="50">
                                         <p:commandLink action="#{requisicionBean.seleccionarRequisicion(currentRow.id)}" 
-                                                       styleClass="btn btn-default" value="Seleccionar"                                                     
+                                                       styleClass="btn btn-default" 
                                                        title="Clic aqui para ver y modificar los items de la requisición..." 
-                                                       process="@this" update="form1:tbReq">
+                                                       process="@this" update="form1:tbRequi form1:lblReq">
+                                            <i class="fa fa-eye text-primary"/>
                                         </p:commandLink>
                                     </p:column>
                                 </p:dataTable>
@@ -134,12 +140,12 @@
                         </div>
                     </div>
                     <div id="divDatos" style="display: none;">
-                       <div class="col-5" style="margin-top: 10px;">
+                        <div class="col-5" style="margin-top: 10px;">
                             <h:outputText value="Más información de la requisición: "/>
-                            <h:outputText value="#{requisicionBean.requisicionActual.consecutivo}" style="font-weight:  bold;"/>
+                            <h:outputText id="lblReq" value="#{requisicionBean.requisicionActual.consecutivo}" style="font-weight:  bold;"/>
                         </div><br/>
                         <div class="container-fluid" >
-                            <p:tabView id="tbReq" activeIndex="0" >
+                            <p:tabView id="tbRequi" activeIndex="0" >
                                 <p:tab title="Más información">
                                     <ui:include src="../../SiaWeb/Requisiciones/fragmentos/masInformacionRequisicion.xhtml"/>
                                 </p:tab>
