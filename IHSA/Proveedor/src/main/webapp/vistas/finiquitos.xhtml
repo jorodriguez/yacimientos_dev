@@ -1,0 +1,293 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+    <body>
+
+        <ui:composition template="./../WEB-INF/template/plantilla.xhtml">
+
+            <ui:define name="title">
+                Contratos en proceso de finiquito
+            </ui:define>
+            <ui:define name="content">
+                <h:form id="frmExhProv">
+                    <p:dataTable id="dtConvenios" value="#{procesoFiniquitoProveedorBean.contratos}" var="dataConv"
+                                   rows="15" paginator="true" paginatorPosition="bottom" paginatorAlwaysVisible="true"
+                                   style="font-size: 1em;">
+                        <p:column headerText="Número" style="text-align: left;" >
+                            <h:outputText value="#{dataConv.numero}" />
+                        </p:column>
+                        <p:column headerText="Contrato" style="text-align: left;" >
+                            <h:outputText value="#{dataConv.nombre}" />
+                        </p:column>
+                        <p:column headerText="Inicio">
+                            <h:outputText value="#{dataConv.fechaInicio}">
+                                <f:convertDateTime pattern="dd/MM/yyyy"/>
+                            </h:outputText>
+                        </p:column>
+                        <p:column headerText="Vencimiento">
+                            <h:outputText value="#{dataConv.fechaVencimiento}">
+                                <f:convertDateTime pattern="dd/MM/yyyy"/>
+                            </h:outputText>
+                        </p:column>
+                        <p:column headerText="Vigencia">
+                            <h:outputText value="#{dataConv.vigencia}"/>
+                        </p:column>
+                        <p:column headerText="Formas">
+                            <h:outputText value="#{dataConv.totalFormas}"/>
+                        </p:column>
+                        <p:column>
+                            <h:commandLink actionListener="#{procesoFiniquitoProveedorBean.administrar(event)}"
+                                           styleClass="text text-primary">
+                                <i class="fa fa-cog text-primary fa-2x"/>
+                                <f:param name="convnum" value="#{dataConv.numero}"/>
+                            </h:commandLink>
+                        </p:column>
+                    </p:dataTable>
+                </h:form> 
+                <h:form id="frmFinProcConv">
+                    <div class="modal fade" id="dialogoProceso" data-backdrop="static" data-keyboard="false">                    
+                        <div class="modal-dialog modal-lg" style="width: 80%;">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h4 class="modal-title">Formas para el proceso de finiquito de contratos</h4>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="row">
+                                        <div class="form-group col-lg-3">
+                                            <h:outputLabel value="Número:" styleClass="control-label"/>
+                                            <div class="col-lg-12">
+                                                <h:outputLabel value="#{procesoFiniquitoProveedorBean.contratoVo.numero}"/>
+                                            </div>
+                                        </div>
+                                        <div class="form-group col-lg-9">
+                                            <h:outputLabel value="Contrato:" styleClass="control-label"/>
+                                            <div class="col-lg-12">
+                                                <h:outputLabel value="#{procesoFiniquitoProveedorBean.contratoVo.nombre}"/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <p:tabView>
+                                        <p:tab title="Proceso de finiquito">
+                                            <div class="row">
+                                                <h:message  id="msg-file" for="file-entry" styleClass="text-danger" showDetail="false" showSummary="true"/>
+                                                <div class="col-lg-12">
+                                                    <p:dataTable id="dtSol" value="#{procesoFiniquitoProveedorBean.contratoFormas}" var="dataFor"
+                                                                   rowIndexVar="index">
+                                                        <p:column headerText="Forma" style="text-align: left;" >
+                                                            <h:outputText id="txtRutaDoc" 
+                                                                          value="#{dataFor.forma}"/>
+                                                        </p:column>
+                                                        <p:column headerText="Descargar">
+                                                            <h:outputLink style="color: blue"
+                                                                          target="_blank"  title="Click aqui para descargar la plantilla..." 
+                                                                          value="/Proveedor/AbrirArchivo?ZWZ2W=#{dataFor.idAdjuntoPlantilla}&amp;ZWZ3W=#{dataFor.uuIdPlantilla}"
+                                                                          >
+                                                                Plantilla
+                                                            </h:outputLink>
+                                                        </p:column>
+                                                        <p:column headerText="Archivo" >
+                                                            <h:outputLink style="color: blue" rendered="#{dataFor.idAdjunto gt 0}" 
+                                                                          target="_blank"  title="Click aqui para descargar el archivo #{dataFor.forma}..." 
+                                                                          value="/Proveedor/AbrirArchivo?ZWZ2W=#{dataFor.idAdjunto}&amp;ZWZ3W=#{dataFor.uuIdAdjunto}">
+                                                                Archivo
+                                                            </h:outputLink>
+                                                        </p:column>
+                                                        <p:column headerText="Validado">
+                                                            <h:outputText value="#{dataFor.validado ? 'Si' : 'No'}"/>
+                                                        </p:column>
+                                                        <p:column headerText="Notas">
+                                                            <h:commandLink rendered="#{dataFor.totalNotas gt 0}"
+                                                                           actionListener="#{procesoFiniquitoProveedorBean.mostrarNotas(e)}">
+                                                                <i class="fa fa-exclamation-circle text-warning fa-2x"/>
+                                                                <f:param name="indice" value="#{index}"/>
+                                                            </h:commandLink>
+                                                        </p:column>
+                                                        <p:column >
+                                                            <h:commandLink rendered="#{dataFor.validado eq false}" 
+                                                                           title="Eliminar el archivo"
+                                                                           actionListener="#{procesoFiniquitoProveedorBean.eliminarArchivoForma(e)}">
+                                                                <i class="fa fa-trash text-danger fa-2x"/>
+                                                                <f:param name="indice" value="#{index}"/>
+                                                            </h:commandLink>
+                                                        </p:column>
+                                                        <p:column>
+                                                            <h:commandLink rendered="#{dataFor.idAdjunto eq 0}" 
+                                                                           title="Subir el archivo correspondiente a la forma #{dataFor.forma}"
+                                                                           actionListener="#{procesoFiniquitoProveedorBean.subirArchivo(e)}">
+                                                                <i class="fa fa-arrow-up text-primary fa-2x"/>
+                                                                <f:param name="indice" value="#{index}"/>
+                                                            </h:commandLink>
+                                                        </p:column>
+                                                        <p:column >
+                                                            <h:commandLink rendered="#{dataFor.idAdjunto gt 0 and dataFor.idGerencia gt 0}" 
+                                                                           title="Notificar documentación"
+                                                                           actionListener="#{procesoFiniquitoProveedorBean.notificarForma(e)}"
+                                                                           onclick="return confirm('Se enviará la notificación para revisión de la documentación, ¿está seguro?');">
+                                                                <i class="fa fa-send text-primary fa-2x"/>
+                                                                <f:param name="indice" value="#{index}"/>
+                                                            </h:commandLink>
+
+                                                        </p:column>
+                                                    </p:dataTable>
+                                                </div>
+                                            </div>
+                                        </p:tab>
+                                        <p:tab title="Órdendes de compra">
+                                            <p:dataTable id="dtCompras" value="#{procesoFiniquitoProveedorBean.comprasPorContrato}" var="dataOc">
+                                                <p:column headerText="Código">
+                                                    <h:outputText  value="#{dataOc.consecutivo}"/>
+                                                </p:column>
+                                                <p:column headerText="Pedido">
+                                                    <h:outputText  value="#{dataOc.navCode}"/>
+                                                </p:column>
+                                                <p:column headerText="Referencia" style="text-align: left;">
+                                                    <h:outputText  value="#{dataOc.referencia}"/>
+                                                </p:column>
+                                                <p:column headerText="Entrega">
+                                                    <h:outputText  value="#{dataOc.fecha}">
+                                                        <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                                    </h:outputText>
+                                                </p:column>
+                                                <p:column headerText="Subtotal">
+                                                    <h:outputText  value="#{dataOc.subTotal}">
+                                                        <f:convertNumber maxFractionDigits="2"/>
+                                                    </h:outputText>
+                                                </p:column>
+                                                <p:column headerText="Moneda">
+                                                    <h:outputText  value="#{dataOc.moneda}"/>
+                                                </p:column>
+                                            </p:dataTable>
+                                            <p:dataExporter fileName="compras" target="dtCompras" type="xls">
+                                                Exportar compras
+                                            </p:dataExporter>
+                                        </p:tab>
+                                        <p:tab title="Facturas">
+                                            <p:dataTable id="dtFacturas" value="#{procesoFiniquitoProveedorBean.facturasProveedor}" var="dataOc">
+                                                <p:column headerText="Folio">
+                                                    <h:outputText  value="#{dataOc.folio}"/>
+                                                </p:column>
+                                                <p:column headerText="Concepto">
+                                                    <h:outputText  value="#{dataOc.concepto}"/>
+                                                </p:column>
+                                                <p:column headerText="Emisión">
+                                                    <h:outputText  value="#{dataOc.fechaEmision}">
+                                                        <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                                    </h:outputText>
+                                                </p:column>
+                                                <p:column headerText="Monto">
+                                                    <h:outputText  value="#{dataOc.monto}">
+                                                        <f:convertNumber maxFractionDigits="2"/>
+                                                    </h:outputText>
+                                                </p:column>
+                                                <p:column headerText="Moneda">
+                                                    <h:outputText  value="#{dataOc.moneda}"/>
+                                                </p:column>
+                                            </p:dataTable>
+                                            <p:dataExporter fileName="facturas" target="dtFacturas" type="xls">
+                                                Exportar facturas
+                                            </p:dataExporter>
+                                        </p:tab>
+                                    </p:tabView>
+
+                                </div>
+                                <div class="modal-footer">
+                                    <h:commandButton id="btnCerrar" value="Cancelar" class="btn btn-default"
+                                                     actionListener="#{procesoFiniquitoProveedorBean.cancelarEnviarSolicitud(e)}"/>
+                                    <h:commandButton value="Procesar" 
+                                                     styleClass="btn btn-primary"
+                                                     actionListener="#{procesoFiniquitoProveedorBean.enviarSolicitud(e)}"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </h:form>
+                <div class="modal fade" data-backdrop="static" id="dialogoNotas" 
+                     data-keyboard="false" style="z-index: 100002;">
+                    <div class="modal-dialog ">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h4 class="modal-title">Observaciones</h4>
+                            </div>
+                            <h:form id="frmFormaObs">
+                                <div class="modal-body"> 
+                                    <div class="row">
+                                        <div class="col-lg-12 ">
+                                            <h:outputText value="Observaciones"/>
+                                            <p:dataTable value="#{procesoFiniquitoProveedorBean.contratoFormasNotas}" var="dataNot"
+                                                           style="font-size: 1.0em;">
+                                                <p:column headerText="Generó" style="text-align: left;">
+                                                    <h:outputText value="#{dataNot.usuario}"/>
+                                                </p:column>
+                                                <p:column headerText="Observación" style="text-align: left;">
+                                                    <h:outputText value="#{dataNot.observacion}"/>
+                                                </p:column>
+                                                <p:column headerText="Fecha">
+                                                    <h:outputText value="#{dataNot.fechaNota}">
+                                                        <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                                    </h:outputText>
+                                                </p:column>
+                                                <p:column headerText="Hora">
+                                                    <h:outputText value="#{dataNot.horaNota}">
+                                                        <f:convertDateTime pattern="HH:mm "/>
+                                                    </h:outputText>
+                                                </p:column>
+                                            </p:dataTable>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <h:commandButton value="Cerrar" class="btn btn-default" 
+                                                     onclick="$(dialogoNotas).modal('hide');"
+                                                     immediate="true"/>
+                                </div>
+                            </h:form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- subir archivos formas-->
+                <div class="modal fade" data-backdrop="static" id="dialogoSubirFormas" 
+                     data-keyboard="false" style="z-index: 100002;">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h4 class="modal-title">Subir forma</h4>
+                            </div>
+                            <h:form id="frmDocArch">
+                                <div class="modal-body">
+                                    <div class="row">
+                                        <div class="col-lg-12">
+                                            <div class="form-group">
+                                                <label>Forma</label>
+                                                <div>
+                                                    <h:outputLabel value="#{procesoFiniquitoProveedorBean.contratoFormasVo.forma}"/>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <p:fileUpload id="fileEntryDoc" 
+                                                       label="Archivo "                                                                                                              
+                                                       listener="#{procesoFiniquitoProveedorBean.uploadFile}"                                                       
+                                                       styleClass="col-lg-11 col-xs-12 btn btn-default"/>
+                                        <h:message  id="msg-docto" for="fileEntryDoc" styleClass="text-danger" showDetail="false" showSummary="true"/>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <h:commandButton value="Cerrar" class="btn btn-default" onclick="$(dialogoSubirFormas).modal('hide');"
+                                                     immediate="true"/>
+                                    <h:commandButton id="uploadFile" 
+                                                     value="Subir" 
+                                                     styleClass="btn btn-primary"/>
+                                </div>
+                            </h:form>
+                        </div>
+                    </div>
+                </div>
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

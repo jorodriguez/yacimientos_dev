@@ -1,0 +1,250 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+                xmlns:h="http://xmlns.jcp.org/jsf/html">
+
+    <div class="card mt-2" >
+        <div class="row" >
+            <div class="col-6">
+                <div class="form-group col-12 col-xs-12" >
+                    <strong><h:outputText styleClass="col-2 col-xs-12 control-label" value="Gerencia:" /></strong> 
+                    <div class="col-4">
+                        <h:outputText styleClass="control-label" value="#{vistoBuenoCostosBean.requisicionActual.gerencia.nombre}"/>
+                    </div>
+                </div>
+                <div class="form-group col-12 col-xs-12" >
+                    <strong><h:outputText styleClass="col-2 control-label" value="Fecha Solicita" /></strong>
+                    <div class="col-4"><h:outputText styleClass="control-label" value="#{vistoBuenoCostosBean.requisicionActual.fechaSolicito}" >
+                            <f:convertDateTime pattern="dd/MM/yyyy"/>
+                        </h:outputText>
+                    </div>
+                </div>
+                <div class="form-group col-12 col-xs-12" >
+                    <strong><h:outputText styleClass="col-2 control-label" value="Tipo requisicion:" /></strong>
+                    <div class="col-4"><h:outputText styleClass="control-label" value="#{vistoBuenoCostosBean.requisicionActual.tipo eq 'AF' ? 'Activo Fijo' : 'Producto/Servicio'}" />
+                    </div>          
+                </div>
+                <div class="form-group col-12" >
+                    <strong><h:outputText styleClass="col-2 control-label" value="Contrato:"/></strong>
+                    <div class="col-4">
+                        <h:outputText styleClass="control-label" value="#{vistoBuenoCostosBean.requisicionActual.contrato ? 'CON CONTRATO' : 'SIN CONTRATO'}"/>
+                    </div>
+                </div>       
+            </div>
+            <div class="col-6">
+                <div class="form-group col-12 col-xs-12" >
+                    <strong><h:outputText styleClass="col-2 control-label" value="Referencia:"/></strong>
+                    <div class="col-4">
+                        <h:outputText styleClass="control-label" value="#{vistoBuenoCostosBean.requisicionActual.referencia}"/>
+                    </div>
+                </div>
+                <div class="form-group col-12" >
+                    <strong><h:outputText styleClass="col-2 control-label" value="Lugar entrega:"/></strong>
+                    <div class="col-4">
+                        <h:outputText styleClass="control-label" value="#{vistoBuenoCostosBean.requisicionActual.lugarEntrega}"/>
+                    </div>
+                </div>
+                <div class="form-group col-12" >                            
+                    <strong><h:outputText styleClass="col-2 control-label" value="Proveedor:"/></strong>
+                    <div class="col-4">
+                        <h:outputText styleClass="control-label" value="#{vistoBuenoCostosBean.requisicionActual.proveedor}"/>
+                    </div>
+                </div>
+                <div class="form-group col-12" >
+                    <strong><h:outputText styleClass="col-2 control-label" value="Solicita:"/></strong>
+                    <div class="col-4">
+                        <h:outputText styleClass="control-label" value="#{vistoBuenoCostosBean.requisicionActual.solicita.nombre}"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="input-group card" >
+            <div class="form-group col-12 col-xs-12" >
+                <div class="col-2 col-xs-12" >
+                    <strong><h:outputText styleClass="control-label"    value="Observación:"/></strong>
+                </div>
+                <div class="col-10 col-xs-12">
+                    <h:outputText styleClass="control-label" rendered="#{vistoBuenoCostosBean.requisicionActual.observaciones != null}" value="#{vistoBuenoCostosBean.requisicionActual.observaciones}"/>
+                    <h:outputText styleClass="control-label" rendered="#{vistoBuenoCostosBean.requisicionActual.observaciones == null}" value=" "/>
+                </div>    
+            </div>
+        </div>
+    </div>
+    <div class="col-12 col-xs-12" >        
+        <strong><h:outputText class="col-3 control-label" value="Items de la requisición: #{vistoBuenoCostosBean.requisicionActual.consecutivo}"/></strong>
+    </div>
+    <div class="col-12 col-xs-12" >
+        <div class="col-12 col-xs-12 input-group" >
+            <div class="form-group col-12 col-xs-12" >
+                <ui:repeat rendered="#{vistoBuenoCostosBean.listaItems.rowCount gt 0}" value="#{vistoBuenoCostosBean.listaItems}" var="currentRow">
+                    <div class="form-group row" >
+                        <ui:fragment rendered="#{currentRow['idpresupuesto']  gt 0}">
+                            <div class="row">                            
+                                <ui:fragment rendered="#{vistoBuenoCostosBean.requisicionActual.apCampo.tipo  eq 'C'}">
+                                    <div class="col-3">
+                                        <div class="col-12">
+                                            <strong><h:outputText styleClass="control-label" value="Presupuesto"/></strong>
+                                        </div>
+                                        <div class="col-12">
+                                            <h:outputText styleClass="control-label" title="#{currentRow['presupuestoNombre'] eq 'null' ? '' : currentRow['presupuestoNombre']}" value="#{currentRow['presupuestoCodigo'] eq 'null' ? '' : currentRow['presupuestoCodigo']}"/>
+                                        </div>
+                                    </div>
+                                    <div class="col-2">
+                                        <div class="col-12">                                    
+                                            <strong><h:outputText styleClass="control-label" value="Presup Año y Mes"/></strong>
+                                        </div>
+                                        <div class="col-12">
+                                            <h:outputText styleClass="control-label" value="Año #{currentRow['anioPresupuesto']} y" title="#{currentRow['anioPresupuesto']}"/>
+                                            <h:outputText styleClass="control-label" value="  Mes #{currentRow['mesPresupuesto']}" title="#{currentRow['mesPresupuesto']}"/>                                
+                                        </div>
+                                    </div>
+                                    <div class="col-3">
+                                        <div class="col-12">
+                                            <strong><h:outputText styleClass="control-label" value="Actividad"/></strong>
+                                        </div>
+                                        <div class="col-12">
+                                            <h:outputText styleClass="control-label" value="#{currentRow['nombreActPedrolera']}" title="#{currentRow['codigoActPedrolera']}"/>                                            
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="col-12">
+                                            <strong><h:outputText styleClass="control-label" value="Proyecto OT"/></strong>
+                                        </div>
+                                        <div class="col-12">
+                                            <h:outputText styleClass="control-label" title="#{currentRow['proyectoOt'] eq 'null' ? '' : currentRow['proyectoOt']}" value="#{currentRow['proyectoOtCC'] eq 'null' ? '' : currentRow['proyectoOtCC']}"/>
+                                        </div>
+                                    </div>
+
+                                </ui:fragment>
+                            </div>
+                        </ui:fragment>
+                        <div class="row">
+                            <ui:fragment rendered="#{currentRow['idpresupuesto']  lt 1}">
+                                <div class="col-2">
+                                    <div class="col-12">
+                                        <strong><h:outputText styleClass="control-label" value="Proyecto OT"/></strong>
+                                    </div>
+                                    <div class="col-12">
+                                        <h:outputText styleClass="control-label" title="#{currentRow['proyectoOt'] eq 'null' ? '' : currentRow['proyectoOt']}" value="#{currentRow['proyectoOtCC'] eq 'null' ? '' : currentRow['proyectoOtCC']}"/>
+                                    </div>
+                                </div>
+                            </ui:fragment>
+                            <ui:fragment rendered="#{vistoBuenoCostosBean.requisicionActual.apCampo.tipo  eq 'C'}">
+                                <ui:fragment rendered="#{currentRow['idpresupuesto']  lt 1}">
+                                    <div class="col-1">
+                                        <div class="col-12">
+                                            <strong><h:outputText styleClass="control-label" value="Actividad"/></strong>
+                                        </div>
+                                        <div class="col-12">
+                                            <ui:fragment rendered="#{vistoBuenoCostosBean.requisicionActual.tipo  eq 'PS'}">
+                                                <h:outputText styleClass="control-label" value="#{currentRow['nombreActPedrolera']}" title="#{currentRow['codigoActPedrolera']}"/>
+                                            </ui:fragment>
+                                            <ui:fragment rendered="#{vistoBuenoCostosBean.requisicionActual.tipo  eq 'AF'}">
+                                                <h:outputText styleClass="control-label" value="Activo Fijo"/>
+                                            </ui:fragment>
+                                        </div>
+                                    </div>
+                                </ui:fragment>
+                                <div class="col-3">
+                                    <div class="col-12">                                    
+                                        <strong><h:outputText styleClass="control-label" value="Subactividad"/></strong>
+                                    </div>
+                                    <div class="col-12">
+                                        <ui:fragment rendered="#{vistoBuenoCostosBean.requisicionActual.tipo  eq 'PS'}">
+                                            <h:outputText styleClass="control-label" value="#{currentRow['tipoTarea']}"/>
+                                        </ui:fragment>
+                                        <ui:fragment rendered="#{vistoBuenoCostosBean.requisicionActual.tipo  eq 'AF'}">
+                                            <h:outputText styleClass="control-label" value="Activo Fijo"/>
+                                        </ui:fragment>
+                                    </div>
+                                </div>
+                            </ui:fragment>
+                            <ui:fragment rendered="#{vistoBuenoCostosBean.requisicionActual.apCampo.tipo  eq 'N'}">
+                                <div class="col-4">
+                                    <div class="col-12">                                    
+                                        <strong><h:outputText styleClass="control-label" value="Tipo de Tarea"/></strong>
+                                    </div>
+                                    <div class="col-12">
+                                        <ui:fragment rendered="#{vistoBuenoCostosBean.requisicionActual.tipo  eq 'PS'}">
+                                            <h:outputText styleClass="control-label" value="#{currentRow['tipoTarea']}"/>
+                                        </ui:fragment>
+                                        <ui:fragment rendered="#{vistoBuenoCostosBean.requisicionActual.tipo  eq 'AF'}">
+                                            <h:outputText styleClass="control-label" value="Activo Fijo"/>
+                                        </ui:fragment>
+                                    </div>
+                                </div>
+                            </ui:fragment>
+                            <ui:fragment rendered="#{vistoBuenoCostosBean.requisicionActual.tipo  eq 'PS'}">
+                                <div class="col-2">
+                                    <div class="col-12">
+                                        <strong><h:outputText styleClass="control-label" value="Tarea"/></strong>
+                                    </div>
+                                    <div class="col-12">
+                                        <h:outputText styleClass="control-label" value="#{currentRow['codeTarea']}" title="#{currentRow['nombreTarea']}"/>                        
+                                    </div>
+                                </div>
+                                <ui:fragment rendered="#{vistoBuenoCostosBean.requisicionActual.apCampo.tipo  eq 'C'}">
+                                    <div class="col-3">
+                                        <div class="col-12">
+                                            <strong><h:outputText styleClass="control-label" value="Subtarea"/></strong>
+                                        </div>
+                                        <div class="col-12">
+                                            <h:outputText styleClass="control-label" value="#{currentRow['codigoSubTarea']}" title="#{currentRow['subTarea']}"/>                        
+                                        </div>
+                                    </div>
+                                </ui:fragment>
+                            </ui:fragment>                
+
+                        </div>
+                        <div class="row">
+                            <div class="col-3">
+                                <div class="col-12">
+                                    <strong><h:outputText styleClass="control-label" value="Número parte"/></strong>
+                                </div>
+                                <div class="col-12">
+                                    <h:outputText styleClass="control-label" value="#{currentRow['artNumeroParte'] eq 'null' ? '' : currentRow['artNumeroParte']}"/>
+                                </div>
+                            </div>
+                            <div class="col-1">
+                                <div class="col-12" style="text-align: center;">
+                                    <strong><h:outputText styleClass="control-label" value="Cantidad"/></strong>
+                                </div>
+                                <div class="col-1"></div>
+                                <div class="col-11" style="text-align: center;">                            
+                                    <h:outputText styleClass="control-label" value="#{currentRow['cantidadSolicitada']}">
+                                        <f:convertNumber maxFractionDigits="3"/>
+                                    </h:outputText>
+                                </div>
+                            </div>                
+                            <div class="col-2">
+                                <div class="col-12">
+                                    <strong><h:outputText styleClass="control-label" value="Unidad" /></strong>
+                                </div>
+                                <div class="col-12">
+                                    <h:outputText styleClass="control-label" value="#{currentRow['artUnidad']}"/>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="col-12">
+                                    <strong><h:outputText styleClass="control-label" value="Descripción"/></strong>
+                                </div>
+                                <div class="col-12">
+                                    <h:outputText styleClass="control-label"  value="#{currentRow['artDescripcion']}"/>
+                                </div>
+                            </div>                    
+                        </div>
+                    </div>
+                </ui:repeat>
+            </div>
+        </div>
+    </div>
+
+    <div id="dialogObser" class="modal fade" data-backdrop="static" data-keyboard="false" style="display: none;" title="Observación">
+        <p id="cajaDiaObsr" styleClass="textoNegrita10" 
+           />
+    </div>          
+
+</ui:composition>
+

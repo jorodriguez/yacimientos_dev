@@ -1,0 +1,259 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://java.sun.com/jsf/core">
+    <div class="modal fade" data-backdrop="static" id="dialogoSubirRepse" 
+         data-keyboard="false" style="z-index: 100002;">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">#{msgs['sia.orden.subir.repse']}</h4>
+                </div>
+                <h:form id="frmDocArch">
+                    <div class="modal-body container-fluid">
+                        <p:fileUpload id="fileDocto" 
+                                       label="#{msgs['sia.archivo']}"
+                                       listener="#{cartaIntencionBean.uploadFile}"                                       
+                                       styleClass="col-lg-12 col-xs-12 btn btn-default"/>
+                        <h:message  for="" style="display: block;" infoClass="alert alert-success" warnClass="alert alert-warning"
+                                    styleClass="col-lg-12"
+                                    errorClass="alert alert-danger" fatalClass="alert alert-danger"  />
+                        <h:message  id="msg-docto" for="fileDocto" 
+                                    styleClass="text-danger" showDetail="false" showSummary="true"
+                                    style="display: none;"/>
+                    </div>
+                    <div class="modal-footer">
+                        <h:commandButton value="#{msgs['sistema.cerrar']}" class="btn btn-default" onclick="$(dialogoSubirRepse).modal('hide');"
+                                         immediate="true"/>
+                        <h:commandButton id="uploadFile" 
+                                         value="#{msgs['sistema.subir']}" 
+                                         styleClass="btn btn-primary"/>
+                    </div>
+                </h:form>
+            </div>
+        </div>
+    </div>
+    <!--Datos de la compra-->
+
+    <div class="modal fade" data-backdrop="static" id="dialogoDatosCompra" 
+         data-keyboard="false" style="z-index: 100002;">
+        <div class="modal-dialog" style="width: 80%;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">#{msgs['sia.compra.datos']}</h4>
+                </div>
+                <h:form id="frmDatosCompra">
+                    <div class="modal-body">
+                        <p:tabView>
+                            <p:tab title="#{msgs['sia.datos']}">
+                                <div class="row">
+                                    <div class="col-lg-4">
+                                        <div class="form-group">
+                                            <h:outputText value="#{msgs['sia.empresa']}: " styleClass="control-label"/>
+                                            <div >
+                                                <h:outputText value="#{cartaIntencionBean.ordeneVo.compania}"/>    
+                                            </div> 
+                                        </div>
+                                        <div class="form-group">
+                                            <h:outputText value="#{msgs['sia.bloque.nombre']}: " styleClass="control-label"/>
+                                            <div >
+                                                <h:outputText value="#{cartaIntencionBean.ordeneVo.bloque}"/>    
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <h:outputText value="#{msgs['sia.orden.termino.pago']}: " styleClass="control-label"/>
+                                            <div >
+                                                <h:outputText value="#{cartaIntencionBean.ordeneVo.terminoPago}"/>    
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4">
+                                        <div class="form-group"> 
+                                            <h:outputText value="#{msgs['sia.nombre.referencia']}: " styleClass="control-label"/>
+                                            <div >
+                                                <h:outputText value="#{cartaIntencionBean.ordeneVo.referencia}"/>
+                                            </div>
+                                        </div> 
+                                        <div class="form-group"> 
+                                            <h:outputText value="#{msgs['sia.orden.lugar.entrega']}: " styleClass="control-label"/>
+                                            <div >
+                                                <h:outputText value="#{cartaIntencionBean.ordeneVo.destino}"/>    
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4">
+                                        <div class="form-group">
+                                            <h:outputText value="#{msgs['sia.factura.monto']}: " styleClass="control-label"/>
+                                            <div >
+                                                <h:outputText value="#{cartaIntencionBean.ordeneVo.subTotal}">
+                                                    <f:convertNumber maxFractionDigits="2" pattern="#,###.##"/>
+                                                </h:outputText>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <h:outputText value="#{msgs['sia.orden.impuesto']}: " styleClass="control-label"/>
+                                            <div >
+                                                <h:outputText value="#{cartaIntencionBean.ordeneVo.iva}">
+                                                    <f:convertNumber maxFractionDigits="2" pattern="#,###.##"/>
+                                                </h:outputText>    
+                                            </div>
+                                        </div>                                        
+                                        <div class="form-group">
+                                            <h:outputText value="#{msgs['sia.orden.total']}: " styleClass="control-label"/>
+                                            <div >
+                                                <h:outputText value="#{cartaIntencionBean.ordeneVo.total}">
+                                                    <f:convertNumber maxFractionDigits="2" pattern="#,###.##"/>
+                                                </h:outputText>
+                                                <h:outputText value="#{cartaIntencionBean.ordeneVo.monedaSiglas}"/>    
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-12">
+                                    <p:dataTable value="#{cartaIntencionBean.items}" 
+                                                   var="dataItems" paginator="true" paginatorPosition="bottom">
+                                        <p:column headerText="#{msgs['sia.descripcion']}" style="text-align: left;">
+                                            <h:outputText value="#{dataItems.artNombre}"/>
+                                        </p:column>
+                                        <p:column headerText="#{msgs['sistema.unidad']}">
+                                            <h:outputText value="#{dataItems.artUnidad}"/>
+                                        </p:column>
+                                        <p:column headerText="#{msgs['sia.cantidad']}">
+                                            <h:outputText value="#{dataItems.cantidad}"/>
+                                        </p:column>
+                                        <p:column headerText="#{msgs['sia.orden.precio.unitario']}">
+                                            <h:outputText value="#{dataItems.precioUnitario}">
+                                                <f:convertNumber maxFractionDigits="2" pattern="#,###.##"/>
+                                            </h:outputText>
+                                        </p:column>
+                                        <p:column headerText="#{msgs['sia.factura.importe']}">
+                                            <h:outputText value="#{dataItems.importe}">
+                                                <f:convertNumber maxFractionDigits="2" pattern="#,###.##"/>
+                                            </h:outputText>
+                                        </p:column>
+                                    </p:dataTable>
+                                </div>
+                            </p:tab>
+                            <p:tab title="#{msgs['sia.documentos']}">
+                                <p:dataTable value="#{cartaIntencionBean.doctosOrden}" 
+                                               var="dataD" rowIndexVar="index" style="width: 40%">     
+                                    <p:column headerText="#{msgs['sia.nombre']}">
+                                        <h:outputText value="#{dataD.nombre}"/>
+                                    </p:column>
+                                    <p:column>                                        
+                                        <h:outputLink   
+                                            style="color: blue"
+                                            target="_blank"  
+                                            id="abrirReq"
+                                            title="#{msgs['sia.clic.abrir.archivo']}" 
+                                            value="/Proveedor/AbrirArchivo?ZWZ2W=#{dataD.id}&amp;ZWZ3W=#{dataD.uuid}"
+                                            >
+                                            Descargar
+                                        </h:outputLink>                                      
+                                    </p:column>
+                                    <p:column> 
+                                        <h:commandLink actionListener="#{cartaIntencionBean.eliminarRepse(e)}"
+                                                       title="Elimina el archivo registrado"
+                                                       rendered="#{dataD.genero eq sesion.proveedorVo.rfc}"> 
+                                            <i class="fa fa-trash text-danger"/>
+                                            <f:param name="indice" value="#{index}"/>
+                                        </h:commandLink>
+                                    </p:column>                                        
+                                </p:dataTable>
+                            </p:tab>
+                            <p:tab title="#{msgs['sia.movimientos']}">                                
+                                <p:dataTable value="#{cartaIntencionBean.rechazos}" 
+                                               var="dataRec" rowIndexVar="index" style="width: 60%">     
+                                    <p:column headerText="#{msgs['sistema.rechazo']}">
+                                        <h:outputText value="#{dataRec.genero}"/>
+                                    </p:column>
+                                    <p:column headerText="#{msgs['sia.factura.fecha']}">
+                                        <h:outputText value="#{dataRec.fechaGenero}"/>
+                                    </p:column>                                    
+                                    <p:column headerText="#{msgs['sia.rechazo.motivo']}Motivo">
+                                        <h:outputText value="#{dataRec.motivo}"/>
+                                    </p:column>            
+                                </p:dataTable>
+                            </p:tab>
+                        </p:tabView>
+                    </div>
+                    <div class="modal-footer">
+                        <h:commandLink value="#{msgs['sistema.cerrar']}" onclick="$(dialogoDatosCompra).modal('hide');"
+                                       immediate="true" styleClass="btn btn-default"/>
+                    </div>
+                </h:form>
+            </div>
+        </div>
+    </div>
+    <!--rechazar carta-->
+    <div class="modal fade" data-backdrop="static" id="dialogoRechazarCompra" 
+         data-keyboard="false" style="z-index: 100002;">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">#{msgs['sia.datos.carta.intencion']}</h4>
+                </div>
+                <h:form id="frmRechazar">
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="form-inline">
+                                <div class="form-group">
+                                    <h:outputLabel value="#{msgs['sia.nombre.referencia']}:"/>
+                                    <div>
+                                        <h:outputText value="#{cartaIntencionBean.ordeneVo.referencia}"/>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="form-group">
+                                        <h:outputLabel value="#{msgs['sia.orden.lugar.entrega']}:"/>
+                                        <div>
+                                            <h:outputText value="#{cartaIntencionBean.ordeneVo.destino}"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-12">
+                                <div class="form-group">
+                                    <h:outputLabel value="#{msgs['sia.rechazo.motivo']}:*"/>
+                                    <div>
+                                        <h:inputTextarea id="motivoRechazo" value="#{cartaIntencionBean.motivo}" required="true"
+                                                         rows="3"
+                                                         onkeydown="contarCaracteres('frmRechazar', 'motivoRechazo');" 
+                                                         onchange="contarCaracteres('frmRechazar', 'motivoRechazo');" 
+                                                         onkeyup="contarCaracteres('frmRechazar', 'motivoRechazo');"
+                                                         requiredMessage="Es necesario agregar un motivo." 
+                                                         styleClass="form-control"/>
+                                    </div>
+                                    <div>
+                                        <h:outputLabel value="#{msgs['sia.agregar.caracteres']}" styleClass="small" style="font-style: italic;"/>
+                                        <h:inputText  readonly="true" id="remLen" size="3" maxlength="3" value="0"/> #{msgs['sistema.caracteres']}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>                        
+                        <div class="row">
+                            <h:message for="" styleClass="small" errorClass="text-danger" showDetail="true"/>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <h:commandLink value="#{msgs['sistema.cerrar']}" styleClass="btn btn-default"
+                                       onclick="$(dialogoRechazarCompra).modal('hide');"
+                                       immediate="true"/>
+                        <h:commandLink value="#{msgs['sistema.rechazar']}"  styleClass="btn btn-primary" 
+                                       actionListener="#{cartaIntencionBean.rechazarCompra(e)}"/>
+                    </div>
+                </h:form>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+
+        function contarCaracteres(frm, component) {
+            $("#" + frm + "\\:" + component).keydown(function () {
+                var t = $("#" + frm + "\\:" + component).val().length;
+                $("#" + frm + "\\:remLen").val(t + 1);
+            });
+        }
+    </script>
+</ui:composition>
