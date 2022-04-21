@@ -1,0 +1,217 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"      
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:c="http://java.sun.com/jsp/jstl/core"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      >    
+    <h:body>
+        <ui:composition template="/vistas/template/template.xhtml">
+            <ui:define name="content">    
+                <style >
+                    .row{
+                        margin-top:40px;
+                        padding: 0 10px;
+                    }
+
+                    .clickable{
+                        cursor: pointer;   
+                    }
+
+                    .panel-heading span {
+                        margin-top: -20px;
+                        font-size: 15px;
+                    } 
+                    .panel-body {
+                        padding: 5px;
+                    }
+                    
+                </style>
+                <script>
+                    function ejecutarFiltrosViajes(btn) {        
+                        jQuery('#frmViajesPen\\:'+btn).click();                        
+                    }
+                </script>
+                <div class="row" style="margin-top: 5px;">
+                    <ui:fragment rendered="#{not empty sesion.usuarioVO and not grBean.admin and not grBean.grvia}">
+                        <div class="col-lg-11">                                                
+                            <div class="jumbotron" style="background-color: #e7e7e7; margin-top: 5px;">
+                                <div class="container">                
+                                    <div class="col-lg-12 col-xs-12" style="text-align: center;">                              
+                                        <h1 style="color: #222;">GESTIÓN DE RIESGOS</h1>
+
+                                    </div>
+                                    <h:form id="frmPrincGR">
+                                        <ui:fragment rendered="#{not empty sesion.usuarioVO}">
+                                            <div class="visible-lg visible-md col-lg-12 col-md-3-9" style="text-align: center;">
+                                                <h4 style="color: #222;">Centro de operaciones (24 Hrs/7Días)</h4>
+                                                <h4 style="color: #222;">Contacto: (81) 1946-9999</h4>
+                                                <h4 style="color: #222;">Emergencias: (81) 1946-1111</h4>                                                                        
+                                            </div>                                    
+                                            <div class="visible-xs col-xs-12" style="text-align: center;">
+                                                <h4 style="color: #222;">Centro de operaciones (24 Hrs/7Días)</h4>
+                                                <h4 style="color: #222;">Contacto:</h4><h4> (81) 1946-9999</h4>
+                                                <h4 style="color: #222;">Emergencias:</h4><h4> (81) 1946-1111</h4>                                                                        
+                                            </div>    
+                                            <ui:fragment rendered="#{not empty sesion.alertas}">
+                                                <c:forEach items="#{sesion.alertas}" var="alerta">
+                                                    <ui:fragment rendered="#{alerta.sgSemaforo eq 3}">                                                    
+                                                        <ui:fragment rendered="#{alerta.visible}">
+                                                            <div class="visible-lg visible-md col-lg-12 col-md-3-9" style="text-align: center; margin-top: 15px;">
+                                                                <h:commandLink styleClass="col-lg-12 col-md-3-9" action="#{grBean.goMapa()}"><h3><span class="label label-danger">Semáforo rojo - #{alerta.grMapaVO.nombre}</span></h3>
+                                                                    <f:param name="tipoArchivo" value="#{alerta.grMapaVO.id}"/>
+                                                                </h:commandLink>
+                                                            </div>
+                                                            <div class="visible-xs row" style="text-align: center; margin-top: 15px;">
+                                                                <h:commandLink styleClass="row" action="#{popupGrBean.goPopupImagenMapa(event)}"><span class="label label-danger" style="font-size: 15px;">Semáforo rojo - #{alerta.grMapaVO.nombre}</span>
+                                                                    <f:param name="tipoArchivo" value="#{alerta.grMapaVO.id}"/>
+                                                                </h:commandLink>
+                                                            </div>                                    
+                                                        </ui:fragment>
+                                                        <ui:fragment rendered="#{not alerta.visible}">
+                                                            <div class="visible-lg visible-md col-lg-12 col-md-3-9" style="text-align: center; margin-top: 15px;">
+                                                                <h3><span class="label label-danger">Semáforo rojo - #{alerta.grMapaVO.nombre}</span></h3>                                                        
+                                                            </div>
+                                                            <div class="visible-xs row" style="text-align: center; margin-top: 15px;">
+                                                                <span class="label label-danger" style="font-size: 15px;">Semáforo rojo - #{alerta.grMapaVO.nombre}</span>                                                        
+                                                            </div>                                    
+                                                        </ui:fragment>
+                                                    </ui:fragment>
+                                                    <ui:fragment rendered="#{alerta.sgSemaforo eq 4}">  
+                                                        <ui:fragment rendered="#{alerta.visible}">
+                                                            <div class="visible-lg visible-md col-lg-12 col-md-3-9" style="text-align: center; margin-top: 15px;">
+                                                                <h:commandLink styleClass="col-lg-12 col-md-3-9" action="#{grBean.goMapa()}"><h3><span class="label label-danger">Semáforo negro - #{alerta.grMapaVO.nombre}</span></h3>
+                                                                    <f:param name="tipoArchivo" value="#{alerta.grMapaVO.id}"/>
+                                                                </h:commandLink>
+                                                            </div>
+                                                            <div class="visible-xs  row" style="text-align: center; margin-top: 15px;">
+                                                                <h:commandLink styleClass="row" action="#{popupGrBean.goPopupImagenMapa(event)}"><span class="label label-danger" style="font-size: 15px;">Semáforo negro -  #{alerta.grMapaVO.nombre}</span>
+                                                                    <f:param name="tipoArchivo" value="#{alerta.grMapaVO.id}"/>
+                                                                </h:commandLink>
+                                                            </div>                                    
+                                                        </ui:fragment>
+                                                        <ui:fragment rendered="#{not alerta.visible}">
+                                                            <div class="visible-lg visible-md col-lg-12 col-md-3-9" style="text-align: center; margin-top: 15px;">
+                                                                <h3><span class="label label-danger">Semáforo negro - #{alerta.grMapaVO.nombre}</span></h3>                                                        
+                                                            </div>
+                                                            <div class="visible-xs  row" style="text-align: center; margin-top: 15px;">
+                                                                <span class="label label-danger" style="font-size: 15px;">Semáforo negro -  #{alerta.grMapaVO.nombre}</span>                                                        
+                                                            </div>                                    
+                                                        </ui:fragment>
+                                                    </ui:fragment>
+
+                                                </c:forEach>                              
+                                            </ui:fragment>
+                                        </ui:fragment>                                                                        
+                                    </h:form>
+                                </div>
+                            </div>
+                        </div>                 
+                    </ui:fragment>
+                    <ui:fragment rendered="#{not empty sesion.usuarioVO and grBean.admin or grBean.grvia}">
+                        <h:form id="frmViajesPen">
+                            <div class="container">       
+                                <div class="row">   
+                                    <div id="tipoViaje">
+                                        <ul>
+                                            <li><a href="#viajesPen" onclick="ejecutarFiltrosViajes('btnViajesPen');">Viajes Pendientes</a></li>
+                                            <li><a href="#viajesPro" onclick="ejecutarFiltrosViajes('btnViajesPro');">Viajes en Proceso</a></li>
+                                            <li><a href="#viajesPau" onclick="ejecutarFiltrosViajes('btnViajesPau');">Viajes por autorizar</a></li>
+                                            <li><a href="#viajesInt" onclick="ejecutarFiltrosViajes('btnViajesInt');">Viajes por interceptar</a></li>
+                                        </ul>
+
+
+                                        <div id="viajesPen" class="textoIzquierda">
+
+                                            <p:commandLink id="btnViajesPen" value="" 
+                                                             actionListener="#{sesion.setRutasViajesPen(actionEvent)}" style="display: none;">
+                                                <f:ajax event="click" render="viajesPenID"/>
+                                            </p:commandLink>
+                                            <div class="row">
+                                                <ui:include src="/vistas/gr/rutasViajesPendientes.xhtml"/> 
+                                            </div>                                        
+
+                                        </div>
+
+                                        <div id="viajesPro" class="textoIzquierda">
+
+                                            <p:commandLink id="btnViajesPro" value="" 
+                                                             actionListener="#{sesion.setRutasViajesPro(actionEvent)}"                                                             
+                                                             style="display: none;">
+                                                <f:ajax event="click" render="viajesProID"/>
+                                            </p:commandLink>
+                                            <div class="row">
+                                                <ui:include src="/vistas/gr/rutasViajesEnProceso.xhtml"/>
+                                            </div>                                        
+
+                                        </div>
+
+                                        <div id="viajesPau" class="textoIzquierda">
+
+                                            <p:commandLink id="btnViajesPau" value="" actionListener="#{sesion.setRutasViajesPau(actionEvent)}" 
+                                                             style="display: none;">
+                                                <f:ajax event="click" render="viajesPauID"/>
+                                            </p:commandLink>
+                                            <div class="row">
+                                                <ui:include src="/vistas/gr/rutasViajesEnPausa.xhtml"/>
+                                            </div>                                        
+
+                                        </div>
+
+                                        <div id="viajesInt" class="textoIzquierda">
+
+                                            <p:commandLink id="btnViajesInt" value="" 
+                                                             actionListener="#{sesion.setRutasViajesInt(actionEvent)}" style="display: none;">
+                                                <f:ajax event="click" render="viajesIntID"/>
+                                            </p:commandLink>
+                                            <div class="row">
+                                                <ui:include src="/vistas/gr/rutasViajesInterceptados.xhtml"/>
+                                            </div>                                        
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </h:form>
+
+
+                        <ui:include src="/vistas/gr/grPopUpCrearViaje.xhtml"/>                                
+                    </ui:fragment>
+                    <ui:fragment rendered="#{empty sesion.usuarioVO}">
+                        <div class="row">      
+                            <div class="col-lg-12">                    
+                                <h:form id="logouGR">
+                                    <h:panelGrid style="text-align: center; width: 100%; margin-top: 12%; ">
+                                        <h:messages errorClass="mensaje" infoClass="mensaje"/>
+                                        <h:outputText value="Su sesión ha caducado, para utilizar el sistema tiene que iniciar sesión de nuevo…"/>
+                                        <p:commandLink value="Clic aquí para iniciar sesión." actionListener="#{sesion.salir(actionEvent)}" 
+                                                         styleClass="link"/>                                
+                                    </h:panelGrid>
+                                </h:form>
+
+                            </div>
+                            <div style="margin-top: 50px;" class="col-lg-12">
+                                <h:message  for="" style="display: block;" infoClass="alert alert-success" warnClass="alert alert-warning"
+                                            errorClass="alert alert-danger" fatalClass="alert alert-danger"  />
+                            </div>                        
+                        </div>               
+                    </ui:fragment>
+
+                </div>    
+                <script>
+                    $(document).ready(function () {
+                        $("#tipoViaje").tabs({active: 0});
+                        startDate();
+                    });
+                </script>
+            </ui:define> 
+            <ui:fragment rendered="#{empty sesion.usuarioVO}">
+                <ui:define name="bottom">
+                    <div class="row"></div>
+                </ui:define>
+            </ui:fragment>
+        </ui:composition>        
+    </h:body>
+</html>
