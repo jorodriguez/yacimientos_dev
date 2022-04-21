@@ -1891,9 +1891,8 @@ public class UsuarioBean implements Serializable {
         }
     }
 
-    public void abrirPopup() {
-        UsuarioVO us = (UsuarioVO) getListaUsuario().getRowData();
-        Usuario u = buscarPorId(us.getId());
+    public void abrirPopup(String idUser) {
+        Usuario u = buscarPorId(idUser);
         if (u != null) {
             UtilLog4j.log.info(this, "8888888888888888888888usuario " + u.getNombre());
             llenarUsuarioVOAlta(u);

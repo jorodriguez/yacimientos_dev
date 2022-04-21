@@ -2202,7 +2202,7 @@ public class RequisicionImpl extends AbstractFacade<Requisicion> {
                 
                 for (SiOpcionVo opcion : lo) {
                     if (retVal.get(opcion.getIdCampo()) == null) {
-                        retVal.put(opcion.getIdCampo(), new ArrayList<SiOpcionVo>());
+                        retVal.put(opcion.getIdCampo(), new ArrayList<>());
                     }
                     
                     retVal.get(opcion.getIdCampo()).add(opcion);

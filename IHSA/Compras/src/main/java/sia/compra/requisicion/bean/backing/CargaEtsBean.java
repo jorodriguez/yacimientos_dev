@@ -419,9 +419,7 @@ public class CargaEtsBean implements Serializable {
         popupGeneralBean.toggleModal();
     }
 
-    public void actualizarEtsDesdeEtsCategoria() {
-        int idRelacionn
-                = Integer.valueOf(FacesUtilsBean.getRequestParameter("idRelacionActualizar"));
+    public void actualizarEtsDesdeEtsCategoria(int idRelacionn) {
 
         setEtsOcOrden(servicioOcOrdenEts.find(idRelacionn));
         etsActualAdjunto = getEtsOcOrden().getSiAdjunto();

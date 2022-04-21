@@ -36,7 +36,7 @@ import sia.util.UtilLog4j;
  *
  * @author mluis
  */
-@Named (value = "vistoBuenoCostosBean")
+@Named(value = "vistoBuenoCostosBean")
 @ViewScoped
 public class VistoBuenoCostosBean implements Serializable {
 
@@ -55,7 +55,8 @@ public class VistoBuenoCostosBean implements Serializable {
     @Inject
     private OcUsoCFDIImpl ocUsoCFDIImpl;
     //
-    private final UsuarioBean usuarioBean = (UsuarioBean) FacesUtilsBean.getManagedBean("usuarioBean");
+    @Inject
+    private UsuarioBean usuarioBean;
 
     private DataModel listaRequisiciones;
     private Requisicion requisicionActual;
@@ -92,37 +93,42 @@ public class VistoBuenoCostosBean implements Serializable {
         }
     }
 
+    public void vistoBuenoCostosVarias() {
+
+        List<RequisicionVO> lr = (List<RequisicionVO>) listaRequisiciones.getWrappedData();;//   (List<RequisicionVO>)  new ListDataModel<>(listaRequisiciones);
+        if (lr.stream().anyMatch(RequisicionVO::isSelected)) {
+            lr.stream().filter((RequisicionVO::isSelected)).forEach(r -> {
+                if (r.getIdCfdi() > Constantes.CERO || r.getCompania().equals(Constantes.RFC_IHSA_CQ)) {
+                    vistoBuenoCostoMth(r);
+                } else {
+                    FacesUtilsBean.addErrorMessage("Para revisar la requisicion " + r.getConsecutivo() + " es necesario seleccionar el USO CFDI, en la requisición.");
+                }
+            });
+
+            //
+            FacesUtilsBean.addInfoMessage("Se envió al proceso de aprobación . . . ");
+            cambiarRequisicion(0);
+            //
+            String jsMetodo = ";limpiarTodos();";
+            PrimeFaces.current().executeScript(jsMetodo);
+        } else {
+            FacesUtilsBean.addErrorMessage("Seleccione al menos una requisición");
+        }
+    }
+
     public void vistoBuenoCosto() {
         try {
-            if (this.getRequisicionActual() == null) {
-                for (Object object : listaRequisiciones) {
-                    RequisicionVO o = (RequisicionVO) object;
-                    if (o.isSelected()) {
-                        if (o.getIdCfdi() > Constantes.CERO || o.getCompania().equals(Constantes.RFC_IHSA_CQ)) {
-                            vistoBuenoCostoMth(o);
-                        } else {
-                            FacesUtilsBean.addErrorMessage("Para revisar la requisicion " + o.getConsecutivo() + " es necesario seleccionar el USO CFDI, en la requisición.");
-                        }
-                    }
-                }
-                //
+            if (idCfdi > Constantes.CERO || requisicionActual.getCompania().getRfc().equals(Constantes.RFC_IHSA_CQ)) {
+                requisicionVO.setIdCfdi(idCfdi);
+                vistoBuenoCostoMth(requisicionVO);
                 FacesUtilsBean.addInfoMessage("Se envió al proceso de aprobación . . . ");
-                cambiarRequisicion(0);
-                //
-                String jsMetodo = ";limpiarTodos();";
-                PrimeFaces.current().executeScript( jsMetodo);
+                this.cambiarRequisicion(0);
+                String jsMetodo = ";regresar('divTabla', 'divDatos', 'divOperacion', 'divAutoriza');";
+                PrimeFaces.current().executeScript(jsMetodo);
             } else {
-                if (idCfdi > Constantes.CERO || requisicionActual.getCompania().getRfc().equals(Constantes.RFC_IHSA_CQ)) {
-                    requisicionVO.setIdCfdi(idCfdi);
-                    vistoBuenoCostoMth(requisicionVO);
-                    FacesUtilsBean.addInfoMessage("Se envió al proceso de aprobación . . . ");
-                    this.cambiarRequisicion(0);
-                    String jsMetodo = ";regresar('divTabla', 'divDatos', 'divOperacion', 'divAutoriza');";
-                    PrimeFaces.current().executeScript( jsMetodo);
-                } else {
-                    FacesUtilsBean.addErrorMessage("Seleccione el Uso CFDI, para la requisición.");
-                }
+                FacesUtilsBean.addErrorMessage("Seleccione el Uso CFDI, para la requisición.");
             }
+
             ContarBean contarBean = (ContarBean) FacesUtilsBean.getManagedBean("contarBean");
             contarBean.llenarReqSinVoBoConta();
             contarBean.llenarReqSinVistoBueno();
@@ -158,7 +164,7 @@ public class VistoBuenoCostosBean implements Serializable {
 
     public void devolverRequisicion() {
         try {
-            PrimeFaces.current().executeScript( ";abrirDialogoModal(dialogoDevReq);");
+            PrimeFaces.current().executeScript(";abrirDialogoModal(dialogoDevReq);");
         } catch (Exception e) {
             LOGGER.fatal(this, e.getMessage(), e);
         }
@@ -173,13 +179,14 @@ public class VistoBuenoCostosBean implements Serializable {
                 }
             }
             String jsMetodo = ";limpiarTodos();";
-            PrimeFaces.current().executeScript( jsMetodo);
-            PrimeFaces.current().executeScript( ";cerrarDevolver();");
+            PrimeFaces.current().executeScript(jsMetodo);
+            PrimeFaces.current().executeScript(";cerrarDevolver();");
             //
             ContarBean contarBean = (ContarBean) FacesUtilsBean.getManagedBean("contarBean");
             contarBean.llenarReqSinVistoBueno();
             //
             requisicionesSinVistoBueno();
+            motivo = "";
         } catch (Exception ex) {
             LOGGER.fatal(this, "Ex : : : : " + ex.getMessage(), ex);
         }
@@ -196,10 +203,10 @@ public class VistoBuenoCostosBean implements Serializable {
             }
             requisicionVO = null;
             //
-            PrimeFaces.current().executeScript( ";cerrarDialogoModal(dialogoCancelarVariasReq);");
+            PrimeFaces.current().executeScript(";cerrarDialogoModal(dialogoCancelarVariasReq);");
             this.cambiarRequisicion(0);
             String jsMetodo = ";limpiarTodos();";
-            PrimeFaces.current().executeScript( jsMetodo);
+            PrimeFaces.current().executeScript(jsMetodo);
             //
 
             ContarBean contarBean = (ContarBean) FacesUtilsBean.getManagedBean("contarBean");
@@ -207,6 +214,7 @@ public class VistoBuenoCostosBean implements Serializable {
             contarBean.llenarReqSinVoBoConta();
             //
             requisicionesSinVistoBueno();
+            motivo = "";
         } catch (Exception ex) {
             LOGGER.fatal(this, "Ex : : : : " + ex.getMessage(), ex);
         }
@@ -221,10 +229,10 @@ public class VistoBuenoCostosBean implements Serializable {
         //Esto es para Quitar las lineas seleccionadas
         this.cambiarRequisicion(0);
         //Esto es para cerrar el panel emergente de cancelar requisicion
-        PrimeFaces.current().executeScript( ";cerrarCancelar();");
+        PrimeFaces.current().executeScript(";cerrarCancelar();");
     }
 
-    public void seleccionarRequisicionCostosConta(RequisicionVO reqVo ) {
+    public void seleccionarRequisicionCostosConta(RequisicionVO reqVo) {
         try {
             requisicionVO = reqVo;
             //
@@ -238,7 +246,7 @@ public class VistoBuenoCostosBean implements Serializable {
             //
             rechazosRequisicion();
             String jsMetodo = ";activarTab('tabOCSProc',0, 'divDatos', 'divTabla', 'divOperacion', 'divAutoriza');";
-            PrimeFaces.current().executeScript( jsMetodo);
+            PrimeFaces.current().executeScript(jsMetodo);
         } catch (Exception e) {
             LOGGER.fatal(this, e.getMessage(), e);
         }
@@ -283,8 +291,8 @@ public class VistoBuenoCostosBean implements Serializable {
             contarBean.llenarReqSinVistoBueno();
             //
             String jsMetodo = ";limpiarTodos();";
-            PrimeFaces.current().executeScript( jsMetodo);
-            PrimeFaces.current().executeScript( ";cerrarDevolver();");
+            PrimeFaces.current().executeScript(jsMetodo);
+            PrimeFaces.current().executeScript(";cerrarDevolver();");
         } catch (Exception e) {
             UtilLog4j.log.error(e);
             FacesUtilsBean.addInfoMessage("Requisición(es) devuelta(s) correctamente...");
