@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
-import javax.ejb.Stateless;
+import javax.ejb.LocalBean;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
@@ -72,6 +72,7 @@ import sia.servicios.sistema.impl.SiUsuarioRolImpl;
 import sia.servicios.usuario.impl.RhTipoGerenciaImpl;
 import sia.util.UtilLog4j;
 import sia.util.UtilSia;
+import javax.ejb.Stateless;
 
 /**
  *
@@ -79,7 +80,7 @@ import sia.util.UtilSia;
  * @version 1.0
  * @author-mail hacosta.sierr@gmail.com @date 7/07/2009
  */
-@Stateless 
+@Stateless
 public class UsuarioImpl extends AbstractFacade<Usuario> {
 
     @PersistenceContext(unitName = "Sia-ServiciosPU")

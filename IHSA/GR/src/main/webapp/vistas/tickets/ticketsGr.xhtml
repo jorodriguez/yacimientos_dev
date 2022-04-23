@@ -1,0 +1,266 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"  
+      xmlns:p="http://primefaces.org/ui"      
+      xmlns:f="http://java.sun.com/jsf/core">
+    <body>
+        <ui:composition template="/vistas/template/template.xhtml">
+            <ui:define name="content">                
+                <div class="form-row">
+                    <h3>Registro de tickets</h3>
+                </div>
+                <h:form id="frmTickets">
+                    <div class="container">
+                        <h:commandLink actionListener="#{incidenciaBean.crearIncidecnia(e)}" styleClass="btn btn-primary"
+                                       title="Registrar nuevo ticket" immediate="true">
+                            <i class="fa fa-plus"/>
+                        </h:commandLink>
+                        <h:commandLink actionListener="#{incidenciaBean.refrescarTickets(e)}" styleClass="btn btn-primary"
+                                       title="Refrescar tickets" immediate="true">
+                            <i class="fa fa-refresh"/>
+                        </h:commandLink>
+                    </div>
+                    <div class="container">
+                        <p:dataTable value="#{incidenciaBean.incidencias}" var="dataInc">
+                            <p:column headerText="Código" style="width: 15%">
+                                <h:outputText value="#{dataInc.codigo}"/>
+                            </p:column>
+                            <p:column headerText="Categoría" style="width: 15%">
+                                <h:outputText value="#{dataInc.categoriaIncidencia}"/>
+                            </p:column>
+                            <p:column headerText="Título" style="width: 20%">
+                                <h:outputText value="#{dataInc.titulo}"/>
+                            </p:column>
+                            <p:column headerText="Descripción" styleClass="text-left" style="text-align: left; ">
+                                <h:outputText value="#{dataInc.descripcion}"/>
+                            </p:column>
+                            <p:column headerText="Fecha" styleClass="text-left">
+                                <h:outputText value="#{dataInc.fechaGenero}"/>
+                            </p:column>
+                            <p:column headerText="Hora" styleClass="text-left">
+                                <h:outputText value="#{dataInc.horaGenero}"/>
+                            </p:column>
+                            <p:column headerText="Estado" styleClass="text-left">
+                                <h:outputText value="#{dataInc.estado}"/>
+                            </p:column>
+                            <p:column>
+                                <h:commandLink actionListener="#{incidenciaBean.agregarAdjunto(e)}"
+                                               title="Agregar archivo">
+                                    <i class="fa fa-paperclip text-primary"></i>
+                                    <f:param name="idTicket" value="#{dataInc.idIncidencia}"/>
+                                </h:commandLink>					
+                            </p:column>
+                            <p:column>
+                                <h:commandLink actionListener="#{incidenciaBean.inicioReenviarTicket(e)}"
+                                               title="Agregar complemento">
+                                    <i class="fa fa-edit text-primary"></i>
+                                    <f:param name="idTicket" value="#{dataInc.idIncidencia}"/>
+                                </h:commandLink>					
+                            </p:column>
+                            <p:column>
+                                <h:commandLink actionListener="#{incidenciaBean.inicioCerrarTicket(e)}"
+                                               rendered="#{dataInc.idEstado eq 1210}"
+                                               title="Finalizar el ticket">
+                                    <i class="fa fa-close text-warning"></i>
+                                    <f:param name="idTicket" value="#{dataInc.idIncidencia}"/>
+                                </h:commandLink>					
+                            </p:column>
+                        </p:dataTable>
+                    </div>
+                </h:form>
+                <div class="modal fade" id="dialogoAdjuntaarTickt" data-backdrop="static" data-keyboard="false">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h4 class="modal-title">Agregar archivo a Tickets</h4>
+                            </div>
+                            <h:form id="frmAdjTick">
+                                <div class="modal-body">
+                                    <p:fileUpload id="adjArch"
+                                                   styleClass="btn btn-default"
+                                                   label="Archivo"
+                                                   listener="#{incidenciaBean.subirAdjunto}"                                                   
+                                                   immediate="false" />
+                                    <h:commandButton  styleClass="btn btn-default" id="uploadFile" value="Subir y Enviar"/>
+                                    <div class="form-row">
+                                        <p:dataTable id="dtArchivo" value="#{incidenciaBean.incidenciasAdjunto}" var="dataAdj"
+                                                       rowIndexVar="index">
+                                            <p:column headerText="Evidencia">
+                                                <h:outputLink target="_blank"  
+                                                              value="/Sia/AbrirArchivo?ZWZ2W=#{dataAdj.id}&amp;ZWZ3W=#{dataAdj.uuid}">
+                                                    <h:outputText value="#{dataAdj.nombre}"/>
+                                                </h:outputLink>
+                                            </p:column>
+                                            <p:column >
+                                                <h:commandLink actionListener="#{incidenciaBean.eliminarArchivo(dataAdj.idTabla)}"
+                                                               immediate="true" rendered="#{incidenciaBean.incidenciaVo.idEstado eq 1210}">
+                                                    <i class="fa fa-trash text-danger"/>
+                                                    <f:ajax execute="@this" render="@form"/>
+                                                </h:commandLink> 
+                                            </p:column>
+                                        </p:dataTable>    
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <h:commandButton value="Cerrar" styleClass="btn btn-default"
+                                                     onclick="$(dialogoAdjuntaarTickt).modal('hide');"/>
+                                </div>
+                            </h:form>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="modal fade" id="dialogoNuevoTickts" data-backdrop="static" data-keyboard="false">
+                    <div class="modal-dialog ">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h4 class="modal-title">Registro de incidencias (Tickets)</h4>
+                            </div>
+                            <h:form id="frmNuevoTick">
+                                <div class="modal-body">
+                                    <div class="form-group">
+                                        <h:outputText class="control-label" value="Categoría:"/>
+                                        <div >
+                                            <h:selectOneMenu value="#{incidenciaBean.idCatIncidencia}"
+                                                             styleClass="form-control">
+                                                <f:selectItems value="#{incidenciaBean.tiposEvidencias}" />
+                                                <f:ajax listener="#{incidenciaBean.traerCategoria}" execute="@this" event="change"
+                                                        render="txtCodCat codSeleccionado"/>
+                                            </h:selectOneMenu>
+                                        </div>
+                                    </div>
+                                    <div  id="divCodigo"> 
+                                        <div  class="form-group">
+                                            <div class="form-inline">
+                                                <h:outputText id="txtCodCat" class="control-label" value="¿Tiene un código de #{incidenciaBean.categoriaIncidenciaVo.nombre} ?"/>
+                                            </div>
+                                            <div class="form-inline">
+                                                <h:selectOneRadio id="codSeleccionado" value="#{incidenciaBean.idTieneCod}"
+                                                                  styleClass="form-control">
+                                                    <f:selectItem itemLabel="Si" itemValue="1"/>
+                                                    <f:selectItem itemLabel="No" itemValue="0"/>
+                                                    <f:ajax render="txtCodigo" execute="@this" event="change"
+                                                            listener="#{incidenciaBean.mostrarTextoCodigo}"/>
+                                                </h:selectOneRadio>
+                                            </div>
+                                            <div id="inpCod" class="form-inline">
+                                                <h:inputText id="txtCodigo" styleClass="form-control" value="#{incidenciaBean.incidenciaVo.codigoCategoria}"/>
+                                                <h:messages id="msgCod"  errorClass="text-danger small"/>
+                                            </div>
+                                            <div id="noInpCod" class="form-inline">
+                                                <h:outputText value="No aplica" style="font-weight: bold;"/>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <h:outputText class="control-label" value="Título:*"/>
+                                        <div >
+                                            <h:inputText id="txtTitulo" styleClass="form-control" value="#{incidenciaBean.incidenciaVo.titulo}"
+                                                         required="true" requiredMessage="Agregue un título"/>
+                                            <h:message for="txtTitulo" errorClass="text-danger"/>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <h:outputText class="control-label" value="Descripción:*"/>
+                                        <div >
+                                            <h:inputTextarea id="txtDes" styleClass="form-control" value="#{incidenciaBean.incidenciaVo.descripcion}"
+                                                             required="true" requiredMessage="Agregue un descripción"/>
+                                            <h:message for="txtDes" errorClass="text-danger"/>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <h:outputText class="control-label" value="Prioridad"/>
+                                        <div >
+                                            <h:selectOneMenu value="#{incidenciaBean.idPrioridad}"
+                                                             styleClass="form-control">
+                                                <f:selectItems value="#{incidenciaBean.prioridades}" />
+                                            </h:selectOneMenu>
+                                        </div>
+                                    </div>
+                                </div> 
+                                <div class="modal-footer">
+                                    <h:commandButton value="Cancelar" immediate="true"
+                                                     styleClass="btn btn-default"
+                                                     onclick="$(dialogoNuevoTickts).modal('hide');"
+                                                     title="Cerrar ventana de crear tickets...">
+                                    </h:commandButton>
+                                    <h:commandButton value="Guardar y enviar"
+                                                     styleClass="btn btn-primary"
+                                                     actionListener="#{incidenciaBean.guardarEnviarIncidencia(e)}"
+                                                     title="Guardar y solicitar tickets..."/>
+                                </div>
+                            </h:form>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal fade" id="dialogoComplementoTickt" data-backdrop="static" data-keyboard="false">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h4 class="modal-title">Complemento de Tickets</h4>
+                            </div>
+                            <h:form id="frmCompTick">
+                                <div class="modal-body">
+                                    <div class="form-row">
+                                        <h:outputLabel value="Complemento:*"/>
+                                        <h:inputTextarea id="txtArea" value="#{incidenciaBean.complemento}" required="true" requiredMessage="Agregue un complemento"
+                                                         rows="5" styleClass="form-control"/>
+                                        <h:message for="txtArea" errorClass="text-danger"/>
+                                    </div>                                    
+                                </div>
+                                <div class="modal-footer">
+                                    <h:commandLink value="Cancelar" immediate="true"
+                                                   styleClass="btn btn-default"
+                                                   onclick="$(dialogoComplementoTickt).modal('hide');"
+                                                   title="Cerrar ventana de complemento de tickets..."/>
+                                    <h:commandLink value="Guardar y enviar"
+                                                   styleClass="btn btn-primary"
+                                                   actionListener="#{incidenciaBean.reenviarTicket(e)}"
+                                                   title="Complemento de tickets..."/>
+                                </div>
+                            </h:form>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal fade" id="dialogoCierreTickt" data-backdrop="static" data-keyboard="false">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h4 class="modal-title">Cierre de Tickets</h4>
+                            </div>
+                            <h:form id="frmCierreTick">
+                                <div class="modal-body">
+                                    <div class="form-row">
+                                        <h:outputLabel value="Motivo:*"/>
+                                        <h:inputTextarea id="txtArea" value="#{incidenciaBean.complemento}" required="true" 
+                                                         requiredMessage="Agregue un motivo de cierre"
+                                                         rows="5" styleClass="form-control"/>
+                                        <h:message for="txtArea" errorClass="text-danger"/>
+                                    </div>                                    
+                                </div>
+                                <div class="modal-footer">
+                                    <h:commandLink value="Cancelar" immediate="true"
+                                                   styleClass="btn btn-default"
+                                                   onclick="$(dialogoCierreTickt).modal('hide');"
+                                                   title="Cerrar ventana de cierre de tickets..."/>
+                                    <h:commandLink value="Guardar y enviar"
+                                                   styleClass="btn btn-primary"
+                                                   actionListener="#{incidenciaBean.cerrarTicket(e)}"
+                                                   title="Cierre de tickets..."/>
+                                </div>
+                            </h:form>
+                        </div>
+                    </div>
+                </div>
+            </ui:define>
+
+        </ui:composition>
+
+    </body>
+</html>
