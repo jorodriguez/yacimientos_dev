@@ -57,7 +57,7 @@ public class SiLocalizacionImpl extends AbstractFacade<SiLocalizacion> {
             siLocalizacion.setTelefonoSimOperador(datos.get("simOperatorName").getAsString());
             siLocalizacion.setTelefonoSimSerie(datos.get("simSerialNumber").getAsString());
         } catch (JSONException e) {
-            UtilLog4j.log.debug(e.toString());
+            UtilLog4j.log.debug(this, "", e);
         }
         //
 
