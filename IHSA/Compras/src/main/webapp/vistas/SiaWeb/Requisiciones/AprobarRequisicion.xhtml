@@ -24,7 +24,7 @@
                             <p:commandLink value="Aprobar"
                                            style="font-weight: bold;"
                                            styleClass="btn btn-default" 
-                                           action="#{requisicionBean.aprobarRequisicion}"
+                                           action="#{requisicionBean.aprobarVariasRequisiciones}"
                                            title="Clic aqui para aprobar la requisición..."
                                            disabled="#{requisicionBean.requisicionesSinAprobar.rowCount lt 1}"
                                            process="@form" update="form1"> 
@@ -74,11 +74,7 @@
                                            value="Generar Nota" process="@this" update="frmNotaReq" />
                         </div>                            
                     </div>                        
-                    <div id="divTabla" class="container-fluid"> 
-                        <!--   Ponga todo su codigo aqui... -->
-                        <div class="col-12" >
-                            <h:outputText id="outputText0" value="Selecione una requisición de la lista para ver y modificar sus Items. "/>
-                        </div>
+                    <div id="divTabla" class="container-fluid">                         
                         <div class="table table-responsive">
                             <p:dataTable size="small" stripedRows="true" showGridlines="true"  id="dataTable1" rows="10" 
                                          value="#{requisicionBean.requisicionesSinAprobar}" var="currentRow" styleClass="table table-striped">
@@ -101,19 +97,19 @@
                                         <h:outputText value="Referencia"/>
                                     </f:facet>
                                 </p:column>
-                                <p:column style="text-align: center; width: 5%;">
+                                <p:column style="text-align: center; width: 8%;">
                                     <h:outputText value="#{currentRow['fechaSolicitada']}">
                                         <f:convertDateTime dateStyle="default"
-                                                           type="date"/>
+                                                           type="date" pattern="dd/MM/yyyy"/>
                                     </h:outputText>
                                     <f:facet name="header">
                                         <h:outputText value="Solicitada"/>
                                     </f:facet>
                                 </p:column>
-                                <p:column style="text-align: center; width: 5%;">
+                                <p:column style="text-align: center; width: 8%;">
                                     <h:outputText value="#{currentRow['fechaRequerida']}">
                                         <f:convertDateTime dateStyle="default"
-                                                           type="date"/>
+                                                           type="date" pattern="dd/MM/yyyy"/>
                                     </h:outputText>
                                     <f:facet name="header">
                                         <h:outputText value="Requerida"/>
@@ -131,11 +127,12 @@
                                         <h:outputText value="Co."/>
                                     </f:facet>
                                 </p:column>
-                                <p:column style="text-align: center; width: 5%;">
-                                    <p:commandLink value="Seleccionar" styleClass="btn btn-default" 
+                                <p:column width="50">
+                                    <p:commandLink styleClass="btn btn-default" 
                                                    action="#{requisicionBean.seleccionarRequisicion(currentRow.id)}"
                                                    title="Clic aqui para ver y modificar los items de la requisición..."
-                                                   process="@this" update="form1:tbReq">
+                                                   process="@this" update="form1:tbRequi form1:lblReq">
+                                        <i class="fa fa-eye text-primary"/>
                                     </p:commandLink>
                                 </p:column>
                             </p:dataTable>
@@ -145,10 +142,10 @@
                     <div id="divDatos" style="display: none;">
                         <div class="col-5">
                             <h:outputText value="Más información de la requisición: "/>
-                            <h:outputText value="#{requisicionBean.requisicionActual.consecutivo}" style="font-size: large; font-weight:  bold;"/>
+                            <h:outputText id="lblReq" value="#{requisicionBean.requisicionActual.consecutivo}" />
                         </div><br/>
                         <div class="container-fluid">
-                            <p:tabView id="tbReq" activeIndex="0">
+                            <p:tabView id="tbRequi" activeIndex="0">
                                 <p:tab title="Más información"> 
                                     <ui:include src="../Requisiciones/fragmentos/masInformacionRequisicion.xhtml"/>
                                 </p:tab>

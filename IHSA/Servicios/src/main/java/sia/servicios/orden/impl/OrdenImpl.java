@@ -112,8 +112,8 @@ import sia.util.notificacion.FCMSender;
  * @version 1.0
  * @author-mail new_nick_name@hotmail.com @date 13/10/2009
  */
-@Stateless 
-public class OrdenImpl extends AbstractFacade<Orden>{
+@Stateless
+public class OrdenImpl extends AbstractFacade<Orden> {
 
     private static final UtilLog4j LOGGER = UtilLog4j.log;
 
@@ -198,7 +198,6 @@ public class OrdenImpl extends AbstractFacade<Orden>{
     @PersistenceContext(unitName = "Sia-ServiciosPU")
     private EntityManager em;
 
-    
     @Override
     protected EntityManager getEntityManager() {
         return em;
@@ -208,7 +207,6 @@ public class OrdenImpl extends AbstractFacade<Orden>{
         super(Orden.class);
     }
 
-   
     public void creaarOrden(Orden orden) {
         if (orden.getUuid() == null || orden.getUuid().isEmpty()) {
             orden.setUuid(getUUID());
@@ -226,7 +224,6 @@ public class OrdenImpl extends AbstractFacade<Orden>{
         return UUID.randomUUID().toString();
     }
 
-    
     public Orden createReturnOrden(Orden orden) {
         if (orden.getUuid() == null || orden.getUuid().isEmpty()) {
             orden.setUuid(getUUID());
@@ -240,12 +237,10 @@ public class OrdenImpl extends AbstractFacade<Orden>{
         return orden;
     }
 
-    
     public void editarOrden(Orden orden) {
         edit(orden);
     }
 
-    
     public void remove(int idOrden, String idUser) {
         //- - - regresar la requisición
         Orden orden = find(idOrden);
@@ -305,12 +300,10 @@ public class OrdenImpl extends AbstractFacade<Orden>{
                 .getResultList();
     }
 
-    
     public Orden find(Object id) {
         return em.find(Orden.class, id);
     }
 
-    
     public Orden buscarPorConsecutivo(Object consecutivo) {
         try {
             return (Orden) em.createQuery("SELECT o FROM Orden o WHERE o.consecutivo = :consecutivo OR o.navCode = :consecutivo2")
@@ -322,7 +315,6 @@ public class OrdenImpl extends AbstractFacade<Orden>{
         }
     }
 
-    
     public Orden buscarPorConsecutivoEmpresa(String consecutivo, String rfcEmpresa) {
         Orden r = null;
 
@@ -343,7 +335,6 @@ public class OrdenImpl extends AbstractFacade<Orden>{
         return r;
     }
 
-    
     public Orden buscarPorConsecutivoBloque(String consecutivo, int idBloque, String idUsuario) {
         Orden r = null;
         try {
@@ -363,13 +354,11 @@ public class OrdenImpl extends AbstractFacade<Orden>{
         return r;
     }
 
-    
     public List<Orden> findAll() {
         return em.createQuery("select object(o) from Orden as o").getResultList();
     }
 
     //-- Ordenes nuevas
-    
     public List<OrdenVO> ordenesPendientes(String usuario, int apCampo, boolean conContrato) {
 
         String sql
@@ -423,7 +412,6 @@ public class OrdenImpl extends AbstractFacade<Orden>{
     }
 
     //-- ordenes q se tienen que aprobar por la gerencia solicitante ---
-    
     public List<OrdenVO> getOrdenesApruebaGerenciaSolicitante(String usuario, int apCampo) {
         StringBuilder sb = new StringBuilder();
         sb.append(consultaOrden());
@@ -444,7 +432,6 @@ public class OrdenImpl extends AbstractFacade<Orden>{
     }
 
     //-- ordenes que se tienen que autorizar por la direccion de MPG - -
-    
     public List<OrdenVO> getOrdenesAutorizaMPG(String usuario, int apCampo) {
         StringBuilder sb = new StringBuilder();
         sb.append(consultaOrden());
@@ -466,7 +453,6 @@ public class OrdenImpl extends AbstractFacade<Orden>{
     }
 
     //-- ordenes que se tienen q autorizar por la direccion de IHSA ---
-    
     public List<OrdenVO> getOrdenesAutorizaFinanzas(String usuario, int apCampo) {
 
         StringBuilder sb = new StringBuilder();
@@ -488,7 +474,6 @@ public class OrdenImpl extends AbstractFacade<Orden>{
     }
 
     //-- ordenes que se tienen q autorizar por la direccion de IHSA ---
-    
     public List<OrdenVO> getOrdenesAutorizaSocio(String usuario, int apCampo) {
 
         StringBuilder sb = new StringBuilder();
@@ -510,7 +495,6 @@ public class OrdenImpl extends AbstractFacade<Orden>{
     }
 
     //-- ordenes que se tienen q autorizar por la direccion de IHSA ---
-    
     public List<OrdenVO> getOrdenesAutorizaIHSA(String usuario, int apCampo) {
         StringBuilder sb = new StringBuilder();
         sb.append(consultaOrden());
@@ -532,7 +516,6 @@ public class OrdenImpl extends AbstractFacade<Orden>{
     }
 
     //- - - - - Ordenes que se tienen que autorizar por la gerencia de Compras
-    
     public List<OrdenVO> getOrdenesAutorizaCompras(String usuario, int apCampo) {
         StringBuilder sb = new StringBuilder();
         sb.append(consultaOrden());
@@ -554,7 +537,6 @@ public class OrdenImpl extends AbstractFacade<Orden>{
         return lor;
     }
 
-    
     public List<OrdenVO> getOrdenesAutorizaLicitacion(String usuario, int apCampo) {
         StringBuilder sb = new StringBuilder();
         sb.append(consultaOrden());
@@ -573,7 +555,6 @@ public class OrdenImpl extends AbstractFacade<Orden>{
         return lor;
     }
 
-    
     public List getOrdenesAutorizadasCompras(String usuario, int apCampo, String tipo) {
         StringBuilder sb = new StringBuilder();
         sb.append(" SELECT r.ID, r.CONSECUTIVO,  r.REFERENCIA, q.consecutivo, a.FECHA_SOLICITO, ");
@@ -600,8 +581,7 @@ public class OrdenImpl extends AbstractFacade<Orden>{
     }
 
     //- - - - - Ordenes que se hicieron por la reequisicion
-    
-    public List getOrdenesPorRequisicion(Object idRequisicion, String canceladas) {
+    public List<OrdenVO> getOrdenesPorRequisicion(Object idRequisicion, String canceladas) {
         StringBuilder sb = new StringBuilder();
         sb.append("SELECT o.ID, o.CONSECUTIVO, e.nombre, c.nombre ");
         sb.append(" FROM AUTORIZACIONES_ORDEN ao");
@@ -614,10 +594,20 @@ public class OrdenImpl extends AbstractFacade<Orden>{
         sb.append(" Where o.REQUISICION = ").append(idRequisicion);
         sb.append("     ORDER BY o.CONSECUTIVO ASC");
 //
-        return em.createNativeQuery(sb.toString()).getResultList();
+        List<Object[]> lo = em.createNativeQuery(sb.toString()).getResultList();
+        List<OrdenVO> lista = new ArrayList<>();
+        OrdenVO o;
+        for (Object[] objects : lo) {
+            o = new OrdenVO();
+            o.setId((Integer) objects[0]);
+            o.setConsecutivo(String.valueOf(objects[1]));
+            o.setEstatus(String.valueOf(objects[2]));
+            o.setCompania((String) objects[3]);
+            lista.add(o);
+        }
+        return lista;
     }
 
-    
     public List<OrdenVO> traerOrdenDeProyectoOt(Integer idProyectoOt) {
         try {
             StringBuilder sb = new StringBuilder();
@@ -655,7 +645,6 @@ public class OrdenImpl extends AbstractFacade<Orden>{
         }
     }
 
-    
     public List<Orden> getOrdenesPorRequisicionJPA(Object idRequisicion) {
         return em.createQuery("SELECT o FROM Orden o WHERE "
                 + " o.requisicion.id = :requisicion and o.eliminado = :eli"
@@ -663,7 +652,6 @@ public class OrdenImpl extends AbstractFacade<Orden>{
     }
 
     // Trae totales de las OC/S
-    
     public long totalOrdenesSinSolicitar(String usuario, int apCampo) {
         StringBuilder sb = new StringBuilder();
         sb.append(" select count(*) from AUTORIZACIONES_ORDEN a ");
@@ -677,7 +665,6 @@ public class OrdenImpl extends AbstractFacade<Orden>{
     }
 
     //-- Total ordenes sin aprobar por gerencia solicitante
-    
     public long totalOrdenesSinAprobar(String usuario, int apCampo) {
         StringBuilder sb = new StringBuilder();
         sb.append("select count(*) from AUTORIZACIONES_ORDEN ao ");
@@ -692,7 +679,6 @@ public class OrdenImpl extends AbstractFacade<Orden>{
     }
 
     //-- Total ordenes sin autorizar por direccion MPG
-    
     public long totalOrdenesSinAutorizarMPG(String usuario, int apCampo) {
         StringBuilder sb = new StringBuilder();
         sb.append("select count(*) from AUTORIZACIONES_ORDEN ao ");
@@ -708,7 +694,6 @@ public class OrdenImpl extends AbstractFacade<Orden>{
     }
     //-- Total ordenes sin autorizar por direccion IHSA
 
-    
     public long getTotalOrdenesSinAutorizarIHSA(String usuario, int apCampo) {
         StringBuilder sb = new StringBuilder();
         sb.append("select count(*) from AUTORIZACIONES_ORDEN ao ");
@@ -722,7 +707,6 @@ public class OrdenImpl extends AbstractFacade<Orden>{
         return ((Long) em.createNativeQuery(sb.toString()).getSingleResult());
     }
 
-    
     public long totalOrdenesSinAutorizarFinanzas(String usuario, int apCampo) {
 
         String sql
@@ -742,7 +726,6 @@ public class OrdenImpl extends AbstractFacade<Orden>{
                 .getSingleResult());
     }
 
-    
     public long totalOrdenesSinAprobarSocio(String usuario, int apCampo) {
         StringBuilder sb = new StringBuilder();
         sb.append(" SELECT count(*) from AUTORIZACIONES_ORDEN a ");
@@ -755,7 +738,6 @@ public class OrdenImpl extends AbstractFacade<Orden>{
         return ((Long) em.createNativeQuery(sb.toString()).getSingleResult());
     }
 
-    
     public long getTotalOrdenesSinAutorizarCompras(String usuario, int apCampo) {
 
         StringBuilder sb = new StringBuilder();
@@ -771,7 +753,6 @@ public class OrdenImpl extends AbstractFacade<Orden>{
 
     }
 
-    
     public long getTotalOrdenesSinAutorizarComprasLicitacion(String usuario, int apCampo) {
 
         String sql
@@ -791,7 +772,6 @@ public class OrdenImpl extends AbstractFacade<Orden>{
                 .getSingleResult());
     }
 
-    
     public long getTotalTareasSinCompleta(String usuario, int apCampo) {
         StringBuilder sb = new StringBuilder();
         sb.append(" SELECT count(*) from AUTORIZACIONES_ORDEN a ");
@@ -806,7 +786,6 @@ public class OrdenImpl extends AbstractFacade<Orden>{
         return ((Long) em.createNativeQuery(sb.toString()).getSingleResult());
     }
 
-    
     public long getTotalTareasSinCompletaAF(String usuario, int apCampo) {
         StringBuilder sb = new StringBuilder();
         sb.append(" SELECT count(*) from AUTORIZACIONES_ORDEN a ");
@@ -821,7 +800,6 @@ public class OrdenImpl extends AbstractFacade<Orden>{
         return ((Long) em.createNativeQuery(sb.toString()).getSingleResult());
     }
 
-    
     public long getTotalTareasSinCompletaPS(String usuario, int apCampo) {
         StringBuilder sb = new StringBuilder();
         sb.append(" SELECT count(*) from AUTORIZACIONES_ORDEN a ");
@@ -836,7 +814,6 @@ public class OrdenImpl extends AbstractFacade<Orden>{
         return ((Long) em.createNativeQuery(sb.toString()).getSingleResult());
     }
 
-    
     public long totalOrdenesEstatusUsuario(String usuario, int apCampo, int status) {
         StringBuilder sb = new StringBuilder();
         sb.append(" SELECT count(*) from AUTORIZACIONES_ORDEN a ");
@@ -849,7 +826,6 @@ public class OrdenImpl extends AbstractFacade<Orden>{
         return ((Long) em.createNativeQuery(sb.toString()).getSingleResult());
     }
 
-    
     public void actualizarMontoOrden(Orden orden, double total) {
         orden.setTotal(total);
         orden.setSubtotal(orden.getTotal());
@@ -875,7 +851,6 @@ public class OrdenImpl extends AbstractFacade<Orden>{
 
     //JAVIER
     // - - - Items o Lineas de la Orden - - -
-    
     public void crearItem(OrdenDetalle ordenDetalle, String idSesion, int idTarea) {
         try {
             ordenDetalle.setImporte(ordenDetalle.getCantidad() * ordenDetalle.getPrecioUnitario());
@@ -920,7 +895,6 @@ public class OrdenImpl extends AbstractFacade<Orden>{
         }
     }
 
-    
     public void actualizarItem(OrdenDetalle ordenDetalle, String idSesion, int idTarea) {
         Double importeAux = ordenDetalle.getCantidad() * ordenDetalle.getPrecioUnitario();
         boolean actMonto = false;
@@ -945,7 +919,6 @@ public class OrdenImpl extends AbstractFacade<Orden>{
         }
     }
 
-    
     public void actualizarMultiItems(int idOrden, OrdenDetalle itemP, String idSesion, String monedaNombre, String compania) {
         Moneda m = this.monedaServicioImpl.buscarPorNombre(monedaNombre, compania);
         List<OrdenDetalle> items = ordenDetalleServicioImpl.getItemsPorOrden(idOrden, itemP.getMultiproyectoId());
@@ -990,7 +963,6 @@ public class OrdenImpl extends AbstractFacade<Orden>{
         }
     }
 
-    
     public void actualizarMultiItemsProducto(int idOrden, int agrupadorID, int idProducto) {
         List<OrdenDetalle> items = ordenDetalleServicioImpl.getItemsPorOrden(idOrden, agrupadorID);
         for (OrdenDetalle item : items) {
@@ -1000,7 +972,6 @@ public class OrdenImpl extends AbstractFacade<Orden>{
 
     }
 
-    
     public void eliminarItem(OrdenDetalle ordenDetalle) {
         ordenDetalleServicioImpl.remove(ordenDetalle);
         //
@@ -1008,7 +979,6 @@ public class OrdenImpl extends AbstractFacade<Orden>{
         actualizarMonto(ordenDetalle.getOrden(), items);
     }
 
-    
     public List<OrdenDetalle> getItems(Object orden) {
         return ordenDetalleServicioImpl.getItemsPorOrden(orden);
     }
@@ -1017,7 +987,6 @@ public class OrdenImpl extends AbstractFacade<Orden>{
         return paridadValorRemote.traerParidadValor(siglas, fecha, monedaID);
     }
 
-    
     public boolean solicitarOrden(int idProveedor, String revisa, String aprueba, Object condicionPago, String moneda,
             Date fechaEntrega, Orden orden, int iva, Object tipoOrden, int idCampo, List<ContactoProveedorVO> lcp,
             String idSesion, int idTerminoPago, String contrato) {
@@ -1270,7 +1239,6 @@ public class OrdenImpl extends AbstractFacade<Orden>{
     }
 
     //-- Aprobar Orden por gerencia solicitante // ihsa comptras
-    
     public boolean aprobarOrdenGerenciaSolicitante(int ordenID, String sesion, String correoSesion) {
         boolean enviada = false;
         //
@@ -1325,7 +1293,6 @@ public class OrdenImpl extends AbstractFacade<Orden>{
     }
     //--- Autorizar Orden por direccion MPG estatus 120
 
-    
     public void enviarExcepcionSia(String sesion, String para, String modulo, String opcion, String consecutivo, int idOrden) {
         Orden orden = find(idOrden);
         AutorizacionesOrden autorizaOCS = orden.getAutorizacionesOrden();
@@ -1342,7 +1309,6 @@ public class OrdenImpl extends AbstractFacade<Orden>{
         notificacionesOrdenRemote.enviarExcepcionSIA(para, "", asunto, modulo, opcion, sbM.toString());
     }
 
-    
     public boolean autorizarOrdenMPG(int ordenID, String sesion, String correoSesion) {
         boolean enviada = false;
         boolean enviadaTarea = false;
@@ -1414,7 +1380,6 @@ public class OrdenImpl extends AbstractFacade<Orden>{
      * @param orden MLUIS
      * @return
      */
-    
     public boolean revisarOrdenExterno(Orden orden) {
         boolean enviada = false;
         orden.setLeida(Constantes.BOOLEAN_FALSE);
@@ -1448,7 +1413,6 @@ public class OrdenImpl extends AbstractFacade<Orden>{
     }
 
     //-- Autorizar Orden por direccion IHSA
-    
     public boolean autorizarOrdenIHSA(int ordenID, String sesion, String correoSesion) {
         boolean enviada = false;
         boolean enviadaTarea = false;
@@ -1563,7 +1527,6 @@ public class OrdenImpl extends AbstractFacade<Orden>{
         }
     }
 
-    
     public boolean autorizarOrdenSocio(int ordenID, String sesion, String correoSesion) {
         boolean enviada = false;
         boolean enviadaTarea = false;
@@ -1618,7 +1581,6 @@ public class OrdenImpl extends AbstractFacade<Orden>{
     }
 
     //-- Autorizar Orden por gerencia compras
-    
     public boolean autorizarOrdenCompras(int ordenID, String sesion, String correoSesion) throws Exception {
         boolean enviada = false;
         Usuario usr = usuarioServicioImpl.find(sesion);
@@ -1688,7 +1650,6 @@ public class OrdenImpl extends AbstractFacade<Orden>{
         return enviada;
     }
 
-    
     public boolean autorizarOrdenCompras(Orden orden, Usuario usr) {
         boolean enviada = false;
         boolean enviadaTarea = false;
@@ -1850,7 +1811,6 @@ public class OrdenImpl extends AbstractFacade<Orden>{
         return enviada;
     }
 
-    
     public boolean autorizarTareaCompra(int ordenID, String sesion,
             String correoSesion, boolean aprobarIHSA
     ) {
@@ -1942,7 +1902,6 @@ public class OrdenImpl extends AbstractFacade<Orden>{
         return enviarCompras ? enviada : !enviarCompras;
     }
 
-    
     public boolean enviarCompraLicitacion(int ordenID, String sesion,
             String correoSesion, boolean aprobarIHSA
     ) {
@@ -1998,7 +1957,6 @@ public class OrdenImpl extends AbstractFacade<Orden>{
         return enviada;
     }
 
-    
     public boolean cancelarOrden(Orden orden, String nombreUsrSolicito,
             String idUsrGenero, Object Motivo,
             boolean getContactosOrden, boolean eliminarReq) throws Exception {
@@ -2173,7 +2131,6 @@ public class OrdenImpl extends AbstractFacade<Orden>{
 
     }
 
-    
     public boolean devolverOrden(Orden orden, String nombreUsrSolicito, String idUsrGenero, String motivo) throws Exception {
         boolean enviarCorreoDevolucion = false;
         StringBuilder para = new StringBuilder();
@@ -2264,54 +2221,44 @@ public class OrdenImpl extends AbstractFacade<Orden>{
     }
 
     // - - - - Contactos
-    
     public void crearContacto(ContactosOrden contactoOrden) {
         contactosOrdenServicioImpl.create(contactoOrden);
     }
 
-    
     public void eliminarContacto(ContactosOrden contactoOrden) {
         contactosOrdenServicioImpl.remove(contactoOrden);
     }
 
-    
     public ContactosOrden buscarPorNombre(Object idOrden, Object nombre) {
         return contactosOrdenServicioImpl.buscarPorNombre(idOrden, nombre);
     }
 
-    
     public List getContactos(Object idOrden) {
         return contactosOrdenServicioImpl.getContactosPorOrden(idOrden);
     }
 
-    
     public List<ContactoOrdenVo> getContactosVo(int idOrden) {
         return contactosOrdenServicioImpl.traerContactoPorOrden(idOrden);
     }
 
-    
     public List<RechazosOrden> getRechazos(Object idOrden) {
         return rechazosOrdenServicioImpl.getRechazosPorOrden(idOrden);
     }
 
     // - - - - Notas - - - -
-    
     public void createNota(NotaOrden notaOrden) {
         notaOrdenServicioImpl.create(notaOrden);
     }
 
-    
     public List<OrdenDetalleVO> itemsPorOrdenCompra(int id) {
         return ordenDetalleServicioImpl.itemsPorOrden(id);
     }
 
-    
     public List<OrdenDetalleVO> itemsPorOrdenCompraMulti(int id) {
         return ordenDetalleServicioImpl.itemsPorOrdenMulti(id);
     }
 
     //Historial de orden de compra
-    
     public List<OrdenVO> getHistorialOrdenes(String usuario, int apCampo, String inicio, String fin, int idStatus) {
         //gerencia hmunoz
         //visto bueno jose carmen jrodriguez
@@ -2355,7 +2302,6 @@ public class OrdenImpl extends AbstractFacade<Orden>{
     }
 
     //Historial de orden de compra
-    
     public List<OrdenVO> traerHistorialOrdenePorCadenaItems(String cadena, String idUsuario, int idCampo) {
         StringBuilder sb = new StringBuilder();
         boolean v = siUsuarioRolRemote.buscarRolPorUsuarioModulo(idUsuario, Constantes.MODULO_COMPRA, Constantes.CODIGO_ROL_CONS_OCS, idCampo);
@@ -2414,7 +2360,6 @@ public class OrdenImpl extends AbstractFacade<Orden>{
         return o;
     }
 
-    
     public List<CampoOrden> buscarTrabajoPendienteCampo(String idUsuario, int idCampo) {
 
         //List<CampoVo> lc = apCampoRemote.getAllFieldExceptCurrent(idCampo);
@@ -2469,7 +2414,6 @@ public class OrdenImpl extends AbstractFacade<Orden>{
 
     }
 
-    
     public long obtieneTotalOrdenes(String usuario) {
         StringBuilder stringBuilder = new StringBuilder();
 
@@ -2492,7 +2436,6 @@ public class OrdenImpl extends AbstractFacade<Orden>{
     /**
      * Consulta para OC/S superan el monto
      */
-    
     public List<OrdenVO> traerOrdenSuperaMonto() {
         try {
             List<OrdenVO> lo = null;
@@ -2548,7 +2491,6 @@ public class OrdenImpl extends AbstractFacade<Orden>{
         }
     }
 
-    
     public List<OrdenVO> ordenesCompraAutorizadas(String comprador, int status, int anio, int mes) {
         try {
             StringBuilder sb = new StringBuilder();
@@ -2596,7 +2538,6 @@ public class OrdenImpl extends AbstractFacade<Orden>{
         return o;
     }
 
-    
     public List<Integer> ordenesSinUUID(int anio, int estatus) {
         List<Integer> lo = null;
         try {
@@ -2621,7 +2562,6 @@ public class OrdenImpl extends AbstractFacade<Orden>{
         return lo;
     }
 
-    
     public boolean reenviarOrdenCompras(Orden orden, Usuario usr) throws Exception {
         File ordenPDF = null;
         File pdfCG = null;
@@ -2639,7 +2579,6 @@ public class OrdenImpl extends AbstractFacade<Orden>{
         return notificacionesOrdenRemote.reenviarNotificacionOrdenProveedor(orden, listaContactosOrden, ordenPDF, pdfCG);
     }
 
-    
     public boolean reenviarCodigos(Orden orden) throws Exception {
         return notificacionesOrdenRemote.enviarNotificacionOrdenAnalista(orden);
     }
@@ -2682,8 +2621,7 @@ public class OrdenImpl extends AbstractFacade<Orden>{
     private void copiarArchivo(String pathOrigen, String pathDestino) throws Exception {
         File copied = new File(pathDestino);
         File original = new File(pathOrigen);
-        try (InputStream in = new BufferedInputStream(new FileInputStream(original));
-                OutputStream out = new BufferedOutputStream(new FileOutputStream(copied))) {
+        try ( InputStream in = new BufferedInputStream(new FileInputStream(original));  OutputStream out = new BufferedOutputStream(new FileOutputStream(copied))) {
             byte[] buffer = new byte[1024];
             int lengthRead;
             while ((lengthRead = in.read(buffer)) > 0) {
@@ -2728,11 +2666,10 @@ public class OrdenImpl extends AbstractFacade<Orden>{
         }
     }
 
-    
     @Trace(dispatcher = true)
     public File generarExcel(Orden orden, File fileTemp) throws Exception {
 
-        try (InputStream inputDocument = new FileInputStream(fileTemp);) {
+        try ( InputStream inputDocument = new FileInputStream(fileTemp);) {
             if (orden != null
                     && orden.getCompania() != null
                     && !Strings.isNullOrEmpty(orden.getCompania().getRfc())) {
@@ -2763,14 +2700,13 @@ public class OrdenImpl extends AbstractFacade<Orden>{
         return fileTemp;
     }
 
-    
     @Trace(dispatcher = true)
     public File generarExcel(Orden orden, String pathOrigen, String pathDestino) throws Exception {
         File fileTemp = null;
         copiarArchivo(pathOrigen, pathDestino);
         fileTemp = new File(pathDestino);
         if (fileTemp.exists()) {
-            try (InputStream inputDocument = new FileInputStream(fileTemp);) {
+            try ( InputStream inputDocument = new FileInputStream(fileTemp);) {
                 int i = 22;
                 OPCPackage pkg = OPCPackage.open(inputDocument);
                 XSSFWorkbook wb = new XSSFWorkbook(pkg);
@@ -2781,7 +2717,7 @@ public class OrdenImpl extends AbstractFacade<Orden>{
                 } else {
                     cargarExcelPS(myWorksheet, wb, orden, i);
                 }
-                try (OutputStream outputFile = new FileOutputStream(fileTemp);) {
+                try ( OutputStream outputFile = new FileOutputStream(fileTemp);) {
                     wb.write(outputFile);
                     outputFile.close();
                     pkg.close();
@@ -2795,7 +2731,6 @@ public class OrdenImpl extends AbstractFacade<Orden>{
         return fileTemp;
     }
 
-    
     public File generarExcelOCSAI(Orden orden, File fileTemp) throws Exception {
         //FIXME : usar try-with-resources
         try {
@@ -3177,7 +3112,6 @@ public class OrdenImpl extends AbstractFacade<Orden>{
 
     }
 
-    
     public List<OrdenVO> ordenesPorCondicionPago(int condicionPago, int bloque) {
         List<OrdenVO> lo = null;
         List<Object[]> lobj = null;
@@ -3216,14 +3150,12 @@ public class OrdenImpl extends AbstractFacade<Orden>{
         }
     }
 
-    
     public long totalOrdenesPorProveedor(int idProveedor) {
         StringBuilder sb = new StringBuilder();
         sb.append("select count(*) from ORDEN o where o.PROVEEDOR  = ").append(idProveedor);
         return ((Long) em.createNativeQuery(sb.toString()).getSingleResult()).intValue();
     }
 
-    
     public OrdenVO buscarOrdenPorConsecutivoEmpresa(String consecutivo, int idBloque, boolean condetalle) {
         StringBuilder sb = new StringBuilder();
         OrdenVO ovo = null;
@@ -3242,7 +3174,6 @@ public class OrdenImpl extends AbstractFacade<Orden>{
         return ovo;
     }
 
-    
     public OrdenVO buscarOrdenPorId(int idOrden, int idBloque, boolean condetalle) {
         StringBuilder sb = new StringBuilder();
         OrdenVO ovo = null;
@@ -3330,7 +3261,6 @@ public class OrdenImpl extends AbstractFacade<Orden>{
     }
     //
 
-    
     public void actualizaMontoOrden(Orden orden, String idSesion) {
         double total = ordenDetalleServicioImpl.traerTotalOrden(orden.getId());
         double desc = ordenDetalleServicioImpl.traerTotalDescuentoOrden(orden.getId());
@@ -3348,7 +3278,6 @@ public class OrdenImpl extends AbstractFacade<Orden>{
         }
     }
 
-    
     public List<OrdenVO> traerOrdenComporaUsuarioEstatus(String usuario, int idEstatus, int campo) {
         StringBuilder sb = new StringBuilder();
         List<OrdenVO> lord = null;
@@ -3495,7 +3424,6 @@ public class OrdenImpl extends AbstractFacade<Orden>{
         return o;
     }
 
-    
     public boolean pasarOrdenesCompra(List<OrdenVO> lo, int idStatus, String usuarioOrden, String usuarioAprobara, String idSesion, String rfcEmpresa, String correoSesion) {
         boolean v;
         Usuario para = usuarioServicioImpl.find(usuarioAprobara);
@@ -3551,7 +3479,6 @@ public class OrdenImpl extends AbstractFacade<Orden>{
         }
     }
 
-    
     public boolean existeNavCode(String navCode) {
         StringBuilder sb = new StringBuilder();
         boolean existe = false;
@@ -3573,7 +3500,6 @@ public class OrdenImpl extends AbstractFacade<Orden>{
         return existe;
     }
 
-    
     public boolean productosLineasGuadados(int orderID) {
         StringBuilder sb = new StringBuilder();
         boolean listos = false;
@@ -3657,7 +3583,6 @@ public class OrdenImpl extends AbstractFacade<Orden>{
         return o;
     }
 
-    
     public List<OrdenVO> traerOrdenStatusUsuarioRol(int idStatus, int idCampo, String idUsuario, String codRol) {
         StringBuilder sb = new StringBuilder();
         sb.append(consultaOrden());
@@ -3678,7 +3603,6 @@ public class OrdenImpl extends AbstractFacade<Orden>{
 
     }
 
-    
     public List<OrdenVO> buscarOCS(int idGerencia, int idProveedor, int idMoneda, int minimo, double maximo, String tipo, int idCampo, int rango, boolean agergarFecha, String inicio, String fin) {
         List<OrdenVO> lor = null;
         StringBuilder sb = new StringBuilder();
@@ -3730,7 +3654,6 @@ public class OrdenImpl extends AbstractFacade<Orden>{
         return o;
     }
 
-    
     public double traerTotalMaximoOCS(int moneda) {
         StringBuilder sb = new StringBuilder();
         if (moneda == 1) {
@@ -3741,7 +3664,6 @@ public class OrdenImpl extends AbstractFacade<Orden>{
         return (Double) em.createNativeQuery(sb.toString()).getSingleResult();
     }
 
-    
     public List<OrdenVO> ordenesContado(String fecha, int campo) {
         StringBuilder sb = new StringBuilder();
         sb.append(consultaOrden());
@@ -3762,7 +3684,6 @@ public class OrdenImpl extends AbstractFacade<Orden>{
         return lor;
     }
 
-    
     public Orden buscarPorOrdenConsecutivo(String consecutivo, int bloque, String usuario) {
         Orden r = null;
         try {
@@ -3785,7 +3706,6 @@ public class OrdenImpl extends AbstractFacade<Orden>{
         return r;
     }
 
-    
     public OrdenVO buscarOrdenPorUsuarioInvArticulo(String consecutivo, int idBloque, String usuario, boolean condetalle) {
         StringBuilder sb = new StringBuilder();
         OrdenVO ovo = null;
@@ -3811,7 +3731,6 @@ public class OrdenImpl extends AbstractFacade<Orden>{
         return ovo;
     }
 
-    
     public OrdenVO buscarOrdenPorUsuario(String consecutivo, int idBloque, String usuario, boolean condetalle) {
         StringBuilder sb = new StringBuilder();
         OrdenVO ovo = null;
@@ -3871,7 +3790,6 @@ public class OrdenImpl extends AbstractFacade<Orden>{
         return sb.toString();
     }
 
-    
     public boolean cambiarAnalistaOCS(String sesion, int idOrden, String usuarioSolicita) {
         boolean v = true;
         try {
@@ -3899,7 +3817,6 @@ public class OrdenImpl extends AbstractFacade<Orden>{
      * @param idCampo
      * @return
      */
-    
     public long totalOcsPendientePorCampo(String idUsuario, int idCampo) {
         int total = 0;
         if (idCampo > 0) {
@@ -3918,7 +3835,6 @@ public class OrdenImpl extends AbstractFacade<Orden>{
         return total;
     }
 
-    
     public long totalOcsPendientePorCampoAprobadores(String idUsuario, int idCampo) {
         int total = 0;
         try {
@@ -3976,7 +3892,6 @@ public class OrdenImpl extends AbstractFacade<Orden>{
     }
 //- - - - - Ordenes que se tienen que autorizar por la gerencia de Compras
 
-    
     public List<OrdenVO> traerOCSPorContrato(int idContrato, int estado, int campo) {
         List<OrdenVO> lor = null;
         try {
@@ -4048,7 +3963,6 @@ public class OrdenImpl extends AbstractFacade<Orden>{
         return lor;
     }
 
-    
     public List<OrdenVO> traerOCSPorContratoDet(int idContrato, int estado, int campo) {
         List<OrdenVO> lor = null;
         try {
@@ -4142,7 +4056,6 @@ public class OrdenImpl extends AbstractFacade<Orden>{
         }
     }
 
-    
     public double sumaToalOCSPorContrato(int idContrato, int campo) {
         try {
 
@@ -4161,7 +4074,6 @@ public class OrdenImpl extends AbstractFacade<Orden>{
         }
     }
 
-    
     public List<CampoVo> totalPorTodosCampos(String sesion) {
         List<CampoUsuarioPuestoVo> lista = apCampoUsuarioRhPuestoRemote.getAllPorUsurio(sesion);
         List<CampoVo> campo = new ArrayList<>();
@@ -4175,7 +4087,6 @@ public class OrdenImpl extends AbstractFacade<Orden>{
         return campo;
     }
 
-    
     public Orden buscarPorOrdenConsecutivo(String consecutivo, String usuario) {
         Orden r = null;
         try {
@@ -4200,7 +4111,6 @@ public class OrdenImpl extends AbstractFacade<Orden>{
         return r;
     }
 
-    
     public List<OrdenVO> traerOrdenPorRequisicion(int idRequisicion) {
         try {
             StringBuilder sb = new StringBuilder();
@@ -4239,7 +4149,6 @@ public class OrdenImpl extends AbstractFacade<Orden>{
         }
     }
 
-    
     public List<OrdenVO> traerTotalesPorCompania(String compania, int anio, int monedaId) {
         List<OrdenVO> lista = new ArrayList<>();
         try {
@@ -4268,7 +4177,6 @@ public class OrdenImpl extends AbstractFacade<Orden>{
         return lista;
     }
 
-    
     public List<Integer> traerAniosOrden(String compania) {
         String c = "SELECT DISTINCT extract(year from fecha)::int from orden "
                 + " where consecutivo is not null\n"
@@ -4277,7 +4185,6 @@ public class OrdenImpl extends AbstractFacade<Orden>{
         return em.createNativeQuery(c).getResultList();
     }
 
-    
     public List<OrdenVO> totalProveedores(String compania, int moneda, int anio) {
         List<OrdenVO> lista = new ArrayList<>();
         String cons = "SELECT p.nombre, round(sum(o.total)::numeric,2) as total from orden o \n"
@@ -4309,7 +4216,6 @@ public class OrdenImpl extends AbstractFacade<Orden>{
         return lista;
     }
 
-    
     public List<CompaniaVo> empresasPorProveedor(int idproveedor, int statusIncial, int statusFinal) {
         StringBuilder c = new StringBuilder();
         c.append(" SELECT o.compania, c.nombre from orden o \n")
@@ -4340,7 +4246,6 @@ public class OrdenImpl extends AbstractFacade<Orden>{
         return compa;
     }
 
-    
     public Orden ordenPorEmpresaEstatus(String consecutivo, String rfcEmpresa, int statusInicial, int statatusFinal) {
         Orden r = null;
 
@@ -4366,7 +4271,6 @@ public class OrdenImpl extends AbstractFacade<Orden>{
         return r;
     }
 
-    
     public boolean validarConvenio(int idOrden, String codigoConvenio) {
         boolean continuar = false;
         try {
@@ -4408,7 +4312,6 @@ public class OrdenImpl extends AbstractFacade<Orden>{
         return continuar;
     }
 
-    
     public void notificarValidarPresupuesto(Orden orden, String partidas) {
         String correos = siUsuarioRolRemote.correosListaDestinatarios(orden.getApCampo().getId(), "PresupuestoSinMonto");
         if (!correos.isEmpty()) {
@@ -4423,7 +4326,6 @@ public class OrdenImpl extends AbstractFacade<Orden>{
         notificacionesOrdenRemote.enviarNotificacionValidarPresupuesto(correos, partidas, orden.getApCampo().getNombre());
     }
 
-    
     public void notificarValidarContrato(Orden orden, String contrato) {
         String correos = siUsuarioRolRemote.correosListaDestinatarios(orden.getApCampo().getId(), "ConvenioSinMonto");
         if (!correos.isEmpty()) {
@@ -4435,7 +4337,6 @@ public class OrdenImpl extends AbstractFacade<Orden>{
         notificacionesOrdenRemote.enviarNotificacionValidarContrato(correos, contrato, orden.getApCampo().getNombre());
     }
 
-    
     public List<OrdenVO> totalCompraProceso(int campo, int statusIncial, int statusFinal, String proveedor) {
         String cad = "SELECT nombre,  total, siglas from (\n"
                 + "	SELECT pot.nombre,  m.siglas,	  round(sum(o.total::numeric),2) as total from orden o\n"
@@ -4469,7 +4370,6 @@ public class OrdenImpl extends AbstractFacade<Orden>{
         return ordens;
     }
 
-    
     public List<OrdenVO> totalCompras(int campo, int statusInicial, int statusFinal, String proveedor) {
         String cad = " SELECT m.nombre, round(sum(o.total::numeric),2) as total from orden o\n"
                 + "     	inner join autorizaciones_orden ao on ao.orden = o.id    \n"
@@ -4496,7 +4396,6 @@ public class OrdenImpl extends AbstractFacade<Orden>{
         return ordens;
     }
 
-    
     public List<OrdenVO> comprasPorProyecto(String proyecto, int campo, int statusInicial, int statusFinal, String proveedor) {
         String c = "SELECT pot.nombre, pot.cuenta_contable, r.consecutivo, o.consecutivo,  o.navcode,  p.nombre, o.fecha, o.referencia, o.destino, round(o.subtotal::numeric,2) as subtotal, \n"
                 + "		round(o.iva::numeric,2) as iva, round(o.total::numeric,2) as total, m.siglas, es.nombre \n"
@@ -4525,7 +4424,6 @@ public class OrdenImpl extends AbstractFacade<Orden>{
         return ordens;
     }
 
-    
     public List<OrdenVO> comprasPorProveedor(int campo, int statusInicial, int statusFinal, String proveedor) {
         String c = "SELECT pot.nombre, pot.cuenta_contable, r.consecutivo, o.consecutivo,  o.navcode,  p.nombre, o.fecha, o.referencia, o.destino, round(o.subtotal::numeric,2) as subtotal, \n"
                 + "		round(o.iva::numeric,2) as iva, round(o.total::numeric,2) as total, m.siglas, es.nombre \n"
@@ -4571,7 +4469,6 @@ public class OrdenImpl extends AbstractFacade<Orden>{
         return ordenVO;
     }
 
-    
     public OrdenVO buscarOrdenPorConsecutivo(String consecutivo, boolean condetalle) {
         StringBuilder sb = new StringBuilder();
         OrdenVO ovo = null;
@@ -4589,7 +4486,6 @@ public class OrdenImpl extends AbstractFacade<Orden>{
         return ovo;
     }
 
-    
     public OrdenVO buscarOrdenPorUuId(String uuId, boolean condetalle) {
         StringBuilder sb = new StringBuilder();
         OrdenVO ovo = null;
@@ -4607,7 +4503,6 @@ public class OrdenImpl extends AbstractFacade<Orden>{
         return ovo;
     }
 
-    
     public void aceptarCartaIntencion(int ordenId, List<OrdenDetalleVO> items, UsuarioVO usuarioSesion) {
         AutorizacionesOrden au = autorizacionesOrdenRemote.buscarPorOrden(ordenId);
         au.setEstatus(estatusServicioImpl.find(OrdenEstadoEnum.POR_REVISAR_REPSE.getId())); // 148 para revision de Jridico
@@ -4622,7 +4517,6 @@ public class OrdenImpl extends AbstractFacade<Orden>{
         autorizacionesOrdenRemote.editar(au);
     }
 
-    
     public void rechazarCartaIntencion(int ordenId, List<OrdenDetalleVO> items, String motivo, UsuarioVO usuarioSesion) {
         try {
             AutorizacionesOrden au = autorizacionesOrdenRemote.buscarPorOrden(ordenId);
@@ -4648,7 +4542,6 @@ public class OrdenImpl extends AbstractFacade<Orden>{
         }
     }
 
-    
     public void rechazarRepse(int ordenId, List<OrdenDetalleVO> items, String correoSesion, String motivo, String sesion) {
         AutorizacionesOrden au = autorizacionesOrdenRemote.buscarPorOrden(ordenId);
         au.setEstatus(estatusServicioImpl.find(OrdenEstadoEnum.POR_ACEPTAR_CARTA_INTENCION.getId())); // 150 para revision de Jridico
@@ -4675,7 +4568,6 @@ public class OrdenImpl extends AbstractFacade<Orden>{
         ordenSiMovimientoRemote.guardarMovimiento(sesion, ordenId, motivo, sesion, Constantes.ID_SI_RECHAZAR_REPSE);
     }
 
-    
     public void aceptarRepse(int ordenId, List<OrdenDetalleVO> items, String usuarioSesion, boolean proveedorConCartaIntencion) {
         AutorizacionesOrden au = autorizacionesOrdenRemote.buscarPorOrden(ordenId);
         au.setEstatus(estatusServicioImpl.find(OrdenEstadoEnum.POR_ENVIAR_PROVEEDOR.getId())); // 150 para revision de Jridico
@@ -4716,7 +4608,6 @@ public class OrdenImpl extends AbstractFacade<Orden>{
         //
     }
 
-    
     public List<OrdenTiemposVO> ordenTiempos(int idCampo, String consecutivo, int status, int gerencia, String fecha1, String fecha2, String proveedor) {
         List<OrdenTiemposVO> lr = null;
 
