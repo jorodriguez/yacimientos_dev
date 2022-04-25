@@ -1,13 +1,10 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package sia.util;
 
 import java.io.Serializable;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.logging.Level;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,10 +32,10 @@ public class UtilLog4j<E> implements Serializable {
 
         try {
             
-           // PropertyConfigurator.configure(getClass().getResource("/log4j.properties"));
+          System.setProperty("logback.configurationFile", "/logback.xml");
 
         } catch (Exception e) {
-            UtilLog4j.log.fatal(UtilLog4j.class.getSimpleName(), "Ocurrio un error al crear el archivo" + e.getMessage());
+            java.util.logging.Logger.getAnonymousLogger().log(Level.SEVERE, "", e);
         }
     }
 

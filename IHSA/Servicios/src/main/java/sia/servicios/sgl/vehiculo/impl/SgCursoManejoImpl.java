@@ -416,6 +416,7 @@ public class SgCursoManejoImpl extends AbstractFacade<SgCursoManejo>{
     }
 
     
+    //TODO : revisar si aun se está usando
     public File crearArchivo(int idCampo, File fileTem) {
         try {
 
@@ -426,7 +427,6 @@ public class SgCursoManejoImpl extends AbstractFacade<SgCursoManejo>{
 
                 fileTem = new File(REPOSITORYPATH + "UsuariosTemporal.xlsx");
 
-                //FileInputStream input_document = new FileInputStream(fileTem);
                 Workbook workbook = new XSSFWorkbook();
                 Sheet pagina = workbook.createSheet("Usuarios");
                 pagina.setDefaultColumnWidth(35);

@@ -1,11 +1,3 @@
-/*
- * UsuarioImpl.java
- * Creado el 7/07/2009, 08:47:52 AM
- * EJB sin estado desarrollado por: Héctor Acosta Sierra para: MPG-IHSA
- *
- * Para información sobre el uso de este EJB sin estado (Stateless Session EJB), asi como bugs, actualizaciones o mejoras
- * enviar un mail a: hacosta@mpg-ihsa.com.mx o a: hacosta.0505@gmail.com
- */
 package sia.servicios.catalogos.impl;
 
 import com.google.gson.Gson;
@@ -23,7 +15,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
-import javax.ejb.LocalBean;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
@@ -73,6 +64,7 @@ import sia.servicios.usuario.impl.RhTipoGerenciaImpl;
 import sia.util.UtilLog4j;
 import sia.util.UtilSia;
 import javax.ejb.Stateless;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  *
@@ -81,8 +73,20 @@ import javax.ejb.Stateless;
  * @author-mail hacosta.sierr@gmail.com @date 7/07/2009
  */
 @Stateless
+@Slf4j
 public class UsuarioImpl extends AbstractFacade<Usuario> {
 
+    
+    private static final String CONSULTA = 
+            "SELECT u.id, u.nombre, u.clave, u.email,  u.destinatarios, u.telefono, u.extension, "
+                + "  u.sexo, u.celular, u.fechanacimiento, u.rfc, u.compania, u.foto, u.pregunta_secreta,"
+                + "  u.respuesta_pregunta_secreta, u.activo, u.genero,"
+                + "  (select c.nombre from ap_campo c where u.ap_campo = c.id), "
+                + "  (select g.nombre from gerencia g where u.gerencia is not null and u.gerencia = g.id),"
+                + "  u.gerencia, u.ap_campo,u.sg_oficina"
+                + "FROM usuario u ";
+    
+    
     @PersistenceContext(unitName = "Sia-ServiciosPU")
     private EntityManager em;
     
@@ -134,33 +138,7 @@ public class UsuarioImpl extends AbstractFacade<Usuario> {
     protected EntityManager getEntityManager() {
         return em;
     }
-
-    private String consulta() {
-        String cu = "SELECT u.id, "
-                + "  u.nombre,"
-                + "  u.clave, "
-                + "  u.email, "
-                + "  u.destinatarios,"
-                + "  u.telefono,"
-                + "  u.extension, "
-                + "  u.sexo, "
-                + "  u.celular,"
-                + "  u.fechanacimiento, "
-                + "  u.rfc,"
-                + "  u.compania, "
-                + "  u.foto, "
-                + "  u.pregunta_secreta,"
-                + "  u.RESPUESTA_PREGUNTA_SECRETA, "
-                + "  u.activo,"
-                + "  u.genero,"
-                + "  (select c.nombre from ap_campo c where u.ap_campo = c.id), "
-                + "  (select g.nombre from gerencia g where u.gerencia is not null and u.gerencia = g.id),"
-                + "  u.gerencia,"
-                + "  u.ap_campo,"
-                + "  u.sg_oficina"
-                + "   from USUARIO u ";
-        return cu;
-    }
+    
 
     public UsuarioImpl() {
         super(Usuario.class);
@@ -171,7 +149,7 @@ public class UsuarioImpl extends AbstractFacade<Usuario> {
         try {
             return (Usuario) em.createNamedQuery("Usuario.findById").setParameter(1, id).getSingleResult();
         } catch (Exception e) {
-            UtilLog4j.log.info("No encontró el usuario  . . . " + e);
+            log.warn("No encontró el usuario {} ", id, e);
             return null;
         }
 
@@ -182,7 +160,7 @@ public class UsuarioImpl extends AbstractFacade<Usuario> {
         try { 
             return (Usuario) em.createNamedQuery("Usuario.findByIdRH").setParameter(1, id).getSingleResult();
         } catch (Exception e) {
-            UtilLog4j.log.info("No encontró el usuario  . . . " + e);
+            log.warn("No encontró el usuario {}", id , e);
             return null;
         }
 
@@ -302,7 +280,7 @@ public class UsuarioImpl extends AbstractFacade<Usuario> {
                     .getResultList()
                     .get(0);
         } catch (Exception e) {
-//	    System.out.print(e.getMessage());
+            log.warn(Constantes.VACIO, e);
             return null;
         }
     }
@@ -319,7 +297,7 @@ public class UsuarioImpl extends AbstractFacade<Usuario> {
     public List<UsuarioVO> getApruebanOrden(int campo) {
         List<UsuarioVO> lo = new ArrayList<>();
 
-        String sql = consulta()
+        String sql = CONSULTA
                 + "         inner join OC_FLUJO fl on fl.EJECUTA = u.ID  "
                 + "  where u.interno = true"
                 + "  and u.ELIMINADO = 'False' "
@@ -333,7 +311,7 @@ public class UsuarioImpl extends AbstractFacade<Usuario> {
                         .setParameter(1, campo)
                         .getResultList();
 
-        LOGGER.info(this, "Rrecupera analista procura : " + sql);
+        log.info("Rrecupera analista procura : {}", sql);
         if (result != null) {
             for (Object[] object : result) {
                 lo.add(castUsuario(object));
@@ -349,7 +327,7 @@ public class UsuarioImpl extends AbstractFacade<Usuario> {
     
     public List<UsuarioVO> getApruebanOrden() {
         List<UsuarioVO> lo = new ArrayList<>();
-        String sql = consulta()
+        String sql = CONSULTA
                 + "     inner join OC_FLUJO fl on fl.EJECUTA = u.ID  "
                 + " where u.interno = true"
                 + "  and  u.ELIMINADO = 'False' "
@@ -358,7 +336,7 @@ public class UsuarioImpl extends AbstractFacade<Usuario> {
                 + " and fl.ACCION = 'AP' ";
 
         List<Object[]> result = em.createNativeQuery(sql).getResultList();
-        LOGGER.info(this, "Rrecupera analista procura : " + sql);
+        log.info("Rrecupera analista procura : {}", sql);
         if (result != null) {
             for (Object[] object : result) {
                 lo.add(castUsuario(object));
@@ -607,7 +585,7 @@ public class UsuarioImpl extends AbstractFacade<Usuario> {
                 LOGGER.debug(this, "Clave despues" + usuario.getClave());
             }
         } catch (NoSuchAlgorithmException e) {
-            LOGGER.error(e);
+            LOGGER.error(this, e);
         }
 
     }
@@ -634,7 +612,7 @@ public class UsuarioImpl extends AbstractFacade<Usuario> {
             //clave encriptada
             retVal = h.toString();
         } catch (Exception e) {
-            LOGGER.info(e);
+            log.info("", e);
         }
 
         return retVal;
@@ -660,7 +638,7 @@ public class UsuarioImpl extends AbstractFacade<Usuario> {
                 usuario.setHoraModifico(new Date());
                 edit(usuario);
             } catch (NoSuchAlgorithmException ex) {
-                LOGGER.error(ex);
+                log.error("", ex);
             }
         }
         return v;
@@ -717,7 +695,7 @@ public class UsuarioImpl extends AbstractFacade<Usuario> {
         try {
             clearQuery();
             UsuarioVO vo = new UsuarioVO();
-            query.append(consulta());
+            query.append(CONSULTA);
             query.append("  where u.interno =  true");
             query.append(" and u.id = ?");
             query.append(" AND u.activo = true");
@@ -753,7 +731,7 @@ public class UsuarioImpl extends AbstractFacade<Usuario> {
         } else {
             // preparar query en función de los parámetros recibidos
             StringBuilder sb = new StringBuilder();
-            sb.append(consulta());
+            sb.append(CONSULTA);
 
             sb.append(" where u.interno = true and u.id in (");
             sb.append(UtilSia.toCommaSeparatedString(usuarioIds, true));
@@ -1797,7 +1775,7 @@ public class UsuarioImpl extends AbstractFacade<Usuario> {
 
     
     public List<UsuarioVO> traerListaUsuariosSinCorreos() {
-        List<UsuarioVO> lo = null;
+        List<UsuarioVO> lo;
 
         final String sql
                 = "SELECT u.id, u.nombre, u.email AS mail"
@@ -1840,7 +1818,7 @@ public class UsuarioImpl extends AbstractFacade<Usuario> {
         UsuarioVO vo = null;
 
         try {
-            String sql = consulta()
+            String sql = CONSULTA
                     + " where u.interno = true"
                     + " and u.nombre = ?"
                     + " AND u.activo = true";
@@ -1860,10 +1838,9 @@ public class UsuarioImpl extends AbstractFacade<Usuario> {
     }
 
     //TODO : revisar la lógica de esto, podría hacerse desde la base de datos?
-    
     public String getMenosEstatusAprobacionByRol(Integer rol, Integer estatus) {
         List<UsuarioVO> usuarios = getUsuariosByRol(rol);
-        Map usuariosMap = new HashMap();
+        Map<String, Integer>  usuariosMap = new HashMap<>();
 
         for (UsuarioVO usuarioVO : usuarios) {
 //            usuarioVO.geti
@@ -1874,19 +1851,17 @@ public class UsuarioImpl extends AbstractFacade<Usuario> {
         }
 
         //Ordenar Map por Valor
-        HashMap mapResultado = new LinkedHashMap();
-        List misMapKeys = new ArrayList(usuariosMap.keySet());
-        List misMapValues = new ArrayList(usuariosMap.values());
-        TreeSet conjuntoOrdenado = new TreeSet(misMapValues);
+        HashMap<String, Object> mapResultado = new LinkedHashMap<>();
+        List<String> misMapKeys = new ArrayList<>(usuariosMap.keySet());
+        List<Integer> misMapValues = new ArrayList<>(usuariosMap.values());
+        TreeSet<Integer> conjuntoOrdenado = new TreeSet<>(misMapValues);
         Object[] arrayOrdenado = conjuntoOrdenado.toArray();
 
         int size = arrayOrdenado.length;
         for (int i = 0; i < size; i++) {
-            mapResultado.put(misMapKeys.get(
-                    misMapValues.indexOf(
-                            arrayOrdenado[i])), arrayOrdenado[i]);
+            mapResultado.put(misMapKeys.get(misMapValues.indexOf(arrayOrdenado[i])), arrayOrdenado[i]);
         }
-        return (String) misMapKeys.get(misMapValues.indexOf(arrayOrdenado[0]));
+        return misMapKeys.get(misMapValues.indexOf(arrayOrdenado[0]));
     }
 
     
@@ -1999,9 +1974,9 @@ public class UsuarioImpl extends AbstractFacade<Usuario> {
                     + " select cg.RESPONSABLE from AP_CAMPO_GERENCIA cg where cg.GERENCIA = ?"
                     + " and cg.AP_CAMPO = ? "
                     + " and cg.eliminado = ? )";
-//            query.append(" and c.COMPANIA = '").append(empresa).append("'");
-            //          query.append(" and u.ap_campo = c.id");
+            
             LOGGER.info(this, "Q: responsable gerencia: " + query.toString());
+            
             Object[] obj = (Object[]) em.createNativeQuery(sql)
                     .setParameter(1, gerencia)
                     .setParameter(2, idCampo)
@@ -2046,7 +2021,7 @@ public class UsuarioImpl extends AbstractFacade<Usuario> {
                     + " and cg.AP_CAMPO = c.id"
                     + " and cg.GERENCIA = ?)";
 
-            LOGGER.info(this, "Q: responsables gerencia 23: " + sql);
+            log.info("Q: responsables gerencia 23: {}", sql);
 
             List<Object[]> obj = em.createNativeQuery(query.toString())
                     .setParameter(1, idGerencia)
@@ -2060,7 +2035,7 @@ public class UsuarioImpl extends AbstractFacade<Usuario> {
             }
 
         } catch (Exception e) {
-            LOGGER.error(this, "Ocurrio un error al recuperar el responsable de la gerencia:  " + idGerencia, e);
+            log.warn("Ocurrio un error al recuperar el responsable de la gerencia: {}",idGerencia, e);
         }
 
         return lu;
@@ -2095,7 +2070,7 @@ public class UsuarioImpl extends AbstractFacade<Usuario> {
                 .getResultList();
         //
         if (lo != null) {
-            lc = new ArrayList<CompaniaVo>();
+            lc = new ArrayList<>();
             for (Object[] objects : lo) {
                 lc.add(castCompania(objects));
             }
@@ -2156,7 +2131,6 @@ public class UsuarioImpl extends AbstractFacade<Usuario> {
                 + " left join CADENAS_MANDO cm on u.ID = cm.USUARIO "
                 + " where cm.AP_CAMPO = ?"
                 + " and cm.ELIMINADO = ? "
-                //+ " and g.ELIMINADO =  '").append(Constantes.BOOLEAN_FALSE).append("'");
                 + " and u.ELIMINADO =  ? "
                 + " and u.ACTIVO =  ? ";
 
@@ -2179,74 +2153,74 @@ public class UsuarioImpl extends AbstractFacade<Usuario> {
         return lo;
     }
 
+    //TODO : revisar si realmente se usa en algún lugar
+//    public String traerUsuarioActivoJson() {
+//        String retVal = null;
+//
+//        try {
+//            Gson gson = new Gson();
+//            String sql
+//                    = "select u.id, u.nombre from usuario u where u.eliminado = ? and u.activo = ? and u.interno = true ";
+//
+//            List<Object[]> lista = em.createNativeQuery(sql)
+//                    .setParameter(1, Constantes.NO_ELIMINADO)
+//                    .setParameter(2, Constantes.BOOLEAN_TRUE)
+//                    .getResultList();
+//
+//            JsonArray a = new JsonArray();
+//
+//            for (Object[] o : lista) {
+//                if (lista != null) {
+//                    JsonObject ob = new JsonObject();
+//                    ob.addProperty("value", o[0] != null ? (String) o[0] : "-");
+//                    ob.addProperty("label", o[1] != null ? (String) o[1] : "-");
+//                    a.add(ob);
+//                }
+//            }
+//            retVal = gson.toJson(a);
+//
+//        } catch (Exception e) {
+//            log.warn("*** Al traer usuarios en formato JSON ...", e);
+//        }
+//
+//        return retVal;
+//    }
+
     
-    public String traerUsuarioActivoJson() {
-        String retVal = null;
-
-        try {
-            Gson gson = new Gson();
-            String sql
-                    = "select u.id, u.nombre from usuario u where u.eliminado = ? and u.activo = ? and u.interno = true ";
-
-            List<Object[]> lista = em.createNativeQuery(sql)
-                    .setParameter(1, Constantes.NO_ELIMINADO)
-                    .setParameter(2, Constantes.BOOLEAN_TRUE)
-                    .getResultList();
-
-            JsonArray a = new JsonArray();
-
-            for (Object[] o : lista) {
-                if (lista != null) {
-                    JsonObject ob = new JsonObject();
-                    ob.addProperty("value", o[0] != null ? (String) o[0] : "-");
-                    ob.addProperty("label", o[1] != null ? (String) o[1] : "-");
-                    a.add(ob);
-                }
-            }
-            retVal = gson.toJson(a);
-
-        } catch (Exception e) {
-            LOGGER.fatal(this, "Excepcion los usuarios " + e.getMessage(), e);
-        }
-
-        return retVal;
-    }
-
-    
-    public List<Object[]> traerUsuarioActivosJson(int idGerencia) {
-        List<Object[]> usuarios = null;
-        String gerencia = "";
-
-        if (idGerencia > 0) {
-            gerencia = " AND u.gerencia = " + idGerencia;
-        }
-        try {
-            String sql
-                    = "select u.id, u.nombre, g.nombre from usuario u "
-                    + " inner join GERENCIA g on g.id=u.GERENCIA"
-                    + " where u.eliminado = ? and u.activo = ?"
-                    + " and u.interno = true"
-                    + gerencia
-                    + " order by u.NOMBRE ";
-
-            usuarios = em.createNativeQuery(sql)
-                    .setParameter(1, Constantes.NO_ELIMINADO)
-                    .setParameter(2, Constantes.BOOLEAN_TRUE)
-                    .getResultList();
-
-        } catch (Exception e) {
-            LOGGER.fatal(this, "Excepcion los usuarios " + e.getMessage(), e);
-        }
-
-        return usuarios;
-    }
+//    public List<Object[]> traerUsuarioActivosJson(int idGerencia) {
+//        List<Object[]> usuarios = null;
+//        String gerencia = "";
+//
+//        if (idGerencia > 0) {
+//            gerencia = " AND u.gerencia = " + idGerencia;
+//        }
+//        try {
+//            String sql
+//                    = "select u.id, u.nombre, g.nombre from usuario u "
+//                    + " inner join GERENCIA g on g.id=u.GERENCIA"
+//                    + " where u.eliminado = ? and u.activo = ?"
+//                    + " and u.interno = true"
+//                    + gerencia
+//                    + " order by u.NOMBRE ";
+//
+//            usuarios = em.createNativeQuery(sql)
+//                    .setParameter(1, Constantes.NO_ELIMINADO)
+//                    .setParameter(2, Constantes.BOOLEAN_TRUE)
+//                    .getResultList();
+//
+//        } catch (Exception e) {
+//            LOGGER.fatal(this, "Excepcion los usuarios " + e.getMessage(), e);
+//        }
+//
+//        return usuarios;
+//    }
 
     
     public void modificarDatosUsuario(String sesion, UsuarioVO usuarioVO, int idPuesto) {
         try {
-            Usuario usuario = find(usuarioVO.getId());
+            var usuario = find(usuarioVO.getId());
 
-            String us = usuario.toString();
+            var us = usuario.toString();
             usuario.setNombre(usuarioVO.getNombre());
             usuario.setEmail(usuarioVO.getMail());
             usuario.setDestinatarios(usuarioVO.getMail());
@@ -2333,21 +2307,19 @@ public class UsuarioImpl extends AbstractFacade<Usuario> {
      * @param numero
      * @return
      */
-    
-
-    public List<Object[]> buscarUsuarioLetras(String cadena, int numero) {
-        StringBuilder sql = new StringBuilder();
-
-        sql.append("select u.ID, u.NOMBRE, u.TELEFONO from USUARIO u")
-                // TODO : revisar al migrar a PgSQL
-                .append("	where upper(u.NOMBRE COLLATE \"es_ES\") like upper('%").append(cadena).append("%')")
-                .append("	and u.ELIMINADO = false and u.interno = true ")
-                .append("	order by u.NOMBRE asc")
-                //TODO : cambiar a LIMIT cuando se migre a PgSQL
-                .append("	rows ").append(numero);
-
-        return em.createNativeQuery(sql.toString()).getResultList();
-    }
+//    public List<Object[]> buscarUsuarioLetras(String cadena, int numero) {
+//        StringBuilder sql = new StringBuilder();
+//
+//        sql.append("select u.ID, u.NOMBRE, u.TELEFONO from USUARIO u")
+//                // TODO : revisar al migrar a PgSQL
+//                .append("where upper(u.NOMBRE COLLATE \"es_ES\") like upper('%").append(cadena).append("%')")
+//                .append("and u.ELIMINADO = false and u.interno = true ")
+//                .append("order by u.NOMBRE asc")
+//                //TODO : cambiar a LIMIT cuando se migre a PgSQL
+//                .append("rows ").append(numero);
+//
+//        return em.createNativeQuery(sql.toString()).getResultList();
+//    }
 
     
     public String traerUsuarioActivoJsonByGerencia(int gerencia, int idOficina) {
@@ -2413,40 +2385,53 @@ public class UsuarioImpl extends AbstractFacade<Usuario> {
     
     public List<UsuarioVO> usuariosSinCurso(int idCampo) {
         
-        List<UsuarioVO> usuarios = new  ArrayList<>();
+        List<UsuarioVO> usuarios;
         
-        String sql = "SELECT u.id,u.NOMBRE,a.id,a.nombre,o.id, o.nombre\n"
+        String sql = 
+                "SELECT u.id, u.nombre, a.id AS id_campo, a.nombre AS campo, o.id AS id_oficina, o.nombre AS oficina\n"
                 + "FROM USUARIO u\n"
-                + "inner join ap_campo_usuario_rh_puesto acu on acu.usuario = u.id and acu.eliminado = FALSE and u.id = acu.usuario\n"
-                + "INNER JOIN ap_campo a on a.id = acu.ap_campo and a.eliminado= ?\n"
-                + "INNER join sg_oficina o on o.id = u.sg_oficina and o.eliminado= ?  \n"
-                + "where u.eliminado = ? and u.activo= ? and u.interno=true and a.id= ? \n"
-                + "and u.id not in (SELECT usuario from sg_curso_manejo where eliminado = ? )"
-                + " order by o.id,u.gerencia,u.nombre";
-
-        List<Object[]> lista = em.createNativeQuery(sql)
-                .setParameter(1, Constantes.FALSE)
-                .setParameter(2, Constantes.FALSE)
-                .setParameter(3, Constantes.FALSE)
-                .setParameter(4, Constantes.TRUE)
-                .setParameter(5, idCampo)
-                .setParameter(6, Constantes.FALSE)
-                .getResultList();
-
-        if (lista != null && !lista.isEmpty()) {
-            UsuarioVO user;
-            for (Object[] o : lista) {
-                user = new UsuarioVO();
-                user.setId((String) o[0]);
-                user.setNombre((String)o[1]);
-                user.setIdCampo((Integer)o[2]);
-                user.setCampo((String)o[3]);
-                user.setIdOficina((Integer)o[4]);
-                user.setOficina((String)o[5]);
-                
-                usuarios.add(user);
-            }
+                + "\tINNER JOIN ap_campo_usuario_rh_puesto acu ON acu.usuario = u.id AND acu.eliminado = FALSE AND u.id = acu.usuario\n"
+                + "\tINNER JOIN ap_campo a ON a.id = acu.ap_campo AND a.eliminado= ?\n"
+                + "\tINNER join sg_oficina o ON o.id = u.sg_oficina AND o.eliminado= ?  \n"
+                + "WHERE u.eliminado = ? AND u.activo= ? AND u.interno=true AND a.id= ? \n"
+                + "\tAND u.id NOT IN (SELECT usuario FROM sg_curso_manejo WHERE eliminado = ? )"
+                + "ORDER BY o.id,u.gerencia,u.nombre";
+        
+        try {
+            usuarios = 
+                    dslCtx.fetch(sql, false, false, false, true, idCampo, false).into(UsuarioVO.class);
+        } catch (DataAccessException e) {
+            log.warn("*** Al recuperar usuarios sin curso ...", e);
+            
+            usuarios = Collections.emptyList();
         }
+        
+
+//        List<Object[]> lista = em.createNativeQuery(sql)
+//                .setParameter(1, Constantes.FALSE)
+//                .setParameter(2, Constantes.FALSE)
+//                .setParameter(3, Constantes.FALSE)
+//                .setParameter(4, Constantes.TRUE)
+//                .setParameter(5, idCampo)
+//                .setParameter(6, Constantes.FALSE)
+//                .getResultList();
+
+//        if (lista != null && !lista.isEmpty()) {
+//            UsuarioVO user;
+//            for (Object[] o : lista) {
+//                user = new UsuarioVO();
+//                user.setId((String) o[0]);
+//                user.setNombre((String)o[1]);
+//                user.setIdCampo((Integer)o[2]);
+//                user.setCampo((String)o[3]);
+//                user.setIdOficina((Integer)o[4]);
+//                user.setOficina((String)o[5]);
+//                
+//                usuarios.add(user);
+//            }
+//        }
+
+
         return usuarios;
     }
 
@@ -2462,10 +2447,10 @@ public class UsuarioImpl extends AbstractFacade<Usuario> {
                 "AND interno = true AND activo = true AND eliminado = false";
         
         try {
-            Record record = dslCtx.fetchOne(sql, usuarioId, usuarioId);
+            Record recusuario = dslCtx.fetchOne(sql, usuarioId, usuarioId);
             
-            if(record != null) {
-                retVal = record.into(Usuario.class);
+            if(recusuario != null) {
+                retVal = recusuario.into(Usuario.class);
             }
         } catch (DataAccessException e) {
             LOGGER.error(this, "Usuario : {0}", new Object[]{usuarioId}, e);
@@ -2484,10 +2469,10 @@ public class UsuarioImpl extends AbstractFacade<Usuario> {
                 " AND eliminado = false";
         
         try {
-            Record rec = dslCtx.fetchOne(sql, usuarioId, usuarioId);
+            Record recUsuario = dslCtx.fetchOne(sql, usuarioId, usuarioId);
             
-            if(rec != null) {
-                retVal = rec.into(Usuario.class);
+            if(recUsuario != null) {
+                retVal = recUsuario.into(Usuario.class);
             }
         } catch (DataAccessException e) {
             LOGGER.error(this, "Usuario : {0}", new Object[]{usuarioId}, e);

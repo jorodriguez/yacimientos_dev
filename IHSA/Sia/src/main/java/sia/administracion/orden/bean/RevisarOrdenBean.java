@@ -18,7 +18,7 @@ import javax.faces.event.ValueChangeEvent;
 import javax.faces.model.SelectItem;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;
 import org.primefaces.PrimeFaces;
 import sia.constantes.Constantes;
 import sia.modelo.campo.usuario.puesto.vo.CampoUsuarioPuestoVo;
@@ -36,15 +36,10 @@ import sia.sistema.bean.support.FacesUtils;
  */
 @Named(value = "revisarOrdenBean")
 @ViewScoped
-@Log4j
+@Slf4j
 public class RevisarOrdenBean implements Serializable {
 
-    /**
-     * Creates a new instance of RevisarOrdenBean
-     */
-    public RevisarOrdenBean() {
-    }
-
+    
     @Inject
     private Sesion sesion;
 
