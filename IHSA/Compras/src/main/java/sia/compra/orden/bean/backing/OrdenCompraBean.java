@@ -18,7 +18,6 @@ import java.util.Map;
 import java.util.TreeSet;
 import javax.annotation.PostConstruct;
 
-
 import javax.faces.event.AjaxBehaviorEvent;
 import javax.faces.model.DataModel;
 import javax.faces.model.ListDataModel;
@@ -35,7 +34,6 @@ import org.primefaces.model.file.UploadedFile;
 import sia.archivador.AlmacenDocumentos;
 import sia.archivador.DocumentoAnexo;
 import sia.archivador.ProveedorAlmacenDocumentos;
-import sia.compra.busqueda.SoporteArticulos;
 import sia.compra.requisicion.bean.backing.FacesUtilsBean;
 import sia.compra.requisicion.bean.backing.MonedaBean;
 import sia.compra.requisicion.bean.backing.UsuarioBean;
@@ -101,7 +99,7 @@ import sia.servicios.sistema.impl.SiUsuarioRolImpl;
  *
  * @author mluis
  */
-@Named (value = "ordenCompraBean")
+@Named(value = "ordenCompraBean")
 @ViewScoped
 public class OrdenCompraBean implements Serializable {
 
@@ -120,6 +118,8 @@ public class OrdenCompraBean implements Serializable {
     private UsuarioBean sesion;
     @Inject
     private MonedaBean monedaBean;
+    @Inject
+    OrdenBean ordenBean;
 
     //
     @Inject
@@ -165,7 +165,6 @@ public class OrdenCompraBean implements Serializable {
     @Inject
     private OcPresupuestoDetalleImpl ocPresupuestoDetalleImpl;
     //
-    private SoporteArticulos soporteArticulos = (SoporteArticulos) FacesUtilsBean.getManagedBean("soporteArticulos");
     private Orden ordenActual;
     private OrdenDetalle itemActual;
     private List<OrdenVO> listaOrden;
@@ -182,13 +181,13 @@ public class OrdenCompraBean implements Serializable {
     private String articuloTx;
     private int articuloID;
     private int idTarea;
-    private CategoriaVo categoriaVoInicial;
+    //private CategoriaVo categoriaVoInicial;
     private CategoriaVo categoriaVo;
     private List<SelectItem> listaMonedas;
     private String categoriasTxt;
-    private List<CategoriaVo> categoriasSeleccionadas = new ArrayList<CategoriaVo>();
-    private List<ArticuloVO> articulosFrecuentes = new ArrayList<ArticuloVO>();
-    private List<SelectItem> articulosResultadoBqda = new ArrayList<>();
+    private List<CategoriaVo> categoriasSeleccionadas = new ArrayList<>();
+    private List<ArticuloVO> articulosFrecuentes = new ArrayList<>();
+    private List<ArticuloVO> articulosResultadoBqda = new ArrayList<>();
     private String referencia;// usuado tambien para buscar OC/S en pag ordenCompra
     private OrdenVO ordenVO;
     private InvArticulo articulo;
@@ -212,6 +211,18 @@ public class OrdenCompraBean implements Serializable {
     @Getter
     @Setter
     private UploadedFile fileInfo;
+    @Getter
+    @Setter
+    private ArticuloVO articuloVo;
+    @Getter
+    @Setter
+    private CategoriaVo categoriaTempVo;
+    @Getter
+    @Setter
+    private List<CategoriaVo> categorias;
+    @Getter
+    @Setter
+    private ConvenioArticuloVo convenioArticuloVo;
 
     //
     @PostConstruct
@@ -220,6 +231,9 @@ public class OrdenCompraBean implements Serializable {
         listaCategoriaEts = new ArrayList<>();
         traerOcCategoriasItems();
         listaMonedas = new ArrayList<>();
+        ordenVO = new OrdenVO();
+        ordenVO.setDetalleOrden(new ArrayList<>());
+        categorias = new ArrayList<>();
     }
 
     private void llenarListaOrden() {
@@ -239,7 +253,7 @@ public class OrdenCompraBean implements Serializable {
     }
 
     public void regresarEts() {
-        PrimeFaces.current().executeScript( "regresar('divDatos', 'Etsregresar', 'divCargaEts', 'divOperacion');");
+        PrimeFaces.current().executeScript("regresar('divDatos', 'Etsregresar', 'divCargaEts', 'divOperacion');");
     }
 
     public void eliminarOrden() {
@@ -261,15 +275,15 @@ public class OrdenCompraBean implements Serializable {
             contarBean.llenarOcsSinSolicitar();
             contarBean.llenarRecReq();
             //
-            PrimeFaces.current().executeScript( jsMetodo);
-        } catch (RuntimeException ex) {
+            PrimeFaces.current().executeScript(jsMetodo);
+        } catch (Exception ex) {
             UtilLog4j.log.fatal(this, ex.getMessage());
         }
     }
 
     public void eliminarOrdenConContrato() {
         ordenImpl.remove(ordenActual.getId(), sesion.getUsuarioConectado().getId());
-        PrimeFaces.current().executeScript( "regresar('divTabla', 'divDatos', 'divOperacion', 'divAutoriza');");
+        PrimeFaces.current().executeScript("regresar('divTabla', 'divDatos', 'divOperacion', 'divAutoriza');");
         llenarListaOrden();
         ContarBean contarBean = (ContarBean) FacesUtilsBean.getManagedBean("contarBean");
         contarBean.llenarOcsSinSolicitar();
@@ -291,8 +305,8 @@ public class OrdenCompraBean implements Serializable {
             ordenImpl.editarOrden(getOrdenActual());
             //Esto es para cerrar el panel emergente de modificar Orden
             FacesUtilsBean.addInfoMessage("Se actualizó correctamente la orden de compra");
-            PrimeFaces.current().executeScript( ";cerrarDialogoModal(dialogoModOCS);");
-        } catch (RuntimeException ex) {
+            PrimeFaces.current().executeScript(";cerrarDialogoModal(dialogoModOCS);");
+        } catch (Exception ex) {
             UtilLog4j.log.fatal(this, ex.getMessage());
         }
     }
@@ -313,7 +327,7 @@ public class OrdenCompraBean implements Serializable {
     public void itemsPorOrdenSingle() {
         try {
             setListaItems(ordenImpl.itemsPorOrdenCompra(getOrdenActual().getId()));
-        } catch (RuntimeException ex) {
+        } catch (Exception ex) {
             setListaItems(null);
             UtilLog4j.log.fatal(this, ex.getMessage());
         }
@@ -325,8 +339,7 @@ public class OrdenCompraBean implements Serializable {
         return solOCS(o.getId());
     }
 
-    public String solicitarOrden() {
-        int idOrd = Integer.parseInt(FacesUtilsBean.getRequestParameter("idOrden"));
+    public String solicitarOrden(int idOrd) {
         return solOCS(idOrd);
     }
 
@@ -346,7 +359,7 @@ public class OrdenCompraBean implements Serializable {
                             ";alertaGeneral('No es posible solicitar una OC/S con items que no están en el catálogo de producto junto con items que sí lo están.');");
                 } else {
                     itemsPorOrden();
-                    PrimeFaces.current().executeScript( ";alertaGeneral('No es posible solicitar una OC/S sin Items');");
+                    PrimeFaces.current().executeScript(";alertaGeneral('No es posible solicitar una OC/S sin Items');");
                 }
             } else if (ordenActual.getTotal() == null || ordenActual.getTotal() == Constantes.CERO) {
                 itemsPorOrden();
@@ -364,16 +377,16 @@ public class OrdenCompraBean implements Serializable {
                 itemsPorOrden();
                 ordenImpl.notificarValidarContrato(
                         ordenActual,
-                        "El convenio "+ordenActual.getContrato()+" junto con sus convenios modificatorios no cuenta con saldo suficiente para realizar la compra.");
+                        "El convenio " + ordenActual.getContrato() + " junto con sus convenios modificatorios no cuenta con saldo suficiente para realizar la compra.");
                 PrimeFaces.current().executeScript(
-                        ";alertaGeneral('El convenio "+ordenActual.getContrato()+" junto con sus convenios modificatorios no cuenta con saldo suficiente para realizar la compra.');");                
-            }else if (Configurador.validarPresupuesto() && msgValidarPresupuesto != null && !msgValidarPresupuesto.isEmpty()){                
+                        ";alertaGeneral('El convenio " + ordenActual.getContrato() + " junto con sus convenios modificatorios no cuenta con saldo suficiente para realizar la compra.');");
+            } else if (Configurador.validarPresupuesto() && msgValidarPresupuesto != null && !msgValidarPresupuesto.isEmpty()) {
                 itemsPorOrden();
                 ordenImpl.notificarValidarPresupuesto(
-                        ordenActual, 
+                        ordenActual,
                         msgValidarPresupuesto);
                 PrimeFaces.current().executeScript(
-                        ";alertaGeneral('No se cuenta con presupuesto para la compra. Por favor validar con la Gerencia de Costos: "+msgValidarPresupuesto+" ');");            
+                        ";alertaGeneral('No se cuenta con presupuesto para la compra. Por favor validar con la Gerencia de Costos: " + msgValidarPresupuesto + " ');");
             } else {
                 int errorAux = recorreItems(getListaItems());
                 switch (ordenActual.getTipo()) {
@@ -436,14 +449,14 @@ public class OrdenCompraBean implements Serializable {
                         return Constantes.VACIO;
                 }
             }
-        } catch (RuntimeException e) {
+        } catch (Exception e) {
             UtilLog4j.log.error(e);
         }
         return Constantes.VACIO;
     }
 
     private String cambiarPagina() {
-        return "solicitarOrden";
+        return "/vistas/SiaWeb/Orden/solicitarOrden.xhtml?faces-redirect=true";
     }
 
     private int recorreItems(List<OrdenDetalleVO> lrd) {
@@ -478,9 +491,8 @@ public class OrdenCompraBean implements Serializable {
         return conUnidad;
     }
 
-    public void seleccionarOrden() {
-        int idOrd = Integer.parseInt(FacesUtilsBean.getRequestParameter("idOrden"));
-        PrimeFaces.current().executeScript( "activarTab('tabsRecepReq', 0, 'divDatos', 'divTabla', 'divOperacion', 'divAutoriza');");
+    public void seleccionarOrden(int idOrd) {
+        PrimeFaces.current().executeScript("activarTab('tabsRecepReq', 0, 'divDatos', 'divTabla', 'divOperacion', 'divAutoriza');");
         llenarDatosOrden(idOrd);
     }
 
@@ -490,7 +502,6 @@ public class OrdenCompraBean implements Serializable {
         //        
         itemsPorOrden();
         // 
-        OrdenBean ordenBean = (OrdenBean) FacesUtilsBean.getManagedBean("ordenBean");
         ordenBean.setOrdenActual(ordenActual);
         //
         traerEspecificacionTecnica();
@@ -509,14 +520,14 @@ public class OrdenCompraBean implements Serializable {
     public void agregarContratoOrden() {
         // quita las partidas que no tienen requisicion
         boolean originalConConvenio = ordenActual.isConConvenio();
-        List<OrdenDetalleVO> listaPartSinReq = new ArrayList<>();        
+        List<OrdenDetalleVO> listaPartSinReq = new ArrayList<>();
         TreeSet<Integer> convenioIDs = new TreeSet<>();
         int idConvenioPorAgregar = 0;
         for (OrdenDetalleVO od : listaItems) {
             if ((od.getIdAgrupador() == 0 && od.getIdRequisicionDetalle() > Constantes.CERO)
                     || (od.getIdAgrupador() > 0 && od.getIdRequisicionDetalle() == Constantes.CERO)) {
                 if (od.getIdConvenio() > 0) {
-                    CvConvenioArticulo convenioArt = cvConvenioArticuloImpl.find(od.getIdConvenio());                    
+                    CvConvenioArticulo convenioArt = cvConvenioArticuloImpl.find(od.getIdConvenio());
                     if (convenioArt != null && convenioArt.getConvenio() != null) {
                         idConvenioPorAgregar = convenioArt.getConvenio().getConvenio() == null ? convenioArt.getConvenio().getId() : convenioArt.getConvenio().getConvenio().getId();
                         convenioIDs.add(idConvenioPorAgregar);
@@ -524,7 +535,7 @@ public class OrdenCompraBean implements Serializable {
                 } else if (od.getIdConvenio() < 0) {
                     convenioIDs.add(od.getIdConvenio());
                 } else {
-                     convenioIDs.add(od.getIdConvenio());
+                    convenioIDs.add(od.getIdConvenio());
                 }
             } else {
                 listaPartSinReq.add(od);
@@ -535,15 +546,15 @@ public class OrdenCompraBean implements Serializable {
             List<OrdenDetalleVO> lTemp = new ArrayList<>();
             for (OrdenDetalleVO voDet : listaItems) {
                 if (voDet != null && voDet.getIdConvenio() > 0) {
-                        CvConvenioArticulo convenioArt = cvConvenioArticuloImpl.find(voDet.getIdConvenio());                                        
-                        //Convenio cc = convenioImpl.find(voDet.getIdConvenio());
-                        if (convenioArt != null
-                                && (codConvenioID == convenioArt.getConvenio().getId() || (convenioArt.getConvenio().getConvenio() != null && codConvenioID == convenioArt.getConvenio().getConvenio().getId()))
-                                && ((voDet.getIdAgrupador() == 0 && voDet.getIdRequisicionDetalle() > Constantes.CERO) 
-                                || (voDet.getIdAgrupador() > 0 && voDet.getIdRequisicionDetalle() == Constantes.CERO))) {
-                            lTemp.add(voDet);
-                        }                    
-                } else if(codConvenioID == voDet.getIdConvenio()) {
+                    CvConvenioArticulo convenioArt = cvConvenioArticuloImpl.find(voDet.getIdConvenio());
+                    //Convenio cc = convenioImpl.find(voDet.getIdConvenio());
+                    if (convenioArt != null
+                            && (codConvenioID == convenioArt.getConvenio().getId() || (convenioArt.getConvenio().getConvenio() != null && codConvenioID == convenioArt.getConvenio().getConvenio().getId()))
+                            && ((voDet.getIdAgrupador() == 0 && voDet.getIdRequisicionDetalle() > Constantes.CERO)
+                            || (voDet.getIdAgrupador() > 0 && voDet.getIdRequisicionDetalle() == Constantes.CERO))) {
+                        lTemp.add(voDet);
+                    }
+                } else if (codConvenioID == voDet.getIdConvenio()) {
                     lTemp.add(voDet);
                 }
             }
@@ -560,30 +571,30 @@ public class OrdenCompraBean implements Serializable {
                         ordenImpl.eliminarItem(ordenDetalleImpl.findLazy(ordenDetalleVO.getId()));
                     }
                 }
-                if(codCov > 0){
+                if (codCov > 0) {
                     ordenConvenioProceso(codCov, value, ordenActual, ordenActual);
-                } else {                    
-                    if(codCov < 0){
+                } else {
+                    if (codCov < 0) {
                         ordenSinConvenioProceso(value, ordenActual, ordenActual);
-                    } 
-                } 
+                    }
+                }
                 ordenActual = ordenImpl.find(ordenActual.getId());
             } else {
                 Orden o = crearOrden((codCov > 0) || originalConConvenio);
-                if(o.isConConvenio()){
+                if (o.isConConvenio()) {
                     ordenConvenioProceso(codCov, value, ordenActual, o);
                 } else {
                     //if(codCov < 0){
-                        ordenSinConvenioProceso(value, ordenActual, o);
+                    ordenSinConvenioProceso(value, ordenActual, o);
 //                    } else {
 //                        ordenConvenioProceso(codCov, value, ordenActual, o);
 //                    }
-                }                
+                }
             }
             //  
             contador++;
         }
-        if(contador > 1){
+        if (contador > 1) {
             ordenImpl.actualizaMontoOrden(ordenActual, sesion.getUsuarioConectado().getId());
         }
         if (ordenActual.isMultiproyecto()) {
@@ -592,21 +603,21 @@ public class OrdenCompraBean implements Serializable {
             listaItems = ordenDetalleImpl.itemsPorOrden(ordenActual.getId());
         }
 
-        PrimeFaces.current().executeScript( ";$(dialogoCambiarContrato).modal('hide');activarTab('tabsRecepReq', 0, 'divDatos', 'divTabla', 'divOperacion', 'divAutoriza');");
+        PrimeFaces.current().executeScript(";$(dialogoCambiarContrato).modal('hide');activarTab('tabsRecepReq', 0, 'divDatos', 'divTabla', 'divOperacion', 'divAutoriza');");
         //
     }
 
     public void cerrarContratoOrden() {
-        PrimeFaces.current().executeScript( ";$(dialogoCambiarContrato).modal('hide');");
+        PrimeFaces.current().executeScript(";$(dialogoCambiarContrato).modal('hide');");
     }
 
     private void ordenConvenioProceso(int idConvMarco, List<OrdenDetalleVO> detalle, Orden fromOrden, Orden toOrden) {
-        Convenio convenioMarco =  null;
-        if(idConvMarco > 0){
+        Convenio convenioMarco = null;
+        if (idConvMarco > 0) {
             convenioMarco = convenioImpl.find(idConvMarco);
         }
         for (OrdenDetalleVO odVo : detalle) {
-            if(idConvMarco > 0){
+            if (idConvMarco > 0) {
                 ConvenioArticuloVo caVo = cvConvenioArticuloImpl.convenioPorArticuloConvenio(odVo.getIdConvenio(), odVo.getArtID());            //       
                 odVo.setPrecioUnitario(caVo.getPrecioUnitario());
                 odVo.setImporte(odVo.getCantidad() * caVo.getPrecioUnitario());
@@ -614,9 +625,9 @@ public class OrdenCompraBean implements Serializable {
                 toOrden.setMoneda(new Moneda(caVo.getIdMoneda()));
                 odVo.setConvenio(caVo.getCodigo());
                 toOrden.setProveedor(new Proveedor(caVo.getIdProveedor()));
-            }            
-            
-            odVo.setDescuento(0.0);            
+            }
+
+            odVo.setDescuento(0.0);
             odVo.setOrden(toOrden.getId());
             ordenDetalleImpl.actualizarItem(odVo, sesion.getUsuarioConectado().getId(), fromOrden.getId(), toOrden.getId());
 
@@ -626,7 +637,7 @@ public class OrdenCompraBean implements Serializable {
         ordenImpl.actualizaMontoOrden(toOrden, sesion.getUsuarioConectado().getId());
         //
     }
-    
+
     private void ordenSinConvenioProceso(List<OrdenDetalleVO> detalle, Orden fromOrden, Orden toOrden) {
         if (fromOrden != null && toOrden != null) {
             if (fromOrden.getId() != toOrden.getId()) {
@@ -659,7 +670,7 @@ public class OrdenCompraBean implements Serializable {
                 }
             }
         }
-        PrimeFaces.current().executeScript( "$(dialogoCambiarContrato).modal('show');");
+        PrimeFaces.current().executeScript("$(dialogoCambiarContrato).modal('show');");
     }
 
     public void seleccionaMoneda(AjaxBehaviorEvent event) {
@@ -674,7 +685,7 @@ public class OrdenCompraBean implements Serializable {
         } else {
             ordenActual.setMoneda(new Moneda());
         }
-        PrimeFaces.current().executeScript( "ocultarDiv('selMoneda');");
+        PrimeFaces.current().executeScript("ocultarDiv('selMoneda');");
     }
 
     private Orden crearOrden(boolean conConvenio) {
@@ -717,7 +728,7 @@ public class OrdenCompraBean implements Serializable {
     public void rechazos() {
         try {
             setListaRechazos(ordenSiMovimientoImpl.getMovimientsobyOrden(getOrdenActual().getId()));
-        } catch (RuntimeException ex) {
+        } catch (Exception ex) {
             UtilLog4j.log.fatal(this, ex.getMessage());
         }
     }
@@ -756,25 +767,25 @@ public class OrdenCompraBean implements Serializable {
             UtilLog4j.log.fatal(this, e);
         }
     }
-    
+
     public void historyItem(int idInv, int idCampo) {
         try {
             if (getOrdenActual() != null) {
-                if(idInv > 0 && idCampo > 0){
-                    this.setHistoricoVentas(this.ordenDetalleImpl.historicoDetalleOrden(idInv, idCampo));                
+                if (idInv > 0 && idCampo > 0) {
+                    this.setHistoricoVentas(this.ordenDetalleImpl.historicoDetalleOrden(idInv, idCampo));
                 } else {
-                    this.setHistoricoVentas(new ArrayList<OrdenVO>());
+                    this.setHistoricoVentas(new ArrayList<>());
                 }
-            } 
-            PrimeFaces.current().executeScript( "$(dialogoHistorialCompra).modal('show');");
+            }
+            PrimeFaces.current().executeScript("$(dialogoHistorialCompra).modal('show');");
         } catch (NumberFormatException e) {
             UtilLog4j.log.fatal(this, e);
         }
     }
-    
+
     public void cerrarHistoryItem() {
-        this.setHistoricoVentas(new ArrayList<OrdenVO>());
-        PrimeFaces.current().executeScript( ";$(dialogoHistorialCompra).modal('hide');");
+        this.setHistoricoVentas(new ArrayList<>());
+        PrimeFaces.current().executeScript(";$(dialogoHistorialCompra).modal('hide');");
     }
 
     private void actualizarItemService() {
@@ -785,12 +796,12 @@ public class OrdenCompraBean implements Serializable {
             listaMapa = new HashMap<>();
             if (ordenActual.getApCampo().getTipo().equals("C")) {
 //                if (TipoRequisicion.PS.equals(getItemActual().getOrden().getTipo())) {
-                    setIdTarea(getItemActual().getOcTarea().getOcCodigoTarea().getId());
-                    llenarActvidad();
-                    llenarProyecto();
-                    llenarTipoTarea();
-                    llenarTarea();
-                    llenarSubTarea();
+                setIdTarea(getItemActual().getOcTarea().getOcCodigoTarea().getId());
+                llenarActvidad();
+                llenarProyecto();
+                llenarTipoTarea();
+                llenarTarea();
+                llenarSubTarea();
 //                } else {
 //                    if(itemActual.getOcActividadPetrolera() == null){
 //                        itemActual.setOcActividadPetrolera(new OcActividadPetrolera());
@@ -803,7 +814,7 @@ public class OrdenCompraBean implements Serializable {
 //                    itemActual.setOcUnidadCosto(null);
 //                }
             } else { // Campos no contractuales
-                if (TipoRequisicion.PS.equals(getOrdenActual().getTipo())) {
+                if (TipoRequisicion.PS.toString().equals(getOrdenActual().getTipo())) {
                     itemActual.setOcActividadPetrolera(null);
                     itemActual.setOcSubTarea(null);
                     setIdTarea(itemActual.getOcTarea().getId());
@@ -829,7 +840,7 @@ public class OrdenCompraBean implements Serializable {
                 this.llenarCategoria(null);
             }
 
-            PrimeFaces.current().executeScript( ";abrirDialogoModal(dialogoModItemOCS);");
+            PrimeFaces.current().executeScript(";abrirDialogoModal(dialogoModItemOCS);");
         } catch (NumberFormatException ex) {
             System.out.println("EEEERRRROOOORRR : " + ex.getMessage());
             UtilLog4j.log.fatal(this, ex);
@@ -847,6 +858,7 @@ public class OrdenCompraBean implements Serializable {
             setItemActual(new OrdenDetalle());
             getItemActual().setOrden(getOrdenActual());
             getItemActual().setInvArticulo(new InvArticulo());
+            getItemActual().getInvArticulo().setId(0);
             getItemActual().setOcActividadPetrolera(new OcActividadPetrolera());
             getItemActual().setOcSubTarea(new OcSubTarea());
             getItemActual().setProyectoOt(new ProyectoOt());
@@ -862,21 +874,20 @@ public class OrdenCompraBean implements Serializable {
             setIdTarea(0);
             setOperacionItem(CREATE_OPERATION);
             // @articulos
-            categoriaVoInicial = new CategoriaVo();
-            categoriaVoInicial.setListaCategoria(invArticuloCampoImpl.traerCategoriaArticulo());
-            setCategoriaVo(getCategoriaVoInicial());
+            categorias = invArticuloCampoImpl.traerCategoriaArticulo();
+
             setArticulosFrecuentes(articuloImpl.articulosFrecuentesOrden(sesion.getUsuarioConectado().getId(),
                     getOrdenActual().getApCampo().getId()));
             if (getArticulosFrecuentes() != null && getArticulosFrecuentes().size() > 10) {
                 setArticulosFrecuentes(getArticulosFrecuentes().subList(0, 10));
             }
             iniciarCatSel();
-            setArticulosResultadoBqda(soporteArticulos.obtenerArticulos("", sesion.getUsuarioConectado().getApCampo().getId(), 0, null));
+            setArticulosResultadoBqda(articuloImpl.obtenerArticulos("", sesion.getUsuarioConectado().getApCampo().getId(), 0, null));
             setCategoriasTxt();
             setListaMonedas(monedaBean.getListaMonedas(getOrdenActual() != null && getOrdenActual().getApCampo() != null ? getOrdenActual().getApCampo().getId() : 0));
 
             //
-            setListaMapa(new HashMap<String, List<SelectItem>>());
+            setListaMapa(new HashMap());
             if (getOrdenActual().getApCampo().getTipo().equals("N")) {
                 getItemActual().getOcActividadPetrolera().setId(Constantes.CERO);
                 getItemActual().getOcSubTarea().setId(Constantes.CERO);
@@ -884,8 +895,9 @@ public class OrdenCompraBean implements Serializable {
             } else {
                 llenarActvidad();
             }
-            PrimeFaces.current().executeScript( ";crearNuevoItemJSOrden();");
+            PrimeFaces.current().executeScript("abrirDialogoModal(dialogoModItemOCS);");
         } catch (Exception ex) {
+            System.out.println("Exc:" + ex);
             UtilLog4j.log.fatal(this, ex.getMessage());
         }
     }
@@ -894,10 +906,10 @@ public class OrdenCompraBean implements Serializable {
         setItemActual(new OrdenDetalle());
         listaConvenioArticuloVo = cvConvenioArticuloImpl.traerCodigoConvenioArticulo(ordenActual.getContrato(), ordenActual.getApCampo().getId());
         //
-        PrimeFaces.current().executeScript( ";$(dialogoItemConvenio).modal('show');");
+        PrimeFaces.current().executeScript(";$(dialogoItemConvenio).modal('show');");
     }
 
-    public void seleccionarArticuloConvenio(SelectEvent event) {
+    public void seleccionarArticuloConvenio(SelectEvent<ConvenioArticuloVo> event) {
         setItemActual(new OrdenDetalle());
         ConvenioArticuloVo caVo = (ConvenioArticuloVo) event.getObject();
         //
@@ -919,7 +931,7 @@ public class OrdenCompraBean implements Serializable {
         itemActual.setRecibido(Constantes.BOOLEAN_FALSE);
         itemActual.setConvenio(caVo.getIdConvenio());
         itemActual.setConvenioCodigo(caVo.getConvenio());
-        setListaMapa(new HashMap<String, List<SelectItem>>());
+        setListaMapa(new HashMap<>());
         if (getOrdenActual().getApCampo().getTipo().equals("N")) {
             itemActual.getOcActividadPetrolera().setId(Constantes.CERO);
             itemActual.getOcSubTarea().setId(Constantes.CERO);
@@ -946,13 +958,13 @@ public class OrdenCompraBean implements Serializable {
         ordenImpl.actualizaMontoOrden(ordenActual, sesion.getUsuarioConectado().getId());
         listaItems = ordenDetalleImpl.itemsPorOrden(ordenActual.getId());
         itemActual = null;
-        PrimeFaces.current().executeScript( ";$(dialogoItemConvenio).modal('hide');");
+        PrimeFaces.current().executeScript(";$(dialogoItemConvenio).modal('hide');");
     }
 
     public void cerrarAgregarItemConvenio() {
         //
         itemActual = null;
-        PrimeFaces.current().executeScript( ";$(dialogoItemConvenio).modal('hide');");
+        PrimeFaces.current().executeScript(";$(dialogoItemConvenio).modal('hide');");
     }
 
     private void llenarActvidad() {
@@ -1050,14 +1062,14 @@ public class OrdenCompraBean implements Serializable {
 
     private void llenarSubTarea() {
 //        getListaMapa().put("subTarea", ocSubTareaImpl.traerLstCentoCostosItems(getIdTarea(), ""));
-        
-        if (getItemActual().getProyectoOt().getId() > 0 
-                && getItemActual().getOcActividadPetrolera().getId() > 0 
-                && getItemActual().getOcUnidadCosto().getId() > 0 
+
+        if (getItemActual().getProyectoOt().getId() > 0
+                && getItemActual().getOcActividadPetrolera().getId() > 0
+                && getItemActual().getOcUnidadCosto().getId() > 0
                 && getItemActual().getOcCodigoTarea().getId() > 0) {
             getListaMapa().put("subTarea", ocPresupuestoDetalleImpl.getSubTareasItems(
                     getItemActual().getOcPresupuesto().getId(),
-                    getItemActual().getOcActividadPetrolera().getId(), 
+                    getItemActual().getOcActividadPetrolera().getId(),
                     getOrdenActual().getApCampo().getId(),
                     getItemActual().getProyectoOt().getId(),
                     getItemActual().getOcUnidadCosto().getId(),
@@ -1068,7 +1080,7 @@ public class OrdenCompraBean implements Serializable {
         } else if (getOrdenActual().isMultiproyecto()) {
             getListaMapa().put("subTarea", ocPresupuestoDetalleImpl.getSubTareasItems(
                     getItemActual().getOcPresupuesto().getId(),
-                    getItemActual().getOcActividadPetrolera().getId(), 
+                    getItemActual().getOcActividadPetrolera().getId(),
                     getOrdenActual().getApCampo().getId(),
                     0,
                     getItemActual().getOcUnidadCosto().getId(),
@@ -1079,8 +1091,7 @@ public class OrdenCompraBean implements Serializable {
         } else {
             getListaMapa().put("subTarea", new ArrayList<>());
         }
-        
-        
+
     }
 
     public void eliminarItem(int id) {
@@ -1091,7 +1102,7 @@ public class OrdenCompraBean implements Serializable {
             setOrdenActual(ordenImpl.find(getOrdenActual().getId()));
             FacesUtilsBean.addInfoMessage("Se eliminó correctamente el Ítem");
             itemsPorOrden();
-        } catch (RuntimeException ex) {
+        } catch (Exception ex) {
             UtilLog4j.log.fatal(this, ex.getMessage());
         }
     }
@@ -1109,7 +1120,7 @@ public class OrdenCompraBean implements Serializable {
             } else {
                 completarActualizacionSingleItem();
             }
-        } catch (RuntimeException ex) {
+        } catch (Exception ex) {
             UtilLog4j.log.fatal(this, ex.getMessage(), ex);
         }
     }
@@ -1129,9 +1140,9 @@ public class OrdenCompraBean implements Serializable {
             //Actualizar
             itemsPorOrden();
             setOrdenActual(ordenImpl.find(getOrdenActual().getId()));
-            PrimeFaces.current().executeScript( ";cerrarDialogoModal(dialogoModItemOCS);");
+            PrimeFaces.current().executeScript(";cerrarDialogoModal(dialogoModItemOCS);");
 
-        } catch (RuntimeException ex) {
+        } catch (Exception ex) {
             UtilLog4j.log.fatal(this, ex.getMessage(), ex);
         }
     }
@@ -1164,25 +1175,25 @@ public class OrdenCompraBean implements Serializable {
                         itemActual.setProyectoOt(new ProyectoOt(itemActual.getProyectoOt().getId()));
                     }
                 }
-                
+
                 OcSubtareaVO ocstarea = ocTareaImpl.traerIDTarea(
-                    itemActual.getProyectoOt().getId(),
-                    itemActual.getOcUnidadCosto().getId(),
-                    this.getIdTarea(),
-                    itemActual.getOcActividadPetrolera().getId(),
-                    itemActual.getOcCodigoSubtarea().getId());
-            if (ocstarea != null) {
-                if (ocstarea.getIdTarea() > 0) {
-                    itemActual.setOcTarea(new OcTarea(ocstarea.getIdTarea()));
-                    setIdTarea(ocstarea.getIdTarea());
+                        itemActual.getProyectoOt().getId(),
+                        itemActual.getOcUnidadCosto().getId(),
+                        this.getIdTarea(),
+                        itemActual.getOcActividadPetrolera().getId(),
+                        itemActual.getOcCodigoSubtarea().getId());
+                if (ocstarea != null) {
+                    if (ocstarea.getIdTarea() > 0) {
+                        itemActual.setOcTarea(new OcTarea(ocstarea.getIdTarea()));
+                        setIdTarea(ocstarea.getIdTarea());
+                    }
+
+                    if (ocstarea.getId() > 0) {
+                        itemActual.setOcSubTarea(new OcSubTarea(ocstarea.getId()));
+                    }
                 }
-                
-                if (ocstarea.getId() > 0) {
-                    itemActual.setOcSubTarea(new OcSubTarea(ocstarea.getId()));
-                }
+
             }
-                
-            } 
             if (continuar) {
                 if (this.operacionItem.equals(UPDATE_OPERATION)) {
                     ordenImpl.actualizarItem(itemActual, sesion.getUsuarioConectado().getId(), getIdTarea());
@@ -1212,10 +1223,10 @@ public class OrdenCompraBean implements Serializable {
                 //Actualizar
                 itemsPorOrden();
                 setOrdenActual(ordenImpl.find(getOrdenActual().getId()));
-                PrimeFaces.current().executeScript( ";cerrarDialogoModal(dialogoModItemOCS);");
+                PrimeFaces.current().executeScript(";cerrarDialogoModal(dialogoModItemOCS);");
                 //
             }
-        } catch (RuntimeException ex) {
+        } catch (Exception ex) {
             UtilLog4j.log.fatal(this, ex.getMessage(), ex);
         }
     }
@@ -1233,12 +1244,12 @@ public class OrdenCompraBean implements Serializable {
             limpiar();
             itemsPorOrden();
             //cierra
-            PrimeFaces.current().executeScript( ";cerrarDialogoModal(dialogoDetalleOCS);");
+            PrimeFaces.current().executeScript(";cerrarDialogoModal(dialogoDetalleOCS);");
             //PrimeFaces.current().executeScript( ";dialogoOK('dialogOK', 'dialogoDetalleOCS');");
         } catch (Exception e) {
             limpiar();
             UtilLog4j.log.info(this, e.getMessage() + "# # # # # # # # # " + e);
-            PrimeFaces.current().executeScript( ";cerrarDialogoModal(dialogoDetalleOCS);");
+            PrimeFaces.current().executeScript(";cerrarDialogoModal(dialogoDetalleOCS);");
         }
 
     }
@@ -1251,8 +1262,8 @@ public class OrdenCompraBean implements Serializable {
         ordenDetalleImpl.actualizarItem(odvo, sesion.getUsuarioConectado().getId(), ordenActual.getId(), ordenActual.getId());
         //
         ordenImpl.actualizaMontoOrden(ordenActual, sesion.getUsuarioConectado().getId());
-        
-        if(ordenActual.isMultiproyecto()){
+
+        if (ordenActual.isMultiproyecto()) {
             listaItems = ordenDetalleImpl.itemsPorOrdenMulti(ordenActual.getId());
         } else {
             listaItems = ordenDetalleImpl.itemsPorOrden(ordenActual.getId());
@@ -1262,7 +1273,7 @@ public class OrdenCompraBean implements Serializable {
 
         String divMostrar = "dvCantidad" + odvo.getId();
         String divOcultar = "dvCantidadMod" + odvo.getId();
-        PrimeFaces.current().executeScript( ";ocultarDiv('" + divOcultar + "'); mostrarDiv('" + divMostrar + "');");
+        PrimeFaces.current().executeScript(";ocultarDiv('" + divOcultar + "'); mostrarDiv('" + divMostrar + "');");
 
     }
 
@@ -1289,7 +1300,7 @@ public class OrdenCompraBean implements Serializable {
 
         String divMostrar = "divDescOp" + odvo.getId();
         String divOcultar = "divDesc" + odvo.getId();
-        PrimeFaces.current().executeScript( ";ocultarDiv('" + divMostrar + "'); mostrarDiv('" + divOcultar + "');");
+        PrimeFaces.current().executeScript(";ocultarDiv('" + divMostrar + "'); mostrarDiv('" + divOcultar + "');");
     }
 
     public void limpiar() {
@@ -1297,55 +1308,40 @@ public class OrdenCompraBean implements Serializable {
         setOrdenVO(null);
     }
 
-    public void seleccionarArtFrecuente(SelectEvent event) {
+    public void seleccionarArtFrecuente(SelectEvent<ArticuloVO> event) {
         try {
             ArticuloVO artVO = (ArticuloVO) event.getObject();
-            if (artVO != null && artVO.getId() > 0) {
-                setArticuloTx(new StringBuilder().append(artVO.getNombre())
-                        .append("=>").append(artVO.getCodigoInt())
-                        .toString().toLowerCase());
-                cambiarArticulo();
-            }
+            cambiarArticulo(artVO);
+            //PrimeFaces.current().ajax().update("PF('pnlArt').unselect(0));");
         } catch (Exception e) {
             UtilLog4j.log.fatal(this, e);
             FacesUtilsBean.addErrorMessage("Ocurrió una excepción, favor de comunicar a sia@ihsa.mx");
         }
     }
 
-    public void seleccionarResultadoBA(SelectEvent event) {
+    public void seleccionarResultadoBA(SelectEvent<ArticuloVO> event) {
         try {
-            SelectItem artItem = (SelectItem) event.getObject();
-            if (artItem != null && artItem.getValue() != null && ((ArticuloVO) artItem.getValue()).getId() > 0) {
-                setArticuloTx(new StringBuilder().append(((ArticuloVO) artItem.getValue()).getNombre())
-                        .append("=>").append(((ArticuloVO) artItem.getValue()).getNumParte())
-                        .toString().toLowerCase());
-
-                cambiarArticulo();
-            }
+            ArticuloVO artItem = (ArticuloVO) event.getObject();
+            cambiarArticulo(artItem);
+            // PrimeFaces.current().ajax().update("PF('pnlArt').unselect(1));");
         } catch (Exception e) {
+            System.out.println("Exc: sele art." + e);
             UtilLog4j.log.fatal(this, e);
             FacesUtilsBean.addErrorMessage("Ocurrió una excepción, favor de comunicar a sia@ihsa.mx");
         }
     }
 
-    public void cambiarArticulo() {
+    public void cambiarArticulo(ArticuloVO artVo) {
         try {
-            if (getArticuloTx() != null && !getArticuloTx().isEmpty()) {
-                int aux = 2;
-                String codigo = getArticuloTx().substring(
-                        (getArticuloTx().lastIndexOf("=>") + aux));
-                List<ArticuloVO> articulos = soporteArticulos.getArticulosActivo(codigo, sesion.getUsuarioConectado().getApCampo().getId(), 0, "");
-                if (articulos != null && articulos.size() > 0) {
-                    setArticuloID(articulos.get(0).getId());
-                    getItemActual().setInvArticulo(articuloImpl.find(articulos.get(0).getId()));
-                    setArticuloTx("");
-                    setCategoriaVo(getCategoriaVoInicial());
-                    categoriasSeleccionadas = new ArrayList<CategoriaVo>();
-                    iniciarCatSel();
-                    PrimeFaces.current().executeScript( ";minimizarPanel('artFrecImg', 'collapsePanelArtFre');minimizarPanel('busAvaImg', 'collapsePanelBusquedaAvanzada');");
-                }
+            if (artVo != null) {
+                setArticuloID(artVo.getId());
+                getItemActual().setInvArticulo(articuloImpl.find(artVo.getId()));
+                setArticuloTx("");
+                categoriasSeleccionadas = new ArrayList<>();
+                iniciarCatSel();
             }
         } catch (Exception e) {
+            System.out.println("Exc: cambiarArticulo art." + e);
             UtilLog4j.log.fatal(this, e);
             FacesUtilsBean.addErrorMessage("Ocurrió una excepción, favor de comunicar a sia@ihsa.mx");
         }
@@ -1365,8 +1361,7 @@ public class OrdenCompraBean implements Serializable {
         this.categoriaVo = categoriaVo;
     }
 
-    public void seleccionarCategoriaCabecera() {
-        int id = Integer.parseInt(FacesUtilsBean.getRequestParameter("indiceCatSel"));
+    public void seleccionarCategoriaCabecera(int id) {
         traerSubcategoria(id);
         setCategoriasTxt();
     }
@@ -1377,7 +1372,7 @@ public class OrdenCompraBean implements Serializable {
                 || (cadena == null || cadena.isEmpty())) {
             setArticulosResultadoBqda(traerArticulosItems(cadena));
         }
-        PrimeFaces.current().executeScript( ";marcarBusquedaOrden();");
+        PrimeFaces.current().executeScript(";marcarBusquedaOrden();");
     }
 
     private String filtrosCadena(String cadena) {
@@ -1393,15 +1388,15 @@ public class OrdenCompraBean implements Serializable {
         return cadenaNombre.toString() + cadenaCodigo.toString() + "))";
     }
 
-    private List<SelectItem> traerArticulosItems(String cadena) {
-        List<SelectItem> list;
+    private List<ArticuloVO> traerArticulosItems(String cadena) {
+        List<ArticuloVO> list;
         try {
             cadena = filtrosCadena(cadena.replace(" ", "%"));
-            list = soporteArticulos.obtenerArticulosItems(cadena, sesion.getUsuarioConectado().getApCampo().getId(),
+            list = articuloImpl.obtenerArticulos(cadena, sesion.getUsuarioConectado().getApCampo().getId(),
                     Constantes.CERO,
                     getCodigos(getCategoriasSeleccionadas().size() > 1
                             ? getCategoriasSeleccionadas().subList(1, getCategoriasSeleccionadas().size())
-                            : new ArrayList<CategoriaVo>()));
+                            : new ArrayList<>()));
         } catch (Exception e) {
             list = new ArrayList<>();
         }
@@ -1409,49 +1404,40 @@ public class OrdenCompraBean implements Serializable {
     }
 
     private void traerSubcategoria(int indice) {
-        CategoriaVo c = categoriasSeleccionadas.get(indice);
-        if (indice == 0) {
-            setCategoriaVo(getCategoriaVoInicial());
-            categoriasSeleccionadas = new ArrayList<CategoriaVo>();
-            iniciarCatSel();
-        } else {
-            setCategoriaVo(siRelCategoriaImpl.traerCategoriaPorCategoria(c.getId(), getSoloCodigos(getCategoriasSeleccionadas().subList(0, indice)), sesion.getUsuarioConectado().getApCampo().getId()));
-            if (c.getId() != getCategoriaVo().getId()) {
-                categoriasSeleccionadas.add(getCategoriaVo());// limpiar lista seleccionadas
-            }
-            if ((indice + 1) < categoriasSeleccionadas.size()) {
-                for (int i = (categoriasSeleccionadas.size() - 1); (indice + 1) < categoriasSeleccionadas.size(); i--) {
-                    categoriasSeleccionadas.remove(i);
+        try {
+            CategoriaVo c = categoriasSeleccionadas.get(indice);
+            if (indice == 0) {
+                categorias = invArticuloCampoImpl.traerCategoriaArticulo();
+                iniciarCatSel();
+            } else {
+                setCategoriaVo(siRelCategoriaImpl.traerCategoriaPorCategoria(c.getId(), getSoloCodigos(getCategoriasSeleccionadas().subList(0, indice)), sesion.getUsuarioConectado().getApCampo().getId()));
+                if (c.getId() != getCategoriaVo().getId()) {
+                    categoriasSeleccionadas.add(getCategoriaVo());// limpiar lista seleccionadas
+                }
+                if ((indice + 1) < categoriasSeleccionadas.size()) {
+                    for (int i = (categoriasSeleccionadas.size() - 1); (indice + 1) < categoriasSeleccionadas.size(); i--) {
+                        categoriasSeleccionadas.remove(i);
+                    }
                 }
             }
+            setItemActual(new OrdenDetalle());
+            getItemActual().setOrden(getOrdenActual());
+            //
+            getItemActual().setInvArticulo(new InvArticulo());
+            getItemActual().setObservaciones("");
+            setArticuloTx("");
+
+        } catch (Exception e) {
+            System.out.println("Exc: traer subcategorías: " + e);
         }
-        setItemActual(new OrdenDetalle());
-        getItemActual().setOrden(getOrdenActual());
-        //
-        getItemActual().setInvArticulo(new InvArticulo());
-        getItemActual().setObservaciones("");
-        setArticuloTx("");
-        PrimeFaces.current().executeScript( ";minimizarPanel('artFrecImg', 'collapsePanelArtFre');expandirPanel('busAvaImg', 'collapsePanelBusquedaAvanzada');");
     }
 
     private void iniciarCatSel() {
-        setCategoriasSeleccionadas(new ArrayList<CategoriaVo>());
+        setCategoriasSeleccionadas(new ArrayList<>());
         CategoriaVo c = new CategoriaVo();
         c.setNombre("Pricipales");
         c.setId(Constantes.CERO);
         categoriasSeleccionadas.add(c);
-    }
-
-    public List<CategoriaVo> getListaCatPrin() {
-        List<CategoriaVo> retVal = null;
-        try {
-            if (getCategoriaVo() != null) {
-                retVal = getCategoriaVo().getListaCategoria();
-            }
-        } catch (Exception ex) {
-            UtilLog4j.log.fatal(this, ex);
-        }
-        return retVal;
     }
 
     /**
@@ -1460,15 +1446,8 @@ public class OrdenCompraBean implements Serializable {
     public void buscarOrdenPorConsecutivoBloque() {
         setOrdenVO(ordenImpl.buscarOrdenPorUsuarioInvArticulo(getReferencia().toUpperCase(), sesion.getUsuarioConectado().getApCampo().getId(), sesion.getUsuarioConectado().getId(), true));
         if (getOrdenVO() == null) {
-            PrimeFaces.current().executeScript( ";alertaGeneral('No se encontró la OC/S o la OC/S no utiliza el catálogo de artículos del SIA.');");
+            PrimeFaces.current().executeScript(";alertaGeneral('No se encontró la OC/S o la OC/S no utiliza el catálogo de artículos del SIA.');");
         }
-    }
-
-    /**
-     * @param sesion the sesion to set
-     */
-    public void setSesion(UsuarioBean sesion) {
-        this.sesion = sesion;
     }
 
     /**
@@ -1502,14 +1481,14 @@ public class OrdenCompraBean implements Serializable {
     /**
      * @return the articulosResultadoBqda
      */
-    public List<SelectItem> getArticulosResultadoBqda() {
+    public List<ArticuloVO> getArticulosResultadoBqda() {
         return articulosResultadoBqda;
     }
 
     /**
      * @param articulosResultadoBqda the articulosResultadoBqda to set
      */
-    public void setArticulosResultadoBqda(List<SelectItem> articulosResultadoBqda) {
+    public void setArticulosResultadoBqda(List<ArticuloVO> articulosResultadoBqda) {
         this.articulosResultadoBqda = articulosResultadoBqda;
     }
 
@@ -1618,7 +1597,7 @@ public class OrdenCompraBean implements Serializable {
                 int aux = 2;
                 String codigo = getArticuloTx().substring(
                         (getArticuloTx().lastIndexOf("=>") + aux));
-                List<ArticuloVO> articulos = soporteArticulos.getArticulosActivo(codigo, sesion.getUsuarioConectado().getApCampo().getId(), 0, "");
+                List<ArticuloVO> articulos = articuloImpl.obtenerArticulos(codigo, sesion.getUsuarioConectado().getApCampo().getId(), 0, "");
                 if (articulos != null && articulos.size() > 0) {
                     setArticuloID(articulos.get(0).getId());
                     getItemActual().setInvArticulo(articuloImpl.find(articulos.get(0).getId()));
@@ -1633,25 +1612,32 @@ public class OrdenCompraBean implements Serializable {
 
     private String getCodigos(List<CategoriaVo> categorias) {
         String codigosTxt = "";
-        for (CategoriaVo cat : categorias) {
-            codigosTxt = codigosTxt + " and upper(a.CODIGO) like upper('%" + cat.getCodigo() + "%') ";
+        try {
+            for (CategoriaVo cat : categorias) {
+                codigosTxt = codigosTxt + " and upper(a.CODIGO) like upper('%" + cat.getCodigo() + "%') ";
+            }
+        } catch (Exception e) {
+            System.out.println("Exc: " + e);
         }
         return codigosTxt;
     }
 
-    public void seleccionarCategoria(SelectEvent event) {
+    public void seleccionarCategoria(SelectEvent<CategoriaVo> event) {
         CategoriaVo con = (CategoriaVo) event.getObject();
         setCategoriaVo(con);
-        llenarCategoria(getSoloCodigos(getCategoriasSeleccionadas()));
+        categoriaVo = siRelCategoriaImpl.traerCategoriaPorCategoria(con.getId(), getSoloCodigos(categoriasSeleccionadas), sesion.getUsuarioConectado().getApCampo().getId());
+        categoriasSeleccionadas.add(categoriaVo);
+        //.out.println("Categoría rec: " + categoriaVo.getNombre() + " cats: " + categoriaVo.getListaCategoria());
+        categorias = categoriaVo.getListaCategoria();
+        //llenarCategoria(getSoloCodigos(getCategoriasSeleccionadas()));
         if (getCategoriasSeleccionadas() != null && getCategoriasSeleccionadas().size() > 1) {
-            setArticulosResultadoBqda(soporteArticulos.obtenerArticulos("", sesion.getUsuarioConectado().getApCampo().getId(),
+            setArticulosResultadoBqda(articuloImpl.obtenerArticulos("", sesion.getUsuarioConectado().getApCampo().getId(),
                     0,
                     getCodigos(getCategoriasSeleccionadas().size() > 1
                             ? getCategoriasSeleccionadas().subList(1, getCategoriasSeleccionadas().size())
-                            : new ArrayList<CategoriaVo>())));
+                            : new ArrayList<>())));
         }
         setCategoriasTxt();
-        PrimeFaces.current().executeScript( ";minimizarPanel('artFrecImg', 'collapsePanelArtFre');expandirPanel('BGart', 'collapsePanelBGart');");
     }
 
     private void llenarCategoria(String catSeleccionadas) {
@@ -1661,12 +1647,18 @@ public class OrdenCompraBean implements Serializable {
 
     private String getSoloCodigos(List<CategoriaVo> categorias) {
         String codigosTxt = "";
-        for (CategoriaVo cat : categorias) {
-            if (codigosTxt.isEmpty() && cat.getId() > 0) {
-                codigosTxt = cat.getId() + "";
-            } else if (cat.getId() > 0) {
-                codigosTxt = codigosTxt + "," + cat.getId();
+        try {
+            if (categorias != null) {
+                for (CategoriaVo cat : categorias) {
+                    if (codigosTxt.isEmpty() && cat.getId() > 0) {
+                        codigosTxt = cat.getId() + "";
+                    } else if (cat.getId() > 0) {
+                        codigosTxt = codigosTxt + "," + cat.getId();
+                    }
+                }
             }
+        } catch (Exception e) {
+            System.out.println("Exc: solo código: " + e);
         }
         return codigosTxt;
     }
@@ -1724,7 +1716,7 @@ public class OrdenCompraBean implements Serializable {
                             )
                     )
             );
-        } catch (RuntimeException ex) {
+        } catch (Exception ex) {
             setListaOcOrdenEts(null);
             LOGGER.fatal(this, null, ex);
         }
@@ -1733,7 +1725,7 @@ public class OrdenCompraBean implements Serializable {
     public void etsPorOrdenRequisicion() {
         try {
             listaEts = new ListDataModel(servicioReRequisicion.traerAdjuntosPorRequisicionVisible(getOrdenActual().getRequisicion().getId(), Constantes.BOOLEAN_TRUE));
-        } catch (RuntimeException ex) {
+        } catch (Exception ex) {
             listaEts = null;
             LOGGER.fatal(this, ex.getMessage(), ex);
         }
@@ -1742,7 +1734,7 @@ public class OrdenCompraBean implements Serializable {
     public void traerEspecificacionTecnica() {
         try {
             setListaOcOrdenEts(new ListDataModel(servicioOcOrdenEts.traerEtsPorOrdenCategoria(getOrdenActual().getId(), Constantes.CERO)));
-        } catch (RuntimeException ex) {
+        } catch (Exception ex) {
             setListaOcOrdenEts(null);
             LOGGER.fatal(this, null, ex);
         }
@@ -1774,7 +1766,7 @@ public class OrdenCompraBean implements Serializable {
      * ********************** CARGA DE ETS DESDE REQUISICION******************
      */
     /**
-     * @param fileEntryEvent
+     * @param fileEvent
      */
     public void uploadFile(FileUploadEvent fileEvent) {
         ValidadorNombreArchivo validadorNombreArchivo = new ValidadorNombreArchivo();
@@ -1782,34 +1774,34 @@ public class OrdenCompraBean implements Serializable {
             AlmacenDocumentos almacenDocumentos
                     = proveedorAlmacenDocumentos.getAlmacenDocumentos();
             fileInfo = fileEvent.getFile();
-                boolean addArchivo = validadorNombreArchivo.isNombreValido(fileInfo.getFileName());
+            boolean addArchivo = validadorNombreArchivo.isNombreValido(fileInfo.getFileName());
 
-                if (addArchivo) {
-                    DocumentoAnexo documentoAnexo = new DocumentoAnexo(fileInfo.getContent());
-                    documentoAnexo.setTipoMime(fileInfo.getContentType());
-                    documentoAnexo.setRuta(getUploadDirectoryOrden());
+            if (addArchivo) {
+                DocumentoAnexo documentoAnexo = new DocumentoAnexo(fileInfo.getContent());
+                documentoAnexo.setTipoMime(fileInfo.getContentType());
+                documentoAnexo.setRuta(getUploadDirectoryOrden());
 
-                    almacenDocumentos.guardarDocumento(documentoAnexo);
+                almacenDocumentos.guardarDocumento(documentoAnexo);
 
-                    SiAdjunto adj = servicioSiAdjuntoImpl.save(documentoAnexo.getNombreBase(),
-                            new StringBuilder()
-                                    .append(documentoAnexo.getRuta())
-                                    .append(File.separator).append(documentoAnexo.getNombreBase()).toString(),
-                            fileInfo.getContentType(), fileInfo.getSize(), sesion.getUsuarioConectado().getId());
-                    if (adj != null) {
-                        servicioOcOrdenEts.crearOcOrdenEts(getOrdenActual().getId(), getIdCategoriaSelccionada(), adj, sesion.getUsuarioConectado());
-                    }
-                    //traerEspecificacionTecnica();
-                    ordenEtsPorCategoria();
-                    FacesUtilsBean.addInfoMessage("El archivo fue agregado correctamente.");
-                } else {
-                    FacesUtilsBean.addErrorMessage(new StringBuilder()
-                            .append("No se permiten los siguientes caracteres especiales en el nombre del Archivo: ")
-                            .append(validadorNombreArchivo.getCaracteresNoValidos())
-                            .toString());
+                SiAdjunto adj = servicioSiAdjuntoImpl.save(documentoAnexo.getNombreBase(),
+                        new StringBuilder()
+                                .append(documentoAnexo.getRuta())
+                                .append(File.separator).append(documentoAnexo.getNombreBase()).toString(),
+                        fileInfo.getContentType(), fileInfo.getSize(), sesion.getUsuarioConectado().getId());
+                if (adj != null) {
+                    servicioOcOrdenEts.crearOcOrdenEts(getOrdenActual().getId(), getIdCategoriaSelccionada(), adj, sesion.getUsuarioConectado());
                 }
+                //traerEspecificacionTecnica();
+                ordenEtsPorCategoria();
+                FacesUtilsBean.addInfoMessage("El archivo fue agregado correctamente.");
+            } else {
+                FacesUtilsBean.addErrorMessage(new StringBuilder()
+                        .append("No se permiten los siguientes caracteres especiales en el nombre del Archivo: ")
+                        .append(validadorNombreArchivo.getCaracteresNoValidos())
+                        .toString());
+            }
 
-                fileInfo.delete();
+            fileInfo.delete();
 
         } catch (IOException e) {
             LOGGER.fatal(this, "+ + + ERROR + + +", e);
@@ -1830,7 +1822,7 @@ public class OrdenCompraBean implements Serializable {
         } else {
             try {
                 setListaOcOrdenEts(new ListDataModel(servicioOcOrdenEts.traerEtsPorOrdenCategoria(getOrdenActual().getId(), getIdCategoriaSelccionada())));
-            } catch (RuntimeException ex) {
+            } catch (Exception ex) {
                 setListaOcOrdenEts(null);
                 LOGGER.fatal(this, " excepcion en getOrdenEts", ex);
             }
@@ -1843,17 +1835,15 @@ public class OrdenCompraBean implements Serializable {
         } else {
             try {
                 setListaTablaComparativa(servicioOcOrdenEts.traerEtsPorOrdenCategoria(getOrdenActual().getId(), Constantes.OCS_CATEGORIA_TABLA));
-            } catch (RuntimeException ex) {
+            } catch (Exception ex) {
                 setListaTablaComparativa(null);
                 LOGGER.fatal(this, " excepcion en getOrdenEts", ex);
             }
         }
     }
 
-    public void eliminarTablaComparativaOrden() {
+    public void eliminarTablaComparativaOrden(int idRelacionn) {
         try {
-
-            int idRelacionn = Integer.valueOf(FacesUtilsBean.getRequestParameter("idRelacionEliminar"));
 
             LOGGER.info("rel : : : " + idRelacionn);
 
@@ -1865,9 +1855,8 @@ public class OrdenCompraBean implements Serializable {
         }
     }
 
-    public void eliminarEtsOrden() {
+    public void eliminarEtsOrden(int idRelacionn) {
         try {
-            int idRelacionn = Integer.valueOf(FacesUtilsBean.getRequestParameter("idRelacionEliminar"));
             LOGGER.info(String.format("rel : : : {0}%s", idRelacionn));
             // Buscar en ReRequicision
             setEtsOcOrden(servicioOcOrdenEts.find(idRelacionn));
@@ -1943,20 +1932,6 @@ public class OrdenCompraBean implements Serializable {
      */
     public void setArticuloID(int articuloID) {
         this.articuloID = articuloID;
-    }
-
-    /**
-     * @return the categoriaVoInicial
-     */
-    public CategoriaVo getCategoriaVoInicial() {
-        return categoriaVoInicial;
-    }
-
-    /**
-     * @param categoriaVoInicial the categoriaVoInicial to set
-     */
-    public void setCategoriaVoInicial(CategoriaVo categoriaVoInicial) {
-        this.categoriaVoInicial = categoriaVoInicial;
     }
 
     /**

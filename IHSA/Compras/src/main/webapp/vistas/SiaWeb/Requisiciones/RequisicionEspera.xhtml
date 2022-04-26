@@ -28,8 +28,8 @@
                                         <div class="form-group panel">
                                             <h:outputLabel class="col-12 control-label" value="Escriba el mensaje"/>
                                             <div class="col-12">
-                                                <h:inputTextarea  id="motivoCancelo" cols="80"  
-                                                                  value="#{requisicionBean.msgEspera}" />
+                                                <h:inputTextarea  id="motivoCancelo" cols="80"   styleClass="form-control"
+                                                                  value="#{requisicionBean.msgEspera}" required="true" requiredMessage="Agruegue el mensaje"/>
                                             </div>
                                         </div>
                                     </div>
@@ -39,12 +39,12 @@
                                                      value="Aceptar"
                                                      styleClass="btn btn-info"
                                                      action="#{requisicionBean.guardarMsgEspera}"
-                                                     onclick="return validaCancelar('frmMsgEsperaRecep', 'motivoCancelo', 'La operación guardara el mensaje. ¿Está seguro?', 'Es necesario agregar el mensaje.')"/>
-                                    <p:commandButton id="buttonCancelarMsgEspera"
-                                                     value="Cancelar"
-                                                     styleClass="btn btn-default"
-                                                     onclick="cerrarDialogoModal(dialogoMsgEsperaReq);"                                                           
-                                                     title="Cerrar ventana..." />
+                                                     process="@form" update="form1"/>
+                                    <p:commandLink id="buttonCancelarMsgEspera"
+                                                   value="Cancelar"
+                                                   styleClass="btn btn-default"
+                                                   onclick="cerrarDialogoModal(dialogoMsgEsperaReq);"                                                           
+                                                   title="Cerrar ventana..." immediate="true"/>
 
                                 </div>
                             </h:form>
@@ -68,24 +68,19 @@
                                             <h:outputText styleClass="col-6 col-xs-12 control-label" value="No se permiten los siguientes caracteres en el nombre del Archivo:" style=" font-size: 12px; font-weight: bold;" />
                                             <h:outputText styleClass="col-6 col-xs-12 control-label" value="&acute; ! ¡ &ldquo; &rdquo; # $ % &amp;  / \ = ¿ ? ' &lsquo; &rsquo;  &gt; &lt; { } [ ]" style="color: red; font-size: 12px; font-weight: bold; text-align: left;" />
                                         </div>
-                                        <div class="col-12 col-xs-12" style="font-size:12px; margin-top: 10px;">                                                    
+                                        <div class="col-12 col-xs-12">
                                             <p:fileUpload id="fileEntryComp" 
                                                           label="Archivo "
-                                                          listener="#{cargaEtsBean.uploadFileEspera}"
-                                                          styleClass="col-11 col-xs-12 btn btn-default"/>
-                                            <p:commandButton id="uploadFileEspera" 
-                                                             value="Subir" 
-                                                             styleClass="col-1 col-xs-12 btn btn-default"
-                                                             onclick="#{cargaEtsBean.setRequi(true)}"/>
+                                                          listener="#{cargaEtsBean.uploadFileEspera}"/>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="modal-footer">                                    
-                                    <p:commandButton id="buttonCancelarAdjuntoEspera"
-                                                     value="Cancelar"
-                                                     styleClass="btn btn-default"
-                                                     onclick="cerrarDialogoModal(dialogoAdjuntoEsperaReq);"                                                           
-                                                     title="Cerrar ventana..." />
+                                    <p:commandLink id="buttonCancelarAdjuntoEspera"
+                                                   value="Cancelar"
+                                                   styleClass="btn btn-default"
+                                                   onclick="cerrarDialogoModal(dialogoAdjuntoEsperaReq);"                                                           
+                                                   title="Cerrar ventana..." />
 
                                 </div>
                             </h:form>
@@ -101,32 +96,24 @@
                             <p:commandButton value="Si" type="button" styleClass="ui-confirmdialog-yes" />
                         </p:confirmDialog>
                         <div id="divOperacion" class="btn-group col-8" style="text-align: left; display: none;">                                
-                            <div class="col-2">                            
-                                <p:commandLink value="Regresar" styleClass="btn btn-default" 
-                                               action="#{requisicionBean.limpiarRequisicion}"
-                                               onclick="regresar('divTabla', 'divDatos', 'divOperacion', 'divAutoriza')"
-                                               process="@form" update="form1"/>                                                                
-                            </div>
-                            <div class="col-3">                            
-                                <p:commandLink value="Activar Requisición" styleClass="btn btn-default" 
-                                               action="#{requisicionBean.activarRequisicion}"
-                                               title="Clic aquí para reactivar la requisición..."
-                                               process="@form" update="form1">
-                                    <p:confirm header="Confirmar" message="¿Está usted seguro de querer reactivar la requisición? "/>
-                                </p:commandLink>
-                            </div>
-                            <div class="col-3">                            
-                                <p:commandLink value="Agregar mensaje" styleClass="btn btn-default" 
-                                               action="#{requisicionBean.abrirMsgEspera}"
-                                               title="Clic aquí para agregar comentario a espera de la requisición..."
-                                               process="@this" update="frmMsgEsperaRecep"/>                                                                
-                            </div>
-                            <div class="col-3">                            
-                                <p:commandLink value="Adjuntar Archivo" styleClass="btn btn-default" 
-                                               action="#{requisicionBean.abrirAdjuntoEspera}"
-                                               title="Clic aquí para adjuntar un archivo a la espera de la requisición..."
-                                               process="@this" update="frmAdjuntoEsperaRecep"/>                                                                
-                            </div>
+                            <p:commandLink value="Regresar" styleClass="btn btn-default" 
+                                           action="#{requisicionBean.limpiarRequisicion}"
+                                           onclick="regresar('divTabla', 'divDatos', 'divOperacion', 'divAutoriza')"
+                                           process="@form" update="form1"/>                                                                
+                            <p:commandLink value="Activar Requisición" styleClass="btn btn-default" 
+                                           action="#{requisicionBean.activarRequisicion}"
+                                           title="Clic aquí para reactivar la requisición..."
+                                           process="@form" update="form1">
+                                <p:confirm header="Confirmar" message="¿Está usted seguro de querer reactivar la requisición? "/>
+                            </p:commandLink>
+                            <p:commandLink value="Agregar mensaje" styleClass="btn btn-default" 
+                                           action="#{requisicionBean.abrirMsgEspera}"
+                                           title="Clic aquí para agregar comentario a espera de la requisición..."
+                                           process="@this" update="frmMsgEsperaRecep"/>                                                                
+                            <p:commandLink value="Adjuntar Archivo" styleClass="btn btn-default" 
+                                           action="#{requisicionBean.abrirAdjuntoEspera}"
+                                           title="Clic aquí para adjuntar un archivo a la espera de la requisición..."
+                                           process="@this" update="frmAdjuntoEsperaRecep"/>                                                                
                         </div>                            
                         <div id="divAutorizaa" class="form-group col-9" style="text-align: center;">
 
@@ -173,7 +160,7 @@
                                         <p:column headerText="Prioridad" style="text-align: center; width: 5%;">
                                             <h:outputText value="#{currentRow['prioridad']}"/>                                            
                                         </p:column>
-                                        <p:column >
+                                        <p:column width="50">
                                             <p:commandLink action="#{requisicionBean.seleccionarRequisicion(currentRow.id)}"
                                                            title="Clic aquí para ver los items de la requisición..."
                                                            process="@this" update="form1:tbReqEsp form1:lblReq">

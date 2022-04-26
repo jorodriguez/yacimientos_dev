@@ -9,6 +9,7 @@
  */
 package sia.compra.requisicion.bean.backing;
 
+import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import java.io.File;
 import java.io.Serializable;
@@ -184,8 +185,6 @@ public class RequisicionBean implements Serializable {
     private EstatusBean estatusBean;
     @Inject
     private FolioBean folioBean;
-    @Inject
-    private PopupBean popupBean;
     @Inject
     private MenuBarBean menuBarBean;
     @Inject
@@ -517,6 +516,10 @@ public class RequisicionBean implements Serializable {
     @Getter
     @Setter
     private List<GereciaTareaVo> listaAyuda;
+    //----------------------
+    @Getter
+    @Setter
+    private String motivo;
 
     /**
      * Creates a new instance of ManagedBeanRequisiciones
@@ -905,7 +908,7 @@ public class RequisicionBean implements Serializable {
 
     public void inicioCancelarRequisicion() {
         try {
-            popupBean.setRequisicion(requisicionActual);
+            motivo = "";
         } catch (Exception e) {
             LOGGER.fatal(this, e.getMessage(), e);
         }
@@ -914,10 +917,7 @@ public class RequisicionBean implements Serializable {
     public void devolverRequisicion() {
         try {
             error = false;
-            popupBean.setRequisicion(requisicionActual);
-            if (popupBean.getRechazo() != null && popupBean.getRechazo().getMotivo() != null) {
-                popupBean.getRechazo().setMotivo("");
-            }
+            setMotivo("");
             PrimeFaces.current().executeScript(";abrirDialogoModal(dialogoDevReq);");
         } catch (Exception e) {
             LOGGER.fatal(this, e.getMessage(), e);
@@ -964,8 +964,8 @@ public class RequisicionBean implements Serializable {
     public void cambiarDptoRequisicion() {
         try {
             error = false;
-            popupBean.setCambiarDpto(true);
-            popupBean.setRequisicion(requisicionActual);
+            //  popupBean.setCambiarDpto(true);
+            //popupBean.setRequisicion(requisicionActual);
             PrimeFaces.current().executeScript(";abrirDialogoModal(dialogoCategoriaRequi);");
         } catch (Exception e) {
             LOGGER.fatal(this, e.getMessage(), e);
@@ -995,8 +995,8 @@ public class RequisicionBean implements Serializable {
         try {
             //           
             setRequisicionActual(requisicionServicioRemoto.find(requiVO.getId()));
-            popupBean.setRequisicion(requisicionActual);
-            popupBean.toggleModalCancelar();
+            // popupBean.setRequisicion(requisicionActual);
+            //popupBean.toggleModalCancelar();
         } catch (Exception e) {
             LOGGER.fatal(this, e.getMessage(), e);
         }
@@ -1135,6 +1135,7 @@ public class RequisicionBean implements Serializable {
         generarRequisicion();
     }
 
+    /*
     public void seleccionarMalRequisicion(int idRequisicion) {
         try {
             //se toma el parametro
@@ -1172,7 +1173,7 @@ public class RequisicionBean implements Serializable {
             LOGGER.fatal(this, ex.getMessage(), ex);
         }
     }
-
+     */
     public void mostrarCatalogo() {
         try {
             menuBarBean.procesarAccion("catalogoServicios");
@@ -1475,15 +1476,14 @@ public class RequisicionBean implements Serializable {
      *
      * @param
      */
-    @Deprecated
     public void cancelarRequisicion() {
         try {
             // se toma la requisición del panel emergente Cancelar requisición
-            setRequisicionActual(popupBean.getRequisicion());
             //Asigno fecha en que se cancela la requisiciòn
             requisicionActual.setFechaCancelo(new Date());
             requisicionActual.setHoraCancelo(new Date());
             requisicionActual.setCancelo(usuarioBean.getUsuarioConectado());
+            requisicionActual.setMotivoCancelo(motivo);
             // Esto Sirve para probar la aplicaciòn
             if (notificacionRequisicionImpl.envioCancelacionRequisicion(
                     getDestinatarios(requisicionActual),
@@ -1502,6 +1502,7 @@ public class RequisicionBean implements Serializable {
                 FacesUtilsBean.addInfoMessage("Requisición(es) cancelada(s) correctamente...");
                 //Esto es para Quitar las lineas seleccionadas
                 cambiarRequisicion(0);
+                motivo = "";
                 //Esto es para cerrar el panel emergente de cancelar requisicion
                 PrimeFaces.current().executeScript(";cerrarCancelar();");
             }//------- Si el correo no se pudo enviar  -----
@@ -1571,7 +1572,7 @@ public class RequisicionBean implements Serializable {
     public void rechazarRequisicion() {
         error = false;
         try {
-            if (popupBean.getRechazo().getMotivo().trim().isEmpty()) {
+            if (motivo.isEmpty()) {
                 mensajeError = "Es necesario agregar un motivo de rechazo de la requisición";
                 error = true;
             } else {
@@ -1581,7 +1582,7 @@ public class RequisicionBean implements Serializable {
                 Rechazo rechazo = new Rechazo();
 
                 //Asigno requisicion fecha hora y usuario de rechazo
-                rechazo.setMotivo(popupBean.getRechazo().getMotivo());
+                rechazo.setMotivo(motivo);
                 rechazo.setRequisicion(requisicionActual);
                 rechazo.setFecha(new Date());
                 rechazo.setHora(new Date());
@@ -1619,6 +1620,7 @@ public class RequisicionBean implements Serializable {
                     requisicionServicioRemoto.crearRechazo(rechazo);
                     //finaliza notas
                     finalizarNotas();
+                    motivo = "";
                     //---- Mostrar mensaje  ----
 
                     FacesUtilsBean.addInfoMessage("Requisición(es) devuelta(s) correctamente...");
@@ -1837,37 +1839,35 @@ public class RequisicionBean implements Serializable {
      *
      * @param
      */
+    public void aprobarVariasRequisiciones() {
+        boolean encontradas = false;
+        for (Object object : listaRequisiciones) {
+            RequisicionVO o = (RequisicionVO) object;
+            if (o.isSelected()) {
+                encontradas = true;
+                setRequisicionActual(requisicionServicioRemoto.find(o.getId()));
+                requisicionServicioRemoto.aprobarRequisicion(requisicionActual, usuarioBean.getUsuarioConectado());
+            }
+        }
+        if (encontradas) {
+            FacesUtilsBean.addInfoMessage(FacesUtilsBean.getKeyResourceBundle("requisiciones.correos.APRenviado"));
+            cambiarRequisicion(0);
+        }
+        requisicionActual = null;
+        String jsMetodo = ";limpiarTodos();";
+        PrimeFaces.current().executeScript(jsMetodo);
+    }
+
     public void aprobarRequisicion() {
         try {
-            if (requisicionActual == null) {
-                boolean entro = false;
-                for (Object object : listaRequisiciones) {
-                    RequisicionVO o = (RequisicionVO) object;
-                    if (o.isSelected()) {
-                        setRequisicionActual(requisicionServicioRemoto.find(o.getId()));
-                        //aprobarRequision(requisicionActual);
-                        requisicionServicioRemoto.aprobarRequisicion(requisicionActual, usuarioBean.getUsuarioConectado());
-                        if (!entro) {
-                            entro = true;
-                        }
-                    }
-                }
-                if (entro) {
+//aprobarRequision(requisicionActual);
+            requisicionServicioRemoto.aprobarRequisicion(requisicionActual, usuarioBean.getUsuarioConectado());
 
-                    FacesUtilsBean.addInfoMessage(FacesUtilsBean.getKeyResourceBundle("requisiciones.correos.APRenviado"));
-                    cambiarRequisicion(0);
-                }
-                String jsMetodo = ";limpiarTodos();";
-                PrimeFaces.current().executeScript(jsMetodo);
-            } else {
-                //aprobarRequision(requisicionActual);
-                requisicionServicioRemoto.aprobarRequisicion(requisicionActual, usuarioBean.getUsuarioConectado());
+            FacesUtilsBean.addInfoMessage(FacesUtilsBean.getKeyResourceBundle("requisiciones.correos.APRenviado"));
+            cambiarRequisicion(0);
+            String jsMetodo = ";regresar('divTabla', 'divDatos', 'divOperacion', 'divAutoriza');";
+            PrimeFaces.current().executeScript(jsMetodo);
 
-                FacesUtilsBean.addInfoMessage(FacesUtilsBean.getKeyResourceBundle("requisiciones.correos.APRenviado"));
-                cambiarRequisicion(0);
-                String jsMetodo = ";regresar('divTabla', 'divDatos', 'divOperacion', 'divAutoriza');";
-                PrimeFaces.current().executeScript(jsMetodo);
-            }
             ContarBean contarBean = (ContarBean) FacesUtilsBean.getManagedBean("contarBean");
             contarBean.llenarReqSinAprobar();
         } catch (Exception ex) {
@@ -1996,66 +1996,69 @@ public class RequisicionBean implements Serializable {
         return sb.toString();
     }
 
-    public void asignarRequisicion() {
+    public void asignarVariasRequisiciones() {
         try {
+            Preconditions.checkArgument(!idAnalista.equals("-1"), "Seleccione un analista de compras");
+            Preconditions.checkArgument(!idAnalista.equals("-1"), "Seleccione un analista de compras");
             StringBuilder requiOK = new StringBuilder();
             StringBuilder requiError = new StringBuilder();
-
-            // .out.println("asdasdadsa sele");
-            if (requisicionActual == null) {
-                boolean entro = false;
-                for (Object object : listaRequisiciones) {
-                    RequisicionVO o = (RequisicionVO) object;
-                    if (o.isSelected()) {
-                        setRequisicionActual(requisicionServicioRemoto.find(o.getId()));
-                        if (asignarRequisicionProceso(requisicionActual)) {
-                            if (requiOK.toString().isEmpty()) {
-                                requiOK.append(requisicionActual.getConsecutivo());
-                            } else {
-                                requiOK.append(", ").append(requisicionActual.getConsecutivo());
-                            }
+            boolean entro = false;
+            for (Object object : listaRequisiciones) {
+                RequisicionVO o = (RequisicionVO) object;
+                if (o.isSelected()) {
+                    setRequisicionActual(requisicionServicioRemoto.find(o.getId()));
+                    if (asignarRequisicionProceso(requisicionActual)) {
+                        if (requiOK.toString().isEmpty()) {
+                            requiOK.append(requisicionActual.getConsecutivo());
                         } else {
-                            if (requiError.toString().isEmpty()) {
-                                requiError.append(requisicionActual.getConsecutivo());
-                            } else {
-                                requiError.append(", ").append(requisicionActual.getConsecutivo());
-                            }
+                            requiOK.append(", ").append(requisicionActual.getConsecutivo());
                         }
-                        if (!entro) {
-                            entro = true;
+                    } else {
+                        if (requiError.toString().isEmpty()) {
+                            requiError.append(requisicionActual.getConsecutivo());
+                        } else {
+                            requiError.append(", ").append(requisicionActual.getConsecutivo());
                         }
                     }
+                    if (!entro) {
+                        entro = true;
+                    }
                 }
-                if (entro) {
+            }
+            if (entro) {
 
-                    FacesUtilsBean.addInfoMessage(
-                            new StringBuilder().append("La(s) requisicion(es) ")
-                                    .append(requiOK.toString())
-                                    .append(" se asignaron correctamente...").toString());
-                    cambiarRequisicion(0);
-                }
-                if (requiError.toString().isEmpty()) {
-                    FacesUtilsBean.addErrorMessage(
-                            new StringBuilder().append("No se pudo asignar la(s) requisicion(es): ")
-                                    .append(requiError.toString()).append(". Por favor notifique el problema a: soportesia@ihsa.mx").toString());
-                }
-                String jsMetodo = ";limpiarTodos();";
+                FacesUtilsBean.addInfoMessage(
+                        new StringBuilder().append("La(s) requisicion(es) ")
+                                .append(requiOK.toString())
+                                .append(" se asignaron correctamente...").toString());
+                cambiarRequisicion(0);
+            }
+            if (requiError.toString().isEmpty()) {
+                FacesUtilsBean.addErrorMessage(
+                        new StringBuilder().append("No se pudo asignar la(s) requisicion(es): ")
+                                .append(requiError.toString()).append(". Por favor notifique el problema a: soportesia@ihsa.mx").toString());
+            }
+            String jsMetodo = ";limpiarTodos();";
+            PrimeFaces.current().executeScript(jsMetodo);
+        } catch (IllegalArgumentException e) {
+            FacesUtilsBean.addErrorMessage(e.getMessage());
+        }
+    }
+
+    public void asignarRequisicion() {
+        try {
+            if (asignarRequisicionProceso(requisicionActual)) {
+                FacesUtilsBean.addInfoMessage(
+                        new StringBuilder().append("La(s) requisicion(es) ")
+                                .append(requisicionActual.getConsecutivo())
+                                .append(" se asignaron correctamente...").toString());
+                cambiarRequisicion(0);
+                String jsMetodo = ";regresar('divTabla', 'divDatos', 'divOperacion', 'divAutoriza');";
                 PrimeFaces.current().executeScript(jsMetodo);
             } else {
-                if (asignarRequisicionProceso(requisicionActual)) {
-
-                    FacesUtilsBean.addInfoMessage(
-                            new StringBuilder().append("La(s) requisicion(es) ")
-                                    .append(requisicionActual.getConsecutivo())
-                                    .append(" se asignaron correctamente...").toString());
-                    cambiarRequisicion(0);
-                    String jsMetodo = ";regresar('divTabla', 'divDatos', 'divOperacion', 'divAutoriza');";
-                    PrimeFaces.current().executeScript(jsMetodo);
-                } else {
-                    FacesUtilsBean.addErrorMessage(
-                            new StringBuilder().append("No se pudo asignar la(s) requisicion(es): ")
-                                    .append(requisicionActual.getConsecutivo()).append(". Por favor notifique el problema a: soportesia@ihsa.mx").toString());
-                }
+                FacesUtilsBean.addErrorMessage(
+                        new StringBuilder().append("No se pudo asignar la(s) requisicion(es): ")
+                                .append(requisicionActual.getConsecutivo()).append(". Por favor notifique el problema a: soportesia@ihsa.mx").toString());
             }
             cambiarRequisicion(0);
             //
@@ -2068,7 +2071,7 @@ public class RequisicionBean implements Serializable {
         }
     }
 
-    public boolean asignarRequisicionProceso(Requisicion requiActual) throws Exception {
+    public boolean asignarRequisicionProceso(Requisicion requiActual) {
         boolean exito = false;
         try {
             Requisicion requisicionActualOld = requisicionServicioRemoto.find(requiActual.getId());
@@ -2113,7 +2116,6 @@ public class RequisicionBean implements Serializable {
             filaSeleccionada.clear();
         } catch (Exception ex) {
             LOGGER.fatal(this, "Ex : : : : " + ex.getMessage(), ex);
-            throw new Exception(ex.getMessage());
         }
         return exito;
     }
@@ -2600,6 +2602,7 @@ public class RequisicionBean implements Serializable {
      * Este metodo sirve para seleccionar un item de requisicion de cualquier
      * parte del sistema
      *
+     * @param idPartida
      * @param
      */
     public void seleccionarItem(int idPartida) {
@@ -2617,8 +2620,6 @@ public class RequisicionBean implements Serializable {
                             requisicionActual.getOcUnidadCosto() == null ? 0 : requisicionActual.getOcUnidadCosto().getId()
                     );
                     operacionItem = UPDATE_OPERATION;
-                    popupBean.setItem(getItemActual());
-                    popupBean.toggleModalModificar();
                     PrimeFaces.current().executeScript(";abrirDialogoModal(AutorizaCantidadItemsRequi);");
                 } else {
                     PrimeFaces.current().executeScript(";alertaGeneral('Es necesario agregar un tipo de tarea a la requisión');");
@@ -2798,7 +2799,6 @@ public class RequisicionBean implements Serializable {
     public void completarActualizacionItem() {
         try {
             // se toma la linea de requisición
-            setItemActual(popupBean.getItem());
             if (operacionItem.equals(UPDATE_OPERATION)) {
                 requisicionServicioRemoto.actualizarItem(getItemActual());
                 FacesUtilsBean.addInfoMessage("El Ítem se actualizó correctamente...");
@@ -3533,7 +3533,7 @@ public class RequisicionBean implements Serializable {
                 }
                 String jsMetodo = ";limpiarTodos();";
 
-                popupBean.getRechazo().setMotivo(Constantes.BLANCO);
+                motivo = Constantes.BLANCO;
 
                 PrimeFaces.current().executeScript(jsMetodo);
             } else {
@@ -3558,12 +3558,10 @@ public class RequisicionBean implements Serializable {
         try {
             if (requisicionActual == null) {
                 boolean entro = false;
-                String motivo = popupBean.getRequisicion().getMotivoCancelo();
                 for (Object object : listaRequisiciones) {
                     RequisicionVO o = (RequisicionVO) object;
                     if (o.isSelected()) {
-                        popupBean.setRequisicion(requisicionServicioRemoto.find(o.getId()));
-                        popupBean.getRequisicion().setMotivoCancelo(motivo);
+                        requisicionActual = requisicionServicioRemoto.find(o.getId());
                         cancelarRequisicion();
                         if (!entro) {
                             entro = true;
@@ -3869,14 +3867,14 @@ public class RequisicionBean implements Serializable {
     public void seleccionarCategoria(SelectEvent<CategoriaVo> event) {
         try {
             CategoriaVo con = (CategoriaVo) event.getObject();
-            System.out.println("Categoría selec:" + con.getNombre());
+            //out.println("Categoría selec:" + con.getNombre());
             //setCategoriaVo(con);
             //
             categoriaVo = siRelCategoriaImpl.traerCategoriaPorCategoria(con.getId(), getSoloCodigos(categoriasSeleccionadas), usuarioBean.getUsuarioConectado().getApCampo().getId());
-            System.out.println("Categoría rec: " + categoriaVo.getNombre() + " cats: " + categoriaVo.getListaCategoria());
+            //.out.println("Categoría rec: " + categoriaVo.getNombre() + " cats: " + categoriaVo.getListaCategoria());
             categorias = categoriaVo.getListaCategoria();
             //
-            System.out.println("Seleccionadas : " + categoriasSeleccionadas.size());
+            //.out.println("Seleccionadas : " + categoriasSeleccionadas.size());
             //llenarCategoria(getSoloCodigos(getCategoriasSeleccionadas()));
             categoriasSeleccionadas.add(categoriaVo);
             if (getCategoriasSeleccionadas() != null && getCategoriasSeleccionadas().size() > 1) {
@@ -4151,4 +4149,18 @@ public class RequisicionBean implements Serializable {
         this.categoriaVoInicial = categoriaVoInicial;
     }
 
+    public String getDescItem() {
+        String ret = "";
+        if (itemActual != null) {
+
+            if (itemActual.getInvArticulo() != null) {
+                ret += this.itemActual.getInvArticulo().getDescripcion();
+                ret += " ";
+                ret += this.itemActual.getTextNav();
+            } else {
+                ret += this.itemActual.getDescripcionSolicitante();
+            }
+        }
+        return ret.toUpperCase();
+    }
 }

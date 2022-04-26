@@ -210,8 +210,8 @@ public class CargaEtsBean implements Serializable {
     }
 //*
 
-    public void actualizarEts() {
-        etsActualAdjunto = ((ReRequisicionEts) getListaEts().getRowData()).getSiAdjunto();
+    public void actualizarEts(SiAdjunto requisicionEts) {
+        etsActualAdjunto = requisicionEts;
         popupGeneralBean.toggleModal();
     }
 
