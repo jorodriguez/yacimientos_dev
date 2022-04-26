@@ -1,4 +1,4 @@
-dialogoModOCS<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:f="http://xmlns.jcp.org/jsf/core"
@@ -8,10 +8,10 @@ dialogoModOCS<ui:composition xmlns="http://www.w3.org/1999/xhtml"
 
     <!-- Inicia popup modificar Ítem -->
     <div class="modal fade" id="dialogoModItemOCS" data-backdrop="static" data-keyboard="false">
-        <div class="modal-dialog" style="width: 90%;">
+        <div class="modal-dialog modal-lg" >
             <div class="modal-content">
                 <div class="modal-header">
-                    <h4 class="modal-title">#{ordenCompraBean.operacionItem} Ítem</h4>
+                    <h4 class="modal-title">Ítem</h4>
                 </div>
 
                 <h:form id="frmItemOrden">
@@ -22,336 +22,302 @@ dialogoModOCS<ui:composition xmlns="http://www.w3.org/1999/xhtml"
                         </div>
                         <div class="row">
                             <div class="col-12">
-                                <div class="card panel-default col-12" >   
-                                    <ui:fragment rendered="#{ordenCompraBean.ordenActual.multiproyecto eq 'False'}">
-                                        <div class="form-group col-12" >
-                                            <div class="col-12" style="margin-bottom: 0px;" >                                        
-                                                <div class="card panel-primary" id="PanelArtFre"> 
-                                                    <div class="card-heading" onclick="colapsarPanel('artFrecImg', 'collapsePanelArtFre');">
-                                                        <h3 class="card-title">
-                                                            <strong>Articulos Frecuentes</strong>
-                                                        </h3>
-                                                        <span class="pull-right clickable panel-collapsed"><i id="artFrecImg" class="fa fa-plus"></i></span>                                                    
-                                                    </div>
-                                                    <div id="collapsePanelArtFre" class="card-collapse collapse">
-                                                        <div class="card-body">
-                                                            <!--<!-- rowSelectListener="#{ordenCompraBean.seleccionarArtFrecuente}" -->
-                                                            <ui:fragment rendered="#{!(ordenCompraBean.itemActual.invArticulo.id gt 0)}">
-                                                                <p:dataTable size="small" stripedRows="true" showGridlines="true" value="#{ordenCompraBean.articulosFrecuentes}" var="artF"
-                                                                               rowStyleClass="table table-bordered table-striped"
-                                                                               rows="10" paginator="true"  
-                                                                               paginatorPosition="bottom" 
-                                                                               selectionMode="single"
-                                                                               >
-                                                                    <p:column style="text-align: left;">
-                                                                        <h:outputText value="#{artF.numParte} - #{artF.nombre.length() > 200 ? artF.nombre.substring(0,200) : artF.nombre}" 
-                                                                                      title="#{artF.nombre}"/>
-                                                                    </p:column>                                                
-                                                                </p:dataTable>
-                                                            </ui:fragment>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="form-group col-12" style="margin-bottom: 0px;" > 
-                                                <div class="card panel-primary" id="panelBusquedaAvanzada"> 
-                                                    <div class="card-heading"  onclick="colapsarPanel('busAvaImg', 'collapsePanelBusquedaAvanzada');">
-                                                        <h3 class="card-title">                                                        
-                                                            <strong>Búsqueda Asistida</strong>
-                                                        </h3>
-                                                        <span class="pull-right clickable panel-collapsed"><i id="busAvaImg" class="fa fa-plus"></i></span>                                                    
-                                                    </div>
-                                                    <div id="collapsePanelBusquedaAvanzada" class="card-collapse collapse">
-                                                        <div class="card-body">
-                                                            <ui:fragment rendered="#{!(ordenCompraBean.itemActual.invArticulo.id gt 0)}">
-                                                                <div class="form-group col-12" style="margin-bottom: 0px;" >
-                                                                    <ui:repeat value="#{ordenCompraBean.categoriasSeleccionadas}" var="dataCat"
-                                                                               varStatus="indice">
-                                                                        <p:commandLink  style="padding-left: 2%;"
-                                                                                          action="#{ordenCompraBean.seleccionarCategoriaCabecera(indice.index)}"
-                                                                                          styleClass="text text-primary">
-                                                                            <i class="fa fa-arrow-right"
-                                                                               style="display: #{ordenCompraBean.categoriasSeleccionadas.size() gt 0} ? 'block' : 'none'"></i>
-                                                                            #{dataCat.nombre} 
-                                                                        </p:commandLink>
-                                                                    </ui:repeat>
-                                                                </div>                                                        
+                                <div class="card col-12" >   
+                                    <ui:fragment rendered="#{ordenCompraBean.ordenActual.multiproyecto eq false}">
+                                        <p:accordionPanel id="pnlAcord" widgetVar="pnlArt">
+                                            <p:tab title="Articulos Frecuentes">
+                                                <ui:fragment rendered="#{ordenCompraBean.itemActual.invArticulo.id  le 0}">
+                                                    <p:dataTable size="small" stripedRows="true" showGridlines="true" 
+                                                                 value="#{ordenCompraBean.articulosFrecuentes}" var="artF"
+                                                                 rows="10" paginator="true"  
+                                                                 paginatorPosition="bottom" 
+                                                                 selectionMode="single"
+                                                                 selection="#{ordenCompraBean.articuloVo}" rowKey="#{artF.id}"
+                                                                 >
+                                                        <p:ajax event="rowSelect" listener="#{ordenCompraBean.seleccionarArtFrecuente}"
+                                                                update="frmItemOrden:pnlArticuloSeleccionado frmItemOrden" />
+                                                        <p:column style="text-align: left;">
+                                                            <h:outputText value="#{artF.numParte} - #{artF.nombre.length() > 200 ? artF.nombre.substring(0,200) : artF.nombre}" 
+                                                                          title="#{artF.nombre}"/>
+                                                        </p:column>                                                
+                                                    </p:dataTable>
+                                                </ui:fragment>
+                                            </p:tab>
+                                            <p:tab title="Búsqueda Asistida">                                                
+                                                <ui:fragment rendered="#{ordenCompraBean.itemActual.invArticulo.id le 0}">
+                                                    <div class="form-group col-12" style="margin-bottom: 0px;" >
+                                                        <p:outputPanel id="pnlCat">
+                                                            <ui:repeat value="#{ordenCompraBean.categoriasSeleccionadas}" var="dataCat"
+                                                                       varStatus="indice">
+                                                                <p:commandLink  action="#{ordenCompraBean.seleccionarCategoriaCabecera(indice.index)}"
+                                                                                styleClass="text text-primary"
+                                                                                update="frmItemOrden:pnlAcord:dtCatPrin frmItemOrden:pnlAcord:lblArtTotal frmItemOrden:pnlAcord:tablaResBusquedaAvTABLE">
+                                                                    <i class="fa fa-arrow-right"
+                                                                       style="display: #{ordenCompraBean.categoriasSeleccionadas.size() gt 0} ? 'block' : 'none'"></i>
+                                                                    #{dataCat.nombre} 
+                                                                </p:commandLink>
+                                                            </ui:repeat>
+                                                        </p:outputPanel>
+                                                    </div>                                                        
 
-                                                                <div class="col-12" id="tablaCategorias">
-                                                                    <!<!-- rowSelectListener="#{ordenCompraBean.seleccionarCategoria}" -->
-                                                                    <p:dataTable size="small" stripedRows="true" showGridlines="true" value="#{ordenCompraBean.listaCatPrin}" var="dataArt"
-                                                                                   rowStyleClass="table table-bordered table-striped"
-                                                                                   rows="20" paginator="true"  
-                                                                                   paginatorPosition="bottom" 
-                                                                                   selectionMode="single"
-                                                                                   >
-                                                                        <p:column headerText="Código" style="width: 10%;">
-                                                                            <h:outputText value="#{dataArt.codigo}"/>
-                                                                        </p:column>
-                                                                        <p:column headerText="Nombre" style="text-align: left;">
-                                                                            <h:outputText value="#{dataArt.nombre}"/>
-                                                                        </p:column>                                                
-                                                                    </p:dataTable>
-                                                                </div>                                                                                                                  
-                                                                <div class="form-group col-12" style="margin-top: 10px; margin-bottom: 10px;" >
-                                                                    <strong><h:outputText style="padding-top: 3px;" class="col-1 control-label" value="Filtro:" /></strong>
-                                                                    <div class="col-9">  
-                                                                        <!<!-- textChangeListener="#{ordenCompraBean.traerArticulosItemsListener}" -->
-                                                                        <p:autoComplete id="idBusquedaAvArticulos"                                                                 
-                                                                                             value="#{ordenCompraBean.articuloTx}"                                                                                              
-                                                                                             styleClass="campoFiltro"                                                                                         
-                                                                                             style="margin: 0px 0 0 0px; width: 100%; height: 25px; background-color: #d9edf7; border: 1px solid #ccc; border-radius: 4px; box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset;">                                                                                                                                                                        
-                                                                        </p:autoComplete>
-                                                                    </div>
-                                                                    <div class="col-2">                                                                                    
-                                                                        <strong><h:outputText
-                                                                                value="#{ordenCompraBean.articulosResultadoBqda.size()} Artículos"/>
-                                                                        </strong>
-
-                                                                    </div>
-                                                                </div>
-                                                                <div class="form-group col-12">
-                                                                    <div class="col-12" id="tablaResBusquedaAv">
-                                                                        <!<!-- rowSelectListener="#{ordenCompraBean.seleccionarResultadoBA}"> -->
-                                                                        <p:dataTable size="small" stripedRows="true" showGridlines="true" value="#{ordenCompraBean.articulosResultadoBqda}" var="dataRBA"
-                                                                                       id="tablaResBusquedaAvTABLE"                                                                                   
-                                                                                       rowStyleClass="table table-bordered table-striped"
-                                                                                       rows="20" paginator="true"  
-                                                                                       paginatorPosition="bottom" 
-                                                                                       selectionMode="single">
-                                                                                       
-                                                                            <p:column headerText="Código" style="width: 15%;" styleClass="resultadoBdaCodigo">
-                                                                                <h:outputText value="#{dataRBA.value.numParte}"/>
-                                                                            </p:column>
-                                                                            <p:column headerText="Nombre" style="text-align: left; width: 85%" styleClass="resultadoBdaNombre">
-                                                                                <h:outputText value="#{dataRBA.value.nombre}"/>
-                                                                            </p:column> 
-                                                                            <p:ajax event="page" process="@this" oncomplete="marcarBusquedaOrden();"/>
-                                                                        </p:dataTable>
-                                                                    </div>                 
-                                                                </div>
-                                                            </ui:fragment>
-                                                        </div>
+                                                    <div class="col-12" id="tablaCategorias">
+                                                        <p:dataTable size="small" stripedRows="true" showGridlines="true" 
+                                                                     id="dtCatPrin" value="#{ordenCompraBean.categorias}" var="dataArt"
+                                                                     rows="10" paginator="true"  
+                                                                     paginatorPosition="bottom" 
+                                                                     selectionMode="single" rowKey="#{data.id}" 
+                                                                     selection="#{ordenCompraBean.categoriaTempVo}"                                                                             
+                                                                     >
+                                                            <p:ajax event="rowSelect" listener="#{ordenCompraBean.seleccionarCategoria}" 
+                                                                    update="frmItemOrden:pnlAcord:pnlCat frmItemOrden:pnlAcord:dtCatPrin frmItemOrden:pnlAcord:lblArtTotal frmItemOrden:pnlAcord:tablaResBusquedaAvTABLE"/>
+                                                            <p:column headerText="Código" style="width: 10%;">
+                                                                <h:outputText value="#{dataArt.codigo}"/>
+                                                            </p:column>
+                                                            <p:column headerText="Nombre" style="text-align: left;">
+                                                                <h:outputText value="#{dataArt.nombre}"/>
+                                                            </p:column>                                                
+                                                        </p:dataTable>
+                                                    </div>                                                                                                                  
+                                                    <div class="form-group col-12" >
+                                                        <strong><h:outputText id="lblArtTotal" value="#{ordenCompraBean.articulosResultadoBqda.size()} Artículos"/>                                                        </strong>
                                                     </div>
-                                                </div>
-                                            </div>
-                                        </div> 
+                                                    <div class="form-group col-12">
+                                                        <div class="col-12" >
+                                                            <p:dataTable size="small" stripedRows="true" showGridlines="true" 
+                                                                         value="#{ordenCompraBean.articulosResultadoBqda}" var="dataRBA"
+                                                                         id="tablaResBusquedaAvTABLE"                                                                                   
+                                                                         rows="20" paginator="true"  
+                                                                         paginatorPosition="bottom" 
+                                                                         selectionMode="single"  rowKey="#{dataRBA.id}"
+                                                                         selection="#{ordenCompraBean.articuloVo}">
+                                                                <p:ajax event="rowSelect" listener="#{ordenCompraBean.seleccionarResultadoBA}" 
+                                                                        update="frmItemOrden:pnlArticuloSeleccionado frmItemOrden"/>
+                                                                <p:column headerText="Código" style="width: 25%;"  filterBy="#{dataRBA.numParte}" filterMatchMode="contains">
+                                                                    <h:outputText value="#{dataRBA.numParte}"/>
+                                                                </p:column>
+                                                                <p:column headerText="Nombre" style="text-align: left; width: 75%" 
+                                                                          filterBy="#{dataRBA.nombre}" filterMatchMode="contains">
+                                                                    <h:outputText value="#{dataRBA.nombre}"/>
+                                                                </p:column> 
+                                                            </p:dataTable>
+                                                        </div>                 
+                                                    </div>
+                                                </ui:fragment>
+                                            </p:tab>
+                                        </p:accordionPanel>
                                     </ui:fragment>
 
-                                    <ui:fragment rendered="#{ordenCompraBean.itemActual.invArticulo.id gt 0 or ordenCompraBean.itemActual.id gt 0}">
-                                        <div class="row" style="margin-top: 10px;" >
-                                            <div class="col-6" >
-                                                <ui:fragment rendered="#{ordenCompraBean.ordenActual.apCampo.tipo eq 'C'}">
-                                                    <div class="form-group col-12">
-                                                        <h:outputText value="Presupuesto:" styleClass="control-label col-2"/>
-                                                        <div class="col-10">
-                                                            <h:selectOneMenu styleClass="form-control" 
-                                                                             readonly="#{ordenCompraBean.ordenActual.apCampo.tipo eq 'C'}"
-                                                                             disabled="#{ordenCompraBean.ordenActual.apCampo.tipo eq 'C'}"
-                                                                             value="#{ordenCompraBean.itemActual.ocPresupuesto.id}" 
-                                                                             >
-                                                                <f:selectItem itemLabel="#{ordenCompraBean.itemActual.ocPresupuesto.nombre}" itemValue="#{ordenCompraBean.itemActual.ocPresupuesto.id}"/>                                                                
-                                                            </h:selectOneMenu>
-                                                        </div>
-                                                    </div>
-                                                    <div class="form-group col-12">
-                                                        <h:outputText value="Año pres:" styleClass="control-label col-2"/>
-                                                        <div class="col-10">
-                                                            <h:selectOneMenu styleClass="form-control" 
-                                                                             readonly="#{ordenCompraBean.ordenActual.apCampo.tipo eq 'C'}"
-                                                                             disabled="#{ordenCompraBean.ordenActual.apCampo.tipo eq 'C'}"
-                                                                             value="#{ordenCompraBean.itemActual.anioPresupuesto}" 
-                                                                             >
-                                                                <f:selectItem itemLabel="Año #{ordenCompraBean.itemActual.anioPresupuesto}" itemValue="#{ordenCompraBean.itemActual.anioPresupuesto}"/>
-                                                            </h:selectOneMenu>
-                                                        </div>
-                                                    </div>
-                                                    <div class="form-group col-12">
-                                                        <h:outputText value="Mes pres:" styleClass="control-label col-2"/>
-                                                        <div class="col-10">
-                                                            <h:selectOneMenu styleClass="form-control" 
-                                                                             readonly="#{ordenCompraBean.ordenActual.apCampo.tipo eq 'C'}"
-                                                                             disabled="#{ordenCompraBean.ordenActual.apCampo.tipo eq 'C'}"
-                                                                             value="#{ordenCompraBean.itemActual.mesPresupuesto}" 
-                                                                             >
-                                                                <f:selectItem itemLabel="Mes #{ordenCompraBean.itemActual.mesPresupuesto}" itemValue="#{ordenCompraBean.itemActual.mesPresupuesto}"/>
-                                                            </h:selectOneMenu>
-                                                        </div>
-                                                    </div>
-                                                    <div class="form-group col-12">
-                                                        <h:outputText value="Actividad petrolera:" styleClass="control-label col-2"/>
-                                                        <div class="col-10">
-                                                            <h:selectOneMenu styleClass="form-control" 
-                                                                             readonly="#{ordenCompraBean.ordenActual.apCampo.tipo eq 'C'}"
-                                                                             disabled="#{ordenCompraBean.ordenActual.apCampo.tipo eq 'C'}"
-                                                                             value="#{ordenCompraBean.itemActual.ocActividadPetrolera.id}" 
-                                                                             >
-                                                                <f:selectItem itemLabel="Seleccione . . . " itemValue="0"/>
-                                                                <f:selectItems value="#{ordenCompraBean.listaMapa.get('actividad')}"/>
-                                                                <f:ajax event="valueChange" render="@this idProyecto idTipoTarea nombreTipoObra nombreSubTarea" 
-                                                                        listener="#{ordenCompraBean.seleccionarActividad}"/>
-                                                            </h:selectOneMenu>
-                                                        </div>
-                                                    </div>
-
-                                                    <ui:fragment rendered="#{ordenCompraBean.ordenActual.tipo eq 'PS' or ordenCompraBean.ordenActual.apCampo.tipo eq 'C'}">
+                                    <p:panel id="pnlArticuloSeleccionado" >
+                                        <ui:fragment rendered="#{ordenCompraBean.itemActual.invArticulo.id gt 0 or ordenCompraBean.itemActual.id gt 0}">
+                                            <div class="row" style="margin-top: 10px;" >
+                                                <div class="col-6" >
+                                                    <ui:fragment rendered="#{ordenCompraBean.ordenActual.apCampo.tipo eq 'C'}">
                                                         <div class="form-group col-12">
-                                                            <h:outputText value="#{ordenCompraBean.ordenActual.apCampo.tipo eq 'C' ? 'SubActividad:' : 'Tipo Tarea:' }" styleClass="control-label col-2"/>
+                                                            <h:outputText value="Presupuesto:" styleClass="control-label col-2"/>
                                                             <div class="col-10">
-                                                                <h:selectOneMenu id="idTipoTarea" value="#{ordenCompraBean.itemActual.ocUnidadCosto.id}" styleClass="form-control"
+                                                                <h:selectOneMenu styleClass="form-control" 
                                                                                  readonly="#{ordenCompraBean.ordenActual.apCampo.tipo eq 'C'}"
-                                                                                 disabled="#{ordenCompraBean.ordenActual.apCampo.tipo eq 'C'}">
-                                                                    <f:selectItem itemLabel="Seleccione . . . " itemValue="0"/>
-                                                                    <f:selectItems value="#{ordenCompraBean.listaMapa.get('tipoTarea')}"/>
-                                                                    <f:ajax render="@this nombreTipoObra nombreSubTarea" listener="#{ordenCompraBean.seleccionarTipoTarea}"/>
+                                                                                 disabled="#{ordenCompraBean.ordenActual.apCampo.tipo eq 'C'}"
+                                                                                 value="#{ordenCompraBean.itemActual.ocPresupuesto.id}" 
+                                                                                 >
+                                                                    <f:selectItem itemLabel="#{ordenCompraBean.itemActual.ocPresupuesto.nombre}" itemValue="#{ordenCompraBean.itemActual.ocPresupuesto.id}"/>                                                                
                                                                 </h:selectOneMenu>
                                                             </div>
                                                         </div>
-                                                    </ui:fragment>
-                                                </ui:fragment>
-                                                <ui:fragment rendered="#{ordenCompraBean.ordenActual.tipo eq 'PS' or ordenCompraBean.ordenActual.apCampo.tipo eq 'C'}">
-                                                    <div class="form-group col-12">
-                                                        <h:outputText value="Tarea:" styleClass="control-label col-2"/>
-                                                        <ui:fragment rendered="#{!ordenCompraBean.ordenActual.multiproyecto}">
+                                                        <div class="form-group col-12">
+                                                            <h:outputText value="Año pres:" styleClass="control-label col-2"/>
                                                             <div class="col-10">
-                                                                <h:selectOneMenu id="nombreTipoObra"  value="#{ordenCompraBean.idTarea}" styleClass="form-control"
+                                                                <h:selectOneMenu styleClass="form-control" 
+                                                                                 readonly="#{ordenCompraBean.ordenActual.apCampo.tipo eq 'C'}"
+                                                                                 disabled="#{ordenCompraBean.ordenActual.apCampo.tipo eq 'C'}"
+                                                                                 value="#{ordenCompraBean.itemActual.anioPresupuesto}" 
+                                                                                 >
+                                                                    <f:selectItem itemLabel="Año #{ordenCompraBean.itemActual.anioPresupuesto}" itemValue="#{ordenCompraBean.itemActual.anioPresupuesto}"/>
+                                                                </h:selectOneMenu>
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group col-12">
+                                                            <h:outputText value="Mes pres:" styleClass="control-label col-2"/>
+                                                            <div class="col-10">
+                                                                <h:selectOneMenu styleClass="form-control" 
+                                                                                 readonly="#{ordenCompraBean.ordenActual.apCampo.tipo eq 'C'}"
+                                                                                 disabled="#{ordenCompraBean.ordenActual.apCampo.tipo eq 'C'}"
+                                                                                 value="#{ordenCompraBean.itemActual.mesPresupuesto}" 
+                                                                                 >
+                                                                    <f:selectItem itemLabel="Mes #{ordenCompraBean.itemActual.mesPresupuesto}" itemValue="#{ordenCompraBean.itemActual.mesPresupuesto}"/>
+                                                                </h:selectOneMenu>
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group col-12">
+                                                            <h:outputText value="Actividad petrolera:" styleClass="control-label col-2"/>
+                                                            <div class="col-10">
+                                                                <h:selectOneMenu styleClass="form-control" 
+                                                                                 readonly="#{ordenCompraBean.ordenActual.apCampo.tipo eq 'C'}"
+                                                                                 disabled="#{ordenCompraBean.ordenActual.apCampo.tipo eq 'C'}"
+                                                                                 value="#{ordenCompraBean.itemActual.ocActividadPetrolera.id}" 
+                                                                                 >
+                                                                    <f:selectItem itemLabel="Seleccione . . . " itemValue="0"/>
+                                                                    <f:selectItems value="#{ordenCompraBean.listaMapa.get('actividad')}"/>
+                                                                    <f:ajax event="valueChange" render="@this idProyecto idTipoTarea nombreTipoObra nombreSubTarea" 
+                                                                            listener="#{ordenCompraBean.seleccionarActividad}"/>
+                                                                </h:selectOneMenu>
+                                                            </div>
+                                                        </div>
+
+                                                        <ui:fragment rendered="#{ordenCompraBean.ordenActual.tipo eq 'PS' or ordenCompraBean.ordenActual.apCampo.tipo eq 'C'}">
+                                                            <div class="form-group col-12">
+                                                                <h:outputText value="#{ordenCompraBean.ordenActual.apCampo.tipo eq 'C' ? 'SubActividad:' : 'Tipo Tarea:' }" styleClass="control-label col-2"/>
+                                                                <div class="col-10">
+                                                                    <h:selectOneMenu id="idTipoTarea" value="#{ordenCompraBean.itemActual.ocUnidadCosto.id}" styleClass="form-control"
+                                                                                     readonly="#{ordenCompraBean.ordenActual.apCampo.tipo eq 'C'}"
+                                                                                     disabled="#{ordenCompraBean.ordenActual.apCampo.tipo eq 'C'}">
+                                                                        <f:selectItem itemLabel="Seleccione . . . " itemValue="0"/>
+                                                                        <f:selectItems value="#{ordenCompraBean.listaMapa.get('tipoTarea')}"/>
+                                                                        <f:ajax render="@this nombreTipoObra nombreSubTarea" listener="#{ordenCompraBean.seleccionarTipoTarea}"/>
+                                                                    </h:selectOneMenu>
+                                                                </div>
+                                                            </div>
+                                                        </ui:fragment>
+                                                    </ui:fragment>
+                                                    <ui:fragment rendered="#{ordenCompraBean.ordenActual.tipo eq 'PS' or ordenCompraBean.ordenActual.apCampo.tipo eq 'C'}">
+                                                        <div class="form-group col-12">
+                                                            <h:outputText value="Tarea:" styleClass="control-label col-2"/>
+                                                            <ui:fragment rendered="#{!ordenCompraBean.ordenActual.multiproyecto}">
+                                                                <div class="col-10">
+                                                                    <h:selectOneMenu id="nombreTipoObra"  value="#{ordenCompraBean.idTarea}" styleClass="form-control"
+                                                                                     readonly="#{ordenCompraBean.ordenActual.apCampo.tipo eq 'C'}"
+                                                                                     disabled="#{ordenCompraBean.ordenActual.apCampo.tipo eq 'C'}"
+                                                                                     >
+                                                                        <f:selectItem itemValue="0" itemLabel="Seleccione . . . " />
+                                                                        <f:selectItems value="#{ordenCompraBean.listaMapa.get('tarea')}"/>
+                                                                        <f:ajax render="@this nombreSubTarea" listener="#{ordenCompraBean.seleccionarTarea}"/>
+                                                                    </h:selectOneMenu>
+                                                                </div>
+                                                            </ui:fragment>
+                                                            <ui:fragment rendered="#{ordenCompraBean.ordenActual.multiproyecto}">
+                                                                <div class="col-10">
+                                                                    <h:selectOneMenu id="nombreTipoObraMM"  value="#{ordenCompraBean.idTarea}" styleClass="form-control"
+                                                                                     readonly="#{ordenCompraBean.ordenActual.apCampo.tipo eq 'C'}"
+                                                                                     disabled="#{ordenCompraBean.ordenActual.apCampo.tipo eq 'C'}"
+                                                                                     >
+                                                                        <f:selectItem itemValue="0" itemLabel="#{ordenCompraBean.nombreTareaMulti}" />                                                                    
+                                                                    </h:selectOneMenu>
+                                                                </div>
+                                                            </ui:fragment>
+                                                        </div>
+                                                    </ui:fragment>
+                                                    <ui:fragment rendered="#{ordenCompraBean.ordenActual.apCampo.tipo eq 'C'}">
+                                                        <div class="form-group col-12">
+                                                            <h:outputText value="SubTarea:" styleClass="control-label col-2"/>
+                                                            <div class="col-10">
+                                                                <h:selectOneMenu id="nombreSubTarea"  value="#{ordenCompraBean.itemActual.ocCodigoSubtarea.id}" styleClass="form-control"
                                                                                  readonly="#{ordenCompraBean.ordenActual.apCampo.tipo eq 'C'}"
                                                                                  disabled="#{ordenCompraBean.ordenActual.apCampo.tipo eq 'C'}"
                                                                                  >
                                                                     <f:selectItem itemValue="0" itemLabel="Seleccione . . . " />
-                                                                    <f:selectItems value="#{ordenCompraBean.listaMapa.get('tarea')}"/>
-                                                                    <f:ajax render="@this nombreSubTarea" listener="#{ordenCompraBean.seleccionarTarea}"/>
+                                                                    <f:selectItems value="#{ordenCompraBean.listaMapa.get('subTarea')}"/>
                                                                 </h:selectOneMenu>
                                                             </div>
-                                                        </ui:fragment>
-                                                        <ui:fragment rendered="#{ordenCompraBean.ordenActual.multiproyecto}">
-                                                            <div class="col-10">
-                                                                <h:selectOneMenu id="nombreTipoObraMM"  value="#{ordenCompraBean.idTarea}" styleClass="form-control"
+                                                        </div>
+                                                    </ui:fragment>
+                                                    <div class="col-12 form-group">
+                                                        <div class="input-group col-12">
+                                                            <h:outputText styleClass="col-12 control-label" value="Cantidad:" />  
+                                                            <div class="col-12">
+                                                                <h:inputText  id="cantidad" styleClass="form-control" value="#{ordenCompraBean.itemActual.cantidad}" 
+                                                                              readonly="#{ordenCompraBean.ordenActual.apCampo.tipo eq 'C'}">
+                                                                    <f:convertNumber pattern="#.###" maxFractionDigits="3"/>
+                                                                </h:inputText>
+                                                            </div>
+                                                            <h:outputText styleClass="col-12 control-label" value="P.U.:"/> 
+                                                            <div class="col-12">
+                                                                <h:inputText id="precioUnitario" styleClass="form-control" value="#{ordenCompraBean.itemActual.precioUnitario}"/>
+                                                            </div>                              
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-6 input-group" >
+                                                    <ui:fragment rendered="#{ordenCompraBean.ordenActual.apCampo.tipo eq 'C' and ordenCompraBean.ordenActual.multiproyecto}">
+                                                        <div class="form-group col-12">
+                                                            <h:outputText value="Proyectos:" styleClass="control-label col-2"/>
+                                                            <div class="col-12">                                                            
+                                                                <h:outputText value="#{ordenCompraBean.listaItems.get(0).multiProyectos}" styleClass="control-label col-10"/>
+                                                            </div>
+                                                        </div>
+                                                    </ui:fragment>
+                                                    <ui:fragment rendered="#{ordenCompraBean.ordenActual.apCampo.tipo eq 'C' and !ordenCompraBean.ordenActual.multiproyecto}">
+                                                        <div class="form-group col-12">
+                                                            <h:outputText value="Proyecto:" styleClass="control-label col-2"/>
+                                                            <div class="col-10">                                                            
+                                                                <h:selectOneMenu id="idProyecto" value="#{ordenCompraBean.itemActual.proyectoOt.id}" 
                                                                                  readonly="#{ordenCompraBean.ordenActual.apCampo.tipo eq 'C'}"
                                                                                  disabled="#{ordenCompraBean.ordenActual.apCampo.tipo eq 'C'}"
-                                                                                 >
-                                                                    <f:selectItem itemValue="0" itemLabel="#{ordenCompraBean.nombreTareaMulti}" />                                                                    
+                                                                                 styleClass="form-control">
+                                                                    <f:selectItem itemLabel="Seleccione . . . " itemValue="0"/>
+                                                                    <f:selectItems value="#{ordenCompraBean.listaMapa.get('proyecto')}"/>
+                                                                    <f:ajax render="@this idTipoTarea nombreTipoObra nombreSubTarea" listener="#{ordenCompraBean.seleccionarProyecto}"/>
                                                                 </h:selectOneMenu>
                                                             </div>
-                                                        </ui:fragment>
-                                                    </div>
-                                                </ui:fragment>
-                                                <ui:fragment rendered="#{ordenCompraBean.ordenActual.apCampo.tipo eq 'C'}">
-                                                    <div class="form-group col-12">
-                                                        <h:outputText value="SubTarea:" styleClass="control-label col-2"/>
-                                                        <div class="col-10">
-                                                            <h:selectOneMenu id="nombreSubTarea"  value="#{ordenCompraBean.itemActual.ocCodigoSubtarea.id}" styleClass="form-control"
-                                                                             readonly="#{ordenCompraBean.ordenActual.apCampo.tipo eq 'C'}"
-                                                                             disabled="#{ordenCompraBean.ordenActual.apCampo.tipo eq 'C'}"
-                                                                             >
-                                                                <f:selectItem itemValue="0" itemLabel="Seleccione . . . " />
-                                                                <f:selectItems value="#{ordenCompraBean.listaMapa.get('subTarea')}"/>
-                                                            </h:selectOneMenu>
                                                         </div>
-                                                    </div>
-                                                </ui:fragment>
-                                                <div class="col-12 form-group">
-                                                    <div class="input-group col-12">
-                                                        <h:outputText styleClass="col-2 control-label" value="Cantidad:" style="margin-top: 5px;"/>  
-                                                        <div class="col-3">
-                                                            <h:inputText  id="cantidad" styleClass="form-control" value="#{ordenCompraBean.itemActual.cantidad}" 
-                                                                          readonly="#{ordenCompraBean.ordenActual.apCampo.tipo eq 'C'}">
-                                                                <f:convertNumber pattern="#.###" maxFractionDigits="3"/>
-                                                            </h:inputText>
-                                                        </div>
-                                                        <h:outputText styleClass="col-1 control-label" value="P.U.:" style="text-align: right; margin-top: 5px;" /> 
-                                                        <div class="col-3">
-                                                            <h:inputText id="precioUnitario" styleClass="form-control" value="#{ordenCompraBean.itemActual.precioUnitario}"/>
-                                                        </div>                              
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-6 input-group" >
-                                                <ui:fragment rendered="#{ordenCompraBean.ordenActual.apCampo.tipo eq 'C' and ordenCompraBean.ordenActual.multiproyecto}">
-                                                    <div class="form-group col-12">
-                                                        <h:outputText value="Proyectos:" styleClass="control-label col-2"/>
-                                                        <div class="col-10">                                                            
-                                                            <h:outputText value="#{ordenCompraBean.listaItems.get(0).multiProyectos}" styleClass="control-label col-10"/>
-                                                        </div>
-                                                    </div>
-                                                </ui:fragment>
-                                                <ui:fragment rendered="#{ordenCompraBean.ordenActual.apCampo.tipo eq 'C' and !ordenCompraBean.ordenActual.multiproyecto}">
-                                                    <div class="form-group col-12">
-                                                        <h:outputText value="Proyecto:" styleClass="control-label col-2"/>
-                                                        <div class="col-10">                                                            
-                                                            <h:selectOneMenu id="idProyecto" value="#{ordenCompraBean.itemActual.proyectoOt.id}" 
-                                                                             readonly="#{ordenCompraBean.ordenActual.apCampo.tipo eq 'C'}"
-                                                                             disabled="#{ordenCompraBean.ordenActual.apCampo.tipo eq 'C'}"
-                                                                             styleClass="form-control">
-                                                                <f:selectItem itemLabel="Seleccione . . . " itemValue="0"/>
-                                                                <f:selectItems value="#{ordenCompraBean.listaMapa.get('proyecto')}"/>
-                                                                <f:ajax render="@this idTipoTarea nombreTipoObra nombreSubTarea" listener="#{ordenCompraBean.seleccionarProyecto}"/>
-                                                            </h:selectOneMenu>
-                                                        </div>
-                                                    </div>
 
-                                                </ui:fragment>
-                                                <div class="col-12 input-group">
-                                                    <div class="form-group">
-                                                        <div class="form-group col-12">
-                                                            <div class="form-group col-6">
-                                                                <h:outputText styleClass="col-2" value="N/P: " /> 
-                                                                <div class="col-10">
-                                                                    <h:outputLabel id="codigo" value="#{ordenCompraBean.itemActual.invArticulo != null ? ordenCompraBean.itemActual.invArticulo.codigoInt : ordenCompraBean.itemActual.codigo}"/>
-                                                                </div>
+                                                    </ui:fragment>
+                                                    <div class="input-group">
+                                                        <div class="form-group">
+                                                            <h:outputText styleClass="col-12" value="N/P: " /> 
+                                                            <div class="col-10">
+                                                                <h:outputLabel id="codigo" value="#{ordenCompraBean.itemActual.invArticulo != null ? ordenCompraBean.itemActual.invArticulo.codigoInt : ordenCompraBean.itemActual.codigo}"/>
                                                             </div>
-                                                            <div class="form-group col-6">
-                                                                <h:outputText styleClass="col-4 control-label" value="Unidad: "/>
-                                                                <div class="col-8">
-                                                                    <h:outputLabel id="unidad" 
-                                                                                   value="#{ordenCompraBean.itemActual.invArticulo != null ? ordenCompraBean.itemActual.invArticulo.unidad.nombre : ordenCompraBean.itemActual.siUnidad.nombre}"/>                                                
-                                                                </div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <h:outputText styleClass="col-4 control-label" value="Unidad: "/>
+                                                            <div class="col-8">
+                                                                <h:outputLabel id="unidad" 
+                                                                               value="#{ordenCompraBean.itemActual.invArticulo != null ? ordenCompraBean.itemActual.invArticulo.unidad.nombre : ordenCompraBean.itemActual.siUnidad.nombre}"/>                                                
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group ">
+                                                            <h:outputText styleClass="col-12 control-label" value="Artículo:" /> 
+                                                            <div class="col-12">
+                                                                <h:outputLabel  id="nombre" value="#{ordenCompraBean.itemActual.invArticulo.nombre}"/>
                                                             </div>
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div class="form-group col-12">
-                                                    <h:outputText styleClass="col-2 control-label" value="Artículo:" /> 
-                                                    <div class="col-10">
-                                                        <h:outputLabel  id="nombre" value="#{ordenCompraBean.itemActual.invArticulo.nombre}"/>
-                                                    </div>
-                                                </div>
                                             </div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="col-10">
-                                                <div class="form-group col-10">
-                                                    <h:outputText styleClass="col-2 control-label" value="Obs. Navision:" /> 
-                                                    <div class="col-10">
+                                            <div class="row">
+                                                <div class="form-group col-12">
+                                                    <h:outputText styleClass="col-12 control-label" value="Obs. Navision:" /> 
+                                                    <div class="col-12">
                                                         <h:inputTextarea styleClass="form-control" value="#{ordenCompraBean.itemActual.textNav}"/>
 
                                                     </div>
                                                 </div>
-                                                <div class="form-group col-10 ">
-                                                    <h:outputText styleClass="col-2 control-label" value="Observaciones:" /> 
-                                                    <div class="col-10">
+                                                <div class="form-group col-12 ">
+                                                    <h:outputText styleClass="col-12 control-label" value="Observaciones:" /> 
+                                                    <div class="col-12">
                                                         <h:inputTextarea styleClass="form-control" value="#{ordenCompraBean.itemActual.observaciones}"/>
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                    </ui:fragment>
+                                        </ui:fragment>
+                                    </p:panel>
                                 </div>
                             </div>
                         </div>
 
                     </div>
                     <div class="modal-footer">
-                        <p:commandButton value="#{ordenCompraBean.operacionItem}"
+                        <p:commandButton id="btnActualizarItem" value="#{ordenCompraBean.operacionItem}"
                                          styleClass="btn btn-info"
-                                         action="#{ordenCompraBean.completarActualizacionItem(actionEvent)}"
+                                         action="#{ordenCompraBean.completarActualizacionItem}"
                                          onclick="return validaItemOCS('frmItemOrden', '#{ordenCompraBean.ordenActual.tipo}')"
-                                         rendered="#{ordenCompraBean.itemActual.invArticulo.id gt 0 or ordenCompraBean.itemActual.id gt 0}"/>
-                        <p:commandButton value="Cancelar"
-                                           styleClass="btn btn-default"
-                                           onclick="cerrarDialogoModal(dialogoModItemOCS);"
-                                           title="Cerrar ventana..." 
-                                           immediate="true"/>                                    
+                                         rendered="#{ordenCompraBean.itemActual.invArticulo.id gt 0 or ordenCompraBean.itemActual.id gt 0}"
+                                         process="@form" update="form1:tbOcs"/>
+                        <p:commandLink value="Cancelar"
+                                       styleClass="btn btn-default"
+                                       onclick="cerrarDialogoModal(dialogoModItemOCS);"
+                                       title="Cerrar ventana..." 
+                                       immediate="true"/>                                    
                     </div>
                 </h:form>
             </div>
@@ -360,59 +326,53 @@ dialogoModOCS<ui:composition xmlns="http://www.w3.org/1999/xhtml"
 
     <!-- Items desde otra oc/s -->
     <div class="modal fade" id="dialogoDetalleOCS" data-backdrop="static" data-keyboard="false">
-        <div class="modal-dialog" style="width: 90%;">
+        <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
                     <h4 class="modal-title">Agregar Items de otra OC/S</h4>
                 </div>
                 <h:form id="frmDialogoDetalleOCS">
-                    <div class="modal-body panel panel-footer">                                
-                        <div class="container-fluid">
-                            <div class="col-10 col-xs-12">
-                                <div class="input-group">
-                                    <div class="form-group col-12 col-xs-12">
-                                        <div class="col-5 col-xs-12">
-                                            <h:inputText  value="#{ordenCompraBean.referencia}" styleClass="form-control"
-                                                            />
-                                        </div>
-                                        <div class="col-4 col-xs-12">
-                                            <p:commandLink value="Buscar..." styleClass="btn btn-default"
-                                                             action="#{ordenCompraBean.buscarOrdenPorConsecutivoBloque}"/>
-
-                                        </div>
-                                    </div>
-                                </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="input-group col-6">
+                                <h:inputText  value="#{ordenCompraBean.referencia}" styleClass="form-control"/>
+                                <p:commandLink value="Buscar..." styleClass="btn btn-default"
+                                               action="#{ordenCompraBean.buscarOrdenPorConsecutivoBloque}"
+                                               process="@form" update="@form"/>
                             </div>
                         </div>
-                        <br/>
                         <h:messages id="noEncontroOC" style="color: red; font-family: 'Arial','Helvetica',sans-serif;"/>
 
-                        <div class="container-fluid">
-                            <div class="col-6 col-xs-12 panel panel-primary">
+                        <div class="row">
+                            <div class="col-6 col-xs-12">
                                 <h:outputLabel value="OC/S en el sistema"/>
-                                <p:panel   >
+                                <div class="form-group">
                                     <h:outputLabel value="OC/S:"/>
                                     <h:outputText  value="#{ordenCompraBean.ordenVO.consecutivo}"/>
+                                </div>
+                                <div class="form-group">
                                     <h:outputLabel value="Proveedor:"/>
                                     <h:outputText  value="#{ordenCompraBean.ordenVO.proveedor}"/>
-                                </p:panel>
+                                </div>
                             </div>
-                            <div class="col-6 panel panel-primary">
+                            <div class="col-6 ">
                                 <h:outputLabel  value="OC/S Seleccionada (Actual)"/>
-                                <p:panel  >
+                                <div class="form-group">
                                     <h:outputLabel value="OC/S:"/>
                                     <h:outputText  value="#{ordenCompraBean.ordenActual.id}"/>
-                                    <h:outputLabel value="Proveedor:"/>
+                                </div>
+                                <div class="form-group">
+                                    <h:outputLabel value="Referencia:"/>
                                     <h:outputText  value="#{ordenCompraBean.ordenActual.referencia}"/>
-                                </p:panel>                                
+                                </div>                  
                             </div>
-                            <br/>
                         </div>
-                        <div class="container-fluid">
+                        <div class="row">
                             <h:outputLabel value="Items"/>
-                            <p:dataTable size="small" stripedRows="true" showGridlines="true"  value="#{ordenCompraBean.ordenVO.detalleOrden}" 
-                                           var="currentRow" >
-                                <p:column>
+                            <p:dataTable size="small" stripedRows="true" showGridlines="true"  
+                                         value="#{ordenCompraBean.ordenVO.detalleOrden}" 
+                                         var="currentRow" >
+                                <p:column width="25">
                                     <h:selectBooleanCheckbox value="#{currentRow.selected}"/>
                                 </p:column>
                                 <p:column>
@@ -421,13 +381,13 @@ dialogoModOCS<ui:composition xmlns="http://www.w3.org/1999/xhtml"
                                         <h:outputText value="Código"/>
                                     </f:facet>
                                 </p:column>
-                                <p:column>
+                                <p:column width="80">
                                     <h:outputText value="#{currentRow['cantidad']}"/>
                                     <f:facet name="header">
                                         <h:outputText value="Cantidad"/>
                                     </f:facet>
                                 </p:column>
-                                <p:column>
+                                <p:column width="80">
                                     <h:outputText value="#{currentRow['artUnidad']}"/>
                                     <f:facet name="header">
                                         <h:outputText value="Unidad"/>
@@ -465,12 +425,12 @@ dialogoModOCS<ui:composition xmlns="http://www.w3.org/1999/xhtml"
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <p:commandLink value="#{msgs['sistema.genera.orden.detalle.pasar']} #{ordenCompraBean.ordenVO.consecutivo}" 
-                                       styleClass="btn btn-success"
+                        <p:commandLink value="#{msgs['sistema.genera.orden.detalle.pasar']}" 
+                                       styleClass="btn btn-primary"
                                        title="#{msgs['sistema.tooltip.orden.detalle.pasar']}"
-                                       rendered="#{ordenCompraBean.ordenVO != null}"
+                                       disabled="#{ordenCompraBean.ordenVO eq null}"
                                        action="#{ordenCompraBean.pasarItemsOrden}"
-                                       process="@form" update="form1">                                
+                                       process="@form" update="form1:tbOcs">                                
                         </p:commandLink>
                         <p:commandLink id="btnLimpiar" styleClass="btn btn-default" value="Cerrar"  
                                        action="#{ordenCompraBean.limpiar}"
@@ -483,7 +443,7 @@ dialogoModOCS<ui:composition xmlns="http://www.w3.org/1999/xhtml"
     </div>
     <!-- Modal Modificar orden-->
     <div class="modal fade" id="dialogoModOCS" data-backdrop="static" data-keyboard="false">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
                     <h4 class="modal-title">Modificar Orden de compra</h4>
@@ -493,21 +453,22 @@ dialogoModOCS<ui:composition xmlns="http://www.w3.org/1999/xhtml"
                         <div class="row">
                             <div class="col-12">
                                 <div class="input-group card" ><br/>
-                                    <div class="form-group col-12" >
-                                        <h:outputText styleClass="col-2 control-label" value="Orden:" /> 
-                                        <div class="col-10">
-                                            <h:outputText styleClass="form-control" value="#{ordenCompraBean.ordenActual.id}"/>
+                                    <div class="form-group col-4" >
+                                        <h:outputText styleClass="col-12 control-label" value="Orden:" /> 
+                                        <div class="col-12">
+                                            <h:outputText  value="#{ordenCompraBean.ordenActual.id}"/>
                                         </div>
                                     </div>
-                                    <div class="form-group col-12">
-                                        <h:outputText styleClass="col-2 control-label" value="Gerencia:" />
-                                        <div class="col-10"><h:outputText styleClass="form-control" value="#{ordenCompraBean.ordenActual.gerencia.nombre}" />
+                                    <div class="form-group col-4">
+                                        <h:outputText styleClass="col-12 control-label" value="Gerencia:" />
+                                        <div class="col-12">
+                                            <h:outputText value="#{ordenCompraBean.ordenActual.gerencia.nombre}" />
                                         </div>
                                     </div>
-                                    <div class="form-group col-12" >
-                                        <h:outputText styleClass="col-2 control-label" value="ProyectoOT:"/>
-                                        <div class="col-10">
-                                            <h:outputText styleClass="form-control" value="#{ordenCompraBean.ordenActual.proyectoOt.nombre}"/>
+                                    <div class="form-group col-4" >
+                                        <h:outputText styleClass="col-122 control-label" value="ProyectoOT:"/>
+                                        <div class="col-12">
+                                            <h:outputText value="#{ordenCompraBean.ordenActual.proyectoOt.nombre}"/>
                                         </div>
                                     </div>
                                 </div>
@@ -517,21 +478,21 @@ dialogoModOCS<ui:composition xmlns="http://www.w3.org/1999/xhtml"
                                 <div class="input-group card" ><br/>
                                     <div class="form-group col-12" >
                                         <h:outputText styleClass="col-2 control-label" value="Lugar de entrega:"/>
-                                        <div class="col-10">
+                                        <div class="col-12">
                                             <h:inputText class="form-control" value="#{ordenCompraBean.ordenActual.destino}"/>
                                         </div>
                                     </div>
 
                                     <div class="form-group col-12" >
                                         <h:outputText styleClass="col-2 control-label" value="Observaciones al proveedor:"/>
-                                        <div class="col-10">
+                                        <div class="col-12">
                                             <h:inputTextarea class="form-control" value="#{ordenCompraBean.ordenActual.nota}"/>
                                         </div>
                                     </div>
 
                                     <div class="form-group col-12" >
                                         <h:outputText styleClass="col-2 control-label" value="Comentarios Internos de la OC/S:"/>
-                                        <div class="col-10">
+                                        <div class="col-12">
                                             <h:inputTextarea class="form-control" value="#{ordenCompraBean.ordenActual.observaciones}"/>
                                         </div>
                                     </div>
@@ -540,12 +501,13 @@ dialogoModOCS<ui:composition xmlns="http://www.w3.org/1999/xhtml"
                         </div>                                    
                     </div>
                     <div class="modal-footer">
-                        <p:commandButton  value="Actualizar" action="#{ordenCompraBean.completarActualizacionOrden(actionEvent)}"                                                           
-                                            styleClass="btn btn-info"/>
-                        <p:commandButton  value="Cancelar"
-                                            styleClass="btn btn-default"
-                                            onclick="$(dialogoModOCS).modal('hide');"
-                                            title="Cerrar ventana sin modificar..."/>                                    
+                        <p:commandButton  value="Actualizar" action="#{ordenCompraBean.completarActualizacionOrden}"                                                           
+                                          styleClass="btn btn-info" process="@form" update="form1:tbOcs"/>
+                        <p:commandLink  value="Cancelar"
+                                        styleClass="btn btn-default"
+                                        onclick="$(dialogoModOCS).modal('hide');"
+                                        title="Cerrar ventana sin modificar..."
+                                        immediate="true"/>                                    
                     </div>
                 </h:form>
             </div>
@@ -553,7 +515,7 @@ dialogoModOCS<ui:composition xmlns="http://www.w3.org/1999/xhtml"
     </div>
 
     <div class="modal fade" id="dialogoCargarEts" data-backdrop="static" data-keyboard="false">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
                     <h4 class="modal-title">Especificación Técnica de Suministros</h4>
@@ -561,24 +523,18 @@ dialogoModOCS<ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 <h:form id="form1Ets" >
                     <div class="modal-body panel panel-footer">
                         <div class="row">
-                            <div class="col-12 col-xs-12" style="font-size: 1em; margin-top: 10px;">
-                                <h:selectOneRadio value="#{ordenCompraBean.opcionSeleccionada}" >
-                                    <f:selectItem itemLabel="Traer de requisición" itemValue="EtsRequisicion"/>
-                                    <f:selectItem itemLabel="Sistema de Archivo" itemValue="ETSLocal"/>    
-                                </h:selectOneRadio>
-                            </div>                   
-                            <div class="col-12 col-xs-12" style="font-size:12px; margin-top: 10px;">                                                    
-                                <!<!-- selectedPanel="#{ordenCompraBean.opcionSeleccionada}" -->
+                            <div class="col-12 col-xs-12" >
+                                <!-- selectedPanel="#{ordenCompraBean.opcionSeleccionada}" -->
                                 <p:panel  style="width: 100%;">
                                     <h:panelGroup id="EtsRequisicion">
-                                        <div class="col-12 col-xs-12" style="font-size:12px; margin-top: 10px;">                                                    
+                                        <div class="col-12 col-xs-12">
                                             <div class="table table-responsive">
                                                 <p:dataTable size="small" stripedRows="true" showGridlines="true"  value="#{ordenCompraBean.listaEts}" var="data"
-                                                               styleClass="table table-striped">
+                                                             styleClass="table table-striped">
                                                     <f:facet name="header">
                                                         <h:outputLabel value="Requisición #{ordenCompraBean.ordenVO.requisicion}"/>
                                                     </f:facet>
-                                                    <p:column>
+                                                    <p:column width="25">
                                                         <h:selectBooleanCheckbox value="#{ordenCompraBean.filasSeleccionadas[data['id']]}"/>                                 
                                                     </p:column>   
                                                     <p:column>
@@ -587,19 +543,7 @@ dialogoModOCS<ui:composition xmlns="http://www.w3.org/1999/xhtml"
                                                         </f:facet>
                                                         <h:outputText value="#{data['siAdjunto'].nombreSinUUID}"/>
                                                     </p:column>
-                                                    <p:column>
-                                                        <f:facet name="header">
-                                                            <h:outputLabel value="Tamaño"/>
-                                                        </f:facet>
-                                                        <h:outputText  value="#{data['siAdjunto'].peso}"/>
-                                                    </p:column>
-                                                    <p:column>
-                                                        <f:facet name="header">
-                                                            <h:outputLabel value="Descripción"/>
-                                                        </f:facet>
-                                                        <h:outputText value="#{data['siAdjunto'].descripcion}"/>
-                                                    </p:column>
-                                                    <p:column>
+                                                    <p:column width="80">
                                                         <h:outputLink   styleClass="btn btn-default"
                                                                         target="_blank"  
                                                                         id="abrirReq"
@@ -611,99 +555,90 @@ dialogoModOCS<ui:composition xmlns="http://www.w3.org/1999/xhtml"
                                                 </p:dataTable> 
                                             </div>
                                         </div>
-                                        <div class="col-12 col-xs-12" style="font-size:12px; margin-top: 10px;">                                                    
+                                        <div class="col-12 col-xs-12" >
                                             <h:outputText value="Destino del documento :"/>
-                                            <h:selectOneMenu value="#{ordenCompraBean.idCategoriaSelccionada}">
+                                            <h:selectOneMenu value="#{ordenCompraBean.idCategoriaSelccionada}" styleClass="form-control">
                                                 <f:selectItems value="#{ordenCompraBean.listaCategoriaEts}" />
                                             </h:selectOneMenu>                        
                                             <p:commandButton value="Adjuntar lo seleccionado" 
-                                                               action="#{ordenCompraBean.guardarSeleccionEts}"                                                           
-                                                               styleClass="btn btn-default"
-                                                               update="formqEts"/>
+                                                             action="#{ordenCompraBean.guardarSeleccionEts}"                                                           
+                                                             styleClass="btn btn-default"
+                                                             update="form1Ets"/>
                                             <p:commandButton 
                                                 value="Adjuntar todo" 
                                                 action="#{ordenCompraBean.guardarTodoEts}" 
                                                 styleClass="btn btn-default"
-                                                immediate="true"/>
+                                                update="form1Ets"/>
                                         </div>
                                     </h:panelGroup>
                                     <h:panelGroup id="ETSLocal">
-                                        <div class="col-12 col-xs-12" style="font-size:12px; margin-top: 10px;">                                                    
+                                        <div class="col-12 col-xs-12">
                                             <h:outputText value="Destino :"/>
-                                            <h:selectOneMenu value="#{ordenCompraBean.idCategoriaSelccionada}" >
+                                            <h:selectOneMenu value="#{ordenCompraBean.idCategoriaSelccionada}" styleClass="form-control">
                                                 <f:selectItems value="#{ordenCompraBean.listaCategoriaEts}" />
                                             </h:selectOneMenu>                       
                                         </div>
-                                        <div class="col-12 col-xs-12" style="font-size:12px; margin-top: 10px;">   
+                                        <div class="col-12 col-xs-12">
                                             <h:outputText value="No se permiten los siguientes caracteres en el nombre del Archivo:" 
-                                                            style=" font-size: 12px; font-weight: bold;" 
-                                                            rendered="#{ordenCompraBean.idCategoriaSelccionada != -1}"/>
+                                                          rendered="#{ordenCompraBean.idCategoriaSelccionada != -1}"/>
                                             <h:outputText value="#{ordenCompraBean.simbolos}" 
-                                                            style="color: red; font-size: 12px; font-weight: bold; alignment-adjust: central;" 
-                                                            rendered="#{ordenCompraBean.idCategoriaSelccionada != -1}"/>
+                                                          style="color: red;" 
+                                                          rendered="#{ordenCompraBean.idCategoriaSelccionada != -1}"/>
                                         </div>
-                                        <div class="col-12 col-xs-12" style="font-size:12px; margin-top: 10px;">                                                                                            
-                                            <h:outputText value="Clasificación:"/>
+                                        <div class="col-12 col-xs-12">
                                             <p:fileUpload id="fileEntryComp" 
-                                                           styleClass="btn btn-default"
-                                                           label="Archivo"
-                                                           listener="#{ordenCompraBean.uploadFile}"/>
-                                            <p:commandButton  styleClass="btn btn-default" id="uploadFile" value="Subir"/>
+                                                          label="Archivo"
+                                                          listener="#{ordenCompraBean.uploadFile}"
+                                                          update="form1Ets"/>
                                         </div>
                                     </h:panelGroup>
                                 </p:panel>
                             </div>
-                            <div class="col-12 col-xs-12" style="font-size:12px; margin-top: 10px;">   
-                                <div class="col-12 col-xs-12">
-                                    <div class="table table-responsive">
-                                        <p:dataTable size="small" stripedRows="true" showGridlines="true"  value="#{ordenCompraBean.listaOcOrdenEts}" var="ets"
-                                                       styleClass="table table-striped">
-                                            <p:column >
-                                                <f:facet name="header"><h:outputLabel value="Categoría"/></f:facet>
-                                                <h:outputText value="#{ets.categoria}"/>
-                                            </p:column>         
-                                            <p:column>
-                                                <f:facet name="header">
-                                                    <h:outputLabel value="Nombre"/>
-                                                </f:facet>
-                                                <h:outputText value="#{ets.nombreSinUUID}"/>
-                                            </p:column>
-                                            <p:column>
-                                                <f:facet name="header">
-                                                    <h:outputLabel value="Tamaño"/>
-                                                </f:facet>
-                                                <h:outputText  value="#{ets.peso}"/>
-                                            </p:column>
-                                            <p:column>                                        
-                                                <h:outputLink styleClass="btn btn-default"
-                                                              id="abrir"
-                                                              target="_blank" 
-                                                              title="Click aqui para abrir el archivo..." 
-                                                              value="/Compras/AbrirArchivo?ZWZ2W=#{ets.id}&amp;ZWZ3W=#{ets.uuid}">
-                                                    <h:outputText value=" Abrir"/>
-                                                </h:outputLink>                                        
-                                            </p:column>
-                                            <p:column>                                                                                    
-                                                <p:commandLink id="eliminar" value="Eliminar"
-                                                                 styleClass="btn btn-default"                                                     
-                                                                 action="#{ordenCompraBean.eliminarEtsOrden(actionEvent)}" 
-                                                                 title="Click aqui para eliminar el archivo..." 
-                                                                 onclick="if (!confirm('Está seguro de eliminar el archivo #{ets.nombreSinUUID} ...? '))
-                                                                             return false;">
-                                                    <f:param name="idRelacionEliminar" value="#{ets['idEtsOrden']}" />
-                                                </p:commandLink>                                        
-                                            </p:column>
-                                        </p:dataTable> 
-                                    </div>
-                                </div>
+                            <div class="col-12 col-xs-12" >
+                                <p:dataTable size="small" stripedRows="true" showGridlines="true"  
+                                             value="#{ordenCompraBean.listaOcOrdenEts}" var="ets">
+                                    <p:column >
+                                        <f:facet name="header"><h:outputLabel value="Categoría"/></f:facet>
+                                        <h:outputText value="#{ets.categoria}"/>
+                                    </p:column>         
+                                    <p:column>
+                                        <f:facet name="header">
+                                            <h:outputLabel value="Nombre"/>
+                                        </f:facet>
+                                        <h:outputText value="#{ets.nombreSinUUID}"/>
+                                    </p:column>
+                                    <p:column>
+                                        <f:facet name="header" >
+                                            <h:outputLabel value="Tamaño"/>
+                                        </f:facet>
+                                        <h:outputText  value="#{ets.peso}"/>
+                                    </p:column>
+                                    <p:column>                                        
+                                        <h:outputLink styleClass="btn btn-default"
+                                                      id="abrir"
+                                                      target="_blank" 
+                                                      title="Click aqui para abrir el archivo..." 
+                                                      value="/Compras/AbrirArchivo?ZWZ2W=#{ets.id}&amp;ZWZ3W=#{ets.uuid}">
+                                            <h:outputText value=" Abrir"/>
+                                        </h:outputLink>                                        
+                                    </p:column>
+                                    <p:column>                                                                                    
+                                        <p:commandLink id="eliminar" value="Eliminar"
+                                                       styleClass="btn btn-default"                                                     
+                                                       action="#{ordenCompraBean.eliminarEtsOrden(ets.idEtsOrden)}" 
+                                                       title="Click aqui para eliminar el archivo..." 
+                                                       process="@this" update="@form">
+                                        </p:commandLink>                                        
+                                    </p:column>
+                                </p:dataTable> 
                             </div>
                         </div>                               
                     </div>
                     <div class="modal-footer">
-                        <p:commandButton  value="Cerrar"
-                                            styleClass="btn btn-default"
-                                            onclick="$(dialogoCargarEts).modal('hide');"
-                                            title="Cerrar ventana sin modificar..."/>                                    
+                        <p:commandLink  value="Cerrar"
+                                        styleClass="btn btn-default"
+                                        onclick="$(dialogoCargarEts).modal('hide');"
+                                        title="Cerrar ventana sin modificar..."/>                                    
                     </div>
                 </h:form>
             </div>
@@ -711,23 +646,23 @@ dialogoModOCS<ui:composition xmlns="http://www.w3.org/1999/xhtml"
     </div>
     <!-- agregar item convenio-->
     <div class="modal fade" id="dialogoItemConvenio" data-backdrop="static" data-keyboard="false">
-        <div class="modal-dialog" style="width: 90%;">
+        <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
                     <h4 class="modal-title">Agregar Items de convenios</h4>
                 </div>
                 <h:form id="frmDialogoItemConvenio">
-                    <div class="modal-body panel panel-footer">                                
+                    <div class="modal-body">
                         <div class="row">
                             <div class="col-12" id="tablaResBusquedaAv">
-                                <!<!-- rowSelectListener="#{ordenCompraBean.seleccionarArticuloConvenio}" -->
                                 <p:dataTable size="small" stripedRows="true" showGridlines="true" value="#{ordenCompraBean.listaConvenioArticuloVo}" var="data"
-                                               id="tblArticuloConvenio"                                                                                   
-                                               rowStyleClass="table table-bordered table-striped"
-                                               rows="20" paginator="true"  
-                                               paginatorPosition="bottom" 
-                                               selectionMode="single"
-                                               >
+                                             id="tblArticuloConvenio"                                                                                   
+                                             rows="20" paginator="true"  
+                                             paginatorPosition="bottom" 
+                                             selectionMode="single" 
+                                             selection="#{ordenCompraBean.convenioArticuloVo}" rowKey="#{data.id}">
+                                    <p:ajax event="rowSelect" listener="#{ordenCompraBean.seleccionarArticuloConvenio}" 
+                                            update="frmDialogoItemConvenio"/>
                                     <p:column headerText="Código" styleClass="resultadoBdaCodigo">
                                         <h:outputText value="#{data.codigoInt}"/>
                                     </p:column>
@@ -804,12 +739,12 @@ dialogoModOCS<ui:composition xmlns="http://www.w3.org/1999/xhtml"
                                 </ui:fragment>
                                 <div class="col-12 form-group">
                                     <div class="input-group col-12">
-                                        <h:outputText styleClass="col-2 control-label" value="Cantidad:" style="margin-top: 5px;"/>  
-                                        <div class="col-3">
+                                        <h:outputText styleClass="col-12 control-label" value="Cantidad:"/>  
+                                        <div class="col-12">
                                             <h:inputText  id="cantidad" styleClass="form-control" value="#{ordenCompraBean.itemActual.cantidad}"/>
                                         </div>
-                                        <h:outputText styleClass="col-1" value="P.U.:" style="text-align: right; margin-top: 5px;" /> 
-                                        <div class="col-3">
+                                        <h:outputText styleClass="col-12" value="P.U.:" /> 
+                                        <div class="col-12">
                                             <h:outputText id="precioUnitario" styleClass="form-control" value="#{ordenCompraBean.itemActual.precioUnitario}"/>
                                         </div>                                                                      
                                     </div>
@@ -844,29 +779,28 @@ dialogoModOCS<ui:composition xmlns="http://www.w3.org/1999/xhtml"
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-10">
-                                <div class="form-group col-10">
-                                    <h:outputText styleClass="col-2 control-label" value="Obs. Navision:" /> 
-                                    <div class="col-10">
-                                        <h:inputTextarea styleClass="form-control" value="#{ordenCompraBean.itemActual.textNav}"/>
+                            <div class="form-group col-12">
+                                <h:outputText styleClass="col-12 control-label" value="Obs. Navision:" /> 
+                                <div class="col-12">
+                                    <h:inputTextarea styleClass="form-control" value="#{ordenCompraBean.itemActual.textNav}"/>
 
-                                    </div>
                                 </div>
-                                <div class="form-group col-10 ">
-                                    <h:outputText styleClass="col-2 control-label" value="Observaciones:" /> 
-                                    <div class="col-10">
-                                        <h:inputTextarea styleClass="form-control" value="#{ordenCompraBean.itemActual.observaciones}"/>
-                                    </div>
+                            </div>
+                            <div class="form-group col-12">
+                                <h:outputText styleClass="col-2 control-label" value="Observaciones:" /> 
+                                <div class="col-12">
+                                    <h:inputTextarea styleClass="form-control" value="#{ordenCompraBean.itemActual.observaciones}"/>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div class="modal-footer">
                         <p:commandButton styleClass="btn btn-info" value="Guardar"
-                                         action="#{ordenCompraBean.completarAgregarItemConvenio(actionEvent)}"/>
-                        <p:commandButton value="Cancelar" styleClass="btn btn-default"
-                                         action="#{ordenCompraBean.cerrarAgregarItemConvenio(actionEvent)}"
-                                         title="Cerrar ventana..."  immediate="true"/>                                    
+                                         action="#{ordenCompraBean.completarAgregarItemConvenio}"
+                                         update="form1" process="@form"/>
+                        <p:commandLink value="Cancelar" styleClass="btn btn-default"
+                                       action="#{ordenCompraBean.cerrarAgregarItemConvenio}"
+                                       title="Cerrar ventana..."  immediate="true"/>                                    
                     </div>
                 </h:form>
             </div>

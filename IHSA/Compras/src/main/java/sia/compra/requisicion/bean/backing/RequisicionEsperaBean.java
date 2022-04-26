@@ -136,10 +136,10 @@ public class RequisicionEsperaBean implements Serializable {
     private boolean puedoDevolverRequisicion() {
         boolean devolver = true;
         try {
-            List<Object[]> l = this.ordenServicioRemoto.getOrdenesPorRequisicion(requisicionActual.getId(), null);
+            List<OrdenVO> l = ordenServicioRemoto.getOrdenesPorRequisicion(requisicionActual.getId(), null);
             if (!l.isEmpty()) {
-                for (Object[] objects : l) {
-                    if (this.ordenServicioRemoto.find((Integer) objects[0]).getAutorizacionesOrden().getEstatus().getId() > 100) {
+                for (OrdenVO objects : l) {
+                    if (this.ordenServicioRemoto.find(objects.getId()).getAutorizacionesOrden().getEstatus().getId() > 100) {
                         devolver = false;
                         break;
                     }
@@ -446,17 +446,7 @@ public class RequisicionEsperaBean implements Serializable {
 
     public void ordenesPorRequisicion() {
         try {
-            listaOrden = new ArrayList<OrdenVO>();
-            OrdenVO o;
-            List<Object[]> l = this.ordenServicioRemoto.getOrdenesPorRequisicion(requisicionActual.getId(), null);
-            for (Object[] objects : l) {
-                o = new OrdenVO();
-                o.setId((Integer) objects[0]);
-                o.setConsecutivo(String.valueOf(objects[1]));
-                o.setEstatus(String.valueOf(objects[2]));
-                o.setCompania((String) objects[3]);
-                listaOrden.add(o);
-            }
+            listaOrden =  ordenServicioRemoto.getOrdenesPorRequisicion(requisicionActual.getId(), null);
 
         } catch (RuntimeException ex) {
             UtilLog4j.log.fatal(this, ex.getMessage());

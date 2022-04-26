@@ -11,16 +11,17 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
-import javax.faces.bean.ViewScoped;
 
-import javax.faces.event.ValueChangeEvent;
 import javax.faces.model.SelectItem;
+import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+import lombok.Getter;
+import lombok.Setter;
 import org.primefaces.PrimeFaces;
+import org.primefaces.event.TabChangeEvent;
 import org.primefaces.shaded.json.JSONException;
 import org.primefaces.shaded.json.JSONObject;
-import sia.compra.requisicion.bean.backing.FacesUtilsBean;
 import sia.compra.requisicion.bean.backing.UsuarioBean;
 import sia.constantes.Constantes;
 import sia.metabase.impl.SiaMetabaseImpl;
@@ -51,7 +52,7 @@ import sia.util.UtilLog4j;
  *
  * @author ihsa
  */
-@Named (value = "reporteBean")
+@Named(value = "reporteBean")
 @ViewScoped
 public class ReporteBean implements Serializable {
 
@@ -102,7 +103,18 @@ public class ReporteBean implements Serializable {
     private int opcioSeleccionada = 1;
     //
     private String tituloTabla;
-    
+    @Getter
+    @Setter
+    private List<SelectItem> listaGerencias = null;
+    @Getter
+    @Setter
+    private List<SelectItem> listaEstatus;
+    @Getter
+    @Setter
+    private List<SelectItem> listaMoneda;
+    @Getter
+    @Setter
+    private List<SelectItem> listaRevisan;
     @Inject
     private UsuarioBean usuarioBean;
 
@@ -111,9 +123,39 @@ public class ReporteBean implements Serializable {
         if (usuarioBean.getUsuarioConectado() != null) {
             idMoneda = usuarioBean.getUsuarioConectado().getApCampo().getCompania().getMoneda().getId();
         }
+        listaGerencias = new ArrayList<>();
+        listaEstatus = new ArrayList<>();
+        listaMoneda = new ArrayList<>();
+        listaRevisan = new ArrayList<>();
+
     }
 
-    public void limiarLista() {
+    private void llenarGerencias() {
+        List<GerenciaVo> geres = gerenciaImpl.getAllGerenciaByApCompaniaAndApCampo(usuarioBean.getCompania().getRfc(), usuarioBean.getUsuarioConectado().getApCampo().getId(), "nombre", true, true, false);
+        //gerenciaImpl.traerGerenciaAbreviatura(usuarioBean.getUsuarioConectado().getApCampo().getId());
+        geres.stream().forEach(ger -> {
+            listaGerencias.add(new SelectItem(ger.getId(), ger.getNombre()));
+        });
+    }
+
+    public void onTabChange(TabChangeEvent event) {
+        switch (event.getTab().getTitle()) {
+            case "OC/S por Status":
+                llenarEstatus();
+                break;
+            case "OC/S de gerencias":
+                llenarGerencias();
+                break;
+            case "Proveedores":
+                llenarMoneda();
+                break;
+            default:
+                break;
+        }
+        limpiarLista();
+    }
+
+    public void limpiarLista() {
         setLista(null);
         setListaR(null);
     }
@@ -125,11 +167,11 @@ public class ReporteBean implements Serializable {
         setOpcioSeleccionada(1);
     }
 
-    public void actualizarGerenciaCompra(ValueChangeEvent event) {
-        setIdGerenciaCopra((Integer) event.getNewValue());
+    public void actualizarGerenciaCompra() {
+        // setIdGerenciaCopra((Integer) event.getNewValue());
     }
 
-    public void traerDatosComprador() throws JSONException {
+    public void traerDatosComprador() {
         List<OrdenVO> lo = autorizacionesOrdenImpl.traerOrdenComprador(getInicio(), getFin(), Constantes.BOOLEAN_FALSE, usuarioBean.getUsuarioConectado().getApCampo().getId());
         JSONObject j = new JSONObject();
         String json;
@@ -150,11 +192,10 @@ public class ReporteBean implements Serializable {
         j.put("totalDolar", totalDolar);
         json = j.toString();
         //      
-        PrimeFaces.current().executeScript( ";llenarDatosCompradores(" + json + ",'" + getInicio() + "','" + getFin() + "'," + isAutorizada() + ");");
+        PrimeFaces.current().executeScript(";llenarDatosCompradores(" + json + ",'" + getInicio() + "','" + getFin() + "'," + isAutorizada() + ");");
     }
 
-    public void buscarRequicion(ValueChangeEvent changeListener) {
-        setTipoRequisicion((String) changeListener.getNewValue());
+    public void buscarRequicion() {
         List<RequisicionVO> lo = requisicionImpl.requisicionesPorEstatus(usuarioBean.getUsuarioConectado().getId(), usuarioBean.getUsuarioConectado().getApCampo().getId(), getTipoRequisicion(), Constantes.REQUISICION_VISTO_BUENO_C);
         setListaR(lo);
 
@@ -166,7 +207,7 @@ public class ReporteBean implements Serializable {
         //
     }
 
-    public void traerRequisicionesSinOrden() throws JSONException {
+    public void traerRequisicionesSinOrden() {
         List<RequisicionVO> lo = requisicionImpl.totalReqOcsSinProcesar(usuarioBean.getUsuarioConectado().getApCampo().getId(), getDiasAnticipados());
         JSONObject j = new JSONObject();
         String json;
@@ -186,7 +227,7 @@ public class ReporteBean implements Serializable {
         j.put("totalOcs", totalOCS);
         json = j.toString();
         //
-        PrimeFaces.current().executeScript( ";llenarRequiscionesCompradores(" + json + "," + getDiasAnticipados() + ");");
+        PrimeFaces.current().executeScript(";llenarRequiscionesCompradores(" + json + "," + getDiasAnticipados() + ");");
     }
 
     public void traerRequisionesPorComprador() {
@@ -214,7 +255,7 @@ public class ReporteBean implements Serializable {
         listaR = lo;
     }
 
-    public void traerOCSGerencia() throws JSONException {
+    public void traerOCSGerencia() {
         if (getPanelSeleccion().equals("TODO")) {
             List<OrdenVO> lo = autorizacionesOrdenImpl.traerOrdenGerencia(getInicio(), getFin(), !isAutorizada(), usuarioBean.getUsuarioConectado().getApCampo().getId(), Constantes.ORDENES_SIN_APROBAR);
             JSONObject j = new JSONObject();
@@ -233,7 +274,7 @@ public class ReporteBean implements Serializable {
                 j.put("total", total);
                 j.put("totalDolar", totalDolar);
                 json = j.toString();
-                PrimeFaces.current().executeScript( ";llenarDatosOCSGerencia(" + json + ",'" + getInicio() + "','" + getFin() + "'," + isAutorizada() + ");");
+                PrimeFaces.current().executeScript(";llenarDatosOCSGerencia(" + json + ",'" + getInicio() + "','" + getFin() + "'," + isAutorizada() + ");");
                 lista = lo;
             }
 
@@ -242,31 +283,16 @@ public class ReporteBean implements Serializable {
         }
     }
 
-    public List<SelectItem> getListaStatus() {
-        List<SelectItem> item = new ArrayList<>();
-        for (OrdenEstadoEnum value : OrdenEstadoEnum.values()) {
-
-        }
-        item.add(new SelectItem(OrdenEstadoEnum.POR_VOBO.getId(), "Visto bueno"));
-        item.add(new SelectItem(OrdenEstadoEnum.POR_REVISAR.getId(), "Revisar"));
-        item.add(new SelectItem(OrdenEstadoEnum.POR_APROBAR_SOCIO.getId(), "Aprobar externo"));
-        item.add(new SelectItem(OrdenEstadoEnum.POR_APROBAR.getId(), "Aprobar"));
-        item.add(new SelectItem(OrdenEstadoEnum.POR_AUTORIZAR.getId(), "Autorizar"));
-        item.add(new SelectItem(OrdenEstadoEnum.POR_AUTORIZAR_1MMD.getId(), "Autorizar OC/S por Monto"));
-        item.add(new SelectItem(OrdenEstadoEnum.POR_ACEPTAR_CARTA_INTENCION.getId(), "Carta de intención Enviadas"));
-        item.add(new SelectItem(OrdenEstadoEnum.POR_REVISAR_REPSE.getId(), "En revisión por Jurídico"));
-        return item;
-    }
-
-    public List<SelectItem> getListaGerencia() {
-        List<SelectItem> item = new ArrayList<>();
-        SelectItem ii = new SelectItem(999, "TODAS");
-        item.add(ii);
-        for (GerenciaVo ger : gerenciaImpl.getAllGerenciaByApCompaniaAndApCampo(usuarioBean.getCompania().getRfc(), usuarioBean.getUsuarioConectado().getApCampo().getId(), "nombre", true, true, false)) {
-            SelectItem i = new SelectItem(ger.getId(), ger.getNombre());
-            item.add(i);
-        }
-        return item;
+    public void llenarEstatus() {
+        listaEstatus = new ArrayList<>();
+        listaEstatus.add(new SelectItem(OrdenEstadoEnum.POR_VOBO.getId(), "Visto bueno"));
+        listaEstatus.add(new SelectItem(OrdenEstadoEnum.POR_REVISAR.getId(), "Revisar"));
+        listaEstatus.add(new SelectItem(OrdenEstadoEnum.POR_APROBAR_SOCIO.getId(), "Aprobar externo"));
+        listaEstatus.add(new SelectItem(OrdenEstadoEnum.POR_APROBAR.getId(), "Aprobar"));
+        listaEstatus.add(new SelectItem(OrdenEstadoEnum.POR_AUTORIZAR.getId(), "Autorizar"));
+        listaEstatus.add(new SelectItem(OrdenEstadoEnum.POR_AUTORIZAR_1MMD.getId(), "Autorizar OC/S por Monto"));
+        listaEstatus.add(new SelectItem(OrdenEstadoEnum.POR_ACEPTAR_CARTA_INTENCION.getId(), "Carta de intención Enviadas"));
+        listaEstatus.add(new SelectItem(OrdenEstadoEnum.POR_REVISAR_REPSE.getId(), "En revisión por Jurídico"));
     }
 
     public void traerOCSPorGerencia() {
@@ -294,28 +320,17 @@ public class ReporteBean implements Serializable {
         lista = lo;
     }
 
-    public List<SelectItem> getListaMoneda() {
-        List<SelectItem> item = new ArrayList<>();
+    public void llenarMoneda() {
+        listaMoneda = new ArrayList<>();
         for (MonedaVO mo : monedaImpl.traerMonedaActiva(usuarioBean.getUsuarioConectado().getApCampo().getId())) {
             SelectItem i = new SelectItem(mo.getId(), mo.getNombre());
-            item.add(i);
+            listaMoneda.add(i);
         }
-        return item;
     }
 
     public void traerOCSMovimiento() {
         List<OrdenVO> lo = ordenSiMovimientoImpl.ordenesRechadas(getInicio(), getFin(), getIdStatus(), usuarioBean.getUsuarioConectado().getApCampo().getId());
         lista = lo;
-    }
-
-    public void limpiarLista(ValueChangeEvent event) {
-        if (jsonProveedores.isEmpty()) {
-            UtilLog4j.log.info(this, "Proveedores json estaba vacio");
-            jsonProveedores = this.proveedorImpl.getProveedorJson(usuarioBean.getCompania().getRfc(), ProveedorEnum.ACTIVO.getId());
-        }
-        PrimeFaces.current().executeScript( ";llenarProveedor(" + "'frmReporteOCSPorProveedor'," + jsonProveedores + ");");
-        setIdProveedor(0);
-        lista = null;
     }
 
     public void traerOCSSolDev() {
@@ -342,7 +357,7 @@ public class ReporteBean implements Serializable {
             j.put("totalCan", totalCan);
             json = j.toString();
 //            System.out.println("Cad : sol dev can : : " + json.toString());
-            PrimeFaces.current().executeScript( ";graficaOCSSolDevCan(" + json + ",'" + getInicio() + "','" + getFin() + "');");
+            PrimeFaces.current().executeScript(";graficaOCSSolDevCan(" + json + ",'" + getInicio() + "','" + getFin() + "');");
         } catch (JSONException ex) {
             UtilLog4j.log.fatal(this, "Ocurrio una excepción en las OC/S dev y canceladas : : : : : : : " + ex.getMessage());
         }
@@ -365,49 +380,43 @@ public class ReporteBean implements Serializable {
         }
     }
 
-    public void recuperaStatus(ValueChangeEvent event) {
-        setIdStatus((Integer) event.getNewValue());
-    }
-
-    public List<SelectItem> getListaRevisa() {
-        List<SelectItem> item = new ArrayList<>();
+    public void llenarRevisa() {
+        listaRevisan = new ArrayList<>();
         switch (getIdStatus()) {
             case Constantes.ORDENES_SIN_APROBAR:
                 UsuarioResponsableGerenciaVo object = gerenciaImpl.traerResponsablePorApCampoYGerencia(usuarioBean.getUsuarioConectado().getApCampo().getId(), Constantes.GERENCIA_ID_COMPRAS);
-                item.add(new SelectItem(object.getIdUsuario(), object.getNombreUsuario()));
+                listaRevisan.add(new SelectItem(object.getIdUsuario(), object.getNombreUsuario()));
                 break;
             case Constantes.ORDENES_SIN_AUTORIZAR_MPG:
                 List<ApCampoGerenciaVo> lg = apCampoGerenciaImpl.listaGerentes(usuarioBean.getUsuarioConectado().getApCampo().getId());
                 for (ApCampoGerenciaVo cg : lg) {
-                    item.add(new SelectItem(cg.getIdResponsable(), cg.getNombreResponsable()));
+                    listaRevisan.add(new SelectItem(cg.getIdResponsable(), cg.getNombreResponsable()));
                 }
                 break;
             case Constantes.ORDENES_SIN_AUTORIZAR_IHSA:
                 List<UsuarioTipoVo> lt = ocFlujoImpl.getUsuariosPorAccion("AP", usuarioBean.getUsuarioConectado().getApCampo().getId(), Constantes.NO_ELIMINADO);
                 for (UsuarioTipoVo ut : lt) {
-                    item.add(new SelectItem(ut.getIdUser(), ut.getUsuario()));
+                    listaRevisan.add(new SelectItem(ut.getIdUser(), ut.getUsuario()));
                 }
                 break;
             case Constantes.ESTATUS_POR_APROBAR_SOCIO:
-                item.add(new SelectItem("Externo", "Externo"));
+                listaRevisan.add(new SelectItem("Externo", "Externo"));
                 break;
             case Constantes.ORDENES_SIN_AUTORIZAR_COMPRAS:
                 UsuarioResponsableGerenciaVo ug = gerenciaImpl.traerResponsablePorApCampoYGerencia(usuarioBean.getUsuarioConectado().getApCampo().getId(), Constantes.ID_GERENCIA_IHSA);
-                item.add(new SelectItem(ug.getIdUsuario(), ug.getNombreUsuario()));
+                listaRevisan.add(new SelectItem(ug.getIdUsuario(), ug.getNombreUsuario()));
                 break;
             case Constantes.ORDENES_SIN_AUTORIZAR_LICITACION:
                 List<UsuarioRolVo> lRol = siUsuarioRolImpl.traerRolPorCodigo(Constantes.CODIGO_ROL_LICITACION, usuarioBean.getUsuarioConectado().getApCampo().getId(), Constantes.MODULO_COMPRA);
                 if (lRol != null) {
                     for (UsuarioRolVo ut : lRol) {
-                        item.add(new SelectItem(ut.getIdUsuario(), ut.getUsuario()));
+                        listaRevisan.add(new SelectItem(ut.getIdUsuario(), ut.getUsuario()));
                     }
                 }
                 break;
             default:
                 break;
         }
-
-        return item;
     }
 
     public void traerOCSEstado() {
@@ -417,7 +426,7 @@ public class ReporteBean implements Serializable {
 
     public void llenarProveedor() {
         jsonProveedores = this.proveedorImpl.getProveedorJson(usuarioBean.getCompania().getRfc(), ProveedorEnum.ACTIVO.getId());
-        PrimeFaces.current().executeScript( ";llenarProveedor(" + "'frmReporteOCSPorProveedor'," + jsonProveedores + ");");
+        PrimeFaces.current().executeScript(";llenarProveedor(" + "'frmReporteOCSPorProveedor'," + jsonProveedores + ");");
     }
 
     public void traerRequisicionesProceso() {
@@ -437,35 +446,35 @@ public class ReporteBean implements Serializable {
         String ret = "";
         try {
             String METABASE_SECRET_KEY = "1d4abeba80e9226dd6154885af5f213e8b13eb66e903e31376ee882cfe1a147f";
-            ret =  siaMetabaseImpl.getTokenUrl(35, METABASE_SECRET_KEY);
+            ret = siaMetabaseImpl.getTokenUrl(35, METABASE_SECRET_KEY);
         } catch (Exception ex) {
             Logger.getLogger(ReporteBean.class.getName()).log(Level.SEVERE, null, ex);
         }
         return ret;
     }
-    
+
     public String getMetaBaseReportMontoPorAlmacen() {
         String ret = "";
         try {
             String METABASE_SECRET_KEY = "1d4abeba80e9226dd6154885af5f213e8b13eb66e903e31376ee882cfe1a147f";
-            ret =  siaMetabaseImpl.getTokenUrl(59, METABASE_SECRET_KEY);
+            ret = siaMetabaseImpl.getTokenUrl(59, METABASE_SECRET_KEY);
         } catch (Exception ex) {
             Logger.getLogger(ReporteBean.class.getName()).log(Level.SEVERE, null, ex);
         }
         return ret;
     }
-    
+
     public String getMetaBaseReportMontoMovGerencia() {
         String ret = "";
         try {
             String METABASE_SECRET_KEY = "1d4abeba80e9226dd6154885af5f213e8b13eb66e903e31376ee882cfe1a147f";
-            ret =  siaMetabaseImpl.getTokenUrlDash(8, METABASE_SECRET_KEY);
+            ret = siaMetabaseImpl.getTokenUrlDash(8, METABASE_SECRET_KEY);
         } catch (Exception ex) {
             Logger.getLogger(ReporteBean.class.getName()).log(Level.SEVERE, null, ex);
         }
         return ret;
     }
-    
+
 //
 //    public String getMetabaseEmbeddedUrl(String metabaseSecretKey, Map<String, Object> payload, String metabaseUrl) {
 //
@@ -479,7 +488,6 @@ public class ReporteBean implements Serializable {
 //                .compact();
 //        return metabaseUrl + "/embed/dashboard/" + jwtToken+ "#bordered=true&titled=true";
 //    }
-
     /**
      * @return the inicio
      */

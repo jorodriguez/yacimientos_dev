@@ -269,6 +269,12 @@ public class OrdenBean implements Serializable {
     @Getter
     @Setter
     private List<OrdenVO> ocs;
+    @Getter
+    @Setter
+    private List<OrdenVO> ordenesTareaAF;
+    @Getter
+    @Setter
+    private List<OrdenVO> ordenesTareaPS;
 
     public OrdenBean() {
     }
@@ -281,6 +287,8 @@ public class OrdenBean implements Serializable {
         setOrdenActual(null);
         notaOrdenBean.setFiltrar(false);
         llenarCompras();
+        ordenesTareaAF = new ArrayList<>();
+        ordenesTareaPS = new ArrayList<>();
     }
 
     private void llenarCompras() {
@@ -313,6 +321,9 @@ public class OrdenBean implements Serializable {
         } else {
             ocs = new ArrayList<>();
         }
+
+        ordenesAutorizaTareaAF();
+        ordenesAutorizaTareaOP();
         /*
         mapaOrdenes.put("vobo", ordenServicioRemoto.getOrdenesApruebaGerenciaSolicitante(usuarioBean.getUsuarioConectado().getId(),
                 usuarioBean.getUsuarioConectado().getApCampo().getId()));
@@ -730,7 +741,6 @@ public class OrdenBean implements Serializable {
 
     public void ordenesAutorizaTareaAF() {
         try {
-            List<OrdenVO> lo = new ArrayList<>();
             OrdenVO o;
             List<Object[]> l = this.ordenServicioRemoto.getOrdenesAutorizadasCompras(this.usuarioBean.getUsuarioConectado().getId(), this.usuarioBean.getUsuarioConectado().getApCampo().getId(),
                     TipoRequisicion.AF.name());
@@ -748,7 +758,7 @@ public class OrdenBean implements Serializable {
                 o.setMoneda((String) objects[9]);
                 o.setSuperaMonto((Boolean) objects[10]);
                 o.setSelected(false);
-                lo.add(o);
+                ordenesTareaAF.add(o);
             }
 
             //mapaOrdenes.put("autorizaTareaAF", lo);
@@ -759,7 +769,6 @@ public class OrdenBean implements Serializable {
 
     public void ordenesAutorizaTareaOP() {
         try {
-            List<OrdenVO> lo = new ArrayList<>();
             OrdenVO o;
             List<Object[]> l = this.ordenServicioRemoto.getOrdenesAutorizadasCompras(this.usuarioBean.getUsuarioConectado().getId(), this.usuarioBean.getUsuarioConectado().getApCampo().getId(),
                     TipoRequisicion.PS.name());
@@ -777,7 +786,7 @@ public class OrdenBean implements Serializable {
                 o.setMoneda((String) objects[9]);
                 o.setSuperaMonto((Boolean) objects[10]);
                 o.setSelected(false);
-                lo.add(o);
+                ordenesTareaPS.add(o);
             }
             //  mapaOrdenes.put("autorizaTareaOP", lo);
         } catch (Exception ex) {

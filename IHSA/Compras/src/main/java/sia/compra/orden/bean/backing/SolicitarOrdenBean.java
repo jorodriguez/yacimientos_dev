@@ -69,8 +69,8 @@ public class SolicitarOrdenBean implements Serializable {
     }
     @Inject
     private UsuarioBean sesion;
-    @ManagedProperty(value = "#{proveedorBean}")
-    private ProveedorBean proveedorBean; // = (ProveedorBean) FacesUtilsBean.getManagedBean("proveedorBean");
+    @Inject
+    ProveedorBean proveedorBean; // = (ProveedorBean) FacesUtilsBean.getManagedBean("proveedorBean");
 
     //
     @Inject

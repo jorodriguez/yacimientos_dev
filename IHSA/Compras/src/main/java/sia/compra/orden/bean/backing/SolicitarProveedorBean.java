@@ -94,6 +94,8 @@ public class SolicitarProveedorBean implements Serializable {
         for (GeneralVo generalVo : lg) {
             listaTerminoPago.add(new SelectItem(generalVo.getValor(), generalVo.getNombre()));
         }
+        proveedorVo= new ProveedorVo();
+        proveedorVo.setContactos(new ArrayList<>());
     }
 
     public void agregarProveedor() {
@@ -213,14 +215,15 @@ public class SolicitarProveedorBean implements Serializable {
         }
         pvClasificacionArchivoImpl.guardar(usuarioBean.getUsuarioConectado().getId(), ltemp, proveedorVo.getIdProveedor());
         //
-        proveedorVo.setLstDocsProveedor(new ArrayList<ProveedorDocumentoVO>());
+        proveedorVo.setLstDocsProveedor(new ArrayList<>());
         proveedorVo.getLstDocsProveedor().addAll(pvClasificacionArchivoImpl.traerArchivoPorProveedorOid(idProveedor, Constantes.CERO));
         PrimeFaces.current().executeScript(";cerrarDialogoModal(dialogoAgregarDoctoProv);");
     }
 
-    public void agregarArchivoDocto() {
+    public void agregarArchivoDocto(ProveedorDocumentoVO pvDocto) {
         try {
             tipoDoctoSubir = 2;
+            proveedorDocumentoVO = pvDocto;
             String metodo = ";abrirDialogoModal(adjuntarArchivo);";
             PrimeFaces.current().executeScript(metodo);
         } catch (Exception e) {
@@ -229,21 +232,21 @@ public class SolicitarProveedorBean implements Serializable {
         }
     }
 
-    public void eliminarProveedorDocumento() {
+    public void eliminarProveedorDocumento(ProveedorDocumentoVO pvDocto) {
         try {
-            pvClasificacionArchivoImpl.eliminar(usuarioBean.getUsuarioConectado().getId(), proveedorDocumentoVO.getId());
-            proveedorVo.getLstDocsProveedor().remove(proveedorDocumentoVO);
+            pvClasificacionArchivoImpl.eliminar(usuarioBean.getUsuarioConectado().getId(), pvDocto.getId());
+            proveedorVo.getLstDocsProveedor().remove(pvDocto);
         } catch (NumberFormatException e) {
             UtilLog4j.log.fatal(e);
         }
     }
 
-    public void quitarSoloArchivoDocumento() {
+    public void quitarSoloArchivoDocumento(ProveedorDocumentoVO pvDocto) {
         try {
-            siAdjuntoImpl.eliminarArchivo(proveedorDocumentoVO.getAdjuntoVO().getId(), usuarioBean.getUsuarioConectado().getId());
-            pvClasificacionArchivoImpl.quitarArchivoDocumento(usuarioBean.getUsuarioConectado().getId(), proveedorDocumentoVO.getId());
+            siAdjuntoImpl.eliminarArchivo(pvDocto.getAdjuntoVO().getId(), usuarioBean.getUsuarioConectado().getId());
+            pvClasificacionArchivoImpl.quitarArchivoDocumento(usuarioBean.getUsuarioConectado().getId(), pvDocto.getId());
             //
-            proveedorVo.setLstDocsProveedor(new ArrayList<ProveedorDocumentoVO>());
+            proveedorVo.setLstDocsProveedor(new ArrayList<>());
             proveedorVo.getLstDocsProveedor().addAll(pvClasificacionArchivoImpl.traerArchivoPorProveedorOid(proveedorVo.getIdProveedor(), Constantes.CERO));
         } catch (NumberFormatException e) {
             UtilLog4j.log.fatal(this, e);

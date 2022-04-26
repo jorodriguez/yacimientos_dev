@@ -11,23 +11,19 @@
         <h:outputText value="#{msgs['sistema.fecha.fin']}" />
         <p:datePicker value="#{reporteBean.fin}" pattern="dd/MM/yyyy"/>
         <p:panel >
-            <h:selectOneRadio id="radioPanel" value="#{reporteBean.panelSeleccion}" 
-
-                              valueChangeListener="#{reporteBean.limpiarLista}">
+            <h:selectOneRadio value="#{reporteBean.panelSeleccion}" >
                 <f:selectItem itemValue="TODO" itemLabel="Todas"/>
                 <f:selectItem itemValue="GERENCIA" itemLabel="Gerencia"/>
             </h:selectOneRadio>
+            <p:commandLink value="#{msgs['sistema.buscar']}" 
+                           rendered="#{reporteBean.panelSeleccion eq 'TODO'}"
+                           action="#{reporteBean.traerOCSGerencia}"
+                           styleClass="btn btn-sm btn-primary"
+                           update="frmRep:tbReportes" process="@form"/>
         </p:panel>
-        <p:commandLink value="#{msgs['sistema.buscar']}" 
-                       rendered="#{reporteBean.panelSeleccion eq 'TODO'}"
-                       action="#{reporteBean.traerOCSGerencia}"
-                       styleClass="btn btn-sm btn-info"
-                       style="float: right;"
-                       onclick="return validaBuscar('frmReporteOCSGerencia\\:inicio', 'frmReporteOCSGerencia\\:fin');"
-                       update="frmReporteOCSGerencia" process="@form"/>
 
     </p:panel>     
-    <!--<!-- selectedPanel="#{reporteBean.panelSeleccion}" -->
+    <!-- selectedPanel="#{reporteBean.panelSeleccion}" -->
     <p:panel >
         <h:panelGroup id="TODO">
             <div id="graficaOrdenPorGerencia" style="min-width: 900px; height: 400px; margin: 0 auto;" ></div>
@@ -37,24 +33,20 @@
         </h:panelGroup>
         <h:panelGroup id="GERENCIA" style="width: 100%;" styleClass="bordePanelGrid">
             <br/>
-            <p:panel  style="margin-left: 20%;">
+            <p:panel >
                 #{msgs['orden.gerencia.nombre']}
-                <h:selectOneMenu value="#{reporteBean.idGerencia}" 
-                                 style="width: 200px;" >                    
-                    <f:selectItems value="#{reporteBean.listaGerencia}"/>
+                <h:selectOneMenu value="#{reporteBean.idGerencia}" styleClass="custom-select">                    
+                    <f:selectItems value="#{reporteBean.listaGerencias}"/>
                 </h:selectOneMenu>
                 <p:commandLink value="#{msgs['sistema.buscar']}" action="#{reporteBean.traerOCSGerencia}" 
-                               styleClass="btn btn-sm btn-info"
-                               onclick="return validaBuscar('frmReporteOCSGerencia\\:inicio', 'frmReporteOCSGerencia\\:fin');"
-                               process="@this" update="frmReporteOCSGerencia"/>
+                               styleClass="btn btn-sm btn-primary"                               
+                               process="@this" update="frmRep"/>
             </p:panel> 
             <p:panel style="margin-top: 20px;"  >
                 <ui:include src="reportePorGerencia.xhtml"/>
             </p:panel>
         </h:panelGroup>        
     </p:panel>   
-    <p:commandLink id="btnLimpiar" value="#{msgs['orden.boton.limpiar']}" style="display: none" action="#{reporteBean.limiarLista}" 
-                   styleClass="compartir"/>
 
 
 </ui:composition>
