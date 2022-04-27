@@ -13,9 +13,6 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 
-
-
-
 import javax.faces.event.ValueChangeEvent;
 import javax.faces.model.DataModel;
 import javax.faces.model.SelectItem;
@@ -141,13 +138,8 @@ public class DevolverOrdenCompraBean implements Serializable {
         listaUsuarios = usuarioImpl.getActivos();
     }
 
-    public void cambiarSeleccionCampo(ValueChangeEvent valueChangeEvent) {
-        Integer var = (Integer) valueChangeEvent.getNewValue();
-        if (var != null) {
-            setIdCampo(var);
-            UtilLog4j.log.info(this, "campo: " + getIdCampo());
-        }
-
+    public void cambiarSeleccionCampo() {
+        UtilLog4j.log.info(this, "campo: " + getIdCampo());
     }
 
     public void buscarOrden() {
