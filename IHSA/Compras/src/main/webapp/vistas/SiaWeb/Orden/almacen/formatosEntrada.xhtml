@@ -5,7 +5,7 @@
       xmlns:p="http://primefaces.org/ui"
       xmlns:f="http://xmlns.jcp.org/jsf/core"
       xmlns:h="http://xmlns.jcp.org/jsf/html"
-      
+
       >
     <body>
         <ui:composition template="./../../templates/template.xhtml">
@@ -13,7 +13,7 @@
                 Formatos de entrada a almacén
             </ui:define>
             <ui:define name="contenido">
-                <h:form>
+                <h:form id="form1">
                     <div class="row">
                         Todos los filtros para la tabla de abajo
                     </div>
@@ -24,39 +24,39 @@
                         <p:datePicker   value="#{formatoEntradaBean.fin}" pattern="dd/MM/yyyy">
 
                         </p:datePicker>
-                        <p:commandLink value="Buscar" styleClass="btn  btn-primary" action="#{formatoEntradaBean.buscarPorFechas(e)}"/>
+                        <p:commandLink value="Buscar" styleClass="btn  btn-primary" 
+                                       action="#{formatoEntradaBean.buscarPorFechas}"
+                                       process="@this" update="form1:tblFormatos"/>
                     </div>
                     <div class="row">
-                        <div class="table table-responsive">
-                            <p:dataTable size="small" stripedRows="true" showGridlines="true" id="tblFormatos" value="#{formatoEntradaBean.formatos}" var="dataF" paginator="true" paginatorAlwaysVisible="true" paginatorPosition="bottom">
-                                <p:column headerText="Compra" filterBy="#{dataF.orden}" filterMatchMode="contains">
-                                    <h:outputText value="#{dataF.orden}"/>
-                                </p:column>
-                                <p:column headerText="Pedido">
-                                    <h:outputText value="#{dataF.pedido}"/>
-                                </p:column>
-                                <p:column headerText="Proveedor">
-                                    <h:outputText value="#{dataF.proveedor}"/>
-                                </p:column>
-                                <p:column headerText="Referencia">
-                                    <h:outputText value="#{dataF.referencia}"/>
-                                </p:column>
-                                <p:column headerText="Fecha">
-                                    <h:outputText value="#{dataF.fechaGenero}">
-                                        <f:convertDateTime pattern="dd/MM/yyyy"/>
-                                    </h:outputText>
-                                </p:column>
-                                <p:column headerText="Archivo">
-                                    <h:outputLink target="_blank"  value="/Compras/AbrirArchivo?ZWZ2W=#{dataF.idAdjunto}&amp;ZWZ3W=#{dataF.uuId}"
-                                                  >
-                                        <h:outputText value=" Abrir"/>
-                                    </h:outputLink>
-                                </p:column>
-                            </p:dataTable>
-                        </div> 
-                        <p:dataExporter fileName="formatosEntrada" target="tblFormatos" type="xls" >
-                            Exportar
-                        </p:dataExporter>
+                        <p:dataTable size="small" stripedRows="true" showGridlines="true" id="tblFormatos" value="#{formatoEntradaBean.formatos}" var="dataF" paginator="true" paginatorAlwaysVisible="true" paginatorPosition="bottom">
+                            <p:column headerText="Compra" filterBy="#{dataF.orden}" filterMatchMode="contains">
+                                <h:outputText value="#{dataF.orden}"/>
+                            </p:column>
+                            <p:column headerText="Pedido">
+                                <h:outputText value="#{dataF.pedido}"/>
+                            </p:column>
+                            <p:column headerText="Proveedor">
+                                <h:outputText value="#{dataF.proveedor}"/>
+                            </p:column>
+                            <p:column headerText="Referencia">
+                                <h:outputText value="#{dataF.referencia}"/>
+                            </p:column>
+                            <p:column headerText="Fecha">
+                                <h:outputText value="#{dataF.fechaGenero}">
+                                    <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                </h:outputText>
+                            </p:column>
+                            <p:column headerText="Archivo">
+                                <h:outputLink target="_blank"  value="/Compras/AbrirArchivo?ZWZ2W=#{dataF.idAdjunto}&amp;ZWZ3W=#{dataF.uuId}"
+                                              >
+                                    <h:outputText value=" Abrir"/>
+                                </h:outputLink>
+                            </p:column>
+                        </p:dataTable>
+                        <p:commandButton value="Exportar">
+                            <p:dataExporter fileName="formatosEntrada" target="tblFormatos" type="xls" />
+                        </p:commandButton>
                     </div> 
                 </h:form>
             </ui:define>
