@@ -12,6 +12,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Properties;
 import java.util.TreeMap;
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Inject;
@@ -21,6 +22,7 @@ import javax.faces.context.FacesContext;
 import javax.faces.model.DataModel;
 import javax.inject.Named;
 import javax.naming.NamingException;
+import javax.servlet.http.HttpSession;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -45,6 +47,8 @@ import sia.servicios.sistema.vo.MenuSiOpcionVo;
 import sia.servicios.sistema.vo.SiModuloVo;
 import sia.servicios.usuario.impl.RhTipoGerenciaImpl;
 import sia.sistema.bean.support.FacesUtils;
+import sia.util.Env;
+import sia.util.SessionUtils;
 
 /**
  *
@@ -56,6 +60,13 @@ import sia.sistema.bean.support.FacesUtils;
 public class Sesion implements Serializable {
 
     public static final long serialVersionUID = 1L;
+
+    public static final String LOGIN = "login";
+    public static final String MAIN = "index";
+    public static final String USER = "user";
+
+    @Getter
+    private Properties ctx;
 
     @Inject
     private UsuarioImpl usuarioImpl;
@@ -85,36 +96,41 @@ public class Sesion implements Serializable {
     private final Calendar calendario = Calendar.getInstance();
     private final Date fecha = calendario.getTime();
     private Usuario usuario;
+
     @Getter
     @Setter
     private UsuarioVO usuarioVo;
+
     @Getter
     @Setter
     private UsuarioVO usuarioVoAlta;
+
     @Getter
     @Setter
     private int idGerencia;
+
     @Getter
     @Setter
     private int idCampo;
+
     private String u, c;
     private boolean olvidoClave;
     private boolean visible = true;
 
     private String rfcCompania;
     private List<SiModuloVo> listaModulo;
+
     @Getter
     @Setter
     private List<CampoUsuarioPuestoVo> camposPorUsuario;
+
     @Getter
     @Setter
     private List<MenuSiOpcionVo> listaMenu;
+
     @Getter
     @Setter
     private DataModel lista;
-
-    public Sesion() {
-    }
 
     public String login() {
         String accion = Constantes.VACIO;
@@ -162,6 +178,16 @@ public class Sesion implements Serializable {
                         setC(Constantes.VACIO);
                         log.info("USUARIO CONECTADO : {}", usuario.getId());
                         traerCampo();
+
+                        HttpSession session = SessionUtils.getSession();
+                        session.setAttribute(USER, usuario);
+
+                        ctx = new Properties();
+
+                        Env.setContext(ctx, Env.SESSION_ID, session.getId());
+                        Env.setContext(ctx, Env.CLIENT_INFO, SessionUtils.getClientInfo(SessionUtils.getRequest()));
+                        Env.setContext(ctx, Env.PUNTO_ENTRADA, "Sia");
+
                     } else {
                         FacesUtils.addInfoMessage("Usuario o contraseña es incorrecta.");
                         setUsuarioVoAlta(null);
@@ -173,7 +199,7 @@ public class Sesion implements Serializable {
 
                 }
             }
-        } catch (NoSuchAlgorithmException | NamingException e) {
+        } catch (NoSuchAlgorithmException e) {
             log.error(Constantes.VACIO, e);
 
             setUsuario(null);
@@ -347,7 +373,7 @@ public class Sesion implements Serializable {
 
     }
 
-    public void cerrarSesion() {
+    public String cerrarSesion() {
         log.info("CERRO SESION : {}", usuario.getId());
         usuario = null;
         setU(Constantes.VACIO);
@@ -355,7 +381,9 @@ public class Sesion implements Serializable {
         setUsuarioVo(null);
         setUsuarioVoAlta(null);
         setCamposPorUsuario(null);
-        PrimeFaces.current().executeScript(";refrescar();");
+        SessionUtils.getSession().removeAttribute(USER);
+
+        return LOGIN;
     }
 
     public void traerCampo() {
@@ -536,7 +564,13 @@ public class Sesion implements Serializable {
         this.rfcCompania = rfcCompania;
     }
 
-    private boolean autenticarAD() throws NamingException {
+    /**
+     * Autenticar al usuario contra Active Directory
+     *
+     * @return true si el usuario fue encontraro y la contraseña fue válida, false en caso
+     * contrario.
+     */
+    private boolean autenticarAD() {
         boolean retVal = false;
         log.info("Autenticando contra Directorio ....");
 
@@ -545,11 +579,15 @@ public class Sesion implements Serializable {
         if (Strings.isNullOrEmpty(directorio)) {
             throw new IllegalStateException("No está configurado el directorio para autenticación de usuarios.");
         } else {
-            //Creating instance of ActiveDirectory, if it doesn't blows up, then the user/pass are the right ones
-            ActiveDirectory activeDirectory = new ActiveDirectory(getU(), getC(), directorio);
-            activeDirectory.closeLdapConnection();
+            try {
+                //Creating instance of ActiveDirectory, if it doesn't blows up, then the user/pass are the right ones
+                ActiveDirectory activeDirectory = new ActiveDirectory(getU(), getC(), directorio);
+                activeDirectory.closeLdapConnection();
 
-            retVal = true;
+                retVal = true;
+            } catch (NamingException e) {
+                log.warn("*** Al validar contra AD ...", e);
+            }
         }
 
         return retVal;

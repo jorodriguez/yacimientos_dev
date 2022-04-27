@@ -137,7 +137,10 @@ public class FacesUtils {
      * @param msg      the information message
      */
     public static void addInfoMessage(String clientId, String msg) {
-        FacesContext.getCurrentInstance().addMessage(clientId, new FacesMessage(FacesMessage.SEVERITY_INFO, msg, msg));
+        FacesContext.getCurrentInstance().addMessage(
+                clientId, 
+                new FacesMessage(FacesMessage.SEVERITY_INFO, msg, msg)
+        );
     }
 
     /**
