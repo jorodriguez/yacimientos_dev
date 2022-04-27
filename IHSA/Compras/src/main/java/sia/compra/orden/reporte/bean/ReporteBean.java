@@ -5,8 +5,10 @@
 package sia.compra.orden.reporte.bean;
 
 import java.io.Serializable;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -79,8 +81,12 @@ public class ReporteBean implements Serializable {
     @Inject
     private SiaMetabaseImpl siaMetabaseImpl;
     //
-    private String inicio;
-    private String fin = Constantes.FMT_ddMMyyy.format(new Date());
+    @Getter
+    @Setter
+    private LocalDate inicio;
+    @Getter
+    @Setter
+    private LocalDate fin;
     private boolean autorizada = true;
     private List<?> lista = null;
     private List<?> listaR = null;
@@ -136,6 +142,7 @@ public class ReporteBean implements Serializable {
         geres.stream().forEach(ger -> {
             listaGerencias.add(new SelectItem(ger.getId(), ger.getNombre()));
         });
+        panelSeleccion = "TODO";
     }
 
     public void onTabChange(TabChangeEvent event) {
@@ -149,6 +156,12 @@ public class ReporteBean implements Serializable {
             case "Proveedores":
                 llenarMoneda();
                 break;
+            case "Ordenes por proveedor":
+                panelSeleccion = "TODOS";
+                break;
+            case "Estadística":
+                indiceTab = 1;
+                break;
             default:
                 break;
         }
@@ -160,8 +173,8 @@ public class ReporteBean implements Serializable {
         setListaR(null);
     }
 
-    public void limiarListaEntregada() {
-        inicio = Constantes.FMT_ddMMyyy.format(new Date());
+    public void limpiarListaEntregada() {
+        inicio = LocalDate.now();
         setLista(null);
         setListaR(null);
         setOpcioSeleccionada(1);
@@ -172,7 +185,7 @@ public class ReporteBean implements Serializable {
     }
 
     public void traerDatosComprador() {
-        List<OrdenVO> lo = autorizacionesOrdenImpl.traerOrdenComprador(getInicio(), getFin(), Constantes.BOOLEAN_FALSE, usuarioBean.getUsuarioConectado().getApCampo().getId());
+        List<OrdenVO> lo = autorizacionesOrdenImpl.traerOrdenComprador(getInicio().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")), getFin().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")), Constantes.BOOLEAN_FALSE, usuarioBean.getUsuarioConectado().getApCampo().getId());
         JSONObject j = new JSONObject();
         String json;
         List<String> u = new ArrayList<>();
@@ -192,7 +205,7 @@ public class ReporteBean implements Serializable {
         j.put("totalDolar", totalDolar);
         json = j.toString();
         //      
-        PrimeFaces.current().executeScript(";llenarDatosCompradores(" + json + ",'" + getInicio() + "','" + getFin() + "'," + isAutorizada() + ");");
+        PrimeFaces.current().executeScript(";llenarDatosCompradores(" + json + ",'" + getInicio() + "','" + getFin().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) + "'," + isAutorizada() + ");");
     }
 
     public void buscarRequicion() {
@@ -257,7 +270,7 @@ public class ReporteBean implements Serializable {
 
     public void traerOCSGerencia() {
         if (getPanelSeleccion().equals("TODO")) {
-            List<OrdenVO> lo = autorizacionesOrdenImpl.traerOrdenGerencia(getInicio(), getFin(), !isAutorizada(), usuarioBean.getUsuarioConectado().getApCampo().getId(), Constantes.ORDENES_SIN_APROBAR);
+            List<OrdenVO> lo = autorizacionesOrdenImpl.traerOrdenGerencia(getInicio().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")), getFin().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")), !isAutorizada(), usuarioBean.getUsuarioConectado().getApCampo().getId(), Constantes.ORDENES_SIN_APROBAR);
             JSONObject j = new JSONObject();
             String json;
             List<String> u = new ArrayList<>();
@@ -274,12 +287,12 @@ public class ReporteBean implements Serializable {
                 j.put("total", total);
                 j.put("totalDolar", totalDolar);
                 json = j.toString();
-                PrimeFaces.current().executeScript(";llenarDatosOCSGerencia(" + json + ",'" + getInicio() + "','" + getFin() + "'," + isAutorizada() + ");");
+                PrimeFaces.current().executeScript(";llenarDatosOCSGerencia(" + json + ",'" + getInicio().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) + "','" + getFin().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) + "'," + isAutorizada() + ");");
                 lista = lo;
             }
 
         } else { // por gerencia
-            lista = autorizacionesOrdenImpl.traerOrdenPorGerencia(getInicio(), getFin(), !isAutorizada(), usuarioBean.getUsuarioConectado().getApCampo().getId(), Constantes.ORDENES_SIN_APROBAR, getIdGerencia());
+            lista = autorizacionesOrdenImpl.traerOrdenPorGerencia(getInicio().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")), getFin().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")), !isAutorizada(), usuarioBean.getUsuarioConectado().getApCampo().getId(), Constantes.ORDENES_SIN_APROBAR, getIdGerencia());
         }
     }
 
@@ -296,26 +309,26 @@ public class ReporteBean implements Serializable {
     }
 
     public void traerOCSPorGerencia() {
-        List<OrdenVO> lo = autorizacionesOrdenImpl.traerOrdenPorGerencia(getInicio(), getFin(), isAutorizada(), usuarioBean.getUsuarioConectado().getApCampo().getId(), Constantes.ORDENES_SIN_APROBAR, getIdGerencia());
+        List<OrdenVO> lo = autorizacionesOrdenImpl.traerOrdenPorGerencia(getInicio().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")), getFin().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")), isAutorizada(), usuarioBean.getUsuarioConectado().getApCampo().getId(), Constantes.ORDENES_SIN_APROBAR, getIdGerencia());
         lista = lo;
     }
 
     public void traerOCSProveedor() {
         List<OrdenVO> lo = null;
-        if (getPanelSeleccion().equals(Constantes.PALABRA_TODO)) {
-            lo = autorizacionesOrdenImpl.traerOrdenPorProveedor(getInicio(), getFin(), usuarioBean.getUsuarioConectado().getApCampo().getId(), Constantes.ESTATUS_AUTORIZADA);
+        if (getPanelSeleccion().equals("TODOS")) {
+            lo = autorizacionesOrdenImpl.traerOrdenPorProveedor(getInicio().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")), getFin().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")), usuarioBean.getUsuarioConectado().getApCampo().getId(), Constantes.ESTATUS_AUTORIZADA);
         } else {
             if (getEstadoOrden().equals(Constantes.ENVIADA_PROVEEDOR)) {
-                lo = autorizacionesOrdenImpl.traerOrdenPorProveedor(getInicio(), getFin(), usuarioBean.getUsuarioConectado().getApCampo().getId(), Constantes.ESTATUS_AUTORIZADA, getIdProveedor(), getEstadoOrden());
+                lo = autorizacionesOrdenImpl.traerOrdenPorProveedor(getInicio().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")), getFin().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")), usuarioBean.getUsuarioConectado().getApCampo().getId(), Constantes.ESTATUS_AUTORIZADA, getIdProveedor(), getEstadoOrden());
             } else {
-                lo = autorizacionesOrdenImpl.traerOrdenPorProveedor(getInicio(), getFin(), usuarioBean.getUsuarioConectado().getApCampo().getId(), Constantes.ORDENES_SIN_APROBAR, getIdProveedor(), getEstadoOrden());
+                lo = autorizacionesOrdenImpl.traerOrdenPorProveedor(getInicio().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")), getFin().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")), usuarioBean.getUsuarioConectado().getApCampo().getId(), Constantes.ORDENES_SIN_APROBAR, getIdProveedor(), getEstadoOrden());
             }
         }
         lista = lo;
     }
 
     public void traerOCSProveedorContrato() {
-        List<OrdenVO> lo = autorizacionesOrdenImpl.traerOrdenPorProveedorContrato(getInicio(), getFin(), usuarioBean.getUsuarioConectado().getApCampo().getId(), getConContrato(), Constantes.ORDENES_SIN_SOLICITAR, Constantes.OCS_PROCESO, getIdMoneda());
+        List<OrdenVO> lo = autorizacionesOrdenImpl.traerOrdenPorProveedorContrato(getInicio().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")), getFin().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")), usuarioBean.getUsuarioConectado().getApCampo().getId(), getConContrato(), Constantes.ORDENES_SIN_SOLICITAR, Constantes.OCS_PROCESO, getIdMoneda());
 
         lista = lo;
     }
@@ -329,13 +342,13 @@ public class ReporteBean implements Serializable {
     }
 
     public void traerOCSMovimiento() {
-        List<OrdenVO> lo = ordenSiMovimientoImpl.ordenesRechadas(getInicio(), getFin(), getIdStatus(), usuarioBean.getUsuarioConectado().getApCampo().getId());
+        List<OrdenVO> lo = ordenSiMovimientoImpl.ordenesRechadas(getInicio().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")), getFin().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")), getIdStatus(), usuarioBean.getUsuarioConectado().getApCampo().getId());
         lista = lo;
     }
 
     public void traerOCSSolDev() {
         try {
-            List<OrdenVO> lo = autorizacionesOrdenImpl.traerSolDevCan(Constantes.ID_SI_OPERACION_DEVOLVER, Constantes.ID_SI_OPERACION_CANCELAR, usuarioBean.getUsuarioConectado().getApCampo().getId(), getInicio(), getFin());
+            List<OrdenVO> lo = autorizacionesOrdenImpl.traerSolDevCan(Constantes.ID_SI_OPERACION_DEVOLVER, Constantes.ID_SI_OPERACION_CANCELAR, usuarioBean.getUsuarioConectado().getApCampo().getId(), getInicio().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")), getFin().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
             JSONObject j = new JSONObject();
             String json;
             List<String> u = new ArrayList<>();
@@ -357,7 +370,8 @@ public class ReporteBean implements Serializable {
             j.put("totalCan", totalCan);
             json = j.toString();
 //            System.out.println("Cad : sol dev can : : " + json.toString());
-            PrimeFaces.current().executeScript(";graficaOCSSolDevCan(" + json + ",'" + getInicio() + "','" + getFin() + "');");
+            PrimeFaces.current().executeScript(";graficaOCSSolDevCan(" + json + ",'" + getInicio().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) + "','" + getFin().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) + "');");
+            indiceTab = 0;
         } catch (JSONException ex) {
             UtilLog4j.log.fatal(this, "Ocurrio una excepción en las OC/S dev y canceladas : : : : : : : " + ex.getMessage());
         }
@@ -367,13 +381,13 @@ public class ReporteBean implements Serializable {
         UsuarioVO uvo = usuarioImpl.findByName(getNombreUsuario());
         switch (indiceTab) {
             case 1:
-                lista = autorizacionesOrdenImpl.traerOrdenSolicitadaPorUsuario(usuarioBean.getUsuarioConectado().getApCampo().getId(), Constantes.ORDENES_SIN_SOLICITAR, uvo.getId(), getInicio(), getFin());
+                lista = autorizacionesOrdenImpl.traerOrdenSolicitadaPorUsuario(usuarioBean.getUsuarioConectado().getApCampo().getId(), Constantes.ORDENES_SIN_SOLICITAR, uvo.getId(), getInicio().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")), getFin().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
                 break;
             case 2:
-                lista = ordenSiMovimientoImpl.ordenesPorUsuario(Constantes.ID_SI_OPERACION_DEVOLVER, usuarioBean.getUsuarioConectado().getApCampo().getId(), uvo.getId(), getInicio(), getFin());
+                lista = ordenSiMovimientoImpl.ordenesPorUsuario(Constantes.ID_SI_OPERACION_DEVOLVER, usuarioBean.getUsuarioConectado().getApCampo().getId(), uvo.getId(), getInicio().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")), getFin().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
                 break;
             case 3:
-                lista = ordenSiMovimientoImpl.ordenesPorUsuario(Constantes.ID_SI_OPERACION_CANCELAR, usuarioBean.getUsuarioConectado().getApCampo().getId(), uvo.getId(), getInicio(), getFin());
+                lista = ordenSiMovimientoImpl.ordenesPorUsuario(Constantes.ID_SI_OPERACION_CANCELAR, usuarioBean.getUsuarioConectado().getApCampo().getId(), uvo.getId(), getInicio().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")), getFin().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")).toString());
                 break;
             default:
                 break;
@@ -436,7 +450,7 @@ public class ReporteBean implements Serializable {
 
     public void buscarOcsEntregadas() {
         try {
-            lista = autorizacionesOrdenImpl.ordenesPorFechaEntrega(usuarioBean.getUsuarioConectado().getApCampo().getId(), inicio, getOpcioSeleccionada());
+            lista = autorizacionesOrdenImpl.ordenesPorFechaEntrega(usuarioBean.getUsuarioConectado().getApCampo().getId(), inicio.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")), getOpcioSeleccionada());
         } catch (Exception ex) {
             UtilLog4j.log.fatal(this, "Ocurrio una excepción en las OC/S dev y canceladas : : : : : : : " + ex.getMessage());
         }
@@ -491,31 +505,6 @@ public class ReporteBean implements Serializable {
     /**
      * @return the inicio
      */
-    public String getInicio() {
-        return inicio;
-    }
-
-    /**
-     * @param inicio the inicio to set
-     */
-    public void setInicio(String inicio) {
-        this.inicio = inicio;
-    }
-
-    /**
-     * @return the fin
-     */
-    public String getFin() {
-        return fin;
-    }
-
-    /**
-     * @param fin the fin to set
-     */
-    public void setFin(String fin) {
-        this.fin = fin;
-    }
-
     /**
      * @return the autorizada
      */

@@ -5,48 +5,37 @@
                 xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
                 xmlns:h="http://xmlns.jcp.org/jsf/html"
                 >
-    <p:panel  >
+    <p:panel id="pnlProv">
         <h:outputText value="Inicio"/>
         <p:datePicker value="#{reporteBean.inicio}" pattern="dd/MM/yyyy"/>
         <h:outputText value="Fin" />
         <p:datePicker value="#{reporteBean.fin}" pattern="dd/MM/yyyy"/>           
-    </p:panel>
-    <p:panel >
-        <h:selectOneRadio  value="#{reporteBean.panelSeleccion}"  
-                          valueChangeListener="#{reporteBean.limpiarLista}">
+        <p:selectOneRadio  value="#{reporteBean.panelSeleccion}"  >
             <f:selectItem itemValue="TODOS" itemLabel="Todas"/>
             <f:selectItem itemValue="PROVEE" itemLabel="Proveedor"/>
-        </h:selectOneRadio>
-        <!-- selectedPanel="#{reporteBean.panelSeleccion}" -->
-        <p:panel >
-            <h:panelGroup id="TODOS">
+            <p:ajax event="change" process="@this frmRep:tbReportes:pnlProv" update="frmRep:tbReportes:pnlSelProv"/>             
+        </p:selectOneRadio>
+        <p:panel id="pnlSelProv">
+            <p:panel id="TODOS" rendered="#{reporteBean.panelSeleccion  eq 'TODOS'}">
                 <b>Enviadas a proveedor</b>
-            </h:panelGroup>
-            <h:panelGroup id="PROVEE">
-                <p:panel >
-                    #{msgs['orden.solicita.proveedor']}
-                    <h:inputText id="autocomplete" size="30" style="border-color: green;"/>
-                    <h:selectOneRadio value="#{reporteBean.estadoOrden}">
-                        <f:selectItem itemLabel="#{msgs['sistema.enviada']}" itemValue="ENV"/>
-                        <f:selectItem itemLabel="#{msgs['sistema.en.proceso']}" itemValue="PROCESO"/>
-                    </h:selectOneRadio>
-                </p:panel>
-            </h:panelGroup>
+            </p:panel>
+            <p:panel id="PROVEE" rendered="#{reporteBean.panelSeleccion  eq 'PROVEE'}">
+                #{msgs['orden.solicita.proveedor']}
+                <p:autoComplete id="autocomplete"  style="width: 450px"/>
+                <p:selectOneRadio value="#{reporteBean.estadoOrden}">
+                    <f:selectItem itemLabel="#{msgs['sistema.enviada']}" itemValue="ENV"/>
+                    <f:selectItem itemLabel="#{msgs['sistema.en.proceso']}" itemValue="PROCESO"/>
+                </p:selectOneRadio>
+            </p:panel>
         </p:panel>
+        <p:commandLink value="#{msgs['sistema.buscar']}"
+                       action="#{reporteBean.traerOCSProveedor}" 
+                       styleClass="btn btn-sm btn-info"
+                       process="@this frmRep:tbReportes:pnlProv" update="frmRep:tbReportes"/>
     </p:panel>
-    <p:commandLink value="#{msgs['sistema.buscar']}"
-                   style="float: right;"
-                   action="#{reporteBean.traerOCSProveedor}" 
-                   styleClass="btn btn-sm btn-info"
-                   process="@this" update="frmRep"/>
-    <br/>
-    <p:commandLink id="btnLlenarProveedor" value="LlenarProveedor" style="display: none" action="#{reporteBean.llenarProveedor}" 
-                   styleClass="btn btn-sm btn-info"/>    
-    <p:panel style="text-align: right;" >
+    <p:panel >
         <h:outputText value="#{msgs['orden.por.proveedor']}"/> 
     </p:panel>
-    <br/>
-    <hr/>
     <p:dataTable size="small" stripedRows="true" showGridlines="true" id="dtCompraPorProveedor" value="#{reporteBean.lista}" var="data"
                  rows="20" styleClass="dataPaginatorDataTable" 
                  paginator="true"  
@@ -83,7 +72,7 @@
         </p:column>                        
     </p:dataTable>
 
-    <p:commandButton value="Exportar" styleClass="p-mr-2 p-mb-2"> 
+    <p:commandButton value="Exportar" styleClass="p-mr-2 p-mb-2" process="@this frmRep:tbReportes:dtCompraPorProveedor"> 
         <p:dataExporter fileName="OCSPorProveedor" type="xls" target="dtCompraPorProveedor"/>
     </p:commandButton>
 
