@@ -5,7 +5,7 @@
                 xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
                 xmlns:h="http://xmlns.jcp.org/jsf/html"
                 >
-    <p:panel  >
+    <p:panel  id="pnlFechas">
         <h:outputText value="#{msgs['sistema.fecha.inicio']}"/>
         <p:datePicker value="#{reporteBean.inicio}" pattern="dd/MM/yyyy"/>
         <h:outputText value="#{msgs['sistema.fecha.fin']}" />
@@ -14,35 +14,37 @@
             Solicitadas
         </h:selectBooleanCheckbox>
         <p:commandLink value="Buscar" action="#{reporteBean.traerDatosComprador}" 
-                       styleClass="btn btn-sm btn-info"/>
+                       styleClass="btn btn-primary" process="@this frmRep:tbReportes:pnlFechas" update="frmRep:tbReportes:outPnlAnalista"/>
     </p:panel>
     <p:panel style="text-align: right;" >
         <h:outputText value="#{msgs['orden.solicitada.analista']}"/> 
     </p:panel>
     <br/>
-    <p:commandLink id="btnLimpiar" value="#{msgs['orden.boton.limpiar']}" style="display: none" action="#{reporteBean.limiarLista}" 
-                   styleClass="compartir"/>
     <!--Grafica-->                    
+    <p:outputPanel id="outPnlAnalista">
+        <div id="grafica" style="min-width: 500px; height: 400px; margin: 0 auto; " ></div>
+        <br/>
+        <p:dataTable size="small" stripedRows="true" showGridlines="true" id="dtCompra" value="#{reporteBean.lista}" var="data"
+                     rows="10" styleClass="dataPaginatorDataTable" 
+                     paginator="true"  
+                     paginatorPosition="bottom" 
+                     style="font-size: 1em; width: 50%" >
+            <p:column headerText="#{msgs['orden.comprador.nombre']}" style="text-align: left;">
+                <h:outputText value="#{data.analista}"/>
+            </p:column>
+            <p:column headerText="#{msgs['orden.total.ocs']}" style="text-align: right;">
+                <h:outputText value="#{data.totalOrdenes}"/>
+            </p:column>
+            <p:column headerText="#{msgs['orden.total.dolares']}" style="text-align: right;">
+                <h:outputText value="#{data.totalUsd}">
+                    <f:convertNumber maxFractionDigits="4"/>
+                </h:outputText>
+            </p:column>                        
+        </p:dataTable>  
+        <p:commandButton value="Exportar" styleClass="p-mr-2 p-mb-2" process="@this frmRep:tbReportes:dtCompra"> 
+            <p:dataExporter fileName="Compradores" type="xls" target="dtCompra"/>
+        </p:commandButton>
 
-    <div id="grafica" style="min-width: 500px; height: 400px; margin: 0 auto; " ></div>
-    <br/>
-    <hr/>
-    <p:dataTable size="small" stripedRows="true" showGridlines="true" id="dtCompra" value="#{reporteBean.lista}" var="data"
-                 rows="10" styleClass="dataPaginatorDataTable" 
-                 paginator="true"  
-                 paginatorPosition="bottom" 
-                 style="font-size: 1em; width: 50%" >
-        <p:column headerText="#{msgs['orden.comprador.nombre']}" style="text-align: left;">
-            <h:outputText value="#{data.analista}"/>
-        </p:column>
-        <p:column headerText="#{msgs['orden.total.ocs']}" style="text-align: right;">
-            <h:outputText value="#{data.totalOrdenes}"/>
-        </p:column>
-        <p:column headerText="#{msgs['orden.total.dolares']}" style="text-align: right;">
-            <h:outputText value="#{data.totalUsd}">
-                <f:convertNumber maxFractionDigits="4"/>
-            </h:outputText>
-        </p:column>                        
-    </p:dataTable>
-    <p:dataExporter fileName="Compradores" type="xls" target="dtCompra"/>
+
+    </p:outputPanel>
 </ui:composition>      

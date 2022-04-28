@@ -5,34 +5,31 @@
                 xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
                 xmlns:h="http://xmlns.jcp.org/jsf/html"
                 >
-    <p:panel    >
+    <p:panel   id="pnlOcSt" >
         <h:outputText value="#{msgs['orden.estado']}"/> 
-        <h:selectOneMenu value="#{reporteBean.idStatus}" valueChangeListener="#{reporteBean.recuperaStatus}"
-                           >
-            <f:selectItems value="#{reporteBean.listaStatus}"/>
-        </h:selectOneMenu>
+        <p:selectOneMenu value="#{reporteBean.idStatus}" 
+                         styleClass="custom-select col-2">
+            <f:selectItems value="#{reporteBean.listaEstatus}"/>   
+            <p:ajax event="change" listener="#{reporteBean.llenarRevisa}" update="frmRep:tbReportes:cmbRev"/>
+        </p:selectOneMenu>
         <h:outputText value="#{msgs['orden.usuario.nombre']}"/> 
-        <h:selectOneMenu value="#{reporteBean.idUsuario}">
-            <f:selectItems value="#{reporteBean.listaRevisa}"/>
-        </h:selectOneMenu>
+        <p:selectOneMenu id="cmbRev" value="#{reporteBean.idUsuario}" styleClass="custom-select  col-2">
+            <f:selectItems value="#{reporteBean.listaRevisan}"/>
+        </p:selectOneMenu>
         <p:commandLink value="#{msgs['sistema.buscar']}" 
-		       style="float: right;"
-                       action="#{reporteBean.traerOCSEstado}" styleClass="btn btn-sm btn-info"
-                       update="@form"/>
+                       action="#{reporteBean.traerOCSEstado}" styleClass="btn btn-sm btn-primary" process="@this frmRep:tbReportes:pnlOcSt"
+                       update="frmRep:tbReportes:dtCompraPorStatus"/>
     </p:panel>
     <br/>
-    <p:commandLink id="btnLimpiar" value="#{msgs['orden.boton.limpiar']}" style="display: none" action="#{reporteBean.limiarLista}" 
-                   styleClass="btn btn-sm btn-info"/>
-    <p:panel style="text-align: right;" >
+    <div  style="text-align: right;" >
         <h:outputText value="#{msgs['orden.orden.estatus']}"/> 
-    </p:panel>
+    </div>
     <br/>
     <hr/>
     <p:dataTable size="small" stripedRows="true" showGridlines="true" id="dtCompraPorStatus" value="#{reporteBean.lista}" var="data"
-                   rows="20" styleClass="dataPaginatorDataTable" 
-                   paginator="true"  
-                   paginatorPosition="bottom" 
-                   style="font-size: 1em; width: 95%" >
+                 rows="20" 
+                 paginator="true"  
+                 paginatorPosition="bottom" >
         <p:column headerText="Requisición" style="text-align: left;">
             <h:outputText value="#{data.requisicion}"/>
         </p:column>
@@ -64,6 +61,9 @@
             </h:outputText>
         </p:column>                        
     </p:dataTable>
-    <p:dataExporter fileName="OCSPorProveedor" type="xls" target="dtCompraPorProveedor" />
+
+    <p:commandButton value="Exportar" styleClass="p-mr-2 p-mb-2" process="@this frmRep:tbReportes:dtCompraPorStatus"> 
+        <p:dataExporter fileName="OCSPorProveedor" type="xls" target="dtCompraPorProveedor" />
+    </p:commandButton>
 
 </ui:composition>

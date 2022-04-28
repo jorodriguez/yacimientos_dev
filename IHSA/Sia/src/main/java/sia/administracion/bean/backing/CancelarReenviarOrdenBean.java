@@ -21,6 +21,7 @@ import lombok.Setter;
 import org.primefaces.event.SelectEvent;
 import sia.modelo.Orden;
 import sia.modelo.Usuario;
+import sia.modelo.sgl.vo.OrdenVO;
 import sia.servicios.campo.nuevo.impl.ApCampoUsuarioRhPuestoImpl;
 import sia.servicios.catalogos.impl.UsuarioImpl;
 import sia.servicios.orden.impl.AutorizacionesOrdenImpl;
@@ -211,10 +212,10 @@ public class CancelarReenviarOrdenBean implements Serializable {
     public boolean puedoCancelarRequisicion() {
         boolean cancelar = true;
         try {
-            List<Object[]> l = this.ordenServicioRemoto.getOrdenesPorRequisicion(getOrden().getRequisicion().getId(), "and e.id <> 100");
+            List<OrdenVO> l = this.ordenServicioRemoto.getOrdenesPorRequisicion(getOrden().getRequisicion().getId(), "and e.id <> 100");
             if (!l.isEmpty() && l.size() > 1) {
-                for (Object[] objects : l) {
-                    if (((Integer) objects[0]) != getOrden().getId() && this.ordenServicioRemoto.find((Integer) objects[0]).getAutorizacionesOrden().getEstatus().getId() > 100) {
+                for (OrdenVO objects : l) {
+                    if (objects.getId() != getOrden().getId() && this.ordenServicioRemoto.find(objects.getId()).getAutorizacionesOrden().getEstatus().getId() > 100) {
                         cancelar = false;
                         break;
                     }
