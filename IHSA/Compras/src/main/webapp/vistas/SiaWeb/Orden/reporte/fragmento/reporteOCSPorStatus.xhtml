@@ -5,19 +5,19 @@
                 xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
                 xmlns:h="http://xmlns.jcp.org/jsf/html"
                 >
-    <p:panel    >
+    <p:panel   id="pnlOcSt" >
         <h:outputText value="#{msgs['orden.estado']}"/> 
-        <h:selectOneMenu value="#{reporteBean.idStatus}" 
+        <p:selectOneMenu value="#{reporteBean.idStatus}" 
                          styleClass="custom-select col-2">
-            <f:selectItems value="#{reporteBean.listaEstatus}"/>
-            <f:ajax listener="#{reporteBean.llenarRevisa}" render="frmRep:tbReportes:cbRev"/>
-        </h:selectOneMenu>
+            <f:selectItems value="#{reporteBean.listaEstatus}"/>   
+            <p:ajax event="change" listener="#{reporteBean.llenarRevisa}" update="frmRep:tbReportes:cmbRev"/>
+        </p:selectOneMenu>
         <h:outputText value="#{msgs['orden.usuario.nombre']}"/> 
-        <h:selectOneMenu id="cmbRev" value="#{reporteBean.idUsuario}" styleClass="custom-select  col-2">
+        <p:selectOneMenu id="cmbRev" value="#{reporteBean.idUsuario}" styleClass="custom-select  col-2">
             <f:selectItems value="#{reporteBean.listaRevisan}"/>
-        </h:selectOneMenu>
+        </p:selectOneMenu>
         <p:commandLink value="#{msgs['sistema.buscar']}" 
-                       action="#{reporteBean.traerOCSEstado}" styleClass="btn btn-sm btn-primary" process="frmRep:tbReportes"
+                       action="#{reporteBean.traerOCSEstado}" styleClass="btn btn-sm btn-primary" process="@this frmRep:tbReportes:pnlOcSt"
                        update="frmRep:tbReportes:dtCompraPorStatus"/>
     </p:panel>
     <br/>
@@ -62,7 +62,7 @@
         </p:column>                        
     </p:dataTable>
 
-    <p:commandButton value="Exportar" styleClass="p-mr-2 p-mb-2"> 
+    <p:commandButton value="Exportar" styleClass="p-mr-2 p-mb-2" process="@this frmRep:tbReportes:dtCompraPorStatus"> 
         <p:dataExporter fileName="OCSPorProveedor" type="xls" target="dtCompraPorProveedor" />
     </p:commandButton>
 

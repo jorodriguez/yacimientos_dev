@@ -3,9 +3,8 @@
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:f="http://xmlns.jcp.org/jsf/core"
                 xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
-                xmlns:h="http://xmlns.jcp.org/jsf/html"
-                >
-    <p:panel  >
+                xmlns:h="http://xmlns.jcp.org/jsf/html">
+    <p:panel id="pnlEst" >
         <h:outputText value="#{msgs['sistema.fecha.inicio']}"/>      
         <p:datePicker value="#{reporteBean.inicio}" pattern="dd/MM/yyyy"/>
         <h:message errorClass="errorMessage" fatalClass="fatalMessage" for="inicio" infoClass="infoMessage"
@@ -14,24 +13,23 @@
         <p:datePicker value="#{reporteBean.fin}" pattern="dd/MM/yyyy"/>
         <h:message errorClass="errorMessage" fatalClass="fatalMessage" for="fin" infoClass="infoMessage"
                    style="color: rgb(204, 0, 0);width: 214px" warnClass="warnMessage"/>
+        <p:commandLink value="#{msgs['sistema.buscar']}" action="#{reporteBean.traerOCSSolDev}" 
+                       styleClass="btn btn-sm btn-primary" process="@this frmRep:tbReportes:pnlEst"
+                       update="frmRep:tbReportes:pnlResEst"/>
+        <br/>
+        <h:inputHidden id="hidenComprador" value="#{reporteBean.nombreUsuario}"/>
+        <p:commandLink id="btnPorComprador" value="Buscar" 
+                       action="#{reporteBean.traerOCSComprador}" process="@this frmRep:tbReportes:pnlEst"
+                       style="display: none;" update="frmRep:tbReportes:pnlResEst"/>
     </p:panel>
-    <p:commandLink value="#{msgs['sistema.buscar']}" action="#{reporteBean.traerOCSSolDev}" 
-                   styleClass="btn btn-sm btn-primary" process="frmRep:tbReportes"
-                   update="frmRep:tbReportes:tbEstadistica"/>
-    <br/>
-    <h:inputHidden id="hidenComprador" value="#{reporteBean.nombreUsuario}"/>
-    <p:commandLink id="btnPorComprador" value="Buscar" 
-                   action="#{reporteBean.traerOCSComprador}"
-                   style="display: none;" update="frmRep:tbReportes:tbEstadistica"/>
     <!--Grafica-->                    
     <div id="graficaSolDevCan" style="min-width: 500px; height: 400px; margin: 0 auto;" ></div>
-
-    <p:tabView id="tbEstadistica">
-        <p:tab title="Ordenes de compra">
+    <p:panel id="pnlResEst">             
+        <c:if test="#{reporteBean.indiceTab eq 1}">
             <h:outputLabel value="OC/S Solicitadas" />
             <ui:include src="../../../Orden/reporte/fragmento/tabla/columnaOCSSolicitada.xhtml"/>
-        </p:tab>
-        <p:tab title="Devueltas">
+        </c:if>
+        <c:if test="#{reporteBean.indiceTab eq 2}">
             <h:outputLabel value="OC/S Devueltas" />
             <p:dataTable size="small" stripedRows="true" showGridlines="true" id="dtDevueltas" value="#{reporteBean.lista}" var="data"
                          rows="20" styleClass="dataPaginatorDataTable" 
@@ -45,8 +43,8 @@
             <p:commandButton value="Exportar" styleClass="p-mr-2 p-mb-2"> 
                 <p:dataExporter fileName="dtOCSDevueltas" type="xls" target="dtDevueltas" />
             </p:commandButton>
-        </p:tab>
-        <p:tab title="Canceladas">
+        </c:if>
+        <c:if test="#{reporteBean.indiceTab eq 1}">
             <h:outputLabel value="OC/S Canceladas" />
             <p:dataTable size="small" stripedRows="true" showGridlines="true" id="dtOCSCancelada" value="#{reporteBean.lista}" var="data"
                          rows="20" styleClass="dataPaginatorDataTable" 
@@ -56,9 +54,10 @@
                 <f:facet name="header"><h:outputLabel value="#{reporteBean.nombreUsuario}"/></f:facet>
                 <ui:include src="../../../Orden/reporte/fragmento/tabla/tablaOCSMovimiento.xhtml"/>
             </p:dataTable>
-            <p:commandButton value="Exportar" styleClass="p-mr-2 p-mb-2"> 
+            <p:commandButton value="Exportar" styleClass="p-mr-2 p-mb-2" process="@this frmRep:tbReportes:dtOCSCancelada"> 
                 <p:dataExporter fileName="OCSCancelada" type="xls" target="dtOCSDevueltas" />
             </p:commandButton>
-        </p:tab>
-    </p:tabView>
+
+        </c:if>
+    </p:panel>
 </ui:composition>
