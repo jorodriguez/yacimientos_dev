@@ -5,16 +5,16 @@
                 xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
                 xmlns:h="http://xmlns.jcp.org/jsf/html"
                 >    
-    <div class="row">
-        <h:selectOneRadio value="#{reporteBean.opcioSeleccionada}">
+    <p:panel id="pnlRec">
+        <p:selectOneRadio value="#{reporteBean.opcioSeleccionada}">
             <f:selectItem itemLabel="En proceso de aprobación" itemValue="1"/>
             <f:selectItem itemLabel="Enviada a proveedor" itemValue="2"/>
-        </h:selectOneRadio>
+        </p:selectOneRadio>
         <p:datePicker value="#{reporteBean.inicio}" pattern="dd/MM/yyyy"/>
         <p:commandLink value="Buscar" action="#{reporteBean.buscarOcsEntregadas}" styleClass="btn btn-primary btn-sm"
-                       process="frmRep:tbReportes"
+                       process="@this frmRep:tbReportes:pnlRec"
                        update="frmRep:tbReportes:dtCompraEnt"/>
-    </div>
+    </p:panel>
     <div class="row">
         <p:dataTable size="small" stripedRows="true" showGridlines="true" id="dtCompraEnt" value="#{reporteBean.lista}" var="data"
                      rows="10"  paginator="true"  
@@ -80,7 +80,7 @@
             </p:column>
         </p:dataTable>
 
-        <p:commandButton value="Exportar" styleClass="p-mr-2 p-mb-2"> 
+        <p:commandButton value="Exportar" styleClass="p-mr-2 p-mb-2" process="@this frmRep:tbReportes:dtCompraEnt"> 
             <p:dataExporter fileName="OcsEntregada" type="xls" target="dtCompraEnt" />
         </p:commandButton>
     </div>

@@ -1491,9 +1491,9 @@ function graficaOCSSolDevCan(datos, inicio, fin) {
                     events: {
                         click: function () {
                             var comprador = this.category
-                            cambiarTab("frmOCSSolDevCan", "btnBuscarPorComprador", "hidenTab", 1)
-                            $("#frmOCSSolDevCan\\:" + "hidenComprador").val(comprador);
-                            $("#frmOCSSolDevCan\\:btnBuscarPorComprador").click();
+                            //cambiarTab("frmOCSSolDevCan", "btnBuscarPorComprador", "hidenTab", 1)
+                            $("#frmRep\\:tbReportes\\:hidenComprador").val(comprador);
+                            $("#frmRep\\:tbReportes\\:btnPorComprador").click();
                         }
                     }
                 }
@@ -1517,9 +1517,9 @@ function graficaOCSSolDevCan(datos, inicio, fin) {
                     events: {
                         click: function () {
                             var comprador = this.category
-                            cambiarTab("frmOCSSolDevCan", "btnBuscarPorComprador", "hidenTab", 2)
-                            $("#frmOCSSolDevCan\\:" + "hidenComprador").val(comprador);
-                            $("#frmOCSSolDevCan\\:btnBuscarPorComprador").click();
+                           // cambiarTab("frmOCSSolDevCan", "btnBuscarPorComprador", "hidenTab", 2)
+                            $("#frmRep\\:tbReportes\\:hidenComprador").val(comprador);
+                            $("#frmRep\\:tbReportes\\:btnPorComprador").click();
                         }
                     }
                 }
@@ -1543,9 +1543,9 @@ function graficaOCSSolDevCan(datos, inicio, fin) {
                     events: {
                         click: function () {
                             var comprador = this.category
-                            cambiarTab("frmOCSSolDevCan", "btnBuscarPorComprador", "hidenTab", 3)
-                            $("#frmOCSSolDevCan\\:" + "hidenComprador").val(comprador);
-                            $("#frmOCSSolDevCan\\:btnBuscarPorComprador").click();
+                           // cambiarTab("frmOCSSolDevCan", "btnBuscarPorComprador", "hidenTab", 3)
+                            $("#frmRep\\:tbReportes\\:hidenComprador").val(comprador);
+                            $("#frmRep\\:tbReportes\\:btnPorComprador").click();
                         }
                     }
                 }
