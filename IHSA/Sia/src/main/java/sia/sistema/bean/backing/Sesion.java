@@ -348,7 +348,7 @@ public class Sesion implements Serializable {
         if (url == null) {
             resultado = Constantes.VACIO;
         } else {
-            resultado = url.replaceAll("@@AM@@", getArrancarModulo(campo, pagina));
+            resultado = url.replace("@@AM@@", getArrancarModulo(campo, pagina));
         }
         return resultado;
     }
@@ -358,7 +358,7 @@ public class Sesion implements Serializable {
         if (url == null) {
             resultado = Constantes.VACIO;
         } else {
-            resultado = url.replaceAll("@@AM@@", getArrancarModulo(0, ""));
+            resultado = url.replace("@@AM@@", getArrancarModulo(0, ""));
         }
         return resultado;
     }
