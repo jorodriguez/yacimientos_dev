@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package sia.sistema.bean.backing;
 
 import com.google.api.client.util.Strings;
@@ -94,7 +90,10 @@ public class Sesion implements Serializable {
 //se fija el objeto a modificar
     private TreeMap<String, Boolean> controladorPopups = new TreeMap<>();
     private final Calendar calendario = Calendar.getInstance();
+    
+    @Getter
     private final Date fecha = calendario.getTime();
+    
     private Usuario usuario;
 
     @Getter
@@ -113,7 +112,14 @@ public class Sesion implements Serializable {
     @Setter
     private int idCampo;
 
-    private String u, c;
+    @Getter
+    @Setter
+    private String u;
+    
+    @Getter
+    @Setter
+    private String c;
+    
     private boolean olvidoClave;
     private boolean visible = true;
 
@@ -137,7 +143,7 @@ public class Sesion implements Serializable {
 
         try {
             // Checamos si existe el usuario
-            if (getC().trim().isEmpty()) {
+            if (Strings.isNullOrEmpty(getC())) {
                 FacesUtils.addInfoMessage("Es necesario introducir la contraseña.");
             } else {
                 usuario = usuarioImpl.find(getU());
@@ -166,6 +172,8 @@ public class Sesion implements Serializable {
 
                     if (autenticado) {
                         olvidoClave = false;
+                        
+                        //TODO : establecer como variables en contexto y obtenerlos de ahí
                         llenarUsuarioVO(usuario);
                         setUsuarioVoAlta(null);
                         setIdCampo(usuarioVo.getIdCampo());
@@ -187,6 +195,7 @@ public class Sesion implements Serializable {
                         Env.setContext(ctx, Env.SESSION_ID, session.getId());
                         Env.setContext(ctx, Env.CLIENT_INFO, SessionUtils.getClientInfo(SessionUtils.getRequest()));
                         Env.setContext(ctx, Env.PUNTO_ENTRADA, "Sia");
+                        Env.setContext(ctx, Env.PROYECTO_ID, usuarioVo.getIdCampo());
 
                     } else {
                         FacesUtils.addInfoMessage("Usuario o contraseña es incorrecta.");
@@ -409,9 +418,12 @@ public class Sesion implements Serializable {
             usuarioVo.setGerencia(con.getGerencia());
             usuarioVo.setPuesto(con.getPuesto());
             setUsuarioVoAlta(null);
+            
+            // TODO : cambiar valores en el objeto de contexto
+            
+            
             //
-            PrimeFaces.current().executeScript(";$(dialogoUsuarioCampo).modal('hide');;"
-            );
+            PrimeFaces.current().executeScript(";$(dialogoUsuarioCampo).modal('hide');;");
             FacesContext.getCurrentInstance().getExternalContext().redirect(Constantes.URL_REL_SIA_PRINCIPAL);
         } catch (IOException ex) {
             log.error(Constantes.VACIO, ex);
@@ -487,41 +499,8 @@ public class Sesion implements Serializable {
         return usrRol != null && usrRol.getIdUsuarioRol() > 0;
     }
 
-    /**
-     * @return the u
-     */
-    public String getU() {
-        return u;
-    }
-
-    /**
-     * @param u the u to set
-     */
-    public void setU(String u) {
-        this.u = u;
-    }
-
-    /**
-     * @return the c
-     */
-    public String getC() {
-        return c;
-    }
-
-    /**
-     * @param c the c to set
-     */
-    public void setC(String c) {
-        this.c = c;
-    }
-
-    /**
-     * @return the fecha
-     */
-    public Date getFecha() {
-        return fecha;
-    }
-
+    
+    
     /**
      * @return the olvidoClave
      */

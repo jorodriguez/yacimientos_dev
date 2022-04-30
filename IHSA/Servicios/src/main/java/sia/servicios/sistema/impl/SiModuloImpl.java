@@ -407,10 +407,12 @@ public class SiModuloImpl extends AbstractFacade<SiModulo> {
         return (list != null ? list : Collections.EMPTY_LIST);
     }
 
+    
+    // TODO : simplificar lógica
     public List<SiModuloVo> getModulosUsuario(String usuario, int moduloID) {
         StringBuilder q = new StringBuilder();
 
-        List<SiModuloVo> list = new ArrayList<SiModuloVo>();
+        List<SiModuloVo> list = new ArrayList<>();
 
         try {
             q.append("SELECT "
@@ -438,6 +440,9 @@ public class SiModuloImpl extends AbstractFacade<SiModulo> {
 
 //            UtilLog4j.log.info(this, "Q modulo: " + q.toString());
             List<Object[]> objs = em.createNativeQuery(q.toString()).getResultList();
+            
+            
+            // FIXME : recuperar por jOOQ
             List<SiModuloVo> modulos = new ArrayList<>();//                   = dbCtx.fetch(q.toString()).into(SiModuloVo.class);
             for (Object[] objects : objs) {
                 SiModuloVo vo = new SiModuloVo();
