@@ -118,7 +118,7 @@ public class ConsultaFacturaBean implements Serializable {
         filtroVo = new FiltroVo();
         setListaFiltro(new ArrayList<FiltroVo>());
         filtroVo.setId(Constantes.CERO);
-        filtroVo.setCampos(new ArrayList<String>());
+        filtroVo.setCampos(new ArrayList<>());
         filtroVo.getCampos().add("Fecha");
         filtroVo.getCampos().add("Gerencia");
         filtroVo.getCampos().add("Proveedor");
@@ -127,7 +127,7 @@ public class ConsultaFacturaBean implements Serializable {
         filtroVo.getCampos().add("Folio");
         //
         filtroVo.setCampoSeleccionado("Fecha");
-        filtroVo.setOperadorRelacional(new ArrayList<String>());
+        filtroVo.setOperadorRelacional(new ArrayList<>());
         filtroVo.getOperadorRelacional().add("Entre");
         filtroVo.setFiltroFechaRango(true);
         //
@@ -147,16 +147,14 @@ public class ConsultaFacturaBean implements Serializable {
         listaFiltro.get(rowIndex).setOperadorLogicoSeleccionado((String) event.getNewValue());
     }
 
-    public void mostrarCondiciones(ValueChangeEvent event) {
-        UIData data = (UIData) event.getComponent().findComponent("tblFiltro");
-        int rowIndex = data.getRowIndex();
-        filtroVo = listaFiltro.get(rowIndex);
-        filtroVo.setCampoSeleccionado((String) event.getNewValue());
+    public void mostrarCondiciones(int ind, String campoSel) {
+        filtroVo = listaFiltro.get(ind);
+        filtroVo.setCampoSeleccionado(campoSel);
         if (filtroVo.getCampoSeleccionado().equals("Fecha")) {
             // mostrar fecha
             filtroVo.setFiltroCombo(false);
             filtroVo.setFiltroCaja(false);
-            filtroVo.setOperadorRelacional(new ArrayList<String>());
+            filtroVo.setOperadorRelacional(new ArrayList<>());
             //
             filtroVo.setFiltroFechaRango(true);
             filtroVo.getOperadorRelacional().add("Entre ");
@@ -166,7 +164,7 @@ public class ConsultaFacturaBean implements Serializable {
             filtroVo.setFiltroCombo(true);
             filtroVo.setListaProveedores(new ArrayList<>());
             filtroVo.setListaProveedores(proveedores);
-            filtroVo.setOperadorRelacional(new ArrayList<String>());
+            filtroVo.setOperadorRelacional(new ArrayList<>());
             filtroVo.getOperadorRelacional().add("Igual a  ");
 
         } else if (filtroVo.getCampoSeleccionado().equals("Gerencia")) {
@@ -177,7 +175,7 @@ public class ConsultaFacturaBean implements Serializable {
             filtroVo.setFiltroCombo(true);
             filtroVo.setFiltroCaja(false);
             filtroVo.setFiltroFechaRango(false);
-            filtroVo.setOperadorRelacional(new ArrayList<String>());
+            filtroVo.setOperadorRelacional(new ArrayList<>());
             //
             filtroVo.getOperadorRelacional().add("Igual a ");
         } else if (filtroVo.getCampoSeleccionado().equals("Estatus")) {
@@ -188,12 +186,12 @@ public class ConsultaFacturaBean implements Serializable {
             filtroVo.setFiltroCombo(true);
             filtroVo.setFiltroCaja(false);
             filtroVo.setFiltroFechaRango(false);
-            filtroVo.setOperadorRelacional(new ArrayList<String>());
+            filtroVo.setOperadorRelacional(new ArrayList<>());
             //
             filtroVo.getOperadorRelacional().add("Igual a ");
         } else {
             // mostrar caja y operador cadena
-            filtroVo.setOperadorRelacional(new ArrayList<String>());
+            filtroVo.setOperadorRelacional(new ArrayList<>());
             //
             filtroVo.setFiltroFechaRango(false);
             filtroVo.setFiltroCaja(true);
@@ -201,7 +199,7 @@ public class ConsultaFacturaBean implements Serializable {
             filtroVo.setFiltroFecha(false);
             filtroVo.getOperadorRelacional().add("Igual a  ");
         }
-        filtroVo.setOperadorRelacionalCadena(new ArrayList<String>());
+        filtroVo.setOperadorRelacionalCadena(new ArrayList<>());
         ///
         listaFiltro.set(filtroVo.getId(), filtroVo);
     }
@@ -209,7 +207,7 @@ public class ConsultaFacturaBean implements Serializable {
     public void agregarNuevoFiltro() {
         filtroVo = new FiltroVo();
         filtroVo.setId(listaFiltro.size());
-        filtroVo.setCampos(new ArrayList<String>());
+        filtroVo.setCampos(new ArrayList<>());
         filtroVo.getCampos().add("Fecha");
         filtroVo.getCampos().add("Gerencia");
         filtroVo.getCampos().add("Proveedor");
@@ -217,11 +215,11 @@ public class ConsultaFacturaBean implements Serializable {
         filtroVo.getCampos().add("Estatus");
         filtroVo.getCampos().add("Folio");
 //
-        filtroVo.setOperadorLogico(new ArrayList<String>());
+        filtroVo.setOperadorLogico(new ArrayList<>());
         filtroVo.getOperadorLogico().add(" Y ");
         filtroVo.getOperadorLogico().add(" O ");
         //
-        filtroVo.setOperadorRelacional(new ArrayList<String>());
+        filtroVo.setOperadorRelacional(new ArrayList<>());
         filtroVo.getOperadorRelacional().add("Entre ");
         //
         Calendar cal = Calendar.getInstance();
@@ -230,8 +228,7 @@ public class ConsultaFacturaBean implements Serializable {
         listaFiltro.add(filtroVo.getId(), filtroVo);
     }
 
-    public void quitarFiltro() {
-        int id = Integer.parseInt(FacesUtilsBean.getRequestParameter("indice"));
+    public void quitarFiltro(int id) {
         //
         reasiganarId(listaFiltro, id);
         // llenar la lista

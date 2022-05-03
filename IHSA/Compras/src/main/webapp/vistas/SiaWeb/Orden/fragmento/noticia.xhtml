@@ -7,10 +7,10 @@
                 >  
     <div class="container-fluid">
         <div class="table table-responsive">
-            <h:dataTable  value="#{notaOrdenBean.listaNoticia}" var="data" cellpadding="0"  
-                          styleClass="table table-striped textoIzquierda">
+            <h:dataTable id="dtNotasOcs"  value="#{ordenBean.notas}" var="data" cellpadding="0"  
+                         styleClass="table table-striped textoIzquierda">
                 <p:column> 
-                    <div class="col-10 bordePanelGrid">
+                    <div class="col-12">
                         <div class="col-1" >
                             <p:graphicImage url="/sia/resources/img/logo.png" width="50" height="40"/>
                         </div>
@@ -26,30 +26,28 @@
                                     <f:convertDateTime pattern="h:mm a" timeStyle="default" type="time"/>
                                 </h:outputText>
                             </div>
-                            <div class="container-fluid">
-                                <div class="row-fluid" >
+                            <div class="row">
+                                <div class="col-6" >
                                     <div class="container-fluid">
                                         <h:outputLabel  value="#{data['titulo']}" styleClass="f12Negrita"/>
                                         <ui:fragment rendered="#{data['genero'] eq usuarioBean.usuarioConectado.id}">
-                                            <p:commandLink value="#{msgs['sistema.modificar']}" action="#{notaOrdenBean.mostrarPopupModificarNoticia}"
+                                            <p:commandLink value="#{msgs['sistema.modificar']}" action="#{ordenBean.mostrarPopupModificarNoticia(data.id)}"
                                                            title="#{msgs['comunicacion.clic.aqui.para']} #{msgs['sistema.modificar']} #{msgs['comunicacion.esta']} #{msgs['comunicacion.publicacion']}"
-                                                           >
-                                                <f:param name="idNoticia" value="#{data['id']}"/>                                                    
+                                                           process="@this" update="frmModNot" oncomplete="PF('dlgModNot').show()">
                                             </p:commandLink>
                                             <h:outputText styleClass="f11gris" value=" - " />  
                                             <p:commandLink value="#{msgs['sistema.eliminar']}" 
                                                            title="#{msgs['comunicacion.clic.aqui.para']} #{msgs['sistema.eliminar']} #{msgs['comunicacion.esta']} #{msgs['comunicacion.publicacion']}"
                                                            onclick="if (!confirm('Está seguro de eliminar esta noticia ...? '))
                                                                        return false;"
-                                                           style="color:  blue;"
-                                                           action="#{notaOrdenBean.eliminarNoticia}">
-                                                <f:param name="idNoticia" value="#{data['id']}"/>                                                    
+                                                           action="#{ordenBean.eliminarNoticia(data.id)}"
+                                                           process="@this" update="form1:tbDatos:dtNotasOcs">
                                             </p:commandLink>
                                             <h:outputText style="color: graytext; font-size: 11px;" value=" - "/>                                                                                                
                                             <p:commandLink title="#{msgs['comunicacion.clic.agregar.archivos']}"                                                             
-                                                           action="#{notaOrdenBean.mostrarPopupSubirArchivo}"
-                                                           value="Adjuntar" >
-                                                <f:param name="idNoticia" value="#{data['id']}"/>
+                                                           action="#{ordenBean.mostrarPopupSubirArchivo(data.id)}"
+                                                           value="Adjuntar" process="@this" update="frmNotArch"
+                                                           oncomplete="PF('dlgSubArh').show()">
                                             </p:commandLink> 
                                         </ui:fragment>
                                     </div>
@@ -63,21 +61,17 @@
                                         <p:commandLink value="#{msgs['comunicacion.responder']}" 
                                                        styleClass=" btn btn-default"
                                                        title="#{msgs['comunicacion.clic.para.guardar.respuesta']}" 
-                                                       action="#{notaOrdenBean.nuevoComentario}">
-                                            <f:setPropertyActionListener value="#{data.respuesta}" 
-                                                                         target="#{notaOrdenBean.textoNoticia}"/>
-                                            <f:param  name="idNoticia" value="#{data['id']}"/>
-                                            <f:param  name="idCampo" value="#{data['idCampo']}"/>
+                                                       action="#{ordenBean.nuevoComentario(data.id, data.idCampo, data.respuesta)}"
+                                                       process="@this" update="form1:tbDatos:dtNotasOcs">
                                         </p:commandLink>
                                     </div>
                                 </div>
-                                <div class=" container-fluid">
-                                    <br/>
+                                <div class=" col-6 ml-2">
                                     <ui:fragment rendered="#{data.adjuntosCount gt 0}">
                                         <div class="container-fluid">
                                             <h:outputLabel value="Archivo(s)"/>
                                             <h:dataTable id="adjuntos" value="#{data.listaAdjunto}"
-                                                         var="arch" width="60%"> 
+                                                         var="arch"> 
                                                 <h:column >      
                                                     <h:outputLink target="_blank"  value="/Compras/AbrirArchivo?ZWZ2W=#{arch['id']}&amp;ZWZ3W=#{arch['uuid']}">
                                                         <h:outputText value="#{arch['nombre']}" styleClass="btn btn-default"/>
@@ -85,20 +79,16 @@
                                                 </h:column>
                                                 <h:column rendered="#{data['genero'] eq usuarioBean.usuarioConectado.id}">                                        
                                                     <p:commandLink value="#{msgs['sistema.eliminar']}" 
-                                                                   action="#{notaOrdenBean.eliminarArchivo}"                                                                 
+                                                                   action="#{ordenBean.eliminarArchivo(arch.id, arch.idNoticiaAdjunto,data.id)}"
                                                                    onclick="if (!confirm('Está seguro de eliminar el archivo . . . ? '))
                                                                                return false;"
-                                                                   >
-                                                        <f:param name="idArchivo"  value="#{arch.id}"/>
-                                                        <f:param name="idCoNoticiaSiAdjunto" value="#{arch['idNoticiaAdjunto']}"/>
-                                                        <f:param name="idNoticia" value="#{data['id']}"/>
+                                                                   process="@this" update="form1:tbDatos:dtNotasOcs">
                                                     </p:commandLink>
                                                 </h:column>
                                             </h:dataTable>
                                         </div>
                                     </ui:fragment>
                                     <ui:fragment rendered="#{not empty data.listaComentario}">
-                                        <br/>
                                         <div class="container-fluid">
                                             <h:outputLabel value="Respuesta(s)"/>
                                             <h:dataTable value="#{data.listaComentario}" var="comentario"  
@@ -122,21 +112,18 @@
                                                                     <h:outputText styleClass="col-8 control-label" value="#{comentario.mensaje}" 
                                                                                   style="font-style: italic;"/>
                                                                     <ui:fragment rendered="#{comentario.genero eq usuarioBean.usuarioConectado.id}">
-                                                                        <div class="col-4">
+                                                                        <div class="input-group">
                                                                             <p:commandLink value="#{msgs['sistema.modificar']}" 
-                                                                                           action="#{notaOrdenBean.mostrarPopupModificarComentario}"
+                                                                                           action="#{ordenBean.mostrarPopupModificarComentario(comentario.id)}"
                                                                                            title="#{msgs['comunicacion.clic.aqui.para']} #{msgs['sistema.modificar']} #{msgs['comunicacion.este']} #{msgs['comunicacion.comentario']}" 
-
-                                                                                           >
-                                                                                <f:param name="idComentario" value="#{comentario.id}"/>
+                                                                                           process="@this" update="frmmodCom" oncomplete="PF('dlgModCom').show()">
                                                                             </p:commandLink>
                                                                             <h:outputText value=" | "/>
                                                                             <p:commandLink value="#{msgs['sistema.eliminar']}" title="#{msgs['comunicacion.clic.aqui.para']} #{msgs['sistema.eliminar']} #{msgs['comunicacion.este']} #{msgs['comunicacion.comentario']}" 
                                                                                            onclick="if (!confirm('Está seguro de eliminar el comentario ...? '))
                                                                                                        return false;"
-                                                                                           action="#{notaOrdenBean.eliminarComentario}"                                                                                              
-                                                                                           >
-                                                                                <f:param name="idComentario" value="#{comentario.id}"/>                                                    
+                                                                                           action="#{ordenBean.eliminarComentario(comentario.id)}"                                                                                              
+                                                                                           process="@this" update="form1:tbDatos">                                       
                                                                             </p:commandLink>
                                                                         </div>
                                                                     </ui:fragment>
@@ -151,7 +138,6 @@
                                     </ui:fragment>
                                 </div>
                             </div>
-                            <br/><br/>
                         </div>
                     </div>
                 </p:column>

@@ -36,11 +36,9 @@ public class GenerarZip extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     @Inject
-    private SiAdjuntoImpl servicioSiAdjuntoImpl;
-    @Inject
-    private ProveedorAlmacenDocumentos proveedorAlmacenDocumentos;
-    @Inject
     private SiFacturaAdjuntoImpl siFacturaAdjuntoImpl;
+    @Inject
+    UsuarioBean sesion;
 
     private final static UtilLog4j LOGGER = UtilLog4j.log;
 
@@ -63,7 +61,6 @@ public class GenerarZip extends HttpServlet {
 
         try {
             // utilizar un managedbean
-            final UsuarioBean sesion = (UsuarioBean) request.getSession().getAttribute("usuarioBean");
 
             if (sesion == null) {
                 response.sendRedirect(Configurador.urlSia() + "Sia");
@@ -75,19 +72,18 @@ public class GenerarZip extends HttpServlet {
                     // si inicio sesion buscar el convenio q viene en el parametro del servlet
                     int facId = Integer.parseInt(request.getParameter("ZWZ2W"));
                     String facIds = String.valueOf(request.getParameter("ZWZ3W"));
-                    
-                    if(facId > 0){
+
+                    if (facId > 0) {
                         fileZip = siFacturaAdjuntoImpl.crearZipFile(facId, siFacturaAdjuntoImpl.traerArchivosFactura(facId, UUID.randomUUID().toString()));
-                    } else if(facIds != null && !facIds.isEmpty()){
+                    } else if (facIds != null && !facIds.isEmpty()) {
                         fileZip = siFacturaAdjuntoImpl.crearZipFile(0, siFacturaAdjuntoImpl.traerArchivosFacturaByIds(facIds, UUID.randomUUID().toString()));
-                    }                   
-                    
+                    }
+
                     if (fileZip != null && fileZip.exists()) {
 
-                        try (InputStream in = new FileInputStream(fileZip);
-                                ServletOutputStream servletoutputstream = response.getOutputStream();) {
+                        try ( InputStream in = new FileInputStream(fileZip);  ServletOutputStream servletoutputstream = response.getOutputStream();) {
                             byte[] data = new byte[in.available()];
-                            in.read(data);                            
+                            in.read(data);
                             response.setContentType("application/zip");
                             response.setContentLength(data.length);
                             servletoutputstream.write(data);
@@ -115,8 +111,8 @@ public class GenerarZip extends HttpServlet {
             LOGGER.error("File : " + fullFilePath, e);
             error = true;
         } finally {
-            if(fileZip != null && fileZip.exists()){
-                fileZip.delete();            
+            if (fileZip != null && fileZip.exists()) {
+                fileZip.delete();
             }
         }
 
