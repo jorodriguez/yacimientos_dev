@@ -13,114 +13,85 @@
                 Historial de OC/S
             </ui:define>
             <ui:define name="contenido">
+
                 <h:form id="form1">              
-                    <div class="row">
-                        <div class="col-1 col-xs-12"></div>
-                        <div class="col-10 col-xs-12 bordePanelGrid">
-                            <div class="col-12  col-xs-12">
-                                <h:selectOneRadio style="margin-left:  30%;" 
-                                                    value="#{ordenBean.tipoFiltro}"
-                                                    valueChangeListener="#{ordenBean.cambiarFiltroHistorial}"
-                                                    layout="lineDirection" >
-                                    <f:selectItem itemLabel="Filtros" itemValue="filtro"/>
-                                    <f:selectItem itemLabel="Por palabra" itemValue="palabra"/>
-                                </h:selectOneRadio>
-                            </div><br/>
-                            <div class="col-12  col-xs-12" style="margin-top: 10px;">                                
-                                <div class="col-1  col-xs-12"></div>
-                                <div class="col-8  col-xs-12">
-                                    <!--selectedPanel="#{ordenBean.tipoFiltro}"-->
-                                    <p:panel  style="width: 100%;">
-                                        <h:panelGroup id="filtro">
-                                            <ui:include src="/vistas/SiaWeb/Orden/fragmento/filtroOrdenCompra.xhtml"/>   
-                                        </h:panelGroup>
-                                        <h:panelGroup id="palabra">                                                
-                                            <ui:include src="/vistas/SiaWeb/Orden/fragmento/filtroOrdenPorCadena.xhtml"/>                                                    
-                                        </h:panelGroup>
-                                    </p:panel>                 
-                                </div>
-                                <div class="col-2 col-xs-12" style="margin-bottom: 5px;">
-                                    <p:commandLink id="btnBuscar" value="#{msgs['cabecera.buscar']}"
-                                                     action="#{ordenBean.filtrarOrden}" 
-                                                     styleClass="btn btn-sm btn-info"
-                                                     process="@form" update="@form"/>
-                                </div>                                
-                                <div class="col-1  col-xs-12"></div>
-                            </div>
-                            <br/> 
-                        </div>
-                        <div class="col-1 col-xs-12"></div>
-                        <div class="col-12 col-xs-12" align="center" style="font-style:  italic; font-size: 11px; margin-top: 10px;">
+                    <p:panel id="pnlSel">
+                        <p:selectOneRadio value="#{ordenBean.tipoFiltro}" styleClass="col-8">
+                            <f:selectItem itemLabel="Filtros" itemValue="filtro"/>
+                            <f:selectItem itemLabel="Por palabra" itemValue="palabra"/>
+                            <p:ajax event="change" update="form1:pnlOpcs"/>
+                        </p:selectOneRadio>
+                    </p:panel>   
+                    <p:panelGrid id="pnlOpcs" columns="2" styleClass="col-8">
+                        <p:panel id="filtro" rendered="#{ordenBean.tipoFiltro eq 'filtro'}">
+                            <ui:include src="../Orden/fragmento/filtroOrdenCompra.xhtml"/>   
+                        </p:panel>
+                        <p:panel id="palabra" rendered="#{ordenBean.tipoFiltro eq 'palabra'}">                                                
+                            <ui:include src="../Orden/fragmento/filtroOrdenPorCadena.xhtml"/>     
                             <h:outputText value="*La consulta por palabra se realiza en las partidas de las OC/S." 
                                           styleClass="input-group-sm"/>
-                        </div>
-                    </div>
-                    <div class="col-2"></div>
-                    <br/>
+                        </p:panel>
+                        <p:commandLink id="btnBuscar" value="#{msgs['cabecera.buscar']}"
+                                       action="#{ordenBean.filtrarOrden}" 
+                                       styleClass="btn btn-primary"
+                                       process="@this form1:pnlSel form1:pnlOpcs" update="form1:dataTableOrdenesSolicitadas"/>
+                    </p:panelGrid>
                     <div class="row">
-                        <div class="table table-responsive">
-                            <p:dataTable size="small" stripedRows="true" showGridlines="true" id="dataTableOrdenesSolicitadas" rows="10" 
-                                           value="#{ordenBean.ordenesSolicitadas}" var="currentRow"                                    
-                                           paginator="true"   paginatorPosition="bottom" 
-                                           style="font-size: 0.9em;" 
-                                           styleClass="table table-striped">
-                                <f:facet name="header">
-                                    <h:panelGroup style="font-size: 14px; text-align: center;" >
-                                        <h:outputText value="#{msgs['titulo.tabla.historial.orden']}  "/>
-                                    </h:panelGroup>
-                                </f:facet>
-                                <p:column headerText="#{msgs['presupuesto.nuevos.campoConsecutivo']}"
-                                            filterBy="#{currentRow.consecutivo}" filterMatchMode="contains">
-                                    <h:outputText  value="#{currentRow['consecutivo']}"/>
-                                </p:column>
-                                <p:column headerText="#{msgs['requisicion.referencia']}"
-                                            filterBy="#{currentRow.referencia}" filterMatchMode="contains">
-                                    <h:outputText  value="#{currentRow['referencia']}"/>
-                                </p:column>
-                                <p:column headerText="#{msgs['requisicion.solicitada']}"
-                                            filterBy="#{currentRow.fecha}" filterMatchMode="contains">
-                                    <h:outputText value="#{currentRow['fecha']}">
-                                        <f:convertDateTime pattern="dd/MM/yyyy"/>
-                                    </h:outputText>
-                                </p:column>                                            
-                                <p:column  headerText="Proyecto OT" 
-                                            filterBy="#{currentRow.nombreProyectoOT}" filterMatchMode="contains">
-                                    <h:outputText value="#{currentRow['nombreProyectoOT']}"/>
-                                </p:column>                                                            
-                                <p:column  headerText="#{msgs['orden.proveedor']}" 
-                                            filterBy="#{currentRow.proveedor}" 
-                                            filterMatchMode="contains">
-                                    <h:outputText value="#{currentRow['proveedor']}"/>
-                                </p:column>                                                            
-                                <p:column  headerText="#{msgs['estatus.actual']}" filterBy="#{currentRow.estatus}" 
-                                            filterMatchMode="contains">
-                                    <h:outputText value="#{currentRow['estatus']}"/>
-                                </p:column>                                                            
-                                <p:column >
-                                    <p:link value="/Compras/generarExcel?ZWZ2W=#{currentRow['id']}" 
-                                                    rendered="#{(currentRow.idStatus eq 155 and currentRow.navCode ne null) || currentRow.idStatus eq 160}">
-                                        <h:outputText value="Generar Excel"  
-                                                        title="Clic aqui para generar el excel de la OC/S ...">
-                                        </h:outputText>
-                                    </p:link>
-                                </p:column>
-                                <p:column>
-                                    <p:commandLink value="#{msgs['sistema.ver.detalle']}" 
-                                                     action="#{ordenBean.verDetalleOrden()}"
-                                                     title="Clic aqui para ver mas información...">
-                                        <f:param name="idOrden" value="#{currentRow.id}"/>
-                                    </p:commandLink>
-                                </p:column>                                                            
-                            </p:dataTable>     
-                        </div>
+                        <p:dataTable size="small" stripedRows="true" showGridlines="true" id="dataTableOrdenesSolicitadas" rows="10" 
+                                     value="#{ordenBean.ordenesHistorial}" var="currentRow"                                    
+                                     paginator="true"   paginatorPosition="bottom" >
+                            <f:facet name="header">
+                                <h:outputText value="#{msgs['titulo.tabla.historial.orden']}  "/>
+                            </f:facet>
+                            <p:column headerText="#{msgs['presupuesto.nuevos.campoConsecutivo']}"
+                                      filterBy="#{currentRow.consecutivo}" filterMatchMode="contains" width="100">
+                                <h:outputText  value="#{currentRow['consecutivo']}"/>
+                            </p:column>
+                            <p:column headerText="#{msgs['requisicion.referencia']}"
+                                      filterBy="#{currentRow.referencia}" filterMatchMode="contains">
+                                <h:outputText  value="#{currentRow['referencia']}"/>
+                            </p:column>
+                            <p:column headerText="#{msgs['requisicion.solicitada']}"
+                                      filterBy="#{currentRow.fecha}" filterMatchMode="contains" width="120">
+                                <h:outputText value="#{currentRow['fecha']}">
+                                    <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                </h:outputText>
+                            </p:column>                                            
+                            <p:column  headerText="Proyecto OT" 
+                                       filterBy="#{currentRow.nombreProyectoOT}" filterMatchMode="contains">
+                                <h:outputText value="#{currentRow['nombreProyectoOT']}"/>
+                            </p:column>                                                            
+                            <p:column  headerText="#{msgs['orden.proveedor']}" 
+                                       filterBy="#{currentRow.proveedor}" 
+                                       filterMatchMode="contains">
+                                <h:outputText value="#{currentRow['proveedor']}"/>
+                            </p:column>                                                            
+                            <p:column  headerText="#{msgs['estatus.actual']}" filterBy="#{currentRow.estatus}" 
+                                       filterMatchMode="contains" width="150">
+                                <h:outputText value="#{currentRow['estatus']}"/>
+                            </p:column>                                                            
+                            <p:column  width="40">   
+                                <h:outputLink value="/Compras/generarExcel?ZWZ2W=#{currentRow['id']}" 
+                                              rendered="#{(currentRow.idStatus eq 155 and currentRow.navCode ne null) || currentRow.idStatus eq 160}"
+                                              title="Clic aqui para generar el excel de la OC/S ...">
+                                    <i class="fa fa-file-excel text-success"/>
+                                </h:outputLink>
+                            </p:column>
+                            <p:column width="40">
+                                <p:commandLink action="#{ordenBean.verDetalleOrden(currentRow.id)}"
+                                               title="Clic aqui para ver mas información..."
+                                               > 
+                                    <i class="fa fa-eye text-primary" />
+                                </p:commandLink>
+                            </p:column>                                                            
+                        </p:dataTable>     
                     </div>
-                    <p:panel style="float: right;">   
+                    <div class="row">
                         <p:commandButton value="Exportar">                                         
-                        <p:dataExporter  target="dataTableOrdenesSolicitadas" type="xls" fileName="Ordenes" 
-                                          />
+                            <p:dataExporter  target="dataTableOrdenesSolicitadas" type="xls" fileName="Ordenes" 
+                                             />
                         </p:commandButton>
-                    </p:panel>
-                    <br/>
+                    </div>
                 </h:form>
             </ui:define>
 

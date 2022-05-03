@@ -15,6 +15,8 @@ import java.io.File;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -141,8 +143,6 @@ public class RequisicionBean implements Serializable {
     @Inject
     private OcRequisicionCoNoticiaImpl ocRequisicionCoNoticiaImpl;
     @Inject
-    private SiManejoFechaImpl siManejoFechaImpl;
-    @Inject
     private SiUsuarioRolImpl siUsuarioRolImpl;
     @Inject
     private ArticuloImpl articuloImpl;
@@ -170,8 +170,6 @@ public class RequisicionBean implements Serializable {
     private RequisicionSiMovimientoImpl requisicionSiMovimientoImpl;
     @Inject
     InventarioImpl inventarioImpl;
-    @Inject
-    private NotificacionMovilUsuarioImpl notificacionMovilImpl;
 
     //
     @Inject
@@ -257,16 +255,13 @@ public class RequisicionBean implements Serializable {
     //----------------------
     // Este Atributo almacena la actual operación de la modificación que se está llevando a cabo con
     // La Requisicion. Cuenta con 2 posibilidades "Actualizar" y "Crear"
-    @Getter
     @Setter
     private String operacionRequisicion;
-    @Getter
     @Setter
     private String operacionItem;
     @Getter
     @Setter
     int fila, numerofilas;
-    @Getter
     @Setter
     private int totalRequisiciones;
     @Getter
@@ -285,13 +280,10 @@ public class RequisicionBean implements Serializable {
     @Getter
     @Setter
     private Date fechaRequerida = (Date) fechaActual.getTime().clone();
-    @Getter
     @Setter
     private boolean verAutoriza = false;
-    @Getter
     @Setter
     private boolean verVistoBueno = false;
-    @Getter
     @Setter
     private boolean crearItem = false;
     @Getter
@@ -321,10 +313,10 @@ public class RequisicionBean implements Serializable {
     //
     @Getter
     @Setter
-    private String fechaInicio;
+    private LocalDate fechaInicio;
     @Getter
     @Setter
-    private String fechaFin = Constantes.FMT_ddMMyyy.format(new Date());
+    private LocalDate fechaFin;
     //
     @Getter
     @Setter
@@ -537,6 +529,8 @@ public class RequisicionBean implements Serializable {
         requisicionVO.setListaDetalleRequision(new ArrayList<>());
         categorias = new ArrayList<>();
         listaRechazo = new ArrayList<>();
+        fechaFin = LocalDate.now();
+        fechaInicio = fechaFin.minusDays(30);
     }
 
     public List<SelectItem> getListaAnalista() {
@@ -660,14 +654,14 @@ public class RequisicionBean implements Serializable {
                 case "filtro":
                     requisicionesSolicitadas = new ListDataModel(requisicionServicioRemoto.buscarRequisicionPorFiltro(usuarioBean.getUsuarioConectado().getId(),
                             usuarioBean.getUsuarioConectado().getApCampo().getId(),
-                            Constantes.REQUISICION_SOLICITADA, siManejoFechaImpl.cambiarddmmyyyyAyyyymmaa(getFechaInicio()), siManejoFechaImpl.cambiarddmmyyyyAyyyymmaa(getFechaFin())));
+                            Constantes.REQUISICION_SOLICITADA, getFechaInicio().format(DateTimeFormatter.ofPattern("yyyy/MM/dd")), getFechaFin().format(DateTimeFormatter.ofPattern("yyyy/MM/dd"))));
                     break;
                 case "palabra":
                     requisicionesSolicitadas = new ListDataModel(requisicionServicioRemoto.buscarRequisicionFiltroPorPalabra(usuarioBean.getUsuarioConectado().getId(), usuarioBean.getUsuarioConectado().getApCampo().getId(), getReferencia()));
                     break;
                 default:
                     requisicionesSolicitadas = new ListDataModel(requisicionServicioRemoto.traerRequisicionPorGerencia(Constantes.REQUISICION_SOLICITADA, usuarioBean.getUsuarioConectado().getApCampo().getId(), usuarioBean.getUsuarioConectado().getGerencia().getId(),
-                            siManejoFechaImpl.cambiarddmmyyyyAyyyymmaa(getFechaInicio()), siManejoFechaImpl.cambiarddmmyyyyAyyyymmaa(getFechaFin())));
+                            getFechaInicio().format(DateTimeFormatter.ofPattern("yyyy/MM/dd")), getFechaFin().format(DateTimeFormatter.ofPattern("yyyy/MM/dd"))));
                     break;
             }
             if (requisicionesSolicitadas == null) {
@@ -1054,13 +1048,13 @@ public class RequisicionBean implements Serializable {
         }
     }
 
-    public void verDetalle(int idReq) {
+    public String verDetalle(int idReq) {
         setRequisicionActual(requisicionServicioRemoto.find(idReq));
         getItemsActualizar();
         //
         rechazosRequisicion();
         ordenBean.ordenesDeRequisicion(idReq);
-        menuBarBean.procesarAccion("/vistas/SiaWeb/Requisiciones/DetalleHistorial.xhtml?faces-redirect=true");
+        return "/vistas/SiaWeb/Requisiciones/DetalleHistorial.xhtml?faces-redirect=true";
     }
 
     public void verDetalleRevisadas() {
@@ -2162,13 +2156,6 @@ public class RequisicionBean implements Serializable {
     }
 
     /**
-     * @return the requisicionActual
-     */
-    public Requisicion getRequisicionActual() {
-        return requisicionActual;
-    }
-
-    /**
      * @return Lista de Requisiciones Sin Solicitar
      */
     public DataModel getRequisicionesSinSolicitar() {
@@ -2431,16 +2418,16 @@ public class RequisicionBean implements Serializable {
         DataModel retVal = null;
         try {
             if (getTipoFiltro().equals(Constantes.FILTRO)) {
-                if (getFechaInicio() == null || getFechaInicio().isEmpty()) {
-                    setFechaInicio(inicio());
+                if (getFechaInicio() == null) {
+                    setFechaInicio(LocalDate.now());
                 }
                 List<RequisicionVO> lo
                         = requisicionServicioRemoto.buscarRequisicionPorFiltro(
                                 usuarioBean.getUsuarioConectado().getId(),
                                 usuarioBean.getUsuarioConectado().getApCampo().getId(),
                                 Constantes.REQUISICION_SOLICITADA,
-                                siManejoFechaImpl.cambiarddmmyyyyAyyyymmaa(getFechaInicio()),
-                                siManejoFechaImpl.cambiarddmmyyyyAyyyymmaa(getFechaFin())
+                                getFechaInicio().format(DateTimeFormatter.ofPattern("yyyy/MM/dd")),
+                                getFechaFin().format(DateTimeFormatter.ofPattern("yyyy/MM/dd"))
                         );
                 if (lo != null) {
                     setRequisicionesSolicitadas(new ListDataModel(lo));
@@ -3314,13 +3301,6 @@ public class RequisicionBean implements Serializable {
     }
 
     /**
-     * @return the fechaRequerida
-     */
-    public Date getFechaRequerida() {
-        return (Date) fechaRequerida.clone();
-    }
-
-    /**
      * @param fechaRequerida the fechaRequerida to set
      */
     public void setFechaRequerida(Date fechaRequerida) {
@@ -3343,46 +3323,6 @@ public class RequisicionBean implements Serializable {
      */
     public boolean isCrearItem() {
         return crearItem;
-    }
-
-    /**
-     * @return the requisicionesSolicitadas
-     */
-    public DataModel getRequisicionesSolicitadas() {
-//////        if (requisicionesSolicitadas == null && usuarioBean.getUsuarioConectado() != null) {
-//////            listaRequisicionesSolicitadas();
-//////        }
-        return requisicionesSolicitadas;
-    }
-
-    /**
-     * @return the requisicionesRevisadas
-     */
-    public DataModel getRequisicionesRevisadas() {
-        if (requisicionesRevisadas == null && usuarioBean.getUsuarioConectado() != null) {
-            listaRequisicionesRevisadas();
-        }
-        return requisicionesRevisadas;
-    }
-
-    /**
-     * @return the requisicionesAprobadas
-     */
-    public DataModel getRequisicionesAprobadas() {
-        if (requisicionesAprobadas == null && usuarioBean.getUsuarioConectado() != null) {
-            listaRequisicionesAprobadas();
-        }
-        return requisicionesAprobadas;
-    }
-
-    /**
-     * @return the requisicionesAsignadas
-     */
-    public DataModel getRequisicionesAsignadas() {
-        if (requisicionesAsignadas == null && usuarioBean.getUsuarioConectado() != null) {
-            listaRequisicionesAsignadas();
-        }
-        return requisicionesAsignadas;
     }
 
     /**

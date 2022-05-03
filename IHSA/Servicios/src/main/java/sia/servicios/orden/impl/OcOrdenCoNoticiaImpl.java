@@ -132,7 +132,7 @@ public class OcOrdenCoNoticiaImpl extends AbstractFacade<OcOrdenCoNoticia> {
 	    UtilLog4j.log.info(this, "Q: : : :  noticia por usuario : " + query.toString());
 	    List<Object[]> lo = em.createNativeQuery(query.toString()).getResultList();
 	    if (lo != null) {
-		ln = new ArrayList<NoticiaVO>();
+		ln = new ArrayList<>();
 		for (Object[] objects : lo) {
 		    ln.add(castVO(objects, traerComentario));
 		}

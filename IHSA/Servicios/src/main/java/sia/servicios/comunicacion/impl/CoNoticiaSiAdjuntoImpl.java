@@ -111,7 +111,7 @@ public class CoNoticiaSiAdjuntoImpl extends AbstractFacade<CoNoticiaSiAdjunto> {
     
     private  List<NoticiaAdjuntoVO> castVo(List lista){
         NoticiaAdjuntoVO notiAdjVo = null;
-        List<NoticiaAdjuntoVO> lo = new ArrayList<NoticiaAdjuntoVO>();
+        List<NoticiaAdjuntoVO> lo = new ArrayList<>();
         for (Iterator it = lista.iterator(); it.hasNext();) {
             Object[] obj = (Object[]) it.next();
             notiAdjVo = new NoticiaAdjuntoVO();

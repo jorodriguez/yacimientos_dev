@@ -2,32 +2,19 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-
       xmlns:p="http://primefaces.org/ui"
       xmlns:f="http://xmlns.jcp.org/jsf/core"
-      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
       xmlns:h="http://xmlns.jcp.org/jsf/html"
       >
-
     <body>
-
         <ui:composition template="./../templates/template.xhtml">
             <ui:define name="tituloPagina">
                 Evaluaciones de Proveedores
             </ui:define>
             <ui:define name="contenido">
-                <script>
-                    $(document).ready(function () {
-                        $('#tblEvaluacionHistorial').DataTable({
-                            "scrollY": 200,
-                            "scrollX": true
-                        });
-                    });
-                </script>
-                <h:form id="formEva">                     
-
+                <h:form id="formEva">                    
                     <div id="divTabla" class="row"> 
-                        <div class="input-group card" style="padding-top: 10px;" >
+                        <div class="input-group" >
                             <div class="form-group col-6" >
                                 <strong><h:outputText class="col-2 control-label" value="Proveedor:"/></strong>
                                 <div class="col-10">                                            
@@ -52,8 +39,8 @@
                                 </div>
                             </div> 
 
-                            <div class="form-group col-12" >
-                                <div class="form-group col-8" >
+                            <div class="input-group col-12" >
+                                <div class="input-group col-8" >
                                     <strong><h:outputText class="col-2 control-label" value="Fecha Ini:"/></strong>
                                     <div class="col-4">           
                                         <p:datePicker value="#{histEvaluacionesBean.fechaI}"
@@ -69,18 +56,17 @@
                                 <div class="form-group col-4" >
                                     <p:commandLink action="#{histEvaluacionesBean.filtrarEvaluaciones}" 
                                                    class="btn btn-primary" value="Filtrar"
-                                                   process="@form" update="form1"/>
+                                                   process="@form" update="formEva:tbHistEv"/>
                                 </div>
                             </div>
                         </div>
 
-                        <p:tabView >
+                        <p:tabView id="tbHistEv" activeIndex="0">
                             <p:tab title="Ev. de Seguimiento SERVICIOS">
                                 <div class="form-row">
                                     <div class="table table-responsive">
-                                        <p:dataTable size="small" stripedRows="true" showGridlines="true" id="tblEvaluacionHistorialSer" value="#{histEvaluacionesBean.lstEvaluacionesSer}" var="dataEva"                                                
-
-
+                                        <p:dataTable size="small" stripedRows="true" showGridlines="true" id="tblEvaluacionHistorialSer" value="#{histEvaluacionesBean.lstEvaluacionesSer}" 
+                                                     var="dataEva"
                                                      >
                                             <p:column headerText="Nombre del Proveedor" style="text-align: left;">
                                                 <h:outputText value="#{dataEva.nombreProveedor}"/>
@@ -121,8 +107,9 @@
                                     </div>
                                 </div>
                                 <div class="form-inline">
-                                    <p:dataExporter fileName="evaluaciones" type="xls" target="tblEvaluacionHistorialSer" 
-                                                    /> 
+                                    <p:commandButton value="Exportar">
+                                        <p:dataExporter fileName="evaluaciones" type="xls" target="tblEvaluacionHistorialSer" /> 
+                                    </p:commandButton>
                                 </div>
 
                             </p:tab>
@@ -226,18 +213,11 @@
                                         <p:dataExporter fileName="evaluaciones" type="xls" target="tblEvaluacionHistorialObr" /> 
                                     </p:commandButton>
                                 </div>
-
                             </p:tab>
                         </p:tabView>
-
-
-
-                    </div>                    
-
-
+                    </div>
                 </h:form>                
             </ui:define>
-
         </ui:composition>
 
     </body>
