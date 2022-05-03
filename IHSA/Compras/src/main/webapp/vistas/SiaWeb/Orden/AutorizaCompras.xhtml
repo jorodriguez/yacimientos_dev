@@ -5,7 +5,6 @@
 
       xmlns:p="http://primefaces.org/ui"
       xmlns:f="http://xmlns.jcp.org/jsf/core"
-      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
       xmlns:h="http://xmlns.jcp.org/jsf/html"
       >
 
@@ -42,7 +41,7 @@
                                            value="Autorizar"
                                            action="#{ordenBean.autorizarOrdenCompras}"
                                            process="@this  form1:Ordenes" update="@form">
-                                <p:confirmDialog header="Confirmar" message="La operación va a autorizar la(s) OC/S seleccionada(s). ¿Está seguro?"/>
+                                <p:confirm header="Confirmar" message="La operación va a autorizar la(s) OC/S seleccionada(s). ¿Está seguro?"/>
                             </p:commandLink>
                             <p:commandLink 
                                 title="Clic aquí para cancelar la orden de compra..." value="Cancelar"
@@ -69,11 +68,11 @@
                         <div scope="colgroup" colspan="7"  style="font-weight: normal;"><span>Ordenes de compra pendientes de autorizar</span></div>
                         <div class="table table-responsive">                            
                             <p:dataTable size="small" stripedRows="true" showGridlines="true" id="Ordenes"   value="#{ordenBean.ocs}" var="data" 
-                                         styleClass="table table-striped" rows="20" 
+                                         rows="20" 
                                          paginator="true"  
-                                         paginatorPosition="bottom" 
-                                         style="font-size: 1em; width: 100%" >
-                                <p:column styleClass="#{data.leida eq 'False' ? 'filaConSombra': 'filaSinSombra'}">
+                                         paginatorPosition="bottom" >
+                                <p:column styleClass="#{data.leida eq 'False' ? 'filaConSombra': 'filaSinSombra'}"
+                                          width="35">
                                     <f:facet name="header">
                                         <h:selectBooleanCheckbox  class="todos" 
                                                                   onchange="seleccionarTodo('todos', 'seleccion')"
@@ -88,38 +87,26 @@
                                         <h:outputText value="Código"/>
                                     </f:facet>
                                 </p:column>
-                                <p:column styleClass="#{data.leida eq 'False' ? 'filaConSombra': 'filaSinSombra'}">
+                                <p:column styleClass="#{data.leida eq 'False' ? 'filaConSombra': 'filaSinSombra'}"
+                                          width="150" headerText="Referencia">
                                     <h:outputText value="#{data['referencia']}"
                                                   style="#{data['superaMonto'] eq 'True' ? 'color: maroon;' : ''}"/>
-                                    <f:facet name="header">
-                                        <h:outputText value="Referencia"/>
-                                    </f:facet>
                                 </p:column>
-                                <p:column styleClass="#{data.leida eq 'False' ? 'filaConSombra': 'filaSinSombra'}">
+                                <p:column styleClass="#{data.leida eq 'False' ? 'filaConSombra': 'filaSinSombra'}" headerText="Requisición">
                                     <h:outputText value="#{data['requisicion']}" style="#{data['superaMonto'] eq 'True' ? 'color: maroon;' : ''}"/>
-                                    <f:facet name="header">
-                                        <h:outputText value="Requisición"/>
-                                    </f:facet>
                                 </p:column>
-                                <p:column styleClass="#{data.leida eq 'False' ? 'filaConSombra': 'filaSinSombra'}">
-                                    <center>
-                                        <h:outputText value="#{data['fecha']}" style="#{data['superaMonto'] eq 'True' ? 'color: maroon;' : ''}">
-                                            <f:convertDateTime dateStyle="default" pattern="dd/MM/yyyy"/>
-                                        </h:outputText>
-                                    </center>
-                                    <f:facet name="header">
-                                        <h:outputText value="F. Ingreso"/>
-                                    </f:facet>
+                                <p:column styleClass="#{data.leida eq 'False' ? 'filaConSombra': 'filaSinSombra'}" width="120" headerText="F. Ingreso">
+                                    <h:outputText value="#{data['fecha']}" style="#{data['superaMonto'] eq 'True' ? 'color: maroon;' : ''}">
+                                        <f:convertDateTime dateStyle="default" pattern="dd/MM/yyyy"/>
+                                    </h:outputText>
                                 </p:column>
-                                <p:column styleClass="#{data.leida eq 'False' ? 'filaConSombra': 'filaSinSombra'}" style="width: 11%">
-                                    <f:facet name="header">
-                                        <h:outputText value="Subtotal"/>
-                                    </f:facet>
+                                <p:column styleClass="#{data.leida eq 'False' ? 'filaConSombra': 'filaSinSombra'}" style="width: 8%"
+                                          headerText="Subtotal">
                                     <h:outputText value="#{data['subTotal']}" style="#{data['superaMonto'] eq 'True' ? 'color: maroon;' : ''}" >
                                         <f:convertNumber pattern="$ #,##0.00" locale="es-MX"/>
                                     </h:outputText>
                                 </p:column>
-                                <p:column styleClass="#{data.leida eq 'False' ? 'filaConSombra': 'filaSinSombra'}">
+                                <p:column styleClass="#{data.leida eq 'False' ? 'filaConSombra': 'filaSinSombra'}" width="40">
                                     <h:outputText value="#{data['moneda']}"
                                                   style="#{data['superaMonto'] eq 'True' ? 'color: maroon;' : ''}"/>
                                     <f:facet name="header">
@@ -168,12 +155,13 @@
                                         </ui:repeat>
                                     </h:panelGroup>
                                 </p:column>
-                                <p:column styleClass="#{data.leida eq 'False' ? 'filaConSombra': 'filaSinSombra'}">
+                                <p:column styleClass="#{data.leida eq 'False' ? 'filaConSombra': 'filaSinSombra'}" width="40">
                                     <p:commandLink action="#{ordenBean.seleccionarOrden(data.id)}"
-                                                   style="#{data.errorEnvio eq 'True' ? 'color: red' : 'color : blue'}"
-                                                   title="Clic aqui para ver Items..." value="Seleccionar"
+                                                   title="Clic aqui para ver Items..." 
                                                    onclick="activarTab('tabOCSProc', 0, 'divDatos', 'divTabla', 'divOperacion', 'divAutoriza');"
-                                                   process="@this" update="form1:tbDatos form1:lblOcs"/>
+                                                   process="@this" update="form1:tbDatos form1:lblOcs">
+                                        <i class="fa fa-eye #{data.errorEnvio eq true ? 'text-danger' : 'text-primary'} fa-2x"/>
+                                    </p:commandLink>
                                 </p:column>
                             </p:dataTable>
                         </div>

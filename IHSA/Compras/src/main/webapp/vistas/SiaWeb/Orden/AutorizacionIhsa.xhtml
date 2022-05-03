@@ -48,7 +48,7 @@
                                            styleClass="btn btn-default"
                                            action="#{ordenBean.aprobarOrdenComprasAprueba}"
                                            process="@this" update="form1">
-                                <p:confirmDialog header="Confirmar" message="La operación va a autorizar la(s) OC/S seleccionada(s). ¿Está seguro?"/>
+                                <p:confirm header="Confirmar" message="La operación va a autorizar la(s) OC/S seleccionada(s). ¿Está seguro?"/>
                             </p:commandLink>
                             <p:commandLink 
                                 title="Clic aquí para cancelar la orden de compra..." value="Cancelar"
@@ -70,10 +70,10 @@
                         <p  style="float: right; color: #E79E19;"><i class="fa fa-asterisk"/>Ordenes con contrato vencido</p>
                         <div class="table table-responsive">
                             <p:dataTable size="small" stripedRows="true" showGridlines="true" id="Ordenes" rows="15"
-                                         value="#{ordenBean.ordenesAutorizaIHSA}" var="data"
+                                         value="#{ordenBean.ocs}" var="data"
                                          paginator="true"  
                                          paginatorPosition="bottom" >
-                                <p:column styleClass="#{data.leida eq 'False' ? 'filaConSombra': 'filaSinSombra'}">
+                                <p:column styleClass="#{data.leida eq 'False' ? 'filaConSombra': 'filaSinSombra'}" width="25">
                                     <f:facet name="header">
                                         <h:selectBooleanCheckbox  class="todos" onchange="seleccionarGeneral('todos', 'seleccion', 'divAutoriza')"/>
                                     </f:facet>
@@ -117,7 +117,7 @@
                                         <f:convertNumber pattern="$ #,##0.00" locale="es-MX"/>
                                     </h:outputText>
                                 </p:column>
-                                <p:column styleClass="#{data.leida eq 'False' ? 'filaConSombra': 'filaSinSombra'}">
+                                <p:column styleClass="#{data.leida eq 'False' ? 'filaConSombra': 'filaSinSombra'}" width="30">
                                     <h:outputText value="#{data['moneda']}" style=" #{data.contratoActivo gt 0  ? 'color: #E79E19' : ''}"/>
                                     <f:facet name="header">
                                         <h:outputText value="$"/>
@@ -166,16 +166,17 @@
                                     <p:commandLink action="#{ordenBean.seleccionarOrden(data.id)}" 
                                                    style="#{data.errorEnvio eq 'True' ? 'color: red' : 'color : blue'}"
                                                    title="Clic aquí para ver Items..." 
-                                                   value="Seleccionar"
                                                    onclick="activarTab('tabOCSProc', 0, 'divDatos', 'divTabla', 'divOperacion', 'divAutoriza');"                                                   
-                                                       process="@this" update="form1:tbDatos form1:lblOcs"/>
+                                                   process="@this" update="form1:tbDatos form1:lblOcs">
+                                        <i class="fa fa-eye text-primary"/>
+                                    </p:commandLink>
                                 </p:column>
                             </p:dataTable>
                         </div>
                     </div>                    
                     <br/>
                     <div id="divDatos" style="display: none;" class="row">
-                        <div class="col-5" style="padding-top: 5px; z-index: 999;">
+                        <div class="col-5" style="z-index: 999;">
                             <h:outputText value="Información de la OC/S: "/>
                             <h:outputText id="lblOcs" value="#{ordenBean.ordenActual.consecutivo}" style="font-weight:  bold;"/>
                         </div><br/>

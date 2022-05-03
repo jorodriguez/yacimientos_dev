@@ -6,21 +6,21 @@
                 xmlns:h="http://xmlns.jcp.org/jsf/html"
                 >
     <div class="table-responsive">
-        <div class="col-10 col-xs-10" >
+        <div class="input-group" >
             <div class="col-10 col-xs-10"></div>
             <div class="col-1 col-xs-1" style="text-align: right; padding-top: 20px;">
                 <p:commandLink  action="#{consultaFacturaBean.limpiarBusqueda}"
-                                  styleClass="btn btn-warning"
-                                  title="Limpiar filtros"
-                                  style="text-align: right; margin-left: 0px;"
-                                  process="@this" update="@form">
+                                styleClass="btn btn-warning"
+                                title="Limpiar filtros"
+                                style="text-align: right; margin-left: 0px;"
+                                process="@this" update="@form">
                     <i class="fa fa-trash" aria-hidden="true"></i>
                 </p:commandLink>
             </div>
             <div class="col-1 col-xs-1" style="text-align: right; padding-top: 20px;">
                 <p:commandLink styleClass="btn btn-success" action="#{consultaFacturaBean.buscarFactura}"
-                                 style="text-align: right; margin-left: 0px;"
-                                 title="Buscar facturas">
+                               style="text-align: right; margin-left: 0px;"
+                               title="Buscar facturas" process="@this frmConsFact:tblFiltro" update="frmConsFact:tblFacturas">
                     <i class="fa fa-search"/>
                 </p:commandLink>
             </div>
@@ -29,7 +29,7 @@
     <div class="table-responsive">
         <div class="col-12 col-xs-12">
             <p:dataTable size="small" stripedRows="true" showGridlines="true" id="tblFiltro" 
-                         value="#{consultaFacturaBean.listaFiltro}" var="data">	    
+                         value="#{consultaFacturaBean.listaFiltro}" var="data" rowIndexVar="index">	    
                 <p:column headerText="Nexo" style="width: 6%;">
                     <h:selectOneMenu value="#{data.operadorLogicoSeleccionado}"
                                      styleClass="form-control"
@@ -38,35 +38,35 @@
                     </h:selectOneMenu>
                 </p:column>
                 <p:column headerText="Campo" style="width: 20%;" >
-                    <h:selectOneMenu value="#{data.campoSeleccionado}"
-                                       styleClass="form-control"
-                                       
-                                       valueChangeListener="#{consultaFacturaBean.mostrarCondiciones}">
+                    <p:selectOneMenu value="#{data.campoSeleccionado}"
+                                     styleClass="form-control">
                         <f:selectItems value="#{data.campos}"/>
-                    </h:selectOneMenu>
+                        <p:ajax event="change" listener="#{consultaFacturaBean.mostrarCondiciones(index,data.campoSeleccionado)}"
+                                update="frmConsFact:tblFiltro"/>
+                    </p:selectOneMenu>
                 </p:column>
                 <p:column headerText="Operador" style="width: 20%;">
                     <h:selectOneMenu value="#{data.operadorRelacionalSeleccionado}"
-                                       styleClass="form-control">
+                                     styleClass="form-control">
                         <f:selectItems value="#{data.operadorRelacional}"/>
                     </h:selectOneMenu>
 
                 </p:column>
                 <p:column headerText="Valor" style="width: 50%; text-align: left;">
-                    <div class="form-inline" style="display: #{data.filtroFechaRango ? 'block;' : 'none;'} ">
+                    <div class="input-group" style="display: #{data.filtroFechaRango ? 'block;' : 'none;'} ">
                         <p:datePicker value="#{data.fechaInicio}" 
-                                           pattern="dd/MM/yyyy" style="width: 60px"
-                                           readonly="true"
-                                           mindate="#{consultaFacturaBean.fechaMinina}"
-                                           maxdate="#{consultaFacturaBean.fechaMaxima}">
-                            
+                                      pattern="dd/MM/yyyy" 
+                                      readonly="true"
+                                      mindate="#{consultaFacturaBean.fechaMinina}"
+                                      maxdate="#{consultaFacturaBean.fechaMaxima}">
+
                         </p:datePicker>
                         <h:outputText value="a" styleClass="control-label" style="margin: 15px;"/>
-                        <p:datePicker value="#{data.fechaFin}" style="width: 60px"
-                                           pattern="dd/MM/yyyy"
-                                           readonly="true"
-                                           mindate="#{consultaFacturaBean.fechaMinina}"
-                                           maxdate="#{consultaFacturaBean.fechaMaxima}">
+                        <p:datePicker value="#{data.fechaFin}" 
+                                      pattern="dd/MM/yyyy"
+                                      readonly="true"
+                                      mindate="#{consultaFacturaBean.fechaMinina}"
+                                      maxdate="#{consultaFacturaBean.fechaMaxima}">
                         </p:datePicker>
                     </div>
                     <h:inputText value="#{data.alcance}" rendered="#{data.filtroCaja}"
@@ -87,16 +87,16 @@
                 </p:column>	    
                 <p:column style="width: 2%;">
                     <p:commandLink action="#{consultaFacturaBean.agregarNuevoFiltro}"
-                                     rendered="#{data.id eq consultaFacturaBean.listaFiltro.size()-1}">
-                        <f:ajax execute="@form" render="@form"/> 
+                                   rendered="#{data.id eq consultaFacturaBean.listaFiltro.size()-1}"
+                                   process="@this" update="@form">
                         <i class="fa fa-plus text-primary"/>
                     </p:commandLink>
                 </p:column>
                 <p:column rendered="#{consultaFacturaBean.listaFiltro.size() gt 1}" style="width: 2%;">
                     <p:commandLink action="#{consultaFacturaBean.quitarFiltro(data.id)}"
-                                     rendered="#{data.id gt 0}">
+                                   rendered="#{data.id gt 0}" 
+                                   process="@this" update="@form">
                         <i class="fa fa-minus text-warning"/>
-                        <f:ajax render="@form" execute="@form"/>
                     </p:commandLink>
                 </p:column>
             </p:dataTable>
