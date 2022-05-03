@@ -60,9 +60,9 @@ public class CargaEtsBean implements Serializable {
     @Inject
     private SiParametroImpl parametrosSistema;
     @Inject
-    private SiAdjuntoImpl servicioSiAdjuntoImpl;
-    @Inject
-    private ReRequisicionEtsImpl servicioReRequisicion; //servicio que realiza operaciones con la relacione entee Requisicion y SiAdjunto
+        private SiAdjuntoImpl servicioSiAdjuntoImpl;
+        @Inject
+        private ReRequisicionEtsImpl servicioReRequisicion; //servicio que realiza operaciones con la relacione entee Requisicion y SiAdjunto
     @Inject
     private OcCategoriaEtsImpl servicioOcCategoriaEts;
     @Inject
@@ -211,7 +211,7 @@ public class CargaEtsBean implements Serializable {
 
     public void completarActualizacionEts() {
         this.servicioSiAdjuntoImpl.edit(this.etsActualAdjunto);
-        this.popupGeneralBean.toggleModal();
+        PrimeFaces.current().dialog().closeDynamic("dlgNotaSubArh");
     }
 
     public int getFileProgress() {
@@ -523,7 +523,7 @@ public class CargaEtsBean implements Serializable {
      * ********************** CARGA DE ETS DESDE REQUISICION******************
      */
     /**
-     * @param fileEntryEvent
+     * @param uploadFile
      */
     public void uploadFile(FileUploadEvent uploadFile) {
         ValidadorNombreArchivo validadorNombreArchivo = new ValidadorNombreArchivo();

@@ -6,8 +6,6 @@
                 xmlns:h="http://xmlns.jcp.org/jsf/html"
                 >  
 
-    
-
     <!-- CREAR Y EDITAR REQUISICION  -->
     <div class="modal fade" id="dialogoCrearNewReq" data-backdrop="static" data-keyboard="false">
         <div class="modal-dialog">
@@ -148,7 +146,7 @@
                                                  selection="#{requisicionBean.articuloVo}" rowKey="#{artF.id}"
                                                  >
                                         <p:ajax event="rowSelect" listener="#{requisicionBean.seleccionarArtFrecuente}" 
-                                                update="frmItemReq:pnlArticuloSeleccionado"/>
+                                                update="frmItemReq frmItemReq:pnlArticuloSeleccionado "/>
                                         <p:column style="text-align: left;">
                                             <h:outputText value="#{artF.numParte} - #{artF.nombre.length() > 200 ? artF.nombre.substring(0,200) : artF.nombre}" 
                                                           title="#{artF.nombre}"/>
@@ -201,7 +199,7 @@
                                                          selection="#{requisicionBean.articuloVo}"
                                                          >
                                                 <p:ajax event="rowSelect" listener="#{requisicionBean.seleccionarResultadoBA}" 
-                                                        update="frmItemReq:pnlArticuloSeleccionado"/>
+                                                        update="frmItemReq frmItemReq:pnlArticuloSeleccionado"/>
                                                 <p:column headerText="Código" width="240" styleClass="resultadoBdaCodigo"
                                                           filterBy="#{dataRBA.numParte}" filterMatchMode="contains">
                                                     <h:outputText value="#{dataRBA.numParte}"/>
@@ -577,7 +575,7 @@
     </div>
 
 
-    
+
     <!-- Autorizar ITEMS REQUISICION  -->
 
     <!-- ITEMS CATEGORIA  -->
@@ -772,12 +770,133 @@
                         <p:commandLink id="btnCerrar" styleClass="btn btn btn-primary col-1"
                                        onclick="$(dialogoCrearReq).modal('hide');"
                                        action="#{requisicionBean.limpiar}"
-                                       value="Cerrar"/>
+                                       value="Cerrar" immediate="true"/>  
                     </div>
 
                 </h:form>
             </div>
         </div>
     </div>
+
+
+    <!-- CREAR Y EDITAR REQUISICION  -->
+    <div class="modal fade" id="dialogoAdjArchReq" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <strong><h4 class="modal-title">Carga Especificación Técnica de Suministros</h4></strong>
+                </div><!-- comment -->
+
+                <h:form id="frmDialogoAdjArch">
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-12 col-xs-12" style="font-size:12px; margin-top: 10px;">                                                    
+                                <h:outputText styleClass="col-12 col-xs-12 control-label" value="Busca un archivo en tu computadora, luego presiona el boton Subir para enviar los datos al servidor."/>
+                                <h:outputText styleClass="col-6 col-xs-12 control-label" value="No se permiten los siguientes caracteres en el nombre del Archivo:" style=" font-size: 12px; font-weight: bold;" />
+                                <h:outputText styleClass="col-6 col-xs-12 control-label" value="Acentos, signos de puntuación y/o caracteres especiales" style="color: red; font-size: 12px; font-weight: bold; text-align: left;" />
+                            </div>
+                            <div class="col-12 col-xs-12" >
+                                <p:fileUpload id="fileEntryComp" 
+                                              label="Archivo "
+                                              listener="#{requisicionBean.uploadFile}"
+                                              styleClass="btn-default"
+                                              update="frmDialogoAdjArch:dtArch"/>
+                            </div>
+
+                            <div class="table table-responsive">
+                                <p:dataTable id="dtArch" size="small" stripedRows="true" showGridlines="true" 
+                                             value="#{requisicionBean.listaEts}" 
+                                             var="ets">
+                                    <p:column>
+                                        <f:facet name="header">
+                                            <h:outputLabel value="Nombre"/>
+                                        </f:facet>
+                                        <h:outputText value="#{ets['siAdjunto'].nombreSinUUID}"/>
+                                    </p:column>
+                                    <p:column width="80">
+                                        <f:facet name="header">
+                                            <h:outputLabel value="Tamaño"/>
+                                        </f:facet>
+                                        <h:outputText  value="#{ets['siAdjunto'].peso}"/>
+                                    </p:column>
+                                    <p:column>
+                                        <f:facet name="header">
+                                            <h:outputLabel value="Fecha"/>
+                                        </f:facet>
+                                        <h:outputText value="#{ets['siAdjunto'].fechaGenero}">
+                                            <f:convertDateTime dateStyle="default" type="date"/>
+                                        </h:outputText>
+                                    </p:column>
+                                    <p:column>
+                                        <f:facet name="header">
+                                            <h:outputLabel value="Descripción"/>
+                                        </f:facet>
+                                        <h:outputText value="#{ets['siAdjunto'].descripcion}"/>
+                                    </p:column>
+                                    <p:column width="50">
+                                        <p:commandLink 
+                                            value="Modificar descripción"
+                                            title="Modificar descripción"
+                                            action="#{requisicionBean.actualizarEts(ets.siAdjunto)}"
+                                            styleClass="btn btn-default"/>
+                                    </p:column>
+                                    <p:column width="50">
+                                        <h:outputLink target="_blank"  value="/Compras/AbrirArchivo?ZWZ2W=#{ets['siAdjunto'].id}&amp;ZWZ3W=#{ets['siAdjunto'].uuid}"
+                                                      styleClass="btn btn-default">
+                                            <h:outputText value=" Abrir"/>
+                                        </h:outputLink>
+                                    </p:column>
+                                    <p:column width="50">
+                                        <p:commandLink styleClass="btn btn-default"
+                                                       action="#{requisicionBean.eliminarEts(ets)}"
+                                                       update="dtArch" process="@this">
+                                            <i class="fa fa-trash text-danger"/>
+                                        </p:commandLink>
+                                    </p:column>
+                                </p:dataTable>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <p:commandLink id="btnCerrar" styleClass="btn btn btn-primary col-1"
+                                       onclick="$(dialogoAdjArchReq).modal('hide');"
+                                       action="#{requisicionBean.limpiar}"
+                                       value="Cerrar" immediate="true"/>                        
+                    </div>
+                </h:form>
+            </div>
+        </div>
+    </div>
+    <h:form id="frmDesArch">
+        <p:dialog style="z-index:1001;" widgetVar="dlgDescArchReq"
+                  draggable="false" modal="true"
+                  styleClass="corePopup" >
+            <f:facet name="header">
+                <p:panel  >
+                    <h:outputText styleClass="popupHeaderText" value="Actualizar descripción"/>
+                </p:panel>
+            </f:facet>
+            <f:facet name="body">
+                <h:panelGroup styleClass="popupBody" style="font-size:12px">
+                    <p:panel  >
+                        <h:outputLabel value="Nombre:"/>
+                        <h:outputText value="#{requisicionBean.etsActualAdjunto.nombreSinUUID}"/> 
+                        <h:outputLabel value="Tamaño:"/>
+                        <h:outputText value="#{requisicionBean.etsActualAdjunto.peso}"/>
+                        <h:outputLabel value="Descripción:"/>
+                        <h:inputTextarea cols="80"  value="#{requisicionBean.etsActualAdjunto.descripcion}"/> 
+                    </p:panel>
+                    <center>
+                        <p:panel >
+                            <p:commandButton value="Actualizar" action="#{requisicionBean.completarActualizacionEts}"
+                                             process="@form" update="frmDialogoAdjArch:dtArch"
+                                             />
+                        </p:panel>
+                    </center>
+                </h:panelGroup>
+            </f:facet>
+        </p:dialog>
+    </h:form>
+
 
 </ui:composition>
