@@ -58,6 +58,10 @@ public class SessionUtils {
 
         return retVal;
     }
+    
+    public static void setAttribute(String name, Object value) {
+        getSession().setAttribute(name, value);
+    }
 
     /**
      * Devuelve la localización en base a los datos enviados por el cliente remoto.

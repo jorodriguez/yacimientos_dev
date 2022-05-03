@@ -8,6 +8,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.TreeMap;
 import javax.enterprise.context.SessionScoped;
@@ -18,7 +19,6 @@ import javax.faces.context.FacesContext;
 import javax.faces.model.DataModel;
 import javax.inject.Named;
 import javax.naming.NamingException;
-import javax.servlet.http.HttpSession;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -57,7 +57,7 @@ public class Sesion implements Serializable {
 
     public static final long serialVersionUID = 1L;
 
-    public static final String LOGIN = "login";
+    public static final String LOGIN = "/principal.xhtml";
     public static final String MAIN = "index";
     public static final String USER = "user";
 
@@ -187,15 +187,11 @@ public class Sesion implements Serializable {
                         log.info("USUARIO CONECTADO : {}", usuario.getId());
                         traerCampo();
 
-                        HttpSession session = SessionUtils.getSession();
-                        session.setAttribute(USER, usuario);
+                        SessionUtils.setAttribute(USER, usuario);
 
                         ctx = new Properties();
-
-                        Env.setContext(ctx, Env.SESSION_ID, session.getId());
-                        Env.setContext(ctx, Env.CLIENT_INFO, SessionUtils.getClientInfo(SessionUtils.getRequest()));
-                        Env.setContext(ctx, Env.PUNTO_ENTRADA, "Sia");
-                        Env.setContext(ctx, Env.PROYECTO_ID, usuarioVo.getIdCampo());
+                        
+                        subirValoresContexto();
 
                     } else {
                         FacesUtils.addInfoMessage("Usuario o contraseña es incorrecta.");
@@ -220,6 +216,16 @@ public class Sesion implements Serializable {
         return accion;
     }
 
+    
+    private void subirValoresContexto() {
+        Env.setContext(ctx, Env.SESSION_ID, SessionUtils.getSession().getId());
+        Env.setContext(ctx, Env.CLIENT_INFO, SessionUtils.getClientInfo(SessionUtils.getRequest()));
+        Env.setContext(ctx, Env.PUNTO_ENTRADA, "Sia");
+        Env.setContext(ctx, Env.PROYECTO_ID, usuarioVo.getIdCampo());
+        Env.setContext(ctx, Env.CODIGO_COMPANIA, usuarioVo.getRfcEmpresa());
+    }
+    
+    
     private void llenarUsuarioVO(Usuario u) {
         //Traer puesto del usuario
         setUsuarioVo(new UsuarioVO());
@@ -382,7 +388,7 @@ public class Sesion implements Serializable {
 
     }
 
-    public String cerrarSesion() {
+    public void cerrarSesion() {
         log.info("CERRO SESION : {}", usuario.getId());
         usuario = null;
         setU(Constantes.VACIO);
@@ -390,9 +396,9 @@ public class Sesion implements Serializable {
         setUsuarioVo(null);
         setUsuarioVoAlta(null);
         setCamposPorUsuario(null);
-        SessionUtils.getSession().removeAttribute(USER);
-
-        return LOGIN;
+        ctx = null;
+        
+        PrimeFaces.current().executeScript(";refrescar();");
     }
 
     public void traerCampo() {
@@ -419,7 +425,7 @@ public class Sesion implements Serializable {
             usuarioVo.setPuesto(con.getPuesto());
             setUsuarioVoAlta(null);
             
-            // TODO : cambiar valores en el objeto de contexto
+            subirValoresContexto();
             
             
             //
@@ -518,7 +524,7 @@ public class Sesion implements Serializable {
     /**
      * @return the controladorPopups
      */
-    public TreeMap<String, Boolean> getControladorPopups() {
+    public Map<String, Boolean> getControladorPopups() {
         return controladorPopups;
     }
 

@@ -97,10 +97,10 @@ public class DireccionBean implements Serializable{
 
     public void loadOnTableSiEstadoBySiPaisListener(ValueChangeEvent valueChangeEvent) {
         int idAnterior = this.direccionBeanModel.getId();
-        this.direccionBeanModel.setId(((Integer) valueChangeEvent.getNewValue()).intValue());
+        this.direccionBeanModel.setId(((Integer) valueChangeEvent.getNewValue()));
 
         if (this.direccionBeanModel.getId() > 0) {
-            if (idAnterior != ((Integer) valueChangeEvent.getNewValue()).intValue()) {
+            if (idAnterior != ((Integer) valueChangeEvent.getNewValue())) {
                 this.direccionBeanModel.reloadAllSiEstado();
             }
 
@@ -111,10 +111,10 @@ public class DireccionBean implements Serializable{
 
     public void loadSiEstadoBySiPaisOnComboListener(ValueChangeEvent valueChangeEvent) {
         int idAnterior = this.direccionBeanModel.getId();
-        this.direccionBeanModel.setId(((Integer) valueChangeEvent.getNewValue()).intValue());
+        this.direccionBeanModel.setId(((Integer) valueChangeEvent.getNewValue()));
 
         if (this.direccionBeanModel.getId() > 0) {
-            if (idAnterior != ((Integer) valueChangeEvent.getNewValue()).intValue()) {
+            if (idAnterior != ((Integer) valueChangeEvent.getNewValue())) {
                 //Rellenar combo de Estados
                 List<SiEstado> siEstadoList = this.direccionBeanModel.getAllSiEstadoList(this.direccionBeanModel.getId());
                 List<SelectItem> list = new ArrayList<SelectItem>();
@@ -134,10 +134,10 @@ public class DireccionBean implements Serializable{
     
     public void loadSiCiudadBySiEstadoOnTableListener(ValueChangeEvent valueChangeEvent) {
         int idAnterior = this.direccionBeanModel.getIdSiEstado();
-        this.direccionBeanModel.setIdSiEstado(((Integer) valueChangeEvent.getNewValue()).intValue());
+        this.direccionBeanModel.setIdSiEstado(((Integer) valueChangeEvent.getNewValue()));
 
         if (this.direccionBeanModel.getIdSiEstado() > 0) {
-            if (idAnterior != ((Integer) valueChangeEvent.getNewValue()).intValue()) {
+            if (idAnterior != ((Integer) valueChangeEvent.getNewValue())) {
                 this.direccionBeanModel.reloadAllSiCiudad();
             }
         } else {
@@ -160,7 +160,7 @@ public class DireccionBean implements Serializable{
     
     public List<SelectItem> getAllSiPaisSelectItem() {
         List<SiPais> siPaisList = this.direccionBeanModel.getAllSiPaisList();
-        List<SelectItem> list = new ArrayList<SelectItem>();
+        List<SelectItem> list = new ArrayList<>();
 
         for (SiPais sp : siPaisList) {
             SelectItem item = new SelectItem(sp.getId(), sp.getNombre());
@@ -285,7 +285,7 @@ public class DireccionBean implements Serializable{
 
             //Rellenando de nuevo el combo de SiEstado
             List<SiEstado> siEstadoList = this.direccionBeanModel.getAllSiEstadoList(this.direccionBeanModel.getId());
-            List<SelectItem> list = new ArrayList<SelectItem>();
+            List<SelectItem> list = new ArrayList<>();
 
             for (SiEstado sp : siEstadoList) {
                 SelectItem item = new SelectItem(sp.getId(), sp.getNombre());
@@ -396,8 +396,8 @@ public class DireccionBean implements Serializable{
             UtilLog4j.log.fatal(this, eie.getMensajeParaProgramador());
         } catch (Exception e) {
             FacesUtils.addErrorMessage("formPopupCreateSiCiudad:msgsPopupCreateSiCiudad", new SIAException().getMessage());
-            UtilLog4j.log.fatal(this, e.getMessage());
-            e.printStackTrace();
+            UtilLog4j.log.fatal(e);
+            
         }
     }
 
