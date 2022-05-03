@@ -19,6 +19,7 @@ import javax.persistence.NonUniqueResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import org.jooq.DSLContext;
+import org.jooq.exception.DataAccessException;
 import sia.constantes.Constantes;
 import sia.excepciones.ExistingItemException;
 import sia.excepciones.ItemUsedBySystemException;
@@ -59,6 +60,10 @@ public class SiModuloImpl extends AbstractFacade<SiModulo> {
 
     @PersistenceContext(unitName = "Sia-ServiciosPU")
     private EntityManager em;
+    
+    @Inject
+    private DSLContext dslCtx;
+    
     //
     @Inject
     private UsuarioImpl usuarioRemote;
@@ -366,51 +371,55 @@ public class SiModuloImpl extends AbstractFacade<SiModulo> {
 
     public List<SiModuloVo> getAllSiModuloListCategory(String orderByField, boolean sortAscending, boolean eliminado, boolean in, boolean viewAll) {
         StringBuilder q = new StringBuilder();
-        q.append(" SELECT  mo.id,  mo.nombre,  mo.ruta   ");
-        q.append(" FROM  SI_MODULO mo   ");
-        q.append(" inner join SI_ROL sr on sr.SI_MODULO = mo.ID and sr.ELIMINADO = 'False' ");
-        q.append(" WHERE ");
-        q.append(" mo.ELIMINADO = '").append((eliminado ? Constantes.ELIMINADO : Constantes.NO_ELIMINADO)).append("'");
+        q.append(
+                "SELECT  mo.id,  mo.nombre,  mo.ruta \n"
+                + "FROM  SI_MODULO mo \n"
+                + "INNER JOIN SI_ROL sr ON sr.SI_MODULO = mo.ID and sr.ELIMINADO = 'False' \n"
+                + "WHERE "
+                + " mo.ELIMINADO = ").append(eliminado).append('\n');
+        
         if (!viewAll && in) {
-            q.append(" and sr.ID in ( ");
+            q.append(" and sr.ID in ( \n");
         } else if (!viewAll) {
-            q.append(" and sr.ID not in ( ");
+            q.append(" and sr.ID not in ( \n");
         }
+        
         if (!viewAll) {
-            q.append(" select r.ID ");
-            q.append(" from si_usuario_rol a  ");
-            q.append(" inner join SI_ROL r on r.ID = a.SI_ROL ");
-            q.append(" where a.ELIMINADO = 'False' ");
-
-            q.append(" group by r.ID ");
-            q.append(" ) ");
+            q.append(
+                    " select r.ID \n"
+            + " from si_usuario_rol a  \n"
+            + " inner join SI_ROL r on r.ID = a.SI_ROL \n"
+            + " where a.ELIMINADO = 'False' \n"
+            + " group by r.ID \n"
+            + " ) \n");
         }
-        q.append(" group by mo.id,  mo.nombre,  mo.ruta     ");
+        
+        q.append("group by mo.id,  mo.nombre,  mo.ruta \n");
+        
         if (orderByField != null && !orderByField.isEmpty()) {
-            q.append(" ORDER BY mo.").append(orderByField).append(" ").append((sortAscending ? Constantes.ORDER_BY_ASC : Constantes.ORDER_BY_DESC));
+            q.append("ORDER BY mo.").append(orderByField)
+                    .append(" ").append((sortAscending ? Constantes.ORDER_BY_ASC : Constantes.ORDER_BY_DESC));
         }
-
-        Query query = em.createNativeQuery(q.toString());
-
-        List<Object[]> result = query.getResultList();
-        List<SiModuloVo> list = new ArrayList<SiModuloVo>();
-
-        SiModuloVo vo = null;
-
-        for (Object[] objects : result) {
-            vo = new SiModuloVo();
-            vo.setId((Integer) objects[0]);
-            vo.setNombre((String) objects[1]);
-            vo.setRuta((String) objects[2]);
-            list.add(vo);
+        
+        List<SiModuloVo> retVal;
+        
+        try {
+            retVal = dslCtx.fetch(q.toString()).into(SiModuloVo.class);
+        } catch (DataAccessException e) {
+            UtilLog4j.log.warn(this, "", e);
+            
+            retVal = Collections.emptyList();
         }
-        return (list != null ? list : Collections.EMPTY_LIST);
+        
+        return retVal;
     }
 
+    
+    // TODO : simplificar lógica
     public List<SiModuloVo> getModulosUsuario(String usuario, int moduloID) {
         StringBuilder q = new StringBuilder();
 
-        List<SiModuloVo> list = new ArrayList<SiModuloVo>();
+        List<SiModuloVo> list = new ArrayList<>();
 
         try {
             q.append("SELECT "
@@ -438,6 +447,9 @@ public class SiModuloImpl extends AbstractFacade<SiModulo> {
 
 //            UtilLog4j.log.info(this, "Q modulo: " + q.toString());
             List<Object[]> objs = em.createNativeQuery(q.toString()).getResultList();
+            
+            
+            // FIXME : recuperar por jOOQ
             List<SiModuloVo> modulos = new ArrayList<>();//                   = dbCtx.fetch(q.toString()).into(SiModuloVo.class);
             for (Object[] objects : objs) {
                 SiModuloVo vo = new SiModuloVo();

@@ -1,14 +1,12 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package sia.util;
 
 import java.io.Serializable;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import org.apache.log4j.Logger;
+import java.util.logging.Level;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -27,40 +25,45 @@ public class UtilLog4j<E> implements Serializable {
         System.setProperty("current.date", dateFormat.format(Calendar.getInstance().getTime()));
     }
 
-    public static final UtilLog4j log = new UtilLog4j();
+    public static final UtilLog4j log = new UtilLog4j<>();
     private Logger logger;
 
     public UtilLog4j() {
 
         try {
             
-           // PropertyConfigurator.configure(getClass().getResource("/log4j.properties"));
+          System.setProperty("logback.configurationFile", "/logback.xml");
 
         } catch (Exception e) {
-            UtilLog4j.log.fatal(UtilLog4j.class.getSimpleName(), "Ocurrio un error al crear el archivo" + e.getMessage());
+            java.util.logging.Logger.getAnonymousLogger().log(Level.SEVERE, "", e);
         }
     }
 
     public Logger getLogger(String clazz) {
-        return Logger.getLogger(clazz);
+        return LoggerFactory.getLogger(clazz);
     }
 
     public void debug(E t, String logs) {
-        logger = Logger.getLogger(t.getClass());
+        logger = LoggerFactory.getLogger(t.getClass());
         logger.debug(logs);
     }
 
     public void debug(E t, String message, Object[] params) {
-        logger = Logger.getLogger(t.getClass());
+        logger = LoggerFactory.getLogger(t.getClass());
         logger.debug(MessageFormat.format(message, params));
+    }
+    
+    public void debug(E t, String message, Throwable e) {
+        logger = LoggerFactory.getLogger(t.getClass());
+        logger.debug(message, e);
     }
 
     public void info(Throwable exception) {
-        logger.info(exception);
+        logger.info("", exception);
     }
 
     public void info(Object exception) {
-        logger.info(exception);
+        logger.info("", exception);
 
     }
 
@@ -69,18 +72,18 @@ public class UtilLog4j<E> implements Serializable {
     }
 
     public void info(E t, String message, Object[] params) {
-        logger = Logger.getLogger(t.getClass());
+        logger = LoggerFactory.getLogger(t.getClass());
         logger.info(MessageFormat.format(message, params));
     }
 
     public void info(E t, String logs) {
-        logger = Logger.getLogger(t.getClass());
+        logger = LoggerFactory.getLogger(t.getClass());
         logger.info(logs);
 
     }
 
     public void info(E t, String logs, Throwable exception) {
-        logger = Logger.getLogger(t.getClass());
+        logger = LoggerFactory.getLogger(t.getClass());
 
         if (exception == null) {
             logger.info(logs, exception);
@@ -90,104 +93,95 @@ public class UtilLog4j<E> implements Serializable {
     }
 
     public void info(E t, String message, Object[] params, Throwable tr) {
-        logger = Logger.getLogger(t.getClass());
+        logger = LoggerFactory.getLogger(t.getClass());
         logger.info(MessageFormat.format(message, params), tr);
     }
 
     public void warn(Throwable exception) {
-        logger.warn(exception);
+        logger.warn("", exception);
     }
 
     public void warn(E t, String logs) {
-        logger = Logger.getLogger(t.getClass());
+        logger = LoggerFactory.getLogger(t.getClass());
         logger.warn(logs);
     }
 
     public void warn(E t, String message, Object[] params) {
-        logger = Logger.getLogger(t.getClass());
+        logger = LoggerFactory.getLogger(t.getClass());
         logger.warn(MessageFormat.format(message, params));
     }
 
     public void warn(E t, Throwable tr) {
-        logger = Logger.getLogger(t.getClass());
-        logger.warn(tr);
+        logger = LoggerFactory.getLogger(t.getClass());
+        logger.warn("", tr);
     }
 
     public void warn(E t, String logs, Throwable tr) {
-        logger = Logger.getLogger(t.getClass());
+        logger = LoggerFactory.getLogger(t.getClass());
         logger.warn(logs, tr);
     }
 
     public void warn(E t, String message, Object[] params, Throwable tr) {
-        logger = Logger.getLogger(t.getClass());
+        logger = LoggerFactory.getLogger(t.getClass());
         logger.warn(MessageFormat.format(message, params), tr);
     }
 
     public void error(Throwable exception) {
-        logger.error(exception);
+        logger.error("", exception);
     }
 
     public void error(E t, String logs) {
-        logger = Logger.getLogger(t.getClass());
+        logger = LoggerFactory.getLogger(t.getClass());
         logger.error(logs);
     }
 
     public void error(E t, String message, Object[] params) {
-        logger = Logger.getLogger(t.getClass());
+        logger = LoggerFactory.getLogger(t.getClass());
         logger.error(MessageFormat.format(message, params));
     }
 
     public void error(E t, Throwable tr) {
-        logger = Logger.getLogger(t.getClass());
-        logger.error(tr);
+        logger = LoggerFactory.getLogger(t.getClass());
+        logger.error("", tr);
     }
 
     public void error(E t, String logs, Throwable tr) {
-        logger = Logger.getLogger(t.getClass());
+        logger = LoggerFactory.getLogger(t.getClass());
         logger.error(logs, tr);
     }
 
     public void error(E t, String message, Object[] params, Throwable tr) {
-        logger = Logger.getLogger(t.getClass());
+        logger = LoggerFactory.getLogger(t.getClass());
         logger.error(MessageFormat.format(message, params), tr);
     }
 
     public void fatal(Throwable exception) {
-        logger.fatal(exception);
+        logger.error("", exception);
     }
 
     public void fatal(E t, String logs) {
-        logger = Logger.getLogger(t.getClass());
-        logger.fatal(logs);
+        logger = LoggerFactory.getLogger(t.getClass());
+        logger.error("", logs);
     }
 
     public void fatal(E t, String message, Object[] params) {
-        logger = Logger.getLogger(t.getClass());
-        logger.fatal(MessageFormat.format(message, params));
+        logger = LoggerFactory.getLogger(t.getClass());
+        logger.error(MessageFormat.format(message, params));
     }
 
     public void fatal(E t, Throwable tt) {
-        logger = Logger.getLogger(t.getClass());
-        logger.fatal(tt);
+        logger = LoggerFactory.getLogger(t.getClass());
+        logger.error("", tt);
     }
 
     public void fatal(E t, String logs, Throwable tr) {
-        logger = Logger.getLogger(t.getClass());
-        logger.fatal(logs, tr);
+        logger = LoggerFactory.getLogger(t.getClass());
+        logger.error(logs, tr);
     }
 
     public void fatal(E t, String message, Object[] params, Throwable tr) {
-        logger = Logger.getLogger(t.getClass());
-        logger.fatal(MessageFormat.format(message, params), tr);
-    }
-
-    public void fatal(Object exception) {
-        Exception e = (Exception) exception;
-        logger.fatal(e.getStackTrace());
-    }
-
-    public void debug(String antes_de_registrar_el_provvedor_se_analiz) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        logger = LoggerFactory.getLogger(t.getClass());
+        logger.error(MessageFormat.format(message, params), tr);
     }
 
 }

@@ -1,0 +1,759 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+    <h:body>
+        <ui:composition template="/vistas/template/template.xhtml">
+            <ui:define name="content">
+                <script>
+                    $(document).ready(function () {
+                        $("div.bhoechie-tab-menu>div.list-group>a").click(function (e) {
+                            e.preventDefault();
+                            $(this).siblings('a.active').removeClass("active");
+                            $(this).addClass("active");
+                            var index = $(this).index();
+                            $("div.bhoechie-tab>div.bhoechie-tab-content").removeClass("active");
+                            $("div.bhoechie-tab>div.bhoechie-tab-content").eq(index).addClass("active");
+                        });
+                    });
+                </script>
+                <style>
+
+                    /*  bhoechie tab */
+                    div.bhoechie-tab-container{
+                        z-index: 10;
+                        background-color: #ffffff;
+                        padding: 0 !important;
+                        border-radius: 4px;
+                        -moz-border-radius: 4px;
+                        border:1px solid #ddd;
+                        margin-top: 20px;
+                        margin-left: 0px;
+                        -webkit-box-shadow: 0 6px 12px rgba(0,0,0,.175);
+                        box-shadow: 0 6px 12px rgba(0,0,0,.175);
+                        -moz-box-shadow: 0 6px 12px rgba(0,0,0,.175);
+                        background-clip: padding-box;
+                        opacity: 0.97;
+                        filter: alpha(opacity=97);
+                    }
+                    div.bhoechie-tab-menu{
+                        padding-right: 0;
+                        padding-left: 0;
+                        padding-bottom: 0;
+                    }
+                    div.bhoechie-tab-menu div.list-group{
+                        margin-bottom: 0;
+                    }
+                    div.bhoechie-tab-menu div.list-group>a{
+                        margin-bottom: 0;
+                    }
+                    div.bhoechie-tab-menu div.list-group>a .glyphicon,
+                    div.bhoechie-tab-menu div.list-group>a .fa {
+                        color: #5A55A3;
+                    }
+                    div.bhoechie-tab-menu div.list-group>a:first-child{
+                        border-top-right-radius: 0;
+                        -moz-border-top-right-radius: 0;
+                    }
+                    div.bhoechie-tab-menu div.list-group>a:last-child{
+                        border-bottom-right-radius: 0;
+                        -moz-border-bottom-right-radius: 0;
+                    }
+                    div.bhoechie-tab-menu div.list-group>a.active,
+                    div.bhoechie-tab-menu div.list-group>a.active .glyphicon,
+                    div.bhoechie-tab-menu div.list-group>a.active .fa{
+                        background-color: #5A55A3;
+                        background-image: #5A55A3;
+                        color: #ffffff;
+                    }
+                    div.bhoechie-tab-menu div.list-group>a.active:after{
+                        content: '';
+                        position: absolute;
+                        left: 100%;
+                        top: 50%;
+                        margin-top: -13px;
+                        border-left: 0;
+                        border-bottom: 13px solid transparent;
+                        border-top: 13px solid transparent;
+                        border-left: 10px solid #5A55A3;
+                    }
+
+                    div.bhoechie-tab-content{
+                        background-color: #ffffff;
+                        /* border: 1px solid #eeeeee; */
+                        padding-left: 20px;
+                        padding-top: 10px;
+                    }
+
+                    div.bhoechie-tab div.bhoechie-tab-content:not(.active){
+                        display: none;
+                    }
+
+
+                </style>
+                <ui:include src="/vistas/gr/popUpGR.xhtml"/>                
+                <h:form id="form1">                    
+
+                    <div class="container">
+                        <div class="row">                                
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 bhoechie-tab-container">
+                                <div class="col-lg-3 col-md-3 col-sm-3 col-xs-2 bhoechie-tab-menu">
+                                    <div class="visible-lg visible-md visible-sm list-group">                                        
+                                        <h:commandLink
+                                            actionListener="#{configuracionBean.cargarMapas(actionEvent)}"                                                                                              
+                                               styleClass="list-group-item active text-center"
+                                               >
+                                            <h4 class="glyphicon glyphicon-globe"></h4><br/>Mapas
+                                        </h:commandLink>
+                                        <h:commandLink
+                                            actionListener="#{configuracionBean.cargarRecomendaciones(actionEvent)}"                                                                                              
+                                               styleClass="list-group-item text-center"
+                                               >
+                                            <h4 class="glyphicon glyphicon-warning-sign"></h4><br/>Recomendaciones
+                                        </h:commandLink>
+                                        <h:commandLink
+                                            actionListener="#{configuracionBean.cargarSitios(actionEvent)}"                                                                                              
+                                               styleClass="list-group-item text-center"
+                                               >
+                                            <h4 class="glyphicon glyphicon-link"></h4><br/>Sitios Recomendados
+                                        </h:commandLink>
+                                        <!-- a href="#" class="list-group-item text-center">
+                                            <h4 class="glyphicon glyphicon-envelope"></h4><br/>Mensaje
+                                        </a -->
+                                        <h:commandLink
+                                            actionListener="#{configuracionBean.cargarSituaciones(actionEvent)}"                                                                                              
+                                               styleClass="list-group-item text-center"
+                                               >
+                                            <h4 class="glyphicon glyphicon-fire"></h4><br/>Situaciones de Riesgo
+                                        </h:commandLink>
+                                        <h:commandLink
+                                            actionListener="#{configuracionBean.cargarSemaforos(actionEvent)}"
+                                               styleClass="list-group-item text-center"
+                                               >
+                                            <h4 class="glyphicon glyphicon-map-marker"></h4><br/>Semáforo
+                                        </h:commandLink>
+                                        <h:commandLink
+                                            actionListener="#{configuracionBean.cargarRutas(actionEvent)}"
+                                               styleClass="list-group-item text-center"
+                                               >
+                                            <h4 class="glyphicon glyphicon-road"></h4><br/>Trayectos
+                                        </h:commandLink>
+                                        <h:commandLink
+                                            actionListener="#{configuracionBean.cargarZonas(actionEvent)}"                                                                                              
+                                               styleClass="list-group-item text-center"
+                                               >
+                                            <h4 class="glyphicon glyphicon-zoom-in"></h4><br/>Zonas/Sectores
+                                        </h:commandLink>                                        
+                                        <h:commandLink
+                                            actionListener="#{configuracionBean.cargarPuntos(actionEvent)}"                                                                                              
+                                               styleClass="list-group-item text-center"
+                                               >
+                                            <h4 class="glyphicon glyphicon-thumbs-up"></h4><br/>Punto Seguro
+                                        </h:commandLink>
+                                    </div>
+                                    <div class="visible-xs list-group">
+                                        <h:commandLink
+                                            actionListener="#{configuracionBean.cargarMapas(actionEvent)}"                                                                                              
+                                               styleClass="list-group-item active text-center"
+                                               >
+                                            <h4 class="glyphicon glyphicon-globe" title="Mapas"></h4>
+                                        </h:commandLink>
+                                        <h:commandLink
+                                            actionListener="#{configuracionBean.cargarRecomendaciones(actionEvent)}"                                                                                              
+                                               styleClass="list-group-item text-center"
+                                               >
+                                            <h4 class="glyphicon glyphicon-warning-sign" title="Recomendaciones"></h4>
+                                        </h:commandLink>
+                                        <h:commandLink
+                                            actionListener="#{configuracionBean.cargarSitios(actionEvent)}"                                                                                              
+                                               styleClass="list-group-item text-center"
+                                               >
+                                            <h4 class="glyphicon glyphicon-link" title="Sitios Recomendados"></h4>
+                                        </h:commandLink>
+                                        <!-- a href="#" class="list-group-item text-center">
+                                            <h4 class="glyphicon glyphicon-envelope" title="Mensaje"></h4>
+                                        </a -->
+                                        <h:commandLink
+                                            actionListener="#{configuracionBean.cargarSituaciones(actionEvent)}"                                                                                              
+                                               styleClass="list-group-item text-center"
+                                               >
+                                            <h4 class="glyphicon glyphicon-fire" title="Situaciones de Riesgo"></h4>
+                                        </h:commandLink>
+                                        <h:commandLink
+                                            actionListener="#{configuracionBean.cargarSemaforos(actionEvent)}"                                                                                              
+                                               styleClass="list-group-item text-center"
+                                               >
+                                            <h4 class="glyphicon glyphicon-map-marker" title="Semáforo"></h4>
+                                        </h:commandLink>
+                                        <h:commandLink
+                                            actionListener="#{configuracionBean.cargarRutas(actionEvent)}"                                                                                              
+                                               styleClass="list-group-item text-center"
+                                               >
+                                            <h4 class="glyphicon glyphicon-road" title="Trayectos"></h4>
+                                        </h:commandLink>
+                                        <h:commandLink
+                                            actionListener="#{configuracionBean.cargarZonas(actionEvent)}"                                                                                              
+                                               styleClass="list-group-item text-center"
+                                               >
+                                            <h4 class="glyphicon glyphicon-zoom-in" title="Zonas/Sectores"></h4>
+                                        </h:commandLink>
+                                        <h:commandLink
+                                            actionListener="#{configuracionBean.cargarPuntos(actionEvent)}"                                                                                              
+                                               styleClass="list-group-item text-center"
+                                               >
+                                            <h4 class="glyphicon glyphicon-thumbs-up" title="Punto Seguro"></h4>
+                                        </h:commandLink>
+                                    </div>
+                                </div>
+                                <div class="col-lg-9 col-md-9 col-sm-9 col-xs-10 bhoechie-tab" style="padding-left: 10px;">
+                                    <!-- flight section -->
+                                    <div class="bhoechie-tab-content active">
+                                        <center>
+                                            <div class="row" style="margin-bottom: 0px;">
+                                                <h:commandLink value="Registrar Mapa"                                                                     
+                                                               action="#{popupGrBean.goPopupMapas(event)}"
+                                                               title="Click aquí para generar un nuevo mapa..."                                               
+                                                               styleClass="btn btn-primary col-lg-3 col-xs-12"
+                                                               />                                                                    
+                                            </div>
+                                            <div class="table table-responsive" style="margin-bottom: 0px;">
+                                                <p:dataTable id="MapasOP" rows="10" 
+                                                               value="#{configuracionBean.mapas}" var="currentRow" styleClass="table table-striped"
+                                                               style="font-size:12px; color: black;">                                                                                  
+                                                    <p:column>
+                                                        <h:outputText value="#{currentRow.grMapaVO.nombre}"/>
+                                                        <f:facet name="header">
+                                                            <h:outputText value="Región"/>
+                                                        </f:facet>
+                                                    </p:column>
+                                                    <p:column>
+                                                        <h:outputText value="#{currentRow.sgSemaforoVO.color}"/>
+                                                        <f:facet name="header">
+                                                            <h:outputText value="Semáforo"/>
+                                                        </f:facet>
+                                                    </p:column>
+                                                    <p:column>
+                                                        <h:outputText value="#{currentRow.siAdjuntoVO.nombreUUID}"/>
+                                                        <f:facet name="header">
+                                                            <h:outputText value="Archivo"/>
+                                                        </f:facet>
+                                                    </p:column>
+                                                    <p:column>
+                                                        <h:outputText value="#{currentRow.fechaGenero}">
+                                                            <f:convertDateTime dateStyle="default" type="date"/>
+                                                        </h:outputText>
+                                                        <f:facet name="header">
+                                                            <h:outputText value="Fecha"/>
+                                                        </f:facet>
+                                                    </p:column>
+                                                    <p:column>
+                                                        <h:outputText value="#{currentRow.horaGenero}">
+                                                            <f:convertDateTime dateStyle="default" type="time"/>
+                                                        </h:outputText>
+                                                        <f:facet name="header">
+                                                            <h:outputText value="Hora"/>
+                                                        </f:facet>
+                                                    </p:column>
+                                                    <p:column>
+                                                        <p:commandLink 
+                                                            styleClass="btn btn-info btn-sm"                                                     
+                                                            actionListener="#{popupGrBean.goEditMapa(actionEvent)}"
+                                                            title="Click aquí para editar mapa..." >
+                                                            <i class="glyphicon glyphicon-pencil"></i>
+                                                            <f:param name="idArchivo" value="#{currentRow.id}"/>
+                                                        </p:commandLink>                                                        
+                                                    </p:column>
+                                                </p:dataTable>
+                                                <!-- aqui va el paginador -->                                            
+                                            </div>
+                                            
+
+                                        </center>
+                                    </div>
+                                    <!-- train section -->
+                                    <div class="bhoechie-tab-content">
+                                        <center>
+                                            <div class="row" style="margin-bottom: 10px;">
+                                                <h:commandLink value="Registrar Recomendación"                                                                     
+                                                               action="#{popupGrBean.goPopupRecomendaciones(event)}"
+                                                               title="Click aquí para generar una nueva Recomendación de Seguridad..."                                               
+                                                               styleClass="btn btn-primary col-lg-5 col-xs-10"
+                                                               />                    
+                                            </div>
+                                            <div class="table table-responsive">
+                                                <p:dataTable id="RecomendacionesOP" rows="10" 
+                                                               value="#{configuracionBean.recomendaciones}" var="currentRow" styleClass="table table-striped"
+                                                               style="font-size:12px; color: black;">                                                                                  
+                                                    <p:column>
+                                                        <h:outputText value="#{currentRow.titulo}"/>
+                                                        <f:facet name="header">
+                                                            <h:outputText value="Titulo"/>
+                                                        </f:facet>
+                                                    </p:column>                                                        
+                                                    <p:column>
+                                                        <h:outputText value="#{currentRow.siAdjuntoVO.nombreUUID}"/>
+                                                        <f:facet name="header">
+                                                            <h:outputText value="Archivo"/>
+                                                        </f:facet>
+                                                    </p:column>
+                                                    <p:column>
+                                                        <h:outputText value="#{currentRow.fechaGenero}">
+                                                            <f:convertDateTime dateStyle="default" type="date"/>
+                                                        </h:outputText>
+                                                        <f:facet name="header">
+                                                            <h:outputText value="Fecha"/>
+                                                        </f:facet>
+                                                    </p:column>
+                                                    <p:column>
+                                                        <h:outputText value="#{currentRow.horaGenero}">
+                                                            <f:convertDateTime dateStyle="default" type="time"/>
+                                                        </h:outputText>
+                                                        <f:facet name="header">
+                                                            <h:outputText value="Hora"/>
+                                                        </f:facet>
+                                                    </p:column>
+                                                    <p:column>                                                        
+                                                        <f:facet name="header">
+                                                            <h:outputText value="Activa"/>
+                                                        </f:facet>
+                                                        <h:selectBooleanCheckbox value="#{currentRow.activo}" disabled="true" />
+                                                    </p:column>
+                                                    <p:column>
+                                                        <p:commandLink 
+                                                            styleClass="btn btn-info btn-sm"                                                     
+                                                            actionListener="#{popupGrBean.goEditRecomendaciones(actionEvent)}"
+                                                            title="Click aquí para editar la recomendación..." >
+                                                            <i class="glyphicon glyphicon-pencil"></i>
+                                                            <f:param name="idArchivo" value="#{currentRow.id}"/>
+                                                        </p:commandLink>
+                                                    </p:column>
+                                                </p:dataTable>
+                                                <!-- aqui va el paginador -->
+                                            </div>
+                                        </center>
+                                    </div>
+                                    <div class="bhoechie-tab-content">
+                                        <center>
+                                            <div class="row" style="margin-bottom: 10px;">
+                                                <h:commandLink value="Registrar Sitio"                                                                     
+                                                               action="#{popupGrBean.goPopupSitiosRecomendados(event)}"
+                                                               title="Click aquí para generar un nuevo sitio recomendado..."                                               
+                                                               styleClass="btn btn-primary col-lg-4 col-xs-10"
+                                                               />                    
+                                            </div>
+                                            <div class="table table-responsive">
+                                                <p:dataTable id="SitiosOP" rows="10" 
+                                                               value="#{configuracionBean.sitios}" var="currentRow" styleClass="table table-striped"
+                                                               style="font-size:12px; color: black;">                              
+                                                    <p:column>
+                                                        <h:outputText value="#{currentRow.nombre}"/>
+                                                        <f:facet name="header">
+                                                            <h:outputText value="Nombre"/>
+                                                        </f:facet>
+                                                    </p:column>                                                        
+                                                    <p:column>
+                                                        <h:outputText value="#{currentRow.descripcion}"/>
+                                                        <f:facet name="header">
+                                                            <h:outputText value="Descripción"/>
+                                                        </f:facet>
+                                                    </p:column>                                                                                                            
+                                                    <p:column>
+                                                        <h:outputText value="#{currentRow.fech_Genero}">
+                                                            <f:convertDateTime dateStyle="default" type="date"/>
+                                                        </h:outputText>
+                                                        <f:facet name="header">
+                                                            <h:outputText value="Fecha"/>
+                                                        </f:facet>
+                                                    </p:column>
+                                                    <p:column>
+                                                        <h:outputText value="#{currentRow.hora_Genero}">
+                                                            <f:convertDateTime dateStyle="default" type="time"/>
+                                                        </h:outputText>
+                                                        <f:facet name="header">
+                                                            <h:outputText value="Hora"/>
+                                                        </f:facet>
+                                                    </p:column>
+                                                    <p:column>                                                        
+                                                        <f:facet name="header">
+                                                            <h:outputText value="Activo"/>
+                                                        </f:facet>
+                                                        <h:selectBooleanCheckbox value="#{currentRow.activo}" disabled="true" />
+                                                    </p:column>                                                        
+                                                    <p:column>
+                                                        <p:commandLink 
+                                                            styleClass="btn btn-info btn-sm"                                                     
+                                                            actionListener="#{popupGrBean.goEditSitiosRecomendados(actionEvent)}"
+                                                            title="Click aquí para editar el sitio..." >
+                                                            <i class="glyphicon glyphicon-pencil"></i>
+                                                            <f:param name="idArchivo" value="#{currentRow.id}"/>
+                                                        </p:commandLink>
+                                                    </p:column>
+                                                </p:dataTable>
+                                                <!-- aqui va el paginador -->
+                                            </div>
+                                        </center>
+                                    </div>                                    
+                                    <div class="bhoechie-tab-content">
+                                        <center>
+                                            <div class="row" style="margin-bottom: 10px;">
+                                                <h:commandLink value="Registrar Situación"                                                                     
+                                                               action="#{popupGrBean.goPopupSituacionRiesgo(event)}"
+                                                               title="Click aquí para generar una nueva Situación de Riesgo..."                                               
+                                                               styleClass="btn btn-primary col-lg-4 col-xs-10"
+                                                               />                    
+                                            </div>
+                                            <div class="table table-responsive">
+                                                <p:dataTable id="SituacionOP" rows="10" 
+                                                               value="#{configuracionBean.situaciones}" var="currentRow" styleClass="table table-striped"
+                                                               style="font-size:12px; color: black;">                              
+                                                    <p:column>
+                                                        <h:outputText value="#{currentRow.titulo}"/>
+                                                        <f:facet name="header">
+                                                            <h:outputText value="Titulo"/>
+                                                        </f:facet>
+                                                    </p:column>                                                        
+                                                    <p:column>
+                                                        <h:outputText value="#{currentRow.siAdjuntoVO.nombreUUID}"/>
+                                                        <f:facet name="header">
+                                                            <h:outputText value="Archivo"/>
+                                                        </f:facet>
+                                                    </p:column>
+                                                    <p:column>
+                                                        <h:outputText value="#{currentRow.fechaGenero}">
+                                                            <f:convertDateTime dateStyle="default" type="date"/>
+                                                        </h:outputText>
+                                                        <f:facet name="header">
+                                                            <h:outputText value="Fecha"/>
+                                                        </f:facet>
+                                                    </p:column>
+                                                    <p:column>
+                                                        <h:outputText value="#{currentRow.horaGenero}">
+                                                            <f:convertDateTime dateStyle="default" type="time"/>
+                                                        </h:outputText>
+                                                        <f:facet name="header">
+                                                            <h:outputText value="Hora"/>
+                                                        </f:facet>
+                                                    </p:column>
+                                                    <p:column>                                                        
+                                                        <f:facet name="header">
+                                                            <h:outputText value="Activa"/>
+                                                        </f:facet>
+                                                        <h:selectBooleanCheckbox value="#{currentRow.activo}" disabled="true" />
+                                                    </p:column>
+                                                    <p:column>
+                                                        <p:commandLink 
+                                                            styleClass="btn btn-info btn-sm"                                                     
+                                                            actionListener="#{popupGrBean.goEditSituacionRiesgo(actionEvent)}"
+                                                            title="Click aquí para editar la situación..." >
+                                                            <i class="glyphicon glyphicon-pencil"></i>
+                                                            <f:param name="idArchivo" value="#{currentRow.id}"/>
+                                                        </p:commandLink>
+                                                    </p:column>
+                                                </p:dataTable>
+                                                <!-- aqui va el paginador -->
+                                            </div>
+                                        </center>
+                                    </div>
+                                    <div class="bhoechie-tab-content">
+                                        <center>
+                                            <div class="row" style="margin-bottom: 10px;">
+                                                <h:commandLink value="Registrar Semáforo"                                                                     
+                                                               action="#{popupGrBean.goPopupSemaforo(event)}"
+                                                               title="Click aquí para generar una nueva zona..."                                               
+                                                               styleClass="btn btn-primary col-lg-4 col-xs-12"
+                                                               />                    
+                                            
+                                            <div class="form-group col-lg-8 col-xs-12" >
+                                                    <strong><h:outputText class="col-lg-3 control-label" value="Filtro Zona:"/></strong>
+                                                    <div class="col-lg-9">                                            
+                                                        <p:selectOneMenu id="idZonaSem" styleClass="form-control"
+                                                                           value="#{configuracionBean.semZonaID}"
+                                                                           valueChangeListener="#{configuracionBean.cambiarValorZonaSem}">                    
+                                                            <f:selectItem itemValue="0" itemLabel="Seleccione . . . "/>
+                                                            <f:selectItems value="#{configuracionBean.zonasSem}"/>
+                                                        </p:selectOneMenu>
+                                                    </div>
+                                                </div>
+                                                </div>
+                                            <div class="table table-responsive">
+                                                <p:dataTable id="SemOP" rows="10" 
+                                                               value="#{configuracionBean.semaforos}" var="currentRow" styleClass="table table-striped"
+                                                               style="font-size:12px; color: black;">                                                                                  
+                                                    <p:column>
+                                                        <h:outputText value="#{currentRow.mapa.nombre}"/>
+                                                        <f:facet name="header">
+                                                            <h:outputText value="Zona"/>
+                                                        </f:facet>
+                                                    </p:column>                                                    
+                                                    <p:column>
+                                                        <h:outputText value="#{currentRow.semaforoVO.color}"/>
+                                                        <f:facet name="header">
+                                                            <h:outputText value="Semáforo"/>
+                                                        </f:facet>
+                                                    </p:column>                                                    
+                                                    <p:column>
+                                                        <h:outputText value="#{currentRow.fechaInicio}">
+                                                            <f:convertDateTime dateStyle="default" type="date"/>
+                                                        </h:outputText>
+                                                        <f:facet name="header">
+                                                            <h:outputText value="Fec. Ini"/>
+                                                        </f:facet>
+                                                    </p:column>
+                                                    <p:column>
+                                                        <h:outputText value="#{currentRow.horaInicio}">
+                                                            <f:convertDateTime dateStyle="default" type="time"/>
+                                                        </h:outputText>
+                                                        <f:facet name="header">
+                                                            <h:outputText value="Hr. Ini"/>
+                                                        </f:facet>
+                                                    </p:column>
+                                                    <p:column>
+                                                        <h:outputText value="#{currentRow.fechaFin}">
+                                                            <f:convertDateTime dateStyle="default" type="date"/>
+                                                        </h:outputText>
+                                                        <f:facet name="header">
+                                                            <h:outputText value="Fec. Fin"/>
+                                                        </f:facet>
+                                                    </p:column>
+                                                    <p:column>
+                                                        <h:outputText value="#{currentRow.horaFin}">
+                                                            <f:convertDateTime dateStyle="default" type="time"/>
+                                                        </h:outputText>
+                                                        <f:facet name="header">
+                                                            <h:outputText value="Hr. Fin"/>
+                                                        </f:facet>
+                                                    </p:column>
+                                                </p:dataTable>
+                                                <!-- aqui va el paginador -->
+                                            </div>                                            
+                                        </center>
+                                    </div>                                    
+                                    <div class="bhoechie-tab-content">
+                                        <center>
+                                            <div class="row" style="margin-bottom: 10px;">
+                                                <div class="form-group col-lg-12" >
+                                                    <strong><h:outputText class="col-lg-2 control-label" value="Oficina:"/></strong>
+                                                    <div class="col-lg-10">                                            
+                                                        <p:selectOneMenu id="idOficina" styleClass="form-control"
+                                                                           value="#{configuracionBean.oficinaID}"
+                                                                           valueChangeListener="#{configuracionBean.cambiarValorOficina}">
+                                                            <f:selectItem itemValue="0" itemLabel="Seleccione . . . "/>
+                                                            <c:forEach items="#{configuracionBean.oficinas}" var="ofic">
+                                                            <f:selectItem itemValue="#{ofic.id}" itemLabel="#{ofic.nombre}"/>
+                                                            </c:forEach>
+                                                            
+                                                        </p:selectOneMenu>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="table table-responsive">
+                                                <p:dataTable id="rutaOP" rows="10" 
+                                                               value="#{configuracionBean.rutas}" var="currentRow" styleClass="table table-striped"
+                                                               style="font-size:12px; color: black;">                                                                                  
+                                                    <p:column>
+                                                        <h:outputText value="#{currentRow.id}"/>
+                                                        <f:facet name="header">
+                                                            <h:outputText value="ID"/>
+                                                        </f:facet>
+                                                    </p:column>                                                        
+                                                    <p:column>
+                                                        <h:outputText value="#{currentRow.nombre}" title="#{currentRow.etiquetaHorario}"/>
+                                                        <f:facet name="header">
+                                                            <h:outputText value="Nombre"/>
+                                                        </f:facet>
+                                                    </p:column>                                                                                                        
+                                                    <!-- p:column>
+                                                        <h:outputText value="#{currentRow.codigo}"/>
+                                                        <f:facet name="header">
+                                                            <h:outputText value="Código"/>
+                                                        </f:facet>
+                                                    </p:column -->                                                                                                        
+                                                    <p:column>
+                                                        <h:outputText value="#{currentRow.tiempoViaje}"/>
+                                                        <f:facet name="header">
+                                                            <h:outputText value="Tiempo"/>
+                                                        </f:facet>
+                                                    </p:column>  
+                                                    <p:column>
+                                                        <h:outputText value="#{currentRow.tipo}"/>
+                                                        <f:facet name="header">
+                                                            <h:outputText value="Tipo"/>
+                                                        </f:facet>
+                                                    </p:column>  
+                                                    <p:column>
+                                                        <p:commandLink 
+                                                            styleClass="btn btn-info btn-sm"                                                     
+                                                            actionListener="#{popupGrBean.goEditRuta(actionEvent)}"
+                                                            title="Click aquí para editar la zona..." >
+                                                            <i class="glyphicon glyphicon-pencil"></i>
+                                                            <f:param name="idArchivo" value="#{currentRow.id}"/>
+                                                        </p:commandLink>
+                                                    </p:column>
+                                                    <p:column>
+                                                        <p:commandLink 
+                                                            styleClass="btn btn-info btn-sm"                                                     
+                                                            actionListener="#{popupGrBean.goEditHorasRuta(actionEvent)}"                                                            
+                                                            title="Click aquí para editar horarios de la ruta..." >
+                                                            <i class="glyphicon glyphicon-dashboard"></i>
+                                                            <f:param name="idArchivo" value="#{currentRow.id}"/>
+                                                        </p:commandLink>
+                                                    </p:column>
+                                                </p:dataTable>
+                                                <!-- aqui va el paginador -->
+                                            </div>                                            
+                                        </center>
+                                    </div>
+                                    <div class="bhoechie-tab-content">
+                                        <center>
+                                            <div class="row" style="margin-bottom: 10px;">
+                                                <h:commandLink value="Registrar Zona/Sector"                                                                     
+                                                               action="#{popupGrBean.goPopupZonas(event)}"
+                                                               title="Click aquí para generar una nueva zona..."                                               
+                                                               styleClass="btn btn-primary col-lg-4 col-xs-10"
+                                                               />                    
+                                            </div>
+                                            <div class="table table-responsive">
+                                                <p:dataTable id="zonaOP" rows="10" 
+                                                               value="#{configuracionBean.zonas}" var="currentRow" styleClass="table table-striped"
+                                                               style="font-size:12px; color: black;">                              
+                                                    <p:column>
+                                                        <h:outputText value="#{currentRow.nombre}"/>
+                                                        <f:facet name="header">
+                                                            <h:outputText value="Nombre"/>
+                                                        </f:facet>
+                                                    </p:column>                                                        
+                                                    <p:column>
+                                                        <h:outputText value="#{currentRow.codigo}"/>
+                                                        <f:facet name="header">
+                                                            <h:outputText value="Código"/>
+                                                        </f:facet>
+                                                    </p:column>                                                        
+                                                    <p:column>
+                                                        <h:outputText value="#{currentRow.descripcion}"/>
+                                                        <f:facet name="header">
+                                                            <h:outputText value="Descripción"/>
+                                                        </f:facet>
+                                                    </p:column>
+                                                    <p:column>                                                        
+                                                        <f:facet name="header">
+                                                            <h:outputText value="Visible"/>
+                                                        </f:facet>
+                                                        <h:selectBooleanCheckbox value="#{currentRow.visible}" disabled="true" />
+                                                    </p:column>
+                                                    <p:column>
+                                                        <h:outputText value="#{currentRow.fechaModifico}">
+                                                            <f:convertDateTime dateStyle="default" type="date"/>
+                                                        </h:outputText>
+                                                        <f:facet name="header">
+                                                            <h:outputText value="Fecha"/>
+                                                        </f:facet>
+                                                    </p:column>
+                                                    <p:column>
+                                                        <h:outputText value="#{currentRow.horaModifico}">
+                                                            <f:convertDateTime dateStyle="default" type="time"/>
+                                                        </h:outputText>
+                                                        <f:facet name="header">
+                                                            <h:outputText value="Hora"/>
+                                                        </f:facet>
+                                                    </p:column>
+                                                    <!-- p:column>
+                                                        <h:outputText value="#{currentRow.punto.nombre}"/>
+                                                        <f:facet name="header">
+                                                            <h:outputText value="P. Seguridad"/>
+                                                        </f:facet>
+                                                    </p:column -->
+                                                    <p:column>
+                                                        <p:commandLink 
+                                                            styleClass="btn btn-info btn-sm"                                                     
+                                                            actionListener="#{popupGrBean.goEditZona(actionEvent)}"
+                                                            title="Click aquí para editar la zona..." >
+                                                            <i class="glyphicon glyphicon-pencil"></i>
+                                                            <f:param name="idArchivo" value="#{currentRow.id}"/>
+                                                        </p:commandLink>
+                                                    </p:column>
+                                                </p:dataTable>
+                                                <!-- aqui va el paginador -->
+                                            </div>                                            
+                                        </center>
+                                    </div>                                    
+                                    <div class="bhoechie-tab-content">
+                                        <center>
+                                            <div class="row" style="margin-bottom: 10px;">
+                                                <h:commandLink value="Registrar Punto Seguro"                                                                     
+                                                               action="#{popupGrBean.goPopupPunto(event)}"
+                                                               title="Click aquí para generar un nuevo punto de seguridad..."                                               
+                                                               styleClass="btn btn-primary col-lg-4 col-xs-10"
+                                                               />                    
+                                            </div>
+                                            <div class="table table-responsive">
+                                                <p:dataTable id="puntoOP" rows="10" 
+                                                               value="#{configuracionBean.puntos}" var="currentRow" styleClass="table table-striped"
+                                                               style="font-size:12px; color: black;">                              
+                                                    <p:column>
+                                                        <h:outputText value="#{currentRow.nombre}"/>
+                                                        <f:facet name="header">
+                                                            <h:outputText value="Nombre"/>
+                                                        </f:facet>
+                                                    </p:column>                                                        
+                                                    <p:column>
+                                                        <h:outputText value="#{currentRow.descripcion.length() gt 40 ? currentRow.descripcion.substring(0, 40):currentRow.descripcion}" title="#{currentRow.descripcion}"/>
+                                                        <f:facet name="header">
+                                                            <h:outputText value="Descripción"/>
+                                                        </f:facet>
+                                                    </p:column>                                                    
+                                                    <p:column>
+                                                        <h:outputText value="#{currentRow.fechaGenero}">
+                                                            <f:convertDateTime dateStyle="default" type="date"/>
+                                                        </h:outputText>
+                                                        <f:facet name="header">
+                                                            <h:outputText value="Fecha"/>
+                                                        </f:facet>
+                                                    </p:column>
+                                                    <p:column>
+                                                        <h:outputText value="#{currentRow.horaGenero}">
+                                                            <f:convertDateTime dateStyle="default" type="time"/>
+                                                        </h:outputText>
+                                                        <f:facet name="header">
+                                                            <h:outputText value="Hora"/>
+                                                        </f:facet>
+                                                    </p:column>
+                                                    <p:column>                                                        
+                                                        <f:facet name="header">
+                                                            <h:outputText value="Activa"/>
+                                                        </f:facet>
+                                                        <h:selectBooleanCheckbox value="#{currentRow.activa}" disabled="true" />
+                                                    </p:column>
+                                                    <p:column>
+                                                        <p:commandLink 
+                                                            styleClass="btn btn-info btn-sm"                                                     
+                                                            actionListener="#{popupGrBean.goEditPunto(actionEvent)}"
+                                                            title="Click aquí para editar la punto..." >
+                                                            <i class="glyphicon glyphicon-pencil"></i>
+                                                            <f:param name="idArchivo" value="#{currentRow.id}"/>
+                                                        </p:commandLink>
+                                                    </p:column>
+                                                </p:dataTable>
+                                                <!-- aqui va el paginador -->
+                                            </div>                                            
+                                        </center>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </h:form>  
+                <script>
+                    $(document).ready(function () {                        
+                        startDate();
+                    });
+                </script>
+            </ui:define>
+        </ui:composition>
+    </h:body>
+</html>

@@ -17,7 +17,7 @@ public abstract class AbstractFacade<T> {
     protected StringBuilder query = new StringBuilder();   //<<<<<<<<<<
     private final Class<T> entityClass;
 
-    public AbstractFacade(Class<T> entityClass) {
+    protected AbstractFacade(Class<T> entityClass) {
         this.entityClass = entityClass;
     }
 

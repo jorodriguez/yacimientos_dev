@@ -11,14 +11,14 @@ import javax.servlet.ServletResponse;
 import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  *
  * @author mrojas
  */
 @WebFilter
-@Log4j
+@Slf4j
 public class SiaFilter implements Filter {
 
     @Override

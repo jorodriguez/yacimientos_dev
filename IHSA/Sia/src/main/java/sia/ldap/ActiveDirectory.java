@@ -8,14 +8,14 @@ import javax.naming.directory.DirContext;
 import javax.naming.directory.InitialDirContext;
 import javax.naming.directory.SearchControls;
 import javax.naming.directory.SearchResult;
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;
 
 
 /**
  *
  * @author mrojas
  */
-@Log4j
+@Slf4j
 public class ActiveDirectory {
 
     //required private variables   
