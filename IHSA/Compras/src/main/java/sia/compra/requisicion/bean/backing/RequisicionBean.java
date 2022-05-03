@@ -12,6 +12,7 @@ package sia.compra.requisicion.bean.backing;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import java.io.File;
+import java.io.IOException;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
@@ -38,12 +39,17 @@ import javax.inject.Named;
 import lombok.Getter;
 import lombok.Setter;
 import org.primefaces.PrimeFaces;
-import org.primefaces.component.datatable.DataTable;
+import org.primefaces.event.FileUploadEvent;
 import org.primefaces.event.SelectEvent;
+import org.primefaces.model.file.UploadedFile;
+import sia.archivador.AlmacenDocumentos;
+import sia.archivador.DocumentoAnexo;
+import sia.archivador.ProveedorAlmacenDocumentos;
 import sia.compra.orden.bean.backing.OrdenBean;
 import sia.compra.sistema.bean.backing.ContarBean;
 import sia.constantes.Constantes;
 import sia.constantes.TipoRequisicion;
+import sia.excepciones.SIAException;
 import sia.inventarios.service.ArticuloImpl;
 import sia.inventarios.service.InvArticuloCampoImpl;
 import sia.inventarios.service.InventarioImpl;
@@ -58,6 +64,7 @@ import sia.modelo.OcSubTarea;
 import sia.modelo.OcTarea;
 import sia.modelo.OcUnidadCosto;
 import sia.modelo.ProyectoOt;
+import sia.modelo.ReRequisicionEts;
 import sia.modelo.Rechazo;
 import sia.modelo.Requisicion;
 import sia.modelo.RequisicionDetalle;
@@ -71,6 +78,7 @@ import sia.modelo.requisicion.vo.OcSubtareaVO;
 import sia.modelo.requisicion.vo.OcTareaVo;
 import sia.modelo.requisicion.vo.RequisicionDetalleVO;
 import sia.modelo.requisicion.vo.RequisicionEsperaVO;
+import sia.modelo.requisicion.vo.RequisicionEtsVo;
 import sia.modelo.requisicion.vo.RequisicionMovimientoVO;
 import sia.modelo.rol.vo.RolVO;
 import sia.modelo.sgl.vo.RequisicionVO;
@@ -92,6 +100,7 @@ import sia.servicios.requisicion.impl.OcPresupuestoImpl;
 import sia.servicios.requisicion.impl.OcRequisicionCoNoticiaImpl;
 import sia.servicios.requisicion.impl.OcSubTareaImpl;
 import sia.servicios.requisicion.impl.OcTareaImpl;
+import sia.servicios.requisicion.impl.ReRequisicionEtsImpl;
 import sia.servicios.requisicion.impl.RequisicionDetalleImpl;
 import sia.servicios.requisicion.impl.RequisicionImpl;
 import sia.servicios.requisicion.impl.RequisicionSiMovimientoImpl;
@@ -104,6 +113,7 @@ import sia.servicios.sistema.impl.SiRolImpl;
 import sia.servicios.sistema.impl.SiUnidadImpl;
 import sia.servicios.sistema.impl.SiUsuarioRolImpl;
 import sia.util.UtilLog4j;
+import sia.util.ValidadorNombreArchivo;
 
 /**
  * @author Héctor Acosta Sierra
@@ -170,6 +180,10 @@ public class RequisicionBean implements Serializable {
     private RequisicionSiMovimientoImpl requisicionSiMovimientoImpl;
     @Inject
     InventarioImpl inventarioImpl;
+    @Inject
+    private ProveedorAlmacenDocumentos proveedorAlmacenDocumentos;
+    @Inject
+    private ReRequisicionEtsImpl servicioReRequisicion;
 
     //
     @Inject
@@ -303,9 +317,6 @@ public class RequisicionBean implements Serializable {
     @Getter
     @Setter
     private int paginaSeleccionada = 1;
-    @Getter
-    @Setter
-    private DataTable dataTable;
     @Getter
     @Setter
     private boolean selected;
@@ -513,6 +524,17 @@ public class RequisicionBean implements Serializable {
     @Setter
     private String motivo;
 
+    @Getter
+    @Setter
+    private UploadedFile fileInfo;
+    @Getter
+    @Setter
+    private List<ReRequisicionEts> listaEts;
+
+    @Getter
+    @Setter
+    private SiAdjunto etsActualAdjunto;
+
     /**
      * Creates a new instance of ManagedBeanRequisiciones
      */
@@ -531,6 +553,7 @@ public class RequisicionBean implements Serializable {
         listaRechazo = new ArrayList<>();
         fechaFin = LocalDate.now();
         fechaInicio = fechaFin.minusDays(30);
+        listaEts = new ArrayList<>();
     }
 
     public List<SelectItem> getListaAnalista() {
@@ -747,24 +770,6 @@ public class RequisicionBean implements Serializable {
         }
         return null;
 
-    }
-
-    /**
-     * Este metodo sirve para seleccionar una requisicion de cualquier parte del
-     * sistema
-     *
-     * @param
-     */
-    public void cargarETS() {
-        //FIXME : al parecer este método no tiene referencias, revisar si es posible eliminarlo
-        try {
-            RequisicionVO r = (RequisicionVO) listaRequisiciones.getRowData();
-            setRequisicionActual(requisicionServicioRemoto.find(r.getId()));
-
-            menuBarBean.procesarAccion("cargarETS");
-        } catch (Exception e) {
-            LOGGER.fatal(this, e.getMessage(), e);
-        }
     }
 
     public String solicitarRequisicion() {
@@ -3439,20 +3444,89 @@ public class RequisicionBean implements Serializable {
         cambiarRequisicion(0);
     }
 
-    public String cargarEts() {
-        String retVal = null;
+    public void uploadFile(FileUploadEvent uploadFile) {
+        ValidadorNombreArchivo validadorNombreArchivo = new ValidadorNombreArchivo();
         try {
-            irInicio = true;
-            retVal
-                    = menuBarBean.cargarEts(
-                            FacesUtilsBean.getRequestParameter("paginaOrigen"),
-                            FacesUtilsBean.getRequestParameter("paginaDestino")
+            fileInfo = uploadFile.getFile();
+            AlmacenDocumentos almacenDocumentos
+                    = proveedorAlmacenDocumentos.getAlmacenDocumentos();
+
+            boolean addArchivo = validadorNombreArchivo.isNombreValido(fileInfo.getFileName());
+
+            if (addArchivo) {
+                DocumentoAnexo documentoAnexo = new DocumentoAnexo(fileInfo.getContent());
+                documentoAnexo.setTipoMime(fileInfo.getContentType());
+                documentoAnexo.setRuta(uploadDirectoryRequi());
+                almacenDocumentos.guardarDocumento(documentoAnexo);
+
+                SiAdjunto adj
+                        = servicioSiAdjuntoImpl.save(
+                                documentoAnexo.getNombreBase(),
+                                new StringBuilder()
+                                        .append(documentoAnexo.getRuta())
+                                        .append(File.separator).append(documentoAnexo.getNombreBase()).toString(),
+                                fileInfo.getContentType(),
+                                fileInfo.getSize(),
+                                usuarioBean.getUsuarioConectado().getId()
+                        );
+
+                if (adj != null) {
+                    servicioReRequisicion.crear(
+                            getRequisicionActual(),
+                            adj,
+                            usuarioBean.getUsuarioConectado()
                     );
-        } catch (Exception e) {
-            LOGGER.fatal(this, e.getMessage(), e);
-            retVal = Constantes.VACIO;
+                }
+                listaEts = servicioReRequisicion.traerAdjuntosPorRequisicion(requisicionActual.getId());
+                FacesUtilsBean.addInfoMessage("El archivo fue agregado correctamente.");
+            } else {
+                FacesUtilsBean.addErrorMessage(new StringBuilder()
+                        .append("No se permiten los siguientes caracteres especiales en el nombre del Archivo: ")
+                        .append(validadorNombreArchivo.getCaracteresNoValidos())
+                        .toString());
+            }
+
+            fileInfo.delete();
+
+        } catch (IOException e) {
+            LOGGER.fatal(this, "+ + + ERROR + + +", e);
+            FacesUtilsBean.addInfoMessage("Ocurrió un problema al cargar el archivo, por favor contacte al equipo de soporte SIA (soportesia@ihsa.mx)");
+        } catch (SIAException e) {
+            LOGGER.fatal(this, "+ + + ERROR + + +", e);
+            FacesUtilsBean.addInfoMessage("Ocurrió un problema al cargar el archivo, por favor contacte al equipo de soporte SIA (soportesia@ihsa.mx)");
         }
-        return retVal;
+    }
+
+    public void actualizarEts(SiAdjunto requisicionEts) {
+        etsActualAdjunto = new SiAdjunto();
+        etsActualAdjunto = requisicionEts;
+    }
+
+    public void completarActualizacionEts() {
+        this.servicioSiAdjuntoImpl.edit(etsActualAdjunto);
+        PrimeFaces.current().dialog().closeDynamic("PF('dlgNotaSubArh').hide()");
+    }
+
+    public void eliminarEts(ReRequisicionEts adjReq) {
+        try {
+            etsActualAdjunto = adjReq.getSiAdjunto();
+
+            proveedorAlmacenDocumentos.getAlmacenDocumentos().borrarDocumento(adjReq.getSiAdjunto().getUrl());
+
+            etsActualAdjunto.setModifico(new Usuario(usuarioBean.getUsuarioConectado().getId()));
+            etsActualAdjunto.setFechaModifico(new Date());
+            etsActualAdjunto.setHoraModifico(new Date());
+            etsActualAdjunto.setEliminado(Constantes.BOOLEAN_TRUE);
+            servicioSiAdjuntoImpl.edit(etsActualAdjunto);
+            //
+            servicioReRequisicion.eliminarReRequisicion(adjReq, usuarioBean.getUsuarioConectado());
+
+            listaEts = servicioReRequisicion.traerAdjuntosPorRequisicion(requisicionActual.getId());
+            FacesUtilsBean.addInfoMessage("Se eliminó correctamente el archivo...");
+        } catch (SIAException e) {
+            LOGGER.fatal(this, "Excepcion en eliminar ETS", e);
+            FacesUtilsBean.addErrorMessage("Ocurrió un problema al eliminar el archivo, por favor contacte al equipo de soporte SIA (soportesia@ihsa.mx)");
+        }
     }
 
     public void devolverVariasRequisicion() {
@@ -4102,5 +4176,10 @@ public class RequisicionBean implements Serializable {
             }
         }
         return ret.toUpperCase();
+    }
+
+    public String uploadDirectoryRequi() {
+        return new StringBuilder().append("ETS/Requisicion/")
+                .append(getRequisicionActual().getId()).toString();
     }
 }

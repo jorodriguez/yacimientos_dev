@@ -95,7 +95,7 @@ public class VistoBuenoCostosBean implements Serializable {
 
     public void vistoBuenoCostosVarias() {
 
-        List<RequisicionVO> lr = (List<RequisicionVO>) listaRequisiciones.getWrappedData();;//   (List<RequisicionVO>)  new ListDataModel<>(listaRequisiciones);
+        List<RequisicionVO> lr = (List<RequisicionVO>) listaRequisiciones.getWrappedData();//   (List<RequisicionVO>)  new ListDataModel<>(listaRequisiciones);
         if (lr.stream().anyMatch(RequisicionVO::isSelected)) {
             lr.stream().filter((RequisicionVO::isSelected)).forEach(r -> {
                 if (r.getIdCfdi() > Constantes.CERO || r.getCompania().equals(Constantes.RFC_IHSA_CQ)) {
@@ -110,6 +110,7 @@ public class VistoBuenoCostosBean implements Serializable {
             cambiarRequisicion(0);
             //
             String jsMetodo = ";limpiarTodos();";
+            requisicionesSinVistoBueno();
             PrimeFaces.current().executeScript(jsMetodo);
         } else {
             FacesUtilsBean.addErrorMessage("Seleccione al menos una requisición");

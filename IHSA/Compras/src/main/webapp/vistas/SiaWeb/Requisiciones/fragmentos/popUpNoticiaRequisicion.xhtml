@@ -5,9 +5,10 @@
                 xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
                 xmlns:h="http://xmlns.jcp.org/jsf/html"
                 >  
-    <h:form >        
-        <p:dialog header="Comentar" styleClass="col-6 col-xs-11" rendered="#{notaRequisicionBean.mrPopupModificarComentario}" 
-                        modal="true">
+    <h:form id="frmComReq">        
+        <p:dialog header="Comentar" styleClass="col-6 col-xs-11" 
+                  widgetVar="dlgComentar"
+                  modal="true">
             <f:facet name="header">
                 #{msgs['sistema.modificar']} #{msgs['comunicacion.comentario']}
             </f:facet>
@@ -16,7 +17,7 @@
                     <center><h:messages errorClass="mensaje" infoClass="mensaje"/></center>                             
                     <p:panel >
                         <h:inputTextarea styleClass="textAreaModificarNoticia"  
-                                           value="#{notaRequisicionBean.comentarioActual.mensaje}" cols="39" rows="3"/>
+                                         value="#{notaRequisicionBean.comentarioActual.mensaje}" cols="39" rows="3"/>
                     </p:panel>
                     <br/>
                     <center>
@@ -32,9 +33,9 @@
             </f:facet>
         </p:dialog>
     </h:form>
-    <h:form >
-        <p:dialog header="Comentar" styleClass="col-6 col-xs-11" rendered="#{notaRequisicionBean.mrPopupModificarNoticia}" 
-                        modal="true">
+    <h:form id="frmNotReq">
+        <p:dialog header="Comentar" widgetVar="dlgNoticiaReq"
+                  modal="true">
             <f:facet name="header">
                 #{msgs['sistema.modificar']} #{msgs['comunicacion.noticia']}
             </f:facet>
@@ -43,7 +44,7 @@
                     <center><h:messages errorClass="mensaje" infoClass="mensaje"/></center>                             
                     <p:panel >
                         <h:inputTextarea styleClass="textAreaModificarNoticia" 
-                                           value="#{notaRequisicionBean.noticiaActual.mensajeAutomatico}" cols="60" rows="3"/>
+                                         value="#{notaRequisicionBean.noticiaActual.mensajeAutomatico}" cols="60" rows="3"/>
                     </p:panel>
                     <br/>
                     <center>
@@ -60,9 +61,9 @@
     </h:form>
     <!-- PANEL ADJUNTAR  -->
 
-    <h:form >
-        <p:dialog id="popup1" styleClass="col-6 col-xs-11" style="background: #FFFFFF;" rendered="#{notaRequisicionBean.mrSubirArchivo}" 
-                        draggable="false" modal="true">
+    <h:form id="frmAdjArchNot">
+        <p:dialog id="popup1" widgetVar="dlgSubArhNotReq"
+                  draggable="false" modal="true">
             <f:facet name="header">
                 <h:panelGroup>
                     <h:outputText value="#{msgs['comunicacion.adjuntar.archivos']}" style="float: left; padding: 4px;text-align: center; vertical-align: middle;font: 11px;color: #484848; font-weight: bold;"/>
@@ -72,9 +73,9 @@
                 <h:panelGroup>
                     <p:panel >
                         <p:fileUpload id="fileEntryr"
-                                       immediate="true"
-                                       listener="#{notaRequisicionBean.subirArchivo}" 
-                                       label="#{msgs['sistema.subir.archivo']}"/>
+                                      immediate="true"
+                                      listener="#{notaRequisicionBean.subirArchivo}" 
+                                      label="#{msgs['sistema.subir.archivo']}"/>
                         <p:commandButton type="submit" value="#{msgs['sistema.subir']}" />                        
                         <p:commandButton value="#{msgs['sistema.cancelar']}" styleClass="cancelar"  title="Clic para cerrar el popup"
                                          action="#{notaRequisicionBean.ocultarPopupSubirArchivo}" 
@@ -85,8 +86,7 @@
         </p:dialog>
     </h:form>
     <h:form >
-        <p:dialog id="popup1" styleClass="col-6 col-xs-11" style="background: #FFFFFF;" 
-                        visible="#{notaRequisicionBean.mrVerAdjuntos}" draggable="false" modal="true">
+        <p:dialog id="popup1" widgetVar="dlgMvArchReq" draggable="false" modal="true">
             <f:facet name="header">
                 <h:panelGroup>
                     <h:outputText value="#{msgs['comunicacion.adjuntar.archivos']}" style="float: left; padding: 4px;text-align: center; vertical-align: middle;font: 11px;color: #484848; font-weight: bold;"/>
@@ -97,9 +97,9 @@
                     <center><h:messages errorClass="mensaje" infoClass="mensaje"/></center>  
                     <p:panel >
                         <p:dataTable size="small" stripedRows="true" showGridlines="true"  id="adjuntos"                                        
-                                       value="#{notaRequisicionBean.dataModel}"
-                                        var="data"
-                                       >  
+                                     value="#{notaRequisicionBean.dataModel}"
+                                     var="data"
+                                     >  
                             <p:column rendered="false">                                       
                                 <h:outputText value="#{data['idNoticiaAdjunto']}"/>                                                                              
                             </p:column>
@@ -135,7 +135,8 @@
                                 <p:commandLink value="#{msgs['sistema.eliminar']}" 
                                                action="#{notaRequisicionBean.eliminarArchivo(data.id, data.idNoticiaAdjunto, data.id)}" 
                                                rendered="#{data['genero'] eq usuarioBean.usuarioConectado.id}" 
-                                                 onclick="if (!confirm('Está seguro de eliminar el archivo #{data['nombre']} ...? ')) return false;"/>
+                                               onclick="if (!confirm('Está seguro de eliminar el archivo #{data['nombre']} ...? '))
+                                                           return false;"/>
                             </p:column>
                             <p:column>      
                                 <h:outputLink target="_blank"  value="/Compras/AbrirArchivo?ZWZ2W=#{data['id']}&amp;ZWZ3W=#{data['uuid']}">
@@ -147,7 +148,7 @@
                     <br/>
                     <center>
                         <p:commandLink value="#{msgs['sistema.cerrar']}" styleClass="cancelar" 
-                                         action="#{notaRequisicionBean.ocultarPopupVerAdjuntos}" immediate="true"/>
+                                       action="#{notaRequisicionBean.ocultarPopupVerAdjuntos}" immediate="true"/>
                     </center>
                 </h:panelGroup>
             </f:facet>
