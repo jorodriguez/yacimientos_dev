@@ -60,9 +60,9 @@ public class CargaEtsBean implements Serializable {
     @Inject
     private SiParametroImpl parametrosSistema;
     @Inject
-    private SiAdjuntoImpl servicioSiAdjuntoImpl;
-    @Inject
-    private ReRequisicionEtsImpl servicioReRequisicion; //servicio que realiza operaciones con la relacione entee Requisicion y SiAdjunto
+        private SiAdjuntoImpl servicioSiAdjuntoImpl;
+        @Inject
+        private ReRequisicionEtsImpl servicioReRequisicion; //servicio que realiza operaciones con la relacione entee Requisicion y SiAdjunto
     @Inject
     private OcCategoriaEtsImpl servicioOcCategoriaEts;
     @Inject
@@ -70,12 +70,11 @@ public class CargaEtsBean implements Serializable {
     @Inject
     private ProveedorAlmacenDocumentos proveedorAlmacenDocumentos;
     @Inject
-    private OrdenImpl ordenImpl;
-    @Inject
     private RequisicionSiMovimientoImpl requisicionSiMovimientoImpl;
 
     //------------------------------------------------------
-    private final UsuarioBean usuarioBean = (UsuarioBean) FacesUtilsBean.getManagedBean("usuarioBean");
+    @Inject
+    UsuarioBean usuarioBean;
     private final PopupGeneralBean popupGeneralBean = (PopupGeneralBean) FacesUtilsBean.getManagedBean("popupGeneralBean");
     private final RequisicionBean requisicionBean = (RequisicionBean) FacesUtilsBean.getManagedBean("requisicionBean");
     private final OrdenBean ordenBean = (OrdenBean) FacesUtilsBean.getManagedBean("ordenBean");
@@ -121,7 +120,6 @@ public class CargaEtsBean implements Serializable {
             listaEts = null;
         } else {
             try {
-
                 if (requisicionBean.getRequisicionActual() != null && requisicionBean.getRequisicionActual().getId() != null) {
 
                     listaEts
@@ -148,13 +146,9 @@ public class CargaEtsBean implements Serializable {
                 if (requisicionBean.getRequisicionActual() != null && requisicionBean.getRequisicionActual().getId() != null) {
 
                     listaEtsEspera
-                            = new ListDataModel(
-                                    servicioReRequisicion.traerAdjuntosPorRequisicionVisibleTipo(
-                                            requisicionBean.getRequisicionActual().getId(),
-                                            false,
-                                            "ESPERA"
-                                    )
-                            );
+                            = new ListDataModel(servicioReRequisicion.traerAdjuntosPorRequisicionVisibleTipo(
+                                    requisicionBean.getRequisicionActual().getId(),
+                                    false, "ESPERA"));
                 }
             } catch (Exception ex) {
                 listaEts = null;
@@ -173,7 +167,7 @@ public class CargaEtsBean implements Serializable {
             eliminarEtsComplemento();
 
             FacesUtilsBean.addInfoMessage("Se eliminó correctamente el archivo...");
-
+            getEtsPorRequisicion();
         } catch (SIAException e) {
             LOGGER.fatal(this, "Excepcion en eliminar ETS", e);
             FacesUtilsBean.addErrorMessage("Ocurrió un problema al eliminar el archivo, por favor contacte al equipo de soporte SIA (soportesia@ihsa.mx)");
@@ -188,9 +182,9 @@ public class CargaEtsBean implements Serializable {
 
             proveedorAlmacenDocumentos.getAlmacenDocumentos().borrarDocumento(etsActualAdjunto.getUrl());
             eliminarEtsComplemento();
+            getEtsPorRequisicionEspera();
 
             FacesUtilsBean.addInfoMessage("Se eliminó correctamente el archivo...");
-
         } catch (SIAException e) {
             LOGGER.fatal(this, "Excepcion en eliminar ETS", e);
             FacesUtilsBean.addErrorMessage("Ocurrió un problema al eliminar el archivo, por favor contacte al equipo de soporte SIA (soportesia@ihsa.mx)");
@@ -217,7 +211,7 @@ public class CargaEtsBean implements Serializable {
 
     public void completarActualizacionEts() {
         this.servicioSiAdjuntoImpl.edit(this.etsActualAdjunto);
-        this.popupGeneralBean.toggleModal();
+        PrimeFaces.current().dialog().closeDynamic("dlgNotaSubArh");
     }
 
     public int getFileProgress() {
@@ -529,7 +523,7 @@ public class CargaEtsBean implements Serializable {
      * ********************** CARGA DE ETS DESDE REQUISICION******************
      */
     /**
-     * @param fileEntryEvent
+     * @param uploadFile
      */
     public void uploadFile(FileUploadEvent uploadFile) {
         ValidadorNombreArchivo validadorNombreArchivo = new ValidadorNombreArchivo();
@@ -603,11 +597,12 @@ public class CargaEtsBean implements Serializable {
      * ********************** CARGA DE ETS DESDE REQUISICION******************
      */
     /**
-     * @param fileEntryEvent
+     * @param uploadEvent
      */
     public void uploadFileEspera(FileUploadEvent uploadEvent) {
         ValidadorNombreArchivo validadorNombreArchivo = new ValidadorNombreArchivo();
         try {
+            fileInfo = uploadEvent.getFile();
 
             AlmacenDocumentos almacenDocumentos
                     = proveedorAlmacenDocumentos.getAlmacenDocumentos();

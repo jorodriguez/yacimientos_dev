@@ -6,38 +6,35 @@ package sia.inventarios.log;
 
 import sia.constantes.Constantes;
 
-import org.apache.log4j.BasicConfigurator;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.apache.log4j.Priority;
 
 import java.util.Date;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
  * @author AdminSia
  */
 public class EjbLog {
+    
+    private static Logger LOGGER = LoggerFactory.getLogger(EjbLog.class);
+    
     static {
         System.setProperty("current.date", Constantes.FMT_ddMMyyyyHHmmss.format(new Date()));
     }
     
+    private EjbLog(){}
+    
     public static void info(String mensaje){
-        final Logger logger = LogManager.getLogger(EjbLog.class.getName());
-        BasicConfigurator.configure();
-        logger.log(Priority.DEBUG, mensaje);
+        LOGGER.info(mensaje);
     }
     
     public static void warn(String mensaje){
-        final Logger logger = LogManager.getLogger(EjbLog.class.getName());
-        BasicConfigurator.configure();
-        logger.log(Priority.WARN, mensaje);
+        LOGGER.warn(mensaje);
     }
     
     public static void error(String mensaje){
-        final Logger logger = LogManager.getLogger(EjbLog.class.getName());
-        BasicConfigurator.configure();
-        logger.log(Priority.ERROR, mensaje);
+        LOGGER.error(mensaje);
     }
     
     

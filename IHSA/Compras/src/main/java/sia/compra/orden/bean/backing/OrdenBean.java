@@ -10,7 +10,10 @@ package sia.compra.orden.bean.backing;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
+import java.io.IOException;
 import java.io.Serializable;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -32,6 +35,11 @@ import javax.servlet.http.HttpServletRequest;
 import lombok.Getter;
 import lombok.Setter;
 import org.primefaces.PrimeFaces;
+import org.primefaces.event.FileUploadEvent;
+import org.primefaces.model.file.UploadedFile;
+import sia.archivador.AlmacenDocumentos;
+import sia.archivador.DocumentoAnexo;
+import sia.archivador.ProveedorAlmacenDocumentos;
 import sia.compra.requisicion.bean.backing.CargaEtsBean;
 import sia.compra.requisicion.bean.backing.FacesUtilsBean;
 import sia.compra.requisicion.bean.backing.MenuBarBean;
@@ -45,6 +53,7 @@ import sia.constantes.TipoRequisicion;
 import sia.excepciones.SIAException;
 import sia.inventarios.service.InvOrdenFormatoImpl;
 import sia.modelo.AutorizacionesOrden;
+import sia.modelo.CoComentario;
 import sia.modelo.CoNoticia;
 import sia.modelo.Compania;
 import sia.modelo.Estatus;
@@ -54,6 +63,7 @@ import sia.modelo.OrdenDetalle;
 import sia.modelo.Proveedor;
 import sia.modelo.Rechazo;
 import sia.modelo.RequisicionDetalle;
+import sia.modelo.SiAdjunto;
 import sia.modelo.Usuario;
 import sia.modelo.campoVO.CampoOrden;
 import sia.modelo.comunicacion.ComparteCon;
@@ -94,6 +104,7 @@ import sia.servicios.orden.impl.OrdenSiMovimientoImpl;
 import sia.servicios.proveedor.impl.PvProveedorSinCartaIntencionImpl;
 import sia.servicios.requisicion.impl.ReRequisicionEtsImpl;
 import sia.servicios.requisicion.impl.RequisicionImpl;
+import sia.servicios.sistema.impl.SiAdjuntoImpl;
 import sia.servicios.sistema.impl.SiFacturaAdjuntoImpl;
 import sia.servicios.sistema.impl.SiFacturaContenidoNacionalImpl;
 import sia.servicios.sistema.impl.SiFacturaDetalleImpl;
@@ -101,6 +112,7 @@ import sia.servicios.sistema.impl.SiFacturaImpl;
 import sia.servicios.sistema.impl.SiManejoFechaImpl;
 import sia.servicios.sistema.impl.SiUsuarioRolImpl;
 import sia.util.UtilLog4j;
+import sia.util.ValidadorNombreArchivo;
 
 /**
  *
@@ -169,6 +181,8 @@ public class OrdenBean implements Serializable {
     SiFacturaDetalleImpl siFacturaDetalleImpl;
     @Inject
     PvProveedorSinCartaIntencionImpl PvProveedorSinCartaIntencionImpl;
+    @Inject
+    SiAdjuntoImpl siAdjuntoImpl;
     ////////////////    
     //-- Managed Beans ----
     @Inject
@@ -182,8 +196,9 @@ public class OrdenBean implements Serializable {
 
     @Inject
     private PopupCompletarActivoFijoBean popupCompletarActivoFijoBean;
+
     @Inject
-    private NotaOrdenBean notaOrdenBean;
+    private ProveedorAlmacenDocumentos proveedorAlmacenDocumentos;
     // - - - - - - - - - -
 
     //  private Map<String, List<OrdenVO>> mapaOrdenes;
@@ -220,8 +235,12 @@ public class OrdenBean implements Serializable {
     private int idProveedorr;
     private int idTarea;
     //
-    private String fechaInicio;
-    private String fechaFin = Constantes.FMT_ddMMyyy.format(new Date());
+    @Getter
+    @Setter
+    private LocalDate fechaInicio;
+    @Getter
+    @Setter
+    private LocalDate fechaFin;
     //
     private int idProyectoOT;
     private String tipoFiltro;
@@ -275,6 +294,26 @@ public class OrdenBean implements Serializable {
     @Getter
     @Setter
     private List<OrdenVO> ordenesTareaPS;
+    @Getter
+    @Setter
+    private List<OrdenVO> ordenesHistorial;
+    @Getter
+    @Setter
+    private String textoNoticia;
+    @Getter
+    @Setter
+    private List<NoticiaVO> notas;
+    @Setter
+    private String directorioPath;
+    @Getter
+    @Setter
+    private CoNoticia noticiaActual;
+    @Getter
+    @Setter
+    private CoComentario comentarioActual;
+    @Getter
+    @Setter
+    private UploadedFile fileInfo;
 
     public OrdenBean() {
     }
@@ -285,10 +324,12 @@ public class OrdenBean implements Serializable {
     public void iniciarLimpiar() {
         //  mapaOrdenes = new HashMap<>();
         setOrdenActual(null);
-        notaOrdenBean.setFiltrar(false);
+
         llenarCompras();
         ordenesTareaAF = new ArrayList<>();
         ordenesTareaPS = new ArrayList<>();
+        ordenesHistorial = new ArrayList<>();
+        notas = new ArrayList<>();
     }
 
     private void llenarCompras() {
@@ -340,6 +381,7 @@ public class OrdenBean implements Serializable {
         mapaOrdenes.put("licitacion", ordenServicioRemoto.getOrdenesAutorizaLicitacion(usuarioBean.getUsuarioConectado().getId(),
                 usuarioBean.getUsuarioConectado().getApCampo().getId()));
          */
+        fechaFin = LocalDate.now();
     }
 
     public void etsPorRequisicion() {
@@ -354,7 +396,7 @@ public class OrdenBean implements Serializable {
     public void cargarEts() {
         try {
             setPaginaAtras(FacesUtilsBean.getRequestParameter("paginaAtras"));
-            notaOrdenBean.setFiltrar(false);
+
         } catch (Exception e) {
             LOGGER.fatal(this, e);
         }
@@ -364,7 +406,6 @@ public class OrdenBean implements Serializable {
         setOrdenActual(ordenServicioRemoto.find(idOrden));
         getOrdenActual().setLeida(Constantes.BOOLEAN_TRUE);
         ordenServicioRemoto.editarOrden(ordenActual);
-        notaOrdenBean.setFiltrar(true);
 
         itemsPorOrden();
         notasPorOrden();
@@ -381,6 +422,9 @@ public class OrdenBean implements Serializable {
         //
         itemsRequisicion = new ArrayList<>();
         itemsPorRequisicion();
+        //
+        notasPorOrden();
+        noticiaActual = new CoNoticia();
 
     }
 
@@ -392,20 +436,16 @@ public class OrdenBean implements Serializable {
         listaArchivoConvenio = null;
     }
 
-    public List<NoticiaVO> notasPorOrden() {
+    public void notasPorOrden() {
         try {
-            if (ordenActual != null) {
-                return notaOrdenBean.traerNoticiaPorOrden(getOrdenActual().getId());
-            }
+            notas = ocOrdenCoNoticiaImpl.traerNoticiaPorOrden(getOrdenActual().getId(), Boolean.TRUE);
         } catch (Exception e) {
             LOGGER.fatal(this, "notasPorOrden  . . ." + e.getMessage(), e);
         }
-        return null;
     }
 
     public void seleccionarOrdenAF(int idOrden) {
         this.setOrdenActual(ordenServicioRemoto.find(idOrden));
-        this.notaOrdenBean.setNotaActual(null);
         this.mostrar = true;
         List<OrdenDetalleVO> lo = this.ordenServicioRemoto.itemsPorOrdenCompra(getOrdenActual().getId());
         this.setListaItems(lo);
@@ -502,7 +542,7 @@ public class OrdenBean implements Serializable {
     }
 
     public void crearNota() {
-        notaOrdenBean.setFiltrar(true);
+        noticiaActual = new CoNoticia();
     }
 
     public void completarCrearNota() {
@@ -532,12 +572,12 @@ public class OrdenBean implements Serializable {
                     correoNota.length() > 0 ? correoNota.toString() : "",
                     uvo.getMail(),
                     ordenActual,
-                    asunto.toString(), usuarioBean.getUsuarioConectado().getNombre(), notaOrdenBean.getTextoNoticia(),
+                    asunto.toString(), usuarioBean.getUsuarioConectado().getNombre(), getTextoNoticia(),
                     listaContactosOrden)) {
                 //
                 //Noticias nueavas
                 CoNoticia coNoticia = coNoticiaImpl.nuevaNoticia(usuarioBean.getUsuarioConectado().getId(), asunto.toString(), "",
-                        notaOrdenBean.getTextoNoticia(), 0, 0, castUsuarioComparteCon(ordenActual));
+                        getTextoNoticia(), 0, 0, castUsuarioComparteCon(ordenActual));
                 //Guarda la nota
                 ocOrdenCoNoticiaImpl.guardarNoticia(usuarioBean.getUsuarioConectado().getId(), coNoticia, ordenActual);
 
@@ -686,23 +726,22 @@ public class OrdenBean implements Serializable {
         return (invitados == null ? null : invitados.toString());
     }
 
-    public DataModel getNotasPorOrden() {
-        DataModel listaNotas = null;
-        if (this.getOrdenActual() != null) {
-            listaNotas = this.notaOrdenBean.getNotasPorOrden(this.getOrdenActual().getId());
-        }
-        return listaNotas;
-    }
-
-    public DataModel getNotasParaDetalleOrden() {
-        DataModel listaNotas = null;
-        if (this.getOrdenActual() != null) {
-            listaNotas = this.notaOrdenBean.getNotasParaDetalleOrden(this.getOrdenActual().getId());
-        }
-        return listaNotas;
-    }
+//    public DataModel getNotasPorOrden() {
+//        DataModel listaNotas = null;
+//        if (this.getOrdenActual() != null) {
+//            listaNotas = this.notaOrdenBean.getNotasPorOrden(this.getOrdenActual().getId());
+//        }
+//        return listaNotas;
+//    }
+//
+//    public DataModel getNotasParaDetalleOrden() {
+//        DataModel listaNotas = null;
+//        if (this.getOrdenActual() != null) {
+//            listaNotas = this.notaOrdenBean.getNotasParaDetalleOrden(this.getOrdenActual().getId());
+//        }
+//        return listaNotas;
+//    }
 // Item 
-
     public void eliminarItem(int id) {
         try {
             OrdenDetalleVO odvo = listaItems.get(id);
@@ -950,6 +989,8 @@ public class OrdenBean implements Serializable {
                     mostrar = false;
 
                     String jsMetodo = JS_METHOD_LIMPIAR_TODOS;
+                    
+                    llenarCompras();
                     PrimeFaces.current().executeScript(jsMetodo);
                 } catch (Exception e) {
                     FacesUtilsBean.addErrorMessage(e.getMessage());
@@ -1717,7 +1758,6 @@ public class OrdenBean implements Serializable {
 
     public void cancelarOrden(int idOrden) {
         this.setOrdenActual(ordenServicioRemoto.find(idOrden));
-        notaOrdenBean.setFiltrar(false);
 
     }
 
@@ -1789,7 +1829,7 @@ public class OrdenBean implements Serializable {
     }
 
     public void detAFPS() {
-        if (getOrdenActual() != null && TipoRequisicion.PS.equals(getOrdenActual().getTipo())) {
+        if (getOrdenActual() != null && TipoRequisicion.PS.toString().equals(getOrdenActual().getTipo())) {
             this.popupCompletarActivoFijoBean.setOcProductos(getOcProductos());
             this.popupCompletarActivoFijoBean.setPopUpocProductoID(0);
         } else {
@@ -1975,7 +2015,6 @@ public class OrdenBean implements Serializable {
 
     public void devolverOrden(int idOrden) {
         this.setOrdenActual(ordenServicioRemoto.find(idOrden));
-        notaOrdenBean.setFiltrar(false);
 
     }
 
@@ -2006,7 +2045,7 @@ public class OrdenBean implements Serializable {
         // false selecciona la ultima orden d la lista si es q hay si no limpia todo...
         setOrdenActual(ordenServicioRemoto.find(0));
 
-        List<OrdenDetalleVO> lo = new ArrayList<OrdenDetalleVO>();
+        List<OrdenDetalleVO> lo = new ArrayList<>();
 
         setListaItems((lo));
 
@@ -2072,8 +2111,8 @@ public class OrdenBean implements Serializable {
     public void listaOrdenesSolicitadas() {
         try {
             List<OrdenVO> lo = ordenServicioRemoto.getHistorialOrdenes(usuarioBean.getUsuarioConectado().getId(),
-                    usuarioBean.getUsuarioConectado().getApCampo().getId(), siManejoFechaImpl.cambiarddmmyyyyAyyyymmaa(getFechaInicio()),
-                    siManejoFechaImpl.cambiarddmmyyyyAyyyymmaa(getFechaFin()), Constantes.ORDENES_SIN_APROBAR);
+                    usuarioBean.getUsuarioConectado().getApCampo().getId(), getFechaInicio().format(DateTimeFormatter.ofPattern("yyyy/MM/dd")),
+                    getFechaFin().format(DateTimeFormatter.ofPattern("yyyy/MM/dd")), Constantes.ORDENES_SIN_APROBAR);
             //  mapaOrdenes.put("ordenesSolicitadas", lo);
         } catch (Exception ex) {
             Logger.getLogger(OrdenBean.class.getName()).log(Level.SEVERE, null, ex);
@@ -2088,23 +2127,25 @@ public class OrdenBean implements Serializable {
 
     public void filtrarOrden() {
         try {
-            if (getFechaInicio() == null || getFechaInicio().isEmpty()) {
-                setFechaInicio(siManejoFechaImpl.convertirFechaStringddMMyyyy(new Date()));
+
+            ordenesHistorial = new ArrayList<>();
+            if (getTipoFiltro().equals(Constantes.FILTRO)) {
+                if (getFechaInicio() == null) {
+                    setFechaInicio(LocalDate.now());
+                }
+                ordenesHistorial = ordenServicioRemoto.getHistorialOrdenes(usuarioBean.getUsuarioConectado().getId(),
+                        usuarioBean.getUsuarioConectado().getApCampo().getId(),
+                        getFechaInicio().format(DateTimeFormatter.ofPattern("yyyy/MM/dd")),
+                        getFechaFin().format(DateTimeFormatter.ofPattern("yyyy/MM/dd")),
+                        Constantes.ORDENES_SIN_APROBAR);
+            } else if (getTipoFiltro().equals("palabra")) {
+                ordenesHistorial = ordenServicioRemoto.traerHistorialOrdenePorCadenaItems(getReferencia(),
+                        usuarioBean.getUsuarioConectado().getId(),
+                        usuarioBean.getUsuarioConectado().getApCampo().getId());
             }
-//            if (getTipoFiltro().equals(Constantes.FILTRO)) {
-//                mapaOrdenes.put("ordenesSolicitadas", ordenServicioRemoto.getHistorialOrdenes(usuarioBean.getUsuarioConectado().getId(),
-//                        usuarioBean.getUsuarioConectado().getApCampo().getId(),
-//                        siManejoFechaImpl.cambiarddmmyyyyAyyyymmaa(getFechaInicio()),
-//                        siManejoFechaImpl.cambiarddmmyyyyAyyyymmaa(getFechaFin()),
-//                        Constantes.ORDENES_SIN_APROBAR));
-//            } else if (getTipoFiltro().equals("palabra")) {
-//                mapaOrdenes.put("ordenesSolicitadas", ordenServicioRemoto.traerHistorialOrdenePorCadenaItems(getReferencia(),
-//                        usuarioBean.getUsuarioConectado().getId(),
-//                        usuarioBean.getUsuarioConectado().getApCampo().getId()));
-//            }
-//            if (mapaOrdenes.get("ordenesSolicitadas") == null) {
-//                FacesUtilsBean.addErrorMessage("No hay OC/S con los parámetros solicitados.");
-//            }
+            if (ordenesHistorial.isEmpty()) {
+                FacesUtilsBean.addErrorMessage("No hay OC/S con los parámetros solicitados.");
+            }
         } catch (Exception ex) {
             LOGGER.fatal(this, "Ocurriio un error al traer los datos del historial. " + ex.getMessage());
         }
@@ -2121,17 +2162,16 @@ public class OrdenBean implements Serializable {
         CargaEtsBean cargaEtsBean = (CargaEtsBean) FacesUtilsBean.getManagedBean("cargaEtsBean");
         cargaEtsBean.traerTablaComparativa();
         cargaEtsBean.ordenEtsPorCategoria();
-        if (notaOrdenBean.getNotaActual() != null) {
-            notaOrdenBean.cambiarNotaOrden(0);
-        }
         itemsPorOrden();
+
         //
         formatosEntradaOrden();
         menuBarBean.procesarAccion("detalleOrden.xhtml?faces-redirect=true");
         if (usuarioBean.getMapaRoles().containsKey("Consulta OCS Factura")) {
             cargarFacturas(idOrd);
         }
-        return "detalleOrden";
+        notasPorOrden();
+        return "detalleOrden.xhtml?faces-redirect=true";
     }
 
     /**
@@ -2503,8 +2543,6 @@ public class OrdenBean implements Serializable {
         requisicionBean.setRequisicionesAsignadas(null);
         requisicionBean.setRequisicionActual(null);
 
-        notaOrdenBean.setNotaActual(null);
-        notaOrdenBean.setListaNotas(null);
         usuarioBean.setCambioCampo(false);
 
     }
@@ -2735,34 +2773,6 @@ public class OrdenBean implements Serializable {
      */
     public void setListaContactos(List<ContactoProveedorVO> listaContactos) {
         this.listaContactos = listaContactos;
-    }
-
-    /**
-     * @return the fechaInicio
-     */
-    public String getFechaInicio() {
-        return fechaInicio;
-    }
-
-    /**
-     * @param fechaInicio the fechaInicio to set
-     */
-    public void setFechaInicio(String fechaInicio) {
-        this.fechaInicio = fechaInicio;
-    }
-
-    /**
-     * @return the fechaFin
-     */
-    public String getFechaFin() {
-        return fechaFin;
-    }
-
-    /**
-     * @param fechaFin the fechaFin to set
-     */
-    public void setFechaFin(String fechaFin) {
-        this.fechaFin = fechaFin;
     }
 
     /**
@@ -3355,4 +3365,150 @@ public class OrdenBean implements Serializable {
         this.proveedorCI = proveedorCI;
     }
 
+    public void modificarNoticia() {
+        if (getNoticiaActual() != null) {
+            coNoticiaImpl.editNoticia(noticiaActual, usuarioBean.getUsuarioConectado().getId());
+            notasPorOrden();
+            PrimeFaces.current().dialog().closeDynamic("dlgModNot");
+        } else {
+            FacesUtilsBean.addErrorMessage("Por favor escribe la noticia..");
+        }
+    }
+
+    public void eliminarComentario(int idC) {
+        try {
+            coNoticiaImpl.eliminarComentario(idC, usuarioBean.getUsuarioConectado().getId());
+            //
+            notasPorOrden();
+            UtilLog4j.log.fatal(this, "Comentario eliminado");
+        } catch (Exception e) {
+            UtilLog4j.log.fatal(this, "Exception en elimnar cmentario " + e.getMessage());
+        }
+    }
+
+    public void mostrarPopupModificarComentario(int idC) {
+        this.setComentarioActual(coNoticiaImpl.buscarComentario(idC));
+    }
+
+    public void modificarComentario() {
+        if (!this.getComentarioActual().getMensaje().equals("")) {
+            coNoticiaImpl.editComentario(getComentarioActual(), usuarioBean.getUsuarioConectado().getId());
+            //
+            notasPorOrden();
+            PrimeFaces.current().dialog().closeDynamic("dlgModCom");
+        } else {
+            FacesUtilsBean.addErrorMessage("Por favor escribe el comentario..");
+        }
+    }
+
+    public void eliminarArchivo(int idAr, int idRelacion, int idN) {
+        //
+        if (quitarArchivo(idN, idAr, idRelacion, usuarioBean.getUsuarioConectado().getId())) {
+            FacesUtilsBean.addInfoMessage("Se eliminó correctamente el archivo...");
+            notasPorOrden();
+        } else {
+            FacesUtilsBean.addErrorMessage("Existió un error al eliminar el arvhivo..");
+        }
+    }
+
+    public boolean quitarArchivo(Integer idNoticia, Integer idArchivo, Integer idRelacion, String idUsuario) {
+        boolean retVal = false;
+        //String path = this.siParametroImpl.find(1).getUploadDirectory();
+        SiAdjunto adjunto = siAdjuntoImpl.find(idArchivo);
+        if (adjunto == null) {
+            FacesUtilsBean.addErrorMessage("No se localizó el adjunto.");
+        } else {
+            try {
+
+                proveedorAlmacenDocumentos.getAlmacenDocumentos().borrarDocumento(adjunto.getUrl());
+                coNoticiaImpl.deleteArchivo(adjunto, idRelacion, idUsuario);
+
+                retVal = true;
+            } catch (SIAException ex) {
+                UtilLog4j.log.error("Eliminando adjunto " + adjunto.getUrl(), ex);
+            }
+        }
+        return retVal;
+    }
+
+    public void nuevoComentario(int idN, int idCampo, String comentario) {
+        //String comen = (String) FacesUtilsBean.getRequestParameter("respuesta");
+        textoNoticia = comentario;
+        if (textoNoticia.trim().isEmpty() || textoNoticia.equals("null")) {
+            FacesUtilsBean.addInfoMessage("Agregue un comentario a la noticia .  .  .  . ");
+        } else {
+            coNoticiaImpl.nuevoComentario(idN, usuarioBean.getUsuarioConectado().getId(), textoNoticia, Boolean.TRUE, false, idCampo, Constantes.MODULO_COMPRA);
+            notasPorOrden();
+            textoNoticia = "";
+        }
+        textoNoticia = "";
+    }
+
+    public void eliminarNoticia(int idN) {
+        try {
+            coNoticiaImpl.eliminarNoticia(idN, usuarioBean.getUsuarioConectado().getId());
+            UtilLog4j.log.fatal(this, "Comentario eliminado");
+            notasPorOrden();
+        } catch (Exception e) {
+            UtilLog4j.log.fatal(this, "Exception en elimnar cmentario " + e.getMessage());
+        }
+    }
+
+    public void mostrarPopupModificarNoticia(int idN) {
+        setNoticiaActual(coNoticiaImpl.find(idN));
+    }
+
+    public void mostrarPopupSubirArchivo(int idN) {
+        noticiaActual = coNoticiaImpl.find(idN);
+        setDirectorioPath("Comunicacion/Noticia/" + idN);
+        UtilLog4j.log.fatal(this, "idNOticia" + idN);
+    }
+
+    public void subirArchivo(FileUploadEvent fileEvent) {
+        UtilLog4j.log.fatal(this, "subirArchivo");
+        boolean v = false;
+        ValidadorNombreArchivo validadorNombreArchivo = new ValidadorNombreArchivo();
+        AlmacenDocumentos almacenDocumentos
+                = proveedorAlmacenDocumentos.getAlmacenDocumentos();
+
+        fileInfo = fileEvent.getFile();
+        try {
+
+            boolean addArchivo = validadorNombreArchivo.isNombreValido(fileInfo.getFileName());
+
+            if (addArchivo) {
+                DocumentoAnexo documentoAnexo = new DocumentoAnexo(fileInfo.getContent());
+                documentoAnexo.setTipoMime(fileInfo.getContentType());
+                documentoAnexo.setNombreBase(fileInfo.getFileName());
+                documentoAnexo.setRuta(directorioPath);
+                almacenDocumentos.guardarDocumento(documentoAnexo);
+
+                v
+                        = coNoticiaImpl.addArchivo(
+                                documentoAnexo.getNombreBase(),
+                                documentoAnexo.getRuta(),
+                                documentoAnexo.getTipoMime(),
+                                documentoAnexo.getTamanio(),
+                                noticiaActual.getId(),
+                                usuarioBean.getUsuarioConectado().getId()
+                        );
+                notasPorOrden();
+                PrimeFaces.current().dialog().closeDynamic("dlgSubArh");
+
+            } else {
+                FacesUtilsBean.addInfoMessage(new StringBuilder()
+                        .append("No se permiten los siguientes caracteres especiales en el nombre del Archivo: ")
+                        .append(validadorNombreArchivo.getCaracteresNoValidos())
+                        .toString());
+            }
+
+            if (v == false) {
+                FacesUtilsBean.addErrorMessage("Ocurrio una excepción, favor de comunicar a sia@ihsa.mx");
+            }
+
+            fileInfo.delete();
+        } catch (IOException | SIAException e) {
+            LOGGER.fatal(this, "Excepcion al subir archivo", e);
+        }
+    }
 }

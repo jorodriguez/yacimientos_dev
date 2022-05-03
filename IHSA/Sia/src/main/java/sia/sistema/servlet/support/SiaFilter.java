@@ -1,7 +1,6 @@
 package sia.sistema.servlet.support;
 
 import java.io.IOException;
-import javax.faces.application.ResourceHandler;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
@@ -11,37 +10,76 @@ import javax.servlet.ServletResponse;
 import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import lombok.extern.slf4j.Slf4j;
+import sia.sistema.bean.backing.Sesion;
 
 /**
  *
  * @author mrojas
  */
-@WebFilter
-//Log4j
+@WebFilter(filterName = "AuthFilter", urlPatterns = "*.xhtml")
+@Slf4j
 public class SiaFilter implements Filter {
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
-        //log.trace("Initializing filter ...");
+        Filter.super.init(filterConfig);
     }
 
     @Override
-    public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) throws IOException, ServletException {
-        HttpServletRequest request = (HttpServletRequest) req;
-        HttpServletResponse response = (HttpServletResponse) res;
-        
-        if (!request.getRequestURI().startsWith(request.getContextPath() + ResourceHandler.RESOURCE_IDENTIFIER)) { // Skip JSF resources (CSS/JS/Images/etc)
-            response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate"); // HTTP 1.1.
-            response.setHeader("Pragma", "no-cache"); // HTTP 1.0.
-            response.setDateHeader("Expires", 0); // Proxies.
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+            throws IOException, ServletException {
+        try {
+            HttpServletRequest reqt = (HttpServletRequest) request;
+            HttpServletResponse resp = (HttpServletResponse) response;
+            HttpSession ses = reqt.getSession(false);
+
+            String reqURI = reqt.getRequestURI();
+
+            boolean isResource
+                    = reqURI.contains("javax.faces.resource")
+                    || reqURI.endsWith(".js")
+                    || reqURI.endsWith(".css")
+                    || reqURI.endsWith(".ico")
+                    || reqURI.endsWith(".jpg")
+                    || reqURI.endsWith(".svg")
+                    || reqURI.endsWith(".png")
+                    || reqURI.endsWith(".gif")
+                    || reqURI.endsWith(".otf")
+                    || reqURI.endsWith(".eot")
+                    || reqURI.endsWith(".map")
+                    || reqURI.endsWith(".ttf")
+                    || reqURI.endsWith(".woff")
+                    || reqURI.endsWith(".woff2");
+
+            if ((ses != null && ses.getAttribute(Sesion.USER) != null)
+                    || reqURI.contains("/login.xhtml")
+                    || isResource) {
+                chain.doFilter(request, response);
+            } else {
+                resp.sendRedirect(reqt.getContextPath() + "/login.xhtml");
+            }
+
+        } catch (IOException | ServletException e) {
+            log.error("", e);
         }
-        
-        chain.doFilter(req, res);
+
+//        HttpServletRequest request = (HttpServletRequest) req;
+//        HttpServletResponse response = (HttpServletResponse) res;
+//        
+//        if (!request.getRequestURI().startsWith(request.getContextPath() + ResourceHandler.RESOURCE_IDENTIFIER)) { // Skip JSF resources (CSS/JS/Images/etc)
+//            response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate"); // HTTP 1.1.
+//            response.setHeader("Pragma", "no-cache"); // HTTP 1.0.
+//            response.setDateHeader("Expires", 0); // Proxies.
+//        }
+//        
+//        chain.doFilter(req, res);
     }
 
     @Override
     public void destroy() {
-       // log.trace("Destroying filter ...");
+        Filter.super.destroy();
     }
-    
+
 }

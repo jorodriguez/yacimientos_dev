@@ -14,7 +14,6 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedProperty;
 
-
 import javax.faces.model.SelectItem;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
@@ -42,13 +41,12 @@ import sia.util.UtilLog4j;
  *
  * @author mluis
  */
-@Named (value = "historialFacturaBean")
+@Named(value = "historialFacturaBean")
 @ViewScoped
-public class HistorialFacturaBean implements Serializable{
+public class HistorialFacturaBean implements Serializable {
 
     private static final UtilLog4j<OrdenBean> LOGGER = UtilLog4j.log;
 
-    
     @Inject
     private UsuarioBean usuarioBean;
 //
@@ -75,7 +73,7 @@ public class HistorialFacturaBean implements Serializable{
     private List<FacturaAdjuntoVo> listaArchivosNotaCredito = new ArrayList<>();
     private Date inicio;
     private Date fin;
-    private List<SelectItem> proveedores = new ArrayList<>();
+    private List<String> proveedores = new ArrayList<>();
     private String provSelected;
     private String motivo;
     private boolean rechazarFactura;
@@ -153,7 +151,7 @@ public class HistorialFacturaBean implements Serializable{
 
     public void seleccionar(int id) {
         facturaVo = siFacturaImpl.buscarFactura(id);
-        facturaVo.setDetalleFactura(new ArrayList<FacturaDetalleVo>());
+        facturaVo.setDetalleFactura(new ArrayList<>());
         facturaVo.setDetalleFactura(siFacturaDetalleImpl.detalleFactura(id));
         //
         listaArchivosFactura = siFacturaAdjuntoImpl.traerSoporteFactura(facturaVo.getId(), true);
@@ -294,32 +292,31 @@ public class HistorialFacturaBean implements Serializable{
     /**
      * @return the proveedores
      */
-    public List<SelectItem> getProveedores() {
+    public List<String> getProveedores() {
         return proveedores;
     }
 
     /**
      * @param proveedores the proveedores to set
      */
-    public void setProveedores(List<SelectItem> proveedores) {
+    public void setProveedores(List<String> proveedores) {
         this.proveedores = proveedores;
     }
 
-    public void proveedorListener(String event) {
-        setProveedores(traerProveedores(event));
-    }
-
-    private List<SelectItem> traerProveedores(String cadena) {
-        List<SelectItem> list = new ArrayList<>();
+    public List<String> proveedorListener(String cadena) {
+        proveedores.clear();
         try {
             if (cadena != null && !cadena.isEmpty() && cadena.length() > 2) {
-                list = siFacturaImpl.traerProveedorPorStatusFacturas(cadena, FacturaEstadoEnum.PROCESO_INTERNO_CLIENTE.getId(),
+                List<SelectItem> lp = siFacturaImpl.traerProveedorPorStatusFacturas(cadena, FacturaEstadoEnum.PROCESO_INTERNO_CLIENTE.getId(),
                         usuarioBean.getUsuarioConectado().getApCampo().getId());
+                lp.stream().forEach(p -> {
+                    proveedores.add(p.getLabel());
+                });
             }
         } catch (Exception e) {
-            list = new ArrayList<>();
+            proveedores = new ArrayList<>();
         }
-        return list;
+        return proveedores;
     }
 
     /**
@@ -359,11 +356,11 @@ public class HistorialFacturaBean implements Serializable{
         List<FacturaVo> lf = new ArrayList<>();
         lf.add(facturaVo);
 
-        if (FacturaEstadoEnum.PROCESO_INTERNO_CLIENTE.getId() == facturaVo.getIdStatus()) {            
+        if (FacturaEstadoEnum.PROCESO_INTERNO_CLIENTE.getId() == facturaVo.getIdStatus()) {
             siFacturaImpl.aceptarFactura(usuarioBean.getUsuarioConectado().getId(), lf, usuarioBean.getUsuarioConectado().getEmail(), FacturaEstadoEnum.PROCESO_INTERNO_CLIENTE.getId(), FacturaEstadoEnum.PROCESO_DE_PAGO.getId());
         } else if (FacturaEstadoEnum.CORREO_FACTURA_AVANZIA.getId() == facturaVo.getIdStatus()) {
             siFacturaImpl.aceptarFactura(usuarioBean.getUsuarioConectado().getId(), lf, usuarioBean.getUsuarioConectado().getEmail(), FacturaEstadoEnum.CORREO_FACTURA_AVANZIA.getId(), FacturaEstadoEnum.PROCESO_DE_PAGO.getId());
-        }        
+        }
         PrimeFaces.current().executeScript("$(dialogoDatosFacturaHistorial).modal('hide');");
 
         consultarListaFacturas();

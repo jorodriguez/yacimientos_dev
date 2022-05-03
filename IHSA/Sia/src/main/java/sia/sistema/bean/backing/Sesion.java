@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package sia.sistema.bean.backing;
 
 import com.google.api.client.util.Strings;
@@ -12,9 +8,9 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 import java.util.TreeMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Inject;
 import javax.faces.component.UIComponent;
@@ -25,6 +21,7 @@ import javax.inject.Named;
 import javax.naming.NamingException;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.primefaces.PrimeFaces;
 import sia.constantes.Constantes;
 import sia.ldap.ActiveDirectory;
@@ -34,33 +31,20 @@ import sia.modelo.campo.usuario.puesto.vo.CampoUsuarioPuestoVo;
 import sia.modelo.usuario.vo.UsuarioRolVo;
 import sia.modelo.usuario.vo.UsuarioTipoVo;
 import sia.modelo.usuario.vo.UsuarioVO;
-import sia.servicios.campo.nuevo.impl.ApCampoGerenciaImpl;
 import sia.servicios.campo.nuevo.impl.ApCampoImpl;
 import sia.servicios.campo.nuevo.impl.ApCampoUsuarioRhPuestoImpl;
-import sia.servicios.campo.nuevo.impl.RhPuestoImpl;
 import sia.servicios.catalogos.impl.GerenciaImpl;
-import sia.servicios.catalogos.impl.RhEmpleadoMaterialImpl;
 import sia.servicios.catalogos.impl.UsuarioImpl;
-import sia.servicios.comunicacion.impl.CoNoticiaImpl;
-import sia.servicios.requisicion.impl.CadenasMandoImpl;
-import sia.servicios.rh.impl.RhCampoGerenciaImpl;
 import sia.servicios.sgl.huesped.impl.SiUsuarioTipoImpl;
-import sia.servicios.sgl.impl.SgEmpresaImpl;
-import sia.servicios.sgl.impl.SgOficinaImpl;
-import sia.servicios.sgl.impl.SgSolicitudEstanciaImpl;
-import sia.servicios.sistema.impl.SiManejoFechaImpl;
 import sia.servicios.sistema.impl.SiModuloImpl;
-import sia.servicios.sistema.impl.SiOpcionImpl;
 import sia.servicios.sistema.impl.SiParametroImpl;
-import sia.servicios.sistema.impl.SiRelRolOpcionImpl;
-import sia.servicios.sistema.impl.SiRolImpl;
 import sia.servicios.sistema.impl.SiUsuarioRolImpl;
 import sia.servicios.sistema.vo.MenuSiOpcionVo;
 import sia.servicios.sistema.vo.SiModuloVo;
 import sia.servicios.usuario.impl.RhTipoGerenciaImpl;
-import sia.servicios.usuario.impl.RhUsuarioGerenciaImpl;
 import sia.sistema.bean.support.FacesUtils;
-import sia.util.UtilLog4j;
+import sia.util.Env;
+import sia.util.SessionUtils;
 
 /**
  *
@@ -68,54 +52,30 @@ import sia.util.UtilLog4j;
  */
 @Named(value = "sesion")
 @SessionScoped
+@Slf4j
 public class Sesion implements Serializable {
 
     public static final long serialVersionUID = 1L;
 
-    private final static UtilLog4j LOGGER = UtilLog4j.log;
+    public static final String LOGIN = "/principal.xhtml";
+    public static final String MAIN = "index";
+    public static final String USER = "user";
+
+    @Getter
+    private Properties ctx;
 
     @Inject
-    private SiOpcionImpl siOpcionImpl;
-    @Inject
     private UsuarioImpl usuarioImpl;
-    @Inject
-    private CadenasMandoImpl cadenasMandoImpl;
     @Inject
     private GerenciaImpl gerenciaImpl;
     @Inject
     private ApCampoUsuarioRhPuestoImpl apCampoUsuarioRhPuestoImpl;
     @Inject
-    private RhPuestoImpl rhPuestoImpl;
-    @Inject
     private ApCampoImpl apCampoImpl;
-    @Inject
-    private ApCampoGerenciaImpl apCampoGerenciaImpl;
-    @Inject
-    private SgOficinaImpl sgOficinaImpl;
-    @Inject
-    private SgEmpresaImpl sgEmpresaImpl;
-    @Inject
-    private RhEmpleadoMaterialImpl rhEmpleadoMaterialImpl;
-    @Inject
-    private SiManejoFechaImpl siManejoFechaLocal;
-    @Inject
-    private SgSolicitudEstanciaImpl sgSolicitudEstanciaImpl;
-    @Inject
-    private RhUsuarioGerenciaImpl rhUsuarioGerenciaImpl;
     @Inject
     private SiUsuarioTipoImpl siUsuarioTipoImpl;
     @Inject
     private RhTipoGerenciaImpl rhTipoGerenciaImpl;
-    @Inject
-    private RhUsuarioGerenciaImpl usuarioGerenciaImpl;
-    @Inject
-    private RhCampoGerenciaImpl rhCampoGerenciaImpl;
-    @Inject
-    private CoNoticiaImpl coNoticiaImpl;
-    @Inject
-    private SiRolImpl siRolImpl;
-    @Inject
-    private SiRelRolOpcionImpl siRolOpcion;
     @Inject
     private SiUsuarioRolImpl siUsuarioRol;
     @Inject
@@ -130,45 +90,60 @@ public class Sesion implements Serializable {
 //se fija el objeto a modificar
     private TreeMap<String, Boolean> controladorPopups = new TreeMap<>();
     private final Calendar calendario = Calendar.getInstance();
+    
+    @Getter
     private final Date fecha = calendario.getTime();
+    
     private Usuario usuario;
+
     @Getter
     @Setter
     private UsuarioVO usuarioVo;
+
     @Getter
     @Setter
     private UsuarioVO usuarioVoAlta;
+
     @Getter
     @Setter
     private int idGerencia;
+
     @Getter
     @Setter
     private int idCampo;
-    private String u, c;
+
+    @Getter
+    @Setter
+    private String u;
+    
+    @Getter
+    @Setter
+    private String c;
+    
     private boolean olvidoClave;
     private boolean visible = true;
 
     private String rfcCompania;
     private List<SiModuloVo> listaModulo;
+
     @Getter
     @Setter
     private List<CampoUsuarioPuestoVo> camposPorUsuario;
+
     @Getter
     @Setter
     private List<MenuSiOpcionVo> listaMenu;
+
     @Getter
     @Setter
     private DataModel lista;
-
-    public Sesion() {
-    }
 
     public String login() {
         String accion = Constantes.VACIO;
 
         try {
             // Checamos si existe el usuario
-            if (getC().trim().isEmpty()) {
+            if (Strings.isNullOrEmpty(getC())) {
                 FacesUtils.addInfoMessage("Es necesario introducir la contraseña.");
             } else {
                 usuario = usuarioImpl.find(getU());
@@ -197,6 +172,8 @@ public class Sesion implements Serializable {
 
                     if (autenticado) {
                         olvidoClave = false;
+                        
+                        //TODO : establecer como variables en contexto y obtenerlos de ahí
                         llenarUsuarioVO(usuario);
                         setUsuarioVoAlta(null);
                         setIdCampo(usuarioVo.getIdCampo());
@@ -207,8 +184,15 @@ public class Sesion implements Serializable {
                         accion = "/principal";
                         setU(Constantes.VACIO);
                         setC(Constantes.VACIO);
-                        LOGGER.info(this, "USUARIO CONECTADO : " + usuario.getId());
+                        log.info("USUARIO CONECTADO : {}", usuario.getId());
                         traerCampo();
+
+                        SessionUtils.setAttribute(USER, usuario);
+
+                        ctx = new Properties();
+                        
+                        subirValoresContexto();
+
                     } else {
                         FacesUtils.addInfoMessage("Usuario o contraseña es incorrecta.");
                         setUsuarioVoAlta(null);
@@ -220,8 +204,8 @@ public class Sesion implements Serializable {
 
                 }
             }
-        } catch (NoSuchAlgorithmException | NamingException e) {
-            LOGGER.fatal(this, Constantes.VACIO, e);
+        } catch (NoSuchAlgorithmException e) {
+            log.error(Constantes.VACIO, e);
 
             setUsuario(null);
             setUsuarioVo(null);
@@ -232,6 +216,16 @@ public class Sesion implements Serializable {
         return accion;
     }
 
+    
+    private void subirValoresContexto() {
+        Env.setContext(ctx, Env.SESSION_ID, SessionUtils.getSession().getId());
+        Env.setContext(ctx, Env.CLIENT_INFO, SessionUtils.getClientInfo(SessionUtils.getRequest()));
+        Env.setContext(ctx, Env.PUNTO_ENTRADA, "Sia");
+        Env.setContext(ctx, Env.PROYECTO_ID, usuarioVo.getIdCampo());
+        Env.setContext(ctx, Env.CODIGO_COMPANIA, usuarioVo.getRfcEmpresa());
+    }
+    
+    
     private void llenarUsuarioVO(Usuario u) {
         //Traer puesto del usuario
         setUsuarioVo(new UsuarioVO());
@@ -280,7 +274,7 @@ public class Sesion implements Serializable {
         if (usuarioList != null && !usuarioList.isEmpty()) {
             for (UsuarioTipoVo vo : usuarioList) {
                 if (vo.getIdUser().equals(usuarioVo.getId())) {
-                    LOGGER.info(this, "ES USUARIO QUE ADMINISTRA TI");
+                    log.info("ES USUARIO QUE ADMINISTRA TI");
                     usuarioVo.setAdministraTI(true);
                     break;
                 }
@@ -320,14 +314,11 @@ public class Sesion implements Serializable {
     }
 
     private boolean autenticarSIA() throws NoSuchAlgorithmException {
-        //LOGGER.info("Autenticando con SIA ....");
-
         return getUsuario().getId().equals(getU())
                 && this.getUsuario().getClave().equals(encriptar(getC()));
     }
 
     public String encriptar(String text) throws NoSuchAlgorithmException {
-        //LOGGER.info(this, "Text: ");
         return usuarioImpl.encriptar(text);
     }
 
@@ -345,14 +336,14 @@ public class Sesion implements Serializable {
         return listaModulo;
     }
 
-    public String getAño() {
+    public String getYear() {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy");
         String retVal = Constantes.VACIO;
 
         try {
             retVal = sdf.format(getFecha());
         } catch (Exception e) {
-            LOGGER.error(e);
+            log.warn(Constantes.VACIO, e);
         }
 
         return retVal;
@@ -372,7 +363,7 @@ public class Sesion implements Serializable {
         if (url == null) {
             resultado = Constantes.VACIO;
         } else {
-            resultado = url.replaceAll("@@AM@@", getArrancarModulo(campo, pagina));
+            resultado = url.replace("@@AM@@", getArrancarModulo(campo, pagina));
         }
         return resultado;
     }
@@ -382,7 +373,7 @@ public class Sesion implements Serializable {
         if (url == null) {
             resultado = Constantes.VACIO;
         } else {
-            resultado = url.replaceAll("@@AM@@", getArrancarModulo(0, ""));
+            resultado = url.replace("@@AM@@", getArrancarModulo(0, ""));
         }
         return resultado;
     }
@@ -398,13 +389,15 @@ public class Sesion implements Serializable {
     }
 
     public void cerrarSesion() {
-        LOGGER.info(this, "CERRO SESION : " + usuario.getId());
+        log.info("CERRO SESION : {}", usuario.getId());
         usuario = null;
         setU(Constantes.VACIO);
         setC(Constantes.VACIO);
         setUsuarioVo(null);
         setUsuarioVoAlta(null);
         setCamposPorUsuario(null);
+        ctx = null;
+        
         PrimeFaces.current().executeScript(";refrescar();");
     }
 
@@ -412,7 +405,7 @@ public class Sesion implements Serializable {
         try {
             listaBloquePorUsuario();
         } catch (Exception e) {
-            LOGGER.error("", e);
+            log.warn(Constantes.VACIO, e);
         }
     }
 
@@ -431,12 +424,15 @@ public class Sesion implements Serializable {
             usuarioVo.setGerencia(con.getGerencia());
             usuarioVo.setPuesto(con.getPuesto());
             setUsuarioVoAlta(null);
+            
+            subirValoresContexto();
+            
+            
             //
-            PrimeFaces.current().executeScript(";$(dialogoUsuarioCampo).modal('hide');;"
-            );
+            PrimeFaces.current().executeScript(";$(dialogoUsuarioCampo).modal('hide');;");
             FacesContext.getCurrentInstance().getExternalContext().redirect(Constantes.URL_REL_SIA_PRINCIPAL);
         } catch (IOException ex) {
-            Logger.getLogger(Sesion.class.getName()).log(Level.SEVERE, null, ex);
+            log.error(Constantes.VACIO, ex);
         }
     }
 
@@ -452,7 +448,7 @@ public class Sesion implements Serializable {
                         = apCampoUsuarioRhPuestoImpl.getAllPorUsurio(getUsuarioVo().getId());
             }
         } catch (RuntimeException e) {
-            LOGGER.fatal(this, "Ocurrio un error : : : : : " + e.getMessage(), e);
+            log.error("Ocurrio un error : : : : : {}", e.getMessage(), e);
         }
     }
 
@@ -460,24 +456,6 @@ public class Sesion implements Serializable {
         return "/vistas/administracion/usuario/datosUsuario";
     }
 
-    /*
-    public String mostrarPanel() {
-        String retVal = Constantes.VACIO;
-
-        if (setUsuarioVoAlta() == null) {
-            FacesUtils.addInfoMessage("Lo sentimos, usuario no encontrado, favor de verificar el usuario");
-        } else {
-            setAgregarNuevoPass(0);
-            retVal = "/vistas/administracion/usuario/olvidoPassword";
-        }
-
-        return retVal;
-    }
-
-    public Effect getHighlightAreaError() {
-        return null;
-    }
-     */
     /**
      * Este método limpia el valor de un Componente HTML
      *
@@ -485,14 +463,14 @@ public class Sesion implements Serializable {
      * @param nombreComponente
      */
     public void clearComponent(String nombreFormulario, String nombreComponente) {
-        LOGGER.debug(this, "Limpiando el componente: " + nombreFormulario + ":" + nombreComponente);
+        log.debug("Limpiando el componente: {} : {}", nombreFormulario, nombreComponente);
         try {
             FacesContext context = FacesContext.getCurrentInstance();
             UIComponent component = context.getViewRoot().findComponent(nombreFormulario + ":" + nombreComponente);
             UIComponent parentComponent = component.getParent();
             parentComponent.getChildren().clear();
         } catch (Exception e) {
-            LOGGER.fatal(this, "Hubo algún error al limpiar el componente: " + nombreFormulario + ":" + nombreComponente);
+            log.error("Hubo algún error al limpiar el componente: {} : {}", nombreFormulario, nombreComponente);
         }
     }
 
@@ -522,46 +500,13 @@ public class Sesion implements Serializable {
         try {
             usrRol = siUsuarioRol.findUsuarioRolVO(Constantes.ROL_VISTO_BUENO_COSTO, sesion, idCamp);
         } catch (Exception ex) {
-            LOGGER.error(ex);
+            log.warn(Constantes.VACIO, ex);
         }
         return usrRol != null && usrRol.getIdUsuarioRol() > 0;
     }
 
-    /**
-     * @return the u
-     */
-    public String getU() {
-        return u;
-    }
-
-    /**
-     * @param u the u to set
-     */
-    public void setU(String u) {
-        this.u = u;
-    }
-
-    /**
-     * @return the c
-     */
-    public String getC() {
-        return c;
-    }
-
-    /**
-     * @param c the c to set
-     */
-    public void setC(String c) {
-        this.c = c;
-    }
-
-    /**
-     * @return the fecha
-     */
-    public Date getFecha() {
-        return fecha;
-    }
-
+    
+    
     /**
      * @return the olvidoClave
      */
@@ -575,14 +520,11 @@ public class Sesion implements Serializable {
     public boolean isVisible() {
         return visible;
     }
-//    public void showComentar(){
-//        this.comentar = !this.comentar;
-//    }
 
     /**
      * @return the controladorPopups
      */
-    public TreeMap<String, Boolean> getControladorPopups() {
+    public Map<String, Boolean> getControladorPopups() {
         return controladorPopups;
     }
 
@@ -607,20 +549,30 @@ public class Sesion implements Serializable {
         this.rfcCompania = rfcCompania;
     }
 
-    private boolean autenticarAD() throws NamingException {
+    /**
+     * Autenticar al usuario contra Active Directory
+     *
+     * @return true si el usuario fue encontraro y la contraseña fue válida, false en caso
+     * contrario.
+     */
+    private boolean autenticarAD() {
         boolean retVal = false;
-        LOGGER.info("Autenticando contra Directorio ....");
+        log.info("Autenticando contra Directorio ....");
 
         String directorio = parametroImpl.find(1).getDirectorioUsuarios();
 
         if (Strings.isNullOrEmpty(directorio)) {
             throw new IllegalStateException("No está configurado el directorio para autenticación de usuarios.");
         } else {
-            //Creating instance of ActiveDirectory, if it doesn't blows up, then the user/pass are the right ones
-            ActiveDirectory activeDirectory = new ActiveDirectory(getU(), getC(), directorio);
-            activeDirectory.closeLdapConnection();
+            try {
+                //Creating instance of ActiveDirectory, if it doesn't blows up, then the user/pass are the right ones
+                ActiveDirectory activeDirectory = new ActiveDirectory(getU(), getC(), directorio);
+                activeDirectory.closeLdapConnection();
 
-            retVal = true;
+                retVal = true;
+            } catch (NamingException e) {
+                log.warn("*** Al validar contra AD ...", e);
+            }
         }
 
         return retVal;

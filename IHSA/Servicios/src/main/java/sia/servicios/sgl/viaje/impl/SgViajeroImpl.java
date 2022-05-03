@@ -766,7 +766,7 @@ public class SgViajeroImpl extends AbstractFacade<SgViajero> {
                 }
             }
         } catch (Exception e) {
-            LOGGER.fatal(e+"-------------------------> clonarViajero()");
+            LOGGER.fatal(this, "-------------------------> clonarViajero()", e);
             newViajero = null;
         }
         return newViajero;

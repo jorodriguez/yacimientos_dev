@@ -5,14 +5,14 @@
  */
 package sia.compra.orden.bean.backing;
 
-
 import java.io.Serializable;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedProperty;
-
 
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
@@ -29,7 +29,7 @@ import sia.servicios.orden.impl.OrdenImpl;
  *
  * @author jcarranza
  */
-@Named (value = "reporteRepseBean")
+@Named(value = "reporteRepseBean")
 @ViewScoped
 public class ReporteRepseBean implements Serializable {
 
@@ -46,43 +46,39 @@ public class ReporteRepseBean implements Serializable {
     OrdenImpl ordenImpl;
     @Inject
     private AutorizacionesOrdenImpl autorizacionesOrdenImpl;
-    
+
     @Getter
     @Setter
     private List<OrdenVO> comprasRepse;
     @Getter
     @Setter
-    private Date inicio;
+    private LocalDate inicio;
     @Getter
     @Setter
-    private Date fin;
+    private LocalDate fin;
     @Getter
     @Setter
     private String codigo;
     @Getter
     @Setter
-    private String proveedor;    
+    private String proveedor;
 
     @PostConstruct
     public void init() {
-        setInicio(new Date());        
-        Calendar cal = Calendar.getInstance();
-        setFin(cal.getTime());
-        cal.add(Calendar.DAY_OF_YEAR, -30);
-        setInicio(cal.getTime());
-        llenarCompras();        
-    }
-
-    private void llenarCompras() {
-        setComprasRepse(autorizacionesOrdenImpl.traerOrdenReporteRepse(Constantes.FMT_yyyy_MM_dd.format(inicio), 
-                Constantes.FMT_yyyy_MM_dd.format(fin), codigo, proveedor, this.sesion.getUsuarioConectado().getApCampo().getId()));
-        
-    }
-    
-    public void buscar() {
+        setFin(LocalDate.now());
+        setInicio(fin.minusDays(30));
         llenarCompras();
     }
 
+    private void llenarCompras() {
+        setComprasRepse(autorizacionesOrdenImpl.traerOrdenReporteRepse(inicio.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
+                fin.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), codigo, proveedor, this.sesion.getUsuarioConectado().getApCampo().getId()));
+
+    }
+
+    public void buscar() {
+        llenarCompras();
+    }
 
     /**
      * @param sesion the sesion to set
@@ -90,8 +86,8 @@ public class ReporteRepseBean implements Serializable {
     public void setSesion(UsuarioBean sesion) {
         this.sesion = sesion;
     }
-    
-    public int getBloque(){
+
+    public int getBloque() {
         return this.sesion.getUsuarioConectado().getApCampo().getId();
     }
 

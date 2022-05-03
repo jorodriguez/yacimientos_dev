@@ -35,6 +35,7 @@ import sia.modelo.sgl.vo.AdjuntoVO;
 import sia.modelo.sistema.vo.FacturaAdjuntoVo;
 import sia.modelo.sistema.vo.FacturaContenidoNacionalVo;
 import sia.modelo.sistema.vo.FacturaVo;
+import sia.modelo.vo.inventarios.ArticuloVO;
 import sia.servicios.sistema.impl.SiAdjuntoImpl;
 import sia.servicios.sistema.impl.SiFacturaAdjuntoImpl;
 import sia.servicios.sistema.impl.SiFacturaContenidoNacionalImpl;
@@ -60,7 +61,6 @@ public class FacturaBean implements Serializable {
     public FacturaBean() {
     }
 
-   
     @Inject
     private UsuarioBean usuarioBean;
 //
@@ -100,7 +100,7 @@ public class FacturaBean implements Serializable {
         setListaFacturaCNH(new ArrayList<FacturaVo>());//siFacturaImpl.traerFacturaPorStatus(FacturaEstadoEnum.PROCESO_DE_PAGO.getId(), usuarioBean.getUsuarioConectado().getApCampo().getId(), Constantes.CERO, usuarioBean.getUsuarioConectado().getApCampo().getCompania().getRfc()));
     }
 
-    public void seleccionarFactura(SelectEvent event) {
+    public void seleccionarFactura(SelectEvent<FacturaVo> event) {
         facturaVo = (FacturaVo) event.getObject();
         listaArchivosFactura = siFacturaAdjuntoImpl.traerSoporteFactura(facturaVo.getId(), Constantes.BOOLEAN_TRUE);
         //

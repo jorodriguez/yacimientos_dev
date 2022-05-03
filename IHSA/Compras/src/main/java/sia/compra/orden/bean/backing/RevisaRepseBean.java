@@ -121,20 +121,20 @@ public class RevisaRepseBean implements Serializable {
 
     @PostConstruct
     public void init() {
-        comprasConRepse = new ArrayList<OrdenVO>();
-        comprasSinRepse = new ArrayList<OrdenVO>();
-        items = new ArrayList<OrdenDetalleVO>();
-        doctos = new ArrayList<OrdenEtsVo>();
-        archivosRepse = new ArrayList<OrdenEtsVo>();
-        archivosContrato = new ArrayList<ContratoVO>();
-        documentosProveedor = new ArrayList<ProveedorDocumentoVO>();
+        comprasConRepse = new ArrayList<>();
+        comprasSinRepse = new ArrayList<>();
+        items = new ArrayList<>();
+        doctos = new ArrayList<>();
+        archivosRepse = new ArrayList<>();
+        archivosContrato = new ArrayList<>();
+        documentosProveedor = new ArrayList<>();
         llenarCompras();
         ordenVo = new OrdenVO();
     }
 
     private void llenarCompras() {
-        comprasConRepse = new ArrayList<OrdenVO>();
-        comprasSinRepse = new ArrayList<OrdenVO>();
+        comprasConRepse = new ArrayList<>();
+        comprasSinRepse = new ArrayList<>();
         List<OrdenVO> ordenes = autorizacionesOrdenImpl.traerOrdenStatusCampo(OrdenEstadoEnum.POR_REVISAR_REPSE.getId(),
                 sesion.getUsuarioConectado().getApCampo().getId());
         for (OrdenVO ordene : ordenes) {
@@ -147,7 +147,7 @@ public class RevisaRepseBean implements Serializable {
     }
 
     public void aceptarRepseSinRepse() {
-        List<OrdenVO> temp = new ArrayList<OrdenVO>();
+        List<OrdenVO> temp = new ArrayList<>();
         for (OrdenVO compra : comprasSinRepse) {
             if (compra.isSelected()) {
                 temp.add(compra);
@@ -258,7 +258,7 @@ public class RevisaRepseBean implements Serializable {
     }
 
     public void aceptarRepse() {
-        List<OrdenVO> temp = new ArrayList<OrdenVO>();
+        List<OrdenVO> temp = new ArrayList<>();
         for (OrdenVO compra : comprasConRepse) {
             if (compra.isSelected()) {
                 temp.add(compra);
@@ -274,9 +274,7 @@ public class RevisaRepseBean implements Serializable {
         }
     }
 
-    public void aceptarCompraConRepse() {
-
-        int ind = Integer.parseInt(FacesUtilsBean.getRequestParameter("indice"));
+    public void aceptarCompraConRepse(int ind) {
         ordenVo = comprasConRepse.get(ind);
         //
         ordenImpl.aceptarRepse(ordenVo.getId(), null, sesion.getUsuarioConectado().getId(), Boolean.TRUE);
@@ -284,8 +282,7 @@ public class RevisaRepseBean implements Serializable {
         comprasConRepse.remove(ind);
     }
 
-    public void inicioRechazarRepse() {
-        int ind = Integer.parseInt(FacesUtilsBean.getRequestParameter("indice"));
+    public void inicioRechazarRepse(int ind) {
         ordenVo = new OrdenVO();
         ordenVo = comprasConRepse.get(ind);
         //
@@ -300,8 +297,7 @@ public class RevisaRepseBean implements Serializable {
         PrimeFaces.current().executeScript("$(dialogoRechazarRepse).modal('hide');");
     }
 
-    public void agregarArchivoRepse() {
-        int ind = Integer.parseInt(FacesUtilsBean.getRequestParameter("indice"));
+    public void agregarArchivoRepse(int ind) {
         ordenVo = new OrdenVO();
         ordenVo = comprasConRepse.get(ind);
         //
@@ -346,12 +342,10 @@ public class RevisaRepseBean implements Serializable {
         }
     }
 
-    public void abriraArchivo() {
+    public void abriraArchivo(int ind) {
         try {
             adjuntoVo = new AdjuntoVO();
-            String param = FacesUtilsBean.getRequestParameter("indice");
-            if (!param.isEmpty()) {
-                int ind = Integer.parseInt(param);
+            if (ind > 0) {
                 //
                 OrdenEtsVo etV = archivosRepse.get(ind);
                 if (etV.getNombre().endsWith(".pdf")) {

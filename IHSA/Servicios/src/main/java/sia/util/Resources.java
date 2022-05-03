@@ -25,7 +25,7 @@ public class Resources {
     @Resource(lookup = "jdbc/__siaPool")
     private DataSource dataSource;
 
-    private static final SQLDialect DIALECT = SQLDialect.FIREBIRD;
+    private static final SQLDialect DIALECT = SQLDialect.POSTGRES;
 
     @Produces
     public DSLContext ctxProducer() {

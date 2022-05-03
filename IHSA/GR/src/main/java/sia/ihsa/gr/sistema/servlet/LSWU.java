@@ -6,8 +6,6 @@
 package sia.ihsa.gr.sistema.servlet;
 
 import java.io.IOException;
-import java.util.List;
-import javax.ejb.EJB;
 import javax.faces.FactoryFinder;
 import javax.faces.application.Application;
 import javax.faces.component.UIViewRoot;
