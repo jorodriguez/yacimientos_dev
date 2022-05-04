@@ -23,6 +23,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.primefaces.PrimeFaces;
+import sia.constantes.Configurador;
 import sia.constantes.Constantes;
 import sia.ldap.ActiveDirectory;
 import sia.modelo.ApCampo;
@@ -375,7 +376,7 @@ public class Sesion implements Serializable {
         } else {
             resultado = url.replace("@@AM@@", getArrancarModulo(0, ""));
         }
-        return resultado;
+        return Configurador.urlSia() + resultado;
     }
 
     public void cerrarSesionExterno() {

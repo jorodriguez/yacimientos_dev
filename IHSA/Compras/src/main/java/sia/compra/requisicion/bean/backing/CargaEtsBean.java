@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.annotation.PostConstruct;
 import javax.faces.bean.CustomScoped;
 import javax.faces.component.html.HtmlInputHidden;
 
@@ -14,6 +15,7 @@ import javax.faces.event.ValueChangeEvent;
 import javax.faces.model.DataModel;
 import javax.faces.model.ListDataModel;
 import javax.faces.model.SelectItem;
+import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import lombok.Getter;
@@ -29,6 +31,7 @@ import sia.constantes.Constantes;
 import sia.excepciones.SIAException;
 import sia.modelo.OcCategoriaEts;
 import sia.modelo.OcOrdenEts;
+import sia.modelo.Orden;
 import sia.modelo.ReRequisicionEts;
 import sia.modelo.SiAdjunto;
 import sia.modelo.Usuario;
@@ -41,6 +44,7 @@ import sia.servicios.requisicion.impl.ReRequisicionEtsImpl;
 import sia.servicios.requisicion.impl.RequisicionSiMovimientoImpl;
 import sia.servicios.sistema.impl.SiAdjuntoImpl;
 import sia.servicios.sistema.impl.SiParametroImpl;
+import sia.util.Env;
 import sia.util.UtilLog4j;
 import sia.util.ValidadorNombreArchivo;
 
@@ -50,7 +54,7 @@ import sia.util.ValidadorNombreArchivo;
  */
 //
 @Named(value = CargaEtsBean.BEAN_NAME)
-@CustomScoped(value = "#{window}")
+@ViewScoped
 public class CargaEtsBean implements Serializable {
 
     //------------------------------------------------------
@@ -60,9 +64,9 @@ public class CargaEtsBean implements Serializable {
     @Inject
     private SiParametroImpl parametrosSistema;
     @Inject
-        private SiAdjuntoImpl servicioSiAdjuntoImpl;
-        @Inject
-        private ReRequisicionEtsImpl servicioReRequisicion; //servicio que realiza operaciones con la relacione entee Requisicion y SiAdjunto
+    private SiAdjuntoImpl servicioSiAdjuntoImpl;
+    @Inject
+    private ReRequisicionEtsImpl servicioReRequisicion; //servicio que realiza operaciones con la relacione entee Requisicion y SiAdjunto
     @Inject
     private OcCategoriaEtsImpl servicioOcCategoriaEts;
     @Inject
@@ -70,14 +74,15 @@ public class CargaEtsBean implements Serializable {
     @Inject
     private ProveedorAlmacenDocumentos proveedorAlmacenDocumentos;
     @Inject
+    private OrdenImpl ordenImpl;
+    @Inject
     private RequisicionSiMovimientoImpl requisicionSiMovimientoImpl;
 
     //------------------------------------------------------
     @Inject
     UsuarioBean usuarioBean;
-    private final PopupGeneralBean popupGeneralBean = (PopupGeneralBean) FacesUtilsBean.getManagedBean("popupGeneralBean");
+
     private final RequisicionBean requisicionBean = (RequisicionBean) FacesUtilsBean.getManagedBean("requisicionBean");
-    private final OrdenBean ordenBean = (OrdenBean) FacesUtilsBean.getManagedBean("ordenBean");
 
     private DataModel<ReRequisicionEts> listaEts; //almacena la lista Especificacion tecnica de suministro
     private DataModel<OcCategoriaEts> listaOcCategoriaEts;
@@ -108,11 +113,25 @@ public class CargaEtsBean implements Serializable {
     @Getter
     @Setter
     private UploadedFile fileInfo;
+    @Getter
+    @Setter
+    private Orden ordenActual;
 
     /**
      * Creates a new instance of CargaEtsBean
      */
     public CargaEtsBean() {
+    }
+
+    @PostConstruct
+    public void iniciar() {
+        Integer parametro = Env.getContextAsInt(usuarioBean.getCtx(), "ORDEN_ID");
+        if (parametro > 0) {
+            ordenActual = ordenImpl.find(parametro);
+        } else {
+            ordenActual = null;
+        }
+        Env.removeContext(usuarioBean.getCtx(), "ORDEN_ID");
     }
 
     public DataModel getEtsPorRequisicion() {
@@ -206,7 +225,6 @@ public class CargaEtsBean implements Serializable {
 
     public void actualizarEts(SiAdjunto requisicionEts) {
         etsActualAdjunto = requisicionEts;
-        popupGeneralBean.toggleModal();
     }
 
     public void completarActualizacionEts() {
@@ -232,12 +250,12 @@ public class CargaEtsBean implements Serializable {
         setRequi(false);
         /*setPreDirectorio(
 	 new StringBuilder().append("ETS/Orden/")
-	 .append(ordenBean.getOrdenActual().getId()).toString()
+	 .append(getOrdenActual().getId()).toString()
 	 );
 	 return new StringBuilder().append(getUploadDirectory()).append(getPreDirectorio()).toString();*/
 
         return new StringBuilder().append("ETS/Orden/")
-                .append(ordenBean.getOrdenActual().getId()).toString();
+                .append(getOrdenActual().getId()).toString();
     }
 
     public String getUploadDirectoryRequi() {
@@ -333,7 +351,7 @@ public class CargaEtsBean implements Serializable {
     }
 
     public DataModel getCategoriaEts() {
-        if (ordenBean.getOrdenActual() == null) {
+        if (getOrdenActual() == null) {
             setListaOcCategoriaEts(null);
         } else {
             try {
@@ -351,14 +369,14 @@ public class CargaEtsBean implements Serializable {
     }
 
     public void ordenEtsPorCategoria() {
-        if (ordenBean.getOrdenActual() == null) {
+        if (getOrdenActual() == null) {
             setListaOcOrdenEts(null);
         } else {
             try {
                 setListaOcOrdenEts(
                         new ListDataModel(
                                 servicioOcOrdenEts.traerEtsPorOrdenCategoria(
-                                        ordenBean.getOrdenActual().getId()
+                                        getOrdenActual().getId()
                                 )
                         )
                 );
@@ -370,14 +388,14 @@ public class CargaEtsBean implements Serializable {
     }
 
     public void traerEspecificacionTecnica() {
-        if (ordenBean.getOrdenActual() == null) {
+        if (getOrdenActual() == null) {
             setListaOcOrdenEts(null);
         } else {
             try {
                 setListaOcOrdenEts(
                         new ListDataModel(
                                 servicioOcOrdenEts.traerEtsPorOrdenCategoria(
-                                        ordenBean.getOrdenActual().getId(),
+                                        getOrdenActual().getId(),
                                         Constantes.CERO
                                 )
                         )
@@ -390,14 +408,14 @@ public class CargaEtsBean implements Serializable {
     }
 
     public void etsPorOrdenRequisicion() {
-        if (ordenBean.getOrdenActual() == null) {
+        if (getOrdenActual() == null) {
             listaEts = null;
         } else {
             try {
                 listaEts
                         = new ListDataModel(
                                 servicioReRequisicion.traerAdjuntosPorRequisicionVisible(
-                                        ordenBean.getOrdenActual().getRequisicion().getId(),
+                                        getOrdenActual().getRequisicion().getId(),
                                         Constantes.BOOLEAN_TRUE
                                 )
                         );
@@ -410,14 +428,12 @@ public class CargaEtsBean implements Serializable {
 
     public void actualizarEtsDesdeOc() {
         etsActualAdjunto = ((OcOrdenEts) getListaOcOrdenEts().getRowData()).getSiAdjunto();
-        popupGeneralBean.toggleModal();
     }
 
     public void actualizarEtsDesdeEtsCategoria(int idRelacionn) {
 
         setEtsOcOrden(servicioOcOrdenEts.find(idRelacionn));
         etsActualAdjunto = getEtsOcOrden().getSiAdjunto();
-        popupGeneralBean.toggleModal();
     }
 
     public void seleccionTodo(ValueChangeEvent textChangeEvent) {
@@ -461,7 +477,7 @@ public class CargaEtsBean implements Serializable {
                 for (ReRequisicionEts reRequisicion : getListaEts()) {
                     if (filasSeleccionadas.get(reRequisicion.getId())
                             && servicioOcOrdenEts.crearOcOrdenEts(
-                                    ordenBean.getOrdenActual().getId(),
+                                    getOrdenActual().getId(),
                                     idCategoriaSelccionada,
                                     reRequisicion.getSiAdjunto(),
                                     usuarioBean.getUsuarioConectado())) {
@@ -493,7 +509,7 @@ public class CargaEtsBean implements Serializable {
             if (getListaEts().getRowCount() > 0) {
                 for (ReRequisicionEts reRequisicion : getListaEts()) {
                     if (servicioOcOrdenEts.crearOcOrdenEts(
-                            ordenBean.getOrdenActual().getId(),
+                            getOrdenActual().getId(),
                             idCategoriaSelccionada,
                             reRequisicion.getSiAdjunto(),
                             usuarioBean.getUsuarioConectado())) {
@@ -566,7 +582,7 @@ public class CargaEtsBean implements Serializable {
                         );
                     } else {
                         servicioOcOrdenEts.crearOcOrdenEts(
-                                ordenBean.getOrdenActual().getId(), getIdCategoriaSelccionada(),
+                                getOrdenActual().getId(), getIdCategoriaSelccionada(),
                                 adj,
                                 usuarioBean.getUsuarioConectado()
                         );
@@ -665,7 +681,7 @@ public class CargaEtsBean implements Serializable {
                 setListaOcOrdenEts(
                         new ListDataModel(
                                 servicioOcOrdenEts.traerEtsPorOrdenCategoria(
-                                        ordenBean.getOrdenActual().getId(),
+                                        getOrdenActual().getId(),
                                         getIdCategoriaSelccionada()
                                 )
                         )
@@ -680,7 +696,7 @@ public class CargaEtsBean implements Serializable {
 
     public void traerTablaComparativa() {
         try {
-            listaTablaComparativa = servicioOcOrdenEts.traerEtsPorOrdenCategoria(ordenBean.getOrdenActual().getId(), Constantes.OCS_CATEGORIA_TABLA);
+            listaTablaComparativa = servicioOcOrdenEts.traerEtsPorOrdenCategoria(getOrdenActual().getId(), Constantes.OCS_CATEGORIA_TABLA);
         } catch (Exception ex) {
             listaTablaComparativa = null;
             LOGGER.fatal(this, " excepcion en getOrdenEts", ex);

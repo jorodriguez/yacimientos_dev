@@ -1,8 +1,8 @@
 <?xml version='1.0' encoding='UTF-8' ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html  xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:p="http://primefaces.org/ui"
-       
+       xmlns:p="http://primefaces.org/ui"
+
        xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
        xmlns:h="http://xmlns.jcp.org/jsf/html"
        xmlns:f="http://xmlns.jcp.org/jsf/core">
@@ -30,16 +30,16 @@
                             <p:commandLink action="#{incidenciaBean.refrescarTickets}" 
                                            styleClass="btn btn-primary"
                                            title="Refrescar tickets" ajax="false">
-                                <i class="fa fa-refresh"/>
+                                <i class="fa fa fa-sync"/>
                             </p:commandLink>
                         </div>
                         <div class="col-12">
                             <p:dataTable size="small" stripedRows="true" showGridlines="true" 
                                          value="#{incidenciaBean.incidencias}" var="dataInc">
-                                <p:column headerText="Código" width="150">
+                                <p:column headerText="Código" width="70">
                                     <h:outputText value="#{dataInc.codigo}"/>
                                 </p:column>
-                                <p:column headerText="Categoría" style="width: 15%">
+                                <p:column headerText="Categoría" style="width: 10%">
                                     <h:outputText value="#{dataInc.categoriaIncidencia}"/>
                                 </p:column>
                                 <p:column headerText="Título" style="width: 20%">
@@ -48,30 +48,30 @@
                                 <p:column headerText="Descripción" styleClass="text-left" style="text-align: left; ">
                                     <h:outputText value="#{dataInc.descripcion}"/>
                                 </p:column>
-                                <p:column headerText="Fecha" styleClass="text-left">
+                                <p:column headerText="Fecha" styleClass="text-left" width="80"> 
                                     <h:outputText value="#{dataInc.fechaGenero}"/>
                                 </p:column>
-                                <p:column headerText="Hora" styleClass="text-left">
+                                <p:column headerText="Hora" styleClass="text-left" width="80">
                                     <h:outputText value="#{dataInc.horaGenero}"/>
                                 </p:column>
                                 <p:column headerText="Estado" styleClass="text-left">
                                     <h:outputText value="#{dataInc.estado}"/>
                                 </p:column>
-                                <p:column>
+                                <p:column width="50">
                                     <p:commandLink action="#{incidenciaBean.agregarAdjunto(e)}"
                                                    title="Agregar archivo">
                                         <i class="fa fa-file text-primary"></i>
                                         <f:param name="idTicket" value="#{dataInc.idIncidencia}"/>
                                     </p:commandLink>					
                                 </p:column>
-                                <p:column>
+                                <p:column width="50">
                                     <p:commandLink action="#{incidenciaBean.inicioReenviarTicket(e)}"
                                                    title="Agregar complemento">
                                         <i class="fa fa-edit text-primary"></i>
                                         <f:param name="idTicket" value="#{dataInc.idIncidencia}"/>
                                     </p:commandLink>					
                                 </p:column>
-                                <p:column>
+                                <p:column width="50">
                                     <p:commandLink action="#{incidenciaBean.inicioCerrarTicket(dataInc.idIncidencia)}"
                                                    rendered="#{dataInc.idEstado eq 1210}"
                                                    title="Finalizar el ticket">
@@ -80,7 +80,7 @@
                                 </p:column>
                             </p:dataTable>
                         </div>
-                        
+
                     </div>    
                 </h:form>
                 <div class="modal fade" id="dialogoAdjuntaarTickt" data-backdrop="static" data-keyboard="false">
@@ -93,21 +93,19 @@
                                 <div class="modal-body">
 
                                     <p:fileUpload id="adjArch"
-                                                   styleClass="btn btn-default"
-                                                   label="Archivo"
-                                                   listener="#{incidenciaBean.subirAdjunto}"
-                                                   immediate="false" />
-                                    <p:commandButton  styleClass="btn btn-default" id="uploadFile" value="Subir y Enviar"/>
+                                                  label="Archivo"
+                                                  listener="#{incidenciaBean.subirAdjunto}"
+                                                  immediate="false" />
                                     <div class="form-row">
                                         <p:dataTable size="small" stripedRows="true" showGridlines="true" id="dtArchivo" value="#{incidenciaBean.incidenciasAdjunto}" var="dataAdj"
-                                                       rowIndexVar="index">
+                                                     rowIndexVar="index">
                                             <p:column headerText="Evidencia">
                                                 <h:outputLink target="_blank"  
                                                               value="/Sia/AbrirArchivo?ZWZ2W=#{dataAdj.id}&amp;ZWZ3W=#{dataAdj.uuid}">
                                                     <h:outputText value="#{dataAdj.nombre}"/>
                                                 </h:outputLink>
                                             </p:column>
-                                            <p:column >
+                                            <p:column  width="50">
                                                 <p:commandLink action="#{incidenciaBean.eliminarArchivo(dataAdj.idTabla)}"
                                                                immediate="true" rendered="#{incidenciaBean.incidenciaVo.idEstado eq 1210}"
                                                                >
@@ -233,8 +231,7 @@
                                     <p:commandLink value="Cancelar" immediate="true"
                                                    styleClass="btn btn-default"
                                                    onclick="$(dialogoComplementoTickt).modal('hide');"
-                                                   title="Cerrar ventana de complemento de tickets..."
-                                                   immediate="true"/>
+                                                   title="Cerrar ventana de complemento de tickets..."/>
                                     <p:commandLink value="Guardar y enviar"
                                                    styleClass="btn btn-primary"
                                                    action="#{incidenciaBean.reenviarTicket}"

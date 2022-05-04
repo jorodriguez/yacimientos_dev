@@ -20,6 +20,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import lombok.Setter;
 import sia.compra.requisicion.bean.backing.UsuarioBean;
 import sia.constantes.Constantes;
@@ -31,6 +32,7 @@ import sia.servicios.catalogos.impl.CompaniaImpl;
 import sia.servicios.catalogos.impl.UsuarioImpl;
 import sia.servicios.orden.impl.OcUsuarioOpcionImpl;
 import sia.servicios.sistema.vo.SiOpcionVo;
+import sia.sistema.servlet.support.SessionUtils;
 import sia.util.GenNrStats;
 import sia.util.UtilLog4j;
 
@@ -103,7 +105,9 @@ public class LSWU extends HttpServlet {
                     //
                     usuarioBean.llenarRoles();
                     //
-                    
+                    //FacesContext context =  FacesContext.getCurrentInstance();
+                    HttpSession session = request.getSession();
+                    usuarioBean.subirValoresContexto(session);
                     response.sendRedirect(Constantes.URL_REL_SIA_WEB + usuarioBean.getPaginaInicial());
                 } else {
                     response.sendRedirect(Constantes.URL_REL_SIA_PRINCIPAL);
