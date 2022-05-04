@@ -14,6 +14,7 @@ import java.util.List;
 import javax.faces.bean.CustomScoped;
 
 import javax.faces.model.SelectItem;
+import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import sia.compra.orden.bean.backing.NotaOrdenBean;
@@ -32,8 +33,8 @@ import sia.util.UtilLog4j;
  * @version 1.0
  * @author-mail hacosta.0505@gmail.com @date 27/06/2009
  */
-@Named (value = EstiloBean.BEAN_NAME)
-@CustomScoped(value = "#{window}")
+@Named (value = "estiloBean")
+@ViewScoped
 public class EstiloBean implements Serializable {
 
     //------------------------------------------------------
@@ -46,15 +47,11 @@ public class EstiloBean implements Serializable {
     @Inject
     private PvProveedorSinCartaIntencionImpl pvProveedorSinCartaIntencionImpl;
     //------------------------------------------------------
-    @Inject
     private RequisicionBean requisicionBean;
     @Inject
     private NotaOrdenBean notaOrdenBean ;
-    @Inject
-    private CargaEtsBean cargaEtsBean ;
     private String codigo;
     private String seleccion = "REQUISICIÓN.";
-    private String ejemplo;
 
     /**
      * Creates a new instance of EstiloBean
@@ -73,7 +70,7 @@ public class EstiloBean implements Serializable {
             resultList.add(item2);
 
             return resultList;
-        } catch (RuntimeException ex) {
+        } catch (Exception ex) {
             UtilLog4j.log.fatal(this, ex.getMessage());
         }
         return resultList;
@@ -85,7 +82,7 @@ public class EstiloBean implements Serializable {
             OrdenBean ordenBean = (OrdenBean) FacesUtilsBean.getManagedBean("ordenBean");
             requisicionBean.setRequisicionActual(null);//---Limpiar la requisicion actual---//
             ordenBean.setOrdenActual(null);//---Limpiar la orden actual---//
-            if (this.codigo.equals("")) {
+            if (codigo.equals("")) {
                 pagina = "";
                 FacesUtilsBean.addErrorMessage("No introdujo ningún valor.");
             } else {
@@ -141,10 +138,6 @@ public class EstiloBean implements Serializable {
                         //
                         ordenBean.formatosEntradaOrden();
                         //
-                        cargaEtsBean.ordenEtsPorCategoria();
-                        cargaEtsBean.traerTablaComparativa();
-                        //
-                        cargaEtsBean.etsPorOrdenRequisicion();
                         if (notaOrdenBean.getNotaActual() != null) {
                             notaOrdenBean.cambiarNotaOrden(0);
                         }
@@ -154,7 +147,7 @@ public class EstiloBean implements Serializable {
                 }
             }
             return pagina;
-        } catch (RuntimeException ex) {
+        } catch (Exception ex) {
             UtilLog4j.log.fatal(this, ex.getMessage());
         }
         return pagina;
@@ -200,15 +193,4 @@ public class EstiloBean implements Serializable {
         this.seleccion = seleccion;
     }
 
-    /**
-     * @return the ejemplo
-     */
-    public String getEjemplo() {
-        if (this.seleccion.equals("REQUISICIÓN.")) {
-            this.ejemplo = "10-1234";
-        } else {
-            this.ejemplo = "OC10-1234";
-        }
-        return ejemplo;
-    }
 }

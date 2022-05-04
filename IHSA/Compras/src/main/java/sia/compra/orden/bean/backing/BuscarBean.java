@@ -5,18 +5,18 @@
 package sia.compra.orden.bean.backing;
 
 import java.io.Serializable;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import javax.annotation.PostConstruct;
-import javax.faces.bean.ManagedBean;
 
 
 import javax.faces.model.SelectItem;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
+import javax.inject.Named;
 import org.primefaces.PrimeFaces;
-import sia.compra.requisicion.bean.backing.FacesUtilsBean;
 import sia.compra.requisicion.bean.backing.UsuarioBean;
 import sia.constantes.Constantes;
 import sia.constantes.TipoRequisicion;
@@ -33,7 +33,7 @@ import sia.util.UtilLog4j;
  *
  * @author ihsa
  */
-@ManagedBean
+@Named
 @ViewScoped
 public class BuscarBean implements Serializable {
 
@@ -69,8 +69,8 @@ public class BuscarBean implements Serializable {
     private double maximo;
     //
     private String agregarFecha = "Si";
-    private String fechaInicio;
-    private String fechaFin = Constantes.FMT_ddMMyyy.format(new Date());
+    private LocalDate fechaInicio;
+    private LocalDate fechaFin ;
 
     public void limpiarValor() {
 	setIdGerencia(-1);
@@ -118,6 +118,8 @@ public class BuscarBean implements Serializable {
 	} catch (Exception e) {
 	    UtilLog4j.log.fatal(this, e);
 	}
+        fechaFin = LocalDate.now();
+        fechaInicio = fechaFin.minusDays(30);
     }
 
     public void buscarOCS() {
@@ -132,8 +134,8 @@ public class BuscarBean implements Serializable {
                 usuarioBean.getUsuarioConectado().getApCampo().getId(), 
                 getRango(), 
                 Constantes.PALABRA_SI.equals(getAgregarFecha()), 
-                getFechaInicio(), 
-                getFechaFin()
+                getFechaInicio().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")), 
+                getFechaFin().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))
         );
     }
 
@@ -269,28 +271,28 @@ public class BuscarBean implements Serializable {
     /**
      * @return the fechaInicio
      */
-    public String getFechaInicio() {
+    public LocalDate getFechaInicio() {
 	return fechaInicio;
     }
 
     /**
      * @param fechaInicio the fechaInicio to set
      */
-    public void setFechaInicio(String fechaInicio) {
+    public void setFechaInicio(LocalDate fechaInicio) {
 	this.fechaInicio = fechaInicio;
     }
 
     /**
      * @return the fechaFin
      */
-    public String getFechaFin() {
+    public LocalDate getFechaFin() {
 	return fechaFin;
     }
 
     /**
      * @param fechaFin the fechaFin to set
      */
-    public void setFechaFin(String fechaFin) {
+    public void setFechaFin(LocalDate fechaFin) {
 	this.fechaFin = fechaFin;
     }
 }

@@ -14,35 +14,30 @@
             <ui:define name="contenido">
                 <div class="row">
                     <h:form id="form1">
-                        <div class="row bordePanelGrid">
+                        <div class="row border">
                             <div class="col-12" >
-                                <div class="col-3">
-                                    <br/>
+                                <div class="col-6">
                                     <h:outputLabel value="Con Fecha"/>
                                     <div class="col-12 col-xs-12">
                                         <h:selectOneRadio id="agregarFecha" class="control-label text text-uppercase" 
-                                                          onclick="validaOcultaFecha('form1\\:agregarFecha');"
                                                           value="#{buscarBean.agregarFecha}" >
                                             <f:selectItem itemLabel="Si" itemValue="Si" />
                                             <f:selectItem itemLabel="No" itemValue="No" />
                                         </h:selectOneRadio>
                                     </div>
                                     <div class="col-12 col-xs-12">
-
                                         <div id="divConFecha" class="row">
-                                            <p:panel  >
-                                                <h:outputLabel value="De:"/>
-                                                <p:datePicker value="#{buscarBean.fechaInicio}" pattern="dd/MM/yyyy"/>
-                                                <h:outputLabel value="A: "/>
-                                                <p:datePicker value="#{buscarBean.fechaFin}" pattern="dd/MM/yyyy"/>
-                                            </p:panel>
+                                            <h:outputLabel value="De:"/>
+                                            <p:datePicker value="#{buscarBean.fechaInicio}" pattern="dd/MM/yyyy"/>
+                                            <h:outputLabel value="A: "/>
+                                            <p:datePicker value="#{buscarBean.fechaFin}" pattern="dd/MM/yyyy"/>
                                         </div>
                                     </div>
                                     <br/>
                                     <h:outputLabel value="Gerencia"/>
                                     <div class="col-12" style="margin-bottom: 10px;">
-                                        <h:selectOneMenu value="#{buscarBean.idGerencia}" class="form-control" 
-                                                         onchange="ejecutarFiltros('form1', 'btnBuscar');">
+                                        <h:selectOneMenu value="#{buscarBean.idGerencia}" class="form-control col-6" 
+                                                         >
                                             <f:selectItem itemLabel="Seleccione . . . . . " itemValue="-1"/>
                                             <f:selectItems value="#{buscarBean.listaGerencia}"/>
                                         </h:selectOneMenu>
@@ -52,7 +47,7 @@
                                     </div>
                                     <div style="padding-left: 5%; padding-bottom: 10px;">
                                         <h:selectOneRadio layout="pageDirection" style="color: grey;" 
-                                                          value="#{buscarBean.idMoneda}" onclick="ejecutarFiltros('form1', 'btnBuscar');">					    
+                                                          value="#{buscarBean.idMoneda}" >					    
                                             <f:selectItems value="#{buscarBean.listaMoneda}"/>
                                         </h:selectOneRadio>
                                     </div>
@@ -61,7 +56,7 @@
                                     </div>
                                     <div style="padding-left: 5%; padding-bottom: 10px;">
                                         <h:selectOneRadio  layout="pageDirection" value="#{buscarBean.rango}" style="color: grey;"
-                                                           onclick="ejecutarFiltros('form1', 'btnBuscar');"> 
+                                                           > 
                                             <f:selectItems value="#{buscarBean.listaMonto}" var="m">
                                                 #{m.valor}
                                             </f:selectItems>
@@ -72,43 +67,44 @@
                                     </div>
                                     <div style="padding-left: 5%; padding-bottom: 10px;">
                                         <h:selectOneRadio style="color: grey;" layout="pageDirection" value="#{buscarBean.tipo}" 
-                                                          onclick="ejecutarFiltros('form1', 'btnBuscar');" >
+                                                          >
                                             <f:selectItems value="#{buscarBean.listaTipo}"/>
                                         </h:selectOneRadio>
                                     </div>
                                     <div style="padding-bottom: 5px;">
-                                        <p:commandLink id="btnBuscar" value="Buscar" class="btn btn-info" 
-                                                       onclick="return validaBuscarAvanzada('form1\\:agregarFecha', 'form1\\:inicio', 'form1\\:fin');"
+                                        <p:commandLink id="btnBuscar" value="Buscar" class="btn btn-primary"                                                        
                                                        action="#{buscarBean.buscarOCS}"
-                                                       >
+                                                       process="@form" update="form1:dtResBuscar">
                                         </p:commandLink>
                                     </div>
                                 </div>
                                 <div class="col-9"  style="height: 550px; border-left: 1px solid #CCCCCC;">
                                     <br/>
                                     <div class="table table-responsive">
-                                        <p:dataTable size="small" stripedRows="true" showGridlines="true" style="font-size: 0.99em" value="#{buscarBean.listaOrden}" 
+                                        <p:dataTable id="dtResBuscar" size="small" stripedRows="true" showGridlines="true" 
+                                                     value="#{buscarBean.listaOrden}" 
                                                      rows="20" var="data"
                                                      paginator="true"   
-                                                     paginatorPosition="bottom" 
-                                                     styleClass="table table-striped">
+                                                     paginatorPosition="bottom" >
                                             <p:column style="width: 20%" headerText="Código" 
                                                       filterBy="#{data.consecutivo}" filterMatchMode="contains">
-                                                <p:commandLink  value="#{data.consecutivo}" styleClass="btn btn-default" 
-                                                                 
-                                                                action="#{ordenBean.verDetalleOrden(data.id)}">
-                                                </p:commandLink>
+                                                <p:commandLink  value="#{data.consecutivo}" styleClass="btn btn-link" 
+                                                                action="#{ordenBean.verDetalleOrden(data.id)}"
+                                                                >
+                                                </p:commandLink> 
                                             </p:column>
                                             <p:column headerText="Proveedor"
                                                       filterBy="#{data.proveedor}" filterMatchMode="contains">
-                                                <p:commandLink value="#{data.proveedor}" styleClass="btn btn-default" 
-                                                               action="#{ordenBean.verDetalleOrden(data.id)}">
+                                                <p:commandLink value="#{data.proveedor}" styleClass="btn btn-link" 
+                                                               action="#{ordenBean.verDetalleOrden(data.id)}"
+                                                               >
                                                 </p:commandLink>
                                             </p:column>
                                             <p:column headerText="Referencia"
                                                       filterBy="#{data.referencia}" filterMatchMode="contains">
-                                                <p:commandLink value="#{data.referencia}" styleClass="btn btn-default" 
-                                                               action="#{ordenBean.verDetalleOrden(data.id)}">
+                                                <p:commandLink value="#{data.referencia}" styleClass="btn btn-link" 
+                                                               action="#{ordenBean.verDetalleOrden(data.id)}"
+                                                               >
                                                 </p:commandLink>
                                             </p:column>
                                         </p:dataTable>

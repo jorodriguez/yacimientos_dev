@@ -78,7 +78,6 @@ import sia.modelo.requisicion.vo.OcSubtareaVO;
 import sia.modelo.requisicion.vo.OcTareaVo;
 import sia.modelo.requisicion.vo.RequisicionDetalleVO;
 import sia.modelo.requisicion.vo.RequisicionEsperaVO;
-import sia.modelo.requisicion.vo.RequisicionEtsVo;
 import sia.modelo.requisicion.vo.RequisicionMovimientoVO;
 import sia.modelo.rol.vo.RolVO;
 import sia.modelo.sgl.vo.RequisicionVO;
@@ -87,7 +86,6 @@ import sia.modelo.usuario.vo.UsuarioVO;
 import sia.modelo.vo.inventarios.ArticuloVO;
 import sia.modelo.vo.inventarios.InventarioVO;
 import sia.notificaciones.requisicion.impl.NotificacionRequisicionImpl;
-import sia.notificaciones.usuario.movil.impl.NotificacionMovilUsuarioImpl;
 import sia.servicios.catalogos.impl.GerenciaImpl;
 import sia.servicios.catalogos.impl.ProyectoOtImpl;
 import sia.servicios.catalogos.impl.UsuarioImpl;
@@ -106,12 +104,12 @@ import sia.servicios.requisicion.impl.RequisicionImpl;
 import sia.servicios.requisicion.impl.RequisicionSiMovimientoImpl;
 import sia.servicios.sistema.impl.FolioImpl;
 import sia.servicios.sistema.impl.SiAdjuntoImpl;
-import sia.servicios.sistema.impl.SiManejoFechaImpl;
 import sia.servicios.sistema.impl.SiParametroImpl;
 import sia.servicios.sistema.impl.SiRelCategoriaImpl;
 import sia.servicios.sistema.impl.SiRolImpl;
 import sia.servicios.sistema.impl.SiUnidadImpl;
 import sia.servicios.sistema.impl.SiUsuarioRolImpl;
+import sia.util.Env;
 import sia.util.UtilLog4j;
 import sia.util.ValidadorNombreArchivo;
 
@@ -546,7 +544,7 @@ public class RequisicionBean implements Serializable {
         listaAyuda = new ArrayList<>();
         esperaVO = new RequisicionEsperaVO();
         esperaVO.setMsgs(new ArrayList<>());
-        requisicionActual = new Requisicion();
+
         requisicionVO = new RequisicionVO();
         requisicionVO.setListaDetalleRequision(new ArrayList<>());
         categorias = new ArrayList<>();
@@ -554,6 +552,15 @@ public class RequisicionBean implements Serializable {
         fechaFin = LocalDate.now();
         fechaInicio = fechaFin.minusDays(30);
         listaEts = new ArrayList<>();
+        // Recibir parametro
+        Integer parametro = Env.getContextAsInt(usuarioBean.getCtx(), "REQ_ID");
+        if (parametro > 0) {
+            requisicionActual = requisicionServicioRemoto.find(parametro);
+            itemsProcesoAprobar();
+            Env.removeContext(usuarioBean.getCtx(), "REQ_ID");
+        } else {
+            requisicionActual = null;
+        }
     }
 
     public List<SelectItem> getListaAnalista() {

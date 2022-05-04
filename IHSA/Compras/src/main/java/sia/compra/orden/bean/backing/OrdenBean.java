@@ -111,6 +111,7 @@ import sia.servicios.sistema.impl.SiFacturaDetalleImpl;
 import sia.servicios.sistema.impl.SiFacturaImpl;
 import sia.servicios.sistema.impl.SiManejoFechaImpl;
 import sia.servicios.sistema.impl.SiUsuarioRolImpl;
+import sia.util.Env;
 import sia.util.UtilLog4j;
 import sia.util.ValidadorNombreArchivo;
 
@@ -382,6 +383,18 @@ public class OrdenBean implements Serializable {
                 usuarioBean.getUsuarioConectado().getApCampo().getId()));
          */
         fechaFin = LocalDate.now();
+        //
+        Integer parametro = Env.getContextAsInt(usuarioBean.getCtx(), "ORDEN_ID");
+        if (parametro > 0) {
+            ordenActual = ordenServicioRemoto.find(parametro);
+            seleccionarOrden(ordenActual.getId());
+            if (usuarioBean.getMapaRoles().containsKey("Consulta OCS Factura")) {
+                cargarFacturas(parametro);
+            }
+            Env.removeContext(usuarioBean.getCtx(), "ORDEN_ID");
+        } else {
+            ordenActual = null;
+        }
     }
 
     public void etsPorRequisicion() {
@@ -989,7 +1002,7 @@ public class OrdenBean implements Serializable {
                     mostrar = false;
 
                     String jsMetodo = JS_METHOD_LIMPIAR_TODOS;
-                    
+
                     llenarCompras();
                     PrimeFaces.current().executeScript(jsMetodo);
                 } catch (Exception e) {
@@ -2158,20 +2171,8 @@ public class OrdenBean implements Serializable {
     }
 
     public String verDetalleOrden(int idOrd) {
-        ordenActual = this.ordenServicioRemoto.find(idOrd);
-        CargaEtsBean cargaEtsBean = (CargaEtsBean) FacesUtilsBean.getManagedBean("cargaEtsBean");
-        cargaEtsBean.traerTablaComparativa();
-        cargaEtsBean.ordenEtsPorCategoria();
-        itemsPorOrden();
-
-        //
-        formatosEntradaOrden();
-        menuBarBean.procesarAccion("detalleOrden.xhtml?faces-redirect=true");
-        if (usuarioBean.getMapaRoles().containsKey("Consulta OCS Factura")) {
-            cargarFacturas(idOrd);
-        }
-        notasPorOrden();
-        return "detalleOrden.xhtml?faces-redirect=true";
+        Env.setContext(usuarioBean.getCtx(), "ORDEN_ID", idOrd);
+        return "/vistas/SiaWeb/Orden/DetalleOrden.xhtml?faces-redirect=true";
     }
 
     /**

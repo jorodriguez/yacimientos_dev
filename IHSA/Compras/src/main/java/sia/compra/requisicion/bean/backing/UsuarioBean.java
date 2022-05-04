@@ -16,7 +16,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.annotation.PostConstruct;
+import java.util.Objects;
+import java.util.Properties;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.context.FacesContext;
 
@@ -24,19 +25,28 @@ import javax.faces.model.SelectItem;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import sia.compra.orden.bean.backing.NotaOrdenBean;
 import sia.compra.orden.bean.backing.OrdenBean;
 import sia.compra.sistema.bean.backing.ContarBean;
 import sia.constantes.Constantes;
 import sia.modelo.Compania;
+import sia.modelo.Orden;
+import sia.modelo.Requisicion;
 import sia.modelo.Usuario;
 import sia.modelo.campo.usuario.puesto.vo.CampoUsuarioPuestoVo;
 import sia.modelo.usuario.vo.UsuarioRolVo;
 import sia.modelo.usuario.vo.UsuarioVO;
 import sia.servicios.catalogos.impl.UsuarioImpl;
+import sia.servicios.orden.impl.OrdenImpl;
+import sia.servicios.proveedor.impl.PvProveedorSinCartaIntencionImpl;
+import sia.servicios.requisicion.impl.RequisicionImpl;
 import sia.servicios.sistema.impl.SiUsuarioRolImpl;
+import sia.sistema.servlet.support.SessionUtils;
+import sia.util.Env;
 import sia.util.UtilLog4j;
 import sia.util.UtilSia;
 
@@ -46,16 +56,24 @@ import sia.util.UtilSia;
  */
 @Named(value = "usuarioBean")
 @SessionScoped
+@Slf4j
 public class UsuarioBean implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     private final static UtilLog4j LOGGER = UtilLog4j.log;
+    public static final String USER = "user";
 
     @Inject
     private UsuarioImpl usuarioServicioRemoto;
     @Inject
     private SiUsuarioRolImpl siUsuarioRolImpl;
+    @Inject
+    private OrdenImpl ordenImpl;
+    @Inject
+    private RequisicionImpl requisicionImpl;
+    @Inject
+    private PvProveedorSinCartaIntencionImpl pvProveedorSinCartaIntencionImpl;
     //
     @Inject
     CadenasMandoBean cadenasMandoBean;
@@ -74,9 +92,17 @@ public class UsuarioBean implements Serializable {
     private String paginaInicial;
     //
     private String puesto;
+    @Getter
+    @Setter
+    private String codigo;
+    @Getter
+    @Setter
+    private String seleccion = "REQUISICIÓN.";
     //
     private List<CampoUsuarioPuestoVo> listaCampo;
     private Map<String, Boolean> mapaRoles;
+    @Getter
+    private Properties ctx;
 
     /**
      * Creates a new instance of ManagedBeanUsuario
@@ -86,6 +112,50 @@ public class UsuarioBean implements Serializable {
 
     public void iniciar() {
         direccionar();
+    }
+
+    public void subirValoresContexto(HttpSession session) {
+        ctx = new Properties();
+        Env.setContext(ctx, Env.SESSION_ID, session.getId());
+        //Env.setContext(ctx, Env.CLIENT_INFO, session. SessionUtils.getClientInfo(SessionUtils.getRequest()));
+        Env.setContext(ctx, Env.PUNTO_ENTRADA, "Compras");
+        Env.setContext(ctx, Env.PROYECTO_ID, usuarioConectado.getApCampo().getId());
+        Env.setContext(ctx, Env.CODIGO_COMPANIA, usuarioConectado.getApCampo().getCompania().getRfc());
+    }
+
+    public String buscarElemento() {
+        String pagina = "";
+        try {
+            if (codigo.equals("")) {
+                pagina = "";
+                FacesUtilsBean.addErrorMessage("No introdujo ningún valor.");
+            } else {
+                if (this.seleccion.equals("REQUISICIÓN.")) {
+                    Requisicion requisicion = requisicionImpl.buscarPorConsecutivoBloque(codigo.toUpperCase(), getUsuarioConectado().getId());
+                    if (requisicion != null && requisicion.getApCampo().getId().intValue() == usuarioConectado.getApCampo().getId().intValue()) {
+                        pagina = "/vistas/SiaWeb/Requisiciones/DetalleHistorial.xhtml?faces-redirect=true";
+
+                        Env.setContext(ctx, "REQ_ID", requisicion.getId());
+                    } else {
+                        FacesUtilsBean.addErrorMessage("Requisición no encontrada.");
+                    }
+                } else {
+
+                    Orden orden = ordenImpl.buscarPorOrdenConsecutivo(codigo.toUpperCase().trim(), getUsuarioConectado().getId());
+                    if (orden != null && orden.getApCampo().getId().intValue() == usuarioConectado.getApCampo().getId().intValue()) {
+                        pagina = "/vistas/SiaWeb/Orden/DetalleOrden.xhtml?faces-redirect=true";
+                        Env.setContext(ctx, "ORDEN_ID", orden.getId());
+                    } else {
+                        pagina = "";
+                        FacesUtilsBean.addErrorMessage("La Orden no coincide con el Bloque.");
+                    }
+                }
+            }
+            return pagina;
+        } catch (Exception ex) {
+            UtilLog4j.log.fatal(this, ex.getMessage());
+        }
+        return pagina;
     }
 
     public void cambiarCampo(int idCampo, String nombrePuesto) {
@@ -293,7 +363,6 @@ public class UsuarioBean implements Serializable {
         return accionUsuario;
     }
 
-   
     /**
      * @return the Identificacion
      */
@@ -351,7 +420,6 @@ public class UsuarioBean implements Serializable {
     public void llenarRoles() {
 
         //.println("siUsuarioRolImpl " + siUsuarioRolImpl);
-
         setMapaRoles(new HashMap<>());
         List<UsuarioRolVo> rolUsuario = siUsuarioRolImpl.traerRolPorUsuarioModulo(usuarioConectado.getId(), Constantes.MODULO_REQUISICION, usuarioConectado.getApCampo().getId());
         rolUsuario.addAll(siUsuarioRolImpl.traerRolPorUsuarioModulo(usuarioConectado.getId(), Constantes.MODULO_COMPRA, usuarioConectado.getApCampo().getId()));
