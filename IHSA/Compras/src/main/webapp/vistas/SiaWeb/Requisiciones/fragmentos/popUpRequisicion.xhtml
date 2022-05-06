@@ -24,7 +24,7 @@
                                             <p:selectOneRadio id="tipoReq" value="#{requisicionBean.tipoRequisicion}"
                                                               styleClass="form-control" >                                        
                                                 <f:selectItems value="#{requisicionBean.listaTipoRequisicion}" />
-                                                <p:ajax listener="#{requisicionBean.cambiarTipoRequisicion}"/>
+                                                <p:ajax listener="#{requisicionBean.cambiarTipoRequisicion}" update="frmCrearRequisicion"/>
                                             </p:selectOneRadio >
                                         </strong>
                                     </div>
@@ -800,7 +800,7 @@
                                               label="Archivo "
                                               listener="#{requisicionBean.uploadFile}"
                                               styleClass="btn-default"
-                                              update="frmDialogoAdjArch:dtArch"/>
+                                              update="frmDialogoAdjArch"/>
                             </div>
 
                             <div class="table table-responsive">
@@ -834,15 +834,16 @@
                                         <h:outputText value="#{ets['siAdjunto'].descripcion}"/>
                                     </p:column>
                                     <p:column width="50">
-                                        <p:commandLink 
-                                            value="Modificar descripción"
-                                            title="Modificar descripción"
-                                            action="#{requisicionBean.actualizarEts(ets.siAdjunto)}"
-                                            styleClass="btn btn-default"/>
+                                        <p:commandLink title="Modificar descripción"
+                                                       action="#{requisicionBean.actualizarEts(ets.siAdjunto)}"
+                                                       styleClass="btn btn-default" oncomplete="PF('dlgDescArchReq').show()"
+                                                       process="@this" update="frmDesArch">
+                                            <i class="fa fa-edit text-primary"/>
+                                        </p:commandLink>
                                     </p:column>
                                     <p:column width="50">
                                         <h:outputLink target="_blank"  value="/Compras/AbrirArchivo?ZWZ2W=#{ets['siAdjunto'].id}&amp;ZWZ3W=#{ets['siAdjunto'].uuid}"
-                                                      styleClass="btn btn-default">
+                                                      styleClass="btn btn-link text-primary">
                                             <h:outputText value=" Abrir"/>
                                         </h:outputLink>
                                     </p:column>
@@ -867,36 +868,28 @@
             </div>
         </div>
     </div>
-    <h:form id="frmDesArch">
-        <p:dialog style="z-index:1001;" widgetVar="dlgDescArchReq"
-                  draggable="false" modal="true"
-                  styleClass="corePopup" >
-            <f:facet name="header">
-                <p:panel  >
-                    <h:outputText styleClass="popupHeaderText" value="Actualizar descripción"/>
+
+    <p:dialog style="z-index:10000099;" widgetVar="dlgDescArchReq"
+              draggable="false" modal="true"
+              header="Actualizar descripción">
+        <h:form id="frmDesArch">
+            <div  class="input-group border" >
+                <h:outputLabel value="Nombre:"/>
+                <h:outputText value="#{requisicionBean.etsActualAdjunto.nombreSinUUID}" styleClass="col-12"/> 
+                <h:outputLabel value="Tamaño:"/>
+                <h:outputText value="#{requisicionBean.etsActualAdjunto.peso}" styleClass="col-12"/>
+                <h:outputLabel value="Descripción:"/>
+                <h:inputTextarea cols="80"  value="#{requisicionBean.etsActualAdjunto.descripcion}" styleClass="col-12 form-control"/> 
+            </div>
+            <center>
+                <p:panel >
+                    <p:commandButton value="Actualizar" action="#{requisicionBean.completarActualizacionEts}"
+                                     process="@form" update="frmDialogoAdjArch:dtArch"
+                                     oncomplete="PF('dlgNotaSubArh').hide()"/>
                 </p:panel>
-            </f:facet>
-            <f:facet name="body">
-                <h:panelGroup styleClass="popupBody" style="font-size:12px">
-                    <p:panel  >
-                        <h:outputLabel value="Nombre:"/>
-                        <h:outputText value="#{requisicionBean.etsActualAdjunto.nombreSinUUID}"/> 
-                        <h:outputLabel value="Tamaño:"/>
-                        <h:outputText value="#{requisicionBean.etsActualAdjunto.peso}"/>
-                        <h:outputLabel value="Descripción:"/>
-                        <h:inputTextarea cols="80"  value="#{requisicionBean.etsActualAdjunto.descripcion}"/> 
-                    </p:panel>
-                    <center>
-                        <p:panel >
-                            <p:commandButton value="Actualizar" action="#{requisicionBean.completarActualizacionEts}"
-                                             process="@form" update="frmDialogoAdjArch:dtArch"
-                                             />
-                        </p:panel>
-                    </center>
-                </h:panelGroup>
-            </f:facet>
-        </p:dialog>
-    </h:form>
+            </center>
+        </h:form>
+    </p:dialog>
 
 
 </ui:composition>

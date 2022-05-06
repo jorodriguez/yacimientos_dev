@@ -9,6 +9,7 @@ import java.util.List;
 import javax.faces.bean.CustomScoped;
 
 import javax.faces.model.SelectItem;
+import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 import sia.modelo.OcActivoFijo;
 import sia.modelo.sgl.vo.OrdenDetalleVO;
@@ -18,8 +19,8 @@ import sia.modelo.sgl.vo.OrdenDetalleVO;
  * @author ihsa
  */
 
-@Named (value= PopupCompletarActivoFijoBean.BEAN_NAME)
-@CustomScoped(value = "#{window}")
+@Named (value= "popupCompletarActivoFijoBean")
+@ViewScoped
 public class PopupCompletarActivoFijoBean implements Serializable{
 
     //------------------------------------------------------

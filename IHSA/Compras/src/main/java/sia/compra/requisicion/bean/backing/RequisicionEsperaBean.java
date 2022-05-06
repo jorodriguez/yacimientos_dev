@@ -453,15 +453,14 @@ public class RequisicionEsperaBean implements Serializable {
         }
     }
 
-    public void seleccionarOrden() {
-        int idOrden = Integer.parseInt(FacesUtilsBean.getRequestParameter("idOrdenReq"));
+    public void seleccionarOrden(int idOrden) {
         OrdenBean ordenBean = (OrdenBean) FacesUtilsBean.getManagedBean("ordenBean");
         ordenBean.setOrdenActual(ordenServicioRemoto.find(idOrden));
         itemsPorOrden(idOrden);
         notasPorOrden(idOrden);
         CargaEtsBean cargaEtsBean = (CargaEtsBean) FacesUtilsBean.getManagedBean("cargaEtsBean");
         //argaEtsBean.etsPorOrdenCategoria();
-        cargaEtsBean.traerTablaComparativa();
+        cargaEtsBean.traerTablaComparativa(idOrden);
         cargaEtsBean.etsPorOrdenRequisicion();
         //
         cargaEtsBean.ordenEtsPorCategoria();

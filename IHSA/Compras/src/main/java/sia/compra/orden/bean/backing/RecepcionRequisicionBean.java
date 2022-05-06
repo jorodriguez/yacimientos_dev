@@ -499,7 +499,7 @@ public class RecepcionRequisicionBean implements Serializable {
         ordenesRechazadas = ordenSiMovimientoImpl.getMovimientsobyOrden(idOrden);
         CargaEtsBean cargaEtsBean = (CargaEtsBean) FacesUtilsBean.getManagedBean("cargaEtsBean");
         //argaEtsBean.etsPorOrdenCategoria();
-        cargaEtsBean.traerTablaComparativa();
+        cargaEtsBean.traerTablaComparativa(idOrden);
         cargaEtsBean.etsPorOrdenRequisicion();
         //
         cargaEtsBean.ordenEtsPorCategoria();

@@ -1779,6 +1779,7 @@ public class OrdenCompraBean implements Serializable {
             if (addArchivo) {
                 DocumentoAnexo documentoAnexo = new DocumentoAnexo(fileInfo.getContent());
                 documentoAnexo.setTipoMime(fileInfo.getContentType());
+                documentoAnexo.setNombreBase(fileInfo.getFileName());
                 documentoAnexo.setRuta(getUploadDirectoryOrden());
 
                 almacenDocumentos.guardarDocumento(documentoAnexo);

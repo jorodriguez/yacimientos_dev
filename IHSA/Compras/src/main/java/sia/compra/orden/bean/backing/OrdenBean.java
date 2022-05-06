@@ -194,6 +194,8 @@ public class OrdenBean implements Serializable {
     private ProyectoOtBean proyectoOtBean;
     @Inject
     private ProveedorBean proveedorBean;
+    @Inject
+    CargaEtsBean cargaEtsBean;
 
     @Inject
     private PopupCompletarActivoFijoBean popupCompletarActivoFijoBean;
@@ -325,10 +327,10 @@ public class OrdenBean implements Serializable {
     public void iniciarLimpiar() {
         //  mapaOrdenes = new HashMap<>();
         setOrdenActual(null);
-
-        llenarCompras();
         ordenesTareaAF = new ArrayList<>();
         ordenesTareaPS = new ArrayList<>();
+
+        llenarCompras();
         ordenesHistorial = new ArrayList<>();
         notas = new ArrayList<>();
     }
@@ -422,9 +424,8 @@ public class OrdenBean implements Serializable {
 
         itemsPorOrden();
         notasPorOrden();
-        CargaEtsBean cargaEtsBean = (CargaEtsBean) FacesUtilsBean.getManagedBean("cargaEtsBean");
         //
-        cargaEtsBean.traerTablaComparativa();
+        cargaEtsBean.traerTablaComparativa(ordenActual.getId());
         cargaEtsBean.etsPorOrdenRequisicion();
         //
         cargaEtsBean.ordenEtsPorCategoria();
@@ -474,8 +475,7 @@ public class OrdenBean implements Serializable {
             lo = this.ordenServicioRemoto.itemsPorOrdenCompra(getOrdenActual().getId());
         }
         this.setListaItems(lo);
-        CargaEtsBean cargaEtsBean = (CargaEtsBean) FacesUtilsBean.getManagedBean("cargaEtsBean");
-        cargaEtsBean.traerTablaComparativa();
+
     }
 
     public void limpiarTab() {
@@ -536,13 +536,15 @@ public class OrdenBean implements Serializable {
 
 //    public void guardarItemOCProducto(ValueChangeEvent event) {
     public void guardarItemOCProducto(OrdenDetalleVO odvo) {
-        if (odvo.getId() > 0) {
-            setItemActual(ordenDetalleImpl.find(odvo.getId()));
-            getItemActual().setOcProductoCompania(ocProductoCompaniaImpl.find(odvo.getOcProductoID()));
-            ordenDetalleImpl.editar(getItemActual());
-        } else {
-            ordenServicioRemoto.actualizarMultiItemsProducto(this.getOrdenActual().getId(), odvo.getIdAgrupador(),
-                    odvo.getOcProductoID());
+        if (odvo.getOcProductoID() > 0) {
+            if (odvo.getId() > 0) {
+                setItemActual(ordenDetalleImpl.find(odvo.getId()));
+                getItemActual().setOcProductoCompania(new OcProductoCompania(odvo.getOcProductoID()));
+                ordenDetalleImpl.editar(getItemActual());
+            } else {
+                ordenServicioRemoto.actualizarMultiItemsProducto(this.getOrdenActual().getId(), odvo.getIdAgrupador(),
+                        odvo.getOcProductoID());
+            }
         }
     }
 
@@ -793,6 +795,7 @@ public class OrdenBean implements Serializable {
 
     public void ordenesAutorizaTareaAF() {
         try {
+            ordenesTareaAF = new ArrayList<>();
             OrdenVO o;
             List<Object[]> l = this.ordenServicioRemoto.getOrdenesAutorizadasCompras(this.usuarioBean.getUsuarioConectado().getId(), this.usuarioBean.getUsuarioConectado().getApCampo().getId(),
                     TipoRequisicion.AF.name());
@@ -821,6 +824,7 @@ public class OrdenBean implements Serializable {
 
     public void ordenesAutorizaTareaOP() {
         try {
+            ordenesTareaPS = new ArrayList<>();
             OrdenVO o;
             List<Object[]> l = this.ordenServicioRemoto.getOrdenesAutorizadasCompras(this.usuarioBean.getUsuarioConectado().getId(), this.usuarioBean.getUsuarioConectado().getApCampo().getId(),
                     TipoRequisicion.PS.name());
@@ -1880,16 +1884,16 @@ public class OrdenBean implements Serializable {
 
     private boolean validarPrefijoNavCode(String navCode, Compania compania) {
         boolean navCodeCorrecto = false;
-        String regexp = compania.getNavPrefijo() + "\\d+";
-
-        if (!Strings.isNullOrEmpty(navCode) && compania != null) {
-            navCodeCorrecto
-                    = (compania.getNavPrefijo() == null
-                    || compania.getNavPrefijo().isEmpty()
-                    || (navCode.startsWith(compania.getNavPrefijo())
-                    && Pattern.matches(regexp, navCode)));
+        if (!navCode.isEmpty() && navCode.length() > 9) {
+            String regexp = compania.getNavPrefijo() + "\\d+";
+            if (!Strings.isNullOrEmpty(navCode) && compania != null) {
+                navCodeCorrecto
+                        = (compania.getNavPrefijo() == null
+                        || compania.getNavPrefijo().isEmpty()
+                        || (navCode.startsWith(compania.getNavPrefijo())
+                        && Pattern.matches(regexp, navCode)));
+            }
         }
-
         return navCodeCorrecto;
     }
 
@@ -1924,12 +1928,15 @@ public class OrdenBean implements Serializable {
                         FacesUtilsBean.addErrorMessage("No se pudo autorizar la orden de compra y/o servicio, favor de contactar al equipo de soporte. ");
                     }
                 }
+                ContarBean contarBean = (ContarBean) FacesUtilsBean.getManagedBean("contarBean");
+                contarBean.llenarOcsEnivarProveedor();
+                PrimeFaces.current().executeScript(";cerrarEnvioPDF();");
             } else {
-                if (this.getOrdenActual().getNavCode() == null || this.getOrdenActual().getNavCode().isEmpty()) {
+                 if (this.getOrdenActual().getNavCode() == null || this.getOrdenActual().getNavCode().isEmpty()) {
                     FacesUtilsBean.addErrorMessage("Se require que se capture el código del pedido de NAVISION");
                 } else if (!validarPrefijoNavCode(this.getOrdenActual().getNavCode(), this.getOrdenActual().getCompania())) {
                     FacesUtilsBean.addErrorMessage(new StringBuilder().append("Se require que se capture un código del pedido de NAVISION correcto: Prefijo - ").append(this.getOrdenActual().getCompania().getNavPrefijo()).append(". ").toString());
-                } else if (TipoRequisicion.AF.equals(this.getOrdenActual().getTipo()) && ocActivoFijoImpl.afCompletos(this.getOrdenActual().getId()) != 0) {
+                } else if (TipoRequisicion.AF.toString().equals(this.getOrdenActual().getTipo()) && ocActivoFijoImpl.afCompletos(this.getOrdenActual().getId()) != 0) {
                     FacesUtilsBean.addErrorMessage("Se require que se capturen todos los códigos de los activos fijos de NAVISION.");
                 } else if (this.getOrdenActual().getNavCode() != null && !this.getOrdenActual().getNavCode().isEmpty()
                         && ordenServicioRemoto.existeNavCode(this.getOrdenActual().getNavCode())) {
@@ -1937,8 +1944,6 @@ public class OrdenBean implements Serializable {
                 }
             }
             //
-            ContarBean contarBean = (ContarBean) FacesUtilsBean.getManagedBean("contarBean");
-            contarBean.llenarOcsEnivarProveedor();
             //
 
         } catch (Exception ex) {
@@ -1948,7 +1953,6 @@ public class OrdenBean implements Serializable {
             }
             FacesUtilsBean.addErrorMessage(ex.getMessage());
         }
-        PrimeFaces.current().executeScript(";cerrarEnvioPDF();");
     }
 
     public void completarActivosFijo() throws SIAException, Exception {
@@ -1968,10 +1972,10 @@ public class OrdenBean implements Serializable {
         }
     }
 
-    public void completarAFPS() throws SIAException, Exception {
+    public void completarAFPS() {
         try {
             ContarBean contarBean = (ContarBean) FacesUtilsBean.getManagedBean("contarBean");
-            if (TipoRequisicion.AF.equals(ordenActual.getTipo())) {
+            if (TipoRequisicion.AF.toString().equals(ordenActual.getTipo())) {
                 if (popupCompletarActivoFijoBean.getAfValue() != null && !popupCompletarActivoFijoBean.getAfValue().isEmpty()) {
                     List<OrdenDetalle> lstDet = ordenDetalleImpl.getItemsPorOrden(ordenActual.getId());
                     List<OcActivoFijoVO> lstAF = ocActivoFijoImpl.getDetActivoFijo(ordenActual.getId(), 0);
@@ -1998,7 +2002,7 @@ public class OrdenBean implements Serializable {
                 }
                 PrimeFaces.current().executeScript(";cerrarDialogoModal(dialogoPedidoActivo);");
                 //popupCompletarActivoFijoBean.toggleModal(actionEvent);
-            } else if (TipoRequisicion.PS.equals(ordenActual.getTipo())) {
+            } else if (TipoRequisicion.PS.toString().equals(ordenActual.getTipo())) {
                 if (popupCompletarActivoFijoBean.getPopUpocProductoID() > 0) {
                     OcProductoCompania ocProducto = ocProductoCompaniaImpl.find(popupCompletarActivoFijoBean.getPopUpocProductoID());
                     if (ocProducto != null && ocProducto.getId() > 0) {
