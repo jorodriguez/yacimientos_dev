@@ -989,6 +989,7 @@ public class RequisicionBean implements Serializable {
             if (Constantes.REQUISICION_EN_ESPERA == requisicionActual.getEstatus().getId()) {
                 enEsperaDet();
             }
+            listaEts = servicioReRequisicion.traerAdjuntosPorRequisicion(requisicionActual.getId());
             //
             String jsMetodo = ";activarTab('tabsRequi',0, 'divDatos', 'divTabla', 'divOperacion', 'divAutoriza');";
             PrimeFaces.current().executeScript(jsMetodo);
@@ -3464,6 +3465,7 @@ public class RequisicionBean implements Serializable {
                 DocumentoAnexo documentoAnexo = new DocumentoAnexo(fileInfo.getContent());
                 documentoAnexo.setTipoMime(fileInfo.getContentType());
                 documentoAnexo.setRuta(uploadDirectoryRequi());
+                documentoAnexo.setNombreBase(fileInfo.getFileName());
                 almacenDocumentos.guardarDocumento(documentoAnexo);
 
                 SiAdjunto adj
@@ -3511,7 +3513,8 @@ public class RequisicionBean implements Serializable {
 
     public void completarActualizacionEts() {
         this.servicioSiAdjuntoImpl.edit(etsActualAdjunto);
-        PrimeFaces.current().dialog().closeDynamic("PF('dlgNotaSubArh').hide()");
+        //
+        listaEts = servicioReRequisicion.traerAdjuntosPorRequisicion(requisicionActual.getId());
     }
 
     public void eliminarEts(ReRequisicionEts adjReq) {

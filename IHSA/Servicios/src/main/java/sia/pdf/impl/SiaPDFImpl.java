@@ -29,6 +29,9 @@ import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.export.JRPdfExporter;
 import net.sf.jasperreports.engine.export.JRPdfExporterParameter;
+import net.sf.jasperreports.export.SimpleExporterInput;
+import net.sf.jasperreports.export.SimpleOutputStreamExporterOutput;
+import net.sf.jasperreports.export.SimplePdfExporterConfiguration;
 import sia.archivador.AlmacenDocumentos;
 import sia.archivador.DocumentoAnexo;
 import sia.archivador.ProveedorAlmacenDocumentos;
@@ -58,7 +61,7 @@ import sia.util.UtilLog4j;
  *
  * @author ihsa
  */
-@Stateless 
+@Stateless
 public class SiaPDFImpl {
 
     @Inject
@@ -78,7 +81,7 @@ public class SiaPDFImpl {
     @Inject
     private ProveedorAlmacenDocumentos proveedorAlmacenDocumentos;
     @Inject
-    private CvConvenioDocumentoImpl  cvConvenioDocumentoLocal;
+    private CvConvenioDocumentoImpl cvConvenioDocumentoLocal;
 
     private static final String REP_NAME_EVALUACION = "evaluacion";
     private static final String REP_NAME_ORDEN = "reporteOC";
@@ -102,7 +105,6 @@ public class SiaPDFImpl {
     private static final UtilLog4j<SiaPDFImpl> LOGGER = UtilLog4j.log;
 
 //    private final static Logger LOGGER = Logger.getLogger(OrdenImpl.class.getName());
-    
     public void validarUUID(Orden orden) throws Exception {
         if (Strings.isNullOrEmpty(orden.getUuid())) {
             setUuidOrden(orden);
@@ -127,7 +129,6 @@ public class SiaPDFImpl {
         return generarEvaluacionPDF(source, source.getId(), nombreBase, usr);
     }
 
-    
     @Trace
     public File getPDF(Object source, Usuario usr, boolean borrarArchivo) throws Exception {
         DocumentoAnexo pdfFile;
@@ -191,7 +192,7 @@ public class SiaPDFImpl {
 
         DocumentoAnexo retVal;
 
-        try (Connection conn = getConexion();) {
+        try ( Connection conn = getConexion();) {
             final Map<String, Object> params = new HashMap();
             final String REPOSITORYPATH = getRepositoryPath();
             final String subRepotPath = new StringBuilder().append(REPOSITORYPATH).append(JASPER_FILE_PATH_REQUISICION).append(File.separator).toString();
@@ -253,6 +254,17 @@ public class SiaPDFImpl {
 
         // Export pdf file
         final JRPdfExporter exporter = new JRPdfExporter();
+        exporter.setExporterInput(new SimpleExporterInput(jprint));
+        
+        //
+        exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(jasperData.repositoryPath + jasperData.pdfFilePath + jasperData.baseFileName + EXT_PDF));
+        //
+        SimplePdfExporterConfiguration configuration = new SimplePdfExporterConfiguration();
+        configuration.setCreatingBatchModeBookmarks(true);
+        exporter.setConfiguration(configuration);
+        exporter.exportReport();
+
+        /*
         exporter.setParameter(JRPdfExporterParameter.IS_ENCRYPTED, Boolean.TRUE);
         exporter.setParameter(JRPdfExporterParameter.IS_128_BIT_KEY, Boolean.TRUE);
         exporter.setParameter(JRPdfExporterParameter.PERMISSIONS, PdfWriter.ALLOW_PRINTING);
@@ -265,7 +277,7 @@ public class SiaPDFImpl {
         );
         exporter.setParameter(JRExporterParameter.JASPER_PRINT, jprint);
         exporter.exportReport();
-
+         */
         return new File(
                 new StringBuilder().append(jasperData.repositoryPath)
                         .append(jasperData.pdfFilePath)
@@ -416,7 +428,7 @@ public class SiaPDFImpl {
             throws Exception {
         File pdfFile = null;
 
-        try (Connection conn = getConexion();) {
+        try ( Connection conn = getConexion();) {
             Map params = new HashMap();
             final String REPOSITORYPATH = getRepositoryPath();
 
@@ -474,7 +486,7 @@ public class SiaPDFImpl {
             throws Exception {
         File pdfFile = null;
 
-        try (Connection conn = getConexion();) {
+        try ( Connection conn = getConexion();) {
             Map params = new HashMap();
             final String REPOSITORYPATH = getRepositoryPath();
 
@@ -528,7 +540,6 @@ public class SiaPDFImpl {
         return this.parametrosSistemaServicioRemoto.find(STR_MAX_LEN).getUploadDirectory();
     }
 
-    
     public DocumentoAnexo buscarOrdenPDF(String nombre) {
         DocumentoAnexo pdfFile = null;
         try {
@@ -546,7 +557,6 @@ public class SiaPDFImpl {
         return pdfFile;
     }
 
-    
     public File buscarPdfCG(Compania compania) throws Exception {
         File pdfFile = null;
         try {

@@ -38,8 +38,8 @@ public class OcProductoCompania implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @Basic(optional = false)
-@GeneratedValue(generator =  "oc_producto_compania_seq", strategy = GenerationType.SEQUENCE)
-    
+    @GeneratedValue(generator = "oc_producto_compania_seq", strategy = GenerationType.SEQUENCE)
+
     @Column(name = "ID")
     private Integer id;
     @JoinColumn(name = "COMPANIA", referencedColumnName = "RFC")
@@ -67,19 +67,26 @@ public class OcProductoCompania implements Serializable {
     @Column(name = "HORA_MODIFICO")
     @Temporal(TemporalType.TIME)
     private Date horaModifico;
-    
+
     @Column(name = "ELIMINADO")
     private boolean eliminado;
-    //
 
-    
+    //
+    public OcProductoCompania() {
+    }
+
+    public OcProductoCompania(Integer id) {
+        this.id = id;
+    }
+
+    @Override
     public int hashCode() {
         int hash = 0;
         hash += (id != null ? id.hashCode() : 0);
         return hash;
     }
 
-    
+    @Override
     public boolean equals(Object object) {
         if (!(object instanceof OcProductoCompania)) {
             return false;
@@ -88,7 +95,7 @@ public class OcProductoCompania implements Serializable {
         return !((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id)));
     }
 
-    
+    @Override
     public String toString() {
         return "sia.modelo.OcProductoCompania[ id=" + id + " ]";
     }

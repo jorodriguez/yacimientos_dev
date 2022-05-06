@@ -559,7 +559,8 @@ public class CargaEtsBean implements Serializable {
                 } else {
                     documentoAnexo.setRuta(getUploadDirectoryOrden());
                 }
-
+                documentoAnexo.setNombreBase(fileInfo.getFileName());
+                
                 almacenDocumentos.guardarDocumento(documentoAnexo);
 
                 SiAdjunto adj
@@ -628,6 +629,7 @@ public class CargaEtsBean implements Serializable {
             if (addArchivo) {
                 DocumentoAnexo documentoAnexo = new DocumentoAnexo(fileInfo.getContent());
                 documentoAnexo.setTipoMime(fileInfo.getContentType());
+                documentoAnexo.setNombreBase(fileInfo.getFileName());
                 documentoAnexo.setRuta(getUploadDirectoryRequi());
                 almacenDocumentos.guardarDocumento(documentoAnexo);
 
@@ -694,9 +696,9 @@ public class CargaEtsBean implements Serializable {
 
     }
 
-    public void traerTablaComparativa() {
+    public void traerTablaComparativa(int ordenId) {
         try {
-            listaTablaComparativa = servicioOcOrdenEts.traerEtsPorOrdenCategoria(getOrdenActual().getId(), Constantes.OCS_CATEGORIA_TABLA);
+            listaTablaComparativa = servicioOcOrdenEts.traerEtsPorOrdenCategoria(ordenId, Constantes.OCS_CATEGORIA_TABLA);
         } catch (Exception ex) {
             listaTablaComparativa = null;
             LOGGER.fatal(this, " excepcion en getOrdenEts", ex);
