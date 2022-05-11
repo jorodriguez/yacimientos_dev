@@ -11,18 +11,17 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.PostConstruct;
-import javax.faces.bean.ManagedProperty;
-
 
 import javax.faces.event.AjaxBehaviorEvent;
 import javax.faces.model.SelectItem;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+import lombok.Getter;
+import lombok.Setter;
 import org.primefaces.PrimeFaces;
 import sia.compra.requisicion.bean.backing.FacesUtilsBean;
 import sia.compra.requisicion.bean.backing.MenuBarBean;
-import sia.compra.requisicion.bean.backing.ProveedorBean;
 import sia.compra.requisicion.bean.backing.UsuarioBean;
 import sia.constantes.Configurador;
 import sia.constantes.Constantes;
@@ -35,6 +34,7 @@ import sia.modelo.contrato.vo.ConvenioArticuloVo;
 import sia.modelo.orden.vo.ContactoOrdenVo;
 import sia.modelo.orden.vo.MovimientoVO;
 import sia.modelo.proveedor.Vo.ContactoProveedorVO;
+import sia.modelo.proveedor.Vo.ProveedorVo;
 import sia.modelo.sgl.vo.OrdenDetalleVO;
 import sia.modelo.usuario.vo.UsuarioResponsableGerenciaVo;
 import sia.modelo.usuario.vo.UsuarioTipoVo;
@@ -44,21 +44,23 @@ import sia.servicios.catalogos.impl.ImpuestoImpl;
 import sia.servicios.convenio.impl.ConvenioImpl;
 import sia.servicios.orden.impl.OcFlujoImpl;
 import sia.servicios.orden.impl.OcFormaPagoImpl;
-import sia.servicios.orden.impl.OcOrdenCoNoticiaImpl;
 import sia.servicios.orden.impl.OcTerminoPagoImpl;
 import sia.servicios.orden.impl.OcTipoCompraImpl;
 import sia.servicios.orden.impl.OrdenImpl;
 import sia.servicios.orden.impl.OrdenSiMovimientoImpl;
 import sia.servicios.proveedor.impl.ContactoProveedorImpl;
+import sia.servicios.proveedor.impl.ProveedorServicioImpl;
 import sia.servicios.proveedor.impl.PvProveedorCompaniaImpl;
 import sia.servicios.sistema.impl.SiManejoFechaImpl;
+import sia.util.Env;
+import sia.util.ProveedorEnum;
 import sia.util.UtilLog4j;
 
 /**
  *
  * @author mluis
  */
-@Named (value = "solicitarOrdenBean")
+@Named(value = "solicitarOrdenBean")
 @ViewScoped
 public class SolicitarOrdenBean implements Serializable {
 
@@ -69,8 +71,6 @@ public class SolicitarOrdenBean implements Serializable {
     }
     @Inject
     private UsuarioBean sesion;
-    @Inject
-    ProveedorBean proveedorBean; // = (ProveedorBean) FacesUtilsBean.getManagedBean("proveedorBean");
 
     //
     @Inject
@@ -88,7 +88,9 @@ public class SolicitarOrdenBean implements Serializable {
     @Inject
     private PvProveedorCompaniaImpl proveedorCompaniaImpl;
     @Inject
-    private OcOrdenCoNoticiaImpl ocOrdenCoNoticiaImpl;
+    private ProveedorServicioImpl proveedorImpl;
+    @Inject
+    private ContactoProveedorImpl contactoProveedorImpl;
     @Inject
     private GerenciaImpl gerenciaImpl;
     @Inject
@@ -120,7 +122,7 @@ public class SolicitarOrdenBean implements Serializable {
     private int idTerminoPago;
     private String tipoOrden = Constantes.VACIO;
     private String condicionSeleccionada = Constantes.VACIO;
-    private final static String ACTION_ORDEN_COMPRA = "ordenCompra";
+    private final static String ACTION_ORDEN_COMPRA = "/vistas/SiaWeb/Orden/OrdenCompra.xhtml?faces-redirect=true";
     private final static String ERR_OCS_NO_SOLIC = "No se pudo solicitar la orden de compra y/o servicio, por favor notifique el problema a: soportesia@ihsa.mx";
     private boolean mostrarTipoOrden = true;
     private int iva = 0;
@@ -131,48 +133,67 @@ public class SolicitarOrdenBean implements Serializable {
     private ContratoVO contratoVOO;
     private List<MovimientoVO> rechazosCarta = null;
     private String archivoRepse;
+    @Getter
+    @Setter
+    private ProveedorVo proveedorVo;
 
     @PostConstruct
     public void iniciar() {
         int idOrden = 0;
         archivoRepse = "";
-        if (FacesUtilsBean.getRequestParameter("idOrden") != null && !FacesUtilsBean.getRequestParameter("idOrden").isEmpty()) {
-            idOrden = Integer.parseInt(FacesUtilsBean.getRequestParameter("idOrden"));
-        } else {
-            idOrden = Integer.parseInt(FacesUtilsBean.getRequestParameter("idOrdenSel"));
-        }
-        //
-        listaItems = ordenImpl.itemsPorOrdenCompra(idOrden);
-        //
-        cambiarPagina(idOrden);
+        Integer parametro = Env.getContextAsInt(sesion.getCtx(), "ORDEN_ID");
+        if (parametro > 0) {
+            idOrden = parametro;
+            Env.removeContext(sesion.getCtx(), "ORDEN_ID");
+            listaItems = ordenImpl.itemsPorOrdenCompra(idOrden);
+            //
+            cambiarPagina(idOrden);
 
-        setListaTerminoPago(new ArrayList<>());
-        try {
-            List<GeneralVo> tempList = ocTerminoPagoImpl.listaTerminoPago(sesion.getUsuarioConectado().getApCampo().getCompania().getRfc());
-            for (GeneralVo gvo : tempList) {
-                SelectItem item = new SelectItem(gvo.getValor(), gvo.getNombre());
-                getListaTerminoPago().add(item);
+            setListaTerminoPago(new ArrayList<>());
+            try {
+                List<GeneralVo> tempList = ocTerminoPagoImpl.listaTerminoPago(sesion.getUsuarioConectado().getApCampo().getCompania().getRfc());
+                for (GeneralVo gvo : tempList) {
+                    SelectItem item = new SelectItem(gvo.getValor(), gvo.getNombre());
+                    getListaTerminoPago().add(item);
+                }
+            } catch (Exception ex) {
+                UtilLog4j.log.fatal(this, ex.getMessage());
             }
-        } catch (RuntimeException ex) {
-            UtilLog4j.log.fatal(this, ex.getMessage());
+            //
+            setListaTipoPago(new ArrayList<>());
+            for (OcTipoCompra ocTipoCompra : ocTipoCompraImpl.traerTipoCompra()) {
+                getListaTipoPago().add(new SelectItem(ocTipoCompra.getId(), ocTipoCompra.getNombre()));
+            }
+            setListaFormaPago(new ArrayList<>());
+            for (OcFormaPago ocFormaPago : ocFormaPagoImpl.traerFormaPago()) {
+                getListaFormaPago().add(new SelectItem(ocFormaPago.getId(), ocFormaPago.getNombre()));
+            }
+            //
+            listaUsuariosAprueban();
+            //
+            listaUsuariosRevisan();
+            //
+            ordenActual.setOcTipoCompra(new OcTipoCompra());
+            ordenActual.setOcFormaPago(new OcFormaPago());
         }
-        //
-        setListaTipoPago(new ArrayList<>());
-        for (OcTipoCompra ocTipoCompra : ocTipoCompraImpl.traerTipoCompra()) {
-            getListaTipoPago().add(new SelectItem(ocTipoCompra.getId(), ocTipoCompra.getNombre()));
-        }
-        setListaFormaPago(new ArrayList<>());
-        for (OcFormaPago ocFormaPago : ocFormaPagoImpl.traerFormaPago()) {
-            getListaFormaPago().add(new SelectItem(ocFormaPago.getId(), ocFormaPago.getNombre()));
-        }
-        //
-        listaUsuariosAprueban();
-        //
-        listaUsuariosRevisan();
-        //
-        ordenActual.setOcTipoCompra(new OcTipoCompra());
-        ordenActual.setOcFormaPago(new OcFormaPago());
 
+    }
+
+    public List<String> completaProveedor(String query) {
+        return proveedorImpl.traerRfcNombreLikeProveedorQueryNativo(query, sesion.getUsuarioConectado().getApCampo().getCompania().getRfc(), ProveedorEnum.ACTIVO.getId());
+
+    }
+
+    public void llenarDatosProveedor() {
+        proveedorVo = new ProveedorVo();
+        String[] cad = proveedorSeleccionado.split("/");
+        proveedorVo = proveedorImpl.traerProveedorPorRFC(cad[0].trim());
+        idProveedorr = proveedorVo.getIdProveedor();
+        if (proveedorVo != null) {
+            listaContactos = contactoProveedorImpl.traerTodosContactoPorProveedor(proveedorVo.getIdProveedor());
+        }
+        traerConvenios(ordenActual.getContrato());
+        proveedorSeleccionado = "";
     }
 
     private void listaUsuariosAprueban() {
@@ -183,7 +204,7 @@ public class SolicitarOrdenBean implements Serializable {
                 SelectItem item = new SelectItem(nombre.getIdUser(), nombre.getUsuario());
                 usuarioAprueba.add(item);
             }
-        } catch (RuntimeException ex) {
+        } catch (Exception ex) {
             UtilLog4j.log.fatal(this, "Error  : :  :" + ex.getMessage());
         }
     }
@@ -215,7 +236,7 @@ public class SolicitarOrdenBean implements Serializable {
                     usuarioRevisa.add(new SelectItem(listaU.getIdUser(), listaU.getUsuario()));
                 }
             }
-        } catch (RuntimeException ex) {
+        } catch (Exception ex) {
             UtilLog4j.log.fatal(this, "Error  : :  :" + ex.getMessage());
         }
     }
@@ -237,7 +258,6 @@ public class SolicitarOrdenBean implements Serializable {
                 //
                 setIdProveedorr((int) getOrdenActual().getProveedor().getId());
                 setListaContactos(contactoProveedorServicioImpl.traerContactoPorProveedor(getIdProveedorr(), Constantes.CONTACTO_REP_COMPRAS));
-                proveedorBean.llenarJsonProveedor(getOrdenActual().getProveedor().getId(), ordenActual.getCompania().getRfc());
                 List<ContactoOrdenVo> lco = ordenImpl.getContactosVo(getOrdenActual().getId());
                 // Verifica los contactos agregados
                 for (ContactoOrdenVo contactosOrden : lco) {
@@ -252,20 +272,16 @@ public class SolicitarOrdenBean implements Serializable {
                 getOrdenActual().setProveedor(null);
                 setProveedorSeleccionado("");
             }
-            PrimeFaces.current().executeScript( ";mostrarDiv('divContactoProveedor');");
+            PrimeFaces.current().executeScript(";mostrarDiv('divContactoProveedor');");
         }
         if (getOrdenActual().isConConvenio()) {
             setListaProveedorEnConvenio(new ArrayList<>());
             Convenio conv = convenioImpl.buscarContratoPorNumero(ordenActual.getContrato());
             idProveedorr = conv.getProveedor().getId();
             //
-            proveedorBean.llenarJsonProveedor(getIdProveedorr(), ordenActual.getCompania().getRfc());
-            //
             listConvenio = new ArrayList<>();
             listConvenio.add(new SelectItem(conv.getCodigo(), conv.getCodigo() + ", " + conv.getNombre()));
             //
-        } else {
-            proveedorBean.llenarJson(ordenActual.getCompania().getRfc());
         }
         contactoConnvProveedor();
         //
@@ -286,10 +302,10 @@ public class SolicitarOrdenBean implements Serializable {
         setLstImpuestos(impuestoImpl.traerImpuestoItems(getOrdenActual().getApCampo().getCompania().getRfc(), 0));
         //return "solicitarOrden";
     }
-   
 
     private void contactoConnvProveedor() {
-        setListaContactos(proveedorBean.traerContactoPorProveedor(getIdProveedorr(), Constantes.CONTACTO_REP_COMPRAS));
+
+        setListaContactos(contactoProveedorImpl.traerContactoPorProveedor(getIdProveedorr(), Constantes.CONTACTO_REP_COMPRAS));
         //
         if (!ordenActual.isConConvenio()) {
             traerConvenios(null);
@@ -298,18 +314,18 @@ public class SolicitarOrdenBean implements Serializable {
         }
 
         if (getListaContactos() == null || getListaContactos().isEmpty()) {
-            PrimeFaces.current().executeScript( ";mostrarDiv('divNoContactoProveedor');");
+            PrimeFaces.current().executeScript(";mostrarDiv('divNoContactoProveedor');");
             //
-            PrimeFaces.current().executeScript( ";ocultarDiv('divContactoProveedor');");
+            PrimeFaces.current().executeScript(";ocultarDiv('divContactoProveedor');");
         } else {
-            PrimeFaces.current().executeScript( ";mostrarDiv('divContactoProveedor');");
+            PrimeFaces.current().executeScript(";mostrarDiv('divContactoProveedor');");
             //
-            PrimeFaces.current().executeScript( ";ocultarDiv('divNoContactoProveedor');");
+            PrimeFaces.current().executeScript(";ocultarDiv('divNoContactoProveedor');");
         }
 
         //Buscar si el proveedor ha rechazado aglguna carta de intención
         if (ordenActual.getApCampo().isCartaIntencion()) {
-            setRechazosCarta(new ArrayList<MovimientoVO>());
+            setRechazosCarta(new ArrayList<>());
             setRechazosCarta(ordenSiMovimientoImpl.traerCartasRechazadasProveedor(getIdProveedorr()));
             if (getRechazosCarta() != null && !rechazosCarta.isEmpty()) {
                 PrimeFaces.current().executeScript(
@@ -352,7 +368,7 @@ public class SolicitarOrdenBean implements Serializable {
             resultList.add(item2);
 
             return resultList;
-        } catch (RuntimeException ex) {
+        } catch (Exception ex) {
             UtilLog4j.log.fatal(this, ex);
         }
         return resultList;
@@ -382,101 +398,124 @@ public class SolicitarOrdenBean implements Serializable {
 
     public String completarSolicitudOrden() {
         String pagina = Constantes.VACIO;
-        if (this.monedaSeleccionada == null || this.monedaSeleccionada.isEmpty()) {
-            FacesUtilsBean.addErrorMessage("Para solicitar la orden tiene que especificar un tipo de moneda..");
-        } else if (!"OCS_SIN_CONTRATO".equals(ordenActual.getContrato()) && ordenActual.getContrato() != null && !ordenActual.getContrato().isEmpty() && ordenActual.getMoneda().getId() != this.contratoVOO.getIdMoneda()) {
-            FacesUtilsBean.addErrorMessage("El contrato seleccionado tiene una moneda distinta a la moneda de la orden de compra.");
-        } else if (Configurador.validarConvenio() && !"OCS_SIN_CONTRATO".equals(ordenActual.getContrato()) && ordenActual.getContrato() != null && !ordenActual.getContrato().isEmpty() && !ordenImpl.validarConvenio(ordenActual.getId(), ordenActual.getContrato())) {
-            ordenImpl.notificarValidarContrato(
-                    ordenActual,
-                    "El convenio " + ordenActual.getContrato() + " no cuenta con saldo suficiente para realizar la compra.");
-            FacesUtilsBean.addErrorMessage("El convenio " + ordenActual.getContrato() + " no cuenta con saldo suficiente para realizar la compra.");
-        } else if (archivoRepse == null) {
-            FacesUtilsBean.addErrorMessage("Para solicitar la oc/s debe especificar si la compra requiere mano de obra en sitio ..");
-        } else {
-            if (getOrdenActual().getConsecutivo() == null || getOrdenActual().getConsecutivo().isEmpty()) {
-                // si no tiene consecutivo verificar si selecciono el tipo de orden
-                if (this.getTipoOrden() == null || this.getTipoOrden().isEmpty()) {
-                    FacesUtilsBean.addErrorMessage("Para solicitar la orden por favor especifique que tipo de Orden es..");
-                } else {
-                    // Solicitar la orden
-                    filtrarContactos();
-                    try {
-                        ordenActual.setRepse(archivoRepse.equals("Si") ? Constantes.BOOLEAN_TRUE : Constantes.BOOLEAN_FALSE);
-                        boolean solicitada = ordenImpl.solicitarOrden(getIdProveedorr(), getRevisa(), aprueba,
-                                getCondicionSeleccionada(), monedaSeleccionada,
-                                getOrdenActual().getFechaEntrega(),
-                                getOrdenActual(), getIva(), getTipoOrden(), sesion.getUsuarioConectado().getApCampo().getId(),
-                                getListaContactos(), sesion.getUsuarioConectado().getId(),
-                                getIdTerminoPago(), ordenActual.getContrato());
+        List<ContactoProveedorVO> lco = new ArrayList<>();
+        listaContactos.stream().filter(ContactoProveedorVO::isSelected).forEach(cp -> {
+            lco.add(cp);
+        });
+        if (!lco.isEmpty()) {
+            if (!getRevisa().equals("-1")) {
+                if (!getAprueba().equals("-1")) {
+                    if (idTerminoPago > 0) {
+                        if (iva >= 0) {
+                            if (this.monedaSeleccionada == null || this.monedaSeleccionada.isEmpty()) {
+                                FacesUtilsBean.addErrorMessage("Para solicitar la orden tiene que especificar un tipo de moneda..");
+                            } else if (!"OCS_SIN_CONTRATO".equals(ordenActual.getContrato()) && ordenActual.getContrato() != null && !ordenActual.getContrato().isEmpty() && ordenActual.getMoneda().getId() != this.contratoVOO.getIdMoneda()) {
+                                FacesUtilsBean.addErrorMessage("El contrato seleccionado tiene una moneda distinta a la moneda de la orden de compra.");
+                            } else if (Configurador.validarConvenio() && !"OCS_SIN_CONTRATO".equals(ordenActual.getContrato()) && ordenActual.getContrato() != null && !ordenActual.getContrato().isEmpty() && !ordenImpl.validarConvenio(ordenActual.getId(), ordenActual.getContrato())) {
+                                ordenImpl.notificarValidarContrato(
+                                        ordenActual,
+                                        "El convenio " + ordenActual.getContrato() + " no cuenta con saldo suficiente para realizar la compra.");
+                                FacesUtilsBean.addErrorMessage("El convenio " + ordenActual.getContrato() + " no cuenta con saldo suficiente para realizar la compra.");
+                            } else if (archivoRepse == null) {
+                                FacesUtilsBean.addErrorMessage("Para solicitar la oc/s debe especificar si la compra requiere mano de obra en sitio ..");
+                            } else {
+                                if (getOrdenActual().getConsecutivo() == null || getOrdenActual().getConsecutivo().isEmpty()) {
+                                    // si no tiene consecutivo verificar si selecciono el tipo de orden
+                                    if (this.getTipoOrden() == null || this.getTipoOrden().isEmpty()) {
+                                        FacesUtilsBean.addErrorMessage("Para solicitar la orden por favor especifique que tipo de Orden es..");
+                                    } else {
+                                        // Solicitar la orden
+                                        try {
+                                            ordenActual.setRepse(archivoRepse.equals("Si") ? Constantes.BOOLEAN_TRUE : Constantes.BOOLEAN_FALSE);
+                                            boolean solicitada = ordenImpl.solicitarOrden(getIdProveedorr(), getRevisa(), aprueba,
+                                                    getCondicionSeleccionada(), monedaSeleccionada,
+                                                    getOrdenActual().getFechaEntrega(),
+                                                    getOrdenActual(), getIva(), getTipoOrden(), sesion.getUsuarioConectado().getApCampo().getId(),
+                                                    lco, sesion.getUsuarioConectado().getId(),
+                                                    getIdTerminoPago(), ordenActual.getContrato());
 
-                        if (solicitada) {
-                            FacesUtilsBean.addInfoMessage("La orden fue solicitada correctamente..");
-                            this.contactos.clear();
-                            listaContactos.clear();
-                            setIdProveedorr(-1);
-                            this.setCondicionSeleccionada(Constantes.VACIO);
-                            this.monedaSeleccionada = Constantes.VACIO;
-                            this.aprueba = Constantes.VACIO;
-                            this.setTipoOrden(Constantes.VACIO);
-                            setOrdenActual(null);
-                            setConsecutivo(null);
-                            quitarSeleccionOrden(true);
-                            pagina = ACTION_ORDEN_COMPRA;
+                                            if (solicitada) {
+                                                FacesUtilsBean.addInfoMessage("La orden fue solicitada correctamente..");
+                                                this.contactos.clear();
+                                                listaContactos.clear();
+                                                setIdProveedorr(-1);
+                                                this.setCondicionSeleccionada(Constantes.VACIO);
+                                                this.monedaSeleccionada = Constantes.VACIO;
+                                                this.aprueba = Constantes.VACIO;
+                                                this.setTipoOrden(Constantes.VACIO);
+                                                setOrdenActual(null);
+                                                setConsecutivo(null);
+                                                quitarSeleccionOrden(true);
+                                                pagina = ACTION_ORDEN_COMPRA;
+                                            } else {
+                                                FacesUtilsBean.addErrorMessage(ERR_OCS_NO_SOLIC);
+                                            }
+                                        } catch (Exception e) {
+                                            if ("NOPIRINEOS".equals(e.getMessage())) {
+                                                FacesUtilsBean.addErrorMessage("La empresa MPG solo puede solicitar requisiciones del bloque PIRINEOS.");
+                                            } else {
+                                                FacesUtilsBean.addErrorMessage(ERR_OCS_NO_SOLIC);
+                                            }
+                                            UtilLog4j.log.fatal(this, e.getMessage());
+                                        }
+                                    }
+                                } else {
+                                    // si tiene consecutivo asignado solicitar la orden
+                                    try {
+                                        //, getIdFormaPago()
+                                        ordenActual.setRepse(archivoRepse.equals("Si") ? Constantes.BOOLEAN_TRUE : Constantes.BOOLEAN_FALSE);
+                                        boolean solicitada
+                                                = ordenImpl.solicitarOrden(getIdProveedorr(), getRevisa(),
+                                                        aprueba, getCondicionSeleccionada(),
+                                                        monedaSeleccionada, getOrdenActual().getFechaEntrega(),
+                                                        getOrdenActual(), getIva(), getTipoOrden(),
+                                                        sesion.getUsuarioConectado().getApCampo().getId(),
+                                                        lco, sesion.getUsuarioConectado().getId(),
+                                                        getIdTerminoPago(), ordenActual.getContrato()
+                                                );
+
+                                        if (solicitada) {
+                                            FacesUtilsBean.addInfoMessage("La orden fue solicitada correctamente..");
+                                            contactos.clear();
+                                            listaContactos.clear();
+                                            setIdProveedorr(-1);
+                                            setCondicionSeleccionada(Constantes.VACIO);
+                                            monedaSeleccionada = Constantes.VACIO;
+                                            aprueba = Constantes.VACIO;
+                                            setTipoOrden(Constantes.VACIO);
+                                            setRevisa(Constantes.VACIO);
+                                            setOrdenActual(null);
+                                            setConsecutivo(null);
+                                            this.quitarSeleccionOrden(true);
+                                        } else {
+                                            FacesUtilsBean.addInfoMessage(ERR_OCS_NO_SOLIC);
+                                        }
+                                        pagina = ACTION_ORDEN_COMPRA;
+                                    } catch (Exception e) {
+                                        if ("NOPIRINEOS".equals(e.getMessage())) {
+                                            FacesUtilsBean.addErrorMessage("La empresa MPG solo puede solicitar requisiciones del bloque PIRINEOS.");
+                                        } else {
+                                            FacesUtilsBean.addErrorMessage(ERR_OCS_NO_SOLIC);
+                                        }
+                                    }
+                                }
+                            }
                         } else {
-                            FacesUtilsBean.addErrorMessage(ERR_OCS_NO_SOLIC);
+                            FacesUtilsBean.addErrorMessage("Seleccione el impuesto.");
                         }
-                    } catch (Exception e) {
-                        if ("NOPIRINEOS".equals(e.getMessage())) {
-                            FacesUtilsBean.addErrorMessage("La empresa MPG solo puede solicitar requisiciones del bloque PIRINEOS.");
-                        } else {
-                            FacesUtilsBean.addErrorMessage(ERR_OCS_NO_SOLIC);
-                        }
-                        UtilLog4j.log.fatal(this, e.getMessage());
+                    } else {
+                        FacesUtilsBean.addErrorMessage("Seleccione al término de pago.");
                     }
+                } else {
+                    FacesUtilsBean.addErrorMessage("Seleccione al aprobador.");
                 }
             } else {
-                // si tiene consecutivo asignado solicitar la orden
-                try {
-                    filtrarContactos();
-                    //, getIdFormaPago()
-                    ordenActual.setRepse(archivoRepse.equals("Si") ? Constantes.BOOLEAN_TRUE : Constantes.BOOLEAN_FALSE);
-                    boolean solicitada
-                            = ordenImpl.solicitarOrden(getIdProveedorr(), getRevisa(),
-                                    aprueba, getCondicionSeleccionada(),
-                                    monedaSeleccionada, getOrdenActual().getFechaEntrega(),
-                                    getOrdenActual(), getIva(), getTipoOrden(),
-                                    sesion.getUsuarioConectado().getApCampo().getId(),
-                                    getListaContactos(), sesion.getUsuarioConectado().getId(),
-                                    getIdTerminoPago(), ordenActual.getContrato()
-                            );
-
-                    if (solicitada) {
-                        FacesUtilsBean.addInfoMessage("La orden fue solicitada correctamente..");
-                        contactos.clear();
-                        listaContactos.clear();
-                        setIdProveedorr(-1);
-                        setCondicionSeleccionada(Constantes.VACIO);
-                        monedaSeleccionada = Constantes.VACIO;
-                        aprueba = Constantes.VACIO;
-                        setTipoOrden(Constantes.VACIO);
-                        setRevisa(Constantes.VACIO);
-                        setOrdenActual(null);
-                        setConsecutivo(null);
-                        this.quitarSeleccionOrden(true);
-                    } else {
-                        FacesUtilsBean.addInfoMessage(ERR_OCS_NO_SOLIC);
-                    }
-                    pagina = ACTION_ORDEN_COMPRA;
-                } catch (Exception e) {
-                    if ("NOPIRINEOS".equals(e.getMessage())) {
-                        FacesUtilsBean.addErrorMessage("La empresa MPG solo puede solicitar requisiciones del bloque PIRINEOS.");
-                    } else {
-                        FacesUtilsBean.addErrorMessage(ERR_OCS_NO_SOLIC);
-                    }
-                }
+                FacesUtilsBean.addErrorMessage("Seleccione al revisor.");
             }
+        } else {
+            FacesUtilsBean.addErrorMessage("Seleccione al menos un contacto");
         }
+
         //}
         return pagina;
     }
@@ -492,22 +531,7 @@ public class SolicitarOrdenBean implements Serializable {
         setConsecutivo(Constantes.VACIO);
     }
 
-    public void filtrarContactos() {
-        List<ContactoProveedorVO> l = new ArrayList<>();
-        for (ContactoProveedorVO sgV : getListaContactos()) {
-            if (sgV.isSelected()) {
-                l.add(sgV);
-            }
-        }
-        UtilLog4j.log.info(this, "Filas seleccionadas: " + l.size());
-        setListaContactos(l);
-    }
-
-    private void finalizarNoticiaOrden(String sesion, int idOrden) {
-        ocOrdenCoNoticiaImpl.finalizarNoticia(sesion, idOrden);
-    }
-
-    public void seleccionarContrato(AjaxBehaviorEvent event) {
+    public void seleccionarContrato() {
         this.contratoVOO = convenioImpl.traerConveniosPorCodigo(ordenActual.getContrato());
 
         if (this.contratoVOO != null) {
@@ -524,7 +548,7 @@ public class SolicitarOrdenBean implements Serializable {
             }
             if (isMsg) {
                 isMsg = false;
-                PrimeFaces.current().executeScript( ";alertaGeneral('" + msg + "');");
+                PrimeFaces.current().executeScript(";alertaGeneral('" + msg + "');");
             }
         }
     }
@@ -771,9 +795,7 @@ public class SolicitarOrdenBean implements Serializable {
      * @return the mostrarTipoOrden
      */
     public boolean isMostrarTipoOrden() {
-        mostrarTipoOrden
-                = getOrdenActual() == null ? false : getOrdenActual().getConsecutivo() == null;
-
+        mostrarTipoOrden = getOrdenActual() == null ? false : getOrdenActual().getConsecutivo() == null;
         return mostrarTipoOrden;
     }
 
@@ -859,13 +881,6 @@ public class SolicitarOrdenBean implements Serializable {
      */
     public void setListaMapa(Map<String, List<ConvenioArticuloVo>> listaMapa) {
         this.listaMapa = listaMapa;
-    }
-
-    /**
-     * @param proveedorBean the proveedorBean to set
-     */
-    public void setProveedorBean(ProveedorBean proveedorBean) {
-        this.proveedorBean = proveedorBean;
     }
 
     /**

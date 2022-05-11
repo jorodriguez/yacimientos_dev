@@ -94,6 +94,7 @@ import sia.servicios.requisicion.impl.ReRequisicionEtsImpl;
 import sia.servicios.sistema.impl.SiAdjuntoImpl;
 import sia.servicios.sistema.impl.SiRelCategoriaImpl;
 import sia.servicios.sistema.impl.SiUsuarioRolImpl;
+import sia.util.Env;
 
 /**
  *
@@ -334,24 +335,24 @@ public class OrdenCompraBean implements Serializable {
     }
 
     public String soliciarOCS() {
-        OrdenVO o = ordenImpl.buscarOrdenPorId(ordenActual.getId(), ordenActual.getApCampo().getId(), false);
+        //OrdenVO o = ordenImpl.buscarOrdenPorId(ordenActual.getId(), ordenActual.getApCampo().getId(), false);
         //        
-        return solOCS(o.getId());
+        return solOCS(ordenActual.getId());
     }
 
     public String solicitarOrden(int idOrd) {
         return solOCS(idOrd);
     }
 
-    private String solOCS(int o) {
+    private String solOCS(int idOrden) {
         try {
             if (ordenActual == null) {
-                setOrdenActual(ordenImpl.find(o));
+                setOrdenActual(ordenImpl.find(idOrden));
             }
             //
             itemsPorOrdenSingle();
-            boolean hasInvArticulos = ordenDetalleImpl.tieneInvArticulo(o, false);
-            String msgValidarPresupuesto = ordenDetalleImpl.validarPresupuesto(o);
+            boolean hasInvArticulos = ordenDetalleImpl.tieneInvArticulo(idOrden, false);
+            String msgValidarPresupuesto = ordenDetalleImpl.validarPresupuesto(idOrden);
             if (getListaItems() == null || getListaItems().isEmpty() || !hasInvArticulos) {
                 if (!hasInvArticulos) {
                     itemsPorOrden();
@@ -393,7 +394,7 @@ public class OrdenCompraBean implements Serializable {
                     case "PS":
                         if (errorAux == 0) {
                             if (recorreItemsPS(getListaItems())) {
-                                return cambiarPagina();
+                                return cambiarPagina(idOrden);
                             } else {
                                 itemsPorOrden();
                                 PrimeFaces.current().executeScript(
@@ -421,7 +422,7 @@ public class OrdenCompraBean implements Serializable {
                         break;
                     case "AF":
                         if (errorAux == 0) {
-                            return cambiarPagina();
+                            return cambiarPagina(idOrden);
                         } else {
                             itemsPorOrden();
                             switch (errorAux) {
@@ -455,8 +456,9 @@ public class OrdenCompraBean implements Serializable {
         return Constantes.VACIO;
     }
 
-    private String cambiarPagina() {
-        return "/vistas/SiaWeb/Orden/solicitarOrden.xhtml?faces-redirect=true";
+    private String cambiarPagina(int idOrden) {
+        Env.setContext(sesion.getCtx(), "ORDEN_ID", idOrden);
+        return "/vistas/SiaWeb/Orden/SolicitarOrden.xhtml?faces-redirect=true";
     }
 
     private int recorreItems(List<OrdenDetalleVO> lrd) {
@@ -603,7 +605,8 @@ public class OrdenCompraBean implements Serializable {
             listaItems = ordenDetalleImpl.itemsPorOrden(ordenActual.getId());
         }
 
-        PrimeFaces.current().executeScript(";$(dialogoCambiarContrato).modal('hide');activarTab('tabsRecepReq', 0, 'divDatos', 'divTabla', 'divOperacion', 'divAutoriza');");
+        PrimeFaces.current().executeScript("$(dialogoCambiarContrato).modal('hide');");
+        PrimeFaces.current().executeScript("activarTab('tabsRecepReq', 0, 'divDatos', 'divTabla', 'divOperacion', 'divAutoriza');");
         //
     }
 

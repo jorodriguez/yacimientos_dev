@@ -254,13 +254,12 @@ public class ConsultaFacturaBean implements Serializable {
         //
     }
 
-    public void seleccionar() {
-        int idFactura = Integer.parseInt(FacesUtilsBean.getRequestParameter("idFac"));
+    public void seleccionar(int idFactura) {
         facturaVo = siFacturaImpl.buscarFactura(idFactura);
-        facturaVo.setDetalleFactura(new ArrayList<FacturaDetalleVo>());
-        listaArchivosFactura = new ArrayList<FacturaAdjuntoVo>();
-        listaNotaCredito = new ArrayList<FacturaVo>();
-        contenidoNacional = new ArrayList<FacturaContenidoNacionalVo>();
+        facturaVo.setDetalleFactura(new ArrayList<>());
+        listaArchivosFactura = new ArrayList<>();
+        listaNotaCredito = new ArrayList<>();
+        contenidoNacional = new ArrayList<>();
         //
         facturaVo.setDetalleFactura(siFacturaDetalleImpl.detalleFactura(idFactura));
         listaArchivosFactura = siFacturaAdjuntoImpl.traerSoporteFactura(idFactura, Boolean.TRUE);
@@ -271,8 +270,7 @@ public class ConsultaFacturaBean implements Serializable {
         PrimeFaces.current().executeScript("$(dialogoConsultaFactura).modal('show');");
     }
 
-    public void seleccionarNotaCredito() {
-        int idFacNota = Integer.parseInt(FacesUtilsBean.getRequestParameter("idNotaCredito"));
+    public void seleccionarNotaCredito(int idFacNota) {
         //
         listaArchivosNotaCredito = new ArrayList<>();
         listaArchivosNotaCredito = siFacturaAdjuntoImpl.traerSoporteFactura(idFacNota, Boolean.FALSE);
