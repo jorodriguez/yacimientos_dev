@@ -1,0 +1,67 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"                
+                template="/WEB-INF/templates/master.xhtml">
+
+    <ui:define name="tituloPagina">
+        #{msg['sia.inventarios.herramientas.impresion.modulo']}
+    </ui:define>
+
+    <ui:define name="titulo">
+        #{msg['sia.inventarios.herramientas.impresion.titulo']}
+    </ui:define>
+
+    <ui:define name="contenido">
+        <h:messages id="mensajesPagina" showDetail="false" globalOnly="true" styleClass="mensajes-ul"
+                    infoClass="ui-widget ui-corner-all ui-state-highlight input-msg"
+                    errorClass=" ui-widget ui-corner-all ui-state-error input-msg"/>
+        <h:panelGroup id="pnControles">
+            <table style="width: 700px">
+                <tr>
+                    <td>
+                        <h:outputText value="#{msg['sia.inventarios.comun.articulo']}:"/>
+                    </td>
+                    <td>
+                        <h:panelGroup id="pnArticulo">
+                            <h:inputText value="#{impresionEtiqueta.articulo.nombre}" id="txtArticulo"
+                                         styleClass="articuloAutoComplete ui-inputfield ui-textentry ui-widget ui-state-optional ui-corner-all ui-autocomplete-input"
+                                         style="width: 500px">
+                                <f:ajax render="pnControlesButones" event="blur" execute="@form"
+                                        listener="#{impresionEtiqueta.articuloChanged}"/>
+                            </h:inputText>
+                            <h:inputHidden value="#{impresionEtiqueta.articulo.id}" id="hdFiltroArticuloId"
+                                           required="true">
+                            </h:inputHidden>
+                        </h:panelGroup>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="vertical-align: top">
+                        <h:outputText value="#{msg['sia.inventarios.impresion.numeroEtiquetas']}:"/>
+                    </td>
+                    <td>
+                        <h:inputText value="#{impresionEtiqueta.numeroDeEtiquetas}" style="width: 120px;"
+                                     styleClass="ui-inputfield ui-textentry ui-widget ui-state-optional ui-corner-all"
+                                     required="true" requiredMessage="Es necesarioa agregar un número entero.">
+                            <f:ajax event="blur" render="pnControlesButones" execute="@form"/>
+                        </h:inputText>
+                    </td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td>
+                        <h:panelGroup id="pnControlesButones">
+                            <h:outputLink disabled="#{impresionEtiqueta.articulo.id == null}"
+                                          value="../../labels?message=#{impresionEtiqueta.articulo.codigo}&amp;numero=#{impresionEtiqueta.numeroDeEtiquetas}&amp;art=#{impresionEtiqueta.datosEtiqueta}"
+                                          styleClass="hbutton-imp #{impresionEtiqueta.articulo.id == null || facesContext.validationFailed ? 'ui-disabled' : ''}"
+                                          target="_blank"   >
+                                #{msg['sia.inventarios.herramientas.impresion.imprimir']}
+                            </h:outputLink>
+                        </h:panelGroup>
+                    </td>
+                </tr>
+            </table>
+        </h:panelGroup>
+    </ui:define>
+</ui:composition>

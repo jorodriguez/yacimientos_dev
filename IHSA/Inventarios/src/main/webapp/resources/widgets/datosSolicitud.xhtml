@@ -1,0 +1,107 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:composite="http://xmlns.jcp.org/jsf/composite">
+    <composite:interface>
+        <composite:attribute name="embedded" type="Boolean"/>
+    </composite:interface>
+    <composite:implementation>
+        <h:panelGroup id="panelDatosSolicitud">
+            <p:dialog id="nuevoDialogoDatosSolicitud"
+                        header="Solicitud material"
+                        closable="true"
+                        modal="true"
+                        resizable="false"
+                        draggable="false"
+                        showEffect="fade"
+                        hideEffect="fade"
+                        width="900"
+                        widgetVar="crearDialogoDatosSolicitud">            
+                <h:panelGroup id="panelInformacion">
+                    <table class="table-form">
+                        <tr>
+                            <td width="50">
+                                <h:outputText value="Solicitante: "/>
+                            </td>
+                            <td>
+                                <h:outputLabel value="#{autorizarMaterialBean.solicitudeVo.solicita}" style="font-weight: bold;"/>
+                            </td> 
+                            <td style="text-align: right;">
+                                <h:outputText value="Gerencia:"/>
+                            </td>
+                            <td >
+                                <h:outputLabel value="#{autorizarMaterialBean.solicitudeVo.gerencia}"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td >
+                                <h:outputText value="Teléfono: "/>
+                            </td>
+                            <td>
+                                <h:outputLabel value="#{autorizarMaterialBean.solicitudeVo.telefono}"/>
+                            </td>
+                            <td style="text-align: right;">
+                                <h:outputText value="Fecha:"/>
+                            </td>
+                            <td>
+                                <h:outputLabel value="#{autorizarMaterialBean.solicitudeVo.fechaRequiere}"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="4">
+                                <p:dataTable id="tblMat" value="#{autorizarMaterialBean.solicitudeVo.materiales}" 
+                                               var="dataM" rowIndexVar="index">
+                                    <p:column style="text-align: left;" >
+                                        <f:facet name="header">Descripción del artículo</f:facet>
+                                        <h:outputText value="#{dataM.articulo}" title="#{dataM.codigoArt}"/>
+                                    </p:column>
+                                    <p:column headerText="Unidad" style="width: 10%;">
+                                        <h:outputText value="#{dataM.unidad}"/>
+                                    </p:column>
+                                    <p:column headerText="Disp.">
+                                        <h:outputText value="#{dataM.disponibles}"/>
+                                    </p:column>
+                                    <p:column headerText="Cant." style="width: 8%">
+                                        <h:outputText value="#{dataM.cantidad}" class="ui-inputfield ui-textentry"/>
+                                    </p:column>
+                                </p:dataTable>
+                            </td>
+                        </tr>
+                        <tr style="padding-top: 5%;">
+                            <td >
+                                <h:outputLabel value="Observación:" style="margin-top: 20px;"/>
+                            </td>
+                            <td colspan="3">
+                                <h:outputText value="#{autorizarMaterialBean.solicitudeVo.observacion}" />
+                            </td>
+                        </tr>
+                        <tr style="padding-top: 10%;">
+                            <td>
+                                <h:outputLabel value="Recogerá material:"/>
+                            </td>
+                            <td colspan="2">
+                                <h:outputText value="#{autorizarMaterialBean.solicitudeVo.usuarioRecoge}" />
+                            </td>
+                        </tr>
+                    </table>
+                    <table class="table-form">
+                        <tr>
+                            <td>
+                                <h:commandLink value="Cerrar"  styleClass="hbutton cancelar" 
+                                               actionListener="#{autorizarMaterialBean.cerrarVerSolicitud(e)}"
+                                               immediate="true">
+                                    <f:ajax execute="panelDatosSolicitud" render="@all"/>
+                                </h:commandLink>
+                            </td>
+                        </tr>
+
+                    </table>
+                </h:panelGroup>
+            </p:dialog>
+        </h:panelGroup>
+    </composite:implementation>
+</html>

@@ -1,0 +1,73 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/templates/master.xhtml">
+
+    <ui:define name="tituloPagina">
+        #{msg['sia.inventarios.avisos.mensaje.modulo']}
+    </ui:define>
+
+    <ui:define name="titulo">
+        #{msg['sia.inventarios.avisos.mensaje.titulo']}
+    </ui:define>
+
+    <ui:define name="contenido">
+        <h:messages id="mensajesPagina" showDetail="false" globalOnly="true" styleClass="mensajes-ul"
+                    infoClass="ui-widget ui-corner-all ui-state-highlight input-msg"
+                    errorClass=" ui-widget ui-corner-all ui-state-error input-msg"/>
+        <div class="pn-mensaje ">
+            <div class="cabecera">
+                <div>
+                    <div class="asunto">
+                        Asunto:
+                        <span>#{mensaje.aviso.asunto}</span>
+                    </div>
+                    <div class="acciones">
+                        <h:commandLink value="#{msg['sia.inventarios.avisos.noLeido']}"
+                                       action="#{mensaje.marcarComoNoLeido}"
+                                       styleClass="hbutton-cerrado primer">
+                            <f:ajax render="@all"/>
+                        </h:commandLink>
+                        <h:commandLink value="#{msg['sia.inventarios.avisos.eliminar']}"
+                                       styleClass="hbutton-eliminado"
+                                       onclick="mostrarConfirmar(this);
+					       return false;">
+                        </h:commandLink>
+                        <h:commandButton action="#{mensaje.eliminar}" style="display: none">
+                            <f:ajax render="@all"/>
+                        </h:commandButton>
+                    </div>
+                </div>
+                <div>
+                    <div class="acciones">
+                        <h:outputText  value="#{mensaje.aviso.fecha}">
+			    <f:convertDateTime pattern="dd/MM/yyyy HH:mm"/>
+			</h:outputText>
+                    </div>
+                </div>
+            </div>
+            <div class="mensaje-contenido">
+                <h:outputText escape="false" value="#{mensaje.aviso.mensaje}"/>
+            </div>
+        </div>
+        <h:link outcome="/views/index" styleClass="hbutton-reg"
+                value="#{msg['sia.inventarios.avisos.mensaje.regresar']}">
+        </h:link>
+        <p:confirmDialog id="confirmDialog"
+                                message="#{msg['sia.inventarios.avisos.mensaje.confirmarEliminar']}"
+                                header="Confirmar"
+                                width="300"
+                                height="160"
+                                closable="false"
+                                widgetVar="eliminarDialogo">
+            <h:panelGrid columns="2" styleClass="div-center">
+                <button type="button" onclick="confirmar();">#{msg['sia.inventarios.comun.si']}</button>
+                <button type="button" value="No"
+                        onclick="eliminarDialogo.hide();">#{msg['sia.inventarios.comun.no']}</button>
+            </h:panelGrid>
+        </p:confirmDialog>
+    </ui:define>
+</ui:composition>
