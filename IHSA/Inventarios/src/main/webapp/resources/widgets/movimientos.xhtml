@@ -1,0 +1,48 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:composite="http://xmlns.jcp.org/jsf/composite">
+
+    <composite:interface/>
+    <composite:implementation>
+        <h:panelGroup id="pnMovimientosRevision" styleClass="sia-widget">
+            <h1 class="title">#{msg['sia.inventarios.movimientos.movimientosRevisar']}</h1>
+            <h:outputText value="#{msg['sia.inventarios.movimientos.noMovimientos']}" styleClass="mensaje" rendered="#{movimientosRevision.lista.getRowCount() == 0}"/>
+            <p:dataTable id="tablaDatos"
+                           value="#{movimientosRevision.lista}"
+                           var="m"
+                           paginator="true"
+                           paginatorPosition="bottom"
+                           rows="#{movimientosRevision.tamanioPagina}"
+                           styleClass="tabla-inicio"
+                           style="width: 800px"
+                           rendered="#{movimientosRevision.lista.getRowCount() != 0}">
+                <p:column id="id" headerText="#{msg['sia.inventarios.movimientos.fechaMovimiento']}" sortBy="#{m.fecha}" style="width: 220px">
+                    <h:outputText value="#{movimientosRevision.fechaConFormato(m.fecha)}"/>
+                </p:column>
+                <p:column id="codigo" headerText="#{msg['sia.inventarios.movimiento.almacenOrigen']}" sortBy="#{m.almacenNombre}" style="width: 280px">
+                    <h:outputText value="#{m.almacenNombre}"/>
+                </p:column>
+                <p:column id="nombre" headerText="#{msg['sia.inventarios.movimientos.tipoMovimiento']}" sortBy="#{m.tipoMovimiento}" style="width: 200px">
+                    <h:outputText value="#{tipoMovimiento.getNombre(m.tipoMovimiento)}"/>
+                </p:column>
+                <p:column id="solicitante" headerText="#{msg['sia.inventarios.movimientos.usuarioSolicitante']}" sortBy="#{m.generoNombre}" style="width: 200px">
+                    <h:outputText value="#{m.generoNombre}" />
+                </p:column>
+                <p:column style="width: 100px" styleClass="icon-column">
+
+                    <h:link styleClass="link" outcome="inventarios/movimiento" value="#{msg['sia.inventarios.movimientos.revisar']}">
+                        <f:param name="transaccionId" value="#{m.id}" />
+                        <f:param name="lista" value="true"/>
+                    </h:link>
+                </p:column>
+                <p:ajax event="page"/>
+            </p:dataTable>
+        </h:panelGroup>
+    </composite:implementation>
+</html>
+

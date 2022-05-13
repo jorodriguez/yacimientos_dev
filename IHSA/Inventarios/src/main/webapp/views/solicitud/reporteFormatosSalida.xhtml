@@ -1,0 +1,91 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                template="/WEB-INF/templates/crud.xhtml">
+
+    <ui:define name="titulo">
+        Datos de formatos de salida de material
+    </ui:define>  
+    <ui:define name="tabla"> 
+        <h:panelGrid columns="8" width="1000px">
+            <h:outputText value="Inicio:"/>
+            <p:datePicker 
+                value="#{reporteFormatosSalidaBean.inicio}"
+                pattern="dd/MM/yyyy"
+                maxdate="#{reporteFormatosSalidaBean.maximaFecha}"/>
+            <h:outputText value="Fin:"/>
+            <p:datePicker
+                value="#{reporteFormatosSalidaBean.fin}"
+                pattern="dd/MM/yyyy"
+                maxdate="#{reporteFormatosSalidaBean.maximaFecha}"/>
+            <h:outputLabel value="Estado"/>
+            <h:selectOneMenu value="#{reporteFormatosSalidaBean.idStatus}">
+                <f:selectItem itemLabel="Sin Selección . . . " itemValue="0"/>
+                <f:selectItems value="#{reporteFormatosSalidaBean.estados}"/>
+            </h:selectOneMenu>
+            <h:commandLink  value="Buscar" actionListener="#{reporteFormatosSalidaBean.buscarFormatos(event)}" styleClass="hbutton-bu">
+            </h:commandLink>
+            <h:commandLink value="#{msg['sia.inventarios.comun.reestablecer']}" actionListener="#{reporteFormatosSalidaBean.reestablecerFormatos(e)}" styleClass="hbutton-re">
+            </h:commandLink>
+        </h:panelGrid>
+        <div class="row">
+            <p:dataTable id="dtFormatos" value="#{reporteFormatosSalidaBean.solicitudes}" var="data"
+                         rows="20" paginator="true" paginatorAlwaysVisible="true" paginatorPosition="bottom">
+                <f:facet name="header">Formatos de salida</f:facet>
+                <p:column headerText="Almacén">
+                    <h:outputText value="#{data.almacen}" />
+                </p:column>
+                <p:column headerText="Folio">
+                    <h:outputText value="#{data.folio}" />
+                </p:column>
+                <p:column headerText="Gerencia">
+                    <h:outputText value="#{data.gerencia}" />
+                </p:column>
+                <p:column headerText="Estado">
+                    <h:outputText value="#{data.status}" />
+                </p:column>
+                <p:column headerText="Recibió" style="text-align: left;">
+                    <h:outputText value="#{data.usuarioRecibeMaterial}"/>
+                </p:column>
+                <p:column headerText="Requerida">
+                    <h:outputText value="#{data.fechaRequiere}" >
+                        <f:convertDateTime pattern="dd/MM/yyyyy"/>
+                    </h:outputText>
+                </p:column>
+                <p:column headerText="Entrega">
+                    <h:outputText value="#{data.fechaEntrega}" >
+                        <f:convertDateTime pattern="dd/MM/yyyyy"/>
+                    </h:outputText>
+                </p:column>
+                <p:column headerText="Total de materiales">
+                    <h:outputText value="#{data.totalDetalle}" />
+                </p:column>
+                <p:column headerText="Cantidad Solicitada">
+                    <h:outputText value="#{data.cantidadSolicitada}" />
+                </p:column>
+                <p:column headerText="Observaciones" style="width: 18%;">
+                    <h:outputText value="#{data.observacion}" />
+                </p:column>               
+                <p:column >
+                    <h:commandLink value="Ver" action="#{reporteFormatosSalidaBean.seleccionarSolicitud(data.id)}"
+                                   style="color: blue;">
+                    </h:commandLink>
+                </p:column>
+            </p:dataTable>
+
+            <p:commandButton value="Exportar">
+                <p:dataExporter fileName="formatoSalida" target="dtFormatos" type="xls"
+                                />
+            </p:commandButton>
+        </div>
+        <h:form> <!-- Inicia popup  -->
+            <h:panelGroup id="formatosSalidaComponente" >
+                <ui:include src="../../resources/widgets/datosFoliosSalida.xhtml"/>
+            </h:panelGroup>
+        </h:form> <!-- Termina popup --> 
+    </ui:define>
+</ui:composition>
+

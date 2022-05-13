@@ -393,6 +393,7 @@ public class OrdenBean implements Serializable {
             if (usuarioBean.getMapaRoles().containsKey("Consulta OCS Factura")) {
                 cargarFacturas(parametro);
             }
+            Env.setContext(usuarioBean.getCtx(), "ORDEN_ID", 0);
             Env.removeContext(usuarioBean.getCtx(), "ORDEN_ID");
         } else {
             ordenActual = null;
@@ -1824,7 +1825,7 @@ public class OrdenBean implements Serializable {
 
     public void completarOrdenOP(int idOrden) {
         this.setOrdenActual(ordenServicioRemoto.find(idOrden));
-        if ((getOrdenActual().getNavCode() == null || this.getOrdenActual().getNavCode().isEmpty())
+        if ((getOrdenActual().getNavCode() == null || getOrdenActual().getNavCode().isEmpty())
                 && this.ordenServicioRemoto.productosLineasGuadados(getOrdenActual().getId())) {
             PrimeFaces.current().executeScript(";abrirDialogoModal(dialogoEnviarProveedor);");
             //this.popupCompletarOrdenBean.toggleModal(actionEvent);
@@ -1932,7 +1933,7 @@ public class OrdenBean implements Serializable {
                 contarBean.llenarOcsEnivarProveedor();
                 PrimeFaces.current().executeScript(";cerrarEnvioPDF();");
             } else {
-                 if (this.getOrdenActual().getNavCode() == null || this.getOrdenActual().getNavCode().isEmpty()) {
+                if (this.getOrdenActual().getNavCode() == null || this.getOrdenActual().getNavCode().isEmpty()) {
                     FacesUtilsBean.addErrorMessage("Se require que se capture el código del pedido de NAVISION");
                 } else if (!validarPrefijoNavCode(this.getOrdenActual().getNavCode(), this.getOrdenActual().getCompania())) {
                     FacesUtilsBean.addErrorMessage(new StringBuilder().append("Se require que se capture un código del pedido de NAVISION correcto: Prefijo - ").append(this.getOrdenActual().getCompania().getNavPrefijo()).append(". ").toString());
@@ -1945,6 +1946,8 @@ public class OrdenBean implements Serializable {
             }
             //
             //
+
+            ordenesAutorizaTareaOP();
 
         } catch (Exception ex) {
             LOGGER.fatal(this, ex.getMessage());
@@ -1963,6 +1966,7 @@ public class OrdenBean implements Serializable {
                 ocActivoFijoImpl.completarActivosFijo(ordenActual, linea, usrConectado, popupCompletarActivoFijoBean.getLinea().getNavCodes());
                 PrimeFaces.current().executeScript(";cerrarDialogoModal(dialogoPedidoActivo);");
                 //  popupCompletarActivoFijoBean.toggleModal(actionEvent);
+                ordenesAutorizaTareaAF();
             } else {
                 FacesUtilsBean.addErrorMessage("Los códigos de los activos fijos deben de ser unicos en el SIA. Ya existe uno de los códigos capturados, es necesario proporcionar otro.");
             }

@@ -1,0 +1,45 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/templates/crud.xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:define name="titulo">
+        Reporte de existencias
+    </ui:define>
+    <ui:define name="tabla">        
+        <p:dataTable id="tablaDatosExistencia"  value="#{entradasSalidas.existencias}"  paginator="true"                       
+                     var="m" style="width: 1300px;" paginatorAlwaysVisible="true" paginatorPosition="bottom" rows="20">
+            <p:column id="idAlmacen" headerText="#{msg['sia.inventarios.movimiento.almacen']}"  >
+                <h:outputText value="#{m.almacenNombre}"/>
+            </p:column>
+            <p:column id="idArt" headerText="#{msg['sia.inventarios.articulos.titulo']}"  style="text-align: left;">
+                <h:outputText value="#{m.articuloNombre}"/>
+            </p:column>
+            <p:column id="codigo" headerText="#{msg['sia.inventarios.articulos.codigo']}" >
+                <h:outputText value="#{m.codigo}"/>
+            </p:column>
+            <p:column id="codigoInt" headerText="#{msg['sia.inventarios.articulos.codigoBarras']}"  >
+                <h:outputText value="#{m.codigoInt}"/>
+            </p:column>
+            <p:column id="nombre" headerText="Disponibles" >
+                <h:outputText value="#{m.totalUnidades}"/>
+            </p:column>  
+
+            <p:column id="precio" headerText="Precio" >
+                <h:outputText value="#{m.precio == 0 ? '':m.precio}"/>
+            </p:column>
+            <p:column id="moneda" headerText="Moneda" >
+                <h:outputText value="#{m.moneda}"/>
+            </p:column>  
+            <p:column id="ubicacion" headerText="Ubicacion" >
+                <h:outputText value="#{m.ubicacion}"/>
+            </p:column>  
+        </p:dataTable>    
+        <p:commandButton value="Exportar">
+            <p:dataExporter fileName="Existencia" target="tablaDatosExistencia" type="xls" />
+        </p:commandButton>
+    </ui:define>
+</ui:composition>

@@ -50,7 +50,7 @@ import sia.util.UtilLog4j;
  */
 //Stateless (name = "Inventarios_ArticuloService")
 @Stateless
-public class ArticuloImpl extends AbstractFacade<InvArticulo>  {
+public class ArticuloImpl extends AbstractFacade<InvArticulo>  implements ArticuloRemote{
 
     private static final int MAXIMO_RESULTADOS = 100;
 

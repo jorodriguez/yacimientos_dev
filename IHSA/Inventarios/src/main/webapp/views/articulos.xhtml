@@ -1,0 +1,112 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/templates/crud.xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:ihsa="http://java.sun.com/jsf/composite/widgets">
+    <ui:define name="tituloPagina">
+        #{msg['sia.inventarios.articulos.modulo']}
+    </ui:define>
+    <ui:define name="titulo">
+        #{msg['sia.inventarios.articulos.titulo']}
+        <a href="#{request.contextPath}/resources/videos/ayuda/articulos.mp4" class="link-ayuda" target="_blank">Ayuda</a>
+    </ui:define>
+
+    <ui:define name="botones">
+        <h:commandLink id="cmdNuevo" value="#{msg['sia.inventarios.articulos.crearArticulo']}" 
+                       actionListener="#{articulo.agregarNuevo}" immediate="true" styleClass="hbutton-cr" 
+                       rendered="#{not roles.esEmpleadoDeAlmacen()}">
+            <f:ajax  render="@all" onevent="mostrarEditarArticulo"/>
+        </h:commandLink>
+        <h:outputText id="hdTituloDialogo" value="#{articulo.unidadBean.embedded ? unidad.esNuevoElemento ? msg['sia.inventarios.catalogo.unidades.crearTitulo'] : msg['sia.inventarios.catalogo.unidades.editarTitulo'] : articulo.esNuevoElemento ? msg['sia.inventarios.articulos.crearTitulo'] : msg['sia.inventarios.articulos.editarTitulo']}" styleClass="hidden"/>
+        <button type="button" id="btnBuscar" data-icon="ui-icon-search">#{msg['sia.inventarios.comun.buscar']}</button>
+    </ui:define>
+
+    <ui:define name="filtros">
+        <h:panelGrid columns="2" width="300px" id="panelFiltro">
+            <h:outputText value="#{msg['sia.inventarios.comun.codigo']}:"/>
+            <h:inputText id="txtFiltroCodigo" value="#{articulo.filtro.codigo}" styleClass="ui-inputfield ui-textentry ui-widget ui-state-optional ui-corner-all"/>
+            <h:outputText value="#{msg['sia.inventarios.comun.nombre']}: "/>
+            <h:inputText id="txtFiltroNombre" value="#{articulo.filtro.nombre}" styleClass="ui-inputfield ui-textentry ui-widget ui-state-optional ui-corner-all"/>
+            <h:outputText value="#{msg['sia.inventarios.comun.descripcion']}:"/>
+            <h:inputText id="txtFiltroDescripcion" value="#{articulo.filtro.descripcion}" styleClass="ui-inputfield ui-textentry ui-widget ui-state-optional ui-corner-all"/>
+            <h:outputText value="#{msg['sia.inventarios.articulos.unidad']}:"/>
+            <h:selectOneMenu id="smFiltroUnidad" value="#{articulo.filtro.unidadId}" styleClass="ui-widget ui-inputfield ui-state-default ui-state-optional">
+                <f:selectItem itemLabel="- Seleccione -" itemValue="#{null}" noSelectionOption="true" />
+                <f:selectItems value="#{articulo.unidades}" var="u" itemLabel="#{u.nombre}" itemValue="#{u.id}"/>
+            </h:selectOneMenu>
+        </h:panelGrid>
+        <div class="filtro-butones">
+            <h:commandLink  value="#{msg['sia.inventarios.articulos.buscar']}" actionListener="#{articulo.buscar}" styleClass="hbutton-bu">
+                <f:ajax execute="panelFiltro" render="@all"/>
+            </h:commandLink>
+            <h:commandLink value="#{msg['sia.inventarios.comun.reestablecer']}" actionListener="#{articulo.reestablecer}" styleClass="hbutton-re">
+                <f:ajax execute="panelFiltro" render="@all"/>
+            </h:commandLink>
+        </div>
+    </ui:define>
+
+    <ui:define name="tabla">
+        <!-- style="width: 1100px" -->
+        <p:dataTable id="tablaDatos"
+                       value="#{articulo.lista}"
+                       lazy="true"
+                       var="a"
+                       paginator="true"
+                       paginatorPosition="bottom"
+                       rows="#{articulo.tamanioPagina}"
+                       >
+            <p:column id="id" headerText="#{msg['sia.inventarios.articulos.id']}" sortBy="#{a.id}" style="width: 100px">
+                <h:outputText value="#{a.id}"/>
+            </p:column>
+            <p:column id="codigo" headerText="#{msg['sia.inventarios.articulos.codigo']}" sortBy="#{a.codigo}" style="width: 100px">
+                <h:outputText value="#{a.codigo}"/>
+            </p:column>
+            <p:column id="nombre" headerText="#{msg['sia.inventarios.comun.nombre']}" sortBy="#{a.nombre}" style="width: 300px">
+                <h:outputText value="#{a.nombre}"/>
+            </p:column>
+            <p:column id="descripcion" headerText="#{msg['sia.inventarios.comun.descripcion']}" sortBy="#{a.descripcion}" style="width: 300px">
+                <h:outputText value="#{a.descripcion}"/>
+            </p:column>
+            <p:column id="unidad" headerText="#{msg['sia.inventarios.articulos.unidad']}" sortBy="#{a.unidadId}" style="width: 200px">
+                <h:outputText value="#{a.unidadNombre}"/>
+            </p:column>
+            <p:column id="precio" headerText="Precio" >
+                <h:outputText value="#{a.precio}"/>
+            </p:column>
+            <p:column id="moneda" headerText="Moneda" >
+                <h:outputText value="#{a.moneda}"/>
+            </p:column>
+            <p:column style="width: 65px" styleClass="icon-column" rendered="#{not roles.esEmpleadoDeAlmacen()}">
+                <h:commandLink title="#{msg['sia.inventarios.comun.editar']}" action="#{articulo.cargarElementParaEditar(a.id)}"
+                               styleClass="text-primary" value="Modificar">                    
+                    <f:ajax render="@all" onevent="mostrarEditarArticulo"/>
+                </h:commandLink>
+                <h:commandLink title="#{msg['sia.inventarios.comun.eliminar']}" onclick="mostrarConfirmar(this);
+                    return false;" rendered="#{roles.esAdministradorDeInventarios()}" value="Eliminar" styleClass="text-danger">
+                </h:commandLink>
+                <h:commandButton action="#{articulo.eliminarElemento(a.idRel)}" style="display: none" rendered="#{roles.esAdministradorDeInventarios()}">
+                    <f:ajax render="@all"/>
+                </h:commandButton>
+            </p:column>
+            <p:ajax event="page"/>
+        </p:dataTable>
+    </ui:define>
+    <ui:define name="datos">        
+        <h:panelGroup id="articuloComponente" style="display: #{not articulo.unidadBean.embedded ? 'block' : 'none'}">
+            <ihsa:articulo id="articuloComponent">
+            </ihsa:articulo>
+        </h:panelGroup>
+        <h:panelGroup id="unidadComponente" style="display: #{articulo.unidadBean.embedded ? 'block' : 'none'}">
+            <ihsa:unidad embedded="true">
+            </ihsa:unidad>
+        </h:panelGroup>
+    </ui:define>
+
+    <ui:param name="confirmarEliminar" value="#{msg['sia.inventarios.articulos.confirmarEliminar']}"/>
+    <ui:param name="mensajePaginacion" value="#{articulo.mensajePaginacion}" />
+    <ui:param name="dialogoAncho" value="515" />
+
+</ui:composition>

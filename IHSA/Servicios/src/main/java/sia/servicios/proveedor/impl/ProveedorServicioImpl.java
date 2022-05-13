@@ -76,13 +76,12 @@ import sia.util.UtilLog4j;
  * @author Mluis
  * @version 1.0
  */
-@Stateless 
-public class ProveedorServicioImpl extends AbstractFacade<Proveedor>{
+@Stateless
+public class ProveedorServicioImpl extends AbstractFacade<Proveedor> {
 
     @PersistenceContext(unitName = "Sia-ServiciosPU")
     private EntityManager em;
 
-    
     @Override
     protected EntityManager getEntityManager() {
         return em;
@@ -127,7 +126,6 @@ public class ProveedorServicioImpl extends AbstractFacade<Proveedor>{
     SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd-MMM-yyyy");
     SimpleDateFormat DATE_FORMAT_ANIO = new SimpleDateFormat("yyyy");
 
-      
     public Proveedor getPorNombre(Object nombreProveedor, String rfcCompania) {
         try {
             return (Proveedor) em.createQuery("SELECT p.proveedor FROM PvProveedorCompania p WHERE p.proveedor.nombre = :nombre"
@@ -137,7 +135,6 @@ public class ProveedorServicioImpl extends AbstractFacade<Proveedor>{
         }
     }
 
-    
     public Proveedor traerPorRFC(String rfc, String rfcCompania) {
         try {
             if (!rfcCompania.isEmpty()) {
@@ -174,7 +171,6 @@ public class ProveedorServicioImpl extends AbstractFacade<Proveedor>{
         }
     }
 
-    
     public Proveedor traerProveedorVisible(String rfc) {
         try {
             return (Proveedor) em.createQuery("SELECT p FROM Proveedor p WHERE p.rfc = :rfc AND p.visible = :true").setParameter("rfc", rfc).setParameter("true", true).getSingleResult();
@@ -183,7 +179,6 @@ public class ProveedorServicioImpl extends AbstractFacade<Proveedor>{
         }
     }
 
-    
     public boolean activarProveedor(String rfc, String correo, String pass, String rfcCompania) {
         boolean v = false;
         v = this.notificacionServicioRemoto.notificacionActivarProveedor(rfc, correo, pass);
@@ -201,7 +196,6 @@ public class ProveedorServicioImpl extends AbstractFacade<Proveedor>{
         return v;
     }
 
-    
     public boolean eliminarProveedor(int idProv) {
         boolean v = false;
         Proveedor proveedor = this.find(idProv);
@@ -214,7 +208,6 @@ public class ProveedorServicioImpl extends AbstractFacade<Proveedor>{
         return v;
     }
 
-    
     public boolean cambiarPass(int idP, String pass) {
         boolean v = false;
         try {
@@ -236,7 +229,6 @@ public class ProveedorServicioImpl extends AbstractFacade<Proveedor>{
 
     }
 
-    
     public boolean notificaCambioPassword(int idP) {
         boolean v = false;
         try {
@@ -270,7 +262,6 @@ public class ProveedorServicioImpl extends AbstractFacade<Proveedor>{
         return valorEntero;
     }
 
-    
     public List<Proveedor> traerProveedorActivo(String rfcCompania, int status) {
         return em.createQuery("SELECT p.proveedor FROM PvProveedorCompania p WHERE p.proveedor.visible = :true and p.compania.rfc = :rfcCom and p.eliminado = :elim "
                 + " and p.proveedor.estatus.id = :estatus ORDER BY p.proveedor.nombre ASC")
@@ -281,7 +272,6 @@ public class ProveedorServicioImpl extends AbstractFacade<Proveedor>{
                 .setMaxResults(30).getResultList();
     }
 
-    
     public List<String> traerNombreProveedorQueryNativo(String rfcCompania, int status) {
         return em.createNativeQuery("SELECT p.nombre FROM pv_proveedor_compania pc"
                 + "     inner join proveedor p on pc.proveedor = p.id "
@@ -291,7 +281,6 @@ public class ProveedorServicioImpl extends AbstractFacade<Proveedor>{
                 + " and pc.eliminado = false ORDER BY p.nombre ASC").getResultList();
     }
 
-    
     public List<String> traerNombreLikeProveedorQueryNativo(String cadena, String rfcCompania, int status) {
         return em.createNativeQuery("SELECT p.nombre FROM pv_proveedor_compania pc"
                 + "     inner join proveedor p on pc.proveedor = p.id"
@@ -302,7 +291,6 @@ public class ProveedorServicioImpl extends AbstractFacade<Proveedor>{
                 + " and pc.eliminado = false ORDER BY p.nombre ASC").getResultList();
     }
 
-    
     public boolean desActivarProveedor(String rfc, String rfcCompania) {
         boolean v = false;
         Proveedor proveedor = this.traerPorRFC(rfc, rfcCompania);
@@ -313,7 +301,6 @@ public class ProveedorServicioImpl extends AbstractFacade<Proveedor>{
         return v;
     }
 
-    
     public boolean notificarTodos(String user, SiAdjunto proCircular, int puesto) {
         boolean v = false;
 
@@ -359,7 +346,6 @@ public class ProveedorServicioImpl extends AbstractFacade<Proveedor>{
         return v;
     }
 
-    
     public void agregarTipoPersona(Proveedor proveedor, int persona) {
         proveedor.setPvTipoPersona(this.pvTipoPersonaServicioRemoto.find(persona));
         this.edit(proveedor);
@@ -371,7 +357,6 @@ public class ProveedorServicioImpl extends AbstractFacade<Proveedor>{
      * formato Gson
      * @param rfcCompania
      */
-    
     public String getProveedorJson(String rfcCompania, int status) {
         Gson gson = null;
         try {
@@ -420,7 +405,6 @@ public class ProveedorServicioImpl extends AbstractFacade<Proveedor>{
      * @param rfcCompania
      * @return
      */
-    
     public String traerDatosProveedor(int idProveedor, String rfcCompania) {
         Gson gson = null;
         try {
@@ -464,7 +448,6 @@ public class ProveedorServicioImpl extends AbstractFacade<Proveedor>{
      *
      * @param status
      */
-    
     public String traerProveedorPorCompaniaSesionJson(String listaRfcCompania, int status) {
         Gson gson = null;
         try {
@@ -513,7 +496,6 @@ public class ProveedorServicioImpl extends AbstractFacade<Proveedor>{
         return sb.toString();
     }
 
-    
     public ProveedorVo traerProveedor(int idProveedor, String compania) {
 
         StringBuilder sb = new StringBuilder();
@@ -576,7 +558,6 @@ public class ProveedorServicioImpl extends AbstractFacade<Proveedor>{
         return proveedorVo;
     }
 
-    
     public void modificarDatos(ProveedorVo proveedorVo, String id) {
         try {
             Proveedor proveedor = find(proveedorVo.getIdProveedor());
@@ -601,7 +582,6 @@ public class ProveedorServicioImpl extends AbstractFacade<Proveedor>{
         }
     }
 
-    
     public String traerJsonProveedorPorCompania(String rfcCompania, int status) {
         Gson gson = null;
         try {
@@ -647,7 +627,6 @@ public class ProveedorServicioImpl extends AbstractFacade<Proveedor>{
 
     }
 
-    
     public Proveedor traerProveedorPorRfc(String rfc) {
         try {
             return (Proveedor) em.createQuery("SELECT p FROM Proveedor p WHERE p.rfc = ?1").setParameter(1, rfc).getSingleResult();
@@ -657,7 +636,6 @@ public class ProveedorServicioImpl extends AbstractFacade<Proveedor>{
         }
     }
 
-    
     public boolean validaProveedorSAT(String rfc, String idCif) {
         try {
             return contenidoHTML(rfc, idCif);
@@ -686,7 +664,6 @@ public class ProveedorServicioImpl extends AbstractFacade<Proveedor>{
         return encontrado;
     }
 
-    
     public int cargarDatosProveedor(String sesion, File file, String rfcEmpresa) {
         try {
             LecturaLibro lecturaLibro = new LecturaLibro();
@@ -919,7 +896,6 @@ public class ProveedorServicioImpl extends AbstractFacade<Proveedor>{
 
     }
 
-    
     public List<ProveedorVo> traerProveedorEstatus(String sesion, int status, int maximoRegistros) {
 
         String sb = " select DISTINCT p.id, p.nombre, p.calle, p.colonia, p.ciudad, p.estado, p.pais, p.rfc, p.numero, p.codigo_postal, \n"
@@ -970,7 +946,6 @@ public class ProveedorServicioImpl extends AbstractFacade<Proveedor>{
         return proveedorVo;
     }
 
-    
     public void procesarProveedor(UsuarioVO sesion, ProveedorVo proveedorVo) {
         Proveedor p = find(proveedorVo.getIdProveedor());
         p.setCartaContenidoNacional(proveedorVo.isCarta());
@@ -984,7 +959,6 @@ public class ProveedorServicioImpl extends AbstractFacade<Proveedor>{
         notificacionServicioRemoto.notificacionProveedorProceso(proveedorVo, sesion);
     }
 
-    
     public void activarProveedor(String sesion, ProveedorVo proveedorVo, int campo) {
         Proveedor p = find(proveedorVo.getIdProveedor());
         p.setEstatus(new Estatus(ProveedorEnum.ACTIVO.getId()));
@@ -996,7 +970,6 @@ public class ProveedorServicioImpl extends AbstractFacade<Proveedor>{
         notificacionServicioRemoto.notificacionAltaProveedor(proveedorVo, p.getGenero() != null ? p.getGenero().getEmail() : p.getModifico().getEmail(), campo);
     }
 
-    
     public void devolverProveedor(Usuario usuario, ProveedorVo proveedorVo, String motivo) {
         Proveedor p = find(proveedorVo.getIdProveedor());
         p.setEstatus(new Estatus(ProveedorEnum.REGISTRADO.getId()));
@@ -1010,7 +983,6 @@ public class ProveedorServicioImpl extends AbstractFacade<Proveedor>{
         notificacionServicioRemoto.notificacionDevolucionProveedor(proveedorVo, motivo, p.getGenero() != null ? p.getGenero().getEmail() : p.getModifico().getEmail(), usuario.getEmail());
     }
 
-    
     public ProveedorVo traerProveedorPorRfc(String rfc, String clave, int idProve, String compania) {
         ProveedorVo provPortalVO = null;
         try {
@@ -1053,7 +1025,6 @@ public class ProveedorServicioImpl extends AbstractFacade<Proveedor>{
         return provPortalVO;
     }
 
-    
     public void guardarProveedorDesdeArchivo(File leerArchivoPrecio, String sesion) {
         try {
             LecturaLibro lecturaLibro = new LecturaLibro();
@@ -1145,7 +1116,6 @@ public class ProveedorServicioImpl extends AbstractFacade<Proveedor>{
         }
     }
 
-    
     public List<ProveedorVo> traerProveedorPorParteNombre(String nombre, String sesion, int status) {
         String sb = " select DISTINCT p.id, p.nombre, p.calle, p.colonia, p.ciudad, p.estado, p.pais, p.rfc, p.numero, p.codigo_postal, \n"
                 + " p.NUMERO_INTERIOR, p.GIRO, p.CURP, p.IMSSPATRONAL, p.IDCIF, p.NACIONAL, p.PV_TIPO_PERSONA, p.carta_contenido_nacional\n"
@@ -1166,24 +1136,21 @@ public class ProveedorServicioImpl extends AbstractFacade<Proveedor>{
         return lp;
     }
 
-    
     public String correosProveedor(int idProveedor) {
         String c = " select  COALESCE(array_to_string(array_agg(DISTINCT cp.correo), ', '), 'siaihsa@gmail.com') from contacto_proveedor cp"
                 + "  where cp.proveedor = " + idProveedor
                 + "  and cp.eliminado = false ";
         return (String) em.createNativeQuery(c).getSingleResult();
     }
-    
-    
+
     public String correosProveedorOrden(int idOrden) {
         String c = " select  COALESCE(array_to_string(array_agg(DISTINCT cp.correo), ', '), 'siaihsa@gmail.com') from contactos_orden co "
-                + "  inner join contacto_proveedor cp on cp.id = co.contacto_proveedor and cp.eliminado = false " 
+                + "  inner join contacto_proveedor cp on cp.id = co.contacto_proveedor and cp.eliminado = false "
                 + "  where co.orden = " + idOrden
                 + "  and co.eliminado = false ";
         return (String) em.createNativeQuery(c).getSingleResult();
     }
 
-    
     public boolean eliminarArchivosPortal(int idProveedor, int idList, String userID, String archivos) {
         boolean eliminar = false;
         try {
@@ -1204,7 +1171,6 @@ public class ProveedorServicioImpl extends AbstractFacade<Proveedor>{
         return eliminar;
     }
 
-    
     public File crearZipFile(String rfc, List<ProveedorDocumentoVO> archivos) {
         File fileTempExcel = null;
         try {
@@ -1255,11 +1221,10 @@ public class ProveedorServicioImpl extends AbstractFacade<Proveedor>{
         return fileTempExcel;
     }
 
-    
     public File crearFile(String rfc, ProveedorDocumentoVO archivo) {
         File fileTemp = null;
         try {
-            if (archivo != null && archivo.getAdjuntoVO().getUrl() != null && !archivo.getAdjuntoVO().getUrl().isEmpty() ) {
+            if (archivo != null && archivo.getAdjuntoVO().getUrl() != null && !archivo.getAdjuntoVO().getUrl().isEmpty()) {
                 AlmacenDocumentos almacenDocumentos = proveedorAlmacenDocumentosRemote.getAlmacenDocumentos();
                 String REPOSITORYPATH = this.parametrosSistemaServicioRemoto.find(1).getUploadDirectory();
                 String PLANTILLAPATH = "Factura/Temporal";
@@ -1274,11 +1239,9 @@ public class ProveedorServicioImpl extends AbstractFacade<Proveedor>{
                         DocumentoAnexo documento = almacenDocumentos.cargarDocumento(archivo.getAdjuntoVO().getUrl());
                         fos.write(documento.getContenido());
 
-                    } catch (SIAException ex) {
+                    } catch (SIAException | IOException ex) {
                         Logger.getLogger(SiFacturaAdjuntoImpl.class.getName()).log(Level.SEVERE, null, ex);
-                    } catch (Exception ex) {
-                        Logger.getLogger(SiFacturaAdjuntoImpl.class.getName()).log(Level.SEVERE, null, ex);
-                    } finally{
+                    } finally {
                         fos.close();
                     }
                 }
@@ -1288,4 +1251,39 @@ public class ProveedorServicioImpl extends AbstractFacade<Proveedor>{
         }
         return fileTemp;
     }
+
+    public ProveedorVo traerProveedorPorRFC(String rfc) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(consulta());
+        sb.append(" where p.rfc  = '")
+                .append(rfc).append("'")
+                .append(" and p.eliminado = false ");
+        Object[] objects = (Object[]) em.createNativeQuery(sb.toString()).getSingleResult();
+        return castProveedor(objects, "");
+    }
+
+    public ProveedorVo traerProveedorPorNombre(String nombre) {
+        try {
+            StringBuilder sb = new StringBuilder();
+            sb.append(consulta());
+            sb.append(" where p.nombre  = '")
+                    .append(nombre).append("'")
+                    .append(" and p.eliminado = false ");
+            Object[] objects = (Object[]) em.createNativeQuery(sb.toString()).getSingleResult();
+            return castProveedor(objects, "");
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public List<String> traerRfcNombreLikeProveedorQueryNativo(String cadena, String rfcCompania, int status) {
+        return em.createNativeQuery("SELECT p.rfc || ' / ' || p.nombre FROM pv_proveedor_compania pc"
+                + "     inner join proveedor p on pc.proveedor = p.id"
+                + " WHERE p.visible = true "
+                + " and p.status = " + status
+                + " AND  upper(p.nombre) LIKE '" + cadena.toUpperCase() + "%'"
+                + " and pc.compania = '" + rfcCompania + "' "
+                + " and pc.eliminado = false ORDER BY p.nombre ASC").getResultList();
+    }
+
 }

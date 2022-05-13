@@ -35,7 +35,7 @@ import sia.servicios.requisicion.impl.OcGerenciaProyectoImpl;
  * @author mluis
  */
 @Named (value = "gerenciaProyectoBean")
-@Dependent
+@ViewScoped
 public class GerenciaProyectoBean implements Serializable {
 
     /**

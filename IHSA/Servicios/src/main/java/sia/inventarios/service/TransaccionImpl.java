@@ -63,7 +63,7 @@ import sia.util.UtilLog4j;
  */
 //Stateless (name = "Inventarios_TransaccionService")
 @Stateless
-public class TransaccionImpl extends AbstractFacade<InvTransaccion>  {
+public class TransaccionImpl extends  AbstractFacade<InvTransaccion>  implements TransaccionRemote{
 
     @PersistenceContext(unitName = "Sia-ServiciosPU")
     private EntityManager em;
