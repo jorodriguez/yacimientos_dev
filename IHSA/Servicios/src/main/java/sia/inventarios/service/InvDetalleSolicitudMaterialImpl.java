@@ -41,7 +41,7 @@ public class InvDetalleSolicitudMaterialImpl extends AbstractFacade<InvDetalleSo
     }
 
     @Inject
-    ArticuloImpl articuloRemote;
+    ArticuloRemote articuloRemote;
 
     
     public List<DetalleSolicitudMaterialAlmacenVo> traerPorSolicitudId(int idSol) {

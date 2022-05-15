@@ -10,13 +10,14 @@ import javax.faces.application.FacesMessage;
 import javax.inject.Named;
 import javax.faces.view.ViewScoped;
 import javax.faces.context.FacesContext;
-import javax.faces.event.ActionEvent;
+
 import javax.faces.event.AjaxBehaviorEvent;
 import javax.faces.model.SelectItem;
 import javax.inject.Inject;
 import org.primefaces.PrimeFaces;
 import sia.inventarios.service.AlmacenImpl;
-import sia.inventarios.service.ArticuloImpl;
+import sia.inventarios.service.AlmacenRemote;
+import sia.inventarios.service.ArticuloRemote;
 import sia.inventarios.service.InvCadenaAprobacionImpl;
 import sia.inventarios.service.InvDetalleSolicitudMaterialImpl;
 import sia.inventarios.service.InvSolicitudMaterialImpl;
@@ -44,8 +45,6 @@ import sia.util.UtilLog4j;
 public class SolicitarMaterialBean implements Serializable {
 
     @Inject
-    ArticuloImpl articuloImplImpl;
-    @Inject
     ApCampoUsuarioRhPuestoImpl apCampoUsuarioRhPuestoImpl;
     @Inject
     InvSolicitudMaterialImpl invSolicitudMaterialImpl;
@@ -54,11 +53,11 @@ public class SolicitarMaterialBean implements Serializable {
     @Inject
     GerenciaImpl gerenciaImpl;
     @Inject
-    ArticuloImpl articuloImpl;
+    ArticuloRemote articuloImpl;
     @Inject
     InventarioImpl inventarioImpl;
     @Inject
-    AlmacenImpl almacenImpl;
+    AlmacenRemote almacenImpl;
     @Inject
     InvCadenaAprobacionImpl cadenaAprobacionImpl;
     @Inject
@@ -128,7 +127,7 @@ public class SolicitarMaterialBean implements Serializable {
         solicitudes = invSolicitudMaterialImpl.traerSolicitudesGenero(sesion.getUser().getIdCampo(), sesion.getUser().getId());
     }
 
-    public void crearSolicitudMaterial(ActionEvent event) {
+    public void crearSolicitudMaterial() {
         solicitudMaterialAlmacenVo = new SolicitudMaterialAlmacenVo();
         solicitudMaterialAlmacenVo.setFechaRequiere(new Date());
         solicitudMaterialAlmacenVo.setMateriales(new ArrayList<DetalleSolicitudMaterialAlmacenVo>());
@@ -215,7 +214,7 @@ public class SolicitarMaterialBean implements Serializable {
         }
     }
 
-    public void eliminarMaterialSolicitud(ActionEvent event) {
+    public void eliminarMaterialSolicitud() {
         FacesContext fc = FacesContext.getCurrentInstance();
         //
         String codigo = fc.getExternalContext().getRequestParameterMap().get("codigo");
@@ -235,7 +234,7 @@ public class SolicitarMaterialBean implements Serializable {
         }
     }
 
-    public void guardar(ActionEvent event) {
+    public void guardar() {
         if (!solicitudMaterialAlmacenVo.getTelefono().isEmpty()) {
             if (solicitudMaterialAlmacenVo.getFechaRequiere() != null) {
                 if (!solicitudMaterialAlmacenVo.getUsuarioRecoge().isEmpty() && solicitudMaterialAlmacenVo.getUsuarioRecoge().contains(" ")) {
@@ -278,7 +277,7 @@ public class SolicitarMaterialBean implements Serializable {
         FacesContext.getCurrentInstance().addMessage(null, facesMessage);
     }
 
-    public void guardarSolicitarMaterial(ActionEvent event) {
+    public void guardarSolicitarMaterial() {
         if (materiales != null && !materiales.isEmpty()) {
             if (!solicitudMaterialAlmacenVo.getTelefono().isEmpty()) {
                 if (solicitudMaterialAlmacenVo.getFechaRequiere() != null) {
@@ -321,7 +320,7 @@ public class SolicitarMaterialBean implements Serializable {
         }
     }
 
-    public void cerrarSolicitudMaterial(ActionEvent event) {
+    public void cerrarSolicitudMaterial() {
         materiales.clear();
         devoluciones.clear();
         solicitudMaterialAlmacenVo.setMateriales(new ArrayList<DetalleSolicitudMaterialAlmacenVo>());
@@ -355,7 +354,7 @@ public class SolicitarMaterialBean implements Serializable {
         }
     }
 
-    public void solicitarMaterialAutorizar(ActionEvent event) {
+    public void solicitarMaterialAutorizar() {
         invSolicitudMaterialImpl.solicitarMateriales(solicitudMaterialAlmacenVo.getId(), idAutoriza, sesion.getUser().getId());
         PrimeFaces.current().executeScript(";cerrarDialogoAutorizarMaterial();");
         llenar();

@@ -23,6 +23,7 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import sia.constantes.Constantes;
 import sia.inventarios.service.ArticuloImpl;
+import sia.inventarios.service.ArticuloRemote;
 import sia.modelo.ApCampo;
 import sia.modelo.Convenio;
 import sia.modelo.CvClasificacion;
@@ -125,7 +126,7 @@ public class ConvenioImpl extends AbstractFacade<Convenio> {
     @Inject
     private ApCampoImpl apCampoRemote;
     @Inject
-    private ArticuloImpl invArticuloRemote;
+    private ArticuloRemote invArticuloRemote;
     @Inject
     private SiUnidadImpl unidadRemote;
     @Inject

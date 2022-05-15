@@ -56,16 +56,16 @@ public class InventarioImpl extends AbstractFacade<InvInventario> {
     Audit audit;
 
     @Inject
-    TransaccionImpl transaccionService;
+    TransaccionRemote transaccionService;
 
     @Inject
     InventarioMovimientoImpl inventarioMovimientoService;
 
     @Inject
-    AlmacenImpl almacenService;
+    AlmacenRemote almacenService;
 
     @Inject
-    ArticuloImpl articuloService;
+    ArticuloRemote articuloService;
 
     @Inject
     UsuarioImpl usuarioService;

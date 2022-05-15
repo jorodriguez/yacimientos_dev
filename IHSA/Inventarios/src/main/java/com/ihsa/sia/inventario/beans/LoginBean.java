@@ -5,7 +5,7 @@ import java.io.Serializable;
 import javax.inject.Named;
 import javax.faces.bean.RequestScoped;
 import javax.faces.context.FacesContext;
-import javax.faces.event.ActionEvent;
+
 import javax.servlet.RequestDispatcher;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -24,7 +24,7 @@ public class LoginBean implements Serializable {
     private String userName;
     private String password;
 
-    public void processLogin(ActionEvent e) throws Exception {
+    public void processLogin() throws Exception {
 	HttpServletRequest request
 		= (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
 	HttpServletResponse response
@@ -33,7 +33,7 @@ public class LoginBean implements Serializable {
 	dispatcher.forward(request, response);
     }
 
-    public void cerrarSesion(ActionEvent actionEvent) {
+    public void cerrarSesion() {
 	redireccionar(Constantes.URL_REL_SIA_SIGN_OUT);
     }
 

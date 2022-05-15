@@ -34,13 +34,13 @@ import sia.util.UtilLog4j;
  */
 //Stateless (name = "Movimientos_MovimientoService")
 @Stateless
-public class TransaccionArticuloImpl extends AbstractFacade<InvTransaccionArticulo>  {
+public class TransaccionArticuloImpl extends AbstractFacade<InvTransaccionArticulo> implements TransaccionArticuloRemote{
 
     @PersistenceContext(unitName = "Sia-ServiciosPU")
     private EntityManager em;
 
     @Inject
-    TransaccionImpl transaccionService;
+    TransaccionRemote transaccionService;
 
     @Inject
     Audit audit;
@@ -56,11 +56,13 @@ public class TransaccionArticuloImpl extends AbstractFacade<InvTransaccionArticu
     }
 
     
+    @Override
     public List<TransaccionArticuloVO> buscarPorFiltros(TransaccionArticuloVO filtro, Integer campo) {
         return buscarPorFiltros(filtro, null, null, null, true, campo);
     }
 
     
+    @Override
     public List<TransaccionArticuloVO> buscarPorFiltros(TransaccionArticuloVO filtro, Integer inicio,
             Integer tamanioPagina, String campoOrdenar, boolean esAscendente, Integer campo) {
         CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
@@ -94,6 +96,7 @@ public class TransaccionArticuloImpl extends AbstractFacade<InvTransaccionArticu
     }
 
     
+    @Override
     public int contarPorFiltros(TransaccionArticuloVO filtro, Integer campo) {
         CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
         CriteriaQuery query = criteriaBuilder.createQuery();
@@ -108,6 +111,7 @@ public class TransaccionArticuloImpl extends AbstractFacade<InvTransaccionArticu
     }
 
     
+    @Override
     public TransaccionArticuloVO buscar(Integer id) throws SIAException {
         InvTransaccionArticulo transaccionMovimiento = this.find(id);
         InvTransaccion transaccion = transaccionMovimiento.getTransaccion();
@@ -122,6 +126,7 @@ public class TransaccionArticuloImpl extends AbstractFacade<InvTransaccionArticu
     }
 
     
+    @Override
     public void crear(TransaccionArticuloVO transaccionArticuloVO, String username, int campo) throws SIAException {
         try {
             UtilLog4j.log.info(this, "MovimientoService.create()");
@@ -164,6 +169,7 @@ public class TransaccionArticuloImpl extends AbstractFacade<InvTransaccionArticu
     }
 
     
+    @Override
     public void actualizar(TransaccionArticuloVO transaccionArticuloVO, String username, int campo) throws SIAException {
         try {
             UtilLog4j.log.info(this, "MovimientoService.update()");
@@ -203,6 +209,7 @@ public class TransaccionArticuloImpl extends AbstractFacade<InvTransaccionArticu
     }
 
     
+    @Override
     public void eliminar(Integer id, String username, Integer campo) throws SIAException {
         try {
             UtilLog4j.log.info(this, "MovimientoService.delete()");
@@ -238,7 +245,7 @@ public class TransaccionArticuloImpl extends AbstractFacade<InvTransaccionArticu
     }
 
     private void aplicarFiltros(TransaccionArticuloVO filtro, CriteriaBuilder criteriaBuilder, CriteriaQuery query, Root transaccionArticulo, Join transaccion, Join articulo) {
-        List<Predicate> predicates = new ArrayList<Predicate>(4);
+        List<Predicate> predicates = new ArrayList<>(4);
 
         predicates.add(criteriaBuilder.equal(transaccionArticulo.get("eliminado"), Constantes.BOOLEAN_FALSE));
 

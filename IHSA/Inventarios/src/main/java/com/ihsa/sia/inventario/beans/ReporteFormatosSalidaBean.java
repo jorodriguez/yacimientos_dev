@@ -14,7 +14,7 @@ import javax.annotation.PostConstruct;
 import javax.inject.Named;
 import javax.faces.view.ViewScoped;
 import javax.faces.context.FacesContext;
-import javax.faces.event.ActionEvent;
+
 import javax.faces.model.SelectItem;
 import javax.inject.Inject;
 import org.primefaces.PrimeFaces;
@@ -94,17 +94,17 @@ public class ReporteFormatosSalidaBean implements Serializable {
         PrimeFaces.current().executeScript( ";mostrarDialogoFormatosSalidaMaterial();");
     }
 
-    public void cerrarFormatosSalidaMaterial(ActionEvent event) {
+    public void cerrarFormatosSalidaMaterial() {
         solicitudeVo = new SolicitudMaterialAlmacenVo();
         datosSolicitud = new ArrayList<>();
         PrimeFaces.current().executeScript( ";cerrarDialogoFormatosSalidaMaterial();");
     }
 
-    public void buscarFormatos(ActionEvent event) {
+    public void buscarFormatos() {
         llenar();
     }
 
-    public void reestablecerFormatos(ActionEvent event) {
+    public void reestablecerFormatos() {
         inicio = null;
         fin = null;
         idStatus = Constantes.CERO;

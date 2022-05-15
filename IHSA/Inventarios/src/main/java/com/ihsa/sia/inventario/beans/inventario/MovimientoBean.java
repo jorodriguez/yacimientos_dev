@@ -15,7 +15,7 @@ import javax.faces.bean.ManagedProperty;
 import javax.faces.view.ViewScoped;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
-import javax.faces.event.ActionEvent;
+
 import javax.faces.event.ValueChangeEvent;
 import javax.faces.model.ArrayDataModel;
 import javax.faces.model.DataModel;
@@ -34,9 +34,9 @@ import sia.constantes.Constantes;
 import static sia.constantes.Constantes.INV_MOVIMIENTO_TIPO_ENTRADA;
 import static sia.constantes.Constantes.INV_TRANSACCION_STATUS_PREPARACION;
 import sia.excepciones.SIAException;
-import sia.inventarios.service.AlmacenImpl;
+import sia.inventarios.service.AlmacenRemote;
 import sia.inventarios.service.InvOrdenFormatoImpl;
-import sia.inventarios.service.TransaccionImpl;
+import sia.inventarios.service.TransaccionRemote;
 import sia.inventarios.service.Utilitarios;
 import sia.modelo.SiAdjunto;
 import sia.modelo.vo.inventarios.AlmacenVO;
@@ -70,9 +70,9 @@ public class MovimientoBean extends AbstractBean implements Serializable {
     private String motivoRechazo;
     private DataModel<OrdenFormatoVo> formatos;
     @Inject
-    protected AlmacenImpl almacenService;
+    protected AlmacenRemote almacenService;
     @Inject
-    protected TransaccionImpl transaccionService;
+    protected TransaccionRemote transaccionService;
     @Inject
     MonedaImpl monedaImpl;
     @Inject
@@ -86,24 +86,25 @@ public class MovimientoBean extends AbstractBean implements Serializable {
     @Inject
     OrdenImpl ordenImpl;
     //
-    @ManagedProperty("#{tipoMovimiento}")
-    private TipoMovimientoBean tipoMovimiento;
+    @Inject
+    TipoMovimientoBean tipoMovimiento;
 
-    final protected SessionBean principal = (SessionBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("principal");
+    @Inject
+    SessionBean principal;// = (SessionBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("principal");
 
     @Getter
     @Setter
     private UploadedFile fileInfo;
-    
+
     @PostConstruct
     public void inicializar() {
-        formatos = new ArrayDataModel<OrdenFormatoVo>();
+        formatos = new ArrayDataModel<>();
         almacenes = almacenService.buscarPorFiltros(new AlmacenVO(), getCampoId());
         tipos = tipoMovimiento.buildSelectItems();
         inicializarVOs();
         cargarEditar();
         //monedas
-        monedas = new ArrayList<SelectItem>();
+        monedas = new ArrayList<>();
         List<MonedaVO> lmon = monedaImpl.traerMonedaActiva(getCampoId());
         for (MonedaVO monedaVO : lmon) {
             monedas.add(new SelectItem(monedaVO.getId(), monedaVO.getSiglas()));
@@ -400,7 +401,7 @@ public class MovimientoBean extends AbstractBean implements Serializable {
         }
     }
 
-    public void quitarFormato(ActionEvent event) {
+    public void quitarFormato() {
         OrdenFormatoVo ofv = formatos.getRowData();
         invOrdenFormatoImpl.eliminar(getUserName(), ofv.getId());
         //

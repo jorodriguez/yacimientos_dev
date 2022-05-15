@@ -24,7 +24,7 @@ import javax.faces.component.UIParameter;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.el.ValueBinding;
-import javax.faces.event.ActionEvent;
+
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -93,12 +93,12 @@ public class FacesUtilsBean {
         return (String) FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get(name);
     }
 
-    public static int getParametroEntero(ActionEvent actionEvent) {
-        return ((Integer) ((UIParameter) actionEvent.getComponent().getFacet("ParametroAdicional")).getValue()).intValue();
+    public static int getParametroEntero() {
+        return 0;//((Integer) ((UIParameter) getComponent().getFacet("ParametroAdicional")).getValue()).intValue();
     }
 
-    public static String getParametroCadena(ActionEvent actionEvent) {
-        return  (String) ((UIParameter) actionEvent.getComponent().getFacet("myFacet")).getValue();
+    public static String getParametroCadena() {
+        return  "";//(String) ((UIParameter) getComponent().getFacet("myFacet")).getValue();
     }
     
     /**

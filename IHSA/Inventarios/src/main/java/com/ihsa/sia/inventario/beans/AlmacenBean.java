@@ -3,10 +3,10 @@ package com.ihsa.sia.inventario.beans;
 import java.io.Serializable;
 import java.util.List;
 import javax.faces.view.ViewScoped;
-import javax.faces.event.ActionEvent;
+
 import javax.inject.Inject;
 import javax.inject.Named;
-import sia.inventarios.service.AlmacenImpl;
+import sia.inventarios.service.AlmacenRemote;
 import sia.modelo.campo.usuario.puesto.vo.CampoUsuarioPuestoVo;
 import sia.modelo.usuario.vo.UsuarioVO;
 import sia.modelo.vo.inventarios.AlmacenVO;
@@ -22,7 +22,7 @@ import sia.servicios.catalogos.impl.UsuarioImpl;
 public class AlmacenBean extends LocalAbstractBean<AlmacenVO, Integer> implements Serializable {
 
     @Inject
-    protected AlmacenImpl servicio;
+    protected AlmacenRemote  servicio;
 
     @Inject
     protected UsuarioImpl usuarioServicio;
@@ -47,7 +47,7 @@ public class AlmacenBean extends LocalAbstractBean<AlmacenVO, Integer> implement
 	cargarCampos();
     }
 
-    public void cancelar(ActionEvent event) {
+    public void cancelar() {
 	setEmbedded(false);
     }
 
@@ -56,7 +56,7 @@ public class AlmacenBean extends LocalAbstractBean<AlmacenVO, Integer> implement
     }
 
     @Override
-    protected AlmacenImpl getServicio() {
+    protected AlmacenRemote getServicio() {
 	return servicio;
     }
 

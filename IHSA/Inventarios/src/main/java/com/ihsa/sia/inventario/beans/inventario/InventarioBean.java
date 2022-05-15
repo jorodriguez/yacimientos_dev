@@ -18,16 +18,15 @@ import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
 import javax.inject.Named;
-import javax.faces.bean.ManagedProperty;
 import javax.faces.view.ViewScoped;
 import javax.faces.context.FacesContext;
-import javax.faces.event.ActionEvent;
+
 import javax.faces.event.AjaxBehaviorEvent;
 import javax.inject.Inject;
 import org.primefaces.PrimeFaces;
 import sia.constantes.Constantes;
 import sia.excepciones.SIAException;
-import sia.inventarios.service.AlmacenImpl;
+import sia.inventarios.service.AlmacenRemote;
 import sia.inventarios.service.InvCeldaImpl;
 import sia.inventarios.service.InvInventarioCeldaImpl;
 import sia.inventarios.service.InventarioImpl;
@@ -50,7 +49,7 @@ public class InventarioBean implements Serializable, SaveObserver {
     @Inject
     protected InvCeldaImpl invCeldaImpl;
     @Inject
-    private AlmacenImpl almacenServicio;
+    private AlmacenRemote almacenServicio;
     @Inject
     protected InvInventarioCeldaImpl inventarioCeldaImpl;
     //
@@ -117,7 +116,7 @@ public class InventarioBean implements Serializable, SaveObserver {
         inventarioVO.setCeldas(invCeldaImpl.celdaPorRackPiso(celdaVo.getIdRack(), celdaVo.getIdPiso()));
     }
 
-    public void agregarUbicacion(ActionEvent event) {
+    public void agregarUbicacion() {
         for (CeldaVo celda : inventarioVO.getCeldas()) {
             if (celda.isSelected()) {
                 celdas.add(invCeldaImpl.ubicacion(celda.getId()));
@@ -129,15 +128,11 @@ public class InventarioBean implements Serializable, SaveObserver {
     }
 
     //public void eliminarCeldaTemporal(CeldaVo id) {
-    public void eliminarCeldaTemporal(ActionEvent event) {
-        FacesContext fc = FacesContext.getCurrentInstance();
-        //
-        int idC = Integer.parseInt(fc.getExternalContext().getRequestParameterMap().get("idCelda"));
-        //
+    public void eliminarCeldaTemporal(int idC) {
         celdas.remove(idC);
     }
 
-    public void guardarInventario(ActionEvent event) {
+    public void guardarInventario() {
         try {
             if (!getCeldas().isEmpty()) {
                 inventarioVO.setCeldas(celdas);
@@ -161,11 +156,11 @@ public class InventarioBean implements Serializable, SaveObserver {
         }
     }
 
-    public void buscarInventario(ActionEvent event) {
+    public void buscarInventario() {
         inventarios = servicio.traerInventario(inventarioVO, principal.getUser().getIdCampo());
     }
 
-    public void reestablecerTabla(ActionEvent e) {
+    public void reestablecerTabla() {
         inventarios = servicio.traerInventario(new InventarioVO(), principal.getUser().getIdCampo());
     }
 
@@ -197,7 +192,7 @@ public class InventarioBean implements Serializable, SaveObserver {
         }
     }
 
-    public void agregarNuevo(ActionEvent event) {
+    public void agregarNuevo() {
         getAlmacenBean().setEmbedded(false);
         getArticuloBean().setEmbedded(false);
         inventarioVO = new InventarioVO();
@@ -208,13 +203,13 @@ public class InventarioBean implements Serializable, SaveObserver {
         celdas = new ArrayList<>();
     }
 
-    public void nuevoAlamacen(ActionEvent event) {
-        almacenBean.agregarNuevo(event);
+    public void nuevoAlamacen() {
+        almacenBean.agregarNuevo();
         getAlmacenBean().setEmbedded(true);
     }
 
-    public void nuevoArticulo(ActionEvent event) {
-        articuloBean.agregarNuevo(event);
+    public void nuevoArticulo() {
+        articuloBean.agregarNuevo();
         getArticuloBean().setEmbedded(true);
     }
 

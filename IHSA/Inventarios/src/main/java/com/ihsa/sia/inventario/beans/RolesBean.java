@@ -6,10 +6,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.enterprise.context.SessionScoped;
 import javax.inject.Named;
-import javax.faces.bean.SessionScoped;
+
 import javax.faces.context.FacesContext;
-import javax.faces.event.ActionEvent;
+
 import javax.inject.Inject;
 import org.primefaces.PrimeFaces;
 import sia.modelo.Usuario;
@@ -69,7 +70,7 @@ public class RolesBean implements Serializable {
 	return principal;
     }
 
-    public void guardarElemento(ActionEvent event) {
+    public void guardarElemento() {
 	try {
 
 	} catch (Exception ex) {
@@ -91,16 +92,16 @@ public class RolesBean implements Serializable {
 	this.campoId = campoId;
     }
 
-    public void abrirPopCampo(ActionEvent event) {
+    public void abrirPopCampo() {
 	setEmbeddedCampo(true);
 	PrimeFaces.current().executeScript( ";mostrarDialogoCampo();");
     }
 
-    public void cerrarPopCampo(ActionEvent event) {
+    public void cerrarPopCampo() {
 	setEmbeddedCampo(false);
     }
 
-    public void saveCambioCampo(ActionEvent event) {
+    public void saveCambioCampo() {
 	try {
 	    if (getCampoId() != getUsuario().getIdCampo()) {
 		cambiarCampoUsr(getUsuario().getId(), getUsuario().getId(), getCampoId());

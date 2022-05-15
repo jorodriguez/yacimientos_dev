@@ -14,7 +14,7 @@ import javax.faces.application.FacesMessage;
 import javax.inject.Named;
 import javax.faces.view.ViewScoped;
 import javax.faces.context.FacesContext;
-import javax.faces.event.ActionEvent;
+
 import javax.inject.Inject;
 import org.primefaces.PrimeFaces;
 import sia.inventarios.service.InvEstadoAprobacionSolicitudImpl;
@@ -70,7 +70,7 @@ public class AutorizarMaterialBean implements Serializable{
         PrimeFaces.current().executeScript(";mostrarDialogo(dialogoSolicitudRechazo);");
     }
 
-    public void completarRechazarSolicitud(ActionEvent event) {
+    public void completarRechazarSolicitud() {
         if (!motivo.isEmpty()) {
             estadoAprobacionSolicitudImpl.rechazarSolicitud(solicitudeVo.getId(), sesion.getUser().getId(), motivo, sesion.getUser().getIdCampo());
             //
@@ -83,7 +83,7 @@ public class AutorizarMaterialBean implements Serializable{
         }
     }
 
-    public void cerrarRechazoSolicitud(ActionEvent event) {
+    public void cerrarRechazoSolicitud() {
         PrimeFaces.current().executeScript( ";cerrarDialogo(dialogoSolicitudRechazo);");
     }
 
@@ -93,7 +93,7 @@ public class AutorizarMaterialBean implements Serializable{
         PrimeFaces.current().executeScript( ";mostrarDialogo(dialogoSolicitudCancela);");
     }
 
-    public void completarCancelarSolicitud(ActionEvent event) {
+    public void completarCancelarSolicitud() {
         if (!motivo.isEmpty()) {
             estadoAprobacionSolicitudImpl.cancelarSolicitud(solicitudeVo.getId(), sesion.getUser().getId(), motivo, sesion.getUser().getIdCampo());
             //
@@ -106,7 +106,7 @@ public class AutorizarMaterialBean implements Serializable{
         }
     }
 
-    public void cerrarCancelaSolicitud(ActionEvent event) {
+    public void cerrarCancelaSolicitud() {
         PrimeFaces.current().executeScript( ";cerrarDialogo(dialogoSolicitudCancela);");
     }
 
@@ -116,7 +116,7 @@ public class AutorizarMaterialBean implements Serializable{
         PrimeFaces.current().executeScript( ";mostrarDialogo(crearDialogoDatosSolicitud);");
     }
 
-    public void cerrarVerSolicitud(ActionEvent event) {
+    public void cerrarVerSolicitud() {
         PrimeFaces.current().executeScript( ";cerrarDialogo(crearDialogoDatosSolicitud);");
     }
 

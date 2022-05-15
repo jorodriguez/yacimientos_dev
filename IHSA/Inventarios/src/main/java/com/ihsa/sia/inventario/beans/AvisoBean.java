@@ -45,7 +45,7 @@ public class AvisoBean extends AbstractBean implements Serializable {
     }
 
     public List<AvisoVO> getSeleccionados() {
-        List<AvisoVO> seleccionados = new ArrayList<AvisoVO>();
+        List<AvisoVO> seleccionados = new ArrayList<>();
         for (AvisoVO aviso : getLista()) {
             if (aviso.isSeleccionado()) {
                 seleccionados.add(aviso);

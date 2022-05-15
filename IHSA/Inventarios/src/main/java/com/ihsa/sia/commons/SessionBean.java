@@ -1,7 +1,7 @@
 package com.ihsa.sia.commons;
 
 import java.io.Serializable;
-import javax.faces.bean.SessionScoped;
+import javax.enterprise.context.SessionScoped;
 import javax.inject.Named;
 import sia.modelo.usuario.vo.UsuarioVO;
 

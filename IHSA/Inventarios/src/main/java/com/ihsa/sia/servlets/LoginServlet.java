@@ -34,7 +34,8 @@ public class LoginServlet extends HttpServlet {
     @Inject
     private ApCampoUsuarioRhPuestoImpl apCampoUsuarioRhPuestoImpl;
 
-    private SessionBean sessionBean;
+    @Inject
+    SessionBean sessionBean;
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -84,7 +85,6 @@ public class LoginServlet extends HttpServlet {
                 }
                 List<UsuarioRolVo> roles = siUsuarioRolImpl.traerRolPorUsuarioModulo(username,
                         Constantes.MODULO_INVENTARIOS, usuario.getApCampo().getId());
-                sessionBean = new SessionBean();
                 sessionBean.setLoggedIn(true);
                 sessionBean.setUser(new UsuarioVO(usuario.getId(), usuario.getNombre(), usuario.getEmail(), roles));
                 sessionBean.getUser().setIdCampo(usuario.getApCampo().getId());

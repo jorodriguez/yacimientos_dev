@@ -15,6 +15,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import sia.constantes.Constantes;
 import sia.inventarios.service.ArticuloImpl;
+import sia.inventarios.service.ArticuloRemote;
 import sia.modelo.InvArticulo;
 import sia.modelo.OrdenDetalle;
 import sia.modelo.SiFactura;
@@ -48,7 +49,7 @@ public class SiFacturaDetalleImpl extends AbstractFacade<SiFacturaDetalle>{
     @Inject
     SiFacturaImpl siFacturaRemote;
     @Inject
-    ArticuloImpl articuloRemote;
+    ArticuloRemote articuloRemote;
     @Inject
     OrdenDetalleImpl ordenDetalleRemote;
 
