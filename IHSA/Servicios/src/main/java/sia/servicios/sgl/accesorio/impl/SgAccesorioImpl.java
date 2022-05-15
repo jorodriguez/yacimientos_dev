@@ -47,7 +47,7 @@ public class SgAccesorioImpl extends AbstractFacade<SgAccesorio> {
     
     
     public List<AccesorioVo> traerAccesorioPorMarca(int idMarca, int oficina) {
-	List<AccesorioVo> lista = new ArrayList<AccesorioVo>();
+	List<AccesorioVo> lista = new ArrayList<>();
 	try {
 	    clearQuery();
 	    query.append(consulta());

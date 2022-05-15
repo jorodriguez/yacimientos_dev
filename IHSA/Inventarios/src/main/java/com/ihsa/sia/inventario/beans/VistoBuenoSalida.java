@@ -13,7 +13,7 @@ import javax.annotation.PostConstruct;
 import javax.inject.Named;
 import javax.faces.view.ViewScoped;
 import javax.faces.context.FacesContext;
-import javax.faces.event.ActionEvent;
+
 import javax.inject.Inject;
 import org.primefaces.PrimeFaces;
 import sia.constantes.Constantes;
@@ -62,7 +62,7 @@ public class VistoBuenoSalida implements Serializable{
         PrimeFaces.current().executeScript( ";mostrarDialogo(crearDialogoVistoBuenoEntrega);");
     }
 
-    public void guardarVistoBueno(ActionEvent event) {
+    public void guardarVistoBueno() {
         estadoAprobacionSolicitudImpl.vistoBuenoEntrega(solicitudeVo, sesion.getUser().getId());
         //
         llenar();
@@ -70,7 +70,7 @@ public class VistoBuenoSalida implements Serializable{
         PrimeFaces.current().executeScript( ";cerrarDialogo(crearDialogoVistoBuenoEntrega);");
     }
 
-    public void cerrarEntrega(ActionEvent event) {
+    public void cerrarEntrega() {
         PrimeFaces.current().executeScript( ";cerrarDialogo(crearDialogoVistoBuenoEntrega);");
     }
 

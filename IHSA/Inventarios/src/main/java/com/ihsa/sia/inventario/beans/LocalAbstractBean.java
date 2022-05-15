@@ -11,7 +11,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.PostConstruct;
-import javax.faces.event.ActionEvent;
+
 import javax.faces.model.DataModel;
 import javax.inject.Inject;
 import org.primefaces.model.LazyDataModel;
@@ -97,7 +97,7 @@ public abstract class LocalAbstractBean<ClaseVO, TipoID> extends AbstractBean im
     }
 
     //Eventos
-    public void buscar(ActionEvent e) {
+    public void buscar() {
         try {
             cargarListaConFiltros();
         } catch (Exception ex) {
@@ -105,7 +105,7 @@ public abstract class LocalAbstractBean<ClaseVO, TipoID> extends AbstractBean im
         }
     }
 
-    public void reestablecer(ActionEvent e) {
+    public void reestablecer() {
         try {
             setFiltro(claseVO.newInstance());
             cargarListaConFiltros();
@@ -116,7 +116,7 @@ public abstract class LocalAbstractBean<ClaseVO, TipoID> extends AbstractBean im
         }
     }
 
-    public void agregarNuevo(ActionEvent event) {
+    public void agregarNuevo() {
         try {
             setElemento(claseVO.newInstance());
             esNuevoElemento = true;
@@ -136,7 +136,7 @@ public abstract class LocalAbstractBean<ClaseVO, TipoID> extends AbstractBean im
         }
     }
 
-    public void guardarElemento(ActionEvent event) {
+    public void guardarElemento() {
         try {
             if (esNuevoElemento) {
                 getServicio().crear(getElemento(), getUserName(), principal.getUser().getIdCampo());

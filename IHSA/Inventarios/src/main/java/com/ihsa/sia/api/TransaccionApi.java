@@ -10,7 +10,7 @@ import javax.ws.rs.core.MediaType;
 import org.json.JSONException;
 import org.json.JSONObject;
 import sia.excepciones.SIAException;
-import sia.inventarios.service.TransaccionImpl;
+import sia.inventarios.service.TransaccionRemote;
 
 /**
  *
@@ -20,7 +20,7 @@ import sia.inventarios.service.TransaccionImpl;
 @RequestScoped
 public class TransaccionApi {
     @Inject
-    protected TransaccionImpl servicio;
+    protected TransaccionRemote servicio;
     
     @GET
     @Produces(MediaType.APPLICATION_JSON)

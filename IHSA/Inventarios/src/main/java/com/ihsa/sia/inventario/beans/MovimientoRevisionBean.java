@@ -7,7 +7,6 @@ import javax.faces.view.ViewScoped;
 import javax.faces.model.ListDataModel;
 import sia.constantes.Constantes;
 import sia.excepciones.SIAException;
-import sia.modelo.vo.inventarios.TransaccionVO;
 
 /**
  *
@@ -24,7 +23,7 @@ public class MovimientoRevisionBean extends MovimientosBean implements Serializa
     @Override
     protected void cargarListaConFiltros() {
 	try {
-	    setLista(new ListDataModel<TransaccionVO>(getServicio().buscarPorStatus(
+	    setLista(new ListDataModel<>(getServicio().buscarPorStatus(
 		    Constantes.INV_TRANSACCION_STATUS_TRASPASO_PENDIENTE_REVISION,
 		    principal.getUser().getIdCampo())));
 	} catch (SIAException ex) {

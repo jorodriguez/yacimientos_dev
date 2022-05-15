@@ -3,6 +3,7 @@ package sia.inventarios.service;
 import java.util.List;
 import javax.ejb.Local;
 import sia.excepciones.SIAException;
+import sia.modelo.InvTransaccion;
 import sia.modelo.vo.inventarios.ArticuloCompraVO;
 import sia.modelo.vo.inventarios.TransaccionArticuloVO;
 import sia.modelo.vo.inventarios.TransaccionVO;
@@ -40,5 +41,10 @@ public interface TransaccionRemote extends LocalServiceInterface<TransaccionVO, 
     List<TransaccionArticuloVO> traerPorTrasaccionId(int idTransaccion, int idCampo);
     
     void crearConciliar(TransaccionVO transaccionVO, List<TransaccionArticuloVO> transaccionArticulosVO, String username, int campo) throws SIAException;
-    
+
+    public InvTransaccion find(Object id);
+
+    public void edit(InvTransaccion invTransaccion);
+
+
 }

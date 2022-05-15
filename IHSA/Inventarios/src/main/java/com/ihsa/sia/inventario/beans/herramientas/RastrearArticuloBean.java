@@ -1,7 +1,6 @@
 package com.ihsa.sia.inventario.beans.herramientas;
 
 import com.ihsa.sia.commons.AbstractBean;
-import sia.inventarios.service.TransaccionImpl;
 import sia.modelo.vo.inventarios.TransaccionVO;
 
 import javax.annotation.PostConstruct;
@@ -11,6 +10,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import javax.inject.Inject;
+import sia.inventarios.service.TransaccionRemote;
 
 /**
  * @author Aplimovil SA de CV
@@ -20,7 +20,7 @@ import javax.inject.Inject;
 public class RastrearArticuloBean extends AbstractBean implements Serializable {
 
     @Inject
-    private TransaccionImpl servicio;
+    private TransaccionRemote servicio;
 
     private String filtro;
     private List<TransaccionVO> lista;

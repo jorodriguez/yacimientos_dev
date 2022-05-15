@@ -12,7 +12,7 @@ import javax.faces.bean.CustomScoped;
 import javax.faces.model.SelectItem;
 import javax.inject.Inject;
 import javax.inject.Named;
-import sia.inventarios.service.ArticuloImpl;
+import sia.inventarios.service.ArticuloRemote;
 import sia.modelo.vo.inventarios.ArticuloVO;
 
 /**
@@ -25,7 +25,7 @@ import sia.modelo.vo.inventarios.ArticuloVO;
 public class SoporteArticulos implements  Serializable{
 
     @Inject
-    private ArticuloImpl articuloImpl;
+    private ArticuloRemote articuloImpl;
 
     private List<ArticuloVO> listaArticulos = null;
     

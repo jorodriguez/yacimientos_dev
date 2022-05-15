@@ -23,6 +23,7 @@ import org.jooq.DSLContext;
 import sia.constantes.Constantes;
 import sia.constantes.TipoRequisicion;
 import sia.inventarios.service.ArticuloImpl;
+import sia.inventarios.service.ArticuloRemote;
 import sia.modelo.OcActividadPetrolera;
 import sia.modelo.OcSubTarea;
 import sia.modelo.OcUnidadCosto;
@@ -74,7 +75,7 @@ public class OrdenDetalleImpl extends AbstractFacade<OrdenDetalle>{
     @Inject
     private OcTareaImpl ocTareaRemote;
     @Inject
-    private ArticuloImpl articuloRemote;
+    private ArticuloRemote articuloRemote;
     @Inject
     private CvConvenioArticuloImpl cvConvenioArticuloLocal;
 

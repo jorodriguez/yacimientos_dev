@@ -13,7 +13,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import sia.constantes.Constantes;
-import sia.inventarios.service.AlmacenImpl;
+import sia.inventarios.service.AlmacenRemote;
 import sia.modelo.vo.inventarios.AlmacenVO;
 
 /**
@@ -27,7 +27,7 @@ import sia.modelo.vo.inventarios.AlmacenVO;
 public class AlmacenApi extends MovilApiBase {
 
     @Inject
-    private AlmacenImpl servicio;
+    private AlmacenRemote  servicio;
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
@@ -40,7 +40,7 @@ public class AlmacenApi extends MovilApiBase {
 	    //se llama al servicio que retorna los almacenes
 	    List<AlmacenVO> almacenes = servicio.buscarPorFiltros(new AlmacenVO(), Constantes.AP_CAMPO_DEFAULT);
 	    //se crea el objeto resultado del servicio
-	    Respuesta<AlmacenMovilVO> respuesta = new Respuesta<AlmacenMovilVO>(Estado.ok);
+	    Respuesta<AlmacenMovilVO> respuesta = new Respuesta<>(Estado.ok);
 	    respuesta.setResultados(mapearMovilVo(almacenes));
 	    return Response.ok(respuesta).build();
 	} catch (Exception ex) {
@@ -49,7 +49,7 @@ public class AlmacenApi extends MovilApiBase {
     }
 
     private static List<AlmacenMovilVO> mapearMovilVo(List<AlmacenVO> lista) {
-	List<AlmacenMovilVO> resultado = new ArrayList<AlmacenMovilVO>();
+	List<AlmacenMovilVO> resultado = new ArrayList<>();
 	for (AlmacenVO almacen : lista) {
 	    resultado.add(new AlmacenMovilVO(almacen.getId(), almacen.getNombre()));
 	}

@@ -14,7 +14,7 @@ import javax.faces.view.ViewScoped;
 import javax.faces.event.AjaxBehaviorEvent;
 import javax.inject.Inject;
 import sia.excepciones.SIAException;
-import sia.inventarios.service.ArticuloImpl;
+import sia.inventarios.service.ArticuloRemote;
 import sia.inventarios.service.InventarioImpl;
 import sia.inventarios.service.InventarioMovimientoImpl;
 import sia.modelo.vo.inventarios.ArticuloVO;
@@ -30,7 +30,7 @@ import sia.modelo.vo.inventarios.InventarioVO;
 public class ConsultaRapidaBean extends AbstractBean implements Serializable {
 
     @Inject
-    protected ArticuloImpl servicio;
+    protected ArticuloRemote servicio;
     @Inject
     protected InventarioImpl servicioInventario;
     @Inject

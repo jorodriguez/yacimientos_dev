@@ -3,6 +3,7 @@ package sia.inventarios.service;
 import java.util.List;
 import javax.ejb.Local;
 import sia.excepciones.SIAException;
+import sia.modelo.InvAlmacen;
 import sia.modelo.vo.inventarios.AlmacenVO;
 import sia.modelo.vo.inventarios.InventarioVO;
 
@@ -19,4 +20,8 @@ public interface AlmacenRemote extends LocalServiceInterface<AlmacenVO, Integer>
     public InventarioVO obtenerInventario(Integer almacenId, Integer articuloId, String username, Integer campo) throws SIAException;
 
     List<AlmacenVO> almacenesPorCampo(int idCampo);
+
+    public InvAlmacen find(Object id);
+    
+    
 }

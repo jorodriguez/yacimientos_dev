@@ -24,6 +24,7 @@ import static sia.inventarios.service.Utilitarios.esNuloOVacio;
 import sia.modelo.ApCampo;
 import sia.modelo.InvAlmacen;
 import sia.modelo.InvInventario;
+import sia.modelo.InvTransaccion;
 import sia.modelo.Usuario;
 import sia.modelo.sistema.AbstractFacade;
 import sia.modelo.usuario.vo.UsuarioVO;
@@ -38,7 +39,7 @@ import sia.util.UtilLog4j;
  */
 //Stateless (name = "Inventarios_AlmacenService")
 @Stateless
-public class AlmacenImpl extends AbstractFacade<InvAlmacen> implements AlmacenRemote{
+public class AlmacenImpl extends AbstractFacade<InvAlmacen> implements AlmacenRemote {
 
     @PersistenceContext(unitName = "Sia-ServiciosPU")
     private EntityManager em;
@@ -61,7 +62,12 @@ public class AlmacenImpl extends AbstractFacade<InvAlmacen> implements AlmacenRe
         return em;
     }
 
-    
+    @Override
+    public InvAlmacen find(Object id) {
+        return em.find(InvAlmacen.class, id);
+    }
+
+    @Override
     public List<AlmacenVO> buscarPorFiltros(AlmacenVO filtro, Integer campo) {
         return buscarPorFiltros(filtro, null, null, null, true, campo);
     }
@@ -76,7 +82,7 @@ public class AlmacenImpl extends AbstractFacade<InvAlmacen> implements AlmacenRe
      * @param idCampo
      * @return
      */
-    
+    @Override
     public List<AlmacenVO> buscarPorFiltros(AlmacenVO filtro, Integer inicio, Integer tamanioPagina,
             String campoOrdenar, boolean esAscendente, Integer idCampo) {
         CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
@@ -111,7 +117,7 @@ public class AlmacenImpl extends AbstractFacade<InvAlmacen> implements AlmacenRe
         return typedQuery.getResultList();
     }
 
-    
+    @Override
     public int contarPorFiltros(AlmacenVO filtro, Integer idCampo) {
         CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
         CriteriaQuery query = criteriaBuilder.createQuery();
@@ -127,7 +133,7 @@ public class AlmacenImpl extends AbstractFacade<InvAlmacen> implements AlmacenRe
         return ((Long) getEntityManager().createQuery(query).getSingleResult()).intValue();
     }
 
-    
+    @Override
     public AlmacenVO buscar(Integer id) throws SIAException {
         InvAlmacen almacen = this.find(id);
         Usuario responsable1 = almacen.getResponsable1();
@@ -144,7 +150,7 @@ public class AlmacenImpl extends AbstractFacade<InvAlmacen> implements AlmacenRe
         );
     }
 
-    
+    @Override
     public void crear(AlmacenVO almacenVO, String username, int campo) throws SIAException {
         try {
             UtilLog4j.log.info(this, "AlmacenService.create()");
@@ -190,7 +196,7 @@ public class AlmacenImpl extends AbstractFacade<InvAlmacen> implements AlmacenRe
         }
     }
 
-    
+    @Override
     public void actualizar(AlmacenVO almacenVO, String username, int campo) throws SIAException {
         try {
             UtilLog4j.log.info(this, "AlmacenService.update()");
@@ -238,7 +244,7 @@ public class AlmacenImpl extends AbstractFacade<InvAlmacen> implements AlmacenRe
         }
     }
 
-    
+    @Override
     public void eliminar(Integer id, String username, Integer campo) throws SIAException {
         try {
             UtilLog4j.log.info(this, "AlmacenService.delete()");
@@ -270,7 +276,7 @@ public class AlmacenImpl extends AbstractFacade<InvAlmacen> implements AlmacenRe
         }
     }
 
-    
+    @Override
     public List<InventarioVO> buscarInventariosPorArticulo(Integer almacenId, String keywords) {
         CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
         CriteriaQuery query = criteriaBuilder.createQuery();
@@ -297,7 +303,7 @@ public class AlmacenImpl extends AbstractFacade<InvAlmacen> implements AlmacenRe
         return typedQuery.getResultList();
     }
 
-    
+    @Override
     public InventarioVO buscarInventario(Integer almacenId, Integer articuloId, Integer campo) {
         InventarioVO filtro = new InventarioVO();
         filtro.setAlmacenId(almacenId);
@@ -312,7 +318,7 @@ public class AlmacenImpl extends AbstractFacade<InvAlmacen> implements AlmacenRe
         }
     }
 
-    
+    @Override
     public InventarioVO obtenerInventario(Integer almacenId, Integer articuloId, String username, Integer campo) throws SIAException {
         InventarioVO inventarioVO = this.buscarInventario(almacenId, articuloId, campo);
 
@@ -379,7 +385,7 @@ public class AlmacenImpl extends AbstractFacade<InvAlmacen> implements AlmacenRe
         }
     }
 
-    
+    @Override
     public List<AlmacenVO> almacenesPorCampo(int idCampo) {
         String c = "select ia.id , ia.nombre   from inv_almacen ia where ia.eliminado = false and ia.ap_campo  = " + idCampo;
         //

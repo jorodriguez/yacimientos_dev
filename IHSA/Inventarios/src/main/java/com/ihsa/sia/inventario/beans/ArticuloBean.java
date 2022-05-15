@@ -9,16 +9,16 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.faces.application.FacesMessage;
 import javax.inject.Named;
-import javax.faces.bean.ManagedProperty;
 import javax.faces.view.ViewScoped;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
-import javax.faces.event.ActionEvent;
+
 import javax.faces.validator.ValidatorException;
 import javax.inject.Inject;
 import sia.excepciones.SIAException;
-import sia.inventarios.service.ArticuloImpl;
+import sia.inventarios.service.ArticuloRemote;
 import sia.inventarios.service.UnidadImpl;
+import sia.inventarios.service.UnidadRemote;
 import sia.modelo.campo.usuario.puesto.vo.CampoUsuarioPuestoVo;
 import sia.modelo.sistema.vo.CategoriaVo;
 import sia.modelo.vo.inventarios.ArticuloVO;
@@ -37,17 +37,15 @@ import sia.servicios.sistema.vo.MonedaVO;
 public class ArticuloBean extends LocalAbstractBean<ArticuloVO, Integer> implements Serializable, SaveObserver {
 
     @Inject
-    private ArticuloImpl servicio;
+    private ArticuloRemote servicio;
     @Inject
-    private UnidadImpl unidadServicio;
+    private UnidadRemote unidadServicio;
     @Inject
     private ApCampoUsuarioRhPuestoImpl apCampoUsuarioRhPuestoRemote;
     @Inject
     private SiCategoriaImpl categoriaServicio;
     @Inject
     MonedaImpl monedaRemote;
-    @Inject
-    ArticuloImpl articuloRemote;
 
     @Inject
     private UnidadBean unidadBean;
@@ -88,12 +86,12 @@ public class ArticuloBean extends LocalAbstractBean<ArticuloVO, Integer> impleme
         }
     }
 
-    public void nuevaUnidad(ActionEvent event) {
-        unidadBean.agregarNuevo(event);
+    public void nuevaUnidad() {
+        unidadBean.agregarNuevo();
         getUnidadBean().setEmbedded(true);
     }
 
-    public void cancelar(ActionEvent event) {
+    public void cancelar() {
         setEmbedded(false);
     }
 
@@ -134,7 +132,7 @@ public class ArticuloBean extends LocalAbstractBean<ArticuloVO, Integer> impleme
     }
 
     @Override
-    protected ArticuloImpl getServicio() {
+    protected ArticuloRemote getServicio() {
         return servicio;
     }
 
@@ -142,16 +140,16 @@ public class ArticuloBean extends LocalAbstractBean<ArticuloVO, Integer> impleme
     public void cargarElementParaEditar(Integer id) {
         getUnidadBean().setEmbedded(false);
         try {
-            setElemento(articuloRemote.buscar(id, getCampoId()));
+            setElemento(servicio.buscar(id, getCampoId()));
         } catch (SIAException ex) {
             Logger.getLogger(ArticuloBean.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
     @Override
-    public void agregarNuevo(ActionEvent event) {
+    public void agregarNuevo() {
         getUnidadBean().setEmbedded(false);
-        super.agregarNuevo(event);
+        super.agregarNuevo();
     }
 
     @Override

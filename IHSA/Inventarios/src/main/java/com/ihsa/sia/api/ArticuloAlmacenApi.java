@@ -10,7 +10,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
-import sia.inventarios.service.ArticuloImpl;
+import sia.inventarios.service.ArticuloRemote;
 import sia.inventarios.service.InventarioImpl;
 import sia.modelo.vo.inventarios.ArticuloVO;
 import sia.modelo.vo.inventarios.InventarioVO;
@@ -27,7 +27,7 @@ public class ArticuloAlmacenApi {
     private static final Integer LIMITE_REGISTROS = 100;
 
     @Inject
-    protected ArticuloImpl articuloService;
+    protected ArticuloRemote articuloService;
 
     @Inject
     protected InventarioImpl inventarioService;

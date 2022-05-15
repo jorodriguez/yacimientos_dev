@@ -15,7 +15,7 @@ import javax.annotation.PostConstruct;
 import javax.inject.Named;
 import javax.faces.view.ViewScoped;
 import javax.faces.context.FacesContext;
-import javax.faces.event.ActionEvent;
+
 import javax.faces.event.AjaxBehaviorEvent;
 import javax.faces.model.SelectItem;
 import javax.inject.Inject;
@@ -136,7 +136,7 @@ public class IncidenciaInvBean implements Serializable {
         getIncidencias().addAll(incidenciaImpl.traerPorUsuario(sesion.getUser().getId(), TicketEstadoEnum.ASIGNADO.getId()));
     }
 
-    public void mostrarTickets(ActionEvent event) {
+    public void mostrarTickets() {
         llenarIncidencias();
         //
         PrimeFaces.current().executeScript("$(dialogoTickts).modal('show');");
@@ -168,7 +168,7 @@ public class IncidenciaInvBean implements Serializable {
         }
     }
 
-    public void crearIncidecnia(ActionEvent event) {
+    public void crearIncidecnia() {
         setIncidenciaVo(new IncidenciaVo());
         incidenciasAdjunto = new ArrayList<>();
         PrimeFaces.current().executeScript("$(dialogoNuevoTickts).modal('show');");
@@ -183,7 +183,7 @@ public class IncidenciaInvBean implements Serializable {
         }
     }
 
-    public void eliminarAAdjunto(ActionEvent event) {
+    public void eliminarAAdjunto() {
         //
         int index = Integer.parseInt(FacesUtilsBean.getRequestParameter("indexAdj"));
         //
@@ -242,7 +242,7 @@ public class IncidenciaInvBean implements Serializable {
         return new StringBuilder().append("Ticket/").append(sesion.getUser().getId()).toString();
     }
 
-    public void guardarEnviarIncidencia(ActionEvent actionEvent) {
+    public void guardarEnviarIncidencia() {
         if (idTieneCod == 0 || categoriaIncidenciaVo.getTabla() == null) {
             incidenciaVo.setCodigoCategoria("NA");
             ejecutarRegistro();
@@ -279,14 +279,14 @@ public class IncidenciaInvBean implements Serializable {
         PrimeFaces.current().executeScript("$(dialogoNuevoTickts).modal('hide');");
     }
 
-    public void inicioCerrarTicket(ActionEvent event) {
+    public void inicioCerrarTicket() {
         int idT = Integer.parseInt(FacesUtilsBean.getRequestParameter("idTicket"));
         incidenciaVo = incidenciaImpl.buscarPorId(idT);
         //
         PrimeFaces.current().executeScript("$(dialogoCierreTickt).modal('show');");
     }
 
-    public void cerrarTicket(ActionEvent event) {
+    public void cerrarTicket() {
 
         Usuario usuario = new Usuario();
         usuario.setId(sesion.getUser().getId());
@@ -299,14 +299,14 @@ public class IncidenciaInvBean implements Serializable {
         PrimeFaces.current().executeScript("$(dialogoCierreTickt).modal('hide');");
     }
 
-    public void inicioReenviarTicket(ActionEvent event) {
+    public void inicioReenviarTicket() {
         int idT = Integer.parseInt(FacesUtilsBean.getRequestParameter("idTicket"));
         incidenciaVo = incidenciaImpl.buscarPorId(idT);
         //
         PrimeFaces.current().executeScript("$(dialogoComplementoTickt).modal('show');");
     }
 
-    public void agregarAdjunto(ActionEvent event) {
+    public void agregarAdjunto() {
         int idT = Integer.parseInt(FacesUtilsBean.getRequestParameter("idTicket"));
         incidenciaVo = incidenciaImpl.buscarPorId(idT);
         incidenciasAdjunto = incidenciaAdjuntoImpl.traerArchivoPorIncidencia(idT);
@@ -314,7 +314,7 @@ public class IncidenciaInvBean implements Serializable {
         PrimeFaces.current().executeScript("$(dialogoAdjuntaarTickt).modal('show');");
     }
 
-    public void reenviarTicket(ActionEvent event) {
+    public void reenviarTicket() {
 
         Usuario usuario = new Usuario();
         usuario.setId(sesion.getUser().getId());

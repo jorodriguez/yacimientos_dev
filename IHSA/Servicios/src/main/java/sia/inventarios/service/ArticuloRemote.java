@@ -66,4 +66,8 @@ public interface ArticuloRemote extends LocalServiceInterface<ArticuloVO, Intege
     void agregarCategoriaArticulo(String id, List<ArticuloVO> latemp, List<CategoriaVo> get);
 
     InvArticulo buscarPorCodigo(String codigo, int unidadID);
+
+    List<ArticuloVO> buscarPorPalabras(String palabra, String nombrCampo);
+
+    public ArticuloVO buscar(Integer id) throws SIAException;
 }
