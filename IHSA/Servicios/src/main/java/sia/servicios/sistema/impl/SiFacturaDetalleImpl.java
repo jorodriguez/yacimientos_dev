@@ -73,7 +73,7 @@ public class SiFacturaDetalleImpl extends AbstractFacade<SiFacturaDetalle>{
             siFacturaDetalle.setCantidad(partida.getCantidadPorFacturar());
             siFacturaDetalle.setDescripcion(partida.getArtNombre());
             siFacturaDetalle.setPrecioUnitario(partida.getPrecioUnitario());
-            siFacturaDetalle.setImporte(new BigDecimal(partida.getImporte()));
+            siFacturaDetalle.setImporte(BigDecimal.valueOf(partida.getImporte()));
             siFacturaDetalle.setGenero(new Usuario(sesion));
             siFacturaDetalle.setFechaGenero(new Date());
             siFacturaDetalle.setHoraGenero(new Date());
