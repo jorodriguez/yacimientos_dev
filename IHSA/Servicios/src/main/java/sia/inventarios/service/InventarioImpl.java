@@ -86,18 +86,15 @@ public class InventarioImpl extends AbstractFacade<InvInventario> {
         super(InvInventario.class);
     }
 
-    
     @Override
     protected EntityManager getEntityManager() {
         return em;
     }
 
-    
     public List<InventarioVO> buscarPorFiltros(InventarioVO filtro, Integer campo) {
         return buscarPorFiltros(filtro, null, null, null, true, campo);
     }
 
-    
     public List<InventarioVO> buscarPorFiltros(InventarioVO filtro, Integer inicio, Integer tamanioPagina, String campoOrdenar,
             boolean esAscendente, Integer idCampo) {
         CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
@@ -136,7 +133,6 @@ public class InventarioImpl extends AbstractFacade<InvInventario> {
         return typedQuery.getResultList();
     }
 
-    
     public int contarPorFiltros(InventarioVO filtro, Integer idCampo) {
         CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
         CriteriaQuery query = criteriaBuilder.createQuery();
@@ -151,7 +147,6 @@ public class InventarioImpl extends AbstractFacade<InvInventario> {
         return ((Long) getEntityManager().createQuery(query).getSingleResult()).intValue();
     }
 
-    
     public InventarioVO buscar(Integer id) throws SIAException {
         InvInventario inventario = this.find(id);
         InvAlmacen almacen = inventario.getAlmacen();
@@ -169,7 +164,6 @@ public class InventarioImpl extends AbstractFacade<InvInventario> {
 
     }
 
-    
     public void crear(InventarioVO inventarioVO, String username, int campo) throws SIAException {
         try {
             EjbLog.info("InventarioService.create()");
@@ -207,7 +201,6 @@ public class InventarioImpl extends AbstractFacade<InvInventario> {
         }
     }
 
-    
     public void actualizar(InventarioVO inventarioVO, String username, int campo) throws SIAException {
         try {
             EjbLog.info("InventarioService.update()");
@@ -249,7 +242,6 @@ public class InventarioImpl extends AbstractFacade<InvInventario> {
         }
     }
 
-    
     public void eliminar(Integer id, String username, Integer campo) throws SIAException {
         try {
             UtilLog4j.log.info(this, "InventarioService.delete()");
@@ -272,7 +264,6 @@ public class InventarioImpl extends AbstractFacade<InvInventario> {
         }
     }
 
-    
     public void conciliar(Integer inventarioId, double unidadesReales, String notas, String username, Integer campo) throws SIAException {
         try {
             InventarioVO inventarioVO = this.buscar(inventarioId);
@@ -295,7 +286,7 @@ public class InventarioImpl extends AbstractFacade<InvInventario> {
                     transaccionVO.setNumeroArticulos(0);//el método TransaccionArticuloImpl#crear autoincrementa el numero
                     transaccionVO.setNotas(notas);
 
-                    List<TransaccionArticuloVO> transaccionArticuloVOs = new ArrayList<TransaccionArticuloVO>(1);
+                    List<TransaccionArticuloVO> transaccionArticuloVOs = new ArrayList<>(1);
                     TransaccionArticuloVO transaccionArticuloVO = new TransaccionArticuloVO();
                     transaccionArticuloVO.setArticuloId(inventarioVO.getArticuloId());
                     transaccionArticuloVO.setNumeroUnidades(diferenciaUnidades);//unidadesReales);
@@ -319,7 +310,6 @@ public class InventarioImpl extends AbstractFacade<InvInventario> {
         }
     }
 
-    
     public List<InventarioMovimientoVO> obtenerMovimientos(Integer inventarioId, Integer campo) {
         InventarioMovimientoVO filtro = new InventarioMovimientoVO();
         filtro.setInventarioId(inventarioId);
@@ -401,7 +391,6 @@ public class InventarioImpl extends AbstractFacade<InvInventario> {
         return enviarCorreoService.enviarCorreoIhsa(para, "", "", asunto, cuerpo, new byte[0]);
     }
 
-    
     public List<InventarioVO> traerInventario(InventarioVO inventarioVO, int campo) {
         String cons = " SELECT i.id, a.nombre, ar.nombre, i.numero_unidades, i.minimo_unidades, i.maximo_de_inventario, coalesce(i.punto_de_reorden, 0), i.fecha_ultima_revision,\n"
                 + "	(SELECT coalesce(string_agg(r.codigo || p.codigo || c.codigo, ','), '') as celda  from inv_inventario_celda ic \n"
@@ -465,7 +454,6 @@ public class InventarioImpl extends AbstractFacade<InvInventario> {
         return filtro;
     }
 
-    
     public List<InventarioVO> inventarioMovimientos(int campo) {
         final StringBuilder query = new StringBuilder("");
         query.append(" WITH celdas AS ( ")
@@ -572,7 +560,6 @@ public class InventarioImpl extends AbstractFacade<InvInventario> {
         return inventarios;
     }
 
-    
     public List<InventarioVO> inventario(int campo) {
         final StringBuilder query = new StringBuilder("");
         query.append("SELECT al.nombre, a.nombre, a.codigo,a.codigo_int, sum(ii.numero_unidades), ac.precio,m.nombre as moneda, ")
@@ -613,7 +600,6 @@ public class InventarioImpl extends AbstractFacade<InvInventario> {
         return inventarios;
     }
 
-    
     public void salidaInventario(int idInventario, int idArticulo, int idAlmacen, Integer unidadesEntregada, String sesion, int campo, String folio) {
         try {
             InventarioVO inventarioVO = invetarioPorArticulo(idArticulo, idAlmacen);
@@ -630,7 +616,7 @@ public class InventarioImpl extends AbstractFacade<InvInventario> {
         }
     }
 
-    private InventarioVO invetarioPorArticulo(int idArticulo, int idAlmacen) {
+    public InventarioVO invetarioPorArticulo(int idArticulo, int idAlmacen) {
         try {
             String c = " select  ii.id, ii.almacen, ii.articulo, ii.numero_unidades, ii.minimo_unidades, ii.fecha_ultima_revision , \n"
                     + " ii.maximo_de_inventario,\n"
@@ -644,11 +630,11 @@ public class InventarioImpl extends AbstractFacade<InvInventario> {
             inventarioVO.setId((Integer) obj[0]);
             inventarioVO.setAlmacenId((Integer) obj[1]);
             inventarioVO.setArticuloId((Integer) obj[2]);
-            inventarioVO.setNumeroUnidades((Integer) obj[3]);
-            inventarioVO.setMinimoUnidades((Integer) obj[4]);
+            inventarioVO.setNumeroUnidades(((BigDecimal) obj[3]).doubleValue());
+            inventarioVO.setMinimoUnidades(((BigDecimal) obj[4]).doubleValue());
             inventarioVO.setFechaUltimaRevision((Date) obj[5]);
-            inventarioVO.setMaximoDeInventario((Integer) obj[6]);
-            inventarioVO.setPuntoDeReorden((Integer) obj[7]);
+            inventarioVO.setMaximoDeInventario(((BigDecimal) obj[6]).doubleValue());
+            inventarioVO.setPuntoDeReorden(((BigDecimal) obj[7]).doubleValue());
             //
             return inventarioVO;
 
@@ -659,12 +645,10 @@ public class InventarioImpl extends AbstractFacade<InvInventario> {
         }
     }
 
-    
     public List<InventarioVO> inventarioPorCampo(int campo) {
         return inventarioPorCampoYAlmacen(campo, 0);
     }
 
-    
     public List<InventarioVO> inventarioPorCampoYAlmacen(int campo, int almacen) {
         String c = "select al.nombre, a.nombre, a.codigo , a.codigo_int, sum(ii.numero_unidades), u.nombre, u.id from inv_inventario ii \n"
                 + "	inner join inv_articulo  a on ii.articulo = a.id \n"
@@ -684,6 +668,38 @@ public class InventarioImpl extends AbstractFacade<InvInventario> {
         // out.println("sdadasd: " + c);
         List<Object[]> lobj = em.createNativeQuery(c).getResultList();
         List<InventarioVO> inventarios = new ArrayList<InventarioVO>();
+        for (Object[] objects : lobj) {
+            InventarioVO invVo = new InventarioVO();
+            invVo.setAlmacenNombre((String) objects[0]);
+            invVo.setArticuloNombre((String) objects[1]);
+            invVo.setCodigo((String) objects[2]);
+            invVo.setCodigoInt((String) objects[3]);
+            invVo.setTotalUnidades((objects[4] == null ? 0.0 : ((BigDecimal) objects[4]).doubleValue()));
+            invVo.setArticuloUnidad((String) objects[5]);
+            invVo.setUnidadId((Integer) objects[6]);
+            inventarios.add(invVo);
+        }
+        return inventarios;
+
+    }
+
+    public List<InventarioVO> inventarioPorArticuloCampo(int articuloId, int campo) {
+        String c = "select al.nombre, a.nombre, a.codigo , a.codigo_int, sum(ii.numero_unidades), u.nombre, u.id from inv_inventario ii \n"
+                + "	inner join inv_articulo  a on ii.articulo = a.id \n"
+                + "	inner join si_unidad u on a.unidad = u.id \n"
+                + "	inner join inv_almacen  al on ii.almacen = al.id \n"
+                + "	inner join inv_articulo_campo  ac on ac.inv_articulo = a.id \n"
+                + "where ac.ap_campo = " + campo
+                + " and ii.articulo = " + articuloId
+                + " and ii.eliminado  = false \n";
+
+        c += " group  by al.nombre, a.nombre, a.codigo , a.codigo_int, u.nombre, u.id"
+                + " having  sum(ii.numero_unidades) is not null "
+                + " order by a.nombre";
+
+        // out.println("sdadasd: " + c);
+        List<Object[]> lobj = em.createNativeQuery(c).getResultList();
+        List<InventarioVO> inventarios = new ArrayList<>();
         for (Object[] objects : lobj) {
             InventarioVO invVo = new InventarioVO();
             invVo.setAlmacenNombre((String) objects[0]);

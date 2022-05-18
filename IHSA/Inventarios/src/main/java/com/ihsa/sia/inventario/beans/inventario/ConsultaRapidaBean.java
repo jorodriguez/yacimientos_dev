@@ -1,7 +1,7 @@
 package com.ihsa.sia.inventario.beans.inventario;
 
-import com.ihsa.sia.commons.AbstractBean;
 import com.ihsa.sia.commons.Messages;
+import com.ihsa.sia.commons.SessionBean;
 import java.io.Serializable;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
@@ -13,6 +13,7 @@ import javax.inject.Named;
 import javax.faces.view.ViewScoped;
 import javax.faces.event.AjaxBehaviorEvent;
 import javax.inject.Inject;
+import org.primefaces.event.SelectEvent;
 import sia.excepciones.SIAException;
 import sia.inventarios.service.ArticuloRemote;
 import sia.inventarios.service.InventarioImpl;
@@ -20,6 +21,7 @@ import sia.inventarios.service.InventarioMovimientoImpl;
 import sia.modelo.vo.inventarios.ArticuloVO;
 import sia.modelo.vo.inventarios.InventarioMovimientoVO;
 import sia.modelo.vo.inventarios.InventarioVO;
+import sia.util.UtilLog4j;
 
 /**
  *
@@ -27,14 +29,16 @@ import sia.modelo.vo.inventarios.InventarioVO;
  */
 @Named(value = "consultaRapida")
 @ViewScoped
-public class ConsultaRapidaBean extends AbstractBean implements Serializable {
+public class ConsultaRapidaBean implements Serializable {
 
     @Inject
-    protected ArticuloRemote servicio;
+    ArticuloRemote servicio;
     @Inject
     protected InventarioImpl servicioInventario;
     @Inject
     protected InventarioMovimientoImpl servicioMovimientos;
+    @Inject
+    SessionBean principal;
 
     private ArticuloVO articulo;
     private List<InventarioVO> listaNivelInventario;
@@ -48,13 +52,17 @@ public class ConsultaRapidaBean extends AbstractBean implements Serializable {
         articulo = new ArticuloVO();
     }
 
-    public void articuloChanged(AjaxBehaviorEvent event) {
+    public void articuloChanged() {
         try {
-            listaNivelInventario = servicio.buscarInventarios(articulo.getId(), super.getCampoId());
+            listaNivelInventario = servicioInventario.inventarioPorArticuloCampo(articulo.getId(), principal.getUser().getIdCampo());//buscarInventarios(articulo.getId(), principal.getUser().getIdCampo());
             listaMovimientos = null;
         } catch (Exception ex) {
-            ManejarExcepcion(ex);
+            UtilLog4j.log.error(ex);
         }
+    }
+
+    public List<ArticuloVO> completarArticulo(String cadena) {
+        return servicio.buscarPorPalabras(cadena, principal.getUser().getCampo());
     }
 
     public void verMovimientos(Integer inventarioId, String almacenNombre) {
@@ -63,28 +71,28 @@ public class ConsultaRapidaBean extends AbstractBean implements Serializable {
             tituloMovimientos = MessageFormat.format(mensaje, almacenNombre, articulo.getNombre());
             cargarMovimientos(inventarioId);
         } catch (Exception ex) {
-            ManejarExcepcion(ex);
+            UtilLog4j.log.equals(ex);
         }
     }
 
     public void cargarMovimientos(final Integer inventarioId) {
         try {
             String campoOrdenar = "fecha";
-            boolean esAscendente = false;            
+            boolean esAscendente = false;
             InventarioMovimientoVO filtro = new InventarioMovimientoVO();
             filtro.setInventarioId(inventarioId);
-            this.listaMovimientos = servicioMovimientos.buscarPorFiltros(filtro, null, null, "fecha", true, getCampoId());
+            this.listaMovimientos = servicioMovimientos.buscarPorFiltros(filtro, null, null, "fecha", true, principal.getUser().getIdCampo());
 
             //contarFilas(inventarioId);
         } catch (Exception ex) {
-            ManejarExcepcion(ex);
+            UtilLog4j.log.error(ex);
         }
     }
 
     protected void contarFilas(Integer inventarioId) throws SIAException {
         InventarioMovimientoVO filtro = new InventarioMovimientoVO();
         filtro.setInventarioId(inventarioId);
-        filasTotales = servicioMovimientos.contarPorFiltros(filtro, super.getCampoId());
+        filasTotales = servicioMovimientos.contarPorFiltros(filtro, principal.getUser().getIdCampo());
     }
 
     public String fechaConFormato(Date date) {

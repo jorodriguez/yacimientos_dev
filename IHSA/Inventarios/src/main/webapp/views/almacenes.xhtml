@@ -16,102 +16,179 @@
         <a href="#{request.contextPath}/resources/videos/ayuda/almacenes.mp4" class="link-ayuda" target="_blank">Ayuda</a>
     </ui:define>
 
-    <ui:define name="botones">
-        <h:commandLink id="cmdNuevo" value="#{msg['sia.inventarios.almacenes.crearAlmacen']}" actionListener="#{almacen.agregarNuevo}" immediate="true" styleClass="hbutton-cr"
-                       rendered="#{not roles.esEmpleadoDeAlmacen()}">
-            <f:ajax  render="hdTituloDialogo almacenComponente" onevent="mostrarDialogoAjax"/>
-        </h:commandLink>
-        <h:outputText id="hdTituloDialogo" value="#{almacen.esNuevoElemento ? msg['sia.inventarios.almacenes.crearTitulo'] : msg['sia.inventarios.almacenes.editarTitulo']}" styleClass="hidden"/>
-        <button type="button" id="btnBuscar" data-icon="ui-icon-search">#{msg['sia.inventarios.comun.buscar']}</button>
-    </ui:define>
+    <ui:define name="contenido">
+        <h:form id="frmAlm">
+            <p:commandLink id="cmdNuevo" value="#{msg['sia.inventarios.almacenes.crearAlmacen']}" action="#{almacen.agregarNuevo}" immediate="true" styleClass="hbutton-cr"
+                           rendered="#{not roles.esEmpleadoDeAlmacen()}"
+                           process="@this" update="frmAlmacen" oncomplete="$(dialogoAlmacen).modal('show');">
+            </p:commandLink>
+            <h:panelGrid columns="2" id="panelFiltro">
+                <h:panelGrid columns="6" >
+                    <h:outputText value="#{msg['sia.inventarios.comun.nombre']}: "/>
+                    <h:outputText value="#{msg['sia.inventarios.comun.descripcion']}:"/>
+                    <h:outputText value="#{msg['sia.inventarios.almacenes.supervisor']}:"/>
+                    <h:outputText value="#{msg['sia.inventarios.almacenes.responsable']} 1:"/>
+                    <h:outputText value="#{msg['sia.inventarios.almacenes.responsable']} 2:"/>
+                    <h:outputText value="Bloque:"/>
+                    <h:inputText id="txtFiltroNombre" value="#{almacen.filtro.nombre}" styleClass="form-control"/>
+                    <h:inputText id="txtFiltroDescripcion" value="#{almacen.filtro.descripcion}" styleClass="form-control"/>
+                    <h:selectOneMenu id="smSupervisor" value="#{almacen.filtro.supervisorUsuarioId}" styleClass="custom-select">
+                        <f:selectItem itemLabel="#{msg['sia.inventarios.comun.seleccione']}" itemValue="#{null}" noSelectionOption="true" />
+                        <f:selectItems value="#{almacen.usuarios}" var="u" itemLabel="#{u.nombre}" itemValue="#{u.id}"/>
+                    </h:selectOneMenu>
+                    <h:selectOneMenu id="smFiltroResponsable1" value="#{almacen.filtro.responsable1UsuarioId}" styleClass="custom-select">
+                        <f:selectItem itemLabel="#{msg['sia.inventarios.comun.seleccione']}" itemValue="#{null}" noSelectionOption="true" />
+                        <f:selectItems value="#{almacen.usuarios}" var="u" itemLabel="#{u.nombre}" itemValue="#{u.id}"/>
+                    </h:selectOneMenu>
+                    <h:selectOneMenu id="smFiltroResponsable2" value="#{almacen.filtro.responsable2UsuarioId}" styleClass="custom-select">
+                        <f:selectItem itemLabel="#{msg['sia.inventarios.comun.seleccione']}" itemValue="#{null}" noSelectionOption="true" />
+                        <f:selectItems value="#{almacen.usuarios}" var="u" itemLabel="#{u.nombre}" itemValue="#{u.id}"/>
+                    </h:selectOneMenu>
+                    <h:selectOneMenu id="smFiltroCampo" value="#{almacen.filtro.idCampo}" styleClass="custom-select">
+                        <f:selectItem itemLabel="- Seleccione -" itemValue="#{null}" noSelectionOption="true" />
+                        <f:selectItems value="#{almacen.campos}" var="c" itemLabel="#{c.campo}" itemValue="#{c.idCampo}"/>
+                    </h:selectOneMenu>
+                </h:panelGrid>
+                <h:panelGrid>
+                    <p:commandLink  value="#{msg['sia.inventarios.almacenes.buscar']}" action="#{almacen.buscar}" styleClass="hbutton-bu"
+                                    process="@this frmAlm:panelFiltro" update="frmAlm:tablaDatos">
+                    </p:commandLink>
+                    <p:commandLink value="#{msg['sia.inventarios.comun.reestablecer']}" action="#{almacen.reestablecer}" 
+                                   styleClass="hbutton-re" process="@this" update="@form">
+                    </p:commandLink>
+                </h:panelGrid>
+            </h:panelGrid>
 
-    <ui:define name="filtros">
-        <h:panelGrid columns="2" width="300px" id="panelFiltro">
-            <h:outputText value="#{msg['sia.inventarios.comun.nombre']}: "/>
-            <h:inputText id="txtFiltroNombre" value="#{almacen.filtro.nombre}" styleClass="ui-inputfield ui-textentry ui-widget ui-state-optional ui-corner-all"/>
-            <h:outputText value="#{msg['sia.inventarios.comun.descripcion']}:"/>
-            <h:inputText id="txtFiltroDescripcion" value="#{almacen.filtro.descripcion}" styleClass="ui-inputfield ui-textentry ui-widget ui-state-optional ui-corner-all"/>
-            <h:outputText value="#{msg['sia.inventarios.almacenes.supervisor']}:"/>
-            <h:selectOneMenu id="smSupervisor" value="#{almacen.filtro.supervisorUsuarioId}" styleClass="ui-widget ui-inputfield ui-state-default ui-state-optional">
-                <f:selectItem itemLabel="#{msg['sia.inventarios.comun.seleccione']}" itemValue="#{null}" noSelectionOption="true" />
-                <f:selectItems value="#{almacen.usuarios}" var="u" itemLabel="#{u.nombre}" itemValue="#{u.id}"/>
-            </h:selectOneMenu>
-            <h:outputText value="#{msg['sia.inventarios.almacenes.responsable']} 1:"/>
-            <h:selectOneMenu id="smFiltroResponsable1" value="#{almacen.filtro.responsable1UsuarioId}" styleClass="ui-widget ui-inputfield ui-state-default ui-state-optional">
-                <f:selectItem itemLabel="#{msg['sia.inventarios.comun.seleccione']}" itemValue="#{null}" noSelectionOption="true" />
-                <f:selectItems value="#{almacen.usuarios}" var="u" itemLabel="#{u.nombre}" itemValue="#{u.id}"/>
-            </h:selectOneMenu>
-            <h:outputText value="#{msg['sia.inventarios.almacenes.responsable']} 2:"/>
-            <h:selectOneMenu id="smFiltroResponsable2" value="#{almacen.filtro.responsable2UsuarioId}" styleClass="ui-widget ui-inputfield ui-state-default ui-state-optional">
-                <f:selectItem itemLabel="#{msg['sia.inventarios.comun.seleccione']}" itemValue="#{null}" noSelectionOption="true" />
-                <f:selectItems value="#{almacen.usuarios}" var="u" itemLabel="#{u.nombre}" itemValue="#{u.id}"/>
-            </h:selectOneMenu>
-            <h:outputText value="Bloque:"/>
-            <h:selectOneMenu id="smFiltroCampo" value="#{almacen.filtro.idCampo}" styleClass="ui-widget ui-inputfield ui-state-default ui-state-optional">
-                <f:selectItem itemLabel="- Seleccione -" itemValue="#{null}" noSelectionOption="true" />
-                <f:selectItems value="#{almacen.campos}" var="c" itemLabel="#{c.campo}" itemValue="#{c.idCampo}"/>
-            </h:selectOneMenu>
-        </h:panelGrid>
-        <div class="filtro-butones">
-            <h:commandLink  value="#{msg['sia.inventarios.almacenes.buscar']}" actionListener="#{almacen.buscar}" styleClass="hbutton-bu">
-                <f:ajax execute="panelFiltro" render="@all"/>
-            </h:commandLink>
-            <h:commandLink value="#{msg['sia.inventarios.comun.reestablecer']}" actionListener="#{almacen.reestablecer}" styleClass="hbutton-re">
-                <f:ajax execute="panelFiltro" render="@all"/>
-            </h:commandLink>
+            <p:dataTable id="tablaDatos" showGridlines="true" size="small"
+                         value="#{almacen.lista}"
+                         lazy="true"
+                         var="a"
+                         paginator="true"
+                         paginatorPosition="bottom"
+                         rows="#{almacen.tamanioPagina}">
+                <p:column id="id" headerText="#{msg['sia.inventarios.almacenes.id']}" sortBy="#{a.id}" style="width: 100px">
+                    <h:outputText value="#{a.id}"/>
+                </p:column>
+                <p:column id="nombre" headerText="#{msg['sia.inventarios.comun.nombre']}" sortBy="#{a.nombre}" style="width: 250px">
+                    <h:outputText value="#{a.nombre}"/>
+                </p:column>
+                <p:column id="bloque" headerText="Bloque" sortBy="#{a.campo}" style="width: 300px">
+                    <h:outputText value="#{a.campo}"/>
+                </p:column>
+                <p:column id="descripcion" headerText="#{msg['sia.inventarios.comun.descripcion']}" sortBy="#{a.descripcion}" style="width: 300px">
+                    <h:outputText value="#{a.descripcion}"/>
+                </p:column>
+                <p:column id="supervisor" headerText="#{msg['sia.inventarios.almacenes.supervisor']}" sortBy="#{a.supervisorNombre}" style="width: 250px">
+                    <h:outputText value="#{a.supervisorNombre}"/>
+                </p:column>
+                <p:column id="responsable1" headerText="#{msg['sia.inventarios.almacenes.responsable']} 1" sortBy="#{a.responsable1Nombre}" style="width: 250px">
+                    <h:outputText value="#{a.responsable1Nombre}"/>
+                </p:column>
+                <p:column id="responsable2" headerText="#{msg['sia.inventarios.almacenes.responsable']} 2" sortBy="#{a.responsable2Nombre}" style="width: 250px">
+                    <h:outputText value="#{a.responsable2Nombre}"/>
+                </p:column>
+                <p:column style="width: 80px" styleClass="icon-column" rendered="#{not roles.esEmpleadoDeAlmacen()}">
+                    <p:commandLink title="#{msg['sia.inventarios.comun.editar']}" action="#{almacen.cargarElementParaEditar(a.id)}" rendered="#{not roles.esEmpleadoDeAlmacen()}"
+                                   process="@this" update="frmAlmacen" oncomplete="$(dialogoAlmacen).modal('show');">
+                        <i class="fa fa-pencil fa-large"></i>
+                    </p:commandLink>
+                    <p:commandLink  title="#{msg['sia.inventarios.comun.eliminar']}" 
+                                    action="#{almacen.eliminarElemento(a.id)}" 
+                                    rendered="#{roles.esAdministradorDeInventarios()}"
+                                    process="@this" update="@form">
+                        <i class="fa fa-times fa-large"></i>    
+                    </p:commandLink>
+                </p:column>
+            </p:dataTable>
+        </h:form>
+        <!-- Dialoogo para crear almacenes-->
+
+        <div class="modal fade" id="dialogoAlmacen" data-backdrop="static" data-keyboard="false">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">                    
+                        <h4 class="modal-title">Editar Inventario</h4>
+                    </div>
+                    <h:form id="frmAlmacen">
+                        <div class="modal-body">
+                            <div class="row">
+                                <h:panelGroup id="panelInformacion">
+                                    <table class="table-form">
+                                        <tr>
+                                            <td style="width: 120px" class="bold">#{msg['sia.inventarios.comun.nombre']}:<span class="required">*</span></td>
+                                            <td >
+                                                <h:inputText value="#{almacen.elemento.nombre}" id="txtNombre" required="true" label="Nombre" requiredMessage="#{msg['sia.validaciones.required']}"
+                                                             styleClass="form-control">
+                                                    <f:ajax event="blur" render="msjNombre"/>
+                                                </h:inputText>
+                                                <h:message for="txtNombre" id="msjNombre" styleClass="ui-widget ui-corner-all ui-state-error input-msg"/>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>#{msg['sia.inventarios.comun.descripcion']}:</td>
+                                            <td>
+                                                <h:inputTextarea id="txtDescripcion" value="#{almacen.elemento.descripcion}" styleClass="form-control"
+                                                                 rows="5" cols="50"/>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>#{msg['sia.inventarios.almacenes.supervisor']}:</td>
+                                            <td>
+                                                <h:selectOneMenu id="smSupervisor" value="#{almacen.elemento.supervisorUsuarioId}" styleClass="custom-select" style="width: 200px">
+                                                    <f:selectItem itemLabel="#{msg['sia.inventarios.comun.seleccione']}" itemValue="#{null}" noSelectionOption="true" />
+                                                    <f:selectItems value="#{almacen.usuarios}" var="u" itemLabel="#{u.nombre}" itemValue="#{u.id}"/>
+                                                </h:selectOneMenu>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td >#{msg['sia.inventarios.almacenes.responsable']} 1:</td>
+                                            <td >
+                                                <h:selectOneMenu id="smResponsable1" value="#{almacen.elemento.responsable1UsuarioId}" styleClass="custom-select" style="width: 200px">
+                                                    <f:selectItem itemLabel="#{msg['sia.inventarios.comun.seleccione']}" itemValue="#{null}" noSelectionOption="true" />
+                                                    <f:selectItems value="#{almacen.usuarios}" var="u" itemLabel="#{u.nombre}" itemValue="#{u.id}"/>
+                                                </h:selectOneMenu>
+                                                <h:message for="smResponsable1" id="msjResponsable1" styleClass="ui-widget ui-corner-all ui-state-error input-msg"/>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>#{msg['sia.inventarios.almacenes.responsable']} 2:</td>
+                                            <td>
+                                                <h:selectOneMenu id="smResponsable2" value="#{almacen.elemento.responsable2UsuarioId}" styleClass="custom-select" style="width: 200px">
+                                                    <f:selectItem itemLabel="#{msg['sia.inventarios.comun.seleccione']}" itemValue="#{null}" noSelectionOption="true" />
+                                                    <f:selectItems value="#{almacen.usuarios}" var="u" itemLabel="#{u.nombre}" itemValue="#{u.id}"/>
+                                                </h:selectOneMenu>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td></td>
+                                            <td class="almacen-user-info">
+                                                #{msg["sia.inventarios.almacenes.leyendaUsuarios"]}
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </h:panelGroup>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <p:commandButton styleClass="hbutton" value="#{msg['sia.inventarios.comun.guardar']}" 
+                                             action="#{almacen.guardarElemento}" 
+                                             title="#{msg['sia.inventarios.comun.crearRegistro']}"
+                                             process="@form" update="frmAlm">
+                            </p:commandButton>
+                            <p:commandLink value="Cancelar" 
+                                           action="#{almacen.cancelar}" 
+                                           immediate="true" oncomplete="$(dialogoAlmacen).modal('hide');">
+                            </p:commandLink>                            
+                        </div>
+                    </h:form>
+                </div>
+            </div>
         </div>
     </ui:define>
-
-    <ui:define name="tabla">
-        <p:dataTable id="tablaDatos"
-                       value="#{almacen.lista}"
-                       lazy="true"
-                       var="a"
-                       paginator="true"
-                       paginatorPosition="bottom"
-                       rows="#{almacen.tamanioPagina}"
-                       style="width: 1225px">
-            <p:column id="id" headerText="#{msg['sia.inventarios.almacenes.id']}" sortBy="#{a.id}" style="width: 100px">
-                <h:outputText value="#{a.id}"/>
-            </p:column>
-            <p:column id="nombre" headerText="#{msg['sia.inventarios.comun.nombre']}" sortBy="#{a.nombre}" style="width: 250px">
-                <h:outputText value="#{a.nombre}"/>
-            </p:column>
-            <p:column id="bloque" headerText="Bloque" sortBy="#{a.campo}" style="width: 300px">
-                <h:outputText value="#{a.campo}"/>
-            </p:column>
-            <p:column id="descripcion" headerText="#{msg['sia.inventarios.comun.descripcion']}" sortBy="#{a.descripcion}" style="width: 300px">
-                <h:outputText value="#{a.descripcion}"/>
-            </p:column>
-            <p:column id="supervisor" headerText="#{msg['sia.inventarios.almacenes.supervisor']}" sortBy="#{a.supervisorNombre}" style="width: 250px">
-                <h:outputText value="#{a.supervisorNombre}"/>
-            </p:column>
-            <p:column id="responsable1" headerText="#{msg['sia.inventarios.almacenes.responsable']} 1" sortBy="#{a.responsable1Nombre}" style="width: 250px">
-                <h:outputText value="#{a.responsable1Nombre}"/>
-            </p:column>
-            <p:column id="responsable2" headerText="#{msg['sia.inventarios.almacenes.responsable']} 2" sortBy="#{a.responsable2Nombre}" style="width: 250px">
-                <h:outputText value="#{a.responsable2Nombre}"/>
-            </p:column>
-            <p:column style="width: 80px" styleClass="icon-column" rendered="#{not roles.esEmpleadoDeAlmacen()}">
-                <h:commandLink title="#{msg['sia.inventarios.comun.editar']}" action="#{almacen.cargarElementParaEditar(a.id)}" rendered="#{not roles.esEmpleadoDeAlmacen()}">
-                    <i class="fa fa-pencil fa-large"></i>
-                    <f:ajax render="@all" onevent="mostrarDialogoAjax"/>
-                </h:commandLink>
-                <h:commandLink  title="#{msg['sia.inventarios.comun.eliminar']}" onclick="mostrarConfirmar(this);
-			return false;" rendered="#{roles.esAdministradorDeInventarios()}">
-		    <i class="fa fa-times fa-large"></i>    
-                </h:commandLink>
-                <h:commandButton action="#{almacen.eliminarElemento(a.id)}" style="display: none">
-                    <f:ajax render="@all" rendered="#{roles.esAdministradorDeInventarios()}"/>
-                </h:commandButton>
-            </p:column>
-            <p:ajax event="page"/>
-        </p:dataTable>
-    </ui:define>
     <ui:define name="datos">
-        <h:panelGroup id="almacenComponente">
+        <!--h:panelGroup id="almacenComponente">
             <ihsa:almacen></ihsa:almacen>
-        </h:panelGroup>
+        </h:panelGroup-->
     </ui:define>
 
     <ui:param name="confirmarEliminar" value="#{msg['sia.inventarios.almacenes.confirmarEliminar']}"/>
