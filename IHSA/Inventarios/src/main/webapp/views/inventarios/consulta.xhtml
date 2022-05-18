@@ -19,103 +19,111 @@
     </ui:define>
 
     <ui:define name="contenido">
-        <h:messages id="mensajesPagina" showDetail="false" globalOnly="true" styleClass="mensajes-ul" infoClass="ui-widget ui-corner-all ui-state-highlight input-msg" errorClass=" ui-widget ui-corner-all ui-state-error input-msg"/>
-        <h:panelGrid style="width: 500px">
-            <h:outputText value="#{msg['sia.inventarios.consulta.articulo']}:" />
-            <h:panelGroup id="pnArticulo">
-                <h:inputText value="#{consultaRapida.articulo.nombre}" id="txtArticulo"
-                             styleClass="articuloAutoComplete ui-inputfield ui-textentry ui-widget ui-state-optional ui-corner-all ui-autocomplete-input">
-                    <f:ajax render="pnNivelInventario pnMovimientos" event="blur" execute="@form" listener="#{consultaRapida.articuloChanged}"/>
-                </h:inputText>
-                <h:inputHidden value="#{consultaRapida.articulo.id}" id="hdFiltroArticuloId">
-                </h:inputHidden>
-            </h:panelGroup>
-        </h:panelGrid>
-        <h:panelGroup id="pnNivelInventario">
-            <h:panelGroup rendered="#{consultaRapida.listaNivelInventario != null}">                
-                <div style="width: 1100px">
-                    <h4 class="clearfix" style="margin-bottom: 5px">               
-                        <div class="fleft">
-                            #{msg['sia.inventarios.consulta.nivelInventario']}
-                        </div>
-                        <div class="fright">
-                            <p:commandButton value="Exportar">
-                                <p:dataExporter id="dataExporter" 
-                                                type="csv" target="tablaNivelInventario" fileName="nivel-inventario" encoding="ISO-8859-1" />
-                            </p:commandButton>
+        <h:form id="frmCons">
+            <h:messages id="mensajesPagina" showDetail="false" globalOnly="true" styleClass="mensajes-ul" infoClass="ui-widget ui-corner-all ui-state-highlight input-msg" errorClass=" ui-widget ui-corner-all ui-state-error input-msg"/>
+            <h:panelGrid style="width: 500px">
+                <h:outputText value="#{msg['sia.inventarios.consulta.articulo']}:" />
+                <h:panelGroup id="pnArticulo">
+                    <p:autoComplete value="#{consultaRapida.articulo}" 
+                                    completeMethod="#{consultaRapida.completarArticulo}" size="80"
+                                    var="art" itemLabel="#{art.nombre}" itemValue="#{art}"
+                                    converter="#{articuloConverter}" forceSelection="true" 
+                                    >
+                        <p:ajax event="itemSelect" listener="#{consultaRapida.articuloChanged}" 
+                                update="frmCons:pnNivelInventario" />
+                        <p:ajax event="change" listener="#{consultaRapida.articuloChanged}"
+                                update="frmCons:pnNivelInventario frmCons:pnMovimientos" />
+                    </p:autoComplete>
+                </h:panelGroup>
+            </h:panelGrid>
+            <h:panelGroup id="pnNivelInventario">
+                <h:panelGroup rendered="#{consultaRapida.listaNivelInventario != null}">                
+                    <div >
+                        <h4 class="clearfix" style="margin-bottom: 5px">               
+                            <div class="fleft">
+                                #{msg['sia.inventarios.consulta.nivelInventario']}
+                            </div>
+                            <div class="fright">
+                                <p:commandButton value="Exportar">
+                                    <p:dataExporter id="dataExporter" 
+                                                    type="csv" target="tablaNivelInventario" fileName="nivel-inventario" encoding="ISO-8859-1" />
+                                </p:commandButton>
 
-                        </div>
-                    </h4>            
-                    <p:dataTable id="tablaNivelInventario"
-                                 value="#{consultaRapida.listaNivelInventario}"
-                                 var="i"  >
-                        <p:column id="id" headerText="#{msg['sia.inventarios.comun.almacen']}" sortBy="#{i.almacenNombre}" style="width: 300px">
-                            <h:outputText value="#{i.almacenNombre}"/>
-                        </p:column>
-                        <p:column id="codigo" headerText="#{msg['sia.inventarios.consulta.numeroUnidades']}" sortBy="#{i.numeroUnidades}" style="width: 200px">
-                            <h:outputText value="#{i.numeroUnidades}"/>
-                        </p:column>
-                        <p:column id="nombre" headerText="#{msg['sia.inventarios.consulta.minimoRequerido']}" sortBy="#{i.minimoUnidades}" style="width: 200px">
-                            <h:outputText value="#{i.minimoUnidades}"/>
-                        </p:column>
-                        <p:column id="solicitante" headerText="#{msg['sia.inventarios.consulta.fechaUltimaRevision']}" sortBy="#{i.fechaUltimaRevision}" style="width: 200px">
-                            <h:outputText value="#{consultaRapida.fechaConFormato(i.fechaUltimaRevision)}" />
-                        </p:column>
-                        <p:column style="width: 200px" styleClass="icon-column">
-                            <h:commandLink styleClass="link" action="#{consultaRapida.verMovimientos(i.id, i.almacenNombre)}" value="#{msg['sia.inventarios.consulta.verMovimientos']}">                        
-                            </h:commandLink>
-                        </p:column>
-                    </p:dataTable>
-                </div>
+                            </div>
+                        </h4>            
+                        <p:dataTable id="tablaNivelInventario"
+                                     value="#{consultaRapida.listaNivelInventario}"
+                                     var="i"  >
+                            <p:column id="id" headerText="#{msg['sia.inventarios.comun.almacen']}" sortBy="#{i.almacenNombre}" style="width: 300px">
+                                <h:outputText value="#{i.almacenNombre}"/>
+                            </p:column>
+                            <p:column id="codigo" headerText="#{msg['sia.inventarios.consulta.numeroUnidades']}" sortBy="#{i.numeroUnidades}" style="width: 200px">
+                                <h:outputText value="#{i.numeroUnidades}"/>
+                            </p:column>
+                            <p:column id="nombre" headerText="#{msg['sia.inventarios.consulta.minimoRequerido']}" sortBy="#{i.minimoUnidades}" style="width: 200px">
+                                <h:outputText value="#{i.minimoUnidades}"/>
+                            </p:column>
+                            <p:column id="solicitante" headerText="#{msg['sia.inventarios.consulta.fechaUltimaRevision']}" sortBy="#{i.fechaUltimaRevision}" style="width: 200px">
+                                <h:outputText value="#{consultaRapida.fechaConFormato(i.fechaUltimaRevision)}" />
+                            </p:column>
+                            <p:column width="40" style="width: 200px" styleClass="icon-column">
+                                <p:commandLink action="#{consultaRapida.verMovimientos(i.id, i.almacenNombre)}" 
+                                               value="Movimientos"
+                                               process="@this" update="frmCons:pnMovimientos" >
+                                </p:commandLink>
+                            </p:column>
+                        </p:dataTable>
+                    </div>
+                </h:panelGroup>
             </h:panelGroup>
-        </h:panelGroup>
 
-        <h:panelGroup id="pnMovimientos" styleClass="panel-movimientos">
-            <h:panelGroup rendered="#{consultaRapida.listaMovimientos != null}">
-                <div style="width: 1100px">
-                    <h4 class="clearfix" style="margin-bottom: 5px">               
-                        <div class="fleft">
-                            #{consultaRapida.tituloMovimientos}
-                        </div>
-                        <div class="fright">
-                            <p:commandButton value="Exportar">
-                                <p:dataExporter id="dataExporterMovimientos" pageOnly="false" type="csv" target="tablaMovimientos" fileName="nivel-inventario-movimientos" encoding="ISO-8859-1" />
-                            </p:commandButton>
-                        </div>
-                    </h4> 
-                    <p:dataTable id="tablaMovimientos"
-                                 value="#{consultaRapida.listaMovimientos}"
-                                 var="m"
-                                 paginator="true"
-                                 paginatorPosition="bottom"
-                                 rows="20"
-                                 >
-                        <p:column id="id" headerText="#{msg['sia.inventarios.comun.fecha']}" sortBy="#{m.fecha}" style="width: 200px">
-                            <h:outputText value="#{consultaRapida.fechaConFormato(m.fecha)}"/>
-                        </p:column>
-                        <p:column id="codigo" headerText="#{msg['sia.inventarios.consulta.unidades']}" sortBy="#{m.numeroUnidades}" style="width: 200px">
-                            <h:outputText value="#{m.numeroUnidades > 0 ? '+' : ''} #{m.numeroUnidades}"/>
-                        </p:column>
-                        <p:column id="nombre" headerText="#{msg['sia.inventarios.consulta.concepto']}" sortBy="#{m.tipoMovimiento}" style="width: 200px">
-                            <h:outputText value="#{tipoMovimiento.getNombre(m.tipoMovimiento)}"/>
-                        </p:column> 
-                        <p:column id="creado" headerText="#{msg['sia.inventarios.comun.creadoPor']}" sortBy="#{m.genero}" style="width: 200px">
-                            <h:outputText value="#{m.genero}"/>
-                        </p:column> 
-                        <p:column id="folio" headerText="Folio" sortBy="#{m.folioRemision}" style="width: 100px">
-                            <h:outputText value="#{m.folioRemision}"/>
-                        </p:column> 
-                        <p:column style="width: 180px" styleClass="icon-column">
-                            <h:link styleClass="link" value="#{msg['sia.inventarios.consulta.verTransaccion']}"
-                                    outcome="movimiento" >
-                                <f:param name="transaccionId" value="#{m.transaccionId}"/>
-                                <f:param name="lista" value="true"/>
-                            </h:link>
-                        </p:column>
-                    </p:dataTable>
-                </div>
-            </h:panelGroup>            
-        </h:panelGroup>
+            <h:panelGroup id="pnMovimientos" styleClass="panel-movimientos">
+                <h:panelGroup rendered="#{consultaRapida.listaMovimientos != null}">
+                    <div style="width: 1100px">
+                        <h4 class="clearfix" style="margin-bottom: 5px">               
+                            <div class="fleft">
+                                #{consultaRapida.tituloMovimientos}
+                            </div>
+                            <div class="fright">
+                                <p:commandButton value="Exportar">
+                                    <p:dataExporter id="dataExporterMovimientos" pageOnly="false" type="csv" target="tablaMovimientos" fileName="nivel-inventario-movimientos" encoding="ISO-8859-1" />
+                                </p:commandButton>
+                            </div>
+                        </h4> 
+                        <p:dataTable id="tablaMovimientos"
+                                     value="#{consultaRapida.listaMovimientos}"
+                                     var="m"
+                                     paginator="true"
+                                     paginatorPosition="bottom"
+                                     rows="20"
+                                     >
+                            <p:column id="id" headerText="#{msg['sia.inventarios.comun.fecha']}" sortBy="#{m.fecha}" style="width: 200px">
+                                <h:outputText value="#{consultaRapida.fechaConFormato(m.fecha)}"/>
+                            </p:column>
+                            <p:column id="codigo" headerText="#{msg['sia.inventarios.consulta.unidades']}" sortBy="#{m.numeroUnidades}" style="width: 200px">
+                                <h:outputText value="#{m.numeroUnidades > 0 ? '+' : ''} #{m.numeroUnidades}"/>
+                            </p:column>
+                            <p:column id="nombre" headerText="#{msg['sia.inventarios.consulta.concepto']}" sortBy="#{m.tipoMovimiento}" style="width: 200px">
+                                <h:outputText value="#{tipoMovimiento.getNombre(m.tipoMovimiento)}"/>
+                            </p:column> 
+                            <p:column id="creado" headerText="#{msg['sia.inventarios.comun.creadoPor']}" sortBy="#{m.genero}" style="width: 200px">
+                                <h:outputText value="#{m.genero}"/>
+                            </p:column> 
+                            <p:column id="folio" headerText="Folio" sortBy="#{m.folioRemision}" style="width: 100px">
+                                <h:outputText value="#{m.folioRemision}"/>
+                            </p:column> 
+                            <p:column style="width: 180px" styleClass="icon-column">
+                                <h:link styleClass="link" value="#{msg['sia.inventarios.consulta.verTransaccion']}"
+                                        outcome="movimiento" >
+                                    <f:param name="transaccionId" value="#{m.transaccionId}"/>
+                                    <f:param name="lista" value="true"/>
+                                </h:link>
+                            </p:column>
+                        </p:dataTable>
+                    </div>
+                </h:panelGroup>            
+            </h:panelGroup>
+        </h:form>
     </ui:define>
 </ui:composition>
 
