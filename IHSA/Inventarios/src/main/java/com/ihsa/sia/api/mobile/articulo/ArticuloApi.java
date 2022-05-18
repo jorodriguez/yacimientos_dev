@@ -14,7 +14,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import sia.constantes.Constantes;
-import sia.inventarios.service.ArticuloImpl;
+import sia.inventarios.service.ArticuloRemote;
 import sia.inventarios.service.InvInventarioCeldaImpl;
 import sia.modelo.vo.inventarios.ArticuloInventarioVO;
 import sia.modelo.vo.inventarios.InventarioVO;
@@ -30,7 +30,7 @@ import sia.modelo.vo.inventarios.InventarioVO;
 public class ArticuloApi extends MovilApiBase {
 
     @Inject
-    protected ArticuloImpl articuloService;
+    protected ArticuloRemote articuloService;
     @Inject
     protected InvInventarioCeldaImpl inventarioCeldaLocal;
 

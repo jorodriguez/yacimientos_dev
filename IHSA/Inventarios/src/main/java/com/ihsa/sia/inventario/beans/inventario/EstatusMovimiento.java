@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import javax.annotation.PostConstruct;
-import javax.faces.bean.ApplicationScoped;
+import javax.enterprise.context.SessionScoped;
 import javax.inject.Named;
 import javax.faces.model.SelectItem;
 import static sia.constantes.Constantes.INV_TRANSACCION_STATUS_APLICADA;
@@ -20,7 +20,7 @@ import static sia.constantes.Constantes.INV_TRANSACCION_STATUS_TRASPASO_PENDIENT
  *
  * @author Aplimovil SA de CV
  */
-@ApplicationScoped
+@SessionScoped
 @Named
 public class EstatusMovimiento implements Serializable{
 

@@ -72,9 +72,9 @@ public class InvEstadoAprobacionSolicitudImpl extends AbstractFacade<InvEstadoAp
     @Inject
     InventarioMovimientoImpl inventarioMovimientoService;
     @Inject
-    TransaccionImpl transaccionRemote;
+    TransaccionRemote transaccionRemote;
     @Inject
-    TransaccionArticuloImpl transaccionArticuloRemote;
+    TransaccionArticuloRemote transaccionArticuloRemote;
 
     
     public void guardar(int idSolicitud, String sesion, String idUsuario, int status) {

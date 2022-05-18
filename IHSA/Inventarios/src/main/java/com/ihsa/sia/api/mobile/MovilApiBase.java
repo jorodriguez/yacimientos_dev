@@ -2,10 +2,7 @@ package com.ihsa.sia.api.mobile;
 
 import com.ihsa.sia.commons.Messages;
 import java.io.Serializable;
-import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -29,8 +26,6 @@ public class MovilApiBase implements Serializable{
 
     @Inject
     protected ApiAuthService authService;
-    @Context
-    private HttpServletRequest httpRequest;
     private Respuesta respuestaAutenticacion;
     // private String apiKey;
 

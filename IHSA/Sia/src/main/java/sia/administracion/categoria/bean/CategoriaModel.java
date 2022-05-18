@@ -21,7 +21,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import sia.constantes.Constantes;
 import sia.excepciones.SIAException;
-import sia.inventarios.service.ArticuloImpl;
+import sia.inventarios.service.ArticuloRemote;
 import sia.inventarios.service.InvArticuloCampoImpl;
 import sia.inventarios.service.SatArticuloImpl;
 import sia.modelo.InvArticulo;
@@ -66,7 +66,7 @@ public class CategoriaModel implements Serializable {
     @Inject
     private SiUnidadImpl siUnidadImpl;
     @Inject
-    private ArticuloImpl articuloImpl;
+    private ArticuloRemote articuloImpl;
     @Inject
     private InvArticuloCampoImpl invArticuloCampoImpl;
     @Inject

@@ -8,52 +8,48 @@
     <h:panelGroup id="pnAvisos" styleClass="sia-widget">
         <h1 class="title">#{msg['sia.inventarios.avisos.titulo']}</h1>
         <h:panelGroup id="pnAvisoAcciones" styleClass="pn-avisos-acciones">
-            <h:commandLink value="#{msg['sia.inventarios.avisos.actualizar']}"
+            <p:commandLink value="#{msg['sia.inventarios.avisos.actualizar']}"
                            action="#{avisos.actualizar}"
-                           styleClass="hbutton-actualizar">
-                <f:ajax render="@all"/>
-            </h:commandLink>
-            <h:commandLink value="#{msg['sia.inventarios.avisos.noLeido']}"
+                           process="@this" update="frmContenido:tablaAvisos">
+            </p:commandLink>
+            <p:commandLink value="#{msg['sia.inventarios.avisos.noLeido']}"
                            action="#{avisos.marcarComoNoLeidos}"
                            styleClass="hbutton-cerrado"
-                           disabled="#{avisos.seleccionados.isEmpty()}">
-                <f:ajax render="@all"/>
-            </h:commandLink>
-            <h:commandLink value="#{msg['sia.inventarios.avisos.eliminar']}"
-                           onclick="mostrarConfirmar(this);
-				   return false;"
-                           styleClass="hbutton-eliminado"
-                           disabled="#{avisos.seleccionados.isEmpty()}">
-            </h:commandLink>
-            <h:commandButton action="#{avisos.eliminar}" style="display: none"
-                             disabled="#{avisos.seleccionados.isEmpty()}">
-                <f:ajax render="@all"/>
-            </h:commandButton>
+                           process="@this frmContenido:tablaAvisos" update="frmContenido:tablaAvisos"
+                           disabled="#{avisos.seleccionados.isEmpty()}"
+                           >
+            </p:commandLink>
+            <p:commandLink value="#{msg['sia.inventarios.avisos.eliminar']}"
+                           process="@this frmContenido:tablaAvisos" update="frmContenido:tablaAvisos"
+                           disabled="#{avisos.seleccionados.isEmpty()}"
+                           action="#{avisos.eliminar}" >
+            </p:commandLink>
+
         </h:panelGroup>
         <p:dataTable id="tablaAvisos"
-                       value="#{avisos.lista}"
-                       var="a"
-                       binding="#{avisos.tablaAvisos}"
-                       styleClass="tabla-avisos"
-                       style="width: 800px">
+                     value="#{avisos.lista}"
+                     var="a"
+                     binding="#{avisos.tablaAvisos}"
+                     styleClass="tabla-avisos"
+                     style="width: 800px" showGridlines="true" size="small">
             <p:column id="seleccion" style="width: 50px"
-                        styleClass="#{a.leido ? 'msj-leido' : 'msj-no-leido'}">
+                      styleClass="#{a.leido ? 'msj-leido' : 'msj-no-leido'}">
                 <h:selectBooleanCheckbox value="#{a.seleccionado}">
                     <f:ajax render="@form"/>
                 </h:selectBooleanCheckbox>
             </p:column>
             <p:column id="fecha" headerText="#{msg['sia.inventarios.avisos.fecha']}"
-                        style="width: 250px" styleClass="#{a.leido ? 'msj-leido' : 'msj-no-leido'}">
+                      style="width: 250px" styleClass="#{a.leido ? 'msj-leido' : 'msj-no-leido'}">
                 <h:link styleClass="link" 
                         outcome="inicio/mensaje">
-		    <h:outputText value="#{a.fecha}">
-			<f:convertDateTime pattern="dd/MM/yyyy HH:mm"/>
-		    </h:outputText>
-		    <f:param name="mensajeId" value="#{a.id}"/>
+                    <h:outputText value="#{a.fecha}">
+                        <f:convertDateTime pattern="dd/MM/yyyy HH:mm"/>
+                    </h:outputText>
+                    <f:param name="mensajeId" value="#{a.id}"/>
                 </h:link>
             </p:column>
             <p:column id="almacen" headerText="#{msg['sia.inventarios.avisos.asunto']}"
-                        style="width: 550px" styleClass="#{a.leido ? 'msj-leido' : 'msj-no-leido'}">
+                      style="width: 550px" styleClass="#{a.leido ? 'msj-leido' : 'msj-no-leido'}">
                 <h:link styleClass="link" value="#{a.asunto}"
                         outcome="inicio/mensaje">
                     <f:param name="mensajeId" value="#{a.id}"/>
@@ -63,12 +59,12 @@
         </p:dataTable>
     </h:panelGroup>
     <p:confirmDialog id="confirmDialog"
-                            message="#{msg['sia.inventarios.avisos.confirmarEliminar']}"
-                            header="Confirmar"
-                            width="300"
-                            height="160"
-                            closable="false"
-                            widgetVar="eliminarDialogo">
+                     message="#{msg['sia.inventarios.avisos.confirmarEliminar']}"
+                     header="Confirmar"
+                     width="300"
+                     height="160"
+                     closable="false"
+                     widgetVar="eliminarDialogo">
         <h:panelGrid columns="2" styleClass="div-center">
             <button type="button" onclick="confirmar();">#{msg['sia.inventarios.comun.si']}</button>
             <button type="button" value="No"

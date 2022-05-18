@@ -76,6 +76,7 @@ import sia.modelo.vo.inventarios.ArticuloVO;
 import sia.util.UtilLog4j;
 import sia.util.ValidadorNombreArchivo;
 import sia.constantes.Configurador;
+import sia.inventarios.service.ArticuloRemote;
 import sia.modelo.requisicion.vo.OcSubtareaVO;
 import sia.servicios.catalogos.impl.GerenciaImpl;
 import sia.servicios.convenio.impl.ConvenioImpl;
@@ -128,7 +129,7 @@ public class OrdenCompraBean implements Serializable {
     @Inject
     private ReRequisicionEtsImpl reRequisicionEtsImpl;
     @Inject
-    private ArticuloImpl articuloImpl;
+    private ArticuloRemote articuloImpl;
     @Inject
     private InvArticuloCampoImpl invArticuloCampoImpl;
     @Inject

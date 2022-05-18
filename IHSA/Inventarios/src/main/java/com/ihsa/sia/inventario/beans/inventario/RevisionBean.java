@@ -12,7 +12,7 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.validator.ValidatorException;
 import javax.inject.Inject;
-import sia.inventarios.service.AlmacenImpl;
+import sia.inventarios.service.AlmacenRemote;
 import sia.inventarios.service.InventarioImpl;
 import sia.modelo.vo.inventarios.AlmacenVO;
 import sia.modelo.vo.inventarios.ArticuloVO;
@@ -27,7 +27,7 @@ import sia.modelo.vo.inventarios.InventarioVO;
 public class RevisionBean extends AbstractBean implements Serializable {
 
     @Inject
-    private AlmacenImpl servicioAlmacen;
+    private AlmacenRemote servicioAlmacen;
     @Inject
     private InventarioImpl servicioInventario;
 

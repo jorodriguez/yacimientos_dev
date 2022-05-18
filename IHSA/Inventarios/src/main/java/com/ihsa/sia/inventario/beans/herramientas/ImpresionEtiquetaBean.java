@@ -8,7 +8,7 @@ import javax.faces.view.ViewScoped;
 import javax.faces.event.AjaxBehaviorEvent;
 import javax.inject.Inject;
 import sia.excepciones.SIAException;
-import sia.inventarios.service.ArticuloImpl;
+import sia.inventarios.service.ArticuloRemote;
 import sia.modelo.vo.inventarios.ArticuloVO;
 
 /**
@@ -19,7 +19,7 @@ import sia.modelo.vo.inventarios.ArticuloVO;
 public class ImpresionEtiquetaBean extends AbstractBean implements Serializable {
 
     @Inject
-    private ArticuloImpl servicioArticulo;
+    private ArticuloRemote servicioArticulo;
     private ArticuloVO articulo;
     private int numeroDeEtiquetas;
     private String datosEtiqueta;

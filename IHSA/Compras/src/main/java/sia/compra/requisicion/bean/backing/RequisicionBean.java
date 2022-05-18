@@ -50,7 +50,7 @@ import sia.compra.sistema.bean.backing.ContarBean;
 import sia.constantes.Constantes;
 import sia.constantes.TipoRequisicion;
 import sia.excepciones.SIAException;
-import sia.inventarios.service.ArticuloImpl;
+import sia.inventarios.service.ArticuloRemote;
 import sia.inventarios.service.InvArticuloCampoImpl;
 import sia.inventarios.service.InventarioImpl;
 import sia.modelo.Gerencia;
@@ -153,7 +153,7 @@ public class RequisicionBean implements Serializable {
     @Inject
     private SiUsuarioRolImpl siUsuarioRolImpl;
     @Inject
-    private ArticuloImpl articuloImpl;
+    private ArticuloRemote articuloImpl;
     @Inject
     private InvArticuloCampoImpl invArticuloCampoImpl;
     @Inject
@@ -277,10 +277,8 @@ public class RequisicionBean implements Serializable {
     @Setter
     private int totalRequisiciones;
     @Getter
-    @Setter
     protected static final String UPDATE_OPERATION = "Actualizar";
     @Getter
-    @Setter
     protected static final String CREATE_OPERATION = "Crear";
     @Getter
     @Setter

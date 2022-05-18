@@ -154,10 +154,10 @@ function conciliar(data) {
 }
 
 function seleccionarGeneral(todos, seleccion) {
-    if (ice.ace.jq('.'+todos).is(":checked")) {
+    if (ice.ace.jq('.' + todos).is(":checked")) {
         ice.ace.jq('.' + seleccion).prop("checked", "checked");
     } else {
-        ice.ace.jq('.' + seleccion).prop("checked", ""); 
+        ice.ace.jq('.' + seleccion).prop("checked", "");
     }
 }
 

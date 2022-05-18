@@ -63,7 +63,7 @@ import sia.util.UtilLog4j;
  */
 //Stateless (name = "Inventarios_TransaccionService")
 @Stateless
-public class TransaccionImpl extends  AbstractFacade<InvTransaccion>  implements TransaccionRemote{
+public class TransaccionImpl extends AbstractFacade<InvTransaccion> implements TransaccionRemote {
 
     @PersistenceContext(unitName = "Sia-ServiciosPU")
     private EntityManager em;
@@ -72,10 +72,10 @@ public class TransaccionImpl extends  AbstractFacade<InvTransaccion>  implements
     Audit audit;
 
     @Inject
-    TransaccionArticuloImpl transaccionArticuloService;
+    TransaccionArticuloRemote transaccionArticuloService;
 
     @Inject
-    AlmacenImpl almacenService;
+    AlmacenRemote almacenService;
 
     @Inject
     InventarioImpl inventarioService;
@@ -106,18 +106,27 @@ public class TransaccionImpl extends  AbstractFacade<InvTransaccion>  implements
         super(InvTransaccion.class);
     }
 
-    
     @Override
     protected EntityManager getEntityManager() {
         return em;
     }
 
-    
+    @Override
+    public InvTransaccion find(Object id) {
+        return em.find(InvTransaccion.class, id);
+    }
+
+    @Override
+    public void edit(InvTransaccion invTransaccion) {
+        em.merge(invTransaccion);
+    }
+
+    @Override
     public List<TransaccionVO> buscarPorFiltros(TransaccionVO filtro, Integer campo) {
         return buscarPorFiltros(filtro, null, null, null, true, campo);
     }
 
-    
+    @Override
     public List<TransaccionVO> buscarPorFiltros(TransaccionVO filtro, Integer inicio, Integer tamanioPagina, String campoOrdenar,
             boolean esAscendente, Integer idCampo) {
         CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
@@ -163,7 +172,7 @@ public class TransaccionImpl extends  AbstractFacade<InvTransaccion>  implements
         return typedQuery.getResultList();
     }
 
-    
+    @Override
     public int contarPorFiltros(TransaccionVO filtro, Integer idCampo) {
         CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
         CriteriaQuery consulta = criteriaBuilder.createQuery();
@@ -179,7 +188,7 @@ public class TransaccionImpl extends  AbstractFacade<InvTransaccion>  implements
         return ((Long) getEntityManager().createQuery(consulta).getSingleResult()).intValue();
     }
 
-    
+    @Override
     public TransaccionVO buscar(Integer id) throws SIAException {
         InvTransaccion transaccion = this.find(id);
         InvAlmacen almacen = transaccion.getAlmacen();
@@ -222,7 +231,7 @@ public class TransaccionImpl extends  AbstractFacade<InvTransaccion>  implements
         );
     }
 
-    
+    @Override
     public void crear(TransaccionVO transaccionVO, List<TransaccionArticuloVO> transaccionArticulosVO,
             String username, int campo) throws SIAException {
         try {
@@ -308,7 +317,7 @@ public class TransaccionImpl extends  AbstractFacade<InvTransaccion>  implements
                     OrdenVO ocs = ordenRemote.buscarOrdenPorConsecutivo(transaccion.getFolioOrdenCompra(), Constantes.BOOLEAN_TRUE);
                     if (ocs != null) {
                         ocs.setDetalleOrden(new ArrayList<OrdenDetalleVO>());
-                        ocs.setDetalleOrden(detalleOcs);                        
+                        ocs.setDetalleOrden(detalleOcs);
                         autorizacionesOrdenRemote.marcarOrdenRecibida(user.getId(), ocs);
                     }
                     //
@@ -324,7 +333,7 @@ public class TransaccionImpl extends  AbstractFacade<InvTransaccion>  implements
         }
     }
 
-    
+    @Override
     public void crearYProcesar(TransaccionVO transaccionVO, List<TransaccionArticuloVO> articulosVO, String username, int campo) throws SIAException {
         crear(transaccionVO, articulosVO, username, campo);
         procesar(transaccionVO.getId(), username, campo);
@@ -338,7 +347,7 @@ public class TransaccionImpl extends  AbstractFacade<InvTransaccion>  implements
      * @param campo
      * @throws SIAException
      */
-    
+    @Override
     public void actualizar(TransaccionVO transaccionVO, List<TransaccionArticuloVO> articulosVO,
             String username, int campo) throws SIAException {
         try {
@@ -387,7 +396,7 @@ public class TransaccionImpl extends  AbstractFacade<InvTransaccion>  implements
         }
     }
 
-    
+    @Override
     public List<TransaccionVO> rastrearArticulo(String filtro) {
         CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
         CriteriaQuery query = criteriaBuilder.createQuery();
@@ -419,7 +428,6 @@ public class TransaccionImpl extends  AbstractFacade<InvTransaccion>  implements
         return typedQuery.getResultList();
     }
 
-    
     public List<ArticuloCompraVO> listarArticulosPorFolioOrdenDeCompra(String folio) {
         List<OrdenDetalle> ordenes = em.createNamedQuery("OrdenDetalle.buscarPorFolioCompra", OrdenDetalle.class)
                 .setParameter("folioCompra", folio)
@@ -445,7 +453,6 @@ public class TransaccionImpl extends  AbstractFacade<InvTransaccion>  implements
         return articulos;
     }
 
-    
     public void eliminar(Integer id, String username, Integer campo) throws SIAException {
         try {
             UtilLog4j.log.info(this, "TransaccionImpl.delete()");
@@ -468,7 +475,6 @@ public class TransaccionImpl extends  AbstractFacade<InvTransaccion>  implements
         }
     }
 
-    
     public List<TransaccionArticuloVO> obtenerListaArticulos(Integer transaccionId, Integer campo) throws SIAException {
         TransaccionArticuloVO filtros = new TransaccionArticuloVO();
         filtros.setTransaccionId(transaccionId);
@@ -476,7 +482,6 @@ public class TransaccionImpl extends  AbstractFacade<InvTransaccion>  implements
         return transaccionArticuloService.buscarPorFiltros(filtros, campo);
     }
 
-    
     public List<TransaccionVO> buscarPorStatus(Integer status, int campoID) throws SIAException {
         TransaccionVO filtros = new TransaccionVO();
         filtros.setStatus(status);
@@ -484,7 +489,6 @@ public class TransaccionImpl extends  AbstractFacade<InvTransaccion>  implements
         return buscarPorFiltros(filtros, campoID);
     }
 
-    
     public void procesar(Integer transaccionId, String username, Integer campo) throws SIAException {
         try {
             UtilLog4j.log.info(this, "TransaccionImpl.procesar()");
@@ -536,7 +540,6 @@ public class TransaccionImpl extends  AbstractFacade<InvTransaccion>  implements
         }
     }
 
-    
     public void confirmar(Integer transaccionId, String username, Integer campo) throws SIAException {
         try {
             EjbLog.info("TransaccionImpl.confirmar()");
@@ -573,7 +576,6 @@ public class TransaccionImpl extends  AbstractFacade<InvTransaccion>  implements
         }
     }
 
-    
     public void rechazar(Integer transaccionId, String motivoRechazo, String username) throws SIAException {
         try {
             EjbLog.info("TransaccionImpl.rechazar()");
@@ -609,7 +611,6 @@ public class TransaccionImpl extends  AbstractFacade<InvTransaccion>  implements
         }
     }
 
-    
     public boolean validarFolioOrdenDeCompra(String folio) throws SIAException {
         return em.createNamedQuery("Orden.contarPorFolioCompraEnviada", Long.class)
                 .setParameter("folioCompra", folio)
@@ -1058,7 +1059,6 @@ public class TransaccionImpl extends  AbstractFacade<InvTransaccion>  implements
         return null;
     }
 
-    
     public void crear(TransaccionVO transaccionVO, String username, int campo) throws SIAException {
         crear(transaccionVO, null, username, campo);
     }
@@ -1067,7 +1067,6 @@ public class TransaccionImpl extends  AbstractFacade<InvTransaccion>  implements
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    
     public void actualizar(TransaccionVO transaccionVO, String username, int campo) throws SIAException {
         actualizar(transaccionVO, null, username, campo);
     }
@@ -1148,7 +1147,6 @@ public class TransaccionImpl extends  AbstractFacade<InvTransaccion>  implements
         return list.isEmpty() ? 0 : list.get(0);
     }
 
-    
     public List<TransaccionArticuloVO> traerPorTrasaccionId(int idTransaccion, int idCampo) {
         String c = "SELECT ta.id, ta.transaccion, ta.articulo , a.nombre , ta.numero_unidades , ta.identificador, ca.precio , m.id, m.siglas FROM inv_transaccion_articulo ta\n"
                 + "	inner join inv_articulo  a on ta.articulo  = a.id \n"
@@ -1177,7 +1175,6 @@ public class TransaccionImpl extends  AbstractFacade<InvTransaccion>  implements
         return trans;
     }
 
-    
     public void crearConciliar(TransaccionVO transaccionVO, List<TransaccionArticuloVO> transaccionArticulosVO, String username, int campo) throws SIAException {
         try {
             UtilLog4j.log.info(this, "TransaccionImpl.create()");

@@ -14,7 +14,7 @@ import javax.faces.application.FacesMessage;
 import javax.inject.Named;
 import javax.faces.view.ViewScoped;
 import javax.faces.context.FacesContext;
-import javax.faces.event.ActionEvent;
+
 import javax.inject.Inject;
 import org.primefaces.PrimeFaces;
 import sia.constantes.Constantes;
@@ -67,14 +67,14 @@ public class EntregaMaterialBean implements Serializable {
         PrimeFaces.current().executeScript( ";mostrarDialogo(crearDialogoFinalizaSolicitud);");
     }
 
-    public void completarFinalizaSolicitud(ActionEvent event) {
+    public void completarFinalizaSolicitud() {
         estadoAprobacionSolicitudImpl.finalizarSolicitudMaterial(solicitudeVo, sesion.getUser(), motivo);
         llenar();
         //    
         PrimeFaces.current().executeScript( ";cerrarDialogo(crearDialogoFinalizaSolicitud);");
     }
 
-    public void cerrarFinalizaSolicitud(ActionEvent event) {
+    public void cerrarFinalizaSolicitud() {
         solicitudeVo = new SolicitudMaterialAlmacenVo();
         //    
         PrimeFaces.current().executeScript( ";cerrarDialogo(crearDialogoFinalizaSolicitud);");
@@ -86,7 +86,7 @@ public class EntregaMaterialBean implements Serializable {
         PrimeFaces.current().executeScript( ";mostrarDialogo(crearDialogoEntregaMaterial);");
     }
 
-    public void guardarEntrega(ActionEvent event) {
+    public void guardarEntrega() {
         boolean continuar = true;
 
         if (!solicitudeVo.getUsuarioRecibeMaterial().isEmpty() && solicitudeVo.getUsuarioRecibeMaterial().contains(" ")) {
@@ -120,17 +120,17 @@ public class EntregaMaterialBean implements Serializable {
         PrimeFaces.current().executeScript( ";cerrarDialogo(crearDialogoEntregaMaterial);");
     }
 
-    public void cerrarEntrega(ActionEvent event) {
+    public void cerrarEntrega() {
         PrimeFaces.current().executeScript( ";cerrarDialogo(crearDialogoEntregaMaterial);");
     }
 
-    public void confirmarEntrega(ActionEvent event) {
+    public void confirmarEntrega() {
         PrimeFaces.current().executeScript( ";cerrarDialogo(confirmarEntrega);");
         entregarMaterial();
 
     }
 
-    public void cerrarConfirmacionEntrega(ActionEvent event) {
+    public void cerrarConfirmacionEntrega() {
         PrimeFaces.current().executeScript( ";cerrarDialogo(confirmarEntrega);");
     }
 

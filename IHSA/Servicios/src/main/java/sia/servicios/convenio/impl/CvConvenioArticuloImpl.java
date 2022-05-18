@@ -20,6 +20,7 @@ import javax.persistence.Query;
 import sia.constantes.Constantes;
 import sia.excepciones.SIAException;
 import sia.inventarios.service.ArticuloImpl;
+import sia.inventarios.service.ArticuloRemote;
 import sia.inventarios.service.InvArticuloCampoImpl;
 import sia.modelo.Convenio;
 import sia.modelo.CvConvenioArticulo;
@@ -51,7 +52,7 @@ public class CvConvenioArticuloImpl extends AbstractFacade<CvConvenioArticulo> {
         super(CvConvenioArticulo.class);
     }
     @Inject
-    ArticuloImpl articuloRemote;
+    ArticuloRemote articuloRemote;
     @Inject
     InvArticuloCampoImpl invArticuloCampoRemote;
 

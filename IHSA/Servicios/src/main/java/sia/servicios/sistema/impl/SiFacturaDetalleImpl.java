@@ -15,6 +15,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import sia.constantes.Constantes;
 import sia.inventarios.service.ArticuloImpl;
+import sia.inventarios.service.ArticuloRemote;
 import sia.modelo.InvArticulo;
 import sia.modelo.OrdenDetalle;
 import sia.modelo.SiFactura;
@@ -48,7 +49,7 @@ public class SiFacturaDetalleImpl extends AbstractFacade<SiFacturaDetalle>{
     @Inject
     SiFacturaImpl siFacturaRemote;
     @Inject
-    ArticuloImpl articuloRemote;
+    ArticuloRemote articuloRemote;
     @Inject
     OrdenDetalleImpl ordenDetalleRemote;
 
@@ -73,7 +74,7 @@ public class SiFacturaDetalleImpl extends AbstractFacade<SiFacturaDetalle>{
             siFacturaDetalle.setCantidad(partida.getCantidadPorFacturar());
             siFacturaDetalle.setDescripcion(partida.getArtNombre());
             siFacturaDetalle.setPrecioUnitario(partida.getPrecioUnitario());
-            siFacturaDetalle.setImporte(new BigDecimal(partida.getImporte()));
+            siFacturaDetalle.setImporte(BigDecimal.valueOf(partida.getImporte()));
             siFacturaDetalle.setGenero(new Usuario(sesion));
             siFacturaDetalle.setFechaGenero(new Date());
             siFacturaDetalle.setHoraGenero(new Date());

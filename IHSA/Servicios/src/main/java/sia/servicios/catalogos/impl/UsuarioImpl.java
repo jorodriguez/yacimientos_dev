@@ -440,7 +440,7 @@ public class UsuarioImpl extends AbstractFacade<Usuario> {
             edit(usuario);
             v = true;
         } catch (Exception e) {
-            LOGGER.fatal(this, "Modificando usuario {0}", new Object[]{usuarioVO.getId()}, e);
+            log.warn("Modificando usuario {}", usuarioVO.getId(), e);
         }
 
         return v;

@@ -5,22 +5,19 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.List;
 import javax.annotation.PostConstruct;
-import javax.el.ELContext;
-import javax.el.ExpressionFactory;
-import javax.el.MethodExpression;
+import javax.enterprise.context.SessionScoped;
 import javax.inject.Named;
-import javax.faces.bean.SessionScoped;
+
 import javax.faces.context.FacesContext;
-import javax.faces.event.ActionEvent;
+
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
+import lombok.Getter;
+import lombok.Setter;
 import org.primefaces.model.menu.DefaultMenuItem;
 import org.primefaces.model.menu.DefaultMenuModel;
 import org.primefaces.model.menu.DefaultSubMenu;
-import org.primefaces.model.menu.MenuItem;
 import org.primefaces.model.menu.MenuModel;
-import org.primefaces.model.menu.Submenu;
-import org.w3c.dom.views.DocumentView;
 import sia.constantes.Constantes;
 import sia.servicios.sistema.impl.SiOpcionImpl;
 import sia.servicios.sistema.vo.SiOpcionVo;
@@ -35,6 +32,8 @@ public class MenuBean implements Serializable {
     private SiOpcionImpl siOpcionImpl;
     @Inject
     SessionBean sessionBean;
+    @Getter
+    @Setter
     private MenuModel modelo;
 
     //private SessionBean session;
@@ -43,7 +42,7 @@ public class MenuBean implements Serializable {
         construirMenu();
     }
 
-    public void siaGo(ActionEvent actionEvent) {
+    public void siaGo() {
         redireccionar(Constantes.URL_REL_SIA_PRINCIPAL);
     }
 

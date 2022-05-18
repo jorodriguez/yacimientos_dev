@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Date;
 import java.util.List;
-import javax.ejb.EJB;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.ws.rs.FormParam;
@@ -42,6 +41,7 @@ import sia.inventarios.service.InvOrdenFormatoImpl;
 import sia.inventarios.service.InvSolicitudMaterialImpl;
 import sia.inventarios.service.InventarioImpl;
 import sia.inventarios.service.TransaccionImpl;
+import sia.inventarios.service.TransaccionRemote;
 import sia.inventarios.service.Utilitarios;
 import sia.modelo.SiAdjunto;
 import sia.modelo.sgl.vo.OrdenDetalleVO;
@@ -69,9 +69,9 @@ import sia.util.UtilLog4j;
 public class InventarioApi extends MovilApiBase {
 
     @Inject
-    private TransaccionImpl transaccionService;
+    private TransaccionRemote transaccionService;
     @Inject
-    protected ApiAuthService authService;
+    protected ApiAuthService apiAuthService;
     @Inject
     private InventarioImpl inventarioImpl;
     @Inject
@@ -639,7 +639,8 @@ public class InventarioApi extends MovilApiBase {
         }
     }
 
+    @Override
     protected UsuarioVO getUsuario(String key) throws Exception {
-        return authService.obtenerUsuario(key);
+        return apiAuthService.obtenerUsuario(key);
     }
 }

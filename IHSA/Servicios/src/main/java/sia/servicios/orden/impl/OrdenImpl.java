@@ -300,6 +300,7 @@ public class OrdenImpl extends AbstractFacade<Orden> {
                 .getResultList();
     }
 
+    @Override
     public Orden find(Object id) {
         return em.find(Orden.class, id);
     }

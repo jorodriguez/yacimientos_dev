@@ -4,10 +4,10 @@ import com.ihsa.sia.inventario.beans.LocalAbstractBean;
 import java.io.Serializable;
 import javax.inject.Named;
 import javax.faces.view.ViewScoped;
-import javax.faces.event.ActionEvent;
+
 import javax.inject.Inject;
 import sia.modelo.vo.inventarios.UnidadVO;
-import sia.inventarios.service.UnidadImpl;
+import sia.inventarios.service.UnidadRemote;
 
 /**
  *
@@ -19,14 +19,14 @@ public class UnidadBean extends LocalAbstractBean<UnidadVO, Integer> implements 
 
     //Inyeccion de servicio
     @Inject
-    private UnidadImpl servicio;
+    private UnidadRemote servicio;
     private boolean embeddedUnidad;
 
     public UnidadBean() {
         super(UnidadVO.class);
     }
 
-    protected UnidadImpl getServicio() {
+    protected UnidadRemote getServicio() {
         return servicio;
     }
 
@@ -45,7 +45,7 @@ public class UnidadBean extends LocalAbstractBean<UnidadVO, Integer> implements 
         return "sia.inventarios.catalogo.unidades.eliminarMensaje";
     }
 
-    public void cancelar(ActionEvent e) {
+    public void cancelar() {
         setEmbedded(false);
     }
 

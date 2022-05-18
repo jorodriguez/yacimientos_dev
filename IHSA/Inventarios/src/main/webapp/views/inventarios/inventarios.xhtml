@@ -15,12 +15,15 @@
         <a href="#{request.contextPath}/resources/videos/ayuda/inventarios.mp4" class="link-ayuda" target="_blank">Ayuda</a>
     </ui:define>
 
+    <!-- onevent="mostrarDialogoAjax" -->
     <ui:define name="botones">
-        <h:commandLink id="cmdNuevo" value="#{msg['sia.inventarios.inventarios.crearAlmacen']}" actionListener="#{inventario.agregarNuevo}"
+        <p:commandLink id="cmdNuevo" value="#{msg['sia.inventarios.inventarios.crearAlmacen']}" action="#{inventario.agregarNuevo}"
                        immediate="true" styleClass="hbutton-cr"
-                       rendered="#{not roles.esEmpleadoDeAlmacen()}">
-            <f:ajax  render="hdTituloDialogo panelInformacion almacenComponente articuloComponente" onevent="mostrarDialogoAjax"/>
-        </h:commandLink>
+                       rendered="#{not roles.esEmpleadoDeAlmacen()}"
+                       process="@this" update="hdTituloDialogo panelInformacion almacenComponente articuloComponente" 
+
+                       >
+        </p:commandLink>
         <h:outputText id="hdTituloDialogo" value="#{inventario.articuloBean.embedded ? articulo.unidadBean.embedded ? unidad.esNuevoElemento ? msg['sia.inventarios.catalogo.unidades.crearTitulo'] : msg['sia.inventarios.catalogo.unidades.editarTitulo'] : articulo.esNuevoElemento ? msg['sia.inventarios.articulos.crearTitulo'] : msg['sia.inventarios.articulos.editarTitulo'] : inventario.almacenBean.embedded ? almacen.esNuevoElemento ? msg['sia.inventarios.almacenes.crearTitulo'] : msg['sia.inventarios.almacenes.editarTitulo'] : inventario.esNuevoElemento ? msg['sia.inventarios.inventarios.crearTitulo'] : msg['sia.inventarios.inventarios.editarTitulo']}" styleClass="hidden"/>
         <button type="button" id="btnBuscar" data-icon="ui-icon-search">#{msg['sia.inventarios.comun.buscar']}</button>
     </ui:define>
@@ -44,24 +47,26 @@
             <h:inputText id="txtFiltroMinimoUnidades" value="#{inventario.inventarioVO.minimoUnidades}" label="#{msg['sia.inventarios.inventarios.minimoUnidades']}" styleClass="ui-inputfield ui-textentry ui-widget ui-state-optional ui-corner-all"/>
             <h:outputText value="#{msg['sia.inventarios.inventarios.fechaUltimaRevision']}:"/>
             <p:datePicker id="dtFiltroFechaUltimaRevision"
-                               value="#{inventario.inventarioVO.fechaUltimaRevision}"
-                               pattern="dd/MM/yyyy"
-                               />
+                          value="#{inventario.inventarioVO.fechaUltimaRevision}"
+                          pattern="dd/MM/yyyy"
+                          />
         </h:panelGrid>
         <div class="filtro-butones">
-            <h:commandLink  value="#{msg['sia.inventarios.inventarios.buscar']}" actionListener="#{inventario.buscarInventario(event)}" styleClass="hbutton-bu">
-                <f:ajax execute="panelFiltro" render="@all"/>
-            </h:commandLink>
-            <h:commandLink value="#{msg['sia.inventarios.comun.reestablecer']}" actionListener="#{inventario.reestablecerTabla(e)}" styleClass="hbutton-re">
-                <f:ajax execute="panelFiltro" render="@all"/>
-            </h:commandLink>
+            <p:commandLink  value="#{msg['sia.inventarios.inventarios.buscar']}" action="#{inventario.buscarInventario}" 
+                            styleClass="hbutton-bu" process="@this panelFiltro" update="@form">
+            </p:commandLink>
+            <p:commandLink value="#{msg['sia.inventarios.comun.reestablecer']}" action="#{inventario.reestablecerTabla}" 
+                           styleClass="hbutton-re" process="@this panelFiltro" update="@form">
+            </p:commandLink>
         </div>
     </ui:define>
     <ui:define name="tabla">
         <p:dataTable id="tablaDatos"  value="#{inventario.inventarios}" var="i"
-                       paginator="true" paginatorAlwaysVisible="true"
-                       paginatorPosition="bottom" rows="15"                       >
-            <p:column id="id" headerText="#" sortBy="#{i.id}" style="width: 5px">
+                     paginator="true" paginatorAlwaysVisible="true"
+                     paginatorPosition="bottom" rows="15" showGridlines="true" size="small" 
+                     >
+            <p:column id="id" headerText="#" sortBy="#{i.id}" style="width: 5px"
+                      >
                 <h:outputText value="#{i.id}"/>
             </p:column>
             <p:column id="almacen" headerText="#{msg['sia.inventarios.inventarios.almacen']}" sortBy="#{i.almacenNombre}" style="width: 200px">
@@ -82,7 +87,7 @@
             <p:column id="maximoDeInventario" headerText="Máximo" sortBy="#{i.maximoDeInventario}" style="width: 50px">
                 <h:outputText value="#{i.maximoDeInventario}"/>
             </p:column>
-            <p:column id="puntoDeReorden" headerText="#{msg['sia.inventarios.inventarios.puntoDeReorden']}" sortBy="#{i.minimoUnidades}" style="width: 250px">
+            <p:column id="puntoDeReorden" headerText="#{msg['sia.inventarios.inventarios.puntoDeReorden']}" sortBy="#{i.minimoUnidades}" style="width: 50px">
                 <h:outputText value="#{i.puntoDeReorden}"/>
             </p:column>
             <p:column id="fechaUltimaRevision" headerText="#{msg['sia.inventarios.inventarios.fechaUltimaRevision']}" sortBy="#{i.fechaUltimaRevision}" style="width: 300px">
@@ -90,19 +95,17 @@
             </p:column>
             <!--rendered="#{not roles.esEmpleadoDeAlmacen()}"-->
             <p:column style="width: 105px" styleClass="icon-column" >
-                <h:commandLink title="#{msg['sia.inventarios.comun.editar']}" action="#{inventario.cargarElementParaEditar(i.id)}"
-                               rendered="#{not roles.esEmpleadoDeAlmacen()}">
+                <p:commandLink title="#{msg['sia.inventarios.comun.editar']}" action="#{inventario.cargarElementParaEditar(i.id)}"
+                               rendered="#{not roles.esEmpleadoDeAlmacen()}"
+                               process="@this" oncomplete="$(mostrarDialogoAjax).modal('show')"
+                               update="frmContenido:panelInformacion">
                     Editar
-                    <f:ajax render="@all" onevent="mostrarDialogoAjax"/>
-                </h:commandLink>
-                <h:commandLink title="#{msg['sia.inventarios.comun.eliminar']}" onclick="mostrarConfirmar(this);
-                        return false;"  style="color: red;">
-                    Eliminar
-                </h:commandLink>
-                <h:commandButton action="#{inventario.eliminar(i.id)}" style="display: none"
-                                 rendered="#{roles.esAdministradorDeInventarios()}">
-                    <f:ajax render="@all"/>
-                </h:commandButton>
+                </p:commandLink>
+                <p:commandLink title="#{msg['sia.inventarios.comun.eliminar']}" 
+                               action="#{inventario.eliminar(i.id)}" value="Eliminar"
+                               rendered="#{roles.esAdministradorDeInventarios()}"
+                               process="@this" update="@form">
+                </p:commandLink>
             </p:column>
             <p:ajax event="page"/>
         </p:dataTable>
@@ -120,10 +123,11 @@
                                 <f:selectItems value="#{inventario.almacenes}" var="a" itemLabel="#{a.nombre}" itemValue="#{a.id}"/>
                                 <f:ajax event="change" render="msjAlmacen cmbRack" listener="#{inventario.seleccionarAlmacen}"/>
                             </h:selectOneMenu>
-                            <h:commandLink styleClass="crear-foraneo" actionListener="#{inventario.nuevoAlamacen}" immediate="true">
+                            <p:commandLink styleClass="crear-foraneo" action="#{inventario.nuevoAlamacen}" immediate="true"
+                                           >
                                 <h:graphicImage library="images" name="icon-catalog-link.png"/>
                                 <f:ajax onevent="fijarTituloDialogo" render="@all" />
-                            </h:commandLink>
+                            </p:commandLink>
                         </div>
                         <h:message for="smAlmacen" id="msjAlmacen" styleClass="ui-widget ui-corner-all ui-state-error input-msg"/>
                     </td>
@@ -138,10 +142,10 @@
                             </h:inputText>
                             <h:inputHidden value="#{inventario.inventarioVO.articuloId}" id="hdArticuloId" required="true" 
                                            requiredMessage="#{msg['sia.validaciones.required']}"/>
-                            <!--h:commandLink styleClass="crear-foraneo" actionListener="#{inventario.nuevoArticulo}" immediate="true">
+                            <!--p:commandLink styleClass="crear-foraneo" action="#{inventario.nuevoArticulo}" immediate="true">
                                 <h:graphicImage library="images" name="icon-catalog-link.png"/>
                                 <f:ajax onevent="fijarTituloDialogo" render="@all" />
-                            </h:commandLink-->
+                            </p:commandLink-->
                         </div>
                         <h:message for="hdArticuloId" id="msjArticulo" styleClass="ui-widget ui-corner-all ui-state-error input-msg"/>
                     </td>
@@ -198,9 +202,9 @@
                     <td>#{msg['sia.inventarios.inventarios.fechaUltimaRevision']}:</td>
                     <td>
                         <p:datePicker id="dtFechaUltimaRevision"
-                                           value="#{inventario.inventarioVO.fechaUltimaRevision}"
-                                           pattern="dd/MM/yyyy"
-                                           maxdate="#{inventario.currentDate}"/>
+                                      value="#{inventario.inventarioVO.fechaUltimaRevision}"
+                                      pattern="dd/MM/yyyy"
+                                      maxdate="#{inventario.currentDate}"/>
                     </td>
                 </tr>
             </table>
@@ -235,31 +239,29 @@
                     </h:dataTable>
                 </h:panelGrid>
                 <h:commandButton styleClass="hbutton" value="Agregar" 
-                                 actionListener="#{inventario.agregarUbicacion(event)}" 
+                                 action="#{inventario.agregarUbicacion}" 
                                  onclick="return verificaSeleccion('seleccion');">
                     <f:ajax execute="panelInformacion" render="tblUbicacion" />
                 </h:commandButton>                
             </h:panelGrid>
             <h:panelGroup id="panelUbicacion">
                 <p:dataTable id="tblUbicacion" value="#{inventario.celdas}" var="dataCel" 
-                               rowIndexVar="indice">
+                             rowIndexVar="indice">
                     <p:column headerText="Ubicación">
                         <h:outputText value="#{dataCel.celda}"/>
                     </p:column>
                     <p:column>
-                        <h:commandLink value="Quitar" actionListener="#{inventario.eliminarCeldaTemporal(e)}"
-                                       style="color: red;" immediate="true">
-                            <f:param name="idCelda" value="#{indice}"/>
+                        <p:commandLink value="Quitar" action="#{inventario.eliminarCeldaTemporal(indice)}"
+                                       style="color: red;" process="@this" update="frmContenido:tblUbicacion">
                             <!--f:ajax execute="@this" render="@this"/-->
-                        </h:commandLink>
+                        </p:commandLink>
                     </p:column>
                 </p:dataTable>
             </h:panelGroup>
             <!--  -->
-            <h:commandButton styleClass="hbutton" value="#{msg['sia.inventarios.comun.guardar']}" 
-                             actionListener="#{inventario.guardarInventario(event)}">
-                <f:ajax execute="panelInformacion panelFiltro" render="@all" onevent="ajaxGuardar"/>
-            </h:commandButton>
+            <p:commandButton styleClass="hbutton" value="#{msg['sia.inventarios.comun.guardar']}" 
+                             action="#{inventario.guardarInventario}" process="@this panelInformacion panelFiltro" 
+                             update="frmContenido"/>
         </h:panelGroup>
         <h:panelGroup id="almacenComponente" style="display: #{inventario.almacenBean.embedded ? 'block' : 'none'}">
             <ihsa:almacen embedded="true"></ihsa:almacen>
@@ -271,7 +273,7 @@
     </ui:define>
 
     <ui:param name="confirmarEliminar" value="#{msg['sia.inventarios.inventarios.confirmarEliminar']}"/>
-    <!--ui:param name="mensajePaginacion" value="#{inventario.mensajePaginacion}" /-->
+    <!--ui:param name="mensajePaginacion" value="{inventario.mensajePaginacion}" /-->
     <ui:param name="dialogoAncho" value="600"/>
 
 

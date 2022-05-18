@@ -13,8 +13,9 @@ import sia.constantes.Constantes;
 import static sia.constantes.Constantes.INV_TRANSACCION_STATUS_PREPARACION;
 import static sia.constantes.Constantes.INV_TRANSACCION_STATUS_TRASPASO_PENDIENTE_REVISION;
 import sia.excepciones.SIAException;
-import sia.inventarios.service.AlmacenImpl;
+import sia.inventarios.service.AlmacenRemote;
 import sia.inventarios.service.TransaccionImpl;
+import sia.inventarios.service.TransaccionRemote;
 import sia.modelo.usuario.vo.UsuarioVO;
 import sia.modelo.vo.inventarios.AlmacenVO;
 import sia.modelo.vo.inventarios.TransaccionVO;
@@ -28,9 +29,9 @@ public class MovimientosBean extends LocalAbstractBean<TransaccionVO, Integer>
 	implements Serializable {
 
     @Inject
-    private TransaccionImpl servicio;
+    private TransaccionRemote servicio;
     @Inject
-    private AlmacenImpl almacenServicio;
+    private AlmacenRemote almacenServicio;
 
     private String motivoRechazo;
 
@@ -52,7 +53,7 @@ public class MovimientosBean extends LocalAbstractBean<TransaccionVO, Integer>
     }
 
     @Override
-    public TransaccionImpl getServicio() {
+    public TransaccionRemote getServicio() {
 	return servicio;
     }
 
