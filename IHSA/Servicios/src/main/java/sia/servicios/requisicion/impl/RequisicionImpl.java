@@ -25,6 +25,7 @@ import javax.persistence.Query;
 import javax.persistence.TransactionRequiredException;
 
 import org.jooq.DSLContext;
+import org.jooq.Record;
 import org.jooq.exception.DataAccessException;
 
 import sia.constantes.Constantes;
@@ -1829,10 +1830,14 @@ public class RequisicionImpl extends AbstractFacade<Requisicion> {
         
         try {
         	
-        	opcionVo = dbCtx.fetchOne(s).into(SiOpcionVo.class);
+        	Record result = dbCtx.fetchOne(s);
+        	
+        	if(result != null) {
+        		opcionVo = result.into(SiOpcionVo.class);
+        	}
         	
         } catch (Exception e) {
-        	UtilLog4j.log.warn("", e);
+        	UtilLog4j.log.warn(e);
         	
         	opcionVo = null;
         }
