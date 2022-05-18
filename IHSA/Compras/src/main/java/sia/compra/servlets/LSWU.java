@@ -5,6 +5,7 @@
 package sia.compra.servlets;
 
 import java.io.IOException;
+
 import javax.el.ELContext;
 import javax.faces.FacesException;
 import javax.faces.FactoryFinder;
@@ -21,7 +22,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import sia.compra.requisicion.bean.backing.UsuarioBean;
 import sia.constantes.Constantes;
 import sia.modelo.Usuario;
@@ -32,7 +35,6 @@ import sia.servicios.catalogos.impl.CompaniaImpl;
 import sia.servicios.catalogos.impl.UsuarioImpl;
 import sia.servicios.orden.impl.OcUsuarioOpcionImpl;
 import sia.servicios.sistema.vo.SiOpcionVo;
-import sia.sistema.servlet.support.SessionUtils;
 import sia.util.GenNrStats;
 import sia.util.UtilLog4j;
 
@@ -41,21 +43,30 @@ import sia.util.UtilLog4j;
  * @author hacosta
  */
 @WebServlet(name = "LSWU", urlPatterns = {"/LSWU"})
+@Slf4j
 public class LSWU extends HttpServlet {
 
+    private static final long serialVersionUID = 1L;
+    
     @Inject
     private UsuarioImpl usuarioServicioImpl;
+    
     @Inject
     private OcUsuarioOpcionImpl ocUsuarioOpcionImpl;
+    
     @Inject
     private ApCampoUsuarioRhPuestoImpl apCampoUsuarioRhPuestoImpl;
+    
     @Inject
     private CompaniaImpl companiaImpl;
+    
     @Inject
     private ApCampoImpl apCampoImpl;
+    
     //
     @Inject
     UsuarioBean usuarioBean;
+    
     @Setter
     private Usuario usuario;
 
@@ -72,13 +83,17 @@ public class LSWU extends HttpServlet {
             throws ServletException, IOException {
         try {
             // ---
-            UtilLog4j.log.info(this, "Z4BX2 " + request.getParameter("Z4BX2"));
+            log.info("Z4BX2 {}", request.getParameter("Z4BX2"));
             usuario = usuarioServicioImpl.find(request.getParameter("Z4BX2"));
+            
             if (usuario != null) {
                 if (usuario.getClave().equals(request.getParameter("ZWZ4W"))) {
                     int t = Integer.parseInt(request.getParameter("ZWZCA"));
+                    
                     String rutaPag = request.getParameter("ZWZPA");
+                    
                     CampoUsuarioPuestoVo campoUsuarioPuestoVo = apCampoUsuarioRhPuestoImpl.findByUsuarioCampo(t > 0 ? t : usuario.getApCampo().getId(), usuario.getId());
+                    
                     if (campoUsuarioPuestoVo != null) {
                         usuarioBean.setPuesto(campoUsuarioPuestoVo.getPuesto());
                         usuarioBean.setCompania(companiaImpl.buscarPorRFC(campoUsuarioPuestoVo.getRfcCompania()));
@@ -92,20 +107,20 @@ public class LSWU extends HttpServlet {
                     //Verifica rol
                     SiOpcionVo siOpcionVo = ocUsuarioOpcionImpl.opcionPrincipal(usuario.getId());
                     if (siOpcionVo == null) {
-                        usuarioBean.setPaginaInicial("/Principal.xhtml");
+                        usuarioBean.setPaginaInicial("/principal.xhtml");
                     } else {
-                        UtilLog4j.log.info("Ruta inicial :  : : " + siOpcionVo.getPagina());
+                        log.info("Ruta inicial {} ", siOpcionVo.getPagina());
                         usuarioBean.setPaginaInicial(siOpcionVo.getPagina());
                     }
+                    
                     if (!rutaPag.isEmpty()) {
                         usuarioBean.setPaginaInicial(rutaPag);
                     }
 
                     usuarioBean.setListaCampo(apCampoUsuarioRhPuestoImpl.getAllPorUsurio(usuario.getId()));
-                    //
+                    
                     usuarioBean.llenarRoles();
-                    //
-                    //FacesContext context =  FacesContext.getCurrentInstance();
+                    
                     HttpSession session = request.getSession();
                     usuarioBean.subirValoresContexto(session);
                     response.sendRedirect(Constantes.URL_REL_SIA_WEB + usuarioBean.getPaginaInicial());
@@ -116,7 +131,7 @@ public class LSWU extends HttpServlet {
                 response.sendRedirect(Constantes.URL_REL_SIA_PRINCIPAL);
             }
         } catch (IOException e) {
-            UtilLog4j.log.fatal(this, e);
+            log.error("", e);
             GenNrStats.saveNrData("COMPRAS-LSWU-Exception");
         }
     }

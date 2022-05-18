@@ -16,14 +16,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.persistence.TransactionRequiredException;
+
 import org.jooq.DSLContext;
+import org.jooq.Record;
 import org.jooq.exception.DataAccessException;
+
 import sia.constantes.Constantes;
 import sia.constantes.TipoRequisicion;
 import sia.modelo.Prioridad;
@@ -1812,26 +1816,33 @@ public class RequisicionImpl extends AbstractFacade<Requisicion> {
     
     
     public SiOpcionVo totalRevPagina(String usuario, int campo, int status) {
-        String s = " SELECT o.NOMBRE, o.PAGINA, count(r.id) from SI_OPCION o \n"
-                + "	inner join REQUISICION r on r.ESTATUS = o.ESTATUS_CONTAR \n"
+        String s = " SELECT o.nombre, o.pagina, count(r.id) AS total " 
+        		+ "FROM si_opcion o \n"
+                + "\tinner join REQUISICION r on r.ESTATUS = o.ESTATUS_CONTAR \n"
                 + " where     o.ELIMINADO =false \n"
-                + " and o.SI_MODULO =  " + Constantes.MODULO_REQUISICION
+                + "\tand o.SI_MODULO =  " + Constantes.MODULO_REQUISICION + " \n"
                 + condicionStatus(status, usuario, campo)
-                + " and r.AP_CAMPO =  " + campo
-                + " GROUP by o.NOMBRE, o.PAGINA "
-                + " having count(r.id) > 0";
+                + "\tand r.ap_campo =  " + campo + " \n"
+                + "GROUP by o.nombre, o.pagina "
+                + "HAVING count(r.id) > 0";
+        
+        SiOpcionVo opcionVo = new SiOpcionVo();
+        
         try {
-            Query q = em.createNativeQuery(s);
-            Object[] obj = (Object[]) q.getSingleResult();
-            SiOpcionVo opcionVo = new SiOpcionVo();
-            opcionVo.setNombre((String) obj[0]);
-            opcionVo.setPagina((String) obj[1]);
-            opcionVo.setTotal((Long) obj[2]);
-            //
-            return opcionVo;
+        	
+        	Record result = dbCtx.fetchOne(s);
+        	
+        	if(result != null) {
+        		opcionVo = result.into(SiOpcionVo.class);
+        	}
+        	
         } catch (Exception e) {
-            return null;
+        	UtilLog4j.log.warn(e);
+        	
+        	opcionVo = null;
         }
+        
+        return opcionVo;
     }
     
     private String condicionStatus(int status, String sesion, int campo) {
