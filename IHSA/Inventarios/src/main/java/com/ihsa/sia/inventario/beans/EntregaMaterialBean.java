@@ -8,7 +8,9 @@ package com.ihsa.sia.inventario.beans;
 import com.ihsa.sia.commons.SessionBean;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
 import javax.inject.Named;
@@ -52,7 +54,7 @@ public class EntregaMaterialBean implements Serializable {
 
     @PostConstruct
     public void inciar() {
-        setSolicitudes(new ArrayList<SolicitudMaterialAlmacenVo>());
+        setSolicitudes(new ArrayList<>());
         llenar();
         setSolicitudeVo(new SolicitudMaterialAlmacenVo());
     }
@@ -64,26 +66,25 @@ public class EntregaMaterialBean implements Serializable {
     public void finalizarSolicitud(int idSolicitud) {
         solicitudeVo = solicitudMaterialImpl.solicitudesPorId(idSolicitud);
         //    
-        PrimeFaces.current().executeScript( ";mostrarDialogo(crearDialogoFinalizaSolicitud);");
     }
 
     public void completarFinalizaSolicitud() {
         estadoAprobacionSolicitudImpl.finalizarSolicitudMaterial(solicitudeVo, sesion.getUser(), motivo);
         llenar();
         //    
-        PrimeFaces.current().executeScript( ";cerrarDialogo(crearDialogoFinalizaSolicitud);");
+        PrimeFaces.current().executeScript("PF('crearDialogoFinalizaSolicitud').hide();");
     }
 
     public void cerrarFinalizaSolicitud() {
         solicitudeVo = new SolicitudMaterialAlmacenVo();
         //    
-        PrimeFaces.current().executeScript( ";cerrarDialogo(crearDialogoFinalizaSolicitud);");
+        PrimeFaces.current().executeScript("PF('crearDialogoFinalizaSolicitud').hide();");
     }
 
     public void verSolicitud(int idSolicitud) {
         solicitudeVo = solicitudMaterialImpl.solicitudesPorId(idSolicitud);
         //    
-        PrimeFaces.current().executeScript( ";mostrarDialogo(crearDialogoEntregaMaterial);");
+        PrimeFaces.current().executeScript(";mostrarDialogo(crearDialogoEntregaMaterial);");
     }
 
     public void guardarEntrega() {
@@ -99,7 +100,9 @@ public class EntregaMaterialBean implements Serializable {
             if (continuar) {
                 entregarMaterial();
             } else {
-                PrimeFaces.current().executeScript( ";mostrarDialogo(confirmarEntrega);");
+                PrimeFaces current = PrimeFaces.current();
+                current.executeScript("PF('confirmarEntrega').show();");
+                current.ajax().update("frmConfEntrega");
             }
         } else {
             FacesMessage facesMessage = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Es necesario agregar el nombre del usuario.", null);
@@ -117,21 +120,21 @@ public class EntregaMaterialBean implements Serializable {
         //
         llenar();
         //
-        PrimeFaces.current().executeScript( ";cerrarDialogo(crearDialogoEntregaMaterial);");
+        PrimeFaces.current().executeScript("PF('crearDialogoEntregaMaterial').hide();");
     }
 
     public void cerrarEntrega() {
-        PrimeFaces.current().executeScript( ";cerrarDialogo(crearDialogoEntregaMaterial);");
+        PrimeFaces.current().executeScript("PF('crearDialogoEntregaMaterial').hide();");
     }
 
     public void confirmarEntrega() {
-        PrimeFaces.current().executeScript( ";cerrarDialogo(confirmarEntrega);");
+        PrimeFaces.current().executeScript("PF('confirmarEntrega').hide();");
         entregarMaterial();
 
     }
 
     public void cerrarConfirmacionEntrega() {
-        PrimeFaces.current().executeScript( ";cerrarDialogo(confirmarEntrega);");
+        PrimeFaces.current().executeScript("PF('confirmarEntrega').hide();");
     }
 
     /**

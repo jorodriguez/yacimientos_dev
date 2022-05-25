@@ -650,7 +650,7 @@ public class InventarioImpl extends AbstractFacade<InvInventario> {
     }
 
     public List<InventarioVO> inventarioPorCampoYAlmacen(int campo, int almacen) {
-        String c = "select al.nombre, a.nombre, a.codigo , a.codigo_int, sum(ii.numero_unidades), u.nombre, u.id from inv_inventario ii \n"
+        String c = "select al.nombre, a.nombre, a.codigo , a.codigo_int, sum(ii.numero_unidades), u.nombre, u.id, ii.id from inv_inventario ii \n"
                 + "	inner join inv_articulo  a on ii.articulo = a.id \n"
                 + "	inner join si_unidad u on a.unidad = u.id \n"
                 + "	inner join inv_almacen  al on ii.almacen = al.id \n"
@@ -661,13 +661,13 @@ public class InventarioImpl extends AbstractFacade<InvInventario> {
             c += " and al.id = " + almacen;
         }
 
-        c += " group  by al.nombre, a.nombre, a.codigo , a.codigo_int, u.nombre, u.id"
+        c += " group  by al.nombre, a.nombre, a.codigo , a.codigo_int, u.nombre, u.id, ii.id"
                 + " having  sum(ii.numero_unidades) is not null "
                 + " order by a.nombre";
 
         // out.println("sdadasd: " + c);
         List<Object[]> lobj = em.createNativeQuery(c).getResultList();
-        List<InventarioVO> inventarios = new ArrayList<InventarioVO>();
+        List<InventarioVO> inventarios = new ArrayList<>();
         for (Object[] objects : lobj) {
             InventarioVO invVo = new InventarioVO();
             invVo.setAlmacenNombre((String) objects[0]);
@@ -677,6 +677,7 @@ public class InventarioImpl extends AbstractFacade<InvInventario> {
             invVo.setTotalUnidades((objects[4] == null ? 0.0 : ((BigDecimal) objects[4]).doubleValue()));
             invVo.setArticuloUnidad((String) objects[5]);
             invVo.setUnidadId((Integer) objects[6]);
+            invVo.setId((Integer) objects[7]);
             inventarios.add(invVo);
         }
         return inventarios;

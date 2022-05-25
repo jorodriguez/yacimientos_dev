@@ -1,0 +1,49 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:p="http://primefaces.org/ui">
+    <h:form id="frmRolContrato">
+        <p:commandLink id="btnLimpiar" value="Limpiar" action="#{rolBean.limpiarPestana(event)}"
+                       style="display: none;"/>
+        <div class="row">
+            <div class="col-lg-1">
+                <p:commandLink  styleClass="btn btn-md" 
+                                action="#{rolBean.llenarJson(event)}"
+                                style="color: #ffffff;  border: 2px solid #0895d6;"
+                                title="Agregar permiso">
+                    <i class="fa fa-plus text-primary"/>
+                </p:commandLink>
+            </div>
+            <div class="col-lg-4">
+                <p:selectOneMenu value="#{rolBean.idRol}" 
+                                 styleClass="form-control"
+                                 valueChangeListener="#{rolBean.cambiarRol}"
+                                 >
+                    <f:selectItem itemLabel="Seleccione . . . " itemValue="-1"/>
+                    <f:selectItems value="#{rolBean.listaRol}"/>
+                </p:selectOneMenu>
+            </div> 
+        </div>
+        <div class="table table-responsive">
+            <!-- rowSelectListener="#{rolBean.seleccionarUsuario}" 
+                           selectionMode="single" -->
+            <p:dataTable id="dtRoles" value="#{rolBean.listaUsuarioRol}" var="data"
+                         style="font-size:  1.0em; width: 50%;"
+                         rowStyleClass="table table-striped table-bordered" >
+                <f:facet name="header">Empleados con permiso a contratos</f:facet>
+                <p:column style="text-align: left;">
+                    <h:outputText value="#{data.usuario}"/>
+                </p:column>	
+                <p:column>
+                    <p:commandLink value="Eliminar" action="#{rolBean.eliminarUsuario(event)}"
+                                   style="color: #0895d6;">
+                        <f:param name="idUsuarioRol" value="#{data.idUsuarioRol}"/>
+                    </p:commandLink>
+                </p:column>
+            </p:dataTable>
+        </div>
+    </h:form>
+</ui:composition>

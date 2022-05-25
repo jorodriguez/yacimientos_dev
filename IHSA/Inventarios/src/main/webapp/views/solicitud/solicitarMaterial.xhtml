@@ -9,49 +9,57 @@
     <ui:define name="titulo">
         Solicitar material
     </ui:define>    
-    <ui:define name="tabla"> 
-        <div class="row">
-            <h:commandLink value="Nueva" actionListener="#{solicitarMaterialBean.crearSolicitudMaterial(e)}"
-                           immediate="true">
-            </h:commandLink>
-        </div>
-        <div class="row">
-            <p:dataTable value="#{solicitarMaterialBean.solicitudes}" var="data">
-                <p:column headerText="Almacén">
-                    <h:outputText value="#{data.almacen}" />
-                </p:column>
-                <p:column headerText="Devuelta">
-                    <h:outputText value="#{data.devuelta ? 'Si' : 'No'}" />
-                </p:column>
-                <p:column headerText="Gerencia">
-                    <h:outputText value="#{data.gerencia}" />
-                </p:column>
-                <p:column headerText="Fecha">
-                    <h:outputText value="#{data.fechaRequiere}" >
-                        <f:convertDateTime pattern="dd/MM/yyyyy"/>
-                    </h:outputText>
-                </p:column>
-                <p:column headerText="Total de materiales">
-                    <h:outputText value="#{data.totalDetalle}" />
-                </p:column>
-                <p:column headerText="Cantidad solicitada">
-                    <h:outputText value="#{data.cantidadSolicitada}" />
-                </p:column>
-                <p:column >
-                    <h:commandLink value="Modificar" action="#{solicitarMaterialBean.modificar(data.id)}">
-                        <i class="fa fa-pencil text-primary"/>
-                    </h:commandLink>
-                </p:column>
-                <p:column >
-                    <h:commandLink value="Solicitar" rendered="#{data.materiales.size() gt 0}" action="#{solicitarMaterialBean.solicitarMaterial(data.id)}">
-                    </h:commandLink>
-                </p:column>
-                <p:column >
-                    <h:commandLink value="Eliminar" style="color: red;" action="#{solicitarMaterialBean.eliminiarSolicitarMaterial(data.id)}"/>
-                </p:column>
-            </p:dataTable>
-        </div>
-        <h:form> <!-- Inicia popup  -->
+    <ui:define name="contenido"> 
+        <h:form id="frmSolMat">
+            <div class="row">
+                <p:commandLink value="Nueva" action="#{solicitarMaterialBean.crearSolicitudMaterial}"
+                               process="@this" update="frmSol" oncomplete="PF('crearDialogoMaterial').show()">
+                </p:commandLink>
+            </div>
+            <div class="row">
+                <p:dataTable value="#{solicitarMaterialBean.solicitudes}" var="data"
+                             showGridlines="true" size="small">
+                    <p:column headerText="Almacén">
+                        <h:outputText value="#{data.almacen}" />
+                    </p:column>
+                    <p:column headerText="Devuelta">
+                        <h:outputText value="#{data.devuelta ? 'Si' : 'No'}" />
+                    </p:column>
+                    <p:column headerText="Gerencia">
+                        <h:outputText value="#{data.gerencia}" />
+                    </p:column>
+                    <p:column headerText="Fecha">
+                        <h:outputText value="#{data.fechaRequiere}" >
+                            <f:convertDateTime pattern="dd/MM/yyyyy"/>
+                        </h:outputText>
+                    </p:column>
+                    <p:column headerText="Total de materiales">
+                        <h:outputText value="#{data.totalDetalle}" />
+                    </p:column>
+                    <p:column headerText="Cantidad solicitada">
+                        <h:outputText value="#{data.cantidadSolicitada}" />
+                    </p:column>
+                    <p:column width="40">
+                        <p:commandLink action="#{solicitarMaterialBean.modificar(data.id)}"
+                                       process="@this" update="frmSol" oncomplete="PF('crearDialogoMaterial').show()">
+                            <i class="fa fa-edit text-primary"/>
+                        </p:commandLink>
+                    </p:column>
+                    <p:column width="50">
+                        <p:commandLink value="Solicitar" rendered="#{data.materiales.size() gt 0}" action="#{solicitarMaterialBean.solicitarMaterial(data.id)}"
+                                       process="@this" update="frmSol frmSolMat" >
+                        </p:commandLink>
+                    </p:column>
+                    <p:column width="40">
+                        <p:commandLink style="color: red;" action="#{solicitarMaterialBean.eliminiarSolicitarMaterial(data.id)}"
+                                       process="@this" update="frmSolMat">
+                            <i class="fa fa-trash text-danger"/>
+                        </p:commandLink>
+                    </p:column>
+                </p:dataTable>
+            </div>
+        </h:form>
+        <h:form id="frmSol"> <!-- Inicia popup  -->
             <h:panelGroup id="solicitudComponente" >
                 <ui:include src="../../resources/widgets/solicitud.xhtml"/>
             </h:panelGroup>

@@ -5,22 +5,20 @@
       xmlns:f="http://xmlns.jcp.org/jsf/core"
       xmlns:p="http://primefaces.org/ui"
       xmlns:composite="http://java.sun.com/jsf/composite">
-    <composite:interface>
-        <composite:attribute name="embedded" type="Boolean"/>
-    </composite:interface>
-    <composite:implementation>
-        <h:panelGroup id="panelEntregaSol">
+    <h:panelGroup id="panelEntregaSol">
+        <h:form id="frmDialogEntrega"> <!-- Inicia popup  -->
             <p:dialog id="nuevoDialogoDatosSolicitud"
-                        header="Entrega de material"
-                        closable="true"
-                        modal="true"
-                        resizable="false"
-                        draggable="false"
-                        showEffect="fade"
-                        hideEffect="fade"
-                        width="900"
-                        widgetVar="crearDialogoEntregaMaterial">            
-                <h:panelGroup id="panelInformacion">
+                      width="80%"
+                      header="Entrega de material"
+                      closable="true"
+                      modal="true"
+                      resizable="false"
+                      draggable="false"
+                      showEffect="fade"
+                      hideEffect="fade"
+                      widgetVar="crearDialogoEntregaMaterial"
+                      >            
+                <h:panelGroup id="panelInformacion" style="overflow-y: auto;">
                     <table class="table-form">
                         <tr>
                             <td width="50">
@@ -53,18 +51,18 @@
                         <tr>
                             <td colspan="4">
                                 <p:dataTable id="tblMat" value="#{entregaMaterialBean.solicitudeVo.materiales}" 
-                                               var="dataM" rowIndexVar="index">
+                                             var="dataM" rowIndexVar="index">
                                     <p:column style="text-align: left;" >
                                         <f:facet name="header">Descripción del artículo</f:facet>
                                         <h:outputText value="#{dataM.articulo}" title="#{dataM.codigoArt}"/>
                                     </p:column>
-                                    <p:column headerText="Unidad" style="width: 10%;">
+                                    <p:column headerText="Unidad" style="width: 8%;">
                                         <h:outputText value="#{dataM.unidad}"/>
                                     </p:column>
-                                    <p:column headerText="Ubicación" style="width: 10%;">
+                                    <p:column headerText="Ubicación" style="width: 5%;">
                                         <h:outputText value="#{dataM.ubicacion}"/>
                                     </p:column>
-                                    <p:column headerText="Disp.">
+                                    <p:column headerText="Disp." width="50">
                                         <h:outputText value="#{dataM.disponibles}"/>
                                     </p:column>
                                     <p:column headerText="Cant. Sol." style="width: 8%">
@@ -82,7 +80,7 @@
                             </td>
                             <td >
                                 <h:inputTextarea value="#{entregaMaterialBean.observacion}" 
-                                                 rows="2" styleClass="ui-inputfield ui-textentry ui-widget ui-corner-all"/>
+                                                 rows="2" styleClass="form-control"/>
                             </td>
                             <td >
                                 <h:outputLabel value="Obs. del solicitante: " style="margin-top: 20px;"/>
@@ -112,34 +110,35 @@
                         </tr>
                         <tr>
                             <td> 
-                                <h:commandLink value="Actualizar inventario"  styleClass="hbutton"  
-                                               actionListener="#{entregaMaterialBean.guardarEntrega(e)}">
-                                    <f:ajax execute="panelEntregaSol" render="@all"/>
-                                </h:commandLink>
-
-                                <h:commandLink value="Cerrar"  styleClass="hbutton cancelar" 
-                                               actionListener="#{entregaMaterialBean.cerrarEntrega(e)}"
+                                <p:commandLink value="Actualizar inventario"  styleClass="hbutton"  
+                                               action="#{entregaMaterialBean.guardarEntrega}"                                               
+                                               process="@form" update="frmEntMat">
+                                </p:commandLink>
+                                <p:commandLink value="Cerrar"  styleClass="hbutton cancelar" 
+                                               action="#{entregaMaterialBean.cerrarEntrega}"
                                                immediate="true">
-                                    <f:ajax execute="panelEntregaSol" render="@all"/>
-                                </h:commandLink>
+                                </p:commandLink>
                             </td>
                         </tr>
 
                     </table>
                 </h:panelGroup>
             </p:dialog>
-        </h:panelGroup>
-        <h:panelGroup id="panelConfEntregaSol">
+        </h:form>
+    </h:panelGroup>
+    <h:panelGroup id="panelConfEntregaSol">
+
+        <h:form id="frmConfEntrega"> <!-- Inicia popup  -->
             <p:dialog id="dialogoConfirmarEntrega"
-                        header="Entrega de material"
-                        closable="true"
-                        modal="true"
-                        resizable="false"
-                        draggable="false"
-                        showEffect="fade"
-                        hideEffect="fade"
-                        width="450"
-                        widgetVar="confirmarEntrega">            
+                      header="Entrega de material"
+                      closable="true"
+                      modal="true"
+                      resizable="false"
+                      draggable="false"
+                      showEffect="fade"
+                      hideEffect="fade"
+                      width="450"
+                      widgetVar="confirmarEntrega">            
                 <h:panelGroup id="panelConfirmacion">
                     <table>
                         <tr>
@@ -149,22 +148,21 @@
                         </tr>
                         <tr>
                             <td> 
-                                <h:commandLink value="Confirmar entrega"  styleClass="hbutton"  
-                                               actionListener="#{entregaMaterialBean.confirmarEntrega(e)}">
-                                    <f:ajax execute="panelEntregaSol" render="@all"/>
-                                </h:commandLink>
+                                <p:commandLink value="Confirmar entrega"  styleClass="hbutton"  
+                                               action="#{entregaMaterialBean.confirmarEntrega}"
+                                               process="@form" update="frmEntMat">
+                                </p:commandLink>
 
-                                <h:commandLink value="Cancelar entrega"  styleClass="hbutton cancelar" 
-                                               actionListener="#{entregaMaterialBean.cerrarConfirmacionEntrega(e)}"
+                                <p:commandLink value="Cancelar entrega"  styleClass="hbutton cancelar" 
+                                               action="#{entregaMaterialBean.cerrarConfirmacionEntrega}"
                                                immediate="true">
-                                    <f:ajax execute="panelConfEntregaSol" render="@all"/>
-                                </h:commandLink>
+                                </p:commandLink>
                             </td>
                         </tr>
 
                     </table>
                 </h:panelGroup>
             </p:dialog>
-        </h:panelGroup>
-    </composite:implementation>
+        </h:form>
+    </h:panelGroup>
 </html>

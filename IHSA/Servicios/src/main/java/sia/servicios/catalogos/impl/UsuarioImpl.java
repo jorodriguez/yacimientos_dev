@@ -84,7 +84,7 @@ public class UsuarioImpl extends AbstractFacade<Usuario> {
                 + "  (select c.nombre from ap_campo c where u.ap_campo = c.id), "
                 + "  (select g.nombre from gerencia g where u.gerencia is not null and u.gerencia = g.id),"
                 + "  u.gerencia, u.ap_campo,u.sg_oficina"
-                + "FROM usuario u ";
+                + " FROM usuario u ";
     
     
     @PersistenceContext(unitName = "Sia-ServiciosPU")
