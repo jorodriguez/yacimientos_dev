@@ -1,0 +1,97 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <body>                        
+        <ui:composition template="../../../../WEB-INF/template/template.xhtml">
+            <ui:define name="tituloPagina">
+                <h2 class="page-header"> Validación del documentos   </h2>
+            </ui:define>
+            <ui:define name="content">
+                <h:form>
+                    <p:dataTable id="tblFormasValidar" value="#{validacionDocumetosBean.formas}" var="dataD"
+                                   rowIndexVar="index" style="font-size: 1.1em;">
+                        <p:column headerText="Contrato" style="text-align: left;">
+                            <h:outputText value="#{dataD.codigoConvenio}"/>
+                        </p:column>
+                        <p:column headerText="Contrato" style="text-align: left;">                            
+                            <h:outputText value="#{dataD.convenio}"/>
+                        </p:column>
+                        <p:column headerText="Proveedor" style="text-align: left;">
+                            <h:outputText value="#{dataD.proveedor}"/>
+                        </p:column>
+                        <p:column headerText="Forma" style="text-align: left;">                       
+                            <h:outputLink target="_blank"  
+                                          value="/Sia/AbrirArchivo?ZWZ2W=#{dataD.idAdjunto}&amp;ZWZ3W=#{dataD.uuIdAdjunto}"
+                                          rendered="#{dataD.idAdjunto gt 0}">
+                                <span class="text-info" style="font-weight: bold;"> #{dataD.forma}</span>
+                            </h:outputLink>
+                        </p:column>
+                        <p:column >
+                            <p:commandLink title="Validar documentos" 
+                                           action="#{validacionDocumetosBean.inicioRechazo(e)}">
+                                <i class="fa fa-reply text-danger fa-2x"/>
+                                <f:param name="indice" value="#{index}"/>
+                            </p:commandLink>
+                        </p:column>
+                        <p:column >
+                            <p:commandLink title="Validar documentos" 
+                                           action="#{validacionDocumetosBean.validarDocumento(e)}"
+                                           onclick="return confirmar('¿Está seguro de validar la documentación?');">
+                                <i class="fa fa-check-circle-o text-primary fa-2x"/>
+                                <f:param name="indice" value="#{index}"/>
+                            </p:commandLink>                        
+                        </p:column>   
+                    </p:dataTable>
+                    <p:dataExporter fileName="Convenio_Formas" target="tblFormasValidar" type="xls">
+                        Exportar datos                        
+                    </p:dataExporter>
+                </h:form>
+                <!-- Rechazar forma -->
+                <div class="modal fade" id="dialogoRechazarForma" data-backdrop="static" data-keyboard="false">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h4 class="modal-title">Rechazar forma </h4>
+                            </div>
+                            <h:form id="frmCalConv">
+                                <div class="modal-body">
+                                    <div class="row">
+                                        <div class="col-lg-12">
+                                            <div class="form-group">
+                                                <label>Forma</label>
+                                                <div class="col-lg-12">                                                
+                                                    <h:outputLabel value="#{validacionDocumetosBean.contratoFormasVo.forma}"/>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Motivo:*</label>
+                                                <div class="col-lg-12">
+                                                    <h:inputTextarea id="inAreaMot" value="#{validacionDocumetosBean.contratoFormasNotasVo.observacion}"
+                                                                     styleClass="form-control" rows="5"
+                                                                     required="true" requiredMessage="Es necesario agregar un  motivo"/>
+                                                    <h:message for="inAreaMot" styleClass="text-danger small"/>
+                                                </div>
+                                            </div>                 
+                                        </div>                       
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <h:commandButton id="btnCerrar" value="Cancelar" class="btn btn-default" immediate="true"
+                                                     action="#{validacionDocumetosBean.cancelarEnviarObservacion(e)}"/>
+                                    <h:commandButton value="Enviar" 
+                                                     styleClass="btn btn-primary"
+                                                     action="#{validacionDocumetosBean.enviarObservacion(e)}"/>
+                                </div>
+                            </h:form>
+                        </div>
+                    </div>
+                </div>
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

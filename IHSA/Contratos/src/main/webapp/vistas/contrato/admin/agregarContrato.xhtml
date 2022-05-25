@@ -1,0 +1,144 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <h:body>
+        <ui:composition template="../../../WEB-INF/template/template.xhtml">
+            <ui:define name="tituloPagina">
+                <h2 class="page-header">Registro de contratos</h2>
+            </ui:define>
+            <ui:define name="content">	
+                <h:form id="frmAgregarContrato" >
+                    <div class="row">
+                        <div class="form-group col-lg-8">    			    
+                            <h:outputText class="col-12 control-label" value="Proveedor: "/>
+                            <div class="col-10">
+                                <p:autoComplete id="autoProv" value="#{agregarContratoBean.proveedorSeleccionado}" size="80" 
+                                                completeMethod="#{agregarContratoBean.completaProveedor}"
+                                                multiple="false" selectLimit="1">
+                                    <p:ajax event="itemSelect" listener="#{agregarContratoBean.traerContratoMaestroPorProveedor}" 
+                                            process="@this" ignoreAutoUpdate="true"
+                                            update="frmContrato"/>
+                                </p:autoComplete>
+                            </div>
+                        </div>
+                    </div>
+                </h:form>
+                <h:form id="frmContrato" >
+                    <div class="row">
+                        <div class="form-group col-lg-8">                           
+                            <h:outputText class="col-lg-3 control-label" value="Contrato relacionado: "/>
+                            <div class="col-lg-6"> 
+                                <p:selectOneMenu id="cmbContratos" value="#{agregarContratoBean.contratoVO.idContratoRelacionado}" 
+                                                 styleClass="custom-select">
+                                    <f:selectItem itemLabel="No Aplica . . . " itemValue="0"/>
+                                    <f:selectItems value="#{agregarContratoBean.listaContratos}"/>
+                                </p:selectOneMenu>
+                            </div>
+                        </div>
+                        <div class="form-group col-lg-8">
+                            <h:outputText class="col-lg-3 control-label" value="Clasificación: "/>
+                            <div class="col-lg-6">
+                                <p:selectOneMenu id="cmbCategoria" value="#{agregarContratoBean.id}" styleClass="custom-select"
+                                                 >
+                                    <f:selectItem itemLabel="Seleccione . . . " itemValue="0"/>
+                                    <f:selectItems value="#{agregarContratoBean.mapaSelectItem.get('clasificaciones')}"/>
+                                    <p:ajax listener="#{agregarContratoBean.cabiarClasificacion(agregarContratoBean.id)}" update="frmContrato:cmbCat2"/>
+                                </p:selectOneMenu>  
+                            </div>
+                        </div>
+                        <div class="form-group col-lg-8"  style="display: #{agregarContratoBean.id gt 0 ? 'block' : 'none'}">
+                            <h:outputText class="col-lg-3 control-label" value="SubClasificación: "/>
+                            <div class="col-lg-6">
+                                <p:selectOneMenu id="cmbCat2" value="#{agregarContratoBean.idS}" styleClass="custom-select"
+                                                 >
+                                    <f:selectItem itemLabel="Seleccione . . . " itemValue="0"/>
+                                    <f:selectItems value="#{agregarContratoBean.traerClasificacion2}"/>
+                                    <p:ajax listener="#{agregarContratoBean.cabiarClasificacionDos(agregarContratoBean.idS)}" update="frmContrato:cmbCatT"/>
+                                </p:selectOneMenu>  
+                            </div>
+                        </div>
+                        <div class="form-group col-lg-8"  style="display: #{agregarContratoBean.idS gt 0 ? 'block' : 'none'}">
+                            <h:outputText class="col-lg-3 control-label" value="SubClasificación: "/>
+                            <div class="col-lg-6">
+                                <p:selectOneMenu id="cmbClaT" value="#{agregarContratoBean.idT}" styleClass="custom-select"
+                                                 >
+                                    <f:selectItem itemLabel="Seleccione . . . " itemValue="0"/>
+                                    <f:selectItems value="#{agregarContratoBean.traerClasificacion3}"/>
+                                    <p:ajax listener="#{agregarContratoBean.cabiarClasificacionTres(agregarContratoBean.idT)}" update="frmContrato:cmbClaCua"/>
+                                </p:selectOneMenu>  
+                            </div>
+
+                        </div>
+                        <div class="form-group col-lg-8"   style="display: #{agregarContratoBean.idT gt 0 ? 'block' : 'none'}">
+                            <h:outputText class="col-lg-3 control-label" value="SubClasificación: "/>
+                            <div class="col-lg-6">
+                                <p:selectOneMenu id="cmbClaCua" value="#{agregarContratoBean.idC}" styleClass="custom-select"
+                                                 >
+                                    <f:selectItem itemLabel="Seleccione . . . " itemValue="0"/>
+                                    <f:selectItems value="#{agregarContratoBean.traerClasificacion4}"/>
+                                    <p:ajax listener="#{agregarContratoBean.cabiarClasificacionCuatro(agregarContratoBean.idC)}" update="frmContrato:cmbClaCin"/>
+                                </p:selectOneMenu>  
+                            </div>
+
+                        </div>
+                        <div class="form-group col-lg-8"  style="display: #{agregarContratoBean.idC gt 0 ? 'block' : 'none'}">
+                            <h:outputText class="col-lg-3 control-label" value="SubClasificación: "/>
+                            <div class="col-lg-6">
+                                <p:selectOneMenu id="cmbClaCin" value="#{agregarContratoBean.idCi}" styleClass="form-control">
+                                    <f:selectItem itemLabel="Seleccione . . . " itemValue="0"/>
+                                    <f:selectItems value="#{agregarContratoBean.traerClasificacion5}"/>
+                                    <p:ajax listener="#{agregarContratoBean.cabiarClasificacion(agregarContratoBean.id)}" update="cmbCat2"/>
+                                </p:selectOneMenu>  
+                            </div>
+                        </div>
+                        <div class="form-group col-lg-8">                           
+                            <h:outputText class="col-lg-3 control-label" value="Gerencia: "/>
+                            <div class="col-lg-6">
+                                <p:dataTable value="#{agregarContratoBean.mapaSelectItem.get('gerencias')}" var="data"
+                                             size="small" showGridlines="true">
+                                    <p:column>
+                                        <h:selectBooleanCheckbox value="#{data.selected}" class="seleccion"/>
+                                    </p:column>
+                                    <p:column style="text-align: left;">
+                                        <h:outputText value="#{data.nombre}"/>
+                                    </p:column>
+                                </p:dataTable>
+                            </div>
+                        </div>
+
+                        <div class="form-group col-lg-8">                           
+                            <h:outputText class="col-lg-3 control-label" value="Tipo: "/>
+                            <div class="col-lg-6">
+                                <p:selectOneMenu value="#{agregarContratoBean.contratoVO.idTipo}" styleClass="custom-select"
+                                                 <f:selectItems value="#{agregarContratoBean.mapaSelectItem.get('tipos')}"/>
+                                </p:selectOneMenu> 
+                            </div>
+                        </div>
+                        <div class="form-group col-lg-8">                           
+                            <h:outputText class="col-lg-3 control-label" value="Objetivo: "/>
+                            <div class="col-lg-6">
+                                <h:inputTextarea id="txtArea" rows="2" styleClass="form-control"						   
+                                                 value="#{agregarContratoBean.contratoVO.nombre}"/>
+                            </div>
+                        </div>	
+                    </div>
+                    <div class="row">
+                        <div class="form-group col-lg-4">                           
+                            <p:commandButton value="Cancelar" styleClass="btn btn-default" 
+                                             immediate="true" action="inicio"/>
+                            <div class="col-lg-4">
+                                <p:commandLink value="Guardar" styleClass="btn btn-info" 
+                                               action="#{agregarContratoBean.guardarContrato()}"
+                                               process="@form " update="@form"/>
+                            </div>
+                        </div>
+                    </div>
+                </h:form>
+            </ui:define>
+        </ui:composition>
+    </h:body>
+</html>
