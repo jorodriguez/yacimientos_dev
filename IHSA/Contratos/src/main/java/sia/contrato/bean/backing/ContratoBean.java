@@ -19,10 +19,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
-import javax.faces.context.FacesContext;
-import javax.faces.event.ActionEvent;
 
-import javax.faces.event.ValueChangeEvent;
 import javax.faces.model.DataModel;
 import javax.faces.model.ListDataModel;
 import javax.faces.model.SelectItem;
@@ -50,7 +47,6 @@ import sia.contrato.bean.model.ProveedorModel;
 import sia.contrato.bean.soporte.FacesUtils;
 import sia.excepciones.SIAException;
 import sia.ihsa.contratos.Sesion;
-import sia.inventarios.service.ArticuloImpl;
 import sia.inventarios.service.ArticuloRemote;
 import sia.modelo.CvTipo;
 import sia.modelo.contrato.vo.ClasificacionVo;
@@ -58,7 +54,6 @@ import sia.modelo.contrato.vo.ContratoDocumentoVo;
 import sia.modelo.contrato.vo.ContratoVO;
 import sia.modelo.contrato.vo.ConvenioArticuloVo;
 import sia.modelo.contrato.vo.FiltroVo;
-import sia.modelo.contrato.vo.RhConvenioDocumentoVo;
 import sia.modelo.documento.vo.DocumentoVO;
 import sia.modelo.gerencia.vo.GerenciaVo;
 import sia.modelo.proveedor.Vo.ContactoProveedorVO;
@@ -113,7 +108,6 @@ import sia.servicios.sistema.vo.CatalogoContratoVo;
 import sia.servicios.sistema.vo.MenuSiOpcionVo;
 import sia.servicios.sistema.vo.MonedaVO;
 import sia.servicios.sistema.vo.SiOpcionVo;
-import sia.util.OrdenEstadoEnum;
 import sia.util.UtilLog4j;
 
 /**
@@ -959,9 +953,6 @@ public class ContratoBean implements Serializable {
         return childOpcion(id);
     }
 
-    public void llenarJson() {
-        llenarJsonProveedor();
-    }
 
     private void llenarJsonProveedor() {
         String jsonProveedores = traerJson();
