@@ -69,8 +69,10 @@ public class MenuBean implements Serializable {
         for (SiOpcionVo opcion : opcionesMenu) {
             if (opcion.getPagina() != null) {
                 //First submenu
-                DefaultSubMenu firstSubmenu = DefaultSubMenu.builder()
-                        .label(opcion.getNombre())
+                DefaultMenuItem firstSubmenu = DefaultMenuItem.builder()
+                        .value(opcion.getNombre())
+                        .ajax(Boolean.FALSE)
+                        .command(opcion.getPagina() + "?faces-redirect=true")
                         .build();
                 modelo.getElements().add(firstSubmenu);
             } else {
@@ -82,9 +84,9 @@ public class MenuBean implements Serializable {
                 for (SiOpcionVo opcionHijo : opcionesHijos) {
                     DefaultMenuItem item = DefaultMenuItem.builder()
                             .value(opcionHijo.getNombre())
-                            .icon("pi pi-bars")
+                            .icon("pi pi-cog")
                             .ajax(false)
-                            .command(opcionHijo.getPagina())
+                            .command(opcionHijo.getPagina() + "?faces-redirect=true")
                             .update("messages")
                             .build();
                     firstSubmenu.getElements().add(item);

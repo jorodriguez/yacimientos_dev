@@ -369,7 +369,7 @@ public class MovimientoBean extends AbstractBean implements Serializable {
                 }
                 formatos = new ListDataModel<>(invOrdenFormatoImpl.traerPorMovimiento(folioCompra, INV_MOVIMIENTO_TIPO_ENTRADA));
                 //
-                model = new ListDataModel<TransaccionArticuloVO>(elementos);
+                model = new ListDataModel<>(elementos);
             }
             //
         }

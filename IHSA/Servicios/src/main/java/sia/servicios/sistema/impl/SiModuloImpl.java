@@ -10,6 +10,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -18,8 +19,10 @@ import javax.persistence.NoResultException;
 import javax.persistence.NonUniqueResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+
 import org.jooq.DSLContext;
 import org.jooq.exception.DataAccessException;
+
 import sia.constantes.Constantes;
 import sia.excepciones.ExistingItemException;
 import sia.excepciones.ItemUsedBySystemException;
@@ -29,7 +32,6 @@ import sia.modelo.SiOpcion;
 import sia.modelo.Usuario;
 import sia.modelo.campo.usuario.puesto.vo.CampoUsuarioPuestoVo;
 import sia.modelo.campo.usuario.puesto.vo.CompaniaBloqueGerenciaVo;
-import sia.modelo.campo.vo.CampoVo;
 import sia.modelo.oficio.vo.OficioConsultaVo;
 import sia.modelo.oficio.vo.OficioPromovibleVo;
 import sia.modelo.oficio.vo.PermisosVo;
@@ -90,6 +92,7 @@ public class SiModuloImpl extends AbstractFacade<SiModulo> {
     @Inject
     InvEstadoAprobacionSolicitudImpl estadoAprobacionSolicitudLocal;
 
+    
     @Override
     protected EntityManager getEntityManager() {
         return em;
@@ -445,23 +448,9 @@ public class SiModuloImpl extends AbstractFacade<SiModulo> {
                     + " GROUP BY m.ID \n"
                     + " ORDER BY m.ID) ");
 
-//            UtilLog4j.log.info(this, "Q modulo: " + q.toString());
-            List<Object[]> objs = em.createNativeQuery(q.toString()).getResultList();
             
-            
-            // FIXME : recuperar por jOOQ
-            List<SiModuloVo> modulos = new ArrayList<>();//                   = dbCtx.fetch(q.toString()).into(SiModuloVo.class);
-            for (Object[] objects : objs) {
-                SiModuloVo vo = new SiModuloVo();
-                vo.setId((Integer) objects[0]);
-                vo.setNombre((String) objects[1]);
-                vo.setIcono((String) objects[2]);
-                vo.setRuta((String) objects[3]);
-                vo.setToolTip((String) objects[4]);
-                vo.setRutaServlet((String) objects[5]);
-                vo.setExtraLinkRender((String) objects[6]);
-                modulos.add(vo);
-            }
+            List<SiModuloVo> modulos =
+            		dslCtx.fetch(q.toString()).into(SiModuloVo.class);            
 
             for (SiModuloVo vo : modulos) {
                 //PEndiente                
@@ -472,7 +461,7 @@ public class SiModuloImpl extends AbstractFacade<SiModulo> {
                         vo.setListaCampo(new ArrayList<>());
                         vo.setPendiente(requisicionRemote.totalRequisicionesPendientes(usuario, Constantes.CERO));
                         lca = apCampoUsuarioRhPuestoRemote.getAllPorUsurio(usuario);
-                        vo.setMapOpcion(new HashMap<String, List<SiOpcionVo>>());
+                        vo.setMapOpcion(new HashMap<>());
                         for (CampoUsuarioPuestoVo campoUsuarioPuestoVo : lca) {
                             List<SiOpcionVo> lo = requisicionRemote.totalRevPagina(usuario, campoUsuarioPuestoVo.getIdCampo(), RequisicionEstadoEnum.TODOS_ESTADOS_REQUISICION);
                             if (lo != null && !lo.isEmpty()) {
@@ -483,7 +472,7 @@ public class SiModuloImpl extends AbstractFacade<SiModulo> {
                     case Constantes.MODULO_COMPRA:
                         vo.setPendiente(ordenRemote.totalOcsPendientePorCampo(usuario, 0));
                         lca = apCampoUsuarioRhPuestoRemote.getAllPorUsurio(usuario);
-                        vo.setMapOpcion(new HashMap<String, List<SiOpcionVo>>());
+                        vo.setMapOpcion(new HashMap<>());
 
                         //prueba
                         Map<Integer, List<SiOpcionVo>> contadores

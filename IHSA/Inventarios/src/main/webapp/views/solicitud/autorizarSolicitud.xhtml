@@ -9,56 +9,62 @@
     <ui:define name="titulo">
         Autorizar material
     </ui:define>    
-    <ui:define name="tabla"> 
-        <div class="row">
-            <p:dataTable value="#{autorizarMaterialBean.solicitudes}" var="data">
-                <p:column headerText="Almacén">
-                    <h:outputText value="#{data.almacen}" />
-                </p:column>
-                <p:column headerText="Folio">
-                    <h:outputText value="#{data.folio}" />
-                </p:column>
-                <p:column headerText="Gerencia">
-                    <h:outputText value="#{data.gerencia}" />
-                </p:column>
-                <p:column headerText="Requerida">
-                    <h:outputText value="#{data.fechaRequiere}" >
-                        <f:convertDateTime pattern="dd/MM/yyyyy"/>
-                    </h:outputText>
-                </p:column>
-                <p:column headerText="Total de materiales">
-                    <h:outputText value="#{data.totalDetalle}" />
-                </p:column>
-                <p:column headerText="Cantidad solicitada">
-                    <h:outputText value="#{data.cantidadSolicitada}" />
-                </p:column>
-                <p:column >
-                    <h:commandLink value="Autorizar" action="#{autorizarMaterialBean.autorizarMaterial(data.id)}"/>
-                </p:column>
-                <p:column >
-                    <h:commandLink value="Rechazar" style="color: red;"
-                                    action="#{autorizarMaterialBean.rechazarSolicitud(data.id)}"/>
-                </p:column>
-                <p:column >
-                    <h:commandLink value="Cancelar" style="color: red;"
-                                    action="#{autorizarMaterialBean.cancelarSolicitud(data.id)}"/>
-                </p:column>
-                <p:column >
-                    <h:commandLink value="Ver" action="#{autorizarMaterialBean.verSolicitud(data.id)}"/>
-                </p:column>
-            </p:dataTable>
-        </div>
-        <h:form> <!-- Inicia popup  -->
+    <ui:define name="contenido"> 
+        <h:form id="frmAutSol">
+            <div class="row">
+                <p:dataTable value="#{autorizarMaterialBean.solicitudes}" var="data">
+                    <p:column headerText="Almacén">
+                        <h:outputText value="#{data.almacen}" />
+                    </p:column>
+                    <p:column headerText="Folio">
+                        <h:outputText value="#{data.folio}" />
+                    </p:column>
+                    <p:column headerText="Gerencia">
+                        <h:outputText value="#{data.gerencia}" />
+                    </p:column>
+                    <p:column headerText="Requerida">
+                        <h:outputText value="#{data.fechaRequiere}" >
+                            <f:convertDateTime pattern="dd/MM/yyyyy"/>
+                        </h:outputText>
+                    </p:column>
+                    <p:column headerText="Total de materiales">
+                        <h:outputText value="#{data.totalDetalle}" />
+                    </p:column>
+                    <p:column headerText="Cantidad solicitada">
+                        <h:outputText value="#{data.cantidadSolicitada}" />
+                    </p:column>
+                    <p:column width="50">
+                        <p:commandLink value="Autorizar" action="#{autorizarMaterialBean.autorizarMaterial(data.id)}"
+                                       process="@this" update="frmAutSol"/>
+                    </p:column>
+                    <p:column width="60">
+                        <p:commandLink value="Rechazar" style="color: red;"
+                                       action="#{autorizarMaterialBean.rechazarSolicitud(data.id)}"
+                                       process="@this" update="frmRech" oncomplete="PF('dialogoSolicitudRechazo').show()"/>
+                    </p:column>
+                    <p:column width="60">
+                        <p:commandLink value="Cancelar" style="color: red;"
+                                       action="#{autorizarMaterialBean.cancelarSolicitud(data.id)}"
+                                       process="@this" update="frmCanc" oncomplete="PF('dialogoSolicitudCancela').show()"/>
+                    </p:column>
+                    <p:column width="50">
+                        <p:commandLink value="Ver" action="#{autorizarMaterialBean.verSolicitud(data.id)}"
+                                       process="@this" update="frmDatos" oncomplete="PF('crearDialogoDatosSolicitud').show()"/>
+                    </p:column>
+                </p:dataTable>
+            </div>
+        </h:form>
+        <h:form id="frmDatos"> <!-- Inicia popup  -->
             <h:panelGroup id="solicitudComponente" >
                 <ui:include src="../../resources/widgets/datosSolicitud.xhtml"/>
             </h:panelGroup>
         </h:form> <!-- Termina popup --> 
-        <h:form> <!-- Inicia popup  -->
+        <h:form id="frmRech"> <!-- Inicia popup  -->
             <h:panelGroup id="autorizaComponente" >
                 <ui:include src="../../resources/widgets/rechazarSolicitud.xhtml"/>
             </h:panelGroup>
         </h:form> <!-- Termina popup --> 
-        <h:form> <!-- Inicia popup  -->
+        <h:form id="frmCanc"> <!-- Inicia popup  -->
             <h:panelGroup id="autorizaComponente" >
                 <ui:include src="../../resources/widgets/cancelarSolicitud.xhtml"/>
             </h:panelGroup>

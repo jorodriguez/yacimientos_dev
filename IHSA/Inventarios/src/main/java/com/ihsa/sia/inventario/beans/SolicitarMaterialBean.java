@@ -5,6 +5,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
 import javax.inject.Named;
@@ -14,8 +16,9 @@ import javax.faces.context.FacesContext;
 import javax.faces.event.AjaxBehaviorEvent;
 import javax.faces.model.SelectItem;
 import javax.inject.Inject;
+import lombok.Getter;
+import lombok.Setter;
 import org.primefaces.PrimeFaces;
-import sia.inventarios.service.AlmacenImpl;
 import sia.inventarios.service.AlmacenRemote;
 import sia.inventarios.service.ArticuloRemote;
 import sia.inventarios.service.InvCadenaAprobacionImpl;
@@ -27,6 +30,7 @@ import sia.modelo.cadena.aprobacion.vo.CadenaAprobacionVo;
 import sia.modelo.gerencia.vo.GerenciaVo;
 import sia.modelo.orden.vo.MovimientoVO;
 import sia.modelo.vo.inventarios.AlmacenVO;
+import sia.modelo.vo.inventarios.ArticuloVO;
 import sia.modelo.vo.inventarios.DetalleSolicitudMaterialAlmacenVo;
 import sia.modelo.vo.inventarios.InvSolicitudMovimientoImpl;
 import sia.modelo.vo.inventarios.InventarioVO;
@@ -79,6 +83,9 @@ public class SolicitarMaterialBean implements Serializable {
     private Date fechaMinima;
     private List<MovimientoVO> devoluciones;
     private ApCampo apCampo;
+    @Getter
+    @Setter
+    private ArticuloVO articuloVo;
 
     final protected SessionBean sesion = (SessionBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("principal");
 
@@ -88,15 +95,16 @@ public class SolicitarMaterialBean implements Serializable {
     @PostConstruct
     protected void iniciar() {
         solicitudMaterialAlmacenVo = new SolicitudMaterialAlmacenVo();
-        articulos = new ArrayList<SelectItem>();
-        autorizadores = new ArrayList<SelectItem>();
-        inventarios = new ArrayList<InventarioVO>();
-        devoluciones = new ArrayList<MovimientoVO>();
+        articulos = new ArrayList<>();
+        autorizadores = new ArrayList<>();
+        inventarios = new ArrayList<>();
+        devoluciones = new ArrayList<>();
         solicitudes = new ArrayList<>();
         materiales = new ArrayList<>();
         gerencias = new ArrayList<>();
         almacenes = new ArrayList<>();
         articulo = new InventarioVO();
+        articuloVo = new ArticuloVO();
         apCampo = apCampoImpl.find(sesion.getUser().getIdCampo());
         //
         idAlmacen = apCampo.getInvAlmacen().getId();
@@ -130,16 +138,16 @@ public class SolicitarMaterialBean implements Serializable {
     public void crearSolicitudMaterial() {
         solicitudMaterialAlmacenVo = new SolicitudMaterialAlmacenVo();
         solicitudMaterialAlmacenVo.setFechaRequiere(new Date());
-        solicitudMaterialAlmacenVo.setMateriales(new ArrayList<DetalleSolicitudMaterialAlmacenVo>());
+        solicitudMaterialAlmacenVo.setMateriales(new ArrayList<>());
 
         setIdGerencia(sesion.getUser().getIdGerencia());
         articulo = new InventarioVO();
         //
-        materiales = new ArrayList<DetalleSolicitudMaterialAlmacenVo>();
+        materiales = new ArrayList<>();
 
         gerencias = new ArrayList<>();
         almacenes = new ArrayList<>();
-        inventarios = new ArrayList<InventarioVO>();
+        inventarios = new ArrayList<>();
         idAlmacen = apCampo.getInvAlmacen().getId();
         List<GerenciaVo> ger = gerenciaImpl.getAllGerenciaByApCampo(sesion.getUser().getIdCampo(), "nombre", true, Boolean.TRUE, false);
         for (GerenciaVo gerenciaVo : ger) {
@@ -157,36 +165,32 @@ public class SolicitarMaterialBean implements Serializable {
         //
         inventarios = inventarioImpl.inventarioPorCampoYAlmacen(apCampo.getId(), idAlmacen);
 
-        PrimeFaces.current().executeScript(";mostrarDialogoSolicitarMaterial();");
     }
 
-    public void seleccionarAlmacen(AjaxBehaviorEvent event) {
-        if (event != null && this.getIdAlmacen() > 0) {
-            inventarios = inventarioImpl.inventarioPorCampoYAlmacen(apCampo.getId(), this.getIdAlmacen());
-        }
+    public void seleccionarAlmacen() {
+        inventarios = inventarioImpl.inventarioPorCampoYAlmacen(apCampo.getId(), getIdAlmacen());
     }
 
-    public void seleccionarArticulo(String cadenaDigitada) {
+    public List<InventarioVO> completarArticulo(String cadenaDigitada) {
+        articulos.clear();
+        return inventarios.stream().filter(inv -> inv.getArticuloNombre().toLowerCase().contains(cadenaDigitada.toLowerCase())).collect(Collectors.toList());
+
+    }
+
+    public void seleccionarArticulo() {
         try {
-            articulos.clear();
-            for (InventarioVO inventario : inventarios) {
-                if (inventario.getArticuloNombre().toLowerCase().contains(cadenaDigitada.toLowerCase())
-                        || inventario.getCodigoInt().toLowerCase().contains(cadenaDigitada.toLowerCase())) {
-                    articulos.add(new SelectItem(inventario));
-                }
-            }
             //articulo = (InventarioVO) autoComplete.getSelectedItem().getValue();
-            DetalleSolicitudMaterialAlmacenVo ddVo = new DetalleSolicitudMaterialAlmacenVo();
-            ddVo.setArticulo(articulo.getArticuloNombre());
-            ddVo.setUnidad(articulo.getArticuloUnidad());
-            ddVo.setIdUnidad(articulo.getUnidadId());
-            ddVo.setCodigoArt(articulo.getCodigo());
-            ddVo.setDisponibles(articulo.getTotalUnidades());
+             InventarioVO invVo = inventarios.stream().filter(inv -> (Objects.equals(inv.getId(), articulo.getId()))).findAny().get();
+            DetalleSolicitudMaterialAlmacenVo ddVo = new DetalleSolicitudMaterialAlmacenVo();            
+            ddVo.setArticulo(invVo.getArticuloNombre());
+            ddVo.setUnidad(invVo.getArticuloUnidad());
+            ddVo.setIdUnidad(invVo.getUnidadId());
+            ddVo.setCodigoArt(invVo.getCodigo());
+            ddVo.setDisponibles(invVo.getTotalUnidades());
             //
             materiales.add(ddVo);
             //
             limpiarAlmacen(idAlmacen);
-            PrimeFaces.current().executeScript(";limpiar();");
         } catch (Exception ex) {
             UtilLog4j.log.error(ex);
         }
@@ -202,11 +206,11 @@ public class SolicitarMaterialBean implements Serializable {
                 }
             }
             if (aux != null) {
-                setAlmacenes(new ArrayList<SelectItem>());
+                setAlmacenes(new ArrayList<>());
                 getAlmacenes().add(aux);
             }
         } else {
-            setAlmacenes(new ArrayList<SelectItem>());
+            setAlmacenes(new ArrayList<>());
             List<AlmacenVO> alm = almacenImpl.almacenesPorCampo(sesion.getUser().getIdCampo());
             for (AlmacenVO avo : alm) {
                 almacenes.add(new SelectItem(avo.getId(), avo.getNombre()));
@@ -214,10 +218,7 @@ public class SolicitarMaterialBean implements Serializable {
         }
     }
 
-    public void eliminarMaterialSolicitud() {
-        FacesContext fc = FacesContext.getCurrentInstance();
-        //
-        String codigo = fc.getExternalContext().getRequestParameterMap().get("codigo");
+    public void eliminarMaterialSolicitud(String codigo) {
         DetalleSolicitudMaterialAlmacenVo ddVo = new DetalleSolicitudMaterialAlmacenVo();
         for (DetalleSolicitudMaterialAlmacenVo materiale : materiales) {
             if (codigo.equals(materiale.getCodigoArt())) {
@@ -252,7 +253,7 @@ public class SolicitarMaterialBean implements Serializable {
                             solicitudMaterialAlmacenVo.setObservacion(observacion);
                             solicitudMaterialAlmacenVo.setMateriales(materiales);
                             invSolicitudMaterialImpl.guardar(solicitudMaterialAlmacenVo, sesion.getUser().getId(), sesion.getUser().getIdCampo());
-                            PrimeFaces.current().executeScript(";cerrarDialogoSolicitarMaterial();");
+                            PrimeFaces.current().executeScript("PF('crearDialogoMaterial').hide()");
                             llenar();
                         } else {
                             FacesMessage facesMessage = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Materiales deben tener cantidad y debe ser menor o igual a lo disponible en almacén.", null);
@@ -298,7 +299,7 @@ public class SolicitarMaterialBean implements Serializable {
                                 //
                                 invSolicitudMaterialImpl.guardarSolicitar(solicitudMaterialAlmacenVo, sesion.getUser().getId(), sesion.getUser().getIdCampo(), idAutoriza);
                                 llenar();
-                                PrimeFaces.current().executeScript(";cerrarDialogoSolicitarMaterial();");
+                                PrimeFaces.current().executeScript("PF('crearDialogoMaterial').hide()");
                             } else {
                                 FacesMessage facesMessage = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Materiales deben tener cantidad y debe ser menor o igual a lo disponible en almacén.", null);
                                 FacesContext.getCurrentInstance().addMessage(null, facesMessage);
@@ -323,12 +324,12 @@ public class SolicitarMaterialBean implements Serializable {
     public void cerrarSolicitudMaterial() {
         materiales.clear();
         devoluciones.clear();
-        solicitudMaterialAlmacenVo.setMateriales(new ArrayList<DetalleSolicitudMaterialAlmacenVo>());
-        PrimeFaces.current().executeScript(";cerrarDialogoSolicitarMaterial();");
+        solicitudMaterialAlmacenVo.setMateriales(new ArrayList<>());
+        PrimeFaces.current().executeScript("PF('crearDialogoMaterial').hide()");
     }
 
     public void modificar(int idSolicitud) {
-        materiales = new ArrayList<DetalleSolicitudMaterialAlmacenVo>();
+        materiales = new ArrayList<>();
         solicitudMaterialAlmacenVo = invSolicitudMaterialImpl.solicitudesPorId(idSolicitud);
         idGerencia = solicitudMaterialAlmacenVo.getIdGerencia();
         idAlmacen = solicitudMaterialAlmacenVo.getIdAlmacen();
@@ -336,11 +337,11 @@ public class SolicitarMaterialBean implements Serializable {
         materiales = solicitudMaterialAlmacenVo.getMateriales();
         //
         devoluciones = solicitudMovimientoImpl.traerPorSolicitud(idSolicitud);
+        articulo = new InventarioVO();
 
         limpiarAlmacen(materiales.isEmpty() ? 0 : idAlmacen);
 
         //
-        PrimeFaces.current().executeScript(";mostrarDialogoSolicitarMaterial();");
     }
 
     public void solicitarMaterial(int idSolicitud) {
@@ -350,13 +351,13 @@ public class SolicitarMaterialBean implements Serializable {
         } else {
             // mostrar un pop donde elija quien le autorizará
             solicitudMaterialAlmacenVo = invSolicitudMaterialImpl.solicitudesPorId(idSolicitud);
-            PrimeFaces.current().executeScript(";mostrarDialogoAutorizarMaterial();");
+            PrimeFaces.current().executeScript("PF('crearDialogoMaterial').show();");
         }
     }
 
     public void solicitarMaterialAutorizar() {
         invSolicitudMaterialImpl.solicitarMateriales(solicitudMaterialAlmacenVo.getId(), idAutoriza, sesion.getUser().getId());
-        PrimeFaces.current().executeScript(";cerrarDialogoAutorizarMaterial();");
+        PrimeFaces.current().executeScript("PF('crearDialogoMaterial').hide()");
         llenar();
     }
 

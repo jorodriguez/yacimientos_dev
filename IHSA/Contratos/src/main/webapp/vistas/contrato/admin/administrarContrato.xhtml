@@ -1,0 +1,108 @@
+<ui:composition xmlns:ui="http://xmlns.jcp.org/jsf/facelets"               
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns="http://www.w3.org/1999/xhtml">
+    <!-- Nav tabs -->
+    <div class="card card-primary card-outline card-outline-tabs">
+        <div class="card-header p-0 border-bottom-0">
+            <ul class="nav nav-tabs" id="custom-tabs-four-tab" role="tablist">
+                <li role="presentation" class="nav-item" >
+                    <a href="#datos#{contr.id}" 
+                       class="nav-link active" data-toggle="pill"
+                       aria-selected="true" role="tab" 
+                       aria-controls="datos" >
+                        <font style="color: black;"> Datos generales</font> </a>
+                </li>
+                <li role="presentation" >
+                    <a href="#listaPrecio#{contr.id}" aria-controls="listaprecio"
+                       class="nav-link"  data-toggle="pill" role="tab" 
+                       aria-selected="true" >
+                        <font style="color: black;"><b>Lista Precio</b></font></a>
+                </li>
+                <li role="presentation" >
+                    <a href="#proveedor#{contr.id}" aria-controls="proveedor"
+                       class="nav-link"  data-toggle="pill" role="tab" 
+                       aria-selected="true" >
+                        <font style="color: black;">    Datos del proveedor</font></a>
+                </li>
+                <li role="presentation" >
+                    <a href="#contratosRelacionados#{contr.id}" aria-controls="contratosRelacionados" 
+                       class="nav-link"  data-toggle="pill" role="tab" 
+                       aria-selected="true" >
+                        <font style="color: black;">  Contratos Relacionados</font></a>
+                </li>
+                <li role="presentation" >
+                    <a href="#evals99#{contr.id}" aria-controls="evals99" 
+                       class="nav-link"  data-toggle="pill" role="tab" 
+                       aria-selected="true" >
+                        <font style="color: black;"> Evaluación Proveedor</font></a>
+                </li>                    
+                <li role="presentation" >
+                    <a href="#ocs#{contr.id}" aria-controls="ocs" 
+                       class="nav-link"  data-toggle="pill" role="tab" 
+                       aria-selected="true" >
+                        <font style="color: black;"> Ordenes de c/s</font></a>
+                </li>
+
+
+            </ul>
+        </div>  
+        <div class="card-body">
+            <div class="tab-content">
+                <div role="tabpanel" class="tab-pane fade show active" id="datos#{contr.id}">
+                    <div class="col-lg-12">
+                        <div class="navbar-right">
+                            <h:form id="frmCerrarTa#{contr.id}">
+                                <p:commandLink id="btnEliminar#{contr.id}"
+                                               action="#{contratoBean.eliminarContrato}"
+                                               class="btn btn-success"
+                                               title="Eliminar contrato"
+                                               rendered="#{contr.editar and !contr.formalizado}"
+                                               onclick="return confirmar('La operación eliminará el registro creado. ¿Está seguro?');">
+                                    <i class="fa fa-envelope"></i>
+                                    <span><i>Eliminar</i></span>
+                                </p:commandLink>
+                                <p:commandLink id="btnFiniquitar#{contr.id}"
+                                               action="#{contratoBean.inicioContratoFiniquitado}"
+                                               class="btn btn-success"
+                                               title="Finiquitar contrato"
+                                               rendered="#{contr.editar and !contr.formalizado}">
+                                    <i class="fa fa-envelope"></i>
+                                    <span><i>Finiquitar</i></span>
+                                </p:commandLink>
+                                <p:commandLink action="#{contratoBean.inicioContratoFormalizado}" 
+                                               id="btnFormalizar#{contr.id}"
+                                               class="btn btn-success"
+                                               title="Formalizar contrato"
+                                               rendered="#{contr.editar and !contr.formalizado}">
+                                    <i class="fa fa-upload"></i>
+                                    <span><i>Formalizar</i></span>
+                                </p:commandLink>
+                                <h:outputLabel value="Contrato Formalizado" rendered="#{contr.editar and contr.formalizado}" class="text text-danger"/>
+                            </h:form>
+                        </div>
+                    </div>
+                    <ui:include src="../admin/fragmento/panelDatosContrato.xhtml"/>
+                </div>
+                <div role="tabpanel" class="tab-pane fade" id="listaPrecio#{contr.id}">
+                    <ui:include src="../admin/fragmento/listaPrecio.xhtml"/>
+                </div>
+                <div role="tabpanel" class="tab-pane fade" id="proveedor#{contr.id}">
+                    <ui:include src="../admin/fragmento/datosProveedor.xhtml"/>
+                </div>
+                <div role="tabpanel" class="tab-pane fade" id="contratosRelacionados#{contr.id}">
+                    <ui:include src="../admin/fragmento/contratosRelacionados.xhtml"/>
+                </div> 
+                <div role="tabpanel" class="tab-pane fade" id="evals99#{contr.id}">                        
+                    <ui:include src="../admin/fragmento/evaProveedor.xhtml"/>  
+                </div>
+                <div role="tabpanel" class="tab-pane fade" id="ocs#{contr.id}">
+                    <h:form id="frmOcsConvenio#{contr.id}">
+                        <ui:include src="../consulta/datosContrato/fragmento/reporteOCS.xhtml"/>
+                    </h:form>
+                </div>
+            </div>
+        </div>
+    </div>
+</ui:composition>

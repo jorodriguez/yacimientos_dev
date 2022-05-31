@@ -1,6 +1,5 @@
 package sia.sistema.bean.backing;
 
-import com.google.api.client.util.Strings;
 import java.io.IOException;
 import java.io.Serializable;
 import java.security.NoSuchAlgorithmException;
@@ -11,19 +10,22 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.TreeMap;
+
 import javax.enterprise.context.SessionScoped;
-import javax.inject.Inject;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
-
 import javax.faces.model.DataModel;
+import javax.inject.Inject;
 import javax.inject.Named;
 import javax.naming.NamingException;
+
+import com.google.api.client.util.Strings;
+
+import org.primefaces.PrimeFaces;
+
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.primefaces.PrimeFaces;
-import sia.constantes.Configurador;
 import sia.constantes.Constantes;
 import sia.ldap.ActiveDirectory;
 import sia.modelo.ApCampo;
@@ -376,7 +378,7 @@ public class Sesion implements Serializable {
         } else {
             resultado = url.replace("@@AM@@", getArrancarModulo(0, ""));
         }
-        return Configurador.urlSia() + resultado;
+        return /*Configurador.urlSia() +*/ resultado;
     }
 
     public void cerrarSesionExterno() {

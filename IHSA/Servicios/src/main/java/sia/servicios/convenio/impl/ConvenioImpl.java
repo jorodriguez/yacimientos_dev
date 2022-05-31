@@ -73,13 +73,12 @@ import sia.util.UtilLog4j;
  * @version 1.0
  * @author-mail new_nick_name@hotmail.com @date 27/08/2009
  */
-@Stateless 
+@Stateless
 public class ConvenioImpl extends AbstractFacade<Convenio> {
 
     @PersistenceContext(unitName = "Sia-ServiciosPU")
     private EntityManager em;
 
-    
     @Override
     protected EntityManager getEntityManager() {
         return em;
@@ -134,42 +133,34 @@ public class ConvenioImpl extends AbstractFacade<Convenio> {
     @Inject
     RhConvenioDocumentosImpl rhConvenioDocumentosImpl;
 
-    
     public void create(Convenio convenio) {
         em.persist(convenio);
     }
 
-    
     public void edit(Convenio convenio) {
         em.merge(convenio);
     }
 
-    
     public void remove(Convenio convenio) {
         em.remove(em.merge(convenio));
     }
 
-    
     public Convenio find(Object id) {
         return em.find(Convenio.class, id);
     }
 
-    
     public List<Convenio> findAll() {
         return em.createQuery("select object(o) from Convenio as o").getResultList();
     }
 
-    
     public List getConveniosPorLetra(Object letra) {
         return em.createQuery("SELECT c FROM Convenio c WHERE c.nombre LIKE :nombre ORDER BY c.nombre ASC").setParameter("nombre", letra.toString().toUpperCase() + "%").getResultList();
     }
 
-    
     public List<Convenio> getConveniosPorProveedor(Object nombreProveedor) {
         return em.createQuery("SELECT c FROM Convenio c WHERE c.proveedor.nombre = :proveedor ORDER BY c.nombre ASC").setParameter("proveedor", nombreProveedor).getResultList();
     }
 
-    
     public boolean guardarContrato(String sesion, String id, int proveedor, int estatus, String moneda, String compania, String url, String nombre,
             double monto, String vigencia, Date fechaInicio, Date fechaVencimiento, int tipo, int actividad, int subActividad) {
         boolean v = false;
@@ -207,7 +198,6 @@ public class ConvenioImpl extends AbstractFacade<Convenio> {
         return v;
     }
 
-    
     public int guardar(String sesion, ContratoVO contratoVO, List<Integer> listaClasificacion) {
         Convenio convenio = new Convenio();
         try {
@@ -352,12 +342,10 @@ public class ConvenioImpl extends AbstractFacade<Convenio> {
         return codBase + "-" + (num < 10 ? "0" + num : "" + num);
     }
 
-    
     public List<Convenio> traerConvenioSinArchivo(String user) {
         return em.createQuery("SELECT c FROM Convenio c WHERE c.id NOT IN (SELECT s.idElemento FROM SiAdjunto s WHERE s.siModulo.id = :seis) and c.eliminado = 'False'  ORDER BY c.nombre ASC").setParameter("seis", 6).getResultList();
     }
 
-    
     public boolean agregarArchivoConvenio(String idConvenio, String archivo) {
         boolean v = false;
         Convenio convenio = this.find(idConvenio);
@@ -366,12 +354,10 @@ public class ConvenioImpl extends AbstractFacade<Convenio> {
         return v;
     }
 
-    
     public List<Convenio> traerConvenioConArchivo(String idConvenio) {
         return em.createQuery("SELECT c FROM Convenio c WHERE c.id = :id").setParameter("id", idConvenio).getResultList();
     }
 
-    
     public void actualizarURLConvenio(String idConvenio) {
         try {
             Convenio convenio = this.find(idConvenio);
@@ -381,31 +367,26 @@ public class ConvenioImpl extends AbstractFacade<Convenio> {
         }
     }
 
-    
     public List<Convenio> getConveniosVigentePorProveedor(String proveedor, int actividad) {
         return em.createQuery("SELECT c FROM Convenio c WHERE c.proveedor.nombre = :pro AND c.estatus.id = :es AND "
                 + " c.cvTipo.id = :uno").setParameter("es", 310).setParameter("pro", proveedor).setParameter("uno", 1).getResultList();
     }
 
-    
     public List<Convenio> traerAcuerdosporProveedor(String proveedor) {
         return em.createQuery("SELECT c FROM Convenio c WHERE c.proveedor.nombre = :pro AND c.estatus.id = :es AND "
                 + " c.cvTipo.id = :dos").setParameter("pro", proveedor).setParameter("es", 310).setParameter("dos", 2).getResultList();
     }
 
-    
     public List<Convenio> traerServiciosPorProveedor(String proveedor) {
         return em.createQuery("SELECT c FROM Convenio c WHERE c.proveedor.nombre = :pro AND c.estatus.id = :id AND "
                 + " c.cvTipo.id = :tres").setParameter("pro", proveedor).setParameter("id", 310).setParameter("tres", 3).getResultList();
     }
 
-    
     public void cancelarConvenio(Convenio convenioAcutal) {
         convenioAcutal.setEstatus(this.estatusServicioRemoto.find(300));
         this.edit(convenioAcutal);
     }
 
-    
     public Convenio buscarContratoPorNumero(String noCo) {
         try {
             return (Convenio) em.createQuery("SELECT c FROM Convenio c WHERE upper(c.codigo) = :noC").setParameter("noC", noCo.toUpperCase()).getSingleResult();
@@ -414,7 +395,6 @@ public class ConvenioImpl extends AbstractFacade<Convenio> {
         }
     }
 
-    
     public List<ContratoVO> getContratoPorFecha(Date fechaInicio, Date fechaFin, int campo) {
         List<ContratoVO> le = new ArrayList<>();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
@@ -453,7 +433,6 @@ public class ConvenioImpl extends AbstractFacade<Convenio> {
         return c;
     }
 
-    
     public List<ContratoVO> getListConvenioVigente(int idProveedor, Date fechaSolicito) {
         List<ContratoVO> lv = new ArrayList<>();
         limpiarCuerpoQuery();
@@ -466,7 +445,6 @@ public class ConvenioImpl extends AbstractFacade<Convenio> {
         return lv;
     }
 
-    
     public List<ContratoVO> getListConvenioVigente(int idProveedor, int campo, String codigoConvenioMarco) {
         List<ContratoVO> lv = new ArrayList<>();
         limpiarCuerpoQuery();
@@ -511,7 +489,6 @@ public class ConvenioImpl extends AbstractFacade<Convenio> {
         query.delete(0, query.length());
     }
 
-    
     public List<ContratoVO> listaContratos(int idProveedor, boolean vigente, int idActividad, int campo) {
         limpiarCuerpoQuery();
         List<ContratoVO> lc = null;
@@ -561,7 +538,6 @@ public class ConvenioImpl extends AbstractFacade<Convenio> {
         return c;
     }
 
-    
     public void actualizarFecha(String sesion, int idConvenio, Date fechaInicio, Date fechaVencimiento, double monto) {
         int vi = siManejoFechaImpl.diferenciaDias(siManejoFechaImpl.converterDateToCalendar(fechaInicio, false), siManejoFechaImpl.converterDateToCalendar(fechaVencimiento, false));
         Convenio convenio = find(idConvenio);
@@ -578,7 +554,6 @@ public class ConvenioImpl extends AbstractFacade<Convenio> {
 
     }
 
-    
     public void eliminarContrato(String sesion, int idConvenio) {
         Convenio convenio = find(idConvenio);
         convenio.setCodigo(convenio.getCodigo() + idConvenio);
@@ -590,7 +565,6 @@ public class ConvenioImpl extends AbstractFacade<Convenio> {
         //log
     }
 
-    
     public List<ContratoVO> listaContratosVigentes(int proveedor, int modulo, String tipoElemento, String fecha, int campo) {
         StringBuilder sb = new StringBuilder();
         sb.append(consultaVigente(modulo, tipoElemento));
@@ -631,7 +605,6 @@ public class ConvenioImpl extends AbstractFacade<Convenio> {
         return contratoVO;
     }
 
-    
     public ContratoVO buscarContrato(String codigo, int modulo, String tipoElemento) {
         try {
             ContratoVO contratoVO = new ContratoVO();
@@ -654,7 +627,6 @@ public class ConvenioImpl extends AbstractFacade<Convenio> {
      * @param tipoElemento
      * @return
      */
-    
     public List<ContratoVO> listaArchivoContrato(String codigo, int modulo, String tipoElemento) {
         List<ContratoVO> lista = null;
         try {
@@ -685,7 +657,6 @@ public class ConvenioImpl extends AbstractFacade<Convenio> {
         return sb.toString();
     }
 
-    
     public List<ContratoVO> traerConvenios(int totalContratos, int campo) {
         String sb = "select  c.id, c.CODIGO, c.NOMBRE, p.NOMBRE, c.FECHA_FIRMA, c.FECHA_INICIO, c.FECHA_VENCIMIENTO, c.VIGENCIA, ";
         sb += "  c.PORCENTAJE_DEDUCCION, c.MONTO, m.SIGLAS, ct.NOMBRE, cc.NOMBRE,  e.NOMBRE ,";
@@ -711,7 +682,6 @@ public class ConvenioImpl extends AbstractFacade<Convenio> {
         return lc;
     }
 
-    
     public List<ContratoVO> traerConveniosPorVencer(Date fecha, int dias, int campo) {
         String sb = consulta();
         sb += "  where c.FECHA_VENCIMIENTO between cast('" + siManejoFechaImpl.convertirFechaStringyyyyMMdd(fecha) + "' as date) and cast( '" + siManejoFechaImpl.convertirFechaStringyyyyMMdd(siManejoFechaImpl.fechaSumarDias(fecha, dias)) + "' as date)";
@@ -729,7 +699,6 @@ public class ConvenioImpl extends AbstractFacade<Convenio> {
         return lc;
     }
 
-    
     public long totalConveniosPorVencer(Date fecha, int dias, int campo) {
         String sb = consultaTotal();
         sb += "  where c.FECHA_VENCIMIENTO between cast('" + siManejoFechaImpl.convertirFechaStringyyyyMMdd(fecha) + "' as date) and cast( '" + siManejoFechaImpl.convertirFechaStringyyyyMMdd(siManejoFechaImpl.fechaSumarDias(fecha, dias)) + "' as date)";
@@ -738,7 +707,6 @@ public class ConvenioImpl extends AbstractFacade<Convenio> {
         return ((Long) em.createNativeQuery(sb).getSingleResult());
     }
 
-    
     public List<ContratoVO> traerConveniosPorProveedor(int idProveedor, int campo) {
         String sb = consulta();
         sb += "	where p.id = " + idProveedor;
@@ -757,7 +725,6 @@ public class ConvenioImpl extends AbstractFacade<Convenio> {
         return lc;
     }
 
-    
     public List<ContratoVO> traerConvenioMaestroPorProveedor(int idProveedor, int campo) {
         String sb = consulta();
         sb += "	where p.id = " + idProveedor;
@@ -777,7 +744,6 @@ public class ConvenioImpl extends AbstractFacade<Convenio> {
         return lc;
     }
 
-    
     public ContratoVO buscarPorId(int icContrato, int apCampo, String usuario, boolean validarFormalizado) {
         String sb = consulta();
         sb += "	where c.id = " + icContrato;
@@ -916,7 +882,6 @@ public class ConvenioImpl extends AbstractFacade<Convenio> {
         return contratoVO;
     }
 
-    
     public boolean actualizarDatosGenerales(String sesion, ContratoVO contratoVO, List<GerenciaVo> lg) {
         boolean v = true;
         try {
@@ -954,7 +919,6 @@ public class ConvenioImpl extends AbstractFacade<Convenio> {
      * @param contratoVO // estado, firma, inicio, fin, monto moneda
      * @return
      */
-    
     public boolean actualizar(String sesion, ContratoVO contratoVO) {
         boolean v = true;
         try {
@@ -992,7 +956,6 @@ public class ConvenioImpl extends AbstractFacade<Convenio> {
         return v;
     }
 
-    
     public List<ContratoVO> contratosRelacionados(int idContratoPadre, int idContrato) {
         String sd = "	select  id, CODIGO, Objetivo, NOMBRE, FECHA_FIRMA, FECHA_INICIO, FECHA_VENCIMIENTO, VIGENCIA, ";
         sd += "	    PORCENTAJE_DEDUCCION, MONTO, SIGLAS, Tipo, Clasificacion,  Estatus, ";
@@ -1107,7 +1070,6 @@ public class ConvenioImpl extends AbstractFacade<Convenio> {
         return lista;
     }
 
-    
     public List<ContratoVO> traerConveniosPorProveedorGerencia(int idProveedor, int gerencia) {
         String sb = consulta();
         sb += "	where p.id = " + idProveedor;
@@ -1126,7 +1088,6 @@ public class ConvenioImpl extends AbstractFacade<Convenio> {
         return lc;
     }
 
-    
     public List<ContratoVO> traerConveniosPorProveedorPermisos(int idProveedor, String usuario, int rol,
             double importe, int moneda, Date fecha, int idOperador, int campo, int maximoRegistros, int estado) {
         String sb = consulta();
@@ -1248,7 +1209,6 @@ public class ConvenioImpl extends AbstractFacade<Convenio> {
         return sb;
     }
 
-    
     public List<ContratoVO> traerConveniosPorParteDeCodigo(String codigo) {
         String sb = consulta();
         sb += "	where c.codigo like  '" + codigo + "%'";
@@ -1266,7 +1226,6 @@ public class ConvenioImpl extends AbstractFacade<Convenio> {
         return lc;
     }
 
-    
     public ContratoVO traerConveniosPorCodigo(String codigo) {
         String sb = consulta();
         try {
@@ -1281,7 +1240,6 @@ public class ConvenioImpl extends AbstractFacade<Convenio> {
         }
     }
 
-    
     public List<ContratoVO> buscarConvenioPorUsuario(String usuario, int campo) {
         String sb = consulta();
         List<ApCampoGerenciaVo> lg = apCampoGerenciaRemote.buscarCampoGerencia(usuario, campo);
@@ -1314,7 +1272,6 @@ public class ConvenioImpl extends AbstractFacade<Convenio> {
         return lc;
     }
 
-    
     public List<ProveedorVo> traerProveedoresPorUsuario(String usuario, int rol, int campo) {
         String sb = "select distinct(p.ID), p.RFC, p.NOMBRE from PROVEEDOR p ";
         sb += "	    inner join CONVENIO c on c.PROVEEDOR = p.ID";
@@ -1357,7 +1314,6 @@ public class ConvenioImpl extends AbstractFacade<Convenio> {
      * @param campo
      * @return
      */
-    
     public List<ContratoVO> buscarConvenioNotificarDias(int dias, int campo) {
         String sb = "select c.id , c.CODIGO, c.NOMBRE, p.nombre, c.MONTO, m.siglas, c.fecha_vencimiento from convenio c ";
         sb += "	    inner join PROVEEDOR p on c.proveedor = p.ID ";
@@ -1383,7 +1339,6 @@ public class ConvenioImpl extends AbstractFacade<Convenio> {
         return lc;
     }
 
-    
     public void notificarConvenioPorVencer() {
         List<ApCampoVo> listCampo = apCampoRemote.traerApCampo();
 
@@ -1432,7 +1387,6 @@ public class ConvenioImpl extends AbstractFacade<Convenio> {
         return correo;
     }
 
-    
     public List<ContratoVO> buscarConvenioFechaVencimiento(Date fechaVencimiento, int idCampo) {
         String sb = "select c.id , c.CODIGO, c.NOMBRE, p.nombre, c.MONTO, m.siglas, c.fecha_vencimiento from convenio c ";
         sb += "	    inner join PROVEEDOR p on c.proveedor = p.ID ";
@@ -1458,7 +1412,6 @@ public class ConvenioImpl extends AbstractFacade<Convenio> {
         return lc;
     }
 
-    
     public void notificarVencimiento(int campo) {
         List<ContratoVO> lc = buscarConvenioFechaVencimiento(new Date(), campo);
         if (lc != null && !lc.isEmpty()) {
@@ -1482,7 +1435,6 @@ public class ConvenioImpl extends AbstractFacade<Convenio> {
 
     }
 
-    
     public List<ContratoVO> traerConveniosPorGerencia(int gerencia, int campo) {
         String sb = consulta();
         sb += "where " + gerencia + " in (select gerencia from cv_convenio_gerencia where eliminado = 'False')";
@@ -1501,7 +1453,6 @@ public class ConvenioImpl extends AbstractFacade<Convenio> {
         return lc;
     }
 
-    
     public List<ContratoVO> traerContratosBusqueda(List<FiltroVo> filtroVos, String usuario, int rol, int campo) {
         String sb = consulta();
         sb += "	where ";
@@ -1522,9 +1473,8 @@ public class ConvenioImpl extends AbstractFacade<Convenio> {
 
     }
 
-    
     public List<ContratoVO> traerContratosBusquedaContactos(List<FiltroVo> filtroVos, String usuario, int rol, int campo,
-             boolean conConts, boolean conRL, boolean conRT) {
+            boolean conConts, boolean conRL, boolean conRT) {
         String sb = consultaContactos();
         sb += "	where ";
         sb += parametrosContactos(filtroVos, campo);
@@ -1749,7 +1699,6 @@ public class ConvenioImpl extends AbstractFacade<Convenio> {
         }
     }
 
-    
     public List<ContratoVO> consultaOCSPorConvenio(String codigo, int estado) {
         String sb = "select c.CODIGO, count(o.id), extract(month from o.FECHA)::bigint,";
         sb += "	    extract(year from o.FECHA)::bigint, c.FECHA_INICIO, c.FECHA_VENCIMIENTO, c.MONTO,"
@@ -1780,7 +1729,6 @@ public class ConvenioImpl extends AbstractFacade<Convenio> {
         return lc;
     }
 
-    
     public List<ContratoVO> consultaOCSPorConvenioDet(String codigo, int estado) {
         String sb = "select c.CODIGO, count(o.id), extract(month from o.FECHA)::bigint, ";
         sb += "	    extract(year from o.FECHA)::bigint, c.FECHA_INICIO, c.FECHA_VENCIMIENTO, c.MONTO, "
@@ -1820,7 +1768,6 @@ public class ConvenioImpl extends AbstractFacade<Convenio> {
      * @param nuevoEstado
      * @throws java.lang.Exception
      */
-    
     public void promoverEstadoConvenio(String sesion, int idContrato, int nuevoEstado,
             Map<String, List<ContactoProveedorVO>> listaCorreo) throws Exception {
         String asunto;
@@ -1879,7 +1826,6 @@ public class ConvenioImpl extends AbstractFacade<Convenio> {
         return correo;
     }
 
-    
     public List<ContratoVO> contratosPorVencerPorMontos(int campo, int moneda, Date fecha, double porcentje) {
         String sb = "select count(o.ID), c.CODIGO, c.NOMBRE, c.MONTO, p.NOMBRE, c.FECHA_INICIO, c.FECHA_VENCIMIENTO ";
         sb += " ,round(sum(o.SUBTOTAL)::numeric,2) ";
@@ -1917,7 +1863,6 @@ public class ConvenioImpl extends AbstractFacade<Convenio> {
         return lc;
     }
 
-    
     public List<ContratoVO> traerConveniosPorUsuarioGerencia(String idUsuario, int gerencia, int campo) {
         String sb = consulta();
         sb += "where " + gerencia + " in (select gerencia from cv_convenio_gerencia where eliminado = 'False')";
@@ -1935,7 +1880,6 @@ public class ConvenioImpl extends AbstractFacade<Convenio> {
         return lc;
     }
 
-    
     public List<ConvenioArticuloVo> cargarArchivoPrecio(File archivoPrecio) {
         List<ConvenioArticuloVo> lartInt = new ArrayList<ConvenioArticuloVo>();
         try {
@@ -2034,7 +1978,6 @@ public class ConvenioImpl extends AbstractFacade<Convenio> {
         edit(convenio);
     }
 
-    
     public boolean finalizarConvenio(String sesion, ContratoVO contratoVO, String mensaje) {
         boolean v = true;
         try {
@@ -2057,7 +2000,6 @@ public class ConvenioImpl extends AbstractFacade<Convenio> {
         return v;
     }
 
-    
     public List<ContratoVO> traerConvenioMaestroPorProveedorStatus(int idProveedor, int statusId) {
         String sb = consulta();
         sb += "	where p.id = " + idProveedor;
@@ -2077,7 +2019,6 @@ public class ConvenioImpl extends AbstractFacade<Convenio> {
         return lc;
     }
 
-    
     public List<ContratoVO> traerConvenioPorStatusCampo(int statusId, int campoId) {
         String sb = consulta();
         sb += "	where c.estatus = " + statusId
@@ -2097,7 +2038,6 @@ public class ConvenioImpl extends AbstractFacade<Convenio> {
         return lc;
     }
 
-    
     public boolean actualizarStatus(String sesion, ContratoVO contratoVo, int statusId) {
         boolean v = true;
         try {
@@ -2115,7 +2055,6 @@ public class ConvenioImpl extends AbstractFacade<Convenio> {
         return v;
     }
 
-    
     public int guardarContratoFiniquito(String sesion, ContratoVO contratoVo) {
         Convenio convenio = new Convenio();
         try {
@@ -2146,7 +2085,6 @@ public class ConvenioImpl extends AbstractFacade<Convenio> {
         return convenio.getId();
     }
 
-    
     public List<ContratoVO> reporteContratoFiniquito(int campoId) {
         String c = "select  p.nombre as contratista, p.nombre_corto as nombre_corto, c.codigo as numero, c.nombre as contrato , "
                 + "  c.fecha_vencimiento , e.nombre as status, u.nombre as analista\n"
@@ -2220,7 +2158,6 @@ public class ConvenioImpl extends AbstractFacade<Convenio> {
         return contratosReporte;
     }
 
-    
     public List<ProveedorVo> traerProveedoresConContratoActivo() {
         String c = "select distinct(p.ID), p.RFC, p.NOMBRE from PROVEEDOR p \n"
                 + "	    inner join CONVENIO c on c.PROVEEDOR = p.ID\n"
@@ -2230,7 +2167,7 @@ public class ConvenioImpl extends AbstractFacade<Convenio> {
                 + " and p.eliminado = false";
 
         List<Object[]> lo = em.createNativeQuery(c).getResultList();
-        List<ProveedorVo> lp = new ArrayList<ProveedorVo>();
+        List<ProveedorVo> lp = new ArrayList<>();
         for (Object[] lo1 : lo) {
             ProveedorVo proveedorVo = new ProveedorVo();
             proveedorVo.setIdProveedor((Integer) lo1[0]);
@@ -2239,5 +2176,39 @@ public class ConvenioImpl extends AbstractFacade<Convenio> {
             lp.add(proveedorVo);
         }
         return lp;
+    }
+
+    public ContratoVO buscarPorNumero(String numero, String usuario, boolean validarFormalizado, int campo) {
+        String sb = consulta();
+        sb += "	where c.codigo = '" + numero + "'";
+
+        Object[] lo = (Object[]) em.createNativeQuery(sb).getSingleResult();
+        ContratoVO lc = null;
+        if (lo != null) {
+            lc = castContratos(lo);
+            if (lc != null && validarFormalizado && !lc.isEditar()) {
+                lc.setEditar(siUsuarioRolRemote.buscarRolPorUsuarioModulo(usuario, Constantes.MODULO_CONTRATO, Constantes.COD_EDITAR_CONVENIO_FORMALIZADO, campo));
+            }
+        }
+        return lc;
+    }
+
+    public List<ContratoVO> traerConvenioMaestroPorRfcProveedor(String rfcProveedor, int campo) {
+        String sb = consulta();
+        sb += "	where p.rfc = '" + rfcProveedor + "'";
+        sb += "	and  c.convenio is null";
+        sb += "	and c.ap_campo = " + campo;
+        sb += "	and c.eliminado = 'False'";
+        sb += "	order by c.codigo asc";
+        //System.out.println(" q :::  " + sb);
+        List<Object[]> lo = em.createNativeQuery(sb).getResultList();
+        List<ContratoVO> lc = null;
+        if (lo != null) {
+            lc = new ArrayList<>();
+            for (Object[] ocObjects : lo) {
+                lc.add(castContratos(ocObjects));
+            }
+        }
+        return lc;
     }
 }

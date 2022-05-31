@@ -2,6 +2,7 @@ package com.ihsa.sia.inventario.beans;
 
 import java.io.Serializable;
 import java.util.List;
+import javax.annotation.PostConstruct;
 import javax.faces.view.ViewScoped;
 
 import javax.inject.Inject;
@@ -39,7 +40,7 @@ public class AlmacenBean extends LocalAbstractBean<AlmacenVO, Integer> implement
 	super(AlmacenVO.class);
     }
 
-    @Override
+    @PostConstruct
     protected void init() {
 	super.init();
 	super.getFiltro().setIdCampo(roles.getUsuario().getIdCampo());

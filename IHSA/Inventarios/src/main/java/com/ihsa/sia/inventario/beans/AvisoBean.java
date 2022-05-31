@@ -19,6 +19,7 @@ import org.primefaces.component.datatable.DataTable;
 @Named(value = "avisos")
 @ViewScoped
 public class AvisoBean extends AbstractBean implements Serializable {
+
     private static final long serialVersionUID = 164878925344220088L;
 
     @Inject
@@ -55,9 +56,12 @@ public class AvisoBean extends AbstractBean implements Serializable {
     }
 
     public void actualizar() {
-        lista = servicio.listarAvisos(getUserName());
-        if (tablaAvisos != null) {
-            tablaAvisos.resetValue();
+        String user = getUserName();
+        if (user != null) {
+            lista = servicio.listarAvisos(user);
+            if (tablaAvisos != null) {
+                tablaAvisos.resetValue();
+            }
         }
     }
 

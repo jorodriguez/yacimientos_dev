@@ -84,7 +84,7 @@ public class UsuarioImpl extends AbstractFacade<Usuario> {
                 + "  (select c.nombre from ap_campo c where u.ap_campo = c.id), "
                 + "  (select g.nombre from gerencia g where u.gerencia is not null and u.gerencia = g.id),"
                 + "  u.gerencia, u.ap_campo,u.sg_oficina"
-                + "FROM usuario u ";
+                + " FROM usuario u ";
     
     
     @PersistenceContext(unitName = "Sia-ServiciosPU")
@@ -440,7 +440,7 @@ public class UsuarioImpl extends AbstractFacade<Usuario> {
             edit(usuario);
             v = true;
         } catch (Exception e) {
-            LOGGER.fatal(this, "Modificando usuario {0}", new Object[]{usuarioVO.getId()}, e);
+            log.warn("Modificando usuario {}", usuarioVO.getId(), e);
         }
 
         return v;

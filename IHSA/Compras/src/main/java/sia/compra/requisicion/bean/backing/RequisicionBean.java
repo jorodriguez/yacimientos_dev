@@ -277,10 +277,8 @@ public class RequisicionBean implements Serializable {
     @Setter
     private int totalRequisiciones;
     @Getter
-    @Setter
     protected static final String UPDATE_OPERATION = "Actualizar";
     @Getter
-    @Setter
     protected static final String CREATE_OPERATION = "Crear";
     @Getter
     @Setter

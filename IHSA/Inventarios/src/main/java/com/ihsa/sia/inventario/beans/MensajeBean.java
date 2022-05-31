@@ -42,7 +42,7 @@ public class MensajeBean extends AbstractBean implements Serializable {
 
     public String marcarComoNoLeido() {
         servicio.marcarComoLeidos(Collections.singletonList(getAviso()));
-        return "/views/index";
+        return "/views/index.jsf?faces-redirect=true";
     }
 
     private void leerMensaje() {

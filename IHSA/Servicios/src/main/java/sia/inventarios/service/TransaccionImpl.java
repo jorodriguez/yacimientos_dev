@@ -1175,6 +1175,7 @@ public class TransaccionImpl extends AbstractFacade<InvTransaccion> implements T
         return trans;
     }
 
+    @Override
     public void crearConciliar(TransaccionVO transaccionVO, List<TransaccionArticuloVO> transaccionArticulosVO, String username, int campo) throws SIAException {
         try {
             UtilLog4j.log.info(this, "TransaccionImpl.create()");
@@ -1213,7 +1214,7 @@ public class TransaccionImpl extends AbstractFacade<InvTransaccion> implements T
                 }
             }
             UtilLog4j.log.info(this, "Transaccion creado exitosamente.");
-        } catch (Exception e) {
+        } catch (SIAException e) {
             UtilLog4j.log.error(e);
         }
     }

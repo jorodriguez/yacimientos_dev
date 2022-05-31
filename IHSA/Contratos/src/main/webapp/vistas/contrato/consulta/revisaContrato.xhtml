@@ -1,0 +1,79 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <h:body >
+        <ui:composition template="../../../WEB-INF/template/template.xhtml">
+	    <ui:define name="tituloPagina">
+		<h2 class="page-header">Revisar contratos</h2>
+	    </ui:define>
+	    <ui:define name="content">
+		<script type="text/javascript">
+		    $(document).ready(function () {
+			datos('frmRevisaContrato', 'hidenDes', 'btnFiltro');
+		    });
+		</script>
+		<style>
+		    .ui-icon-circle-close {
+			cursor:pointer;
+		    }
+		</style>
+		<div class="row">
+		    <div class="card with-nav-tabs card-primary">
+			<!--div class="card-body"-->
+			<div class="card-heading">
+			    <h:form id="frmCabecera">
+				<ul class="nav nav-tabs">
+				    <li class="active">
+					<a href="#tab1primary" data-toggle="tab" 
+					   onclick="ejecutarFiltros('frmCabecera', 'btnIniciarIndice')">Búsqueda</a>
+					<span>
+					    <p:commandLink action="#{contratoBean.iniciarIncide}" 
+							   id="btnIniciarIndice"
+							   style="display:  none;">
+					    </p:commandLink>
+					</span>	
+				    </li>
+				    <c:forEach items="#{contratoBean.lstConveniosTabs}" var="cont" varStatus="indice" >
+					<li style="border-radius: 2em 2em 0 2em;">
+					    <a href="##{cont.nombreTab}" data-toggle="tab"
+					       onclick="ejecutarFiltros('frmCabecera', 'btnPestana#{cont.id}')">#{cont.numero}</a>
+					    <p:commandLink styleClass="cerrar" action="#{contratoBean.cerrarPestanaTab(event)}">
+						<f:param name="indice" value="#{indice.index}"/>
+						<i class="fa fa-remove text-warning"></i>
+					    </p:commandLink>
+					    <span>
+						<p:commandLink action="#{contratoBean.seleccionarPestana(event)}" 
+							       value="#{cont.numero}"
+							       id="btnPestana#{cont.id}"
+							       style="display:  none;">
+						    <f:param name="indice" value="#{indice.index}"/>
+						</p:commandLink>
+					    </span>						
+					</li>
+				    </c:forEach>
+				</ul>
+			    </h:form>
+			</div>
+			<div class="card-body">
+			    <div class="tab-content">
+				<div class="tab-pane fade in active" id="tab1primary">
+				    <ui:include src="../consulta/datosContrato/buscarRevisaContrato.xhtml"/>
+				</div>
+				<c:forEach items="#{contratoBean.lstConveniosTabs}" var="contr">
+				    <div class="tab-pane" id="#{contr.nombreTab}">
+					<ui:include src="../consulta/datosContrato/consultaContrato.xhtml"/>
+				    </div>
+				</c:forEach>
+			    </div>
+			</div>
+		    </div>
+		</div>
+	    </ui:define>
+	</ui:composition>
+    </h:body>
+</html>
