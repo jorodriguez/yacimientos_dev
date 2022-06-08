@@ -27,8 +27,7 @@ import sia.servicios.sistema.vo.CatalogoContratoVo;
  *
  * @author ihsa
  */
-@Named(value  = "catalogoBean")
-@RequestScoped
+@Named(value  = "deprecadoCatalogoBean")
 public class CatalogoBean implements Serializable {
 
     static final long serialVersionUID = 1;
@@ -76,20 +75,19 @@ public class CatalogoBean implements Serializable {
     }
 
     public void completarModDocto() {
-	if (catalogoModel.modificarDocto()) {
-	    FacesUtils.addInfoMessage("No se puede modificar el documento de contrato, ya se usó para registrar un contrato");
-	}
-	PrimeFaces.current().executeScript(";$(dialogoDocumentoMod).modal('hide');;");
+//	if (catalogoModel.modificarDocto()) {
+//	    FacesUtils.addInfoMessage("No se puede modificar el documento de contrato, ya se usó para registrar un contrato");
+//	}
+//	PrimeFaces.current().executeScript(";$(dialogoDocumentoMod).modal('hide');;");
     }
 
-    public void eliminarDocto() {
-	int id = Integer.parseInt(FacesUtils.getRequestParam("idDocto"));
-	catalogoModel.setIdVo(id);
-	if (catalogoModel.eliminarDocto()) {
-	    FacesUtils.addInfoMessage("No se puede eliminar el documento de contrato, ya se usó para registrar un contrato");
-	    catalogoModel.setIdVo(0);
-	}
-    }
+//    public void eliminarDocto(int id) {
+//	catalogoModel.setIdVo(id);
+//	if (eliminarDocto()) {
+//	    FacesUtils.addInfoMessage("No se puede eliminar el documento de contrato, ya se usó para registrar un contrato");
+//	    catalogoModel.setIdVo(0);
+//	}
+//    }
 
     //
     public void guardarTipo() {
@@ -111,23 +109,23 @@ public class CatalogoBean implements Serializable {
 	PrimeFaces.current().executeScript(";mostrarDialogo(dialogoTipoMod);;");
     }
 
-    public void completarModificaTipo() {
-	if (catalogoModel.modificarTipo()) {
-	    FacesUtils.addInfoMessage("No se puede modificar el tipo de contrato, ya se usó para registrar un contrato");
-	    limpiar();
-	}
-	PrimeFaces.current().executeScript(";mostrarDialogo(dialogoTipoMod);;");
-    }
+//    public void completarModificaTipo() {
+//	if (catalogoModel.modificarTipo()) {
+//	    FacesUtils.addInfoMessage("No se puede modificar el tipo de contrato, ya se usó para registrar un contrato");
+//	    limpiar();
+//	}
+//	PrimeFaces.current().executeScript(";mostrarDialogo(dialogoTipoMod);;");
+//    }
 
-    public void eliminarTipo() {
-	int id = Integer.parseInt(FacesUtils.getRequestParam("idTipo"));
-	catalogoModel.setIdVo(id);
-	if (catalogoModel.eliminarTipo()) {
-	    FacesUtils.addInfoMessage("No se puede eliminar el tipo de contrato, ya se usó para registrar un contrato");
-	    limpiar();
-	}
-    }
-//
+//    public void eliminarTipo() {
+//	int id = Integer.parseInt(FacesUtils.getRequestParam("idTipo"));
+//	catalogoModel.setIdVo(id);
+//	if (catalogoModel.eliminarTipo()) {
+//	    FacesUtils.addInfoMessage("No se puede eliminar el tipo de contrato, ya se usó para registrar un contrato");
+//	    limpiar();
+//	}
+//    }
+////
 //////////////////////////////////////////////////////////////
 
     public void guardarHito() {
@@ -149,22 +147,22 @@ public class CatalogoBean implements Serializable {
 	PrimeFaces.current().executeScript(";mostrarDialogo(dialogoHitoMod);");
     }
 
-    public void completarModHito() {
-	if (catalogoModel.modificarHito()) {
-	    FacesUtils.addInfoMessage("No se puede modificar el hito de contrato, ya se usó para registrar un contrato");
-	    limpiar();
-	}
-	PrimeFaces.current().executeScript(";$(dialogoHitoMod).modal('hide');;");
-    }
-
-    public void eliminarHito() {
-	int id = Integer.parseInt(FacesUtils.getRequestParam("idHito"));
-	catalogoModel.setIdVo(id);
-	if (catalogoModel.eliminarHito()) {
-	    FacesUtils.addInfoMessage("No se puede eliminar el hito de contrato, ya se usó para registrar un contrato");
-	    limpiar();
-	}
-    }
+//    public void completarModHito() {
+//	if (catalogoModel.modificarHito()) {
+//	    FacesUtils.addInfoMessage("No se puede modificar el hito de contrato, ya se usó para registrar un contrato");
+//	    limpiar();
+//	}
+//	PrimeFaces.current().executeScript(";$(dialogoHitoMod).modal('hide');;");
+//    }
+//
+//    public void eliminarHito() {
+//	int id = Integer.parseInt(FacesUtils.getRequestParam("idHito"));
+//	catalogoModel.setIdVo(id);
+//	if (catalogoModel.eliminarHito()) {
+//	    FacesUtils.addInfoMessage("No se puede eliminar el hito de contrato, ya se usó para registrar un contrato");
+//	    limpiar();
+//	}
+//    }
 
 ////////////////////////////////////////////////////////////// clasificacion
     public void agregarHijoClasificacion() {
@@ -199,13 +197,13 @@ public class CatalogoBean implements Serializable {
 	PrimeFaces.current().executeScript(";mostrarDialogo(dialogoClasiMod);");
     }
 
-    public void completarModClasifica() {
-	if (catalogoModel.modificarClasificacion()) {
-	    FacesUtils.addInfoMessage("No se puede modificar la clasificación de contrato, ya se usó para registrar un contrato");
-	    limpiar();
-	}
-	PrimeFaces.current().executeScript(";$(dialogoClasiMod).modal('hide');;");
-    }
+//    public void completarModClasifica() {
+//	if (catalogoModel.modificarClasificacion()) {
+//	    FacesUtils.addInfoMessage("No se puede modificar la clasificación de contrato, ya se usó para registrar un contrato");
+//	    limpiar();
+//	}
+//	PrimeFaces.current().executeScript(";$(dialogoClasiMod).modal('hide');;");
+//    }
 
     public void eliminarClasificacion() {
 	int id = Integer.parseInt(FacesUtils.getRequestParam("idClasificacion"));
@@ -237,13 +235,13 @@ public class CatalogoBean implements Serializable {
 	PrimeFaces.current().executeScript(";mostrarDialogo(dialogoCondicionMod);");
     }
 
-    public void completarModCondicion() {
-	if (catalogoModel.modificarCondicion()) {
-	    FacesUtils.addInfoMessage("No se puede modificar la condición de pago de contrato, ya se usó para registrar un contrato");
-	    limpiar();
-	}
-	PrimeFaces.current().executeScript(";$(dialogoCondicionMod).modal('hide');;");
-    }
+//    public void completarModCondicion() {
+//	if (catalogoModel.modificarCondicion()) {
+//	    FacesUtils.addInfoMessage("No se puede modificar la condición de pago de contrato, ya se usó para registrar un contrato");
+//	    limpiar();
+//	}
+//	PrimeFaces.current().executeScript(";$(dialogoCondicionMod).modal('hide');;");
+//    }
 
     public void eliminarCondicion() {
 	int id = Integer.parseInt(FacesUtils.getRequestParam("idCondicion"));
@@ -559,13 +557,13 @@ public class CatalogoBean implements Serializable {
 	PrimeFaces.current().executeScript(";$(dialogoSeccion).modal('hide');;");
     }
 
-    public void eliminarSeccion() {
-	int id = Integer.parseInt(FacesUtils.getRequestParam("idSeccion"));
-	catalogoModel.setIdSeccion(id);
-	if (catalogoModel.eliminarSeccion()) {
-	    FacesUtils.addInfoMessage("No se puede eliminar la sección del formato de evaluación.");	    
-	}
-    }
+//    public void eliminarSeccion() {
+//	int id = Integer.parseInt(FacesUtils.getRequestParam("idSeccion"));
+//	catalogoModel.setIdSeccion(id);
+//	if (catalogoModel.eliminarSeccion()) {
+//	    FacesUtils.addInfoMessage("No se puede eliminar la sección del formato de evaluación.");	    
+//	}
+//    }
     
     public void completarModPregunta() {
 	if (catalogoModel.guardarPregunta()) {

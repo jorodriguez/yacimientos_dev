@@ -89,7 +89,7 @@ public class Sesion implements Serializable {
         redireccionar(Constantes.URL_REL_SIA_PRINCIPAL);
     }
 
-    public String direccionar() {
+    public String direccionar() {       
 
         return getPaginaInicio();
     }
@@ -98,7 +98,7 @@ public class Sesion implements Serializable {
         if (!url.endsWith(".xhtml")) {
             url += ".xhtml";
         }
-        return url + "?page-redirect=true";
+        return url + "?faces-redirect=true";
     }
 
     /**

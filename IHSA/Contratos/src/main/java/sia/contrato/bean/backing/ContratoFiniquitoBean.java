@@ -13,7 +13,6 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedProperty;
 
-
 import javax.faces.event.AjaxBehaviorEvent;
 import javax.faces.model.SelectItem;
 import javax.faces.view.ViewScoped;
@@ -26,6 +25,7 @@ import org.primefaces.event.SelectEvent;
 import sia.constantes.Constantes;
 import sia.contrato.bean.soporte.FacesUtils;
 import sia.ihsa.contratos.Sesion;
+import sia.modelo.Usuario;
 import sia.modelo.contrato.vo.ContratoVO;
 import sia.modelo.contrato.vo.ExhortoVo;
 import sia.modelo.gerencia.vo.GerenciaVo;
@@ -46,7 +46,7 @@ import sia.servicios.sistema.impl.SiUsuarioRolImpl;
  *
  * @author mluis
  */
-@Named(value  = "contratoFiniquitoBean")
+@Named(value = "contratoFiniquitoBean")
 @ViewScoped
 public class ContratoFiniquitoBean implements Serializable {
 
@@ -109,16 +109,20 @@ public class ContratoFiniquitoBean implements Serializable {
     @Getter
     @Setter
     private List<UsuarioVO> listaUsuarioGerencia;
+    @Getter
+    @Setter
+    private UsuarioVO UsuarioVo;
 
     @PostConstruct
     public void iniciar() {
         idFiltro = 0;
-        contactosProveedor = new ArrayList<ContactoProveedorVO>();
-        listaCorreoPara = new ArrayList<ContactoProveedorVO>();
-        representanteLegalProveedor = new ArrayList<ContactoProveedorVO>();
-        contratos = new ArrayList<ContratoVO>();
+        contactosProveedor = new ArrayList<>();
+        listaCorreoPara = new ArrayList<>();
+        representanteLegalProveedor = new ArrayList<>();
+        contratos = new ArrayList<>();
         exhortoVo = new ExhortoVo();
         contratoVo = new ContratoVO();
+        UsuarioVo = new UsuarioVO();
         gerencias = new ArrayList<SelectItem>();
         listaUsuarioGerencia = new ArrayList<UsuarioVO>();
         llenarContratos();
@@ -127,7 +131,7 @@ public class ContratoFiniquitoBean implements Serializable {
         }
     }
 
-    public void cambiarFiltro(AjaxBehaviorEvent event) {        
+    public void cambiarFiltro() {
         switch (idFiltro) {
             case 1:
                 contratos = convenioExhortoImpl.traerContratosPorVencer(new Date(), 30, sesion.getUsuarioSesion().getIdCampo());
@@ -146,8 +150,7 @@ public class ContratoFiniquitoBean implements Serializable {
         contratos = convenioExhortoImpl.traerContratosVencidos(sesion.getUsuarioSesion().getIdCampo());
     }
 
-    public void crearCalificacion() {
-        String cod = FacesUtils.getRequestParam("convnum");
+    public void crearCalificacion(String cod) {
         contratoVo = convenioImpl.traerConveniosPorCodigo(cod);
         motivo = "";
         PrimeFaces.current().executeScript("$(dialogoCalificar).modal('show');");
@@ -157,10 +160,10 @@ public class ContratoFiniquitoBean implements Serializable {
         convenioImpl.finalizarConvenio(sesion.getUsuarioSesion().getId(), contratoVo, motivo);
         llenarContratos();
         //
-        PrimeFaces.current().executeScript( "$(dialogoCalificar).modal('hide');");
+        PrimeFaces.current().executeScript("$(dialogoCalificar).modal('hide');");
     }
 
-    public void traerEmpleadoPorGerencia(AjaxBehaviorEvent event) {
+    public void traerEmpleadoPorGerencia() {
         listaUsuarioGerencia = campoUsuarioRhPuestoImpl.traerUsurioGerenciaCampo(idGerencia, contratoVo.getIdCampo());
         //
         UsuarioResponsableGerenciaVo urgv = campoGerenciaImpl.buscarResponsablePorGerencia(getIdGerencia(), contratoVo.getIdCampo());
@@ -170,13 +173,12 @@ public class ContratoFiniquitoBean implements Serializable {
         listaCorreoCopia.add(cpvo);
     }
 
-    public void crearExhorto() {
+    public void crearExhorto(String cod) {
         exhortoVo = new ExhortoVo();
-        contactosProveedor = new ArrayList<ContactoProveedorVO>();
-        listaCorreoPara = new ArrayList<ContactoProveedorVO>();
-        listaCorreoCopia = new ArrayList<ContactoProveedorVO>();
+        contactosProveedor = new ArrayList<>();
+        listaCorreoPara = new ArrayList<>();
+        listaCorreoCopia = new ArrayList<>();
         representanteLegalProveedor.clear();
-        String cod = FacesUtils.getRequestParam("convnum");
         contratoVo = convenioImpl.traerConveniosPorCodigo(cod);
         representanteLegalProveedor = contactoProveedorImpl.traerContactoPorProveedor(contratoVo.getProveedor(), Constantes.CONTACTO_REP_LEGAL);
         //
@@ -184,21 +186,20 @@ public class ContratoFiniquitoBean implements Serializable {
         contactosProveedor.addAll(contactoProveedorImpl.traerContactoPorProveedor(contratoVo.getProveedor(), Constantes.CONTACTO_REP_COMPRAS));
         //
         llenarCorreoCopia(contratoVo.getId(), contratoVo.getIdCampo());
-        PrimeFaces.current().executeScript( "$(dialogoEnviarExhorto).modal('show');");
+        PrimeFaces.current().executeScript("$(dialogoEnviarExhorto).modal('show');");
     }
 
-    public void seleccionarContactoPara(SelectEvent event) {
-        ContactoProveedorVO con = (ContactoProveedorVO) event.getObject();
+    public void seleccionarContactoPara(SelectEvent<ContactoProveedorVO> event) {
         //
         if (listaCorreoPara.isEmpty()) {
-            listaCorreoPara.add(con);
+            listaCorreoPara.add(event.getObject());
         } else {
-            listaCorreoCopia.add(con);
+            listaCorreoCopia.add(event.getObject());
         }
     }
 
-    public void quitarUsuarioPara() {
-        listaCorreoPara.remove(contactoProveedorVo);
+    public void quitarUsuarioPara(ContactoProveedorVO ctPvVo) {
+        listaCorreoPara.remove(ctPvVo);
     }
 
     public void seleccionarContactoCopia(SelectEvent event) {
@@ -207,17 +208,16 @@ public class ContratoFiniquitoBean implements Serializable {
         listaCorreoCopia.add(con);
     }
 
-    public void seleccionarContactoGerenciaCopia(SelectEvent event) {
-        UsuarioVO us = (UsuarioVO) event.getObject();
+    public void seleccionarContactoGerenciaCopia(SelectEvent<UsuarioVO> event) {
         ContactoProveedorVO con = new ContactoProveedorVO();
-        con.setNombre(us.getNombre());
-        con.setCorreo(us.getMail());
+        con.setNombre(event.getObject().getNombre());
+        con.setCorreo(event.getObject().getMail());
         //
         listaCorreoCopia.add(con);
     }
 
-    public void quitarUsuarioCopia() {
-        listaCorreoCopia.remove(contactoProveedorVo);
+    public void quitarUsuarioCopia(ContactoProveedorVO ctPvVo) {
+        listaCorreoCopia.remove(ctPvVo);
     }
 
     public void enviarExhorto() {
@@ -232,7 +232,7 @@ public class ContratoFiniquitoBean implements Serializable {
             //
             llenarContratos();
             //
-            PrimeFaces.current().executeScript( "$(dialogoEnviarExhorto).modal('hide');");
+            PrimeFaces.current().executeScript("$(dialogoEnviarExhorto).modal('hide');");
         } catch (IllegalArgumentException e) {
             FacesUtils.addErrorMessage(e.getMessage());
         }
@@ -260,7 +260,7 @@ public class ContratoFiniquitoBean implements Serializable {
     private void llenarCorreoCopia(int contratoId, int campoId) {
         ContactoProveedorVO cpVo = new ContactoProveedorVO();
         List<GerenciaVo> lg = convenioGerenciaImpl.convenioPorGerenica(contratoId);
-        listaCorreoCopia = new ArrayList<ContactoProveedorVO>();
+        listaCorreoCopia = new ArrayList<>();
         // gerencia compras
         UsuarioResponsableGerenciaVo usuarioResponsableGerenciaVo = campoGerenciaImpl.buscarResponsablePorGerencia(Constantes.GERENCIA_ID_COMPRAS, campoId);
         if (usuarioResponsableGerenciaVo != null) {

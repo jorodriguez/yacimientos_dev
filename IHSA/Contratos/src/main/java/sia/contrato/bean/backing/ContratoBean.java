@@ -19,6 +19,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
+import javax.faces.context.FacesContext;
 
 import javax.faces.model.DataModel;
 import javax.faces.model.ListDataModel;
@@ -108,6 +109,7 @@ import sia.servicios.sistema.vo.CatalogoContratoVo;
 import sia.servicios.sistema.vo.MenuSiOpcionVo;
 import sia.servicios.sistema.vo.MonedaVO;
 import sia.servicios.sistema.vo.SiOpcionVo;
+import sia.util.OrdenEstadoEnum;
 import sia.util.UtilLog4j;
 
 /**
@@ -367,15 +369,15 @@ public class ContratoBean implements Serializable {
     private boolean editarEvals = false;
     @Getter
     @Setter
-    private List<Tab> tabs;
+    private TabView tabView;
     @Getter
     @Setter
-    private TabView tabView;
+    private int activeTab;
 
     @PostConstruct
     public void irContrato() {
         tabView = new TabView();
-        tabs = new LinkedList<>();
+        activeTab = 0;
         listaCorreo = new HashMap<>();
         lstConveniosTabs = new ArrayList<>();
         filtroVo = new FiltroVo();
@@ -428,12 +430,6 @@ public class ContratoBean implements Serializable {
         llenarMapaLista();
     }
     int id;
-
-    public void addTab() {
-        Tab tab = new Tab();
-        tab.setTitle("Nuevo_" + id++);
-        tabs.add(tab);
-    }
 
     public void llenarListaConveniosInicio() {
         if (sesion.getUsuarioSesion() != null) {
@@ -492,19 +488,25 @@ public class ContratoBean implements Serializable {
         if (!cont.equals("Buscar")) {
             contratoVo = convenioServicioRemoto.buscarPorNumero(cont, sesion.getUsuarioSesion().getId(), Boolean.TRUE, sesion.getUsuarioSesion().getIdCampo());
 
-            int index = lstConveniosTabs.indexOf(contratoVo);
+            // int index = lstConveniosTabs.indexOf(contratoVo);
             contratoVo.setProveedorVo(new ProveedorVo());
             contratoVo.getProveedorVo().setTodoContactos(new ArrayList<>());
-            llenarDatos(index, contratoVo.getId(), getListaConvenios());
+            //llenarDatos(index, contratoVo.getId());
             //Activar tabl
             //
-            ocsPorConvenio(index);
-            setIndice(index);
+
+            //setIndice(index);
             listaCorreo = new HashMap<>();
             listaUsuarioGerencia = new ArrayList<>();
             listaCorreo.put("para", new ArrayList<>());
             listaCorreo.put("copia", new ArrayList<>());
+            llenarDatosContrato(contratoVo.getId());
+            //
+            categoriasSeleccionadas = new ArrayList<>();
+            iniciarCatSel();
 
+            categoriaVo = new CategoriaVo();
+            categoriaVo.setListaCategoria(siCategoriaImpl.traerCategoriaPrincipales());
         }
     }
 
@@ -514,24 +516,6 @@ public class ContratoBean implements Serializable {
         indice = lstConveniosTabs.indexOf(contratoVo);
         //regreso a la table
         getListaConvenios().add(getListaConvenios().size(), contratoVo);
-        //borra de las pestanas
-        getLstConveniosTabs().remove(getIndice());
-    }
-
-    public void seleccionarPestana(int ind) {
-        setIndice(ind);
-        llenarDatos(ind, lstConveniosTabs.get(ind).getId(), listaConvenios);
-    }
-
-    public void cerrarPestanaTab(int ind) {
-        setIndice(ind);
-        //regreso a la table
-        getListaConvenios().add(
-                getListaConvenios().size(),
-                buscarPorId(
-                        getLstConveniosTabs().get(getIndice()).getId(), false
-                )
-        );
         //borra de las pestanas
         getLstConveniosTabs().remove(getIndice());
     }
@@ -551,7 +535,7 @@ public class ContratoBean implements Serializable {
         } else {
             getListaCorreo().get("copia").add(con);
         }
-        getLstConveniosTabs().get(getIndice()).getProveedorVo().getTodoContactos().remove(con);
+        contratoVo.getProveedorVo().getTodoContactos().remove(con);
     }
 
     public void quitarUsuarioPara(int ind) {
@@ -559,7 +543,7 @@ public class ContratoBean implements Serializable {
         //
         //setContactoProveedorVO(new ContactoProveedorVO());
         if (getContactoProveedorVO() != null) {
-            getLstConveniosTabs().get(getIndice()).getProveedorVo().getTodoContactos().add(getContactoProveedorVO());
+            contratoVo.getProveedorVo().getTodoContactos().add(getContactoProveedorVO());
         }
     }
 
@@ -570,9 +554,9 @@ public class ContratoBean implements Serializable {
     }
 
     public void traerUsuarioPorGerencia() {
-        setListaUsuarioGerencia(apCampoUsuarioRhPuestoImpl.traerUsurioGerenciaCampo(getIdGerencia(), lstConveniosTabs.get(getIndice()).getIdCampo()));
+        setListaUsuarioGerencia(apCampoUsuarioRhPuestoImpl.traerUsurioGerenciaCampo(getIdGerencia(), contratoVo.getIdCampo()));
         //
-        UsuarioResponsableGerenciaVo urgv = apCampoGerenciaImpl.buscarResponsablePorGerencia(getIdGerencia(), lstConveniosTabs.get(getIndice()).getIdCampo());
+        UsuarioResponsableGerenciaVo urgv = apCampoGerenciaImpl.buscarResponsablePorGerencia(getIdGerencia(), contratoVo.getIdCampo());
         ContactoProveedorVO cpvo = new ContactoProveedorVO();
         cpvo.setNombre(urgv.getNombreUsuario());
         cpvo.setCorreo(urgv.getEmailUsuario());
@@ -594,7 +578,7 @@ public class ContratoBean implements Serializable {
         //
         if (getContactoProveedorVO() != null) {
             if (getContactoProveedorVO().getIdProveedor() > 0) {
-                getLstConveniosTabs().get(getIndice()).getProveedorVo().getTodoContactos().add(getContactoProveedorVO());
+                contratoVo.getProveedorVo().getTodoContactos().add(getContactoProveedorVO());
             }
         }
     }
@@ -607,7 +591,7 @@ public class ContratoBean implements Serializable {
                 traerContactosPorProveedor();
                 PrimeFaces.current().executeScript(
                         ";$(dialogoFormalizarContrato"
-                        + getLstConveniosTabs().get(getIndice()).getId()
+                        + contratoVo.getId()
                         + ").modal('show');"
                 );
             } else {
@@ -619,16 +603,16 @@ public class ContratoBean implements Serializable {
     }
 
     public void traerContactosPorProveedor() {
-        lstConveniosTabs.get(getIndice()).getProveedorVo().setTodoContactos(contactoProveedorImpl.traerTodosContactoPorProveedor(lstConveniosTabs.get(getIndice()).getProveedorVo().getIdProveedor()));
+        contratoVo.getProveedorVo().setTodoContactos(contactoProveedorImpl.traerTodosContactoPorProveedor(contratoVo.getProveedorVo().getIdProveedor()));
     }
 
     public void llenarCorreoCopia() {
         List<ContactoProveedorVO> lc = new ArrayList<>();
         ContactoProveedorVO cpVo = new ContactoProveedorVO();
-        List<GerenciaVo> lg = cvConvenioGerenciaImpl.convenioPorGerenica(lstConveniosTabs.get(getIndice()).getId());
+        List<GerenciaVo> lg = cvConvenioGerenciaImpl.convenioPorGerenica(contratoVo.getId());
 
         // gerencia compras
-        UsuarioResponsableGerenciaVo usuarioResponsableGerenciaVo = apCampoGerenciaImpl.buscarResponsablePorGerencia(Constantes.GERENCIA_ID_COMPRAS, lstConveniosTabs.get(getIndice()).getIdCampo());
+        UsuarioResponsableGerenciaVo usuarioResponsableGerenciaVo = apCampoGerenciaImpl.buscarResponsablePorGerencia(Constantes.GERENCIA_ID_COMPRAS, contratoVo.getIdCampo());
         if (usuarioResponsableGerenciaVo != null) {
             cpVo.setNombre(usuarioResponsableGerenciaVo.getNombreUsuario());
             cpVo.setCorreo(usuarioResponsableGerenciaVo.getEmailUsuario());
@@ -636,7 +620,7 @@ public class ContratoBean implements Serializable {
         }
 
         //Gerencia tesoreria
-        usuarioResponsableGerenciaVo = apCampoGerenciaImpl.buscarResponsablePorGerencia(Constantes.GERENCIA_ID_DIRECCION_FINANZAS, lstConveniosTabs.get(getIndice()).getIdCampo());
+        usuarioResponsableGerenciaVo = apCampoGerenciaImpl.buscarResponsablePorGerencia(Constantes.GERENCIA_ID_DIRECCION_FINANZAS, contratoVo.getIdCampo());
         if (usuarioResponsableGerenciaVo != null) {
             cpVo = new ContactoProveedorVO();
             cpVo.setNombre(usuarioResponsableGerenciaVo.getNombreUsuario());
@@ -644,7 +628,7 @@ public class ContratoBean implements Serializable {
             lc.add(cpVo);
         }
         //Gerencia de juridico
-        usuarioResponsableGerenciaVo = apCampoGerenciaImpl.buscarResponsablePorGerencia(Constantes.GERENCIA_JURIDICO, lstConveniosTabs.get(getIndice()).getIdCampo());
+        usuarioResponsableGerenciaVo = apCampoGerenciaImpl.buscarResponsablePorGerencia(Constantes.GERENCIA_JURIDICO, contratoVo.getIdCampo());
         if (usuarioResponsableGerenciaVo != null) {
             cpVo = new ContactoProveedorVO();
             cpVo.setNombre(usuarioResponsableGerenciaVo.getNombreUsuario());
@@ -652,7 +636,7 @@ public class ContratoBean implements Serializable {
             lc.add(cpVo);
         }
         //Gerencia de juridico
-        usuarioResponsableGerenciaVo = apCampoGerenciaImpl.buscarResponsablePorGerencia(Constantes.GERENCIA_ID_RR_HH, lstConveniosTabs.get(getIndice()).getIdCampo());
+        usuarioResponsableGerenciaVo = apCampoGerenciaImpl.buscarResponsablePorGerencia(Constantes.GERENCIA_ID_RR_HH, contratoVo.getIdCampo());
         if (usuarioResponsableGerenciaVo != null) {
             cpVo = new ContactoProveedorVO();
             cpVo.setNombre(usuarioResponsableGerenciaVo.getNombreUsuario());
@@ -660,7 +644,7 @@ public class ContratoBean implements Serializable {
             lc.add(cpVo);
         }
         // Rol contrato
-        for (UsuarioRolVo urVo : siUsuarioRolImpl.traerUsuarioPorRolModulo(Constantes.ROL_ADMINISTRA_CONTRATO, Constantes.MODULO_CONTRATO, lstConveniosTabs.get(getIndice()).getIdCampo())) {
+        for (UsuarioRolVo urVo : siUsuarioRolImpl.traerUsuarioPorRolModulo(Constantes.ROL_ADMINISTRA_CONTRATO, Constantes.MODULO_CONTRATO, contratoVo.getIdCampo())) {
             cpVo = new ContactoProveedorVO();
             cpVo.setNombre(urVo.getUsuario());
             cpVo.setCorreo(urVo.getCorreo());
@@ -668,7 +652,7 @@ public class ContratoBean implements Serializable {
         }
 
         for (GerenciaVo lg1 : lg) {
-            UsuarioResponsableGerenciaVo urgv = apCampoGerenciaImpl.buscarResponsablePorGerencia(lg1.getId(), lstConveniosTabs.get(getIndice()).getIdCampo());
+            UsuarioResponsableGerenciaVo urgv = apCampoGerenciaImpl.buscarResponsablePorGerencia(lg1.getId(), contratoVo.getIdCampo());
             cpVo = new ContactoProveedorVO();
             cpVo.setNombre(urgv.getNombreUsuario());
             cpVo.setCorreo(urgv.getEmailUsuario());
@@ -678,13 +662,13 @@ public class ContratoBean implements Serializable {
     }
 
     public boolean validaContratoFormalizado() {
-        if (!getLstConveniosTabs().get(getIndice()).getListaArchivoConvenio().isEmpty()) {
-            if (!getLstConveniosTabs().get(getIndice()).getListaConvenioDocumento().isEmpty()) {
-                if (!getLstConveniosTabs().get(getIndice()).getListaGerencia().isEmpty()) {
-                    if (getLstConveniosTabs().get(getIndice()).getFechaInicio() != null
-                            && getLstConveniosTabs().get(getIndice()).getFechaVencimiento() != null
-                            && (getLstConveniosTabs().get(getIndice()).getIdContratoRelacionado() > 0
-                            || getLstConveniosTabs().get(getIndice()).getMonto() > 0)) {
+        if (!contratoVo.getListaArchivoConvenio().isEmpty()) {
+            if (!contratoVo.getListaConvenioDocumento().isEmpty()) {
+                if (!contratoVo.getListaGerencia().isEmpty()) {
+                    if (contratoVo.getFechaInicio() != null
+                            && contratoVo.getFechaVencimiento() != null
+                            && (contratoVo.getIdContratoRelacionado() > 0
+                            || contratoVo.getMonto() > 0)) {
                         return true;
                     }
                 }
@@ -694,21 +678,21 @@ public class ContratoBean implements Serializable {
     }
 
     public boolean validaProveedorContrato() {
-        return getLstConveniosTabs().get(getIndice()).getProveedorVo().getLstRL() != null && !getLstConveniosTabs().get(getIndice()).getProveedorVo().getLstRL().isEmpty();
+        return contratoVo.getProveedorVo().getLstRL() != null && !contratoVo.getProveedorVo().getLstRL().isEmpty();
     }
 
     public void finlizarContratoFormalizado() {
         if (contratoFormalizado()) {	    //
             getLstConveniosTabs().set(getIndice(),
-                    buscarPorId(getLstConveniosTabs().get(getIndice()).getId(), false));
-            llenarDatosContrato(getIndice(), getLstConveniosTabs().get(getIndice()).getId());
+                    buscarPorId(contratoVo.getId(), false));
+            llenarDatosContrato(contratoVo.getId());
             FacesUtils.addInfoMessage("Se envío la notificación de contrato formalizado.");
         } else {
             FacesUtils.addErrorMessage("Ocurrio un error al enviar la notificación del contrato formalizado, por favor contacte al equipo de soporte SIA (soportesia@ihsa.mx)");
         }
         PrimeFaces.current().executeScript(
                 ";$(dialogoFormalizarContrato"
-                + getLstConveniosTabs().get(getIndice()).getId()
+                + contratoVo.getId()
                 + ").modal('hide');"
         );
     }
@@ -716,7 +700,7 @@ public class ContratoBean implements Serializable {
     public boolean contratoFormalizado() {
         try {
             String correo = "";
-            for (ContactoProveedorVO lstRL : getLstConveniosTabs().get(indice).getProveedorVo().getLstRL()) {
+            for (ContactoProveedorVO lstRL : contratoVo.getProveedorVo().getLstRL()) {
                 if (lstRL.isSelected()) {
                     if (correo.isEmpty()) {
                         correo = lstRL.getCorreo();
@@ -725,11 +709,11 @@ public class ContratoBean implements Serializable {
                     }
                 }
             }
-            convenioServicioRemoto.promoverEstadoConvenio(sesion.getUsuarioSesion().getId(), getLstConveniosTabs().get(getIndice()).getId(), Constantes.ESTADO_CONVENIO_ACTIVO, listaCorreo);
+            convenioServicioRemoto.promoverEstadoConvenio(sesion.getUsuarioSesion().getId(), contratoVo.getId(), Constantes.ESTADO_CONVENIO_ACTIVO, listaCorreo);
 
             return true;
         } catch (Exception e) {
-            notificacionSistemaImpl.enviarExcepcion(sesion.getUsuarioSesion().getId(), correoExcepcion(), getLstConveniosTabs().get(getIndice()), "Error - " + getLstConveniosTabs().get(getIndice()).getNumero(), e.toString());
+            notificacionSistemaImpl.enviarExcepcion(sesion.getUsuarioSesion().getId(), correoExcepcion(), getLstConveniosTabs().get(getIndice()), "Error - " + contratoVo.getNumero(), e.toString());
             UtilLog4j.log.fatal(this, e);
             return false;
         }
@@ -762,7 +746,7 @@ public class ContratoBean implements Serializable {
             traerContactosPorProveedor();
             PrimeFaces.current().executeScript(
                     ";$(dialogoFiniquitarContrato"
-                    + getLstConveniosTabs().get(getIndice()).getId()
+                    + contratoVo.getId()
                     + ").modal('show');"
             );
         } else {
@@ -774,15 +758,15 @@ public class ContratoBean implements Serializable {
         if (getListaCorreo().get("para").size() > Constantes.CERO) {
             if (contratoFiniquitado()) {	    //
                 getLstConveniosTabs().set(getIndice(),
-                        buscarPorId(getLstConveniosTabs().get(getIndice()).getId(), false));
-                llenarDatosContrato(getIndice(), getLstConveniosTabs().get(getIndice()).getId());
+                        buscarPorId(contratoVo.getId(), false));
+                llenarDatosContrato(contratoVo.getId());
                 FacesUtils.addInfoMessage("Se envío la notificación de contrato finiquitado.");
             } else {
                 FacesUtils.addErrorMessage("Ocurrio un error al enviar la notificación del contrato finiquitado, por favor contacte al equipo de soporte SIA (soportesia@ihsa.mx)");
             }
             PrimeFaces.current().executeScript(
                     ";$(dialogoFiniquitarContrato"
-                    + getLstConveniosTabs().get(getIndice()).getId()
+                    + contratoVo.getId()
                     + ").modal('hide');"
             );
         } else {
@@ -793,18 +777,18 @@ public class ContratoBean implements Serializable {
     public boolean contratoFiniquitado() {
         try {
             String correo = "";
-            convenioServicioRemoto.promoverEstadoConvenio(sesion.getUsuarioSesion().getId(), getLstConveniosTabs().get(getIndice()).getId(), Constantes.ESTADO_CONVENIO_FINIQUITO, listaCorreo);
+            convenioServicioRemoto.promoverEstadoConvenio(sesion.getUsuarioSesion().getId(), contratoVo.getId(), Constantes.ESTADO_CONVENIO_FINIQUITO, listaCorreo);
 
             return true;
         } catch (Exception e) {
-            notificacionSistemaImpl.enviarExcepcion(sesion.getUsuarioSesion().getId(), correoExcepcion(), getLstConveniosTabs().get(getIndice()), "Error - " + getLstConveniosTabs().get(getIndice()).getNumero(), e.toString());
+            notificacionSistemaImpl.enviarExcepcion(sesion.getUsuarioSesion().getId(), correoExcepcion(), getLstConveniosTabs().get(getIndice()), "Error - " + contratoVo.getNumero(), e.toString());
             UtilLog4j.log.fatal(this, e);
             return false;
         }
     }
 
     public void eliminarContrato() {
-        convenioServicioRemoto.eliminarContrato(sesion.getUsuarioSesion().getId(), lstConveniosTabs.get(getIndice()).getId());
+        convenioServicioRemoto.eliminarContrato(sesion.getUsuarioSesion().getId(), contratoVo.getId());
         getLstConveniosTabs().remove(getIndice());
     }
 
@@ -893,11 +877,11 @@ public class ContratoBean implements Serializable {
     }
 
     /////////////////////////////////////
-    public void ocsPorConvenio(int index) {
+    public void ocsPorConvenio() {
         try {
-            List<ContratoVO> lo = traerOCSConvenio(index);
+            List<ContratoVO> lo = traerOCSConvenio();
             if (lo != null && !lo.isEmpty()) {
-                llenarOCSConvenio(index);
+                llenarOCSConvenio();
                 JSONObject j = new JSONObject();
                 String json;
                 List<String> u = new ArrayList<>();
@@ -915,18 +899,18 @@ public class ContratoBean implements Serializable {
                 json = j.toString();
                 //
                 PrimeFaces.current().executeScript(";grafica(" + json
-                        + ",'" + getLstConveniosTabs().get(index).getNumero() + "'"
-                        + ", 'frmOcsConvenio" + getLstConveniosTabs().get(index).getId() + "'"
-                        + ", 'graficaOCSConvenio" + getLstConveniosTabs().get(index).getId() + "'"
-                        + ", 'txtMesAnio" + getLstConveniosTabs().get(index).getId() + "'"
-                        + ", 'btnBuscar" + getLstConveniosTabs().get(index).getId() + "'"
-                        + ", " + getLstConveniosTabs().get(index).getAcumulado()
-                        + ", '" + (getLstConveniosTabs().get(index).getMonto() - getLstConveniosTabs().get(index).getAcumulado()) + "'"
+                        + ",'" + contratoVo.getNumero() + "'"
+                        + ", 'frmOcsConvenio" + contratoVo.getId() + "'"
+                        + ", 'graficaOCSConvenio" + contratoVo.getId() + "'"
+                        + ", 'txtMesAnio" + contratoVo.getId() + "'"
+                        + ", 'btnBuscar" + contratoVo.getId() + "'"
+                        + ", " + contratoVo.getAcumulado()
+                        + ", '" + (contratoVo.getMonto() - contratoVo.getAcumulado()) + "'"
                         + ");");
             } else {
                 PrimeFaces.current().executeScript(
                         ";ocultarDiv('graficaOCSConvenio"
-                        + getLstConveniosTabs().get(index).getId()
+                        + contratoVo.getId()
                         + "');;"
                 );
             }
@@ -936,32 +920,27 @@ public class ContratoBean implements Serializable {
 
     }
 
-    public void llenarOCSConvenio(int index) {
-        getLstConveniosTabs().get(index).setListaOrdenConvenio(ordenImpl.traerOCSPorContrato(getLstConveniosTabs().get(index).getId(), OrdenEstadoEnum.POR_SOLICITAR.getId(), sesion.getUsuarioSesion().getIdCampo()));
-        getLstConveniosTabs().get(index).getListaOrdenConvenio().addAll(ordenImpl.traerOCSPorContratoDet(getLstConveniosTabs().get(index).getId(), OrdenEstadoEnum.POR_SOLICITAR.getId(), sesion.getUsuarioSesion().getIdCampo()));
+    public void llenarOCSConvenio() {
+        contratoVo.setListaOrdenConvenio(ordenImpl.traerOCSPorContrato(contratoVo.getId(), OrdenEstadoEnum.POR_SOLICITAR.getId(), sesion.getUsuarioSesion().getIdCampo()));
+        contratoVo.getListaOrdenConvenio().addAll(ordenImpl.traerOCSPorContratoDet(contratoVo.getId(), OrdenEstadoEnum.POR_SOLICITAR.getId(), sesion.getUsuarioSesion().getIdCampo()));
     }
 
-    public List<ContratoVO> traerOCSConvenio(int index) {
+    public List<ContratoVO> traerOCSConvenio() {
         List<ContratoVO> lc = new ArrayList<>();
-        lc.addAll(convenioServicioRemoto.consultaOCSPorConvenio(getLstConveniosTabs().get(index).getNumero(), OrdenEstadoEnum.POR_ENVIAR_PROVEEDOR.getId()));
-        lc.addAll(convenioServicioRemoto.consultaOCSPorConvenioDet(getLstConveniosTabs().get(index).getNumero(), OrdenEstadoEnum.POR_ENVIAR_PROVEEDOR.getId()));
+        lc.addAll(convenioServicioRemoto.consultaOCSPorConvenio(contratoVo.getNumero(), OrdenEstadoEnum.POR_ENVIAR_PROVEEDOR.getId()));
+        lc.addAll(convenioServicioRemoto.consultaOCSPorConvenioDet(contratoVo.getNumero(), OrdenEstadoEnum.POR_ENVIAR_PROVEEDOR.getId()));
         return lc;
     }
 /////////////////////
 
     public List<SiOpcionVo> childOpcion(Integer id) {
-        return childOpcion(id);
-    }
+        if (menu == null && sesion.getUsuarioSesion().getMapaRol().containsKey(Constantes.ROL_ADMINISTRA_CONTRATO)) {
 
-
-    private void llenarJsonProveedor() {
-        String jsonProveedores = traerJson();
-        PrimeFaces.current().executeScript(";setJson(" + jsonProveedores + ");");
-    }
-
-    public String traerJson() {
-        String jsonProveedores = proveedorImpl.traerProveedorPorCompaniaSesionJson("'" + sesion.getRfcEmpresa() + "'", Constantes.CERO);
-        return jsonProveedores;
+            if (sesion.getUsuarioSesion().getMapaRol() != null) {
+                menu = siOpcionImpl.getChildSiOpcion(id, sesion.getUsuarioSesion().getId(), Constantes.MODULO_CONTRATO);
+            }
+        }
+        return menu;
     }
 
     public String goToReturn(String page) {
@@ -995,31 +974,30 @@ public class ContratoBean implements Serializable {
     public void actualizarDatosGeneralesContrato() {
         actualizarContratoGenerales();
         PrimeFaces.current().executeScript(";$(dialogoModificarDatosGenerales"
-                + getLstConveniosTabs().get(getIndice()).getId()
+                + contratoVo.getId()
                 + ").modal('hide');"
         );
         setListaGerencia(new ArrayList<>());
-        llenarDatosContrato(getIndice(), getLstConveniosTabs().get(getIndice()).getId());
+        llenarDatosContrato(contratoVo.getId());
     }
 
     public void actualizarContratoGenerales() {
         //
         convenioServicioRemoto.actualizarDatosGenerales(sesion.getUsuarioSesion().getId(), getLstConveniosTabs().get(indice), listaGerencia);
-        getLstConveniosTabs().get(getIndice()).setListaGerencia(cvConvenioGerenciaImpl.convenioPorGerenica(getLstConveniosTabs().get(indice).getId()));
-        //getLstConveniosTabs().set(indice, convenioServicioRemoto.buscarPorId(getLstConveniosTabs().get(indice).getId()));
+        contratoVo.setListaGerencia(cvConvenioGerenciaImpl.convenioPorGerenica(contratoVo.getId()));
+        //getLstConveniosTabs().set(indice, convenioServicioRemoto.buscarPorId(contratoVo.getId()));
     }
 
     public void actualizarContrato() {
         convenioServicioRemoto.actualizar(sesion.getUsuarioSesion().getId(), getLstConveniosTabs().get(getIndice()));
         llenarDatosContrato(
-                getIndice(),
-                getLstConveniosTabs().get(getIndice()).getId()
+                contratoVo.getId()
         );
         getLstConveniosTabs().set(
                 getIndice(), buscarPorId(
-                        getLstConveniosTabs().get(getIndice()).getId(), true)
+                        contratoVo.getId(), true)
         );
-        llenarDatosContrato(getIndice(), getLstConveniosTabs().get(getIndice()).getId());
+        llenarDatosContrato(contratoVo.getId());
     }
 /////////////////////////////////////////////////
 
@@ -1027,13 +1005,12 @@ public class ContratoBean implements Serializable {
 
         cvConvenioGerenciaImpl.eliminar(sesion.getUsuarioSesion().getId(), idConvGer);
         //
-        getLstConveniosTabs().get(getIndice()).setListaGerencia(cvConvenioGerenciaImpl.convenioPorGerenica(lstConveniosTabs.get(getIndice()).getId()));
+        contratoVo.setListaGerencia(cvConvenioGerenciaImpl.convenioPorGerenica(contratoVo.getId()));
 
     }
 
-    public void quitarGerencia() {
-        int indice = Integer.parseInt(FacesUtils.getRequestParam("idGerencia"));
-        getListaGerencia().remove(indice);
+    public void quitarGerencia(int ind) {
+        getListaGerencia().remove(ind);
         //
     }
 
@@ -1075,8 +1052,8 @@ public class ContratoBean implements Serializable {
                 ltemp.add(voSelected);
             }
         }
-        cvConvenioDocumentoImpl.guardar(sesion.getUsuarioSesion().getId(), ltemp, getLstConveniosTabs().get(indice).getId());
-        doctosPorConvenio(getIndice(), getLstConveniosTabs().get(getIndice()).getId());
+        cvConvenioDocumentoImpl.guardar(sesion.getUsuarioSesion().getId(), ltemp, contratoVo.getId());
+        doctosPorConvenio(getIndice(), contratoVo.getId());
     }
 
     public void agregarArchivoDocumento(int idDocConv) {
@@ -1084,7 +1061,7 @@ public class ContratoBean implements Serializable {
         getContratoDocumentoVo().setId(idDocConv);
         PrimeFaces.current().executeScript(
                 ";$(dialogoAgregarArchivoDocto"
-                + getLstConveniosTabs().get(getIndice()).getId()
+                + contratoVo.getId()
                 + ").modal('show');;"
         );
         setContratoDocumentoVo(cvConvenioDocumentoImpl.buscarPorId(contratoDocumentoVo.getId()));
@@ -1095,7 +1072,7 @@ public class ContratoBean implements Serializable {
         setContratoDocumentoVo(new ContratoDocumentoVo());
         getContratoDocumentoVo().setId(idDoctoConvenio);
         cvConvenioDocumentoImpl.eliminar(sesion.getUsuarioSesion().getId(), contratoDocumentoVo.getId());
-        getLstConveniosTabs().get(getIndice()).setListaConvenioDocumento(cvConvenioDocumentoImpl.traerDoctosPorConveni(getLstConveniosTabs().get(getIndice()).getId(), null, null));
+        contratoVo.setListaConvenioDocumento(cvConvenioDocumentoImpl.traerDoctosPorConveni(contratoVo.getId(), null, null));
     }
 
     public void quitarSoloArchivoDocumento(int idDoctoConvenio, int idDoctoConvenioAdjunto) {
@@ -1104,7 +1081,7 @@ public class ContratoBean implements Serializable {
         getContratoDocumentoVo().getAdjuntoVO().setId(idDoctoConvenioAdjunto);
         siAdjuntoServicioRemoto.eliminarArchivo(contratoDocumentoVo.getAdjuntoVO().getId(), sesion.getUsuarioSesion().getId());
         cvConvenioDocumentoImpl.quitarArchivoDocumento(sesion.getUsuarioSesion().getId(), contratoDocumentoVo.getId());
-        getLstConveniosTabs().get(getIndice()).setListaConvenioDocumento(cvConvenioDocumentoImpl.traerDoctosPorConveni(getLstConveniosTabs().get(getIndice()).getId(), null, null));
+        contratoVo.setListaConvenioDocumento(cvConvenioDocumentoImpl.traerDoctosPorConveni(contratoVo.getId(), null, null));
     }
 
     public void agregarAdjuntoDocumento() {
@@ -1133,7 +1110,7 @@ public class ContratoBean implements Serializable {
 
     public void actualizarDocto() {
         cvConvenioDocumentoImpl.agregarArchivo(sesion.getUsuarioSesion().getId(), contratoDocumentoVo, contratoDocumentoVo.getAdjuntoVO().getId());
-        getLstConveniosTabs().get(indice).setListaConvenioDocumento(cvConvenioDocumentoImpl.traerDoctosPorConveni(getLstConveniosTabs().get(indice).getId(), null, null));
+        contratoVo.setListaConvenioDocumento(cvConvenioDocumentoImpl.traerDoctosPorConveni(contratoVo.getId(), null, null));
         FacesUtils.addInfoMessage("Se actualizaron los datos.");
     }
 ///////////////////////////
@@ -1143,9 +1120,9 @@ public class ContratoBean implements Serializable {
         getVo().setId(idCondicionConvenio);
         cvConvenioCondicionPagoImpl.eliminar(sesion.getUsuarioSesion().getId(), vo.getId());
         setVo(new Vo());
-        getLstConveniosTabs().get(indice).setListaConvenioCondicion(cvConvenioCondicionPagoImpl.traerCondicionesPago(getLstConveniosTabs().get(getIndice()).getId()));
+        contratoVo.setListaConvenioCondicion(cvConvenioCondicionPagoImpl.traerCondicionesPago(contratoVo.getId()));
         // llenar las hitos de pago 
-        getLstConveniosTabs().get(indice).setListaConvenioHito(cvConvenioHitoImpl.traerHitosPorConvenio(getLstConveniosTabs().get(getIndice()).getId()));
+        contratoVo.setListaConvenioHito(cvConvenioHitoImpl.traerHitosPorConvenio(contratoVo.getId()));
     }
 
     public void agregarConvCondicionPago() {
@@ -1155,17 +1132,17 @@ public class ContratoBean implements Serializable {
                 ltemp.add(voSelected);
             }
         }
-        cvConvenioCondicionPagoImpl.guardar(sesion.getUsuarioSesion().getId(), ltemp, getLstConveniosTabs().get(indice).getId());
-        getLstConveniosTabs().get(indice).setListaConvenioCondicion(cvConvenioCondicionPagoImpl.traerCondicionesPago(getLstConveniosTabs().get(getIndice()).getId()));
+        cvConvenioCondicionPagoImpl.guardar(sesion.getUsuarioSesion().getId(), ltemp, contratoVo.getId());
+        contratoVo.setListaConvenioCondicion(cvConvenioCondicionPagoImpl.traerCondicionesPago(contratoVo.getId()));
     }
 
     public void traerCondicionesPago() {
-        setListaCondicionesPago(cvCondicionPagoImpl.traerCondicionFaltante(getLstConveniosTabs().get(getIndice()).getId()));
+        setListaCondicionesPago(cvCondicionPagoImpl.traerCondicionFaltante(contratoVo.getId()));
     }
 
     /////////////////////////////////////////////////////////////////////////////
     public void traerHitosPago() {
-        setListaHitoPago(cvHitoImpl.traerHitoFaltante(getLstConveniosTabs().get(getIndice()).getId()));
+        setListaHitoPago(cvHitoImpl.traerHitoFaltante(contratoVo.getId()));
     }
 
     public void agregarConvHitoConvenio() {
@@ -1176,8 +1153,8 @@ public class ContratoBean implements Serializable {
             }
         }
         cvConvenioHitoImpl.guardar(sesion.getUsuarioSesion().getId(), ltemp,
-                getLstConveniosTabs().get(indice).getId());
-        getLstConveniosTabs().get(indice).setListaConvenioHito(cvConvenioHitoImpl.traerHitosPorConvenio(getLstConveniosTabs().get(getIndice()).getId()));
+                contratoVo.getId());
+        contratoVo.setListaConvenioHito(cvConvenioHitoImpl.traerHitosPorConvenio(contratoVo.getId()));
     }
 
     public void quitarRelacionConvHito(int idHitoConvenio) {
@@ -1185,9 +1162,9 @@ public class ContratoBean implements Serializable {
         getVo().setId(idHitoConvenio);
         cvConvenioHitoImpl.eliminar(sesion.getUsuarioSesion().getId(), vo.getId());
         setVo(new Vo());
-        getLstConveniosTabs().get(indice).setListaConvenioHito(cvConvenioHitoImpl.traerHitosPorConvenio(getLstConveniosTabs().get(getIndice()).getId()));
+        contratoVo.setListaConvenioHito(cvConvenioHitoImpl.traerHitosPorConvenio(contratoVo.getId()));
         // llenar las condiciones de pago
-        getLstConveniosTabs().get(indice).setListaConvenioHito(cvConvenioHitoImpl.traerHitosPorConvenio(getLstConveniosTabs().get(getIndice()).getId()));
+        contratoVo.setListaConvenioHito(cvConvenioHitoImpl.traerHitosPorConvenio(contratoVo.getId()));
 
     }
 
@@ -1209,26 +1186,26 @@ public class ContratoBean implements Serializable {
                 documentoAnexo.setRuta(getSubDirectorioDocumento());
                 almacenDocumentos.guardarDocumento(documentoAnexo);
                 if (!getLstConveniosTabs().isEmpty()
-                        && getLstConveniosTabs().get(getIndice()).getId() > 0) {
+                        && contratoVo.getId() > 0) {
                     getLstConveniosTabs()
                             .get(getIndice())
                             .setAdjuntoVO(buildAdjuntoVO(documentoAnexo));
                     //
-                    getLstConveniosTabs().get(getIndice()).getAdjuntoVO().setId(
+                    contratoVo.getAdjuntoVO().setId(
                             siAdjuntoServicioRemoto.saveSiAdjunto(
-                                    getLstConveniosTabs().get(getIndice()).getAdjuntoVO().getNombre(),
-                                    getLstConveniosTabs().get(getIndice()).getAdjuntoVO().getTipoArchivo(),
-                                    getLstConveniosTabs().get(getIndice()).getAdjuntoVO().getUrl(),
-                                    getLstConveniosTabs().get(getIndice()).getAdjuntoVO().getTamanio(),
+                                    contratoVo.getAdjuntoVO().getNombre(),
+                                    contratoVo.getAdjuntoVO().getTipoArchivo(),
+                                    contratoVo.getAdjuntoVO().getUrl(),
+                                    contratoVo.getAdjuntoVO().getTamanio(),
                                     sesion.getUsuarioSesion().getId()
                             )
                     );
                     pvClasificacionArchivoImpl.guardar(
                             sesion.getUsuarioSesion().getId(),
                             this.getDocProveedor().getId(),
-                            getLstConveniosTabs().get(getIndice()).getAdjuntoVO().getId()
+                            contratoVo.getAdjuntoVO().getId()
                     );
-                    getLstConveniosTabs().get(indice).getProveedorVo().setLstDocsProveedor(pvClasificacionArchivoImpl.traerArchivoPorProveedorOid(getLstConveniosTabs().get(indice).getProveedorVo().getIdProveedor(), 0));
+                    contratoVo.getProveedorVo().setLstDocsProveedor(pvClasificacionArchivoImpl.traerArchivoPorProveedorOid(contratoVo.getProveedorVo().getIdProveedor(), 0));
                 } else {
                     ProveedorModel proveedorBean = (ProveedorModel) FacesUtils.getManagedBean(FacesContext.getCurrentInstance(), "proveedorBean");
                     proveedorBean.subirArchivo(path.toFile());
@@ -1237,43 +1214,45 @@ public class ContratoBean implements Serializable {
             } else if (isSubirContrato()) {
                 documentoAnexo.setNombreBase(fileUpload.getFileName());
                 documentoAnexo.setRuta(getSubDirectorioDocumento());
+                documentoAnexo.setTipoMime(fileUpload.getContentType());
                 almacenDocumentos.guardarDocumento(documentoAnexo);
 
                 getLstConveniosTabs().
                         get(getIndice())
                         .setAdjuntoVO(buildAdjuntoVO(documentoAnexo));
 
-                getLstConveniosTabs().get(getIndice()).getAdjuntoVO().setId(
+                contratoVo.getAdjuntoVO().setId(
                         siAdjuntoServicioRemoto.saveSiAdjunto(
-                                getLstConveniosTabs().get(getIndice()).getAdjuntoVO().getNombre(),
-                                getLstConveniosTabs().get(getIndice()).getAdjuntoVO().getTipoArchivo(),
-                                getLstConveniosTabs().get(getIndice()).getAdjuntoVO().getUrl(),
-                                getLstConveniosTabs().get(getIndice()).getAdjuntoVO().getTamanio(),
+                                contratoVo.getAdjuntoVO().getNombre(),
+                                contratoVo.getAdjuntoVO().getTipoArchivo(),
+                                contratoVo.getAdjuntoVO().getUrl(),
+                                contratoVo.getAdjuntoVO().getTamanio(),
                                 sesion.getUsuarioSesion().getId()
                         )
                 );
                 cvConvenioAdjuntoImpl.guardar(
                         sesion.getUsuarioSesion().getId(),
-                        getLstConveniosTabs().get(indice).getId(),
-                        getLstConveniosTabs().get(getIndice()).getAdjuntoVO().getId()
+                        contratoVo.getId(),
+                        contratoVo.getAdjuntoVO().getId()
                 );
-                getLstConveniosTabs().get(indice).setListaArchivoConvenio(cvConvenioAdjuntoImpl.traerPorConvenio(getLstConveniosTabs().get(indice).getId()));
+                contratoVo.setListaArchivoConvenio(cvConvenioAdjuntoImpl.traerPorConvenio(contratoVo.getId()));
             } else if (isSubirListaPrecio()) {
                 try {
-                    //lstConveniosTabs.get(getIndice()).setListaArticulo(new ArrayList<ConvenioArticuloVo>());
-                    lstConveniosTabs.get(getIndice()).getListaArticulo().addAll(convenioServicioRemoto.cargarArchivoPrecio(path.toFile()));
+                    //contratoVo.setListaArticulo(new ArrayList<ConvenioArticuloVo>());
+                    contratoVo.getListaArticulo().addAll(convenioServicioRemoto.cargarArchivoPrecio(path.toFile()));
                 } catch (Exception ex) {
                     Logger.getLogger(ContratoBean.class.getName()).log(Level.SEVERE, null, ex);
                 }
             } else {
                 documentoAnexo.setNombreBase(fileUpload.getFileName());
                 documentoAnexo.setRuta(getSubDirectorioDocumento());
+                documentoAnexo.setTipoMime(fileUpload.getContentType());
                 almacenDocumentos.guardarDocumento(documentoAnexo);
 
                 getContratoDocumentoVo().setAdjuntoVO(buildAdjuntoVO(documentoAnexo));
 
                 agregarAdjuntoDocumento();
-                getLstConveniosTabs().get(indice).setListaConvenioDocumento(cvConvenioDocumentoImpl.traerDoctosPorConveni(getLstConveniosTabs().get(getIndice()).getId(), null, null));
+                contratoVo.setListaConvenioDocumento(cvConvenioDocumentoImpl.traerDoctosPorConveni(contratoVo.getId(), null, null));
             }
 
             fileUpload.delete();
@@ -1309,7 +1288,7 @@ public class ContratoBean implements Serializable {
         getVo().setId(idConvenioArchivo);
         cvConvenioAdjuntoImpl.eliminar(sesion.getUsuarioSesion().getId(), vo.getId());
         setVo(new Vo());
-        getLstConveniosTabs().get(indice).setListaArchivoConvenio(cvConvenioAdjuntoImpl.traerPorConvenio(getLstConveniosTabs().get(indice).getId()));
+        contratoVo.setListaArchivoConvenio(cvConvenioAdjuntoImpl.traerPorConvenio(contratoVo.getId()));
 
     }
 /////////////////////////////////////
@@ -1354,11 +1333,11 @@ public class ContratoBean implements Serializable {
         String subDir = "";
         try {
             if (isSubirProveedor()) {
-                subDir = "CV/Proveedor/" + getLstConveniosTabs().get(getIndice()).getProveedorVo().getRfc() + "/";
+                subDir = "CV/Proveedor/" + contratoVo.getProveedorVo().getRfc() + "/";
             } else if (isSubirContrato()) {
-                subDir = "CV/" + getLstConveniosTabs().get(getIndice()).getNumero() + "/";
+                subDir = "CV/" + contratoVo.getNumero() + "/";
             } else {
-                subDir = "CV/" + getLstConveniosTabs().get(getIndice()).getNumero() + "/Doctos" + "/";
+                subDir = "CV/" + contratoVo.getNumero() + "/Doctos" + "/";
             }
         } catch (Exception e) {
             UtilLog4j.log.fatal(e);
@@ -1442,25 +1421,33 @@ public class ContratoBean implements Serializable {
     public void administrarContrato(SelectEvent<ContratoVO> event) {
         ContratoVO con = (ContratoVO) event.getObject();
         int index = getLstConveniosTabs().size();
+        setIndice(index);
+        contratoVo = buscarPorId(con.getId(), Boolean.TRUE);//new ContratoVO();
+        contratoVo.setCodigo(con.getNumero());
+        getLstConveniosTabs().add(index, contratoVo);
         contratoVo.setProveedorVo(new ProveedorVo());
         contratoVo.getProveedorVo().setTodoContactos(new ArrayList<>());
-        llenarDatos(index, con.getId(), getListaConvenios());
+        listaConvenios.remove(con);
+        llenarDatosContrato(con.getId());
         //Activar tabl
-        PrimeFaces.current().executeScript(";activarTab('" + con.getNombreTab().trim() + "');");
+        //PrimeFaces.current().executeScript(";activarTab('" + con.getNombreTab().trim() + "');");
         //
-        ocsPorConvenio(index);
-        setIndice(index);
+        //ocsPorConvenio(index);
         listaCorreo = new HashMap<>();
         listaUsuarioGerencia = new ArrayList<>();
         listaCorreo.put("para", new ArrayList<>());
         listaCorreo.put("copia", new ArrayList<>());
+        categoriasSeleccionadas = new ArrayList<>();
+        iniciarCatSel();
+        articulosResultadoBqda = new ArrayList<>();
+        categoriaVo = new CategoriaVo();
+        categoriaVo.setListaCategoria(siCategoriaImpl.traerCategoriaPrincipales());
 
-        Tab tab = new Tab();
-        tab.setTitle(con.getNumero());
-        tabs.add(tab);
+        activeTab = index + 1;
+        tabView.setActiveIndex(activeTab);
     }
 
-    private void llenarDatos(int index, int con, List<ContratoVO> lista) {
+    private void llenarDatos(int index, int con) {
 
         //buscar el convenio en el tab
         int encontrar = 0;
@@ -1472,106 +1459,98 @@ public class ContratoBean implements Serializable {
         }
         //
         if (encontrar == 0) {
-            getLstConveniosTabs().add(index, buscarPorId(con, true));
-            llenarDatosContrato(index, con);
+            getLstConveniosTabs().add(index, contratoVo);
+            //  llenarDatosContrato(index, con);
         }
 
-        //
-        Iterator<ContratoVO> it = lista.iterator();
-        while (it.hasNext()) {
-            ContratoVO next = it.next();
-            if (next.getId() == con) {
-                it.remove();
-                break;
-            }
-        }
-        //        
     }
 
-    private void llenarDatosContrato(int index, int con) {
-        getLstConveniosTabs().get(index).setListaConvenioDocumento(cvConvenioDocumentoImpl.traerDoctosPorConveni(con, null, null));
-        evaluacionesPorConvenio(index, con);
-        evaluacionesPendientesPorConvenio(index, con);
-        getLstConveniosTabs().get(index).setListaConvenioCondicion(cvConvenioCondicionPagoImpl.traerCondicionesPago(con));
+    private void llenarDatosContrato(int con) {
+        contratoVo.setListaConvenioDocumento(cvConvenioDocumentoImpl.traerDoctosPorConveni(con, null, null));
+        evaluacionesPorConvenio(con);
+        evaluacionesPendientesPorConvenio(con);
+        contratoVo.setListaConvenioCondicion(cvConvenioCondicionPagoImpl.traerCondicionesPago(con));
 
-        hitosPorConvenio(index, con);
-        traerArchivosConvenio(index);
+        hitosPorConvenio(con);
+        traerArchivosConvenio();
         //
-        traerDatosProveedor(index);
+        traerDatosProveedor();
         //	traerContratos relacionados
-        traerContratosRelacionados(index, con);
+        traerContratosRelacionados(con);
         //
-        traerGerenciaContrato(index, con);
+        traerGerenciaContrato(con);
         //
-        traerDiasYRemanente(index, con);
+        traerDiasYRemanente(con);
         //
-        traerConvenoArticulo(index, con);
+        traerConvenoArticulo(con);
         //
-        traerConvenioDoctosRh(index, con);
+        traerConvenioDoctosRh(con);
+        ocsPorConvenio();
+        buscarContratoPorGrafica();
     }
 
-    public void traerConvenoArticulo(int index, int contrato) {
-        lstConveniosTabs.get(index).setListaArticulo(new ArrayList<>());
-        lstConveniosTabs.get(index).getListaArticulo().addAll(convenioArticuloImpl.traerConvenioArticulo(contrato, lstConveniosTabs.get(getIndice()).getIdCampo()));
+    public void traerConvenoArticulo(int contrato) {
+        contratoVo.setListaArticulo(new ArrayList<>());
+        contratoVo.getListaArticulo().addAll(convenioArticuloImpl.traerConvenioArticulo(contrato, contratoVo.getIdCampo()));
     }
 
-    public void traerConvenioDoctosRh(int index, int contrato) {
-        lstConveniosTabs.get(index).setDoctosRh(new ArrayList<>());
-        lstConveniosTabs.get(index).getDoctosRh().addAll(rhConvenioDocumentosImpl.traerDocumentacionDistintaPorConvenio(contrato));
+    public void traerConvenioDoctosRh(int contrato) {
+        contratoVo.setDoctosRh(new ArrayList<>());
+        contratoVo.getDoctosRh().addAll(rhConvenioDocumentosImpl.traerDocumentacionDistintaPorConvenio(contrato));
     }
 
-    public void traerDiasYRemanente(int index, int convenio) {
-        if (getLstConveniosTabs().get(index).getFechaVencimiento() != null) {
+    public void traerDiasYRemanente(int convenio) {
+        if (contratoVo.getFechaVencimiento() != null) {
 
-            if (getLstConveniosTabs().get(index).getFechaVencimiento().compareTo(new Date()) >= 0) {
-                getLstConveniosTabs().get(index).setDiasRestantes(siManejoFechaImpl.dias(getLstConveniosTabs().get(index).getFechaVencimiento(), new Date()));
+            if (contratoVo.getFechaVencimiento().compareTo(new Date()) >= 0) {
+                contratoVo.setDiasRestantes(siManejoFechaImpl.dias(contratoVo.getFechaVencimiento(), new Date()));
             } else {
-                getLstConveniosTabs().get(index).setDiasRestantes(0);
+                contratoVo.setDiasRestantes(0);
             }
         }
-        getLstConveniosTabs().get(index).setAcumulado(ordenImpl.sumaToalOCSPorContrato(getLstConveniosTabs().get(index).getId(), getLstConveniosTabs().get(index).getIdCampo()));
-        getLstConveniosTabs().get(index).setRemanente(getLstConveniosTabs().get(index).getMonto() - getLstConveniosTabs().get(index).getAcumulado());
+        contratoVo.setAcumulado(ordenImpl.sumaToalOCSPorContrato(contratoVo.getId(), contratoVo.getIdCampo()));
+        contratoVo.setRemanente(contratoVo.getMonto() - contratoVo.getAcumulado());
 
     }
 
-    public void traerGerenciaContrato(int index, int convenio) {
-        getLstConveniosTabs().get(index).setListaGerencia(cvConvenioGerenciaImpl.convenioPorGerenica(getLstConveniosTabs().get(index).getId()));
+    public void traerGerenciaContrato(int convenio) {
+        contratoVo.setListaGerencia(cvConvenioGerenciaImpl.convenioPorGerenica(contratoVo.getId()));
     }
 
-    public void traerContratosRelacionados(int i, int contRel) {
-        getLstConveniosTabs().get(i).setListaContratoRelacionado(convenioServicioRemoto.contratosRelacionados(getLstConveniosTabs().get(i).getIdContratoRelacionado(), getLstConveniosTabs().get(i).getId()));
+    public void traerContratosRelacionados(int contRel) {
+        contratoVo.setListaContratoRelacionado(convenioServicioRemoto.contratosRelacionados(contratoVo.getIdContratoRelacionado(), contratoVo.getId()));
 
     }
 
-    public void traerDatosProveedor(int i) {
-        getLstConveniosTabs().get(i).setProveedorVo(proveedorImpl.traerProveedor(getLstConveniosTabs().get(i).getProveedor(), sesion.getRfcEmpresa()));
+    public void traerDatosProveedor() {
+        contratoVo.setProveedorVo(proveedorImpl.traerProveedor(contratoVo.getProveedor(), sesion.getRfcEmpresa()));
     }
 
-    public void traerArchivosConvenio(int i) {
-        getLstConveniosTabs().get(i).setListaArchivoConvenio(cvConvenioAdjuntoImpl.traerPorConvenio(getLstConveniosTabs().get(i).getId()));
+    public void traerArchivosConvenio() {
+        contratoVo.setListaArchivoConvenio(cvConvenioAdjuntoImpl.traerPorConvenio(contratoVo.getId()));
     }
 
     public void traerArchivosProveedor(int i) {
-        getLstConveniosTabs().get(i).getProveedorVo().setLstDocsProveedor(pvClasificacionArchivoImpl.traerArchivoPorProveedorOid(getLstConveniosTabs().get(i).getProveedorVo().getIdProveedor(), 0));
+        contratoVo.getProveedorVo().setLstDocsProveedor(pvClasificacionArchivoImpl.traerArchivoPorProveedorOid(contratoVo.getProveedorVo().getIdProveedor(), 0));
     }
 
-    public void hitosPorConvenio(int i, int cont) {
-        getLstConveniosTabs().get(i).setListaConvenioHito(cvConvenioHitoImpl.traerHitosPorConvenio(cont));
+    public void hitosPorConvenio(int cont) {
+        contratoVo.setListaConvenioHito(cvConvenioHitoImpl.traerHitosPorConvenio(cont));
     }
 
-    public void evaluacionesPorConvenio(int i, int contrato) {
-        getLstConveniosTabs().get(i).setListaConvenioEvals(cvConvenioEvaluacionImpl.traerEvaluacionTemplate(contrato));
+    public void evaluacionesPorConvenio(int contrato) {
+        contratoVo.setListaConvenioEvals(cvConvenioEvaluacionImpl.traerEvaluacionTemplate(contrato));
     }
 
-    public void evaluacionesPendientesPorConvenio(int i, int contrato) {
-        getLstConveniosTabs().get(i).setListaEvalsPendientes(cvEvaluacionImpl.traerEvaluaciones(contrato, true, false));
+    public void evaluacionesPendientesPorConvenio(int contrato) {
+        contratoVo.setListaEvalsPendientes(cvEvaluacionImpl.traerEvaluaciones(contrato, true, false));
     }
 
     public void quitarDoctoRh(int idDocto) {
         rhConvenioDocumentosImpl.eliminarConvenioDocumento(sesion.getUsuarioSesion().getId(),
-                idDocto, lstConveniosTabs.get(indice).getId());
+                idDocto, contratoVo.getId());
         //
-        traerConvenioDoctosRh(indice, lstConveniosTabs.get(indice).getId());
+        traerConvenioDoctosRh(contratoVo.getId());
     }
 
     public void seleccionarContratoRelacionado() {
@@ -1592,15 +1571,15 @@ public class ContratoBean implements Serializable {
             //
             getLstConveniosTabs().add(index, c);
             doctosPorConvenio(index, c.getId());
-            evaluacionesPorConvenio(index, c.getId());
-            evaluacionesPendientesPorConvenio(index, c.getId());
+            evaluacionesPorConvenio(c.getId());
+            evaluacionesPendientesPorConvenio(c.getId());
             condicionesPorConvenio(index, c.getId());
-            hitosPorConvenio(index, c.getId());
-            traerArchivosConvenio(index);
-            getLstConveniosTabs().get(index).setProveedorVo(new ProveedorVo());
-            traerDatosProveedor(index);
+            hitosPorConvenio(c.getId());
+            traerArchivosConvenio();
+            contratoVo.setProveedorVo(new ProveedorVo());
+            traerDatosProveedor();
             //	traerContratos relacionados
-            traerContratosRelacionados(index, c.getId());
+            traerContratosRelacionados(c.getId());
             //
             Iterator<ContratoVO> listaC = getListaConvenios().iterator();
             while (listaC.hasNext()) {
@@ -1615,11 +1594,11 @@ public class ContratoBean implements Serializable {
     }
 
     public void doctosPorConvenio(int i, int contrato) {
-        getLstConveniosTabs().get(i).setListaConvenioDocumento(cvConvenioDocumentoImpl.traerDoctosPorConveni(contrato, null, null));
+        contratoVo.setListaConvenioDocumento(cvConvenioDocumentoImpl.traerDoctosPorConveni(contrato, null, null));
     }
 
     public void condicionesPorConvenio(int i, int cont) {
-        getLstConveniosTabs().get(i).setListaConvenioCondicion(cvConvenioCondicionPagoImpl.traerCondicionesPago(cont));
+        contratoVo.setListaConvenioCondicion(cvConvenioCondicionPagoImpl.traerCondicionesPago(cont));
     }
 
     /*
@@ -1628,25 +1607,21 @@ public class ContratoBean implements Serializable {
      }
      */
     /////////////////////////////////////////////////////////////////////////
-    public void iniciarFiltro(ActionEvent e) {
+    public void iniciarFiltro() {
         setIdProveedor(Constantes.MENOS_UNO);
 
         getFiltroVo().setIdOperador(Constantes.MENOS_UNO);
         getFiltroVo().setIdMoneda(Constantes.MENOS_UNO);
         getFiltroVo().setImporte(Constantes.CERO);
         getFiltroVo().setFecha(null);
-    }
-
-    public void buscarContratoPorUsuario(ActionEvent e) {
-        setIdProveedor(Constantes.MENOS_UNO);
-        getFiltroVo().setIdOperador(Constantes.MENOS_UNO);
-        getFiltroVo().setIdMoneda(Constantes.MENOS_UNO);
-        getFiltroVo().setImporte(Constantes.CERO);
-        getFiltroVo().setFecha(null);
-        buscarContratoPorUsuario();
     }
 
     public void buscarContratoPorUsuario() {
+        setIdProveedor(Constantes.MENOS_UNO);
+        getFiltroVo().setIdOperador(Constantes.MENOS_UNO);
+        getFiltroVo().setIdMoneda(Constantes.MENOS_UNO);
+        getFiltroVo().setImporte(Constantes.CERO);
+        getFiltroVo().setFecha(null);
         setListaConvenios(convenioServicioRemoto.buscarConvenioPorUsuario(sesion.getUsuarioSesion().getId(), sesion.getUsuarioSesion().getIdCampo()));
     }
 
@@ -1837,31 +1812,23 @@ public class ContratoBean implements Serializable {
     }
 
     public void buscarContratoPorGrafica() {
-        String[] cad = getMesAnio().split("-");
-        List<OrdenVO> lo = autorizacionesOrdenImpl.traerOrdenSolicidasPorMesAnio(Integer.parseInt(cad[0]), Integer.parseInt(cad[1]), OrdenEstadoEnum.POR_ENVIAR_PROVEEDOR.getId(), sesion.getUsuarioSesion().getIdCampo(), lstConveniosTabs.get(indice).getNumero());
-        lstConveniosTabs.get(getIndice()).setListaOrdenConvenio(lo);
+        if (mesAnio != null) {
+            String[] cad = getMesAnio().split("-");
+            List<OrdenVO> lo = autorizacionesOrdenImpl.traerOrdenSolicidasPorMesAnio(Integer.parseInt(cad[0]), Integer.parseInt(cad[1]), OrdenEstadoEnum.POR_ENVIAR_PROVEEDOR.getId(), sesion.getUsuarioSesion().getIdCampo(), contratoVo.getNumero());
+            contratoVo.setListaOrdenConvenio(lo);
+        }
 
     }
 
     public void traerOcsPorconvenio() {
-        ocsPorConvenio(getIndice());
+        ocsPorConvenio();
 //	traerOCSConvenio(getIndice());
     }
 
-    ////// //////////////////LISTA DE PRECIO
-    public List<CategoriaVo> getListaCatPrin() {
-        try {
-            return getCategoriaVo().getListaCategoria();
-        } catch (Exception ex) {
-            Logger.getLogger(ContratoBean.class.getName()).log(Level.SEVERE, null, ex);
-            return null;
-        }
-    }
-
-    public void seleccionarCategoria(SelectEvent event) {
-        CategoriaVo con = (CategoriaVo) event.getObject();
-        getCategoriaVo().setId(con.getId());
-        llenarCategoria(con.getId());
+    ////// //////////////////LISTA DE PRECIO    
+    public void seleccionarCategoria(int idCat) {
+        getCategoriaVo().setId(idCat);
+        llenarCategoria(idCat);
         //
         //setListaCategoría(new ArrayList<>());
         listaCategoría = siCategoriaImpl.traerCategoriMenosPrincipalMenosSubcategorias(categoriaVo.getId());
@@ -1869,12 +1836,11 @@ public class ContratoBean implements Serializable {
                 || getCategoriaVo().getListaCategoria().isEmpty()) {
             verArticulos();
         }
-        setArticulosResultadoBqda(obtenerArticulosItems("", sesion.getUsuarioSesion().getIdCampo(), 0, ""));
-        this.setArticuloTx("");
+        setArticulosResultadoBqda(obtenerArticulosItems("", sesion.getUsuarioSesion().getIdCampo(), idCat, ""));
     }
 
     public void verArticulos() {
-        listaArticulos = articuloImpl.obtenerArticulos(null, sesion.getUsuarioSesion().getIdCampo(), this.getCategoriaVo().getId(),
+        listaArticulos = articuloImpl.obtenerArticulos(null, sesion.getUsuarioSesion().getIdCampo(), Constantes.CERO,
                 catCodigo(this.getCategoriasSeleccionadas().size() > 2
                         ? this.getCategoriasSeleccionadas().subList(2, this.getCategoriasSeleccionadas().size())
                         : new ArrayList<>()
@@ -1891,6 +1857,7 @@ public class ContratoBean implements Serializable {
     }
 
     private void iniciarCatSel() {
+        categoriasSeleccionadas = new ArrayList<>();
         CategoriaVo c = new CategoriaVo();
         c.setNombre("Pricipales");
         c.setId(Constantes.CERO);
@@ -1905,8 +1872,8 @@ public class ContratoBean implements Serializable {
     public void seleccionarCategoriaCabecera(int id) {
         //int id = Integer.parseInt(FacesUtils.getRequestParameter("idCatSelecionada"));
         //
-        CategoriaVo c = categoriasSeleccionadas.get(indice);
-        if (indice == 0) {
+        CategoriaVo c = categoriasSeleccionadas.get(id);
+        if (id == 0) {
             categoriaVo = new CategoriaVo();
             categoriaVo.setListaCategoria(siCategoriaImpl.traerCategoriaPrincipales());
             categoriasSeleccionadas = new ArrayList<>();
@@ -1917,11 +1884,13 @@ public class ContratoBean implements Serializable {
             if (c.getId() != categoriaVo.getId()) {
                 categoriasSeleccionadas.add(categoriaVo);// limpiar lista seleccionadas
             }
-            if ((indice + 1) < categoriasSeleccionadas.size()) {
-                for (int i = (categoriasSeleccionadas.size() - 1); i > indice; i--) {
-                    categoriasSeleccionadas.remove(i);
-                }
-            }
+            List<CategoriaVo> operatedList = new ArrayList<>();
+            categoriasSeleccionadas.indexOf(c);
+
+            categoriasSeleccionadas.stream().filter(ct -> ct.getId() > c.getId()).forEach(ca -> {
+                operatedList.add(ca);
+            });
+            categoriasSeleccionadas.removeAll(operatedList);
         }
 
         if (categoriasSeleccionadas.size() < 3) {
@@ -1955,8 +1924,6 @@ public class ContratoBean implements Serializable {
                             : new ArrayList<>())));
         }
     }
-
-   
 
     public List<ArticuloVO> obtenerArticulosItems(String cadenaDigitada, int campoID, int categoriaID, String codigosCategorias) {
         return articuloImpl.obtenerArticulos(cadenaDigitada, campoID, categoriaID, codigosCategorias);
@@ -1992,16 +1959,24 @@ public class ContratoBean implements Serializable {
 
     }
 
-    public void seleccionarResultadoBA(SelectEvent event) {
+    public void seleccionarResultadoBA(SelectEvent<ArticuloVO> event) {
         try {
-            SelectItem artItem = (SelectItem) event.getObject();
-            cambiarArticuloBda((ArticuloVO) artItem.getValue());
-            //getArticulosResultadoBqda().remove(artItem);
+            cambiarArticuloBda(event.getObject());
+            articulosResultadoBqda.remove(event.getObject());
             //}
         } catch (Exception e) {
             UtilLog4j.log.fatal(this, e);
             FacesUtils.addErrorMessage("Ocurrió una excepción, favor de comunicar a sia@ihsa.mx");
         }
+    }
+
+    public void iniciaCargaArticulos() {
+        iniciarCatSel();
+        articulosResultadoBqda = new ArrayList<>();
+        categoriaVo = new CategoriaVo();
+        categoriaVo.setListaCategoria(siCategoriaImpl.traerCategoriaPrincipales());
+        setSubirListaPrecio(Constantes.FALSE);
+        PrimeFaces.current().executeScript("$(dialogoCargaArticulos).modal('show');");
     }
 
     public void cargarListaPrecio() {
@@ -2025,14 +2000,14 @@ public class ContratoBean implements Serializable {
         try {
             ConvenioArticuloVo cav = new ConvenioArticuloVo();
             cav.setIdConvenioArticulo(Constantes.CERO);
-            cav.setIdConvenio(lstConveniosTabs.get(getIndice()).getId());
+            cav.setIdConvenio(contratoVo.getId());
             cav.setIdArticulo(articuloVO.getId());
             cav.setNombre(articuloVO.getNombre());
             cav.setUnidadNombre(articuloVO.getUnidadNombre());
             cav.setCantidad(articuloVO.getCantidad());
             cav.setPrecioUnitario(articuloVO.getPrecioUnitario());
             cav.setImporte(articuloVO.getImporte());
-            lstConveniosTabs.get(getIndice()).getListaArticulo().add(cav);
+            contratoVo.getListaArticulo().add(cav);
             //
         } catch (Exception e) {
             UtilLog4j.log.fatal(this, e);
@@ -2043,14 +2018,14 @@ public class ContratoBean implements Serializable {
     public void llenarDatosCambiarArticulo() {
         ConvenioArticuloVo cav = new ConvenioArticuloVo();
         cav.setIdArticulo(articuloVO.getId());
-        lstConveniosTabs.get(getIndice()).getListaArticulo().add(cav);
+        contratoVo.getListaArticulo().add(cav);
     }
 
     public void cambiarArticuloBda(ArticuloVO articuloVO) {
         try {
             ConvenioArticuloVo cav = new ConvenioArticuloVo();
             cav.setIdConvenioArticulo(Constantes.CERO);
-            cav.setIdConvenio(lstConveniosTabs.get(getIndice()).getId());
+            cav.setIdConvenio(contratoVo.getId());
             cav.setIdArticulo(articuloVO.getId());
             cav.setItem("");
             cav.setCodigo(articuloVO.getCodigo());
@@ -2060,7 +2035,7 @@ public class ContratoBean implements Serializable {
             cav.setUnidadId(articuloVO.getUnidadId());
             cav.setCantidad(Constantes.CERO);
             cav.setPrecioUnitario(Constantes.CERO);
-            lstConveniosTabs.get(getIndice()).getListaArticulo().add(cav);
+            contratoVo.getListaArticulo().add(cav);
             //
         } catch (Exception e) {
             UtilLog4j.log.fatal(this, e);
@@ -2073,20 +2048,20 @@ public class ContratoBean implements Serializable {
         if (convenioArticuloVo.getIdConvenioArticulo() > 0) {
             convenioArticuloImpl.eliminar(convenioArticuloVo, sesion.getUsuarioSesion().getId());
         }
-        lstConveniosTabs.get(getIndice()).getListaArticulo().remove(convenioArticuloVo);
+        contratoVo.getListaArticulo().remove(convenioArticuloVo);
     }
 
     public void agregarListaArticulosContratoRelacionado() {
-        lstConveniosTabs.get(getIndice()).getListaArticulo().addAll(convenioArticuloImpl.traerArticulosConvenioAnterior(lstConveniosTabs.get(getIndice()).getIdContratoRelacionado(), lstConveniosTabs.get(getIndice()).getId(), lstConveniosTabs.get(getIndice()).getIdCampo()));
+        contratoVo.getListaArticulo().addAll(convenioArticuloImpl.traerArticulosConvenioAnterior(contratoVo.getIdContratoRelacionado(), contratoVo.getId(), contratoVo.getIdCampo()));
     }
 
     public void quitarListaPrecio() {
-        for (ConvenioArticuloVo convenioArticuloVo1 : lstConveniosTabs.get(getIndice()).getListaArticulo()) {
+        for (ConvenioArticuloVo convenioArticuloVo1 : contratoVo.getListaArticulo()) {
             if (convenioArticuloVo1.getIdConvenioArticulo() > Constantes.CERO) {
                 convenioArticuloImpl.eliminar(convenioArticuloVo1, sesion.getUsuarioSesion().getId());
             }
         }
-        lstConveniosTabs.get(getIndice()).setListaArticulo(new ArrayList<>());
+        contratoVo.setListaArticulo(new ArrayList<>());
     }
 
     public void modificarLista(ConvenioArticuloVo convArtVo) {
@@ -2096,7 +2071,7 @@ public class ContratoBean implements Serializable {
 
     public void guardarListaPrecio() {
         boolean lleno = true;
-        for (ConvenioArticuloVo cartvo : lstConveniosTabs.get(getIndice()).getListaArticulo()) {
+        for (ConvenioArticuloVo cartvo : contratoVo.getListaArticulo()) {
             if (cartvo.getCantidad() == Constantes.CERO || cartvo.getPrecioUnitario() == Constantes.CERO
                     || cartvo.getUnidadId() == Constantes.CERO) {
                 lleno = false;
@@ -2104,9 +2079,9 @@ public class ContratoBean implements Serializable {
             }
         }
         if (lleno) {
-            convenioArticuloImpl.guardar(sesion.getUsuarioSesion().getId(), lstConveniosTabs.get(getIndice()).getListaArticulo(), lstConveniosTabs.get(getIndice()).getId(), lstConveniosTabs.get(getIndice()).getIdCampo());
-            lstConveniosTabs.get(getIndice()).setListaArticulo(new ArrayList<>());
-            lstConveniosTabs.get(getIndice()).setListaArticulo(convenioArticuloImpl.traerConvenioArticulo(lstConveniosTabs.get(getIndice()).getId(), lstConveniosTabs.get(getIndice()).getIdCampo()));
+            convenioArticuloImpl.guardar(sesion.getUsuarioSesion().getId(), contratoVo.getListaArticulo(), contratoVo.getId(), contratoVo.getIdCampo());
+            contratoVo.setListaArticulo(new ArrayList<>());
+            contratoVo.setListaArticulo(convenioArticuloImpl.traerConvenioArticulo(contratoVo.getId(), contratoVo.getIdCampo()));
         } else {
             FacesUtils.addErrorMessage("En necesario agregar unidad,  cantidades y precios unitarios");
         }
@@ -2125,7 +2100,7 @@ public class ContratoBean implements Serializable {
     }
 
     public void actualizarEvaluacionesPendientes(int i) {
-        getLstConveniosTabs().get(i).setListaEvalsPendientes(cvEvaluacionImpl.traerEvaluaciones(getLstConveniosTabs().get(i).getId(), true, false));
+        contratoVo.setListaEvalsPendientes(cvEvaluacionImpl.traerEvaluaciones(contratoVo.getId(), true, false));
     }
 
     public void actualizarRepLegalProveedor() {
@@ -2145,27 +2120,27 @@ public class ContratoBean implements Serializable {
     }
 
     public void actualizarCuentas(int i) {
-        getLstConveniosTabs().get(i).getProveedorVo().setCuentas(cuentaBancoProveedorImpl.traerCuentas(getLstConveniosTabs().get(i).getProveedor(), sesion.getRfcEmpresa()));
+        contratoVo.getProveedorVo().setCuentas(cuentaBancoProveedorImpl.traerCuentas(contratoVo.getProveedor(), sesion.getRfcEmpresa()));
     }
 
     public void actualizarEvaluaciones(int i) {
-        getLstConveniosTabs().get(i).setListaConvenioEvals(cvConvenioEvaluacionImpl.traerEvaluacionTemplate(getLstConveniosTabs().get(i).getId()));
+        contratoVo.setListaConvenioEvals(cvConvenioEvaluacionImpl.traerEvaluacionTemplate(contratoVo.getId()));
     }
 
     public void actualizarRepLegal(int i) {
-        getLstConveniosTabs().get(i).getProveedorVo().setLstRL(contactoProveedorImpl.traerContactoPorProveedor(getLstConveniosTabs().get(i).getProveedor(), Constantes.CONTACTO_REP_LEGAL));
+        contratoVo.getProveedorVo().setLstRL(contactoProveedorImpl.traerContactoPorProveedor(contratoVo.getProveedor(), Constantes.CONTACTO_REP_LEGAL));
     }
 
     public void actualizarRepTecnico(int i) {
-        getLstConveniosTabs().get(i).getProveedorVo().setLstRT(contactoProveedorImpl.traerContactoPorProveedor(getLstConveniosTabs().get(i).getProveedor(), Constantes.CONTACTO_REP_TECNICO));
+        contratoVo.getProveedorVo().setLstRT(contactoProveedorImpl.traerContactoPorProveedor(contratoVo.getProveedor(), Constantes.CONTACTO_REP_TECNICO));
     }
 
     public void actualizarContactos(int i) {
-        getLstConveniosTabs().get(i).getProveedorVo().setContactos(contactoProveedorImpl.traerContactoPorProveedor(getLstConveniosTabs().get(i).getProveedor(), Constantes.CONTACTO_REP_COMPRAS));
-        //getLstConveniosTabs().get(i).getProveedorVo().getContactos().addAll(contactoProveedorImpl.traerContactoPorProveedor(getLstConveniosTabs().get(i).getProveedor(), 0));
+        contratoVo.getProveedorVo().setContactos(contactoProveedorImpl.traerContactoPorProveedor(contratoVo.getProveedor(), Constantes.CONTACTO_REP_COMPRAS));
+        //contratoVo.getProveedorVo().getContactos().addAll(contactoProveedorImpl.traerContactoPorProveedor(contratoVo.getProveedor(), 0));
     }
 
     public void actualizarDocumentos(int i) {
-        getLstConveniosTabs().get(i).getProveedorVo().setLstDocsProveedor(pvClasificacionArchivoImpl.traerArchivoPorProveedorOid(getLstConveniosTabs().get(i).getProveedor(), 0));
+        contratoVo.getProveedorVo().setLstDocsProveedor(pvClasificacionArchivoImpl.traerArchivoPorProveedorOid(contratoVo.getProveedor(), 0));
     }
 }

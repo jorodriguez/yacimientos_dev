@@ -1,61 +1,49 @@
-
 <ui:composition xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-                
-
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:h="http://xmlns.jcp.org/jsf/html"
                 xmlns:f="http://xmlns.jcp.org/jsf/core">
-    <!--h:form id="frmRevisaContrato"-->
-    <h:form id="frmPrincipalContrato" >
-        <ui:include src="../../admin/fragmento/filtroBuscar.xhtml"/>
-    </h:form>
-    <h:form id="frmConsultaContrato">
-        <div class="col-lg-12 col-xs-12">
-            <!-- rowSelectListener="#{contratoBean.administrarContrato}"
-                         selectionMode="single"  -->
-            <p:dataTable id="dtConvenioVigente" var="data"
-                         value="#{contratoBean.listaConvenios}" 
-                         rowStyleClass="table table-bordered table-striped"
-                         style="width: 100%; font-size: 1.0em"
-                         paginatorPosition="bottom" rows="10" paginator="true" 
-                         >
-                <p:ajax event="select" process="@this"  update="@all" />
-                <f:facet name="header">Contratos</f:facet>
-                <p:column headerText="Número" style="width: 25%; text-align: left;" >
-                    <h:outputText value="#{data.numero}"/>
-                </p:column>
-                <p:column headerText="Nombre" style="text-align: left;">
-                    <h:outputText value="#{data.nombre}"/>
-                </p:column>
-                <p:column headerText="Proveedor" style="text-align: left;">
-                    <h:outputText value="#{data.nombreProveedor}"/>
-                </p:column>
-                <p:column headerText="Inicio">
-                    <h:outputText value="#{data.fechaInicio}">
-                        <f:convertDateTime pattern="dd/MM/yyyy"/>
-                    </h:outputText>
-                </p:column>
-                <p:column headerText="Vencimiento">
-                    <h:outputText value="#{data.fechaVencimiento}">
-                        <f:convertDateTime pattern="dd/MM/yyyy"/>
-                    </h:outputText>
-                </p:column>
-                <p:column headerText="Monto" style="text-align: right;">
-                    <h:outputText value="#{data.monto}">
-                        <f:convertNumber type="currency"/>
-                    </h:outputText>
-                </p:column>
-                <p:column headerText="Móneda">
-                    #{data.moneda}
-                </p:column>
-            </p:dataTable>
-        </div>
+    <p:dataTable id="dtConvenioVigente" var="data"
+                 value="#{consultaContratoBean.contratos}" 
+                 size="small" showGridlines="true"
+                 paginatorPosition="bottom" rows="10" paginator="true" selectionMode="single"
+                 selection="#{consultaContratoBean.contratoVo}" 
+                 rowKey="#{data.id}">
+        <p:ajax event="rowSelect" listener="#{consultaContratoBean.consultarContrato}" 
+                update="frmConsultaConv:tabViewCons" />
+        <f:facet name="header">Contratos</f:facet>
+        <p:column headerText="Número" style="width: 15%; text-align: left;" >
+            <h:outputText value="#{data.numero}"/>
+        </p:column>
+        <p:column headerText="Nombre" style="text-align: left;">
+            <h:outputText value="#{data.nombre}"/>
+        </p:column>
+        <p:column headerText="Proveedor" style="text-align: left;">
+            <h:outputText value="#{data.nombreProveedor}"/>
+        </p:column>
+        <p:column headerText="Inicio" width="5%">
+            <h:outputText value="#{data.fechaInicio}">
+                <f:convertDateTime pattern="dd/MM/yyyy"/>
+            </h:outputText>
+        </p:column>
+        <p:column headerText="Vencimiento" width="5%">
+            <h:outputText value="#{data.fechaVencimiento}">
+                <f:convertDateTime pattern="dd/MM/yyyy"/>
+            </h:outputText>
+        </p:column>
+        <p:column headerText="Monto" style="text-align: right;" width="5%">
+            <h:outputText value="#{data.monto}">
+                <f:convertNumber type="currency"/>
+            </h:outputText>
+        </p:column>
+        <p:column headerText="Móneda" width="60">
+            #{data.moneda}
+        </p:column>
+    </p:dataTable>
 
-        <div class="col-lg-12 col-xs-12">
-            <p:commandButton value="Exportar">
-                <p:dataExporter type="xls" fileName="cotratos" target="dtConvenioVigente" >
-                </p:dataExporter>
-            </p:commandButton>
-        </div>
-    </h:form>
+    <div class="col-12 col-xs-12">
+        <p:commandButton value="Exportar">
+            <p:dataExporter type="xls" fileName="cotratos" target="dtConvenioVigente" >
+            </p:dataExporter>
+        </p:commandButton>
+    </div>
 </ui:composition>

@@ -5,87 +5,12 @@
                 xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
                 xmlns:h="http://xmlns.jcp.org/jsf/html"
                 xmlns:p="http://primefaces.org/ui">    
-    <h:form id="frmCategoria#{contr.id}">  
-        <p:tabView>
-            <p:tab title="Seleccionar artículos">
-                <div class="row">
-                    <div class="col-lg-6 col-xs-6">
-                        <div class="card card-heading">
-                            <div class="form-group">
-                                <div class="col-lg-10">
-                                    <ui:repeat value="#{contratoBean.categoriasSeleccionadas}" var="data"
-                                               varStatus="indice">
-                                        <p:commandLink  action="#{contratoBean.seleccionarCategoriaCabecera(indice.index)}"
-                                                        styleClass="text text-primary ">
-                                            <i class="#{data.nombre eq 'Pricipales' ? 'fa fa-circle' : 'fa fa-arrow-right' }" ></i>
-                                            #{data.nombre} 
-                                        </p:commandLink>
-                                    </ui:repeat>
-                                </div>                        
-                            </div>
-                        </div>
-                        <div class="col-lg-12 col-xs-12">
-                            <div class="card card-info">
-                                <div class="card card-heading">
-                                    <div class="input-group col-lg-12">
-                                        <div class="col-lg-10">
-                                            #{contratoBean.categoriasSeleccionadas.size()  eq 0 ? 'Pricipales' : contratoBean.categoriaVo.nombre}
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="card card-body">
-                                    <!-- rowSelectListener="#{contratoBean.seleccionarCategoria}"
-                                                   selectionMode="single"   -->
-                                    <p:dataTable value="#{contratoBean.listaCatPrin}" var="data"
-                                                 rows="10" paginator="true"  
-                                                 paginatorPosition="bottom" 
-                                                 rowIndexVar="indice" 
-                                                 size="small" showGridlines="true">
-                                        <p:column headerText="Nombre" style="text-align: left;" >
-                                            <h:outputText value="#{data.nombre}"/>
-                                        </p:column>
-                                        <p:column headerText="Código" filterBy="#{data.codigo}" filterMatchMode="contains">
-                                            <h:outputText value="#{data.codigo}" />
-                                        </p:column>
-                                    </p:dataTable>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-6">
-                        <div class="form-group col-lg-12" style="margin-top: 10px; margin-bottom: 10px;" >                            
-                            <h:outputText value="#{contratoBean.articulosResultadoBqda.size()} Artículos"/>
-                        </div> 
-                    </div>
-                </div>
-
-                <div class="row"> 
-                    <div class="form-group col-lg-12">
-                        <div class="col-lg-12" id="tablaResBusquedaAv#{contr.id}">
-                            <p:dataTable value="#{contratoBean.articulosResultadoBqda}" var="dataRBA"
-                                         id="tablaResBusquedaAvTABLE#{contr.id}"
-                                         rows="10" paginator="true"  
-                                         paginatorPosition="bottom" 
-                                         size="small" showGridlines="true"
-                                         selectionMode="single" selection="#{contratoBean.articuloVO}" >
-                                <p:ajax event="rowSelect" listener="#{contratoBean.seleccionarResultadoBA}" update="tabView:frmArticulo#{contr.id}:dtlConvenioArticulo#{contr.id}"/>
-                                <p:column headerText="Nombre" style="text-align: left; width: 85%" 
-                                          filterBy="#{data.nombre}" filterMatchMode="contains">
-                                    <h:outputText value="#{dataRBA.nombre}"/>
-                                </p:column> 
-                                <p:column headerText="Unidad" style="text-align: left;" width="150" >
-                                    <h:outputText value="#{dataRBA.unidadId}"/>
-                                </p:column> 
-                            </p:dataTable>
-                        </div>                 
-                    </div>
-                </div>
-            </p:tab>
-            <p:tab title="Cargar artículos Excel">
-                <p:commandLink value="Cargar excel de precios" class="btn btn-primary text-white"
-                               action="#{contratoBean.cargarListaPrecio}"
-                               process="@this" update="frmArchivo"/>
-            </p:tab>
-        </p:tabView>
-    </h:form>
+    <div class="input-group">
+        <p:commandButton value="Seleccionar Artículos"
+                         action="#{contratoBean.iniciaCargaArticulos}" process="@this" update="frmCargaArt"
+                         class="btn btn-primary text-white"/>
+        <p:commandButton value="Cargar desde plantilla de Excel" class="btn btn-primary text-white"
+                         action="#{contratoBean.cargarListaPrecio}"
+                         process="@this" update="frmArchivo"/>
+    </div>
 </ui:composition>

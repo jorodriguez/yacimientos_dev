@@ -16,8 +16,6 @@
         <!-- overlayScrollbars -->
         <link rel="stylesheet" href="/resources/css/OverlayScrollbars.min.css"/>
 
-        <!-- PANEL -->
-        <link rel="stylesheet" type="text/css" href="#{request.contextPath}/recursos/css/typeahead.css"></link>
 
         <!-- Google Font -->
         <link rel="stylesheet"
@@ -39,17 +37,12 @@
             .filaSinSombra{
                 background-color: #f8f8f8;
             }
+            .ui-selectonemenu-panel{
+                z-index: 1000009 !important;
+            }
         </style>
 
 
-        <!-- Manejo de fechas -->
-        <!--FIN-->
-        <!--[if lt IE 9]
-            <script type="text/javascript" src="../resources/js/externa/html5shiv.js"></script>
-            <script type="text/javascript" src="../resources/js/externa/respond.js"></script>
-            <script type="text/javascript" src="../resources/js/externa/jquery1.9.js"></script>
-        <![endif]-->
-        <!--Grafica-->
         <noscript>
             <p>Su navegador no soporta javaScript</p>
         </noscript>
@@ -58,12 +51,6 @@
             //var json;
             var proveedores;
             var jsonUsuario;
-            function setJson(json) {
-                proveedores = json;
-            }
-            function llenarUsuarios(json) {
-                jsonUsuario = json;
-            }
             function ejecutarFiltros(frm, boton) {
                 $("#" + frm + "\\:" + boton).click();
             }
@@ -71,69 +58,9 @@
                 //   alert(valor);
                 $("#" + forma + "\\:" + etiqueta).text(valor);
             }
-         
-            function  datos(forma, campohidden, botonFiltro) {
-                //	alert('hola ya vine');
-                if (proveedores !== null) {
-                    $('#' + forma + '\\:q').typeahead({
-                        minLength: false,
-                        maxItem: 15, order: "asc",
-                        hint: true,
-                        searchOnFocus: false,
-                        display: "label",
-                        correlativeTemplate: false,
-                        template: '{{label}}',
-                        source: proveedores,
-                        callback: {
-                            onClickAfter: function (node, a, item, event) {
-                                $("#" + forma + "\\:" + campohidden).val(item.value);
-                                ejecutarFiltros(forma, botonFiltro);
-                                llenarEtiqueta(forma, 'cjNombreProveedor', item.label);
-                                //mostrarElemento(forma, 'btnQuitarProveedor');
-                                mostrarDiv('divProveedorSeleccinado');
-                            },
-                            itemSelected: function (node, a, item, event) {
-                                $("#" + forma + "\\:" + campohidden).val(item.value);
-                                ejecutarFiltros(forma, botonFiltro);
-                                llenarEtiqueta(forma, 'cjNombreProveedor', item.label);
-                                mostrarDiv('divProveedorSeleccinado');
-                            }
-                        },
-                        debug: true
-                    });
-                } else {
-                    alert('No hay proveedores');
-                }
-            }
 
-            function  usuario(forma, campohidden, hidenDesNombre, btnBuscar) {
-                //	alert('hola ya vine');
-                if (jsonUsuario !== null) {
-                    $('#' + forma + '\\:usuario').typeahead({//input: "",
-                        minLength: false,
-                        maxItem: 15, order: "asc",
-                        hint: true,
-                        searchOnFocus: false,
-                        display: "label", correlativeTemplate: false,
-                        template: '{{label}}', source: jsonUsuario,
-                        callback: {
-                            onClickAfter: function (node, a, item, event) {
-                                $("#" + forma + "\\:" + campohidden).val(item.value);
-                                $("#" + forma + "\\:" + hidenDesNombre).val(item.label);
-                                ejecutarFiltros(forma, btnBuscar);
-                            },
-                            itemSelected: function (node, a, item, event) {
-                                $("#" + forma + "\\:" + campohidden).val(item.value);
-                                $("#" + forma + "\\:" + hidenDesNombre).val(item.label);
-                                ejecutarFiltros(forma, btnBuscar);
-                            }
-                        },
-                        debug: true
-                    });
-                } else {
-                    alert('No hay usuarios');
-                }
-            }
+
+
             function validaGuardarRol(seleccion) {
                 var val = false;
                 if (verificaSeleccion(seleccion) > 0) {
@@ -142,16 +69,6 @@
                     alert('Debe seleccionar al menos una gerencia');
                 }
                 return val;
-            }
-            function pasarIdContrato(forma, componente, indice) {
-                //alert('indh: ' + indice);
-                ejecutarFiltros(forma, componente);
-                //mostrarComponente('frmCabecera', 'cerrarPestana');
-                //$('.' + 'hidenDes' + idContrato).val(idContrato);
-                //var val = ;
-                //$("#" + 'frmPestanas' + "\\:" + campo).val(indice);
-                // val = $('.' + campo).val(indice);
-                //alert(val);
             }
             function verificaSeleccion(clase) {
                 var sel = 0;
@@ -180,14 +97,6 @@
                 return v;
             }
 
-            function validarCombo(formYid, valorAComparar) {
-                var se = $("#" + formYid + " option:selected");
-                if (se.val() != valorAComparar) {
-                    return true;
-                } else {
-                    return false;
-                }
-            }
 
             function validarFormato() {
                 if (validarCajaTexto('frmFormato', 'nombreFormato')) {
@@ -344,11 +253,10 @@
                     </ul>
 
                     <!-- Right navbar links -->
-                    <h:form class="navbar-nav ml-auto">
-                        <ul class="navbar-nav ml-auto">
-                            <ui:include src="datosUsuario.xhtml"/>
-                        </ul>
-                    </h:form>
+
+                    <ul class="navbar-nav ml-auto">
+                        <ui:include src="datosUsuario.xhtml"/>
+                    </ul>
                 </nav>
 
                 <!-- Main Sidebar Container -->
@@ -389,25 +297,46 @@
                                 <p:autoUpdate />
                             </p:messages>
                         </div>
-                        <div id="divMensajeError" class="row alert alert-danger" style="display: none;">
-                            <h:outputText id="mensajeError"/>
-                            Por favor pongase en contacto con el equipo de desarrollo al correo soportesia@ihsa.mx
-                        </div>
-
-                        <ui:insert name="content"/>                    
+                        <ui:insert name="contenido"/>                    
                     </section>
-                    <div id="areaBlock" style="display: none;position: fixed;top: 0;left: 0;z-index: 250006;width: 100%;height: 100%;
-                         background: #dddddd;opacity: 0.6;">
-                        <div style="position:absolute;top:50%;left: 50%;">
-                            <img  src="/resources/img/wait.gif" alt="Procesando"/><br/>
-                            <font style="font-weight: bold; font-style: italic; font-size: 11px;">Procesando . . .</font>
-                        </div>                            
-                    </div> 
                 </div>                    
                 <!-- /.content-wrapper -->
                 <footer class="main-footer">
                     <ui:include src="pie.xhtml" /> 
                 </footer>
+
+                <!-- Registro de categoría -->
+                <div class="modal fade" id="dialogoUsuarioCampo" data-backdrop="static" data-keyboard="false">
+                    <div class="modal-dialog" style="z-index: 1000006;">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h4 class="modal-title">Campos</h4>
+                            </div>
+                            <h:form id="frmCampos">
+                                <div class="modal-body">				    
+                                    <p:dataTable id="dtCampos" value="#{sesion.lista}" var="data"
+                                                 styleClass="table table-responsive"
+                                                 selectionMode="single"
+                                                 selection="#{sesion.campoUsuarioPuestoVo}" 
+                                                 rowKey="#{data.idCampoUsuarioPuesto}">
+                                        <p:ajax event="rowSelect" listener="#{sesion.cambioCampoUsuario}" 
+                                                update="@all"/>
+                                        <p:column style="text-align: left;">
+                                            <h:outputText value="#{data.campo}"
+                                                          class="#{sesion.usuarioSesion.campo eq data.campo ? 'text text-primary' : ''}">
+                                            </h:outputText>
+                                        </p:column>
+                                    </p:dataTable>
+                                </div>
+                                <div class="modal-footer">
+                                    <p:commandLink value="Cerrar" styleClass="btn btn-default"
+                                                   immediate="true"
+                                                   onclick="$(dialogoUsuarioCampo).modal('hide');"/>
+                                </div>
+                            </h:form>
+                        </div>
+                    </div>	
+                </div>
             </c:if>
 
             <c:if test="#{empty sesion.usuarioSesion}">
@@ -419,15 +348,11 @@
         <script src="/resources/js/jquery.min.js"></script>
         <!-- jQuery UI 1.11.4 -->
         <script>
-            $.noConflict(true);
+                                                       $.noConflict(true);
 // Code that uses other library's $ can follow here.
         </script>
         <script src="/resources/js/jquery-ui.min.js"></script>
         <!-- Resolve conflict in jQuery UI tooltip with Bootstrap tooltip -->
-        <script>
-            $.widget.bridge('uibutton', $.ui.button)
-        </script>
-        <!-- Bootstrap 4 -->
         <script type="text/javascript" src="/resources/js/bootstrap.bundle.min.js"></script>
         <!-- overlayScrollbars -->
         <script type="text/javascript" src="/resources/js/jquery.overlayScrollbars.min.js"></script>
@@ -438,7 +363,7 @@
 
 
         <script type="text/javascript" src="#{request.contextPath}/recursos/js/validaContrato.js"></script>
-        <script type="text/javascript" src="#{request.contextPath}/recursos/js/jquery.typeahead.js"></script>
+        <!--script type="text/javascript" src="{request.contextPath}/recursos/js/jquery.typeahead.js"></script-->
 
         <script type="text/javascript" src="#{request.contextPath}/recursos/js/highcharts.js"></script>
         <script type="text/javascript" src="#{request.contextPath}/recursos/js/exporting.js"></script>

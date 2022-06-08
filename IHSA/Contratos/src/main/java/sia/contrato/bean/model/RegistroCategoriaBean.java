@@ -59,25 +59,29 @@ public class RegistroCategoriaBean implements Serializable {
 
     @PostConstruct
     public void iniciar() {
-        setMapaCategria(new HashMap<String, List<CategoriaVo>>());
+        setMapaCategria(new HashMap<>());
         categoriaVo = new CategoriaVo();
-        mapaCategria.put("categoriaRelacion", new ArrayList<CategoriaVo>());
-        mapaCategria.put("categoriaSeleccionada", new ArrayList<CategoriaVo>());
+        mapaCategria.put("categoriaRelacion", new ArrayList<>());
+        mapaCategria.put("categoriaSeleccionada", new ArrayList<>());
+        mapaCategria.put("artAgregarCat", new ArrayList<>());
+        mapaCategria.put("categoriaRelacion", new ArrayList<>());
+        mapaCategria.put("categoriaTemporal", new ArrayList<>());
+        
         mapaCategria.put("categoria", siCategoriaImpl.traerCategoriaPrincipales());
-        mapaArticulo = new HashMap<String, List<ArticuloVO>>();
+        mapaArticulo = new HashMap<>();
         mapaArticulo.put("articulo", articuloImpl.buscarArticuloSinCategoriaPorGenero(sesion.getUsuarioSesion().getId()));
     }
 
     public void iniciarAgregarCategoria() {
-        List<ArticuloVO> latemp = new ArrayList<ArticuloVO>();
+        List<ArticuloVO> latemp = new ArrayList<>();
         for (ArticuloVO articuloVO : mapaArticulo.get("articulo")) {
             if (articuloVO.isSelected()) {
                 latemp.add(articuloVO);
             }
         }
         if (!latemp.isEmpty()) {
-            mapaCategria.put("categoriaRelacion", new ArrayList<CategoriaVo>());
-            mapaCategria.put("categoriaSeleccionada", new ArrayList<CategoriaVo>());
+            mapaCategria.put("categoriaRelacion", new ArrayList<>());
+            mapaCategria.put("categoriaSeleccionada", new ArrayList<>());
             mapaCategria.put("categoria", siCategoriaImpl.traerCategoriaPrincipales());
             iniciarCatSel();
             mapaArticulo.put("artAgregarCat", latemp);
@@ -120,12 +124,12 @@ public class RegistroCategoriaBean implements Serializable {
         PrimeFaces.current().executeScript("$(registrarCategoria).modal('hide');");
     }
 
-    public void seleccionarCategoria(SelectEvent event) {
+    public void seleccionarCategoria(SelectEvent<CategoriaVo> event) {
         categoriaVo = (CategoriaVo) event.getObject();
         llenarCategoria(categoriaVo.getId());
         //
-        mapaCategria.put("categoriaTemporal", new ArrayList<CategoriaVo>());
-        //setListaCategoría(new ArrayList<CategoriaVo>());
+        mapaCategria.put("categoriaTemporal", new ArrayList<>());
+        //setListaCategoría(new ArrayList<>());
         traerListaCategoria(categoriaVo.getId());
     }
 
@@ -139,9 +143,7 @@ public class RegistroCategoriaBean implements Serializable {
         mapaCategria.get("categoriaSeleccionada").add(lcs);
     }
 
-    public void seleccionarCategoriaCabecera() {
-        //int id = Integer.parseInt(FacesUtils.getRequestParameter("idCatSelecionada"));
-        int id = Integer.parseInt(FacesUtils.getRequestParam("indiceCatSel"));
+    public void seleccionarCategoriaCabecera(int id) {
         //
         traerSubcategoria(id);
     }
@@ -149,10 +151,10 @@ public class RegistroCategoriaBean implements Serializable {
     private void traerSubcategoria(int indice) {
         categoriaVo = mapaCategria.get("categoriaSeleccionada").get(indice);
         if (indice == 0) {
-            mapaCategria.put("categoriaSeleccionada", new ArrayList<CategoriaVo>());
+            mapaCategria.put("categoriaSeleccionada", new ArrayList<>());
             iniciarCatSel();
             mapaCategria.put("categoria", siCategoriaImpl.traerCategoriaPrincipales());
-            mapaCategria.put("categoriaTemporal", new ArrayList<CategoriaVo>());
+            mapaCategria.put("categoriaTemporal", new ArrayList<>());
         } else {
             mapaCategria.put("categoria", siCategoriaImpl.traerSubCategorias(categoriaVo.getId()));
             if ((indice + 1) < mapaCategria.get("categoriaSeleccionada").size()) {
@@ -171,19 +173,18 @@ public class RegistroCategoriaBean implements Serializable {
     }
 
     public void iniciarEnlaceCategoria() {
-        mapaCategria.put("categoriaTemporal", new ArrayList<CategoriaVo>());
+        mapaCategria.put("categoriaTemporal", new ArrayList<>());
         mapaCategria.put("categoriaRelacion", siCategoriaImpl.traerCategoriaMenosPrincipales());
     }
 
-    public void eliminarCategoria() {
-        int id = Integer.parseInt(FacesUtils.getRequestParam("idCategoria"));
+    public void eliminarCategoria(int id) {
         siRelCategoriaImpl.eliminarRelacion(sesion.getUsuarioSesion().getId(), mapaCategria.get("categoria").get(id).getIdPadre());
         mapaCategria.get("categoria").remove(id);
     }
 
     public void cancelarGuardarCategoria() {
-        mapaCategria.put("categoriaTemporal", new ArrayList<CategoriaVo>());
-        mapaCategria.put("categoriaRelacion", new ArrayList<CategoriaVo>());
+        mapaCategria.put("categoriaTemporal", new ArrayList<>());
+        mapaCategria.put("categoriaRelacion", new ArrayList<>());
 
     }
 
@@ -193,22 +194,20 @@ public class RegistroCategoriaBean implements Serializable {
             for (CategoriaVo listaCategoriaTemporal1 : mapaCategria.get("categoriaTemporal")) {
                 categoriaVo.getListaCategoria().add(categoriaVo.getListaCategoria().size(), listaCategoriaTemporal1);
             }
-            mapaCategria.put("categoriaTemporal", new ArrayList<CategoriaVo>());
-            mapaCategria.put("categoriaRelacion", new ArrayList<CategoriaVo>());
+            mapaCategria.put("categoriaTemporal", new ArrayList<>());
+            mapaCategria.put("categoriaRelacion", new ArrayList<>());
         } else {
             FacesUtils.addInfoMessage("Seleccione al menos una categoría");
         }
 
     }
 
-    public void seleccionarCategoriaAgregar(SelectEvent event) {
-        CategoriaVo con = (CategoriaVo) event.getObject();
-        mapaCategria.get("categoriaTemporal").add(con);
-        mapaCategria.get("categoriaRelacion").remove(con);
+    public void seleccionarCategoriaAgregar(SelectEvent<CategoriaVo> event) {
+        mapaCategria.get("categoriaTemporal").add(event.getObject());
+        mapaCategria.get("categoriaRelacion").remove(event.getObject());
     }
 
-    public void eliminarCategoriaTemporal() {
-        int id = Integer.parseInt(FacesUtils.getRequestParam("idCatTablaTemp"));
+    public void eliminarCategoriaTemporal(int id) {
         mapaCategria.get("categoriaRelacion").add(siCategoriaImpl.buscarCategoriaPorId(mapaCategria.get("categoriaTemporal").get(id).getId()));
         //
         mapaCategria.get("categoriaTemporal").remove(id);

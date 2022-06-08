@@ -12,6 +12,7 @@ import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import static sia.util.UtilLog4j.log;
 
 /**
  *
@@ -36,7 +37,7 @@ public class SiaFilter implements Filter {
             response.setHeader("Pragma", "no-cache"); // HTTP 1.0.
             response.setDateHeader("Expires", 0); // Proxies.
         }
-
+        
         chain.doFilter(req, res);
     }
 

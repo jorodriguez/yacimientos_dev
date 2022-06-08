@@ -10,12 +10,12 @@
             <ui:define name="tituloPagina">
                 <h2 class="page-header"> Formas para el proceso de finiquitos</h2>
             </ui:define>
-            <ui:define name="content">
+            <ui:define name="contenido">
                 <h:form id="frmFormas">
                     <p:dataTable id="dtFormas" 
-                                   value="#{formasBean.formas}" var="data"
-                                   rows="15" paginator="true" paginatorPosition="bottom" paginatorAlwaysVisible="true"
-                                     style="font-size: 0.9em;">
+                                 value="#{formasBean.formas}" var="data"
+                                 rows="15" paginator="true" paginatorPosition="bottom" paginatorAlwaysVisible="true"
+                                 style="font-size: 0.9em;">
                         <p:column headerText="Plantilla" style="text-align: left;" >
                             <h:outputText value="#{data.codigo}" />
                         </p:column>
@@ -32,10 +32,10 @@
                                               rendered="#{data.siAdjunto.id gt 0}">
                                     <span class="text-info" style="font-weight: bold;"> Descargar</span>
                                 </h:outputLink>
-                                <p:commandLink action="#{formasBean.eliminarArchivo(event)}"
+                                <p:commandLink action="#{formasBean.eliminarArchivo(data.id)}"
                                                styleClass="text text-primary" title="Elimina el archivo de la plantilla"
-                                               rendered="#{data.siAdjunto.id gt 0}">
-                                    <f:param name="idForma" value="#{data.id}"/>
+                                               rendered="#{data.siAdjunto.id gt 0}"
+                                               process="@this" update="frmFormas:dtFormas">
                                     <i class="fa fa-trash text-danger"/>
                                 </p:commandLink>
                             </div>
@@ -47,9 +47,9 @@
                             <h:outputText value="Proveedor " rendered="#{data.gerencia eq null and  data.proveedor eq true}" />
                         </p:column>                        
                         <p:column >
-                            <p:commandLink action="#{formasBean.agregarArchivo(event)}"
-                                           title="Adjuntar archivo para la plantilla">
-                                <f:param name="idForma" value="#{data.id}"/>
+                            <p:commandLink action="#{formasBean.agregarArchivo(data.id)}"
+                                           title="Adjuntar archivo para la plantilla"
+                                           process="@this" update="frmArchivo">
                                 <i class="fa fa-arrow-up text-primary"/>
                             </p:commandLink>
                         </p:column>
@@ -62,21 +62,15 @@
                                 <h4 class="modal-title">Agregar archivo</h4>
                             </div>
                             <h:form id="frmArchivo">
-                                <div class="modal-body card-body">
-                                    <div class="input-group">
-                                        <div class="form-group col-lg-12">
-                                            <p:fileUpload   label="Archivo "
-                                                            listener="#{formasBean.subirArchivo}"
-                                                            /> 
-                                        </div>
-                                    </div>
+                                <div class="modal-body ">
+                                    <p:fileUpload   label="Archivo "
+                                                    listener="#{formasBean.subirArchivo}"
+                                                    update="frmFormas"/> 
                                 </div>
                                 <div class="modal-footer">
-                                    <h:commandButton id="btnCerrar" value="Cancelar" class="btn btn-default"
-                                                     onclick="$(adjuntarArchivoForma).modal('hide');"/>
-                                    <h:commandButton value="Guardar" 
-                                                     styleClass="col-lg-3 col-xs-12 btn btn-info"
-                                                     onclick="$(adjuntarArchivoForma).modal('hide');"/>
+                                    <h:commandLink id="btnCerrar" value="Cancelar" class="btn btn-default"
+                                                   onclick="$(adjuntarArchivoForma).modal('hide');"
+                                                   immediate="true"/>
                                 </div>
                             </h:form>
                         </div>

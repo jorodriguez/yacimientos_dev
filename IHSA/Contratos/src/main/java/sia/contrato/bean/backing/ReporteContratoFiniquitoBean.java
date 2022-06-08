@@ -122,7 +122,7 @@ public class ReporteContratoFiniquitoBean implements Serializable {
         }
     }
 
-    public void llenarContratos(AjaxBehaviorEvent event) {
+    public void llenarContratos() {
         contratos = convenioImpl.reporteContratoFiniquito(campoId);
         //
         calcularAvance(contratos);
@@ -143,7 +143,7 @@ public class ReporteContratoFiniquitoBean implements Serializable {
         PrimeFaces.current().executeScript( "$(dialogoResumenFiniquito).modal('show');");
     }
 
-    public void cambiarCampoHistorico(AjaxBehaviorEvent event) {
+    public void cambiarCampoHistorico() {
         historicoAvances = resumenReporteFiniquitoImpl.traerTodos(campoId);
     }
 

@@ -6,85 +6,47 @@
                 xmlns:h="http://xmlns.jcp.org/jsf/html"
                 xmlns:p="http://primefaces.org/ui">    
     <div class="row">
-        <ui:include  src="../fragmento/listaArtculos.xhtml"/>
+        <div class="input-group">
+            <p:commandButton value="Procesar Artículos"
+                             action="#{contratoBean.iniciaCargaArticulos}" process="@this" update="frmCargaArt"
+                             class="btn btn-primary text-white"/>
+            <p:commandButton value="Cargar desde plantilla de Excel" class="btn btn-primary text-white ml-2"
+                             action="#{contratoBean.cargarListaPrecio}"
+                             process="@this" update="frmArchivo"/>
+        </div>
     </div>
-    <div class="row">
-        <div class="card card-primary">
-            <div class="card-heading">
+    <div class="row mt-2">
+        <div class="card card-info">
+            <div class="card-header">
                 Lista de Productos / Servicios
             </div>                
             <div class="card-body">
-                <h:form id="frmArticulo#{contr.id}">
-                    <div class="row">
-                        <div class="col-6">
-
-                        </div>
-                        <div class="col-2">
-                            <p:commandLink  styleClass="btn btn-primary text-white" action="#{contratoBean.agregarListaArticulosContratoRelacionado}"
-                                            title="Agregar los artículos del convenio principal"
-                                            rendered="#{contr.idContratoRelacionado gt 0}" process="@this" update="tabView:frmArticulo#{contr.id}:dtlConvenioArticulo#{contr.id}">
-                                <i class="fa fa-edit"> Importar lista</i>
-                            </p:commandLink>
-                        </div>
-                        <div class="col-2">
-                            <p:commandLink  styleClass="btn btn-warning text-white" action="#{contratoBean.quitarListaPrecio}"
-                                            title="Quita los artículos agregados al convenio"
-                                            process="@this tabView:frmArticulo#{contr.id}:dtlConvenioArticulo#{contr.id}" update="tabView:frmArticulo#{contr.id}:dtlConvenioArticulo#{contr.id}">
-                                <i class="fa fa-edit"> Quitar Lista</i>
-                            </p:commandLink>
-                        </div>
-                        <div class="col-2">
-                            <p:commandLink  styleClass="btn btn-primary text-white"  action="#{contratoBean.guardarListaPrecio}"
-                                            process="@this tabView:frmArticulo#{contr.id}:dtlConvenioArticulo#{contr.id}" update="tabView:frmArticulo#{contr.id}:dtlConvenioArticulo#{contr.id}">
-                                <i class="fa fa-save"> Guardar</i>
-                            </p:commandLink>    
-                        </div>
-                    </div>
-                    <div class="row">
-                        <p:dataTable id="dtlConvenioArticulo#{contr.id}" value="#{contr.listaArticulo}" var="data"
-                                     style="text-align: left;">
-                            <p:column headerText="Ítem" style="text-align: left;"> 
-                                <h:outputText value="#{empty data.item ? data.codigo : data.item}" style="font-weight: #{data.cantidad eq 0 ? 'bold': 'none'}; color: #{data.registrado ? '' : '#B34500'}"/>
-                            </p:column>
-                            <p:column headerText="Artículo" style="text-align: left;">
-                                <h:outputText value="#{data.nombre}" style="font-weight: #{data.cantidad eq 0 ? 'bold': 'none'}; color: #{data.registrado ? '' : '#B34500'}"/>
-                            </p:column>
-                            <p:column id="exp">
-                                <p:rowToggler rendered="#{not empty data.alcance}"/>
-                            </p:column>
-                            <p:column headerText="Unidad" style="width: 10%">
-                                <h:outputText  value="#{data.unidadNombre}"  rendered="#{data.registrado}"/>
-                                <h:selectOneMenu  value="#{data.unidadId}" styleClass="form-control" rendered="#{data.registrado eq false}">
-                                    <f:selectItem itemDescription="Seleccione . . . " itemValue="0"/>
-                                    <f:selectItems value="#{contratoBean.listaUnidad}"/>
-                                </h:selectOneMenu>
-                            </p:column>
-                            <p:column headerText="Cantidad">
-                                <h:outputText  value="#{data.cantidad}"  rendered="#{data.guardado}"/>
-                                <h:inputText class="form-control" value="#{data.cantidad}"  rendered="#{data.guardado eq false}"/>
-                            </p:column>
-                            <p:column headerText="Precio Unitario">
-                                <h:outputText value="#{data.precioUnitario}" rendered="#{data.guardado}"/>
-                                <h:inputText class="form-control" value="#{data.precioUnitario}" rendered="#{data.guardado eq false}"/>
-                            </p:column>
-                            <p:column >
-                                <p:commandLink action="#{contratoBean.modificarLista(contratoBean.convenioArticuloVo)}" rendered="#{data.guardado}"
-                                               process="@this" update="tabView:frmArticulo#{contr.id}:dtlConvenioArticulo#{contr.id}">
-                                    <i class="fa fa-edit"/>
-                                </p:commandLink>
-                            </p:column>
-                            <p:column >
-                                <p:commandLink action="#{contratoBean.eliminarConvenioArticulo(contratoBean.convenioArticuloVo)}"
-                                               process="@this" update="tabView:frmArticulo#{contr.id}:dtlConvenioArticulo#{contr.id}">
-                                    <i class="fa fa-trash text text-danger"/>
-                                </p:commandLink>
-                            </p:column>
-                            <p:rowExpansion>
-                                <h:outputText  value="#{data.alcance}" styleClass="text text-justify text-info"/>
-                            </p:rowExpansion>
-                        </p:dataTable>
-                    </div>
-                </h:form>  
+                <div class="row">
+                    <p:dataTable id="dtlConvenioArticulo" value="#{contratoBean.contratoVo.listaArticulo}" var="data"
+                                 style="text-align: left;" size="small" showGridlines="true" rowKey="#{data.id}">
+                        <p:column headerText="Ítem" style="text-align: left;"> 
+                            <h:outputText value="#{empty data.item ? data.codigo : data.item}" style="font-weight: #{data.cantidad eq 0 ? 'bold': 'none'}; color: #{data.registrado ? '' : '#B34500'}"/>
+                        </p:column>
+                        <p:column headerText="Artículo" style="text-align: left;">
+                            <h:outputText value="#{data.nombre}" style="font-weight: #{data.cantidad eq 0 ? 'bold': 'none'}; color: #{data.registrado ? '' : '#B34500'}"/>
+                        </p:column>
+                        <p:column id="exp" width="50">
+                            <p:rowToggler rendered="#{not empty data.alcance}"/>
+                        </p:column>
+                        <p:column headerText="Unidad" style="width: 5%">
+                            <h:outputText  value="#{data.unidadNombre}" />
+                        </p:column>
+                        <p:column headerText="Cantidad" width="5%">
+                            <h:outputText  value="#{data.cantidad}"  rendered="#{data.guardado}"/>
+                        </p:column>
+                        <p:column headerText="Precio Unitario" width="120">
+                            <h:outputText value="#{data.precioUnitario}" rendered="#{data.guardado}"/>
+                        </p:column>                        
+                        <p:rowExpansion>
+                            <h:outputText  value="#{data.alcance}" styleClass="text text-justify text-info"/>
+                        </p:rowExpansion>
+                    </p:dataTable>
+                </div>
             </div>
         </div>            
     </div>

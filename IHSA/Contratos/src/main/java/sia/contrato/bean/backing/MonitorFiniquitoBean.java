@@ -96,8 +96,7 @@ public class MonitorFiniquitoBean implements Serializable {
         llenarContratos();
     }
 
-    public void mostrarMonitorContrato() {
-        int ind = Integer.parseInt(FacesUtils.getRequestParam("indice"));
+    public void mostrarMonitorContrato(int ind) {
         contratoVo = contratos.get(ind);
         //
         contratoFormas = convenioFormasImpl.traerFormasPorConvenio(contratoVo.getId());
@@ -105,8 +104,7 @@ public class MonitorFiniquitoBean implements Serializable {
         exhortosPorContrato = convenioExhortoImpl.traerPorConvenio(contratos.get(ind).getId());
     }
 
-    public void mostrarNotificaciones() {
-        int idForma = Integer.parseInt(FacesUtils.getRequestParam("indice"));
+    public void mostrarNotificaciones(int idForma) {
         System.out.println("Forma: " + idForma);
         contratoFormaVo = new ContratoFormasVo();
         contratoFormaVo = contratoFormas.get(idForma);
@@ -116,8 +114,7 @@ public class MonitorFiniquitoBean implements Serializable {
         PrimeFaces.current().executeScript( "$(dialogoNotificacionesFormas).modal('show');");
     }
 
-    public void inicioAgregarContratoFiniquito() {
-        int ind = Integer.parseInt(FacesUtils.getRequestParam("indice"));
+    public void inicioAgregarContratoFiniquito(int ind) {
         contratoVo = contratos.get(ind);
         //
         contratoFormas = convenioFormasImpl.traerFormasPorConvenio(contratoVo.getId());

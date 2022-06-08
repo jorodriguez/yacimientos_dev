@@ -61,7 +61,7 @@ public class ValidacionDocumetosBean implements Serializable {
 
     @PostConstruct
     public void iniciar() {
-        formas = new ArrayList<ContratoFormasVo>();
+        formas = new ArrayList<>();
         llenarContratos();
         contratoFormasVo = new ContratoFormasVo();
         contratoFormasNotasVo = new ContratoFormasNotasVo();
@@ -71,8 +71,7 @@ public class ValidacionDocumetosBean implements Serializable {
         formas = convenioFormasImpl.traerFormasPorGerenciaSinValidar(sesion.getUsuarioSesion().getIdGerencia(), Constantes.ESTADO_CONVENIO_PROCESO_FINIQUITO);
     }
 
-    public void inicioRechazo() {
-        int indice = Integer.parseInt(FacesUtils.getRequestParam("indice"));
+    public void inicioRechazo(int indice) {
         contratoFormasVo = formas.get(indice);
         PrimeFaces.current().executeScript( "");
         PrimeFaces.current().executeScript( "$(dialogoRechazarForma).modal('show');");
@@ -92,8 +91,7 @@ public class ValidacionDocumetosBean implements Serializable {
         PrimeFaces.current().executeScript( "$(dialogoRechazarForma).modal('hide');");
     }
 
-    public void validarDocumento() {
-        int indice = Integer.parseInt(FacesUtils.getRequestParam("indice"));
+    public void validarDocumento(int indice) {
         convenioFormasImpl.validarDocumentacion(sesion.getUsuarioSesion(), formas.get(indice));
         llenarContratos();
     }

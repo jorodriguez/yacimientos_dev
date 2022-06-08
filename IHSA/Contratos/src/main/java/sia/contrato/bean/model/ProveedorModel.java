@@ -235,6 +235,7 @@ public class ProveedorModel implements Serializable {
             } else if (guardar) {
                 traerDatosProveedor();
             }
+            //PrimeFaces.current().ajax().update("frmAdmin:tabView:tabViewProv");
             PrimeFaces.current().executeScript(";cerrarDialogoModal(dialogoDGP);");
         } catch (Exception e) {
             UtilLog4j.log.fatal(this, e);

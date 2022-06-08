@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.annotation.PostConstruct;
 import javax.faces.model.SelectItem;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
@@ -23,7 +24,7 @@ import sia.servicios.convenio.impl.ConvenioImpl;
  *
  * @author ihsa
  */
-@Named(value  = "reporteBean")
+@Named(value = "reporteBean")
 @ViewScoped
 public class ReporteModel implements Serializable {
 
@@ -33,11 +34,10 @@ public class ReporteModel implements Serializable {
      * Creates a new instance of ReporteModel
      */
     public ReporteModel() {
-	contratoVO = new ContratoVO();
     }
 
     @Inject
-    private Sesion sesion;
+    Sesion sesion;
     @Inject
     private ConvenioImpl convenioImpl;
 
@@ -49,66 +49,70 @@ public class ReporteModel implements Serializable {
 
 //Reporte
     public void traerReporteFechas() {
-	setListaContratos(convenioImpl.getContratoPorFecha(contratoVO.getFechaInicio(), contratoVO.getFechaVencimiento(), sesion.getUsuarioSesion().getIdCampo()));
+        setListaContratos(convenioImpl.getContratoPorFecha(contratoVO.getFechaInicio(), contratoVO.getFechaVencimiento(), sesion.getUsuarioSesion().getIdCampo()));
     }
 
+    @PostConstruct
     public void iniciar() {
 
+        contratoVO = new ContratoVO();
     }
-public List getTraerGerencia() {
-	List<SelectItem> listaGerencia = new ArrayList<SelectItem>();
-	try {
-	    for (Object obj : getLista().get("gerencias")) {
-		GerenciaVo cg = (GerenciaVo) obj;
-		SelectItem item = new SelectItem(cg.getId(), cg.getNombre());
-		listaGerencia.add(item);
-	    }
-	    return listaGerencia;
-	} catch (Exception e) {
-	    e.getMessage();
-	}
-	return null;
+
+    public List getTraerGerencia() {
+        List<SelectItem> listaGerencia = new ArrayList<>();
+        try {
+            for (Object obj : getLista().get("gerencias")) {
+                GerenciaVo cg = (GerenciaVo) obj;
+                SelectItem item = new SelectItem(cg.getId(), cg.getNombre());
+                listaGerencia.add(item);
+            }
+            return listaGerencia;
+        } catch (Exception e) {
+            e.getMessage();
+        }
+        return null;
     }
+
     /**
      * @param sesion the sesion to set
      */
     public void setSesion(Sesion sesion) {
-	this.sesion = sesion;
+        this.sesion = sesion;
     }
 
     /**
      * @return the contratoVO
      */
     public ContratoVO getContratoVO() {
-	return contratoVO;
+        return contratoVO;
     }
 
     /**
      * @param contratoVO the contratoVO to set
      */
     public void setContratoVO(ContratoVO contratoVO) {
-	this.contratoVO = contratoVO;
+        this.contratoVO = contratoVO;
     }
 
     /**
      * @return the listaContratos
      */
     public List<ContratoVO> getListaContratos() {
-	return listaContratos;
+        return listaContratos;
     }
 
     /**
      * @return the lista
      */
     public Map<String, List> getLista() {
-	return lista;
+        return lista;
     }
 
     /**
      * @param listaContratos the listaContratos to set
      */
     public void setListaContratos(List<ContratoVO> listaContratos) {
-	this.listaContratos = listaContratos;
+        this.listaContratos = listaContratos;
     }
 
     /**

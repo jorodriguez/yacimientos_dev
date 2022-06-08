@@ -8,12 +8,12 @@ package sia.contrato.bean.backing;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
-import javax.faces.bean.RequestScoped;
 
 import javax.faces.event.ValueChangeEvent;
 import javax.faces.model.SelectItem;
+import javax.faces.view.ViewScoped;
+import javax.inject.Named;
 import org.primefaces.PrimeFaces;
 import org.primefaces.event.SelectEvent;
 import sia.constantes.Constantes;
@@ -27,8 +27,8 @@ import sia.modelo.usuario.vo.UsuarioRolVo;
  *
  * @author ihsa
  */
-@ManagedBean
-@RequestScoped
+@Named(value = "depRol")
+@ViewScoped
 public class RolBean implements Serializable {
 
     static final long serialVersionUID = 1;
@@ -110,7 +110,7 @@ public class RolBean implements Serializable {
 
     public void eliminarUsuario() {
 	rolModel.getUsuarioRolVo().setIdUsuarioRol(Integer.parseInt(FacesUtils.getRequestParam("idUsuarioRol")));
-	rolModel.eliminarUsuario();
+	//rolModel.eliminarUsuario();
 	rolModel.llenarListaUsusarioRol();
     }
 

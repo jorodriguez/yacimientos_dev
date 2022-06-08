@@ -5,81 +5,57 @@
                 xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
                 xmlns:h="http://xmlns.jcp.org/jsf/html"
                 xmlns:p="http://primefaces.org/ui">
-    <!-- Modal Panel Popup agregar modificar datos del contrato -->
-
-
-    <script>
-        function validarCajaTexto(forma, idComponente, msg) {
-            var componente = "#" + forma + "\\:" + idComponente;
-            if ($(componente).val() == "" || $(componente).val() == undefined || $(componente).val() == null) {
-                alert(msg);
-                return false;
-            } else {
-                return true;
-            }
-        }
-
-        function validarDatosGenerales(idContrato) {
-            var valorContinuar = true;
-            valorContinuar = validarCajaTexto('frmModContratoGenerales' + idContrato, 'numCont' + idContrato, "El número de contrato es requerido.");
-            return valorContinuar;
-        }
-
-    </script>
-
-
-    <div class="modal fade" id="dialogoModificarDatosGenerales#{contr.id}" data-backdrop="static" data-keyboard="false">
-        <div class="modal-dialog">
+    <div class="modal fade" id="dialogoModificarDatosGenerales" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
                     <h4 class="modal-title">Datos generales </h4>
                 </div>
-                <h:form id="frmModContratoGenerales#{contr.id}">
+                <h:form id="frmModContratoGenerales">
                     <div class="modal-body card-body">
                         <div class="input-group">
                             <ui:fragment rendered="#{contr.formalizado}">
-                                <div class="form-group col-lg-12">                           
-                                    <h:outputText class="col-lg-2 control-label" value="Número: "/>
-                                    <div class="col-lg-8">
-                                        <h:inputTextarea id="numCont#{contr.id}" value="#{contr.numero}" styleClass="form-control"/>
+                                <div class="form-group col-12">                           
+                                    <h:outputText class="col-2 control-label" value="Número: "/>
+                                    <div class="col-8">
+                                        <h:inputTextarea id="numCont" value="#{contratoBean.contratoVo.numero}" styleClass="form-control"/>
                                     </div>
                                 </div>
                             </ui:fragment>
-                            <div class="form-group col-lg-12">                           
-                                <h:outputText class="col-lg-2 control-label" value="Objetivo: "/>
-                                <div class="col-lg-8">
-                                    <h:inputTextarea value="#{contr.nombre}" styleClass="form-control"/>
+                            <div class="form-group col-12">                           
+                                <h:outputText class="col-2 control-label" value="Objetivo: "/>
+                                <div class="col-8">
+                                    <h:inputTextarea value="#{contratoBean.contratoVo.nombre}" styleClass="form-control"/>
                                 </div>
                             </div>
-                            <div class="form-group col-lg-12">                           
-                                <h:outputText class="col-lg-2 control-label" value="Gerencia: "/>
-                                <div class="col-lg-8">
-                                    <p:selectOneMenu value="#{contr.idGerencia}" styleClass="form-control">
+                            <div class="form-group col-12">                           
+                                <h:outputText class="col-2 control-label" value="Gerencia: "/>
+                                <div class="col-8">
+                                    <p:selectOneMenu value="#{contratoBean.idGerencia}" styleClass="custom-select">
                                         <f:selectItem itemLabel="Seleccione . . ." itemValue="-1"/>
-                                        <f:selectItems value="#{contratoBean.traerGerencia}"/>
+                                        <f:selectItems value="#{contratoBean.lista.get('gerencias')}"/>
                                         <p:ajax event="change" listener="#{contratoBean.agregarGerenciaContrato}"
-                                                update="@form"/>
+                                                update="frmModContratoGenerales:tblGerencias"/>
                                     </p:selectOneMenu>
                                 </div>
                             </div>
-                            <div class="form-group col-lg-12">
-                                <div class="col-lg-2 control-label"></div>
-                                <div class="col-lg-8">
-                                    <p:dataTable id="tblGerencias" value="#{contr.listaGerencia}" 
-                                                 var="data">
-                                        <f:facet name="header">Actuales</f:facet>
+                            <div class="form-group col-12">
+                                <div class="col-12">
+                                    <p:dataTable id="tblGerencias" value="#{contratoBean.contratoVo.listaGerencia}" 
+                                                 var="data" showGridlines="true" size="small" >
+                                        <f:facet name="header">Gerencias Actuales</f:facet>
                                         <p:column style="text-align: left;">
                                             <h:outputText value="#{data.nombre}"/>
                                         </p:column>
                                         <p:column>
-                                            <p:commandLink action="#{contratoBean.eliminarGerencia(event)}">
-                                                <f:param name="idConvGer" value="#{data.idTabla}"/>
+                                            <p:commandLink action="#{contratoBean.eliminarGerencia(data.idTabla)}"
+                                                           process="@this" update="frmModContratoGenerales">
                                                 <i class="fa fa-trash text-danger" />
                                             </p:commandLink>
                                         </p:column>
                                     </p:dataTable>
 
-                                    <p:dataTable value="#{contratoBean.listaGerencia}" 
+                                    <p:dataTable id="dtGerNuevas" value="#{contratoBean.listaGerencia}" 
                                                  var="data" 
                                                  rowIndexVar="indice">
                                         <f:facet name="header">Nuevas</f:facet>
@@ -87,47 +63,39 @@
                                             <h:outputText value="#{data.nombre}"/>
                                         </p:column>
                                         <p:column>
-                                            <p:commandLink action="#{contratoBean.quitarGerencia(event)}">
-                                                <f:param name="idGerencia" value="#{indice}"/>
+                                            <p:commandLink action="#{contratoBean.quitarGerencia(indice)}"
+                                                           process="@this" update="frmModContratoGenerales:dtGerNuevas">
                                                 <i class="fa fa-trash text-danger" />
                                             </p:commandLink>
                                         </p:column>
                                     </p:dataTable>
                                 </div>
                             </div>
-                            <div class="form-group col-lg-12">                           
-                                <h:outputText class="col-lg-2 control-label" value="Tipo: "/>
-                                <div class="col-lg-8">
-                                    <p:selectOneMenu value="#{contr.idTipo}" styleClass="form-control">
+                            <div class="form-group col-12">                           
+                                <h:outputText class="col-2 control-label" value="Tipo: "/>
+                                <div class="col-8">
+                                    <p:selectOneMenu value="#{contratoBean.contratoVo.idTipo}" styleClass="custom-select">
                                         <f:selectItems value="#{contratoBean.traerTipo}"/>
                                     </p:selectOneMenu>
                                 </div>
                             </div>
-                            <!--div class="form-group col-lg-12">                           
-                                <h:outputText class="col-lg-2 control-label" value="Clasificación: "/>
-                                <div class="col-lg-8">
-                                    <p:selectOneMenu value="#{contr.idClasificacion}" styleClass="form-control">
-                                        <f:selectItems value="#{contratoBean.traerClasificacion}"/>
-                                    </p:selectOneMenu>
-                                </div>
-                            </div-->
                         </div>
                     </div>
 
                     <div class="modal-footer">
-                        <p:commandButton id="btnCerrar#{contr.id}" value="Cancelar" class="btn btn-default"
-                                         immediate="true"
-                                         action="#{contratoBean.cancelarActualizarDatosGeneralesContrato}" 
-                                         onclick="$(dialogoModificarDatosGenerales#{contr.id}).modal('hide');"/>                        
+                        <p:commandLink id="btnCerrar" value="Cancelar" class="btn btn-default"
+                                       immediate="true"
+                                       action="#{contratoBean.cancelarActualizarDatosGeneralesContrato}" 
+                                       onclick="$(dialogoModificarDatosGenerales).modal('hide');"/>                        
                         <ui:fragment rendered="#{contr.formalizado}">
-                            <p:commandButton id="btnGuardarF#{contr.id}" value="Guardar"
+                            <p:commandButton id="btnGuardarF" value="Guardar"
                                              action="#{contratoBean.actualizarDatosGeneralesContrato}" 
-                                             class="btn btn-primary" process="@form" update="tabView"/>
+                                             class="btn btn-primary" process="@form" update="frmAdmin:tabView"/>
                         </ui:fragment>
                         <ui:fragment rendered="#{!contr.formalizado}">
-                            <p:commandButton id="btnGuardar#{contr.id}" value="Guardar"                                         
+                            <p:commandButton id="btnGuardar" value="Guardar"                                         
                                              action="#{contratoBean.actualizarDatosGeneralesContrato}" 
-                                             class="btn btn-primary" process="@form" update="tabView"/>
+                                             class="btn btn-primary" process="@form" update="frmAdmin:tabView"/>
                         </ui:fragment>
                     </div>
                 </h:form>
@@ -136,59 +104,59 @@
     </div>
 
     <!-- Modal Panel Popup agregar modificar datos del contrato -->
-    <div class="modal fade" id="dialogoModificarComplementos#{contr.id}" data-backdrop="static" data-keyboard="false">
-        <div class="modal-dialog">
+    <div class="modal fade" id="dialogoModificarComplementos" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
                     <h4 class="modal-title">Datos complementarios</h4>
                 </div>
-                <h:form id="frmModContratoCompl#{contr.id}">
+                <h:form id="frmModContratoComp">
                     <div class="modal-body card-body">
                         <div class="input-group">
-                            <div class="form-group col-lg-12">                           
-                                <h:outputText class="col-lg-2 control-label" value="Deducción: "/>
+                            <div class="form-group col-12">                           
+                                <h:outputText class="col-2 control-label" value="Deducción: "/>
                                 <div class="form-group">
-                                    <div class="col-lg-6">
-                                        <h:inputText styleClass="form-control" value="#{contr.porcentajeDeduccion}"/>
+                                    <div class="col-6">
+                                        <h:inputText styleClass="form-control" value="#{contratoBean.contratoVo.porcentajeDeduccion}"/>
                                     </div>
-                                    <div class="col-lg-2">
+                                    <div class="col-2">
                                         <h:outputLabel value="%"/>
                                     </div>
                                 </div>
                             </div>
-                            <div class="form-group col-lg-12">                           
-                                <h:outputText class="col-lg-2 control-label" value="Firma: "/>
-                                <div class="col-lg-8">
-                                    <p:datePicker value="#{contr.fechaFirma}" 
+                            <div class="form-group col-12">                           
+                                <h:outputText class="col-2 control-label" value="Firma: "/>
+                                <div class="col-8">
+                                    <p:datePicker value="#{contratoBean.contratoVo.fechaFirma}" 
                                                   pattern="dd/MM/yyyy"/>
                                 </div>
                             </div>
-                            <div class="form-group col-lg-12">                           
-                                <h:outputText class="col-lg-2 control-label" value="Inicio: "/>
-                                <div class="col-lg-8">
-                                    <p:datePicker value="#{contr.fechaInicio}" 
+                            <div class="form-group col-12">                           
+                                <h:outputText class="col-2 control-label" value="Inicio: "/>
+                                <div class="col-8">
+                                    <p:datePicker value="#{contratoBean.contratoVo.fechaInicio}" 
                                                   pattern="dd/MM/yyyy"/>
                                 </div>
                             </div>
-                            <div class="form-group col-lg-12">                           
-                                <h:outputText class="col-lg-2 control-label" value="Fin: "/>
-                                <div class="col-lg-8">
-                                    <p:datePicker value="#{contr.fechaVencimiento}" 
+                            <div class="form-group col-12">                           
+                                <h:outputText class="col-2 control-label" value="Fin: "/>
+                                <div class="col-8">
+                                    <p:datePicker value="#{contratoBean.contratoVo.fechaVencimiento}" 
                                                   pattern="dd/MM/yyyy" yearNavigator="true"
                                                   />
                                 </div>
                             </div>
-                            <div class="form-group col-lg-12">                           
-                                <h:outputText class="col-lg-2 control-label" value="Monto: "/>
-                                <div class="col-lg-8">
-                                    <h:inputText styleClass="form-control" value="#{contr.monto}"/>
+                            <div class="form-group col-12">                           
+                                <h:outputText class="col-2 control-label" value="Monto: "/>
+                                <div class="col-8">
+                                    <h:inputText styleClass="form-control" value="#{contratoBean.contratoVo.monto}"/>
                                 </div>
                             </div>
-                            <div class="form-group col-lg-12">                           
-                                <h:outputText class="col-lg-2 control-label" value="Móneda: "/>
-                                <div class="col-lg-8">
-                                    <p:selectOneMenu value="#{contr.idMoneda}"
-                                                     styleClass="form-control">
+                            <div class="form-group col-12">                           
+                                <h:outputText class="col-2 control-label" value="Moneda: "/>
+                                <div class="col-8">
+                                    <p:selectOneMenu value="#{contratoBean.contratoVo.idMoneda}"
+                                                     styleClass="custom-select">
                                         <f:selectItems value="#{contratoBean.traerMoneda}"/>
                                     </p:selectOneMenu>
                                 </div>
@@ -197,11 +165,11 @@
                     </div>
 
                     <div class="modal-footer">
-                        <p:commandButton id="btnCerrar#{contr.id}" value="Cancelar" class="btn btn-default"
-                                         onclick="$(dialogoModificarComplementos#{contr.id}).modal('hide');" immediate="true"/>
-                        <p:commandButton id="btnGuardar#{contr.id}" value="Guardar" action="#{contratoBean.actualizarContrato}" 
-                                         class="btn btn-info" oncomplete="$(dialogoModificarComplementos#{contr.id}).modal('hide');"
-                                         process="@form" update="tabView"/>
+                        <p:commandLink id="btnCerrar" value="Cancelar" class="btn btn-default"
+                                       onclick="$(dialogoModificarComplementos).modal('hide');" immediate="true"/>
+                        <p:commandButton id="btnGuardar" value="Guardar" action="#{contratoBean.actualizarContrato}" 
+                                         class="btn btn-info" oncomplete="$(dialogoModificarComplementos).modal('hide');"
+                                         process="@form" update="frmAdmin:tabView"/>
                     </div>
                 </h:form>
             </div>
@@ -209,34 +177,34 @@
     </div>
 
     <!-- Modal Panel Popup agergar documentacion -->
-    <div class="modal fade" id="dialogoAgregarDocto#{contr.id}" data-backdrop="static" data-keyboard="false">
+    <div class="modal fade" id="dialogoAgregarDocto" data-backdrop="static" data-keyboard="false">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
                     <h4 class="modal-title">Agregar documentación</h4>
                 </div>
-                <h:form id="frmDoctos#{contr.id}">
+                <h:form id="frmDoctos">
                     <div class="modal-body card-body">
                         <div class="input-group">
-                            <div class="form-group col-lg-12 col-xs-12">                           
+                            <div class="form-group col-12 col-xs-12">                           
                                 <p:dataTable value="#{contratoBean.listaDoctos}" var="data"
                                              style="width: 100%;">
-                                    <p:column>
+                                    <p:column width="35">
                                         <h:selectBooleanCheckbox value="#{data.selected}"  />
                                     </p:column>
                                     <p:column headerText="Docuemento" style="text-align: left;">
-                                        <h:outputText value="#{data.nombre}" class="form-control"/>
+                                        <h:outputText value="#{data.nombre}"/>
                                     </p:column>
                                 </p:dataTable>
                             </div>
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <p:commandButton id="btnCerrar#{contr.id}" value="Cancelar" class="btn btn-default"
-                                         onclick="$(dialogoAgregarDocto#{contr.id}).modal('hide');" immediate="true"/>
-                        <p:commandButton id="btnGuardar#{contr.id}" value="Guardar" action="#{contratoBean.agregarDocumentos}" 
-                                         class="btn btn-info" oncomplete="$(dialogoAgregarDocto#{contr.id}).modal('hide');"
-                                         process="@form" update="tabView"/>
+                        <p:commandLink id="btnCerrar" value="Cancelar" class="btn btn-default"
+                                       onclick="$(dialogoAgregarDocto).modal('hide');" immediate="true"/>
+                        <p:commandButton id="btnGuardar" value="Guardar" action="#{contratoBean.agregarDocumentos}" 
+                                         class="btn btn-info" oncomplete="$(dialogoAgregarDocto).modal('hide');"
+                                         process="@form" update="frmAdmin:tabView"/>
                     </div>
                 </h:form>
             </div>
@@ -244,84 +212,84 @@
     </div>
 
     <!-- Modal Panel Popup agergar archivos -->
-    <div class="modal fade" id="dialogoAgregarArchivoDocto#{contr.id}" data-backdrop="static" data-keyboard="false">
+    <div class="modal fade" id="dialogoAgregarArchivoDocto" data-backdrop="static" data-keyboard="false">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
                     <h4 class="modal-title">Agregar documentación</h4>
                 </div>
-                <h:form id="frmArchivoDocto#{contr.id}">
+                <h:form id="frmArchivoDocto">
                     <div class="modal-body card-body">
                         <div class="input-group">
-                            <div class="form-group col-lg-12">                           
-                                <h:outputText class="col-lg-2 control-label" value="Entrega: "/>
-                                <div class="col-lg-8">
+                            <div class="form-group col-12">                           
+                                <h:outputText class="col-2 control-label" value="Entrega: "/>
+                                <div class="col-8">
                                     <p:datePicker value="#{contratoBean.contratoDocumentoVo.fechaEntrega}" 
                                                   pattern="dd/MM/yyyy"/>
                                 </div>
                             </div>
-                            <div class="form-group col-lg-12">                           
-                                <h:outputText class="col-lg-2 control-label" value="Inicio: "/>
-                                <div class="col-lg-8">
+                            <div class="form-group col-12">                           
+                                <h:outputText class="col-2 control-label" value="Inicio: "/>
+                                <div class="col-8">
                                     <p:datePicker value="#{contratoBean.contratoDocumentoVo.inicioVigencia}" 
                                                   pattern="dd/MM/yyyy"/>
                                 </div>
                             </div>
-                            <div class="form-group col-lg-12">                           
-                                <h:outputText class="col-lg-2 control-label" value="Fin: "/>
-                                <div class="col-lg-8">
+                            <div class="form-group col-12">                           
+                                <h:outputText class="col-2 control-label" value="Fin: "/>
+                                <div class="col-8">
                                     <p:datePicker value="#{contratoBean.contratoDocumentoVo.finVigencia}" 
                                                   pattern="dd/MM/yyyy"/>
                                 </div>
                             </div>
-                            <div class="form-group col-lg-12">                           
-                                <h:outputText class="col-lg-2 control-label" value="Archivo: "/>
-                                <div class="col-lg-8">
+                            <div class="form-group col-12">                           
+                                <h:outputText class="col-2 control-label" value="Archivo: "/>
+                                <div class="col-8">
                                     <h:outputText value="#{contratoBean.contratoDocumentoVo.adjuntoVO.nombre}" />
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <p:commandButton id="btnCerrar#{contr.id}" value="Cancelar" class="btn btn-default"
-                                         onclick="$(dialogoAgregarArchivoDocto#{contr.id}).modal('hide');" immediate="true"/>
-                        <p:commandButton id="uploadFile#{contr.id}" value="Guardar" action="#{contratoBean.actualizarDocto}"
+                        <p:commandButton id="btnCerrar" value="Cancelar" class="btn btn-default"
+                                         onclick="$(dialogoAgregarArchivoDocto).modal('hide');" immediate="true"/>
+                        <p:commandButton id="uploadFile" value="Guardar" action="#{contratoBean.actualizarDocto}"
                                          styleClass="btn btn-info"
-                                         oncomplete="$(dialogoAgregarArchivoDocto#{contr.id}).modal('hide');"
-                                         process="@form" update="tabView"/>
+                                         oncomplete="$(dialogoAgregarArchivoDocto).modal('hide');"
+                                         process="@form" update="frmAdmin:tabView"/>
                     </div>
                 </h:form>
             </div>
         </div>
     </div>
     <!-- Modal Panel Popup agergar condiciones de pago  -->
-    <div class="modal fade" id="dialogoAgregarConvCondicion#{contr.id}" data-backdrop="static" data-keyboard="false">
+    <div class="modal fade" id="dialogoAgregarConvCondicion" data-backdrop="static" data-keyboard="false">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
                     <h4 class="modal-title">Agregar condiciones de pago</h4>
                 </div>
-                <h:form id="frmCondConv#{contr.id}">
+                <h:form id="frmCondConv">
                     <div class="modal-body card-body">
                         <div class="input-group">
                             <p:dataTable value="#{contratoBean.listaCondicionesPago}" var="data"
-                                         style="width: 100%;">
-                                <p:column width="50">
+                                         style="width: 100%;" size="small" showGridlines="true">
+                                <p:column width="35">
                                     <h:selectBooleanCheckbox value="#{data.selected}"/>
                                 </p:column>
                                 <p:column headerText="Docuemento" style="text-align: left;">
-                                    <h:outputText value="#{data.nombre}" class="form-control"/>
+                                    <h:outputText value="#{data.nombre}" />
                                 </p:column>
                             </p:dataTable>
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <p:commandButton id="btnCerrar#{contr.id}" value="Cancelar" class="btn btn-default"
-                                         onclick="$(dialogoAgregarConvCondicion#{contr.id}).modal('hide');" immediate="true"/>
-                        <p:commandButton id="condicionPago#{contr.id}" value="Guardar" action="#{contratoBean.agregarConvCondicionPago}"
+                        <p:commandLink id="btnCerrar" value="Cancelar" class="btn btn-default"
+                                       onclick="$(dialogoAgregarConvCondicion).modal('hide');" immediate="true"/>
+                        <p:commandButton id="condicionPago" value="Guardar" action="#{contratoBean.agregarConvCondicionPago}"
                                          styleClass="btn btn-info"
-                                         onclick="$(dialogoAgregarConvCondicion#{contr.id}).modal('hide');"
-                                         process="@form" update="tabView"/>
+                                         onclick="$(dialogoAgregarConvCondicion).modal('hide');"
+                                         process="@form" update="frmAdmin:tabView"/>
                     </div>
                 </h:form>
             </div>
@@ -330,13 +298,13 @@
 
 
     <!-- Modal Panel Popup agergar condiciones de pago  -->
-    <div class="modal fade" id="dialogoAgregarConvHito#{contr.id}" data-backdrop="static" data-keyboard="false">
+    <div class="modal fade" id="dialogoAgregarConvHito" data-backdrop="static" data-keyboard="false">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
                     <h4 class="modal-title">Agregar hitos de pago</h4>
                 </div>
-                <h:form id="frmHitoConv#{contr.id}">
+                <h:form id="frmHitoConv">
                     <div class="modal-body card-body">
                         <p:dataTable value="#{contratoBean.listaHitoPago}" var="data"
                                      rowStyleClass="table table-bordered table-striped">
@@ -355,12 +323,11 @@
                         </p:dataTable>
                     </div>
                     <div class="modal-footer">
-                        <p:commandButton id="btnCerrar#{contr.id}" value="Cancelar" class="btn btn-default"
-                                         onclick="$(dialogoAgregarConvHito#{contr.id}).modal('hide');" immediate="true"/>
+                        <p:commandButton id="btnCerrar" value="Cancelar" class="btn btn-default"
+                                         onclick="$(dialogoAgregarConvHito).modal('hide');" immediate="true"/>
                         <p:commandButton id="uploadFile" value="Guardar" action="#{contratoBean.agregarConvHitoConvenio}"
-                                         styleClass="btn btn-info"
-                                         onclick="$(dialogoAgregarConvHito#{contr.id}).modal('hide');"
-                                         process="@form" update="tabView"/>
+                                         onclick="$(dialogoAgregarConvHito).modal('hide');"
+                                         process="@form" update="frmAdmin:tabView"/>
                     </div>
                 </h:form>
             </div>
@@ -368,26 +335,26 @@
     </div>
 
     <!-- Promover contrato -->
-    <div class="modal fade" id="dialogoFormalizarContrato#{contr.id}" data-backdrop="static" data-keyboard="false">
+    <div class="modal fade" id="dialogoFormalizarContrato" data-backdrop="static" data-keyboard="false">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
                     <h4 class="modal-title">Formalizar convenio</h4>
                 </div>
-                <h:form id="frmFormalizar#{contr.id}">
+                <h:form id="frmFormalizar">
                     <div class="modal-body card-body">
-                        <div class="col-lg-12">
+                        <div class="col-12">
                             <div class="form-group">
-                                <h:outputText value="Proveedor" class="col-lg-2"/>
-                                <div class="col-lg-8 ">
-                                    <h:outputLabel value="#{contr.proveedorVo.nombre}"/>
+                                <h:outputText value="Proveedor" class="col-2"/>
+                                <div class="col-8 ">
+                                    <h:outputLabel value="#{contratoBean.contratoVo.proveedorVo.nombre}"/>
                                 </div>
                             </div>
                         </div>
-                        <div class="col-lg-12">
-                            <div class="col-lg-8">	
+                        <div class="col-12">
+                            <div class="col-8">	
                                 <div class="table table-bordered table-striped table-responsive">
-                                    <p:dataTable value="#{contr.proveedorVo.todoContactos}" var="data"                                                   
+                                    <p:dataTable value="#{contratoBean.contratoVo.proveedorVo.todoContactos}" var="data"                                                   
                                                  style="font-size: small;" lazy="true"
                                                  size="small" showGridlines="true" selection="#{contratoBean.contactoProveedorVO}"
                                                  selectionMode="single" rowKey="#{data.idContactoProveedor}"
@@ -409,8 +376,8 @@
                                     </p:dataTable>				    
                                 </div>
                             </div>
-                            <div class="col-lg-4">
-                                <p:dataTable id="dtCorreoPara#{contr.id}"  
+                            <div class="col-4">
+                                <p:dataTable id="dtCorreoPara"  
                                              value="#{contratoBean.listaCorreo.get('para')}" 
                                              var="data" lazy="true" size="small"  
                                              showGridlines="true"
@@ -421,21 +388,21 @@
                                     </p:column>
                                     <p:column style="text-align: left;">
                                         <p:commandLink action="#{contratoBean.quitarUsuarioPara(index)}" immediate="true"
-                                                       process="@this" update="@form">
+                                                       process="@this" update="frmAdmin:tabView">
                                             <i class="fa fa-trash text text-danger"/>
                                         </p:commandLink>
                                     </p:column>
                                 </p:dataTable>
                             </div>
                         </div>
-                        <div class="col-lg-12">
-                            <div class="col-lg-8">
+                        <div class="col-12">
+                            <div class="col-8">
                                 <p:selectOneMenu value="#{contratoBean.idGerencia}" styleClass="custom-select">
                                     <f:selectItem itemLabel="Seleccione . . ." itemValue="-1"/>
                                     <f:selectItems value="#{contratoBean.lista.get('gerencias')}"/>
-                                    <p:ajax listener="#{contratoBean.traerEmpleadoPorGerencia}" update="frmFormalizar#{contr.id}:dtGer#{contr.id}"/>
+                                    <p:ajax listener="#{contratoBean.traerEmpleadoPorGerencia}" update="frmFormalizar:dtGer"/>
                                 </p:selectOneMenu>
-                                <p:dataTable id="dtGer#{contr.id}" value="#{contratoBean.listaUsuarioGerencia}" var="data" 
+                                <p:dataTable id="dtGer" value="#{contratoBean.listaUsuarioGerencia}" var="data" 
                                              style="text-align:  left; font-size: small;"
                                              size="small" showGridlines="true"
                                              selectionMode="single"
@@ -445,8 +412,8 @@
                                     </p:column>
                                 </p:dataTable>
                             </div>
-                            <div class="col-lg-4">
-                                <p:dataTable id="dtCorreoCopia#{contr.id}" value="#{contratoBean.listaCorreo.get('copia')}" 
+                            <div class="col-4">
+                                <p:dataTable id="dtCorreoCopia" value="#{contratoBean.listaCorreo.get('copia')}" 
                                              var="data" rowIndexVar="index"
                                              size="small" showGridlines="true" lazy="true">
                                     <f:facet name="header" >Correo copia</f:facet>
@@ -463,12 +430,12 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <p:commandLink value="Cancelar" onclick="$(dialogoFormalizarContrato#{contr.id}).modal('hide');"
+                        <p:commandLink value="Cancelar" onclick="$(dialogoFormalizarContrato).modal('hide');"
                                        styleClass="btn btn-default" immediate="true">
                         </p:commandLink>
                         <p:commandLink value="Guardar" class="btn btn-primary"
                                        action="#{contratoBean.finlizarContratoFormalizado}"
-                                       process="@form" update="tabView">			    
+                                       process="@form" update="frmAdmin:tabView">			    
                         </p:commandLink>
                     </div>
                 </h:form>
@@ -477,26 +444,26 @@
     </div> 
 
     <!--Finquitar contrato-->
-    <div class="modal fade" id="dialogoFiniquitarContrato#{contr.id}" data-backdrop="static" data-keyboard="false">
+    <div class="modal fade" id="dialogoFiniquitarContrato" data-backdrop="static" data-keyboard="false">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
                     <h4 class="modal-title">Finiquitar convenio</h4>
                 </div>
-                <h:form id="frmFinquitar#{contr.id}">
+                <h:form id="frmFinquitar">
                     <div class="modal-body card-body">
-                        <div class="col-lg-12">
+                        <div class="col-12">
                             <div class="form-group">
-                                <h:outputText value="Proveedor" class="col-lg-2"/>
-                                <div class="col-lg-8 ">
-                                    <h:outputLabel value="#{contr.proveedorVo.nombre}"/>
+                                <h:outputText value="Proveedor" class="col-2"/>
+                                <div class="col-8 ">
+                                    <h:outputLabel value="#{contratoBean.contratoVo.proveedorVo.nombre}"/>
                                 </div>
                             </div>
                         </div>
-                        <div class="col-lg-12">
-                            <div class="col-lg-8">	
+                        <div class="col-12">
+                            <div class="col-8">	
                                 <div class="table table-bordered table-striped table-responsive">
-                                    <p:dataTable id="dtContProv#{contr.id}" value="#{contr.proveedorVo.todoContactos}" var="data"
+                                    <p:dataTable id="dtContProv" value="#{contratoBean.contratoVo.proveedorVo.todoContactos}" var="data"
                                                  size="small" selection="#{contratoBean.contactoProveedorVO}" 
                                                  selectionMode="single"
                                                  rowKey="#{data.idContactoProveedor}">
@@ -518,15 +485,15 @@
                                     </p:dataTable>				    
                                 </div>
                             </div>
-                            <div class="col-lg-4">
-                                <p:dataTable id="dtCorreoPara#{contr.id}" value="#{contratoBean.listaCorreo.get('para')}" var="data"
+                            <div class="col-4">
+                                <p:dataTable id="dtCorreoPara" value="#{contratoBean.listaCorreo.get('para')}" var="data"
                                              size="small" showGridlines="true">
                                     <f:facet name="header" >Correo para</f:facet>
                                     <p:column headerText="Nombre" style="text-align: left;">
                                         <h:outputText value="#{data.nombre}"/>
                                     </p:column>
                                     <p:column style="text-align: left;">
-                                        <p:commandLink action="#{contratoBean.quitarUsuarioPara(data.id)}" process="@this" update="tabView">
+                                        <p:commandLink action="#{contratoBean.quitarUsuarioPara(data.id)}" process="@this" update="frmAdmin:tabView">
                                             <i class="fa fa-trash text text-danger"/>
                                         </p:commandLink>
                                     </p:column>
@@ -534,14 +501,14 @@
                             </div>
 
                         </div>
-                        <div class="col-lg-12">
-                            <div class="col-lg-8">
+                        <div class="col-12">
+                            <div class="col-8">
                                 <p:selectOneMenu value="#{contratoBean.idGerencia}" >
                                     <f:selectItem itemLabel="Seleccione . . ." itemValue="-1"/>
                                     <f:selectItems value="#{contratoBean.lista.get('gerencias')}"/>
                                     <p:ajax event="change" listener="#{contratoBean.traerEmpleadoPorGerencia}" update="@form"/>
                                 </p:selectOneMenu>
-                                <p:dataTable id="dtGer#{contr.id}" value="#{contratoBean.listaUsuarioGerencia}" var="data" 
+                                <p:dataTable id="dtGer" value="#{contratoBean.listaUsuarioGerencia}" var="data" 
                                              showGridlines="true" size="small" rowKey="#{data.id}"
                                              selection="#{contratoBean.usuarioVo}" selectionMode="single">
                                     <p:ajax event="rowSelect" listener="#{contratoBean.seleccionarContactoCopia}" update="@form"/>
@@ -550,7 +517,7 @@
                                     </p:column>
                                 </p:dataTable>
                             </div>
-                            <div class="col-lg-4">
+                            <div class="col-4">
                                 <p:dataTable value="#{contratoBean.listaCorreo.get('copia')}" var="data"
                                              showGridlines="true" size="small" rowIndexVar="index">
                                     <f:facet name="header" >Correo copia</f:facet>
@@ -558,7 +525,7 @@
                                         <h:outputText value="#{data.nombre}"/>
                                     </p:column>
                                     <p:column style="text-align: left;">
-                                        <p:commandLink action="#{contratoBean.quitarUsuarioCopia(index)}" process="@form" update="tabView">
+                                        <p:commandLink action="#{contratoBean.quitarUsuarioCopia(index)}" process="@form" update="frmAdmin:tabView">
                                             <i class="fa fa-trash text text-danger"/>
                                         </p:commandLink>
                                     </p:column>
@@ -567,12 +534,173 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <p:commandLink value="Cancelar" onclick="$(dialogoFiniquitarContrato#{contr.id}).modal('hide');"
+                        <p:commandLink value="Cancelar" onclick="$(dialogoFiniquitarContrato).modal('hide');"
                                        styleClass="btn btn-default" immediate="true">
                         </p:commandLink>
-                        <p:commandLink value="Enviar" class="btn btn-primary"	process="@form" update="tabView"			       
+                        <p:commandLink value="Enviar" class="btn btn-primary"	process="@form" update="frmAdmin:tabView"			       
                                        action="#{contratoBean.finlizarContratoFiniquitado}" >    
                         </p:commandLink>
+                    </div>
+                </h:form>
+            </div>
+        </div>
+    </div>
+    <!-- Dialogo para cargar artículos -->
+    <div class="modal fade" id="dialogoCargaArticulos" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Cargar Articulos</h4>
+                </div>
+                <h:form id="frmCargaArt">
+                    <div class="modal-body ">
+                        <div class="row">
+                            <div class="input-group col-4">                           
+                                <h:outputLabel class="control-label col-12" value="Número: "/>
+                                <div >
+                                    <h:outputText id="numCont" value="#{contratoBean.contratoVo.numero}" />
+                                </div>
+                            </div>                          
+                        </div>
+                        <div class="row">
+                            <p:panel id="pnlCats">
+                                <p:repeat id="repCats" value="#{contratoBean.categoriasSeleccionadas}" var="data"
+                                          varStatus="indice">
+                                    <p:commandLink  action="#{contratoBean.seleccionarCategoriaCabecera(indice.index)}"
+                                                    styleClass="text text-primary " process="@this" 
+                                                    update="frmCargaArt:pnlCats frmCargaArt:repCats frmCargaArt:dtCats">
+                                        <i class="#{empty data.idPadre ? 'fa fa-circle' : 'fa fa-arrow-right' }" ></i>
+                                        #{data.nombre} 
+                                    </p:commandLink>
+                                </p:repeat>
+                            </p:panel>
+                        </div>
+                        <div class="row mt-1">
+                            <div class="card card-info">
+                                <div class="card-header">
+                                    <div class="input-group col-12">
+                                        <div class="col-12">
+                                            #{contratoBean.categoriasSeleccionadas.size()  eq 0 ? 'Pricipales' : contratoBean.categoriaVo.nombre}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <p:dataTable id="dtCats" value="#{contratoBean.categoriaVo.listaCategoria}" var="data"
+                                                 rows="5" paginator="true"  
+                                                 paginatorPosition="bottom" 
+                                                 rowIndexVar="indice" 
+                                                 size="small" showGridlines="true">
+                                        <p:column headerText="Nombre" style="text-align: left;" >
+                                            <h:outputText value="#{data.nombre}"/>
+                                        </p:column>
+                                        <p:column headerText="Código" width="70">
+                                            <h:outputText value="#{data.codigo}" />
+                                        </p:column>
+                                        <p:column width="35">
+                                            <p:commandLink action="#{contratoBean.seleccionarCategoria(data.id)}"
+                                                           process="@this" 
+                                                           update="frmCargaArt:tablaResBusquedaAvTABLE frmCargaArt:pnlCats frmCargaArt:repCats frmCargaArt:dtCats"
+                                                           >
+                                                <i class="fa fa-check"/>
+                                            </p:commandLink>
+                                        </p:column>
+                                    </p:dataTable>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row"> 
+                            <p:dataTable value="#{contratoBean.articulosResultadoBqda}" var="dataRBA"
+                                         id="tablaResBusquedaAvTABLE"
+                                         rows="10" paginator="true"  
+                                         paginatorPosition="bottom" 
+                                         size="small" showGridlines="true"
+                                         selectionMode="single" selection="#{contratoBean.articuloVO}" 
+                                         rowKey="#{dataRBA.id}">
+                                <p:ajax event="rowSelect" listener="#{contratoBean.seleccionarResultadoBA}" 
+                                        update="frmCargaArt:dtlConvenioArticulo"/>
+                                <p:column headerText="Nombre"
+                                          filterBy="#{dataRBA.nombre}" filterMatchMode="contains">
+                                    <h:outputText value="#{dataRBA.nombre}"/>
+                                </p:column> 
+                                <p:column headerText="Unidad" style="text-align: left;" width="150" >
+                                    <h:outputText value="#{dataRBA.unidadNombre}"/>
+                                </p:column> 
+                            </p:dataTable>
+                        </div>
+                        <div class="row">
+                            <div class="col-6">
+
+                            </div>
+                            <div class="col-2">
+                                <p:commandLink  styleClass="btn btn-primary text-white" action="#{contratoBean.agregarListaArticulosContratoRelacionado}"
+                                                title="Agregar los artículos del convenio principal"
+                                                disabled="#{contratoBean.contratoVo.idContratoRelacionado eq 0}" process="@this" update="frmCargaArt:dtlConvenioArticulo">
+                                    <i class="fa fa-edit"> Importar lista</i>
+                                </p:commandLink>
+                            </div>
+                            <div class="col-2">
+                                <p:commandLink  styleClass="btn btn-warning text-white" action="#{contratoBean.quitarListaPrecio}"
+                                                title="Quita los artículos agregados al convenio"
+                                                process="@this frmCargaArt:dtlConvenioArticulo" update="frmCargaArt:dtlConvenioArticulo">
+                                    <i class="fa fa-edit"> Quitar Lista</i>
+                                </p:commandLink>
+                            </div>
+                            <div class="col-2">
+                                <p:commandLink  styleClass="btn btn-primary text-white"  action="#{contratoBean.guardarListaPrecio}"
+                                                process="@this frmCargaArt:dtlConvenioArticulo" update="frmCargaArt:dtlConvenioArticulo">
+                                    <i class="fa fa-save"> Guardar</i>
+                                </p:commandLink>    
+                            </div>
+                        </div>
+                        <div class="row">
+                            <p:dataTable id="dtlConvenioArticulo" value="#{contratoBean.contratoVo.listaArticulo}" var="data"
+                                         style="text-align: left;" size="small" showGridlines="true" rowKey="#{data.id}">
+                                <p:column headerText="Ítem" style="text-align: left;"> 
+                                    <h:outputText value="#{empty data.item ? data.codigo : data.item}" style="font-weight: #{data.cantidad eq 0 ? 'bold': 'none'}; color: #{data.registrado ? '' : '#B34500'}"/>
+                                </p:column>
+                                <p:column headerText="Artículo" style="text-align: left;">
+                                    <h:outputText value="#{data.nombre}" style="font-weight: #{data.cantidad eq 0 ? 'bold': 'none'}; color: #{data.registrado ? '' : '#B34500'}"/>
+                                </p:column>
+                                <p:column id="exp" width="30">
+                                    <p:rowToggler  rendered="#{not empty data.alcance}"/>
+                                </p:column>
+                                <p:column headerText="Unidad" style="width: 5%">
+                                    <h:outputText  value="#{data.unidadNombre}"  rendered="#{data.registrado}"/>
+                                    <p:selectOneMenu  value="#{data.unidadId}"  rendered="#{data.registrado eq false}">
+                                        <f:selectItem itemDescription="Seleccione . . . " itemValue="0"/>
+                                        <f:selectItems value="#{contratoBean.listaUnidad}"/>
+                                    </p:selectOneMenu>
+                                </p:column>
+                                <p:column headerText="Cantidad" width="60">
+                                    <h:outputText  value="#{data.cantidad}"  rendered="#{data.guardado}"/>
+                                    <h:inputText class="form-control" value="#{data.cantidad}"  rendered="#{data.guardado eq false}"/>
+                                </p:column>
+                                <p:column headerText="Precio Unitario" width="120">
+                                    <h:outputText value="#{data.precioUnitario}" rendered="#{data.guardado}"/>
+                                    <h:inputText class="form-control" value="#{data.precioUnitario}" rendered="#{data.guardado eq false}"/>
+                                </p:column>
+                                <p:column width="35">
+                                    <p:commandLink action="#{contratoBean.modificarLista(data)}" rendered="#{data.guardado}"
+                                                   process="@this" update="frmCargaArt:dtlConvenioArticulo">
+                                        <i class="fa fa-edit"/>
+                                    </p:commandLink>
+                                </p:column>
+                                <p:column width="35">
+                                    <p:commandLink action="#{contratoBean.eliminarConvenioArticulo(data)}"
+                                                   process="@this" update="frmCargaArt:dtlConvenioArticulo">
+                                        <i class="fa fa-trash text text-danger"/>
+                                    </p:commandLink>
+                                </p:column>
+                                <p:rowExpansion>
+                                    <h:outputText  value="#{data.alcance}" styleClass="text text-justify text-info"/>
+                                </p:rowExpansion>
+                            </p:dataTable>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <p:commandLink id="btnCerrar" value="Cerrar" class="btn btn-default"
+                                       process="@this" update="frmAdmin:tabView"
+                                       onclick="$(dialogoCargaArticulos).modal('hide');"/>
                     </div>
                 </h:form>
             </div>

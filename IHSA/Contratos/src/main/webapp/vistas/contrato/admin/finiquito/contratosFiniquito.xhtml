@@ -10,49 +10,48 @@
             <ui:define name="tituloPagina">
                 <h2 class="page-header"> Contratos por finiquitar</h2>
             </ui:define>
-            <ui:define name="content">
+            <ui:define name="contenido">
                 <h:form id="frmConFin">
                     <div class="row">
-                        <div class="col-lg-4">
+                        <div class="col-4">
                             <label>Filtros</label>
-                            <h:selectOneMenu id="cmbfiltro" value="#{contratoFiniquitoBean.idFiltro}"
+                            <p:selectOneMenu id="cmbfiltro" value="#{contratoFiniquitoBean.idFiltro}"
                                              styleClass="form-control">
                                 <f:selectItem itemLabel="Vencidos" itemValue="0"/>
                                 <f:selectItem itemLabel="Por Vencer (30 días) " itemValue="1"/>
                                 <f:selectItem itemLabel="Convenios con exhortos" itemValue="2"/>
-                                <f:ajax listener="#{contratoFiniquitoBean.cambiarFiltro}" render="dtConvenios"/>
-                            </h:selectOneMenu>
+                                <p:ajax listener="#{contratoFiniquitoBean.cambiarFiltro}" update="frmConFin:dtConvenios"/>
+                            </p:selectOneMenu>
                         </div>
                     </div> 
                     <p:dataTable id="dtConvenios" value="#{contratoFiniquitoBean.contratos}" var="dataConv"
-                                 rows="15" paginator="true" paginatorPosition="bottom" paginatorAlwaysVisible="true"
-                                 style="font-size: 1em;" >
+                                 rows="15" paginator="true" paginatorPosition="bottom" paginatorAlwaysVisible="true">
                         <p:column headerText="Contrato" style="text-align: left; width: 15%;"
                                   sortBy="#{dataConv.numero}" >
                             <h:outputText value="#{dataConv.numero}" />
                         </p:column>
-                        <p:column headerText="Contrato" style="text-align: left; width: 300%;"
+                        <p:column headerText="Contrato" style="text-align: left;"
                                   sortBy="#{dataConv.nombre}"  >
                             <h:outputText value="#{dataConv.nombre}" />
                         </p:column>
-                        <p:column headerText="Conv. Mod." style="text-align: center">
+                        <p:column headerText="Conv. Mod." style="text-align: center" width="80">
                             <h:outputText value="#{dataConv.numeroContratosRelacionados}" />
                         </p:column>
                         <p:column headerText="Proveedor" style="text-align: left;"
                                   sortBy="#{dataConv.nombreProveedor}" >
                             <h:outputText value="#{dataConv.nombreProveedor}" />
                         </p:column>
-                        <p:column headerText="Inicio">
+                        <p:column headerText="Inicio" width="90">
                             <h:outputText value="#{dataConv.fechaInicio}">
                                 <f:convertDateTime pattern="dd/MM/yyyy"/>
                             </h:outputText>
                         </p:column>
-                        <p:column headerText="Fin" sortBy="#{dataConv.fechaVencimiento}" >
+                        <p:column headerText="Fin" sortBy="#{dataConv.fechaVencimiento}"  width="80">
                             <h:outputLabel value="#{dataConv.fechaVencimiento}">
                                 <f:convertDateTime pattern="dd/MM/yyyy"/>
                             </h:outputLabel>
                         </p:column>
-                        <p:column headerText="Exh. Env.">
+                        <p:column headerText="Exh. Env." width="60">
                             <h:outputText value="#{dataConv.exhortosEnviados}" styleClass="badge"
                                           style="background-color: red" rendered="#{dataConv.exhortosEnviados gt 2}"/>
                             <h:outputText value="#{dataConv.exhortosEnviados}" styleClass="badge"
@@ -60,18 +59,18 @@
                             <h:outputText value="#{dataConv.exhortosEnviados}" 
                                           rendered="#{dataConv.exhortosEnviados lt 2}"/>
                         </p:column>
-                        <p:column>
-                            <p:commandLink value="Calificar" action="#{contratoFiniquitoBean.crearCalificacion(event)}"
-                                           styleClass="text text-primary" style="color: #0895d6;">                                
+                        <p:column width="35">
+                            <p:commandLink value="Calificar" action="#{contratoFiniquitoBean.crearCalificacion(dataConv.numero)}"
+                                           styleClass="text text-primary" style="color: #0895d6;"
+                                           process="@this" update="frmCalConv">                                
                                 <i class="fa fa-check text-primary"/>
-                                <f:param name="convnum" value="#{dataConv.numero}"/>
                             </p:commandLink>
                         </p:column>
-                        <p:column>
-                            <p:commandLink value="Exhorto" action="#{contratoFiniquitoBean.crearExhorto(event)}"
-                                           styleClass="text text-primary" style="color: #0895d6;">
+                        <p:column width="70">
+                            <p:commandLink value="Exhorto" action="#{contratoFiniquitoBean.crearExhorto(dataConv.numero)}"
+                                           styleClass="text text-primary" style="color: #0895d6;"
+                                           process="@this" update="frmExhorto">
                                 <i class="fa fa-send text-primary"/>
-                                <f:param name="convnum" value="#{dataConv.numero}"/>
                             </p:commandLink>
                         </p:column>
                     </p:dataTable>
@@ -90,24 +89,24 @@
                             <h:form id="frmCalConv">
                                 <div class="modal-body">
                                     <div class="row">
-                                        <div class="col-lg-12">
+                                        <div class="col-12">
                                             <div class="form-group">
                                                 <h:outputText value="Contrato"/>
-                                                <div class="col-lg-12">
+                                                <div class="col-12">
                                                     <h:outputLabel value="#{contratoFiniquitoBean.contratoVo.numero}"/>
                                                 </div>
                                             </div>
                                             <div class="form-group">
                                                 <h:outputText value="Proveedor"/>
-                                                <div class="col-lg-12 ">
+                                                <div class="col-12 ">
                                                     <h:outputLabel value="#{contratoFiniquitoBean.contratoVo.nombreProveedor}"/>
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="col-lg-12">
+                                        <div class="col-12">
                                             <div class="form-group">
                                                 <h:outputText value="Calificación:" />
-                                                <div class="col-lg-12 ">
+                                                <div class="col-12 ">
                                                     <h:inputTextarea id="txMotivo" value="#{contratoFiniquitoBean.motivo}" styleClass="form-control"
                                                                      required="true" requiredMessage="Es necesario agregar un motivo"
                                                                      rows="5"/>
@@ -119,11 +118,12 @@
                                 </div>
                                 <div class="modal-footer">
                                     <p:commandLink value="Cancelar" onclick="$(dialogoCalificar).modal('hide');"
-                                                   styleClass="btn btn-default">
+                                                   styleClass="btn btn-default" immediate="true">
                                     </p:commandLink>
-                                    <p:commandLink value="Guardar" class="btn btn-primary"
-                                                   action="#{contratoFiniquitoBean.guardarCalificacion(event)}">			    
-                                    </p:commandLink>
+                                    <p:commandButton value="Guardar" class="btn btn-primary"
+                                                     action="#{contratoFiniquitoBean.guardarCalificacion}"
+                                                     process="@form" update="frmConFin">			    
+                                    </p:commandButton>
                                 </div>
                             </h:form>
                         </div>
@@ -131,28 +131,30 @@
                 </div>
                 <!-- Exhortos -->
                 <div class="modal fade" id="dialogoEnviarExhorto" data-backdrop="static" data-keyboard="false">
-                    <div class="modal-dialog modal-lg">
+                    <div class="modal-dialog modal-xl">
                         <div class="modal-content">
                             <div class="modal-header">
                                 <h4 class="modal-title">Enviar exhorto</h4>
                             </div>
                             <h:form id="frmExhorto">
                                 <div class="modal-body card-body">
-                                    <div class="col-lg-12">
+                                    <div class="col-12">
                                         <div class="form-group">
-                                            <h:outputText value="Proveedor" class="col-lg-2"/>
-                                            <div class="col-lg-8 ">
+                                            <h:outputText value="Proveedor" class="col-2"/>
+                                            <div class="col-8 ">
                                                 <h:outputLabel value="#{contratoFiniquitoBean.contratoVo.nombreProveedor}"/>
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col-lg-12">
-                                        <div class="col-lg-6">	
-                                            <!-- rowSelectListener="#{contratoFiniquitoBean.seleccionarContactoPara}" 
-                                                         selectionMode="single"-->
+                                    <div class="row">
+                                        <div class="col-6">	
                                             <p:dataTable value="#{contratoFiniquitoBean.representanteLegalProveedor}" var="data"
                                                          rows="5" paginatorAlwaysVisible="false" paginator="true" paginatorPosition="bottom"
-                                                         style="font-size: 1em;">
+                                                         showGridlines="true" size="small" rowKey="#{data.idContactoProveedor}"
+                                                         selection="#{contratoFiniquitoBean.contactoProveedorVo}" 
+                                                         selectionMode="single">
+                                                <p:ajax event="rowSelect" listener="#{contratoFiniquitoBean.seleccionarContactoPara}" 
+                                                        update="frmExhorto:dtCorreoPara frmExhorto:dtCorreoCopia"/>
                                                 <f:facet name="header" >Representante(s) Legal (cp)</f:facet>
                                                 <p:column headerText="Nombre" style="text-align: left;">
                                                     <h:outputText value="#{data.nombre}"/>
@@ -164,11 +166,13 @@
                                                     <h:outputText value="#{data.correo}"/>
                                                 </p:column>
                                             </p:dataTable>	
-                                            <!-- rowSelectListener="#{contratoFiniquitoBean.seleccionarContactoCopia}" selectionMode="single"-->
                                             <p:dataTable value="#{contratoFiniquitoBean.contactosProveedor}" var="data"
-
                                                          rows="5" paginatorAlwaysVisible="false" paginator="true" paginatorPosition="bottom"
-                                                         style="font-size: 0.9em;">
+                                                         showGridlines="true" size="small" rowKey="#{data.idContactoProveedor}"
+                                                         selection="#{contratoFiniquitoBean.contactoProveedorVo}" 
+                                                         selectionMode="single">
+                                                <p:ajax event="rowSelect" listener="#{contratoFiniquitoBean.seleccionarContactoCopia}" 
+                                                        update="frmExhorto:dtCorreoCopia"/>
                                                 <f:facet name="header" >Contactos (cc)</f:facet>
                                                 <p:column headerText="Tipo" style="text-align: left;">
                                                     <h:outputText value="#{data.tipoContactoTxt}"/>
@@ -180,50 +184,51 @@
                                                     <h:outputText value="#{data.correo}"/>
                                                 </p:column>
                                             </p:dataTable>
-                                            <div class="col-lg-12">
-                                                <h:selectOneMenu value="#{contratoFiniquitoBean.idGerencia}" 
+                                            <div class="col-12">
+                                                <p:selectOneMenu value="#{contratoFiniquitoBean.idGerencia}" 
                                                                  styleClass="form-control">
                                                     <f:selectItem itemLabel="Seleccione . . ." itemValue="-1"/>
                                                     <f:selectItems value="#{contratoFiniquitoBean.gerencias}"/>
-                                                    <f:ajax listener="#{contratoFiniquitoBean.traerEmpleadoPorGerencia}"
-                                                            render="dtUserGer"/>
-                                                </h:selectOneMenu>	
+                                                    <p:ajax listener="#{contratoFiniquitoBean.traerEmpleadoPorGerencia}"
+                                                            update="frmExhorto:dtUserGer"/>
+                                                </p:selectOneMenu>	
                                             </div>
-                                            <!-- rowSelectListener="#{contratoFiniquitoBean.seleccionarContactoGerenciaCopia}" -->
                                             <p:dataTable id="dtUserGer" value="#{contratoFiniquitoBean.listaUsuarioGerencia}" 
-                                                         var="data"  rows="5" paginator="true" paginatorPosition="bottom" paginatorAlwaysVisible="true"
-                                                         selectionMode="single"
-
-                                                         style="font-size: 1em;">
+                                                         var="data"  rows="5" paginator="true"  size="small" showGridlines="true"
+                                                         paginatorPosition="bottom" paginatorAlwaysVisible="true"
+                                                         selectionMode="single" rowKey="#{data.id}"
+                                                         selection="#{contratoFiniquitoBean.usuarioVo}" >
+                                                <p:ajax event="rowSelect" listener="#{contratoFiniquitoBean.seleccionarContactoGerenciaCopia}" 
+                                                        update="frmExhorto:dtCorreoCopia"/>
                                                 <p:column headerText="Nombre (cc)" style="text-align:  left;">
                                                     <h:outputText value="#{data.nombre}" />
                                                 </p:column>
                                             </p:dataTable>
                                         </div>
-                                        <div class="col-lg-6">	
-                                            <p:dataTable value="#{contratoFiniquitoBean.listaCorreoPara}" var="data"
-                                                         style="font-size: 1em;">
+                                        <div class="col-6 border">	
+                                            <p:dataTable id="dtCorreoPara" value="#{contratoFiniquitoBean.listaCorreoPara}" var="data"
+                                                         size="small" showGridlines="true">
                                                 <f:facet name="header" >Correo para</f:facet>
                                                 <p:column headerText="Nombre" style="text-align: left;">
                                                     <h:outputText value="#{data.nombre}"/>
                                                 </p:column>
                                                 <p:column >
-                                                    <p:commandLink action="#{contratoFiniquitoBean.quitarUsuarioPara}" immediate="true">
+                                                    <p:commandLink action="#{contratoFiniquitoBean.quitarUsuarioPara(data)}" 
+                                                                   process="@this" update="frmExhorto:dtCorreoPara">
                                                         <i class="fa fa-trash text text-danger"/>
-                                                        <f:setPropertyActionListener value="#{data}" target="#{contratoFiniquitoBean.contactoProveedorVo}"/>						
                                                     </p:commandLink>
                                                 </p:column>
                                             </p:dataTable>
-                                            <p:dataTable value="#{contratoFiniquitoBean.listaCorreoCopia}" var="data"
-                                                         style="font-size: 0.9em;">
+                                            <p:dataTable id="dtCorreoCopia" value="#{contratoFiniquitoBean.listaCorreoCopia}" var="data"
+                                                         size="small" showGridlines="true">
                                                 <f:facet name="header" >Correo copia</f:facet>
                                                 <p:column headerText="Nombre" style="text-align: left;">
                                                     <h:outputText value="#{data.nombre}"/>
                                                 </p:column>
                                                 <p:column >
-                                                    <p:commandLink action="#{contratoFiniquitoBean.quitarUsuarioCopia}" immediate="true">
+                                                    <p:commandLink action="#{contratoFiniquitoBean.quitarUsuarioCopia(data)}" 
+                                                                   process="@this" update="frmExhorto:dtCorreoCopia">
                                                         <i class="fa fa-trash text text-danger"/>
-                                                        <f:setPropertyActionListener value="#{data}" target="#{contratoFiniquitoBean.contactoProveedorVo}"/>						
                                                     </p:commandLink>
                                                 </p:column>
                                             </p:dataTable>
@@ -232,11 +237,12 @@
                                 </div>
                                 <div class="modal-footer">
                                     <p:commandLink value="Cancelar" onclick="$(dialogoEnviarExhorto).modal('hide');"
-                                                   styleClass="btn btn-default">
+                                                   styleClass="btn btn-default" immediate="true">
                                     </p:commandLink>
-                                    <p:commandLink value="Enviar" class="btn btn-primary"
-                                                   action="#{contratoFiniquitoBean.enviarExhorto(event)}">			    
-                                    </p:commandLink>
+                                    <p:commandButton value="Enviar" class="btn btn-primary"
+                                                     action="#{contratoFiniquitoBean.enviarExhorto}"
+                                                     process="@form" update="frmConFin">
+                                    </p:commandButton>
                                 </div>
                             </h:form>
                         </div>

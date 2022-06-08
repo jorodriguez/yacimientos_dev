@@ -1,159 +1,154 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-                
+
                 xmlns:f="http://xmlns.jcp.org/jsf/core"
                 xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
                 xmlns:h="http://xmlns.jcp.org/jsf/html"
-		xmlns:p="http://primefaces.org/ui">
+                xmlns:p="http://primefaces.org/ui">
     <div class="row">
-	<div class="col-lg-8">
-	    <div class="card with-nav-tabs card-default">
-		<div class="card-heading">
-		    <div class="input-group col-lg-12">
-			<div class="form-group">
-			    <div class="col-lg-10">
-				<h:outputLabel value="#{rolBean.usuarioRolVo.usuario}"/>
-			    </div>
-			    <div class="col-lg-2">
-				<p:commandLink action="#{rolBean.agregarRelacionUsuarioContrato(event)}"
-						 styleClass="btn btn-primary"
-						 rendered="#{not empty rolBean.usuarioRolVo.usuario}">
-				    <i class="fa fa-link"></i>
-				</p:commandLink>
-			    </div>
-			</div>
-		    </div>
-		</div>
-		<div class="card-body">
-		    <div class="col-lg-12" style="display: #{rolBean.gerencias.size() gt 0 ? 'block':'none'}">
-			<span><h:outputLabel value="#{rolBean.usuarioRolVo.usuario}"/></span> tiene  acceso a los contratos de
-		    </div>
-		    <p:dataTable value="#{rolBean.gerencias}" var="data"
-				   rendered="#{rolBean.gerencias.size() gt 0}"
-				   rowStyleClass="table table-striped table-bordered"
-				   style="font-size: 1.0em;">
-			<p:column style="text-align: left;">
-			    <h:outputText value="#{data.nombre}"/>
-			</p:column>
-		    </p:dataTable>
-		    <div class="col-lg-12">
-			<span> <h:outputText value="#{rolBean.mensaje}" style="font-style: italic; margin-left: 0%;"/></span>
-		    </div>
-		    <p:commandLink value="Quitar Seleccionados" styleClass="btn btn-warning" 
-				   title="Se quitaran todos los contratos seleccionados"
-				   onclick="return validaSeleccion('seleccion');"
-				   action="#{rolBean.quitarTodosContratoGerencia(event)}"
-				   rendered="#{rolBean.listaContratos.size() gt 0}"
-				   >
-		    </p:commandLink>
-		    <p:dataTable value="#{rolBean.contratos}" var="data"
-				   rendered="#{rolBean.contratos.size() gt 0}"
-				   style="font-size: 1.0em;"
-				   rowStyleClass="table table-bordered table-striped"
-				   rows="10" paginator="true"  
-				   paginatorPosition="bottom" 
-				   rowIndexVar="indice">
-			<p:column>
-			    <h:selectBooleanCheckbox value="#{data.selected}" class="seleccion"/>
-			</p:column>
-			<p:column headerText="Número" style="text-align: left;">
-			    <h:outputText value="#{data.numero}"/>
-			</p:column>
-			<p:column headerText="Alcance" style="text-align: left;">
-			    <h:outputText value="#{data.nombre}"/>
-			</p:column>
-			<p:column >
-			    <p:commandLink action="#{rolBean.eliminarRelacionConvUsuario(event)}">
-				<i class="fa fa-trash text-danger"></i>
-				<f:param name="idConvUser" value="#{indice}"/>
-			    </p:commandLink>
-			</p:column>
-		    </p:dataTable>
-		</div>
-	    </div>
-	</div>
-	<ui:fragment rendered="#{rolBean.agregarContrato}">
-	    <div class="col-lg-8">
-		<div class="card card-default">
-		    <div class="card-heading">
-			<div class="input-group">
-			    <p:selectOneMenu value="#{rolBean.idGerencia}" 
-					       valueChangeListener="#{rolBean.mostrarContratosPorGerencia}">
-				<f:selectItem itemLabel="Seleccione la gerencia . . ." itemValue="-1"/>
-				<f:selectItems value="#{rolBean.listaGerencias}"/>
-			    </p:selectOneMenu>
-			    <p:commandLink value="Asignar Todos" styleClass="btn btn-info" title="Se asignaran todos los contratos de la gerencia seleccinada"
-					   onclick="return confirmar('Se asignaran todos los contratos al usuario, ¿Está seguro?');"
-					   action="#{rolBean.asignarTodosContratoGerencia(event)}"
-					   >
-			    </p:commandLink>
-			</div>
-		    </div>
-		    <div class="card-body">
-                        <!-- rowSelectListener="#{rolBean.seleccionarContrato}" 
-				       selectionMode="single"-->
-			<p:dataTable value="#{rolBean.listaContratos}" var="data"
-				       rowStyleClass="table table-striped table-bordered"
-				       style="font-size: 1.0em;"
-				       paginator="true"  
-				       paginatorPosition="bottom" 
-				       rows="5" >
-			    <p:column headerText="Número" filterBy="#{data.numero}" filterMatchMode="contains"
-					style="text-align: left;">
-				<h:outputText value="#{data.numero}"/>
-			    </p:column>
-			    <p:column headerText="Alcance" filterBy="#{data.nombre}" filterMatchMode="contains"
-					style="text-align: left;">
-				<h:outputText value="#{data.nombre}"/>
-			    </p:column>
-			</p:dataTable>
-		    </div>
-		</div>
-	    </div>
-	    <div class="col-lg-8">
-		<div class="card card-default">
-		    <div class="card-heading col-lg-12">
-			<div class="form-group">
-			    <div class="col-lg-8">
-				<h:outputText class="card-title" value="Agregar contratos"/>
-			    </div>
-			    <div class="col-lg-1">
-				<p:commandLink action="#{rolBean.cancelarAgregarContrato(event)}"
-						 styleClass="btn btn-default">
-				    <i class="fa fa-remove text-danger"></i>
-				</p:commandLink>
-			    </div>
-			    <div class="col-lg-1">
-				<p:commandLink action="#{rolBean.agregarContratoUsuario(event)}"
-						 styleClass="btn btn-primary"
-						 style="margin-left: 20px;">
-				    <i class="fa fa-floppy-o"></i>
-				</p:commandLink>
-			    </div>
-			</div>
-		    </div>
-		    <div class="card-body">
-			<p:dataTable value="#{rolBean.listaContratosAgregar}" var="data"
-				       rowStyleClass="table table-bordered table-striped"
-				       rows="10" paginator="true"  
-				       paginatorPosition="bottom" 
-				       rowIndexVar="indice">
-			    <p:column headerText="Número" style="text-align: left;">
-				<h:outputText value="#{data.numero}"/>
-			    </p:column>
-			    <p:column headerText="Alcance" style="text-align: left;">
-				<h:outputText value="#{data.nombre}"/>
-			    </p:column>
-			    <p:column>
-				<p:commandLink action="#{rolBean.quitarContratotemporarUsuario(event)}">
-				    <i class="fa fa-trash text-danger"></i>
-				    <f:param name="idConvTemp" value="#{indice}"/>
-				</p:commandLink>
-			    </p:column>
-			</p:dataTable>
-		    </div>
-		</div>
-	    </div>
-	</ui:fragment>
+        <div class="col-8">
+            <div class="card with-nav-tabs card-default">
+                <div class="card-heading">
+                    <div class="input-group col-12">
+                        <div class="form-group">
+                            <div class="col-10">
+                                <h:outputLabel value="#{rolBean.usuarioRolVo.usuario}"/>
+                            </div>
+                            <div class="col-2">
+                                <p:commandLink action="#{rolBean.agregarRelacionUsuarioContrato}"
+                                               styleClass="btn btn-primary"
+                                               rendered="#{not empty rolBean.usuarioRolVo.usuario}"
+                                               process="@this" update="@form">
+                                    <i class="fa fa-link"></i>
+                                </p:commandLink>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="col-12" style="display: #{rolBean.gerencias.size() gt 0 ? 'block':'none'}">
+                        <span><h:outputLabel value="#{rolBean.usuarioRolVo.usuario}"/></span> tiene  acceso a los contratos de
+                    </div>
+                    <p:dataTable value="#{rolBean.gerencias}" var="data"
+                                 rendered="#{rolBean.gerencias.size() gt 0}"
+                                 size="small" showGridlines="true">
+                        <p:column style="text-align: left;">
+                            <h:outputText value="#{data.nombre}"/>
+                        </p:column>
+                    </p:dataTable>
+                    <div class="col-12">
+                        <span> <h:outputText value="#{rolBean.mensaje}" style="font-style: italic; margin-left: 0%;"/></span>
+                    </div>
+                    <p:commandLink value="Quitar Seleccionados" styleClass="btn btn-warning" 
+                                   title="Se quitaran todos los contratos seleccionados"
+                                   action="#{rolBean.quitarTodosContratoGerencia}"
+                                   rendered="#{rolBean.listaContratos.size() gt 0}"
+                                   process="@this" update="frmRolContrato:tabViewPermisos:dtContratos">
+                    </p:commandLink>
+                    <p:dataTable id="dtContratos" value="#{rolBean.contratos}" var="data"
+                                 rendered="#{rolBean.contratos.size() gt 0}"
+                                 size="small" showGridlines="true"
+                                 rows="10" paginator="true"  
+                                 paginatorPosition="bottom" 
+                                 rowIndexVar="indice">
+                        <p:column>
+                            <h:selectBooleanCheckbox value="#{data.selected}" class="seleccion"/>
+                        </p:column>
+                        <p:column headerText="Número" style="text-align: left;">
+                            <h:outputText value="#{data.numero}"/>
+                        </p:column>
+                        <p:column headerText="Alcance" style="text-align: left;">
+                            <h:outputText value="#{data.nombre}"/>
+                        </p:column>
+                        <p:column width="35">
+                            <p:commandLink action="#{rolBean.eliminarRelacionConvUsuario(indice)}"
+                                           process="@this" update="frmRolContrato:tabViewPermisos:dtContratos">
+                                <i class="fa fa-trash text-danger"></i>
+                            </p:commandLink>
+                        </p:column>
+                    </p:dataTable>
+                </div>
+            </div>
+        </div>
+        <ui:fragment rendered="#{rolBean.agregarContrato}">
+            <div class="col-8">
+                <div class="card card-default">
+                    <div class="card-heading">
+                        <div class="input-group">
+                            <p:selectOneMenu value="#{rolBean.idGerencia}" >
+                                <f:selectItem itemLabel="Seleccione la gerencia . . ." itemValue="-1"/>
+                                <f:selectItems value="#{rolBean.mapaSelect.get('gerencias')}"/>
+                                <p:ajax listener="#{rolBean.mostrarContratosPorGerencia}" update="dtContGer"/>
+                            </p:selectOneMenu>
+                            <p:commandLink value="Asignar Todos" styleClass="btn btn-info" title="Se asignaran todos los contratos de la gerencia seleccinada"
+                                           action="#{rolBean.asignarTodosContratoGerencia}"
+                                           >
+                            </p:commandLink>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <p:dataTable id="dtContGer" value="#{rolBean.listaContratos}" var="data"
+                                     size="small" showGridlines="true"
+                                     paginator="true"  
+                                     paginatorPosition="bottom"  rowKey="#{data.id}"
+                                     rows="5"  selection="#{rolBean.contratoVo}" selectionMode="single">
+                            <p:ajax event="rowSelect" listener="#{rolBean.seleccionarContrato}" update="dtContratosAdd" />
+                            <p:column headerText="Número" filterBy="#{data.numero}" filterMatchMode="contains"
+                                      style="text-align: left;">
+                                <h:outputText value="#{data.numero}"/>
+                            </p:column>
+                            <p:column headerText="Alcance" filterBy="#{data.nombre}" filterMatchMode="contains"
+                                      style="text-align: left;">
+                                <h:outputText value="#{data.nombre}"/>
+                            </p:column>
+                        </p:dataTable>
+                    </div>
+                </div>
+            </div>
+            <div class="col-8">
+                <div class="card card-default">
+                    <div class="card-heading col-12">
+                        <div class="form-group">
+                            <div class="col-8">
+                                <h:outputText class="card-title" value="Agregar contratos"/>
+                            </div>
+                            <div class="col-1">
+                                <p:commandLink action="#{rolBean.cancelarAgregarContrato}"
+                                               styleClass="btn btn-default" process="@this" update="@form">
+                                    <i class="fa fa-remove text-danger"></i>
+                                </p:commandLink>
+                            </div>
+                            <div class="col-1">
+                                <p:commandLink action="#{rolBean.agregarContratoUsuario}"
+                                               styleClass="btn btn-primary"
+                                               style="margin-left: 20px;" process="@this" update="@form">
+                                    <i class="fa fa-floppy-o"></i>
+                                </p:commandLink>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <p:dataTable id="dtContratosAdd" value="#{rolBean.listaContratosAgregar}" var="data"
+                                     rowStyleClass="table table-bordered table-striped"
+                                     rows="10" paginator="true"  
+                                     paginatorPosition="bottom" 
+                                     rowIndexVar="indice">
+                            <p:column headerText="Número" style="text-align: left;">
+                                <h:outputText value="#{data.numero}"/>
+                            </p:column>
+                            <p:column headerText="Alcance" style="text-align: left;">
+                                <h:outputText value="#{data.nombre}"/>
+                            </p:column>
+                            <p:column width="35">
+                                <p:commandLink action="#{rolBean.quitarContratotemporarUsuario(indice)}"
+                                               process="@this" update="frmRolContrato:tabViewPermisos:dtContratosAdd">
+                                    <i class="fa fa-trash text-danger"></i>
+                                </p:commandLink>
+                            </p:column>
+                        </p:dataTable>
+                    </div>
+                </div>
+            </div>
+        </ui:fragment>
     </div>
 </ui:composition>

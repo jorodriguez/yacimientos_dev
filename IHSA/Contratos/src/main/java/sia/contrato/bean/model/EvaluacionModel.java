@@ -145,10 +145,8 @@ public class EvaluacionModel implements Serializable {
         }
     }
 
-    public void editarEvaluacion() {
+    public void editarEvaluacion(int idConv, int idConvTem) {
         try {
-            int idConv = Integer.parseInt(FacesUtils.getRequestParam("idContrato"));
-            int idConvTem = Integer.parseInt(FacesUtils.getRequestParam("idContratoEva"));
             if (idConv > 0 && idConvTem > 0) {
                 setContratoId(idConv);
                 setContratoEvaId(idConvTem);
@@ -166,10 +164,8 @@ public class EvaluacionModel implements Serializable {
         }
     }
 
-    public void borrarEvaluacion() {
+    public void borrarEvaluacion(int idConv, int idConvTem) {
         try {
-            int idConv = Integer.parseInt(FacesUtils.getRequestParam("idContrato"));
-            int idConvTem = Integer.parseInt(FacesUtils.getRequestParam("idContratoEva"));
             if (idConv > 0 && idConvTem > 0) {
                 setContratoId(idConv);
                 setContratoEvaId(idConvTem);

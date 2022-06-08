@@ -43,7 +43,7 @@ public class CvClasificacionImpl extends AbstractFacade<CvClasificacion> {
 	String cad = "select ct.id, ct.nombre, ct.descripcion from cv_clasificacion ct where ct.cv_clasificacion is null and  ct.eliminado = '" + Constantes.NO_ELIMINADO + "'";
 	List<Object[]> lo = em.createNativeQuery(cad).getResultList();
 	if (lo != null) {
-	    lvo = new ArrayList<ClasificacionVo>();
+	    lvo = new ArrayList<>();
 	    for (Object[] lo1 : lo) {
 		ClasificacionVo vo = new ClasificacionVo();
 		vo.setId((Integer) lo1[0]);

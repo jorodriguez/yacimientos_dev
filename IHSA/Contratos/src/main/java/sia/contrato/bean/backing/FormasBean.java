@@ -70,15 +70,13 @@ public class FormasBean implements Serializable {
         formas = formasLocal.traerTodo();
     }
 
-    public void eliminarArchivo() {
-        int idForma = Integer.parseInt(FacesUtils.getRequestParam("idForma"));
+    public void eliminarArchivo(int idForma) {
         formasLocal.eliminarArchivo(sesion.getUsuarioSesion(), idForma);
         //
         formas = formasLocal.traerTodo();
     }
 
-    public void agregarArchivo() {
-        int idForma = Integer.parseInt(FacesUtils.getRequestParam("idForma"));
+    public void agregarArchivo(int idForma) {
         forma = formasLocal.find(idForma);
         //
         PrimeFaces.current().executeScript("$(adjuntarArchivoForma).modal('show');");
