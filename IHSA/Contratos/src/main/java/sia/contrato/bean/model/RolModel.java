@@ -74,6 +74,9 @@ public class RolModel implements Serializable {
     //
     @Getter
     @Setter
+    private List<SelectItem> selectGerencias;
+    @Getter
+    @Setter
     private UsuarioVO usuarioVo;
     private List<UsuarioRolVo> listaUsuarioRol;
     private UsuarioRolVo usuarioRolVo;
@@ -104,6 +107,7 @@ public class RolModel implements Serializable {
         tabView = new TabView();
         activeTab = 0;
         contratoVo = new ContratoVO();
+        selectGerencias= new ArrayList<>();
         listaContratos = new ArrayList<>();
         listaContratosAgregar = new ArrayList<>();
         usuarioRolVo = new UsuarioRolVo();
@@ -117,16 +121,17 @@ public class RolModel implements Serializable {
         usuarioVo = new UsuarioVO();
     }
 
-    /**
-     * @return the listaRol
-     */
-    public List<SelectItem> getListaGerencia() {
-        List<SelectItem> item = new ArrayList<>();
+    public void llenarJson() {
+        PrimeFaces.current().executeScript(";$(dialogoAgregarRolUsuario).modal('show');");
+
+    }
+
+    public void llenarGerencias() {
+        selectGerencias.clear();
         for (Object l1 : getMapaSelect().get("gerencias")) {
             GerenciaVo gerenciaVo = (GerenciaVo) l1;
-            item.add(new SelectItem(gerenciaVo.getId(), gerenciaVo.getNombre()));
+            selectGerencias.add(new SelectItem(gerenciaVo.getId(), gerenciaVo.getNombre()));
         }
-        return item;
     }
 
     public void cambiarGerencia() {
@@ -170,6 +175,9 @@ public class RolModel implements Serializable {
         getUsuarioRolVo().setIdUsuarioRol(idUserRol);
         siUsuarioRolImpl.eliminarUsuarioRol(usuarioRolVo.getIdUsuarioRol(), sesion.getUsuarioSesion().getId());
         llenarListaUsusarioRol();
+        getListaContratos().clear();
+        getListaContratosAgregar().clear();
+        activeTab = 0;
     }
 
     public void guardarRolesUsuario() {
@@ -268,15 +276,6 @@ public class RolModel implements Serializable {
         listaUsuarioRol = siUsuarioRolImpl.traerUsuarioPorRolModulo(getIdRol(), Constantes.MODULO_CONTRATO, sesion.getUsuarioSesion().getIdCampo());
     }
 
-//    public void eliminarUsuario() {
-//	siUsuarioRolImpl.eliminarUsuarioRol(usuarioRolVo.getIdUsuarioRol(), sesion.getUsuarioSesion().getId());
-//    }
-//
-//    public void guardarRolesUsuario() {
-//	siUsuarioRolImpl.guardar(getIdRol(), usuarioRolVo.getIdUsuario(), false, sesion.getUsuarioSesion().getIdCampo(), sesion.getUsuarioSesion().getId());
-//
-//	llenarListaUsusarioRol();
-//    }
     private void permisosPorUsurio() {
         boolean isRolAdminContrato = siUsuarioRolImpl.buscarRolPorUsuarioModulo(usuarioRolVo.getIdUsuario(), Constantes.MODULO_CONTRATO, Constantes.COD_CONVENIO, sesion.getUsuarioSesion().getIdCampo());
         boolean isRolComprador = siUsuarioRolImpl.buscarRolPorUsuarioModulo(usuarioRolVo.getIdUsuario(), Constantes.MODULO_COMPRA, Constantes.COD_ROL_COMPRADOR, sesion.getUsuarioSesion().getIdCampo());
@@ -337,7 +336,7 @@ public class RolModel implements Serializable {
 //        cvConvenioUsuarioImpl.eliminar(contratos.get(idConUser).getIdRelacion(), sesion.getUsuarioSesion().getId());
 //    }
     public List<UsuarioVO> completarUsuario(String query) {
-        List<CampoUsuarioPuestoVo> users = apCampoUsuarioRhPuestoImpl.traerUsurioEnCampoPorCadena(query, sesion.getUsuarioSesion().getIdCampo());
+        List<CampoUsuarioPuestoVo> users = apCampoUsuarioRhPuestoImpl.traerUsurioEnCampoPorCadena(query.toUpperCase(), sesion.getUsuarioSesion().getIdCampo());
         //
         List<UsuarioVO> lt = new ArrayList<>();
         users.stream().forEach(u -> {
