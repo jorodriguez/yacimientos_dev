@@ -25,10 +25,12 @@ import org.primefaces.event.SelectEvent;
 import sia.constantes.Constantes;
 import sia.contrato.bean.soporte.FacesUtils;
 import sia.ihsa.contratos.Sesion;
+import sia.modelo.campo.usuario.puesto.vo.CampoUsuarioPuestoVo;
 import sia.modelo.contrato.vo.ContratoVO;
 import sia.modelo.gerencia.vo.GerenciaVo;
 import sia.modelo.rol.vo.RolVO;
 import sia.modelo.usuario.vo.UsuarioRolVo;
+import sia.modelo.usuario.vo.UsuarioVO;
 import sia.servicios.campo.nuevo.impl.ApCampoUsuarioRhPuestoImpl;
 import sia.servicios.catalogos.impl.GerenciaImpl;
 import sia.servicios.catalogos.impl.UsuarioImpl;
@@ -70,6 +72,9 @@ public class RolModel implements Serializable {
     @Inject
     Sesion sesion;
     //
+    @Getter
+    @Setter
+    private UsuarioVO usuarioVo;
     private List<UsuarioRolVo> listaUsuarioRol;
     private UsuarioRolVo usuarioRolVo;
     private int idRol;
@@ -108,6 +113,8 @@ public class RolModel implements Serializable {
         setEditar(false);
         setAgregarContrato(false);
         tabView.setIndex(activeTab);
+        //
+        usuarioVo = new UsuarioVO();
     }
 
     /**
@@ -166,16 +173,12 @@ public class RolModel implements Serializable {
     }
 
     public void guardarRolesUsuario() {
-        siUsuarioRolImpl.guardar(getIdRol(), usuarioRolVo.getIdUsuario(), false, sesion.getUsuarioSesion().getIdCampo(), sesion.getUsuarioSesion().getId());
+        siUsuarioRolImpl.guardar(getIdRol(), usuarioVo.getId(), false, sesion.getUsuarioSesion().getIdCampo(), sesion.getUsuarioSesion().getId());
 
         llenarListaUsusarioRol();
+        //
+        usuarioRolVo = new UsuarioRolVo();
         PrimeFaces.current().executeScript(";$(dialogoAgregarRolUsuario).modal('hide');;");
-    }
-
-    public void llenarJson() {
-        PrimeFaces.current().executeScript(";$(dialogoAgregarRolUsuario).modal('show');");
-///	System.out.println("json provee " + jsonProveedores);
-
     }
 
     public void buscarPermisosPorUsurio() {
@@ -307,7 +310,7 @@ public class RolModel implements Serializable {
     }
 
     public void llenarListaContratos() {
-        listaContratos = new ArrayList<ContratoVO>();
+        listaContratos = new ArrayList<>();
         listaContratos = convenioImpl.traerConveniosPorGerencia(idGerencia, sesion.getUsuarioSesion().getIdCampo());
     }
 
@@ -333,6 +336,16 @@ public class RolModel implements Serializable {
 //    public void eliminarRelacionConvUsuario(int idConUser) {
 //        cvConvenioUsuarioImpl.eliminar(contratos.get(idConUser).getIdRelacion(), sesion.getUsuarioSesion().getId());
 //    }
+    public List<UsuarioVO> completarUsuario(String query) {
+        List<CampoUsuarioPuestoVo> users = apCampoUsuarioRhPuestoImpl.traerUsurioEnCampoPorCadena(query, sesion.getUsuarioSesion().getIdCampo());
+        //
+        List<UsuarioVO> lt = new ArrayList<>();
+        users.stream().forEach(u -> {
+            lt.add(new UsuarioVO(u.getIdUsuario(), u.getUsuario(), ""));
+        });
+        return lt;
+    }
+
     /**
      * @param sesion the sesion to set
      */
