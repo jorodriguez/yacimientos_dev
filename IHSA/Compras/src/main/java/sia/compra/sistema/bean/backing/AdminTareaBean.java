@@ -25,6 +25,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import org.primefaces.PrimeFaces;
+import org.primefaces.component.tabview.TabView;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.model.file.UploadedFile;
@@ -84,10 +85,15 @@ public class AdminTareaBean implements Serializable {
     @Getter
     @Setter
     private UploadedFile fileInfo;
+    @Getter
+    @Setter
+    private TabView tabView;
+    
 
     @PostConstruct
     public void iniciar() {
         tabSeleccionada = 0;
+         tabView = new TabView();
         listaProyecto = proyectoOtImpl.getListaProyectosOtPorCampo(sesion.getUsuarioConectado().getApCampo().getId(), sesion.getUsuarioConectado().getApCampo().getCompania().getRfc(), null, false);
     }
 
@@ -112,8 +118,8 @@ public class AdminTareaBean implements Serializable {
     }
 
     public void regresarTareas() {
-        this.setLstTareaTemp(new ArrayList<OcTareaVo>());
-        this.setTareasTemp(new HashMap<String, List<OcTareaVo>>());
+        this.setLstTareaTemp(new ArrayList<>());
+        this.setTareasTemp(new HashMap<>());
         String jsMetodo = ";regresar('divTabla', 'divDatos', 'divOperacion', 'divAutoriza');";
         PrimeFaces.current().executeScript(jsMetodo);
 
@@ -142,8 +148,8 @@ public class AdminTareaBean implements Serializable {
         FacesUtilsBean.addInfoMessage(msgSalida);
         String jsMetodo = ";regresar('divTabla', 'divDatos', 'divOperacion', 'divAutoriza');";
         PrimeFaces.current().executeScript(jsMetodo);
-        this.setLstTareaTemp(new ArrayList<OcTareaVo>());
-        this.setTareasTemp(new HashMap<String, List<OcTareaVo>>());
+        this.setLstTareaTemp(new ArrayList<>());
+        this.setTareasTemp(new HashMap<>());
     }
 
     public void uploadFile(FileUploadEvent event) {
@@ -178,7 +184,7 @@ public class AdminTareaBean implements Serializable {
     }
 
     public void cerrarCargaTareas() {
-        setLstTareaTemp(new ArrayList<OcTareaVo>());
+        setLstTareaTemp(new ArrayList<>());
         PrimeFaces.current().executeScript(";$(dialogoCargarTareas).modal('hide');");
     }
 
@@ -198,9 +204,9 @@ public class AdminTareaBean implements Serializable {
         }
     }
 
-    public void seleccionarOt(SelectEvent event) {
+    public void seleccionarOt(ProyectoOtVo proyOt) {
         proyectoOtVo = new ProyectoOtVo();
-        proyectoOtVo = (ProyectoOtVo) event.getObject();
+        proyectoOtVo = proyOt;
         tabSeleccionada = 1;
         //
         listaGerencia = ocTareaImpl.traerGerenciaPorProyectoOT(proyectoOtVo.getId());
@@ -211,19 +217,19 @@ public class AdminTareaBean implements Serializable {
         PrimeFaces.current().executeScript(jsMetodo);
     }
 
-    public void seleccionarGerencia(SelectEvent event) {
+    public void seleccionarGerencia(OcTareaVo event) {
         tareaVo = new OcTareaVo();
-        tareaVo = (OcTareaVo) event.getObject();
+        tareaVo =  event;
         tabSeleccionada = 2;
         System.out.println("Proy: " + proyectoOtVo.getId() + "Ger; " + tareaVo.getIdGerencia());
         listaTipoTarea = ocTareaImpl.traerTipoTareaPorGerenciaOt(tareaVo.getIdGerencia(), proyectoOtVo.getId());
-        listaTarea = new ArrayList<OcTareaVo>();
+        listaTarea = new ArrayList<>();
         String jsMetodo = ";pintarOpaa();";
         PrimeFaces.current().executeScript(jsMetodo);
     }
 
     public void eliminarGerencia() {
-        List<OcTareaVo> ltemp = new ArrayList<OcTareaVo>();
+        List<OcTareaVo> ltemp = new ArrayList<>();
         for (OcTareaVo potVo : listaGerencia) {
             if (potVo.isSelected()) {
                 ltemp.add(potVo);
@@ -240,18 +246,18 @@ public class AdminTareaBean implements Serializable {
         }
     }
 
-    public void seleccionarTipoTarea(SelectEvent event) {
+    public void seleccionarTipoTarea(OcTareaVo event) {
         tareaVo = new OcTareaVo();
-        tareaVo = (OcTareaVo) event.getObject();
+        tareaVo = event;
         tabSeleccionada = 3;
-        System.out.println("Proy: " + proyectoOtVo.getId() + " Gerencia; " + tareaVo.getIdGerencia() + " Tipo tarea; " + tareaVo.getIdUnidadCosto());
+   //     System.out.println("Proy: " + proyectoOtVo.getId() + " Gerencia; " + tareaVo.getIdGerencia() + " Tipo tarea; " + tareaVo.getIdUnidadCosto());
         listaTarea = ocTareaImpl.traerTarea(tareaVo.getIdGerencia(), proyectoOtVo.getId(), tareaVo.getIdUnidadCosto());
         String jsMetodo = ";pintarOpaa();";
         PrimeFaces.current().executeScript(jsMetodo);
     }
 
     public void eliminarTipoTarea() {
-        List<OcTareaVo> ltemp = new ArrayList<OcTareaVo>();
+        List<OcTareaVo> ltemp = new ArrayList<>();
         for (OcTareaVo potVo : listaTipoTarea) {
             if (potVo.isSelected()) {
                 ltemp.add(potVo);

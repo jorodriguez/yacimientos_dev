@@ -11,8 +11,8 @@ package sia.compra.requisicion.bean.backing;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import javax.faces.bean.CustomScoped;
 import javax.faces.model.SelectItem;
+import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import sia.modelo.Gerencia;
@@ -29,7 +29,7 @@ import sia.util.UtilLog4j;
  * @author-mail hacosta.0505@gmail.com @date 7/07/2009
  */
 @Named (value = "gerenciaBean")
-@CustomScoped(value = "#{window}")
+@ViewScoped
 public class GerenciaBean implements Serializable{
 
     //------------------------------------------------------

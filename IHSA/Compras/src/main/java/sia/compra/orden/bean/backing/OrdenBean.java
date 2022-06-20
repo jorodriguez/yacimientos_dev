@@ -317,6 +317,9 @@ public class OrdenBean implements Serializable {
     @Getter
     @Setter
     private UploadedFile fileInfo;
+    @Getter
+    @Setter
+    String nombreSocio = "";
 
     public OrdenBean() {
     }
@@ -398,6 +401,8 @@ public class OrdenBean implements Serializable {
         } else {
             ordenActual = null;
         }
+        //
+        llenarNombreSocio();
     }
 
     public void etsPorRequisicion() {
@@ -438,9 +443,21 @@ public class OrdenBean implements Serializable {
         itemsRequisicion = new ArrayList<>();
         itemsPorRequisicion();
         //
-        notasPorOrden();
         noticiaActual = new CoNoticia();
+        //        
+    }
 
+    public String llenarNombreSocio() {
+        List<UsuarioRolVo> lu = siUsuarioRolImpl.traerUsuarioPorRolModulo(Constantes.ROL_SOCIO, Constantes.MODULO_COMPRA, usuarioBean.getUsuarioConectado().getApCampo().getId());
+        if (lu != null && !lu.isEmpty()) {
+            for (UsuarioRolVo voUsr : lu) {
+                if (!nombreSocio.isEmpty()) {
+                    nombreSocio += ", ";
+                }
+                nombreSocio += voUsr.getUsuario();
+            }
+        }
+        return nombreSocio;
     }
 
     public void llenarListaConvenio(String idOr) {
@@ -3245,10 +3262,8 @@ public class OrdenBean implements Serializable {
 
     public void ordenesDeRequisicion(int idRequuisicion) {
         try {
-
-            List<OrdenVO> lo = this.ordenServicioRemoto.traerOrdenPorRequisicion(idRequuisicion);
+            ocs = this.ordenServicioRemoto.traerOrdenPorRequisicion(idRequuisicion);
             //   mapaOrdenes.put("ordenesRequisicion", lo);
-
         } catch (Exception ex) {
             LOGGER.fatal(this, ex.getMessage());
         }

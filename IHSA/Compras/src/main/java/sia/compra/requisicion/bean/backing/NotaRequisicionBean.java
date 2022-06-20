@@ -20,6 +20,7 @@ import javax.faces.component.html.HtmlInputTextarea;
 
 import javax.faces.model.DataModel;
 import javax.faces.model.ListDataModel;
+import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.naming.NamingException;
@@ -55,7 +56,7 @@ import sia.util.ValidadorNombreArchivo;
  * @author-mail new_nick_name@hotmail.com @date 21/01/2010
  */
 @Named (value = NotaRequisicionBean.BEAN_NAME)
-@CustomScoped(value = "#{window}")
+@ViewScoped
 public class NotaRequisicionBean implements Serializable {
 
     //------------------------------------------------------

@@ -167,28 +167,7 @@ public class UsuarioBean implements Serializable {
         }
 
         setCompania(usuarioConectado.getApCampo().getCompania());
-        RequisicionBean requisicionBean = (RequisicionBean) FacesUtilsBean.getManagedBean("requisicionBean");
-//        RecepcionRequisicionBean recepcionRequisicionBean = (RecepcionRequisicionBean) FacesUtilsBean.getManagedBean("recepcionRequisicionBean");
-//        recepcionRequisicionBean.setActualizar(true);
-        OrdenBean ordenBean = (OrdenBean) FacesUtilsBean.getManagedBean("ordenBean");
-        ordenBean.setOrdenActual(null);
-
-        //Listas de historial
-        requisicionBean.setRequisicionesSolicitadas(null);
-        requisicionBean.setRequisicionesRevisadas(null);
-        requisicionBean.setRequisicionesAprobadas(null);
-        requisicionBean.setRequisicionesAprobadas(null);
-        requisicionBean.setRequisicionesAutorizadas(null);
-        requisicionBean.setRequisicionesVistoBueno(null);
-        requisicionBean.setRequisicionesAsignadas(null);
-        requisicionBean.setRequisicionActual(null);
-
         llenarRoles();
-//
-        NotaOrdenBean notaOrdenBean = (NotaOrdenBean) FacesUtilsBean.getManagedBean("notaOrdenBean");
-        notaOrdenBean.setNotaActual(null);
-        notaOrdenBean.setListaNotas(null);
-        setCambioCampo(false);
         //
         ContarBean contarBean = (ContarBean) FacesUtilsBean.getManagedBean("contarBean");
         contarBean.taerPendiente();
@@ -206,13 +185,6 @@ public class UsuarioBean implements Serializable {
         this.usuarioConectado = null;
 
         // realizar limpieza de informacion
-        RequisicionBean requisicionBean = (RequisicionBean) FacesUtilsBean.getManagedBean("requisicionBean");
-        requisicionBean.setRequisicionesAprobadas(null);
-        requisicionBean.setRequisicionesSolicitadas(null);
-        requisicionBean.setRequisicionesRevisadas(null);
-        requisicionBean.setRequisicionesAutorizadas(null);
-        requisicionBean.setRequisicionesAsignadas(null);
-        requisicionBean.setPanelSeleccionado(0);
     }
 
     /**

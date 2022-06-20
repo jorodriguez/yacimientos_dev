@@ -589,11 +589,7 @@ public class ContratoBean implements Serializable {
                 listaCorreo = new HashMap<>();
                 llenarCorreoCopia();
                 traerContactosPorProveedor();
-                PrimeFaces.current().executeScript(
-                        ";$(dialogoFormalizarContrato"
-                        + contratoVo.getId()
-                        + ").modal('show');"
-                );
+                PrimeFaces.current().executeScript(";$(dialogoFormalizarContrato).modal('show');");
             } else {
                 FacesUtils.addErrorMessage("Los datos del proveedor estan incompletos.");
             }
@@ -744,11 +740,7 @@ public class ContratoBean implements Serializable {
             llenarCorreoCopia();
             //
             traerContactosPorProveedor();
-            PrimeFaces.current().executeScript(
-                    ";$(dialogoFiniquitarContrato"
-                    + contratoVo.getId()
-                    + ").modal('show');"
-            );
+            PrimeFaces.current().executeScript(";$(dialogoFiniquitarContrato).modal('show');");
         } else {
             FacesUtils.addErrorMessage("Es necesario agregar todos los datos del contrato para poder ser cambiado de estado.");
         }
@@ -1217,9 +1209,7 @@ public class ContratoBean implements Serializable {
                 documentoAnexo.setTipoMime(fileUpload.getContentType());
                 almacenDocumentos.guardarDocumento(documentoAnexo);
 
-                getLstConveniosTabs().
-                        get(getIndice())
-                        .setAdjuntoVO(buildAdjuntoVO(documentoAnexo));
+                contratoVo.setAdjuntoVO(buildAdjuntoVO(documentoAnexo));
 
                 contratoVo.getAdjuntoVO().setId(
                         siAdjuntoServicioRemoto.saveSiAdjunto(

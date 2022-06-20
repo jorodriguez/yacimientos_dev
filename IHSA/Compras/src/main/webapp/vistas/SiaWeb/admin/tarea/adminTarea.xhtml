@@ -13,28 +13,36 @@
             <ui:define name="tituloPagina">
                 Administrar Tareas
             </ui:define>
-            <ui:define name="contenido">
+            <ui:define name="contenido">                
                 <div class="row-fluid"> 
                     <div id="divAutoriza" class="btn-group">
                         <h:form>
                             <div class="row-fluid">
-                                <p:commandLink value="Cargar tareas" class="btn btn-primary"
+                                <p:commandLink value="Cargar tareas" class="btn btn-primary text-white"
                                                action="#{adminTareaBean.cargarTareas}"
-                                               title="Cargar tareas desde el archivo de tareas"/>                                
+                                               title="Cargar tareas desde el archivo de tareas"
+                                               process="@form" update="frmDivDatosTareas"/>                                
                             </div>
                         </h:form>
                     </div>
                     <div id="divOperacion" class="btn-group" style="display: none;">
                         <h:form>
+                            <p:confirmDialog global="true" showEffect="fade" hideEffect="fade" responsive="true" width="350">
+                                <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no ui-button-flat"/>
+                                <p:commandButton value="Si" type="button" styleClass="ui-confirmdialog-yes" />
+                            </p:confirmDialog>
                             <div class="row-fluid">
-                                <p:commandLink value="Regresar" class="btn btn-primary"
-                                               action="#{adminTareaBean.regresarTareas}"/>
+                                <p:commandLink value="Regresar" class="btn btn-primary text-white"
+                                               action="#{adminTareaBean.regresarTareas}"
+                                               process="@form" update="frmAdminTarea"/>
                                 <ui:fragment rendered="#{adminTareaBean.tareasTemp.size() gt 0}">
                                     <p:commandLink value="Guardar" 
-                                                   class="btn btn-primary"
-                                                   onclick="if (!confirm('La operación guardara en el sistema las nuevas tareas. ¿Está seguro?'))
-                                                               return false;"
-                                                   action="#{adminTareaBean.guardarTareas}"/>
+                                                   class="btn btn-primary text-white"
+                                                   action="#{adminTareaBean.guardarTareas}"
+                                                   process="@this" update="frmAdminTarea">
+                                        <p:confirm header="Confirmar" message="La operación guardara en el sistema las nuevas tareas. ¿Está seguro?" 
+                                                   icon="pi pi-exclamation-triangle"/>
+                                    </p:commandLink>
                                 </ui:fragment>
                             </div>
                         </h:form>
@@ -42,28 +50,33 @@
                 </div>
 
                 <div id="divTabla" style="padding-top: 5px;" class="container-fluid"> 
-                    <h:form>
-                        <p:tabView >
-                            <p:tab title="Proyectos OT">
+                    <h:form id="frmAdminTarea">
+                        <p:tabView id="tbAdminTarea" binding="#{adminTareaBean.tabView}" activeIndex="#{adminTareaBean.tabSeleccionada}">
+                            <p:tab title="Proyectos OT" >
                                 <div class="col-8">
                                     <div>
-                                        <p:commandLink styleClass="btn btn-info" action="#{adminTareaBean.eliminarOt}"
-                                                         value="Eliminar">
+                                        <p:commandLink styleClass="btn btn-info text-white" action="#{adminTareaBean.eliminarOt}"
+                                                       value="Eliminar" process="@this frmAdminTarea:tbAdminTarea:tbProy" update="frmAdminTarea:tbAdminTarea:tbProy">
                                         </p:commandLink>
                                     </div>
-                                    <!-- rowSelectListener="#{adminTareaBean.seleccionarOt}" -->
-                                    <p:dataTable size="small" stripedRows="true" showGridlines="true" value="#{adminTareaBean.listaProyecto}" var="data" rows="20" 
-                                                   paginatorPosition="bottom" paginator="true" style="font-size: 1.1em;"
-                                                   selectionMode="single" >
-                                        <p:ajax event="select" process="@this" update="@all"/>
-                                        <p:column>
-                                            <h:selectBooleanCheckbox value="#{data.selected}"/>
+                                    <p:dataTable id="tbProy" size="small" stripedRows="true" showGridlines="true" value="#{adminTareaBean.listaProyecto}" 
+                                                 var="data" rows="20" 
+                                                 paginatorPosition="bottom" paginator="true">
+                                        <p:column width="35">
+                                            <h:selectBooleanCheckbox value="#{data.selected}" />
                                         </p:column>
-                                        <p:column headerText="Nombre" style="text-align: left;">
+                                        <p:column headerText="Nombre" style="text-align: left;" filterBy="#{data.nombre}" filterMatchMode="contains"
+                                                  >
                                             <h:outputText value="#{data.nombre}"/>
                                         </p:column>
-                                        <p:column headerText="Ot">
+                                        <p:column headerText="Ot" filterBy="#{data.cuentaContable}" filterMatchMode="contains">
                                             <h:outputText value="#{data.cuentaContable}"/>
+                                        </p:column>
+                                        <p:column width="35">
+                                            <p:commandLink action="#{adminTareaBean.seleccionarOt(data)}"
+                                                           process="@this" update="frmAdminTarea:tbAdminTarea">
+                                                <i class="fa fa-cog text-primary"/>
+                                            </p:commandLink>
                                         </p:column>
                                     </p:dataTable>
                                 </div>
@@ -75,15 +88,14 @@
                                 </div>
                                 <div class="col-6">
                                     <div>
-                                        <p:commandLink styleClass="btn btn-info" action="#{adminTareaBean.eliminarGerencia}"
-                                                         value="Eliminar">
+                                        <p:commandLink styleClass="btn btn-info text-white" action="#{adminTareaBean.eliminarGerencia}"
+                                                       value="Eliminar" process="@this frmAdminTarea:tbAdminTarea:dtGerencia" update="frmAdminTarea:tbAdminTarea">
                                         </p:commandLink>
                                     </div>
-                                    <!--<!-- rowSelectListener="#{adminTareaBean.seleccionarGerencia}" -->
-                                    <p:dataTable size="small" stripedRows="true" showGridlines="true" value="#{adminTareaBean.listaGerencia}" var="data" rows="20" 
-                                                   paginatorPosition="bottom" paginator="true" style="font-size: 1.1em;"
-                                                   selectionMode="true" >
-                                        <p:column headerText="">
+                                    <p:dataTable id="dtGerencia" size="small" stripedRows="true" showGridlines="true" 
+                                                 value="#{adminTareaBean.listaGerencia}" var="data" rows="20" 
+                                                 paginatorPosition="bottom" paginator="true" rowKey="#{data.idGerencia}">
+                                        <p:column width="35">
                                             <h:selectBooleanCheckbox value="#{data.selected}"></h:selectBooleanCheckbox>
                                         </p:column>
                                         <p:column headerText="Nombre" style="text-align: left;">
@@ -91,6 +103,12 @@
                                         </p:column>
                                         <p:column id="exp">
                                             <p:rowToggler />
+                                        </p:column>
+                                        <p:column width="35">
+                                            <p:commandLink action="#{adminTareaBean.seleccionarGerencia(data)}"
+                                                           process="@this" update="frmAdminTarea:tbAdminTarea">
+                                                <i class="fa fa-cog text-primary"/>
+                                            </p:commandLink>
                                         </p:column>
                                         <p:rowExpansion >
                                             <p:dataTable size="small" stripedRows="true" showGridlines="true" value="#{data.listaGerencia}" var="ger">
@@ -114,19 +132,24 @@
                                 </div>
                                 <div class="col-8">
                                     <div >
-                                        <p:commandLink styleClass="btn btn-info" action="#{adminTareaBean.eliminarTipoTarea}"
-                                                         value="Eliminar">
-                                        </p:commandLink>
+                                        <p:commandLink styleClass="btn btn-info text-white" action="#{adminTareaBean.eliminarTipoTarea}"
+                                                       value="Eliminar" process="@this frmAdminTarea:tbAdminTarea:dtTipoTarea" update="frmAdminTarea:tbAdminTarea:dtTipoTarea">
+                                        </p:commandLink> 
                                     </div>
-                                    <!--<!-- rowSelectListener="#{adminTareaBean.seleccionarTipoTarea}" -->
-                                    <p:dataTable size="small" stripedRows="true" showGridlines="true" value="#{adminTareaBean.listaTipoTarea}" var="data" rows="20" 
-                                                   paginatorPosition="bottom" paginator="true" style="font-size: 1.1em;"
-                                                   selectionMode="single" >
-                                        <p:column headerText="">
-                                            <h:selectBooleanCheckbox value="#{data.selected}"></h:selectBooleanCheckbox>
+                                    <p:dataTable id="dtTipoTarea" size="small" stripedRows="true" showGridlines="true" 
+                                                 value="#{adminTareaBean.listaTipoTarea}" var="data" rows="20" 
+                                                 paginatorPosition="bottom" paginator="true" >
+                                        <p:column width="35">
+                                            <h:selectBooleanCheckbox value="#{data.selected}"/>
                                         </p:column>
                                         <p:column headerText="Nombre" style="text-align: left;">
                                             <h:outputText value="#{data.unidadCosto}"/>
+                                        </p:column>
+                                        <p:column width="35">
+                                            <p:commandLink action="#{adminTareaBean.seleccionarTipoTarea(data)}"
+                                                           process="@this" update="frmAdminTarea:tbAdminTarea">
+                                                <i class="fa fa-cog text-primary"/>
+                                            </p:commandLink>
                                         </p:column>
                                     </p:dataTable>
                                 </div>
@@ -146,14 +169,15 @@
                                 </div>
                                 <div class="col-8">
                                     <div>
-                                        <p:commandLink styleClass="btn btn-info" action="#{adminTareaBean.eliminarTarea}"
-                                                         value="Eliminar">
+                                        <p:commandLink styleClass="btn btn-info text-white" action="#{adminTareaBean.eliminarTarea}"
+                                                       value="Eliminar" process="@this frmAdminTarea:tbAdminTarea:dtTareas" update="frmAdminTarea:tbAdminTarea:dtTareas">
                                         </p:commandLink>
                                     </div>
-                                    <p:dataTable size="small" stripedRows="true" showGridlines="true" value="#{adminTareaBean.listaTarea}" var="data" rows="20" 
-                                                   paginatorPosition="bottom" paginator="true" style="font-size: 1.1em;">
-                                        <p:column headerText="">
-                                            <h:selectBooleanCheckbox value="#{data.selected}"></h:selectBooleanCheckbox>
+                                    <p:dataTable id="dtTareas" size="small" stripedRows="true" showGridlines="true" value="#{adminTareaBean.listaTarea}"
+                                                 var="data" rows="20" 
+                                                 paginatorPosition="bottom" paginator="true">
+                                        <p:column width="35">
+                                            <h:selectBooleanCheckbox value="#{data.selected}"/>
                                         </p:column>
                                         <p:column headerText="Nombre" style="text-align: left;">
                                             <h:outputText value="#{data.nombreTarea}"/>
@@ -189,10 +213,11 @@
                             <div class="col-12 col-xs-12">
                                 <ui:fragment rendered="#{adminTareaBean.tareasTemp.size() eq 0}">                                    
                                     <div class="card">
-                                        <p:dataTable size="small" stripedRows="true" showGridlines="true" value="#{adminTareaBean.listaCampo}" var="data">
+                                        <p:dataTable id="dtCampos" size="small" stripedRows="true" showGridlines="true" 
+                                                     value="#{adminTareaBean.listaCampo}" var="data">
                                             <f:facet name="header">Campos</f:facet>
-                                            <p:column>
-                                                <h:selectBooleanCheckbox value="#{data.selected}"/>
+                                            <p:column width="35">
+                                                <p:selectBooleanCheckbox value="#{data.selected}" />
                                             </p:column>
                                             <p:column style="text-align: left;">
                                                 <h:outputLabel value="#{data.nombre}"/>
@@ -204,23 +229,23 @@
                                             <h:outputLabel value="Archivo de tareas"/>
                                         </h4>
                                     </div>
-                                    <div class="col-12 col-xs-12" style="font-size:12px; margin-top: 10px;">                                                                                                                                    
+                                    <div class="col-12 col-xs-12">
                                         <p:fileUpload id="fileEntryCompTareas" 
-                                                       styleClass="btn btn-default"
-                                                       label="Archivo"
-                                                       listener="#{adminTareaBean.uploadFile}" />
-                                        <p:commandButton  styleClass="btn btn-default" onclick="areaBlockCSS();" id="uploadFile" value="Subir"/>
+                                                      label="Archivo" 
+                                                      process="@this frmDivDatosTareas:dtCampos"
+                                                      update="frmDivDatosTareas:tbArt"
+                                                      listener="#{adminTareaBean.uploadFile}" />
                                     </div>
                                 </ui:fragment>
                                 <ui:fragment rendered="#{adminTareaBean.tareasTemp.size() gt 0}">
-                                    <p:tabView>
+                                    <p:tabView id="tbArt">
                                         <c:forEach items="#{adminTareaBean.tareasTemp}" var="apCampo">
                                             <p:tab title="#{apCampo.key}">
                                                 <div class="table table-responsive">
                                                     <p:dataTable size="small" stripedRows="true" showGridlines="true" id="TareasDetID" 
-                                                                   value="#{apCampo.value}" var="data"
-                                                                                                                      
-                                                                   style="font-size: 1em; width: 100%"  >                                                                                        
+                                                                 value="#{apCampo.value}" var="data"
+
+                                                                 style="font-size: 1em; width: 100%"  >                                                                                        
                                                         <p:column style="width: 25%;#{data.existeTarea and data.idProyectoOt gt 0 and data.idcodigoTarea gt 0 and data.idNombreTarea gt 0 and data.idUnidadCosto gt 0 and data.idGerencia gt 0 ? 'background-color: #f8d7da;' : 'background-color: #d4edda;'}">
                                                             <h:outputText value="#{data['campo']}" styleClass="#{data.existeTarea and data.idProyectoOt gt 0 and data.idcodigoTarea gt 0 and data.idNombreTarea gt 0 and data.idUnidadCosto gt 0 and data.idGerencia gt 0 ? 'existe' : 'noExiste'};"/>
                                                             <f:facet name="header"><h:outputText value="Campo"/></f:facet>

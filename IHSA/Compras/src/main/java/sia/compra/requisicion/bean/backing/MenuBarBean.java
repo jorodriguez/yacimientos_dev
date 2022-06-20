@@ -16,6 +16,7 @@ package sia.compra.requisicion.bean.backing;
  */
 import java.io.Serializable;
 import javax.faces.bean.CustomScoped;
+import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.primefaces.PrimeFaces;
@@ -37,7 +38,7 @@ import sia.util.UtilLog4j;
  * orientation of the Menu Bar.</p>
  */
 @Named(value = "menuBarBean")
-@CustomScoped(value = "#{window}")
+@ViewScoped
 public class MenuBarBean implements Serializable {
 
     //------------------------------------------------------

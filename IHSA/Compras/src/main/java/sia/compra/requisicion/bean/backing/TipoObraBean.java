@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.faces.bean.CustomScoped;
 import javax.faces.model.SelectItem;
+import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import sia.modelo.TipoObra;
@@ -31,7 +32,7 @@ import sia.util.UtilLog4j;
  * @author-mail hacosta.0505@gmail.com @date 7/07/2009
  */
 @Named (value = TipoObraBean.BEAN_NAME)
-@CustomScoped(value = "#{window}")
+@ViewScoped
 public class TipoObraBean implements Serializable{
 
     //------------------------------------------------------
