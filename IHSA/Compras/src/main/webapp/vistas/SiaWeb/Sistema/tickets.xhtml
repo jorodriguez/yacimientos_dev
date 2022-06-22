@@ -23,12 +23,12 @@
                     <div class="form-row">
                         <div class="col-12">
                             <p:commandLink action="#{incidenciaBean.crearIncidecnia}" 
-                                           styleClass="btn btn-primary"
+                                           styleClass="btn btn-primary text-white"
                                            title="Registrar nuevo ticket" process="@this" update="frmNuevoTick">
                                 <i class="fa fa-plus"/>
                             </p:commandLink>
                             <p:commandLink action="#{incidenciaBean.refrescarTickets}" 
-                                           styleClass="btn btn-primary"
+                                           styleClass="btn btn-primary text-white"
                                            title="Refrescar tickets" ajax="false">
                                 <i class="fa fa fa-sync"/>
                             </p:commandLink>
@@ -58,23 +58,21 @@
                                     <h:outputText value="#{dataInc.estado}"/>
                                 </p:column>
                                 <p:column width="50">
-                                    <p:commandLink action="#{incidenciaBean.agregarAdjunto(e)}"
-                                                   title="Agregar archivo">
+                                    <p:commandLink action="#{incidenciaBean.agregarAdjunto(dataInc.idIncidencia)}"
+                                                   title="Agregar archivo" process="@this" update="frmAdjTick">
                                         <i class="fa fa-file text-primary"></i>
-                                        <f:param name="idTicket" value="#{dataInc.idIncidencia}"/>
                                     </p:commandLink>					
                                 </p:column>
                                 <p:column width="50">
-                                    <p:commandLink action="#{incidenciaBean.inicioReenviarTicket(e)}"
-                                                   title="Agregar complemento">
+                                    <p:commandLink action="#{incidenciaBean.inicioReenviarTicket(dataInc.idIncidencia)}"
+                                                   title="Agregar complemento" process="@this" update="frmCompTick">
                                         <i class="fa fa-edit text-primary"></i>
-                                        <f:param name="idTicket" value="#{dataInc.idIncidencia}"/>
                                     </p:commandLink>					
                                 </p:column>
                                 <p:column width="50">
                                     <p:commandLink action="#{incidenciaBean.inicioCerrarTicket(dataInc.idIncidencia)}"
                                                    rendered="#{dataInc.idEstado eq 1210}"
-                                                   title="Finalizar el ticket">
+                                                   title="Finalizar el ticket" process="@this" update="frmCierreTick">
                                         <i class="fa fa-trash text-warning"></i>
                                     </p:commandLink>					
                                 </p:column>
@@ -91,11 +89,10 @@
                             </div>
                             <h:form id="frmAdjTick">
                                 <div class="modal-body">
-
                                     <p:fileUpload id="adjArch"
                                                   label="Archivo"
                                                   listener="#{incidenciaBean.subirAdjunto}"
-                                                  immediate="false" />
+                                                  immediate="false" update="frmAdjTick:dtArchivo"/>
                                     <div class="form-row">
                                         <p:dataTable size="small" stripedRows="true" showGridlines="true" id="dtArchivo" value="#{incidenciaBean.incidenciasAdjunto}" var="dataAdj"
                                                      rowIndexVar="index">
@@ -108,16 +105,15 @@
                                             <p:column  width="50">
                                                 <p:commandLink action="#{incidenciaBean.eliminarArchivo(dataAdj.idTabla)}"
                                                                immediate="true" rendered="#{incidenciaBean.incidenciaVo.idEstado eq 1210}"
-                                                               >
+                                                               process="@this" update="frmAdjTick:dtArchivo">
                                                     <i class="fa fa-trash text-danger"/>
-                                                    <f:ajax execute="@this" render="@form"/>
                                                 </p:commandLink> 
                                             </p:column>
                                         </p:dataTable>    
                                     </div>
                                 </div>
                                 <div class="modal-footer">
-                                    <p:commandButton value="Cerrar" styleClass="btn btn-default"
+                                    <p:commandButton value="Cerrar" styleClass="btn btn-default" immediate="true"
                                                      onclick="$(dialogoAdjuntaarTickt).modal('hide');"/>
                                 </div>
                             </h:form>
@@ -138,7 +134,7 @@
                                         <h:outputText class="control-label" value="Categoría:"/>
                                         <div >
                                             <h:selectOneMenu value="#{incidenciaBean.idCatIncidencia}"
-                                                             styleClass="form-control">
+                                                             styleClass="custom-select">
                                                 <f:selectItems value="#{incidenciaBean.tiposEvidencias}" />
                                                 <f:ajax listener="#{incidenciaBean.traerCategoria}" execute="@this" event="change"
                                                         render="txtCodCat codSeleccionado"/>
@@ -152,7 +148,7 @@
                                             </div>
                                             <div class="form-inline">
                                                 <h:selectOneRadio id="codSeleccionado" value="#{incidenciaBean.idTieneCod}"
-                                                                  styleClass="form-control">
+                                                                  styleClass="custom-select">
                                                     <f:selectItem itemLabel="Si" itemValue="1"/>
                                                     <f:selectItem itemLabel="No" itemValue="0"/>
                                                     <f:ajax render="txtCodigo" execute="@this" event="change"
@@ -220,6 +216,10 @@
                             </div>
                             <h:form id="frmCompTick">
                                 <div class="modal-body">
+                                    <div class="form-row">
+                                        <h:outputLabel value="Ticket:"/>
+                                        <h:outputText value="#{incidenciaBean.incidenciaVo.codigo}"/>
+                                    </div>
                                     <div class="form-row">
                                         <h:outputLabel value="Complemento:*"/>
                                         <h:inputTextarea id="txtArea" value="#{incidenciaBean.complemento}" required="true" requiredMessage="Agregue un complemento"
