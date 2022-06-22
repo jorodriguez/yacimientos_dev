@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
@@ -28,32 +29,33 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
  *
  * @author mluis
  */
+@Slf4j
 public class LecturaLibro implements Serializable {
 
     public XSSFWorkbook loadFileXLSX(File file) throws Exception {
-        UtilLog4j.log.info("Cargando archivo " + file.getName());
+        log.info("Cargando archivo " + file.getName());
         XSSFWorkbook workBook = null;
         if (file.exists()) {
             try {
-                UtilLog4j.log.info("Cargando libro de trabajo ...");
+                log.info("Cargando libro de trabajo ...");
                 workBook = new XSSFWorkbook(new FileInputStream(file));
                 //
             } catch (IOException e) {
-                UtilLog4j.log.error(e);
+                log.error(e.toString());
             }
         }
         return workBook;
     }
 
     public HSSFWorkbook loadFile(File file) throws Exception {
-        UtilLog4j.log.info("Cargando archivo " + file.getName());
+        log.info("Cargando archivo " + file.getName());
         HSSFWorkbook workBook = null;
         FileInputStream fis = null;
         if (file.exists()) {
             try {
                 fis = new FileInputStream(file);
                 //
-                UtilLog4j.log.info("Cargando libro de trabajo ...");
+                log.info("Cargando libro de trabajo ...");
                 workBook = new HSSFWorkbook(fis);
                 fis.close();
             } catch (IOException e) {
@@ -63,7 +65,7 @@ public class LecturaLibro implements Serializable {
                     try {
                         fis.close();
                     } catch (IOException e) {
-                        UtilLog4j.log.warn("", e);
+                        log.warn("", e);
                     }
                 }
             }
@@ -73,7 +75,7 @@ public class LecturaLibro implements Serializable {
 
     public HSSFSheet loadSheet(HSSFWorkbook workBook) throws Exception {
         String sheetName = null;
-        UtilLog4j.log.info("Cargando hoja de trabajo " + sheetName);
+        log.info("Cargando hoja de trabajo " + sheetName);
         HSSFSheet workSheet = null;
         int sheetNumber;
         try {
@@ -144,7 +146,7 @@ public class LecturaLibro implements Serializable {
 
     public XSSFSheet loadSheet(XSSFWorkbook workBook) throws Exception {
         String sheetName = null;
-        UtilLog4j.log.info("Cargando hoja de trabajo " + sheetName);
+        log.info("Cargando hoja de trabajo " + sheetName);
         XSSFSheet workSheet = null;
         int sheetNumber;
         try {
@@ -163,7 +165,7 @@ public class LecturaLibro implements Serializable {
 
     public XSSFSheet loadSheet(XSSFWorkbook workBook, int hoja) throws Exception {
 
-        UtilLog4j.log.info("Cargando hoja de trabajo " + hoja);
+        log.info("Cargando hoja de trabajo " + hoja);
         XSSFSheet workSheet = null;
         try {
             workSheet = workBook.getSheetAt(hoja);
@@ -296,7 +298,7 @@ public class LecturaLibro implements Serializable {
                 cell.setCellValue(valorAux);
             }
         } catch (Exception e) {
-            UtilLog4j.log.fatal(this, e.getMessage());
+            log.error(e.getMessage());
         }
     }
 
