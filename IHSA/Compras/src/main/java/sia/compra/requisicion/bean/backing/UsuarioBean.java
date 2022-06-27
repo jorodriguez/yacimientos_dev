@@ -224,10 +224,10 @@ public class UsuarioBean implements Serializable {
         FacesContext facesContext = FacesContext.getCurrentInstance();
         HttpServletRequest servletRequest = (HttpServletRequest) facesContext.getExternalContext().getRequest();
         String fullURI = servletRequest.getRequestURI();
-        System.out.println("URI:" + fullURI);
+        //out.println("URI:" + fullURI);
         String[] url = servletRequest.getRequestURI().split("/");
         String lastPart = url[url.length - 1];
-        System.out.println("URI last part:" + lastPart);
+        //out.println("URI last part:" + lastPart);
         opcionVo = siOpcionImpl.buscarOpcionPorUltimaParteURL(lastPart);
         if (opcionVo != null) {
             PrimeFaces.current().executeScript("$(popAgregarPagina).modal('show');");
@@ -250,6 +250,17 @@ public class UsuarioBean implements Serializable {
             UtilLog4j.log.fatal(this, "Ocurrio un error al guardar la opcion principal. " + e.getMessage());
             PrimeFaces.current().executeScript(";cerrarDialogoModal(popAgregarPagina);");
         }
+    }
+
+    public String cambiarPaginaPendiente(String pagina, int campoId) {
+        //------------------------------------------------------------
+        //
+        usuarioServicioRemoto.cambiarCampoUsuario(getUsuarioConectado().getId(), getUsuarioConectado().getId(), campoId);
+        setUsuarioConectado(usuarioServicioRemoto.find(getUsuarioConectado().getId()));
+        setCompania(getUsuarioConectado().getApCampo().getCompania());
+        //
+
+        return (pagina.contains(".xthml") ? pagina : pagina + ".xhtml?faces-redirect=true");
     }
 
     private void log(String mensaje) {

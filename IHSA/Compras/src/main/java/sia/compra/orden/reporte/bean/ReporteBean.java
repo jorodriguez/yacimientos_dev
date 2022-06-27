@@ -129,6 +129,8 @@ public class ReporteBean implements Serializable {
         if (usuarioBean.getUsuarioConectado() != null) {
             idMoneda = usuarioBean.getUsuarioConectado().getApCampo().getCompania().getMoneda().getId();
         }
+        fin = LocalDate.now();
+        inicio = fin.minusDays(30);
         listaGerencias = new ArrayList<>();
         listaEstatus = new ArrayList<>();
         listaMoneda = new ArrayList<>();
@@ -148,7 +150,9 @@ public class ReporteBean implements Serializable {
     public void onTabChange(TabChangeEvent event) {
         switch (event.getTab().getTitle()) {
             case "OC/S por Status":
+                idStatus = OrdenEstadoEnum.POR_VOBO.getId();
                 llenarEstatus();
+                llenarRevisa();
                 break;
             case "OC/S de gerencias":
                 llenarGerencias();
@@ -429,6 +433,7 @@ public class ReporteBean implements Serializable {
                 }
                 break;
             default:
+                 listaRevisan.add(new SelectItem("", "No hay usuario"));
                 break;
         }
     }

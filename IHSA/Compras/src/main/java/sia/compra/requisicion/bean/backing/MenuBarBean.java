@@ -259,14 +259,14 @@ public class MenuBarBean implements Serializable {
 
     public String cambiarPaginaPendiente(String pagina, int campoId) {
         //------------------------------------------------------------
-        setAccionMenu(pagina);
+        setAccionMenu((pagina.contains(".xthml") ? pagina : pagina + ".xhtml?faces-redirect=true"));
         //
         usuarioImpl.cambiarCampoUsuario(usuarioBean.getUsuarioConectado().getId(), usuarioBean.getUsuarioConectado().getId(), campoId);
         usuarioBean.setUsuarioConectado(usuarioImpl.find(usuarioBean.getUsuarioConectado().getId()));
         usuarioBean.setCompania(usuarioBean.getUsuarioConectado().getApCampo().getCompania());
         //
 
-        return getAccionMenu() + ".xhtml?faces-redirect=true";
+        return getAccionMenu();
     }
     // Este metodo lo utilizo cuando uso botones y paso un solo parametro
 

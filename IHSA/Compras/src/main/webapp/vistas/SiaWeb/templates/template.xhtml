@@ -74,52 +74,56 @@
                          class="brand-image img-circle elevation-3" style="opacity: .8"/>
                     <span class="brand-text font-weight-light">SIA</span>
                     <!-- Sidebar -->
-                    <div class="user-panel mt-3 pb-3 mb-3 d-flex">
-                        <div class="image">
-                            <span class="fa fa-user img-circle elevation-2"/>                                     
-                        </div>
-                        <div class="info">
-                            <ui:include src="datosUsuario.xhtml"/>
-                        </div>
-                    </div>
-                    <!-- SidebarSearch Form -->
-                    <div class="container-fluid">
-                        <h:form id="frmBuscar">
-                            <div class="input-group" data-widget="sidebar-search">
-                                <p:selectOneRadio  value="#{usuarioBean.seleccion}" styleClass="custom-form" 
-                                                   >
-                                    <f:selectItem itemLabel="Req." itemValue="REQUISICIÓN."/>
-                                    <f:selectItem itemLabel="OC/S" itemValue="OCS"/>
-                                </p:selectOneRadio>
-                                <div class="input-group">
-                                    <p:inputText id="inpCodigo"  value="#{usuarioBean.codigo}" class="form-control"
-                                                 placeholder="22-0001" />
-                                    <p:commandLink id="btnBuscar" styleClass="btn btn-default"
-                                                   title="Buscar"
-                                                   action="#{usuarioBean.buscarElemento()}"
-                                                   process="@this frmBuscar frmBuscar:inpCodigo" update="@form">
-                                        <span class="fa fa-search" style="font-weight: bold; color: #303030; "></span>
-                                    </p:commandLink>
-                                </div>
+                    <!-- Sidebar -->
+                    <div class="sidebar">
+                        <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+                            <div class="image">
+                                <span class="fa fa-user img-circle elevation-2"/>                                     
                             </div>
-                            <p:commandLink  action="/vistas/SiaWeb/Orden/buscarAvanzada.xhtml?faces-redirect=true" 
-                                            ajax="false" value="Busqueda avanzada"/>
-                        </h:form>
-                    </div>
-
-                    <!-- Sidebar Menu -->
-                    <nav class="mt-2">
-                        <li class="nav-link">
-                            <h4 style="color: #337ab7; cursor: pointer; font-weight: bold;" 
-                                onclick="$(modalBloqueActivo).modal('show');">
-                                #{usuarioBean.usuarioConectado.apCampo.nombre}</h4>
-                        </li>
-                        <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
-                            <h:form class="nav-item">
-                                <ui:include src="menuLateral.xhtml" />
+                            <div class="info">
+                                <ui:include src="datosUsuario.xhtml"/>
+                            </div>
+                        </div>
+                        <!-- SidebarSearch Form -->
+                        <div class="container-fluid">
+                            <h:form id="frmBuscar">
+                                <div class="input-group" data-widget="sidebar-search">
+                                    <p:selectOneRadio  value="#{usuarioBean.seleccion}" styleClass="custom-form" 
+                                                       >
+                                        <f:selectItem itemLabel="Req." itemValue="REQUISICIÓN."/>
+                                        <f:selectItem itemLabel="OC/S" itemValue="OCS"/>
+                                    </p:selectOneRadio>
+                                    <div class="input-group">
+                                        <p:inputText id="inpCodigo"  value="#{usuarioBean.codigo}" class="form-control"
+                                                     placeholder="22-0001" />
+                                        <p:commandLink id="btnBuscar" styleClass="btn btn-default"
+                                                       title="Buscar"
+                                                       action="#{usuarioBean.buscarElemento()}"
+                                                       process="@this frmBuscar frmBuscar:inpCodigo" update="@form">
+                                            <span class="fa fa-search" style="font-weight: bold; color: #303030; "></span>
+                                        </p:commandLink>
+                                    </div>
+                                </div>
+                                <p:commandLink  action="/vistas/SiaWeb/Orden/buscarAvanzada.xhtml?faces-redirect=true" 
+                                                ajax="false" value="Busqueda avanzada"/>
                             </h:form>
-                        </ul>
-                    </nav>
+                        </div>
+
+                        <!-- Sidebar Menu -->
+                        <nav class="mt-2">
+                            <li class="nav-link">
+                                <h4 style="color: #337ab7; cursor: pointer; font-weight: bold;" 
+                                    onclick="$(modalBloqueActivo).modal('show');">
+                                    #{usuarioBean.usuarioConectado.apCampo.nombre}</h4>
+                            </li>
+                            <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+                                <h:form class="nav-item">
+                                    <ui:include src="menuLateral.xhtml" />
+                                </h:form>
+                            </ul>
+                        </nav>
+                    </div>
+                    <!-- /.sidebar -->
                 </aside>
                 <!-- Content Wrapper. Contains page content -->
                 <div class="content-wrapper">
@@ -127,7 +131,7 @@
                     <section class="content">
                         <h1 class="center">     <ui:insert name="tituloPagina"/></h1>
                         <div  class="row">
-                            <p:messages id="messages" showDetail="true" closable="true" 
+                            <p:messages id="messages" showDetail="false" closable="true" 
                                         class="col-12">
                                 <p:autoUpdate />
                             </p:messages>
@@ -136,8 +140,9 @@
                             <h:outputText id="mensajeError"/>
                             Por favor pongase en contacto con el equipo de desarrollo al correo soportesia@ihsa.mx
                         </div>
-
-                        <ui:insert name="contenido"/>                    
+                        <div  class="col-12">
+                            <ui:insert name="contenido"/>                    
+                        </div>
                     </section>
                     <div id="areaBlock" style="display: none;position: fixed;top: 0;left: 0;z-index: 250006;width: 100%;height: 100%;
                          background: #dddddd;opacity: 0.6;">
@@ -177,13 +182,13 @@
         <script src="/resources/js/jquery.min.js"></script>
         <!-- jQuery UI 1.11.4 -->
         <script>
-                                    $.noConflict(true);
-                                    // Code that uses other library's $ can follow here.
+                                        $.noConflict(true);
+                                        // Code that uses other library's $ can follow here.
         </script>
         <script src="/resources/js/jquery-ui.min.js"></script>
         <!-- Resolve conflict in jQuery UI tooltip with Bootstrap tooltip -->
         <script>
-                                    $.widget.bridge('uibutton', $.ui.button)
+                                        $.widget.bridge('uibutton', $.ui.button)
         </script>
         <!-- Bootstrap 4 -->
         <script src="/resources/js/bootstrap.bundle.min.js"></script>

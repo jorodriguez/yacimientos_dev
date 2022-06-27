@@ -328,6 +328,7 @@ public class OrdenBean implements Serializable {
      */
     @PostConstruct
     public void iniciarLimpiar() {
+        tipoFiltro = "filtro";
         //  mapaOrdenes = new HashMap<>();
         setOrdenActual(null);
         ordenesTareaAF = new ArrayList<>();
@@ -1287,6 +1288,7 @@ public class OrdenBean implements Serializable {
                 setOrdenActual(null);
                 String jsMetodo = JS_METHOD_REGRESAR_DIV_AUTORIZA;
                 PrimeFaces.current().executeScript(jsMetodo);
+                llenarCompras();
             }
         } catch (Exception e) {
             LOGGER.fatal(this, e.getMessage(), e);
@@ -1301,12 +1303,9 @@ public class OrdenBean implements Serializable {
         List<OrdenVO> lo = new ArrayList<>();
         try {
             if (getOrdenActual() == null) {
-//                for (Object object : mapaOrdenes.get("revisaOrdenes")) {
-//                    OrdenVO ord = (OrdenVO) object;
-//                    if (ord.isSelected()) {
-//                        lo.add(ord);
-//                    }
-//                }
+                ocs.stream().filter(OrdenVO::isSelected).forEach(oc -> {
+                    lo.add(oc);
+                });
                 for (OrdenVO ordVo : lo) {
                     boolean v
                             = ordenServicioRemoto.autorizarOrdenMPG(
@@ -1367,6 +1366,8 @@ public class OrdenBean implements Serializable {
             //
             ContarBean contarBean = (ContarBean) FacesUtilsBean.getManagedBean("contarBean");
             contarBean.llenarOcsSinAutorizarMPG();
+            //
+            llenarCompras();
         } catch (Exception e) {
             LOGGER.fatal(this, e.getMessage());
             FacesUtilsBean.addInfoMessage(ERR_UNEXPECTED);
@@ -1379,12 +1380,9 @@ public class OrdenBean implements Serializable {
             StringBuilder noAprobadasSB = new StringBuilder();
             List<OrdenVO> lo = new ArrayList<>();
             if (getOrdenActual() == null) {
-//                for (Object object : mapaOrdenes.get("aprobarOrdenes")) {
-//                    OrdenVO ord = (OrdenVO) object;
-//                    if (ord.isSelected()) {
-//                        lo.add(ord);
-//                    }
-//                }
+                ocs.stream().filter(OrdenVO::isSelected).forEach(oc -> {
+                    lo.add(oc);
+                });
                 boolean v;
                 for (OrdenVO ordVO : lo) {
                     v = ordenServicioRemoto.autorizarOrdenIHSA(ordVO.getId(), usuarioBean.getUsuarioConectado().getId(), usuarioBean.getUsuarioConectado().getEmail());
@@ -1440,6 +1438,7 @@ public class OrdenBean implements Serializable {
             //
             ContarBean contarBean = (ContarBean) FacesUtilsBean.getManagedBean("contarBean");
             contarBean.llenarOcsSinAutorizarIHSA();
+            llenarCompras();
         } catch (Exception e) {
             LOGGER.fatal(this, e.getMessage());
             FacesUtilsBean.addInfoMessage(ERR_UNEXPECTED);
@@ -1450,11 +1449,9 @@ public class OrdenBean implements Serializable {
         StringBuilder aprobadasSB = new StringBuilder();
         StringBuilder noAprobadasSB = new StringBuilder();
         List<OrdenVO> lo = new ArrayList<>();
-//        for (OrdenVO ord : mapaOrdenes.get("ordenesFinanzas")) {
-//            if (ord.isSelected()) {
-//                lo.add(ord);
-//            }
-//        }
+        ocs.stream().filter(OrdenVO::isSelected).forEach(oc -> {
+            lo.add(oc);
+        });
         boolean v;
         for (OrdenVO ordVO : lo) {
             v = ordenServicioRemoto.autorizarOrdenIHSA(ordVO.getId(), usuarioBean.getUsuarioConectado().getId(), usuarioBean.getUsuarioConectado().getEmail());
@@ -1482,6 +1479,7 @@ public class OrdenBean implements Serializable {
         contarBean.llenarOcsSinAutoFinanzas();
         mostrarMensaje(aprobadasSB.toString(), noAprobadasSB.toString());
         mostrar = false;
+        llenarCompras();
 
     }
 
@@ -1491,11 +1489,9 @@ public class OrdenBean implements Serializable {
         List<OrdenVO> lo = new ArrayList<>();
         try {
             if (getOrdenActual() == null) {
-//                for (OrdenVO ord : mapaOrdenes.get("aprobarSocio")) {
-//                    if (ord.isSelected()) {
-//                        lo.add(ord);
-//                    }
-//                }
+                ocs.stream().filter(OrdenVO::isSelected).forEach(oc -> {
+                    lo.add(oc);
+                });
                 boolean v;
                 for (OrdenVO ordVo : lo) {
                     v = ordenServicioRemoto.autorizarOrdenSocio(ordVo.getId(), usuarioBean.getUsuarioConectado().getId(), usuarioBean.getUsuarioConectado().getEmail());
@@ -1551,6 +1547,7 @@ public class OrdenBean implements Serializable {
             //
             ContarBean contarBean = (ContarBean) FacesUtilsBean.getManagedBean("contarBean");
             contarBean.llenarOcsSinAutoSocio();
+            llenarCompras();
         } catch (Exception e) {
             LOGGER.fatal(this, e.getMessage());
             FacesUtilsBean.addInfoMessage(ERR_UNEXPECTED);
@@ -1639,12 +1636,9 @@ public class OrdenBean implements Serializable {
 
         try {
             if (getOrdenActual() == null) {
-//                for (Object object : mapaOrdenes.get("autorizaLicitacion")) {
-//                    OrdenVO ord = (OrdenVO) object;
-//                    if (ord.isSelected()) {
-//                        lo.add(ord);
-//                    }
-//                }
+                ocs.stream().filter(OrdenVO::isSelected).forEach(oc -> {
+                    lo.add(oc);
+                });
                 //OC/S nuevas
                 if (!lo.isEmpty()) {
                     boolean val;
@@ -1708,6 +1702,7 @@ public class OrdenBean implements Serializable {
                 setOrdenActual(null);
                 String jsMetodo = JS_METHOD_REGRESAR_DIV_AUTO;
                 PrimeFaces.current().executeScript(jsMetodo);
+                llenarCompras();
             }
             //
             ContarBean contarBean = (ContarBean) FacesUtilsBean.getManagedBean("contarBean");
@@ -2157,15 +2152,8 @@ public class OrdenBean implements Serializable {
         }
     }
 
-    public void cambiarFiltroHistorial(ValueChangeEvent event) {
-        setTipoFiltro((String) event.getNewValue());
-        setReferencia(Constantes.VACIO);
-        limpiarListaOrdenesSolicitadas();
-    }
-
     public void filtrarOrden() {
         try {
-
             ordenesHistorial = new ArrayList<>();
             if (getTipoFiltro().equals(Constantes.FILTRO)) {
                 if (getFechaInicio() == null) {

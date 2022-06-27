@@ -41,6 +41,10 @@
 
                         </div>
                         <div id="divOperacion" class="btn-group" style="text-align: left; display: none;">
+                            <p:confirmDialog global="true" showEffect="fade" hideEffect="fade" responsive="true" width="350">
+                                <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no ui-button-flat"/>
+                                <p:commandButton value="Si" type="button" styleClass="ui-confirmdialog-yes" />
+                            </p:confirmDialog>
                             <p:commandLink value="Regresar" action="#{evaluacionBean.iniciarEvaluaciones}"
                                            onclick="regresar('divTabla', 'divDatos', 'divOperacion', 'divAutoriza')"
                                            styleClass="btn btn-default"/>
@@ -48,12 +52,15 @@
                                            styleClass="btn btn-default"
                                            style="font-weight: bold;"
                                            action="#{evaluacionBean.guardarEvaluacion}"
-                                           onclick="return confirmar('formEva', 'La operación guardara la evaluación y sera enviada al solicitante. ¿Está seguro?');"
-                                           />
+                                           process="@form" update="@form"
+                                           >
+                                <p:confirm header="Confirmar" message="La operación guardara la evaluación y sera enviada al solicitante. ¿Está seguro?" 
+                                           icon="pi pi-exclamation-triangle"/>
+                            </p:commandLink>
 
                         </div>
                     </div>
-                    
+
                     <div id="divTabla" class="row"> 
 
 
@@ -100,217 +107,214 @@
 
                         </div>
                     </div>                    
-                    
+
                     <div id="divDatos" style="display: none;" class="row">                        
-                        <div class="container-fluid" style="padding-top: 20px;">
-                            <div id="tabOCSProc">                                
-                                <div id="infEva" class="textoIzquierda">
-                                    <div class="form-group container-fluid">                                        
-                                        <div class="row"> 
-                                            <div class="col-12" style="margin-top: 5px; margin-bottom: 5px;">
-                                                <div class="input-group card" style="border: white; border-style: solid; border-width: 1px;">
-                                                    <div class="form-group col-12 col-xs-12" style="border: white; border-bottom: #eee; border-top: white;  border-style: solid; border-width: 2px;">
-                                                        <strong><h:outputText styleClass="col-2 col-xs-12 control-label" value="Prestador de Servicios:" /></strong> 
-                                                        <div class="col-4 col-xs-12">
-                                                            <h:outputText styleClass="control-label" value="#{evaluacionBean.vo.nombreProveedor}"/>
-                                                        </div>
-                                                        <strong><h:outputText styleClass="col-2 col-xs-12 control-label" value="Gerencia:"/></strong>
-                                                        <div class="col-4 col-xs-12">
-                                                            <h:outputText styleClass="control-label" value="#{evaluacionBean.vo.nombreGerencia}"/>
-                                                        </div>
-                                                    </div>                                                
-                                                    <div class="form-group col-12 col-xs-12" style="border: white; border-bottom: #eee; border-top: white;  border-style: solid; border-width: 2px;">            
-                                                        <strong><h:outputText styleClass="col-2 col-xs-12 control-label" value="Correo electrónico:"/></strong>
-                                                        <div class="col-4 col-xs-12">
-                                                            <h:outputText styleClass="control-label" value="#{evaluacionBean.vo.correoProveedor}" />
-                                                        </div>
-                                                        <strong><h:outputText styleClass="col-2 col-xs-12 control-label" value="Fecha evaluación:"/></strong>
-                                                        <div class="col-4 col-xs-12">                                                        
-                                                            <h:outputText styleClass="control-label" value="#{evaluacionBean.vo.fechaEvaluacion}" >
-                                                                <f:convertDateTime pattern="dd/MM/yyyy"/>
-                                                            </h:outputText>
-                                                        </div>
-                                                    </div>
-                                                    <div class="form-group col-12 col-xs-12" style="border: white; border-bottom: #eee; border-top: white;  border-style: solid; border-width: 2px;">
-                                                        <strong><h:outputText styleClass="col-2 col-xs-12 control-label" value="Contrato/Orden No:"/></strong>
-                                                        <div class="col-4 col-xs-12">
-                                                            <h:outputText styleClass="control-label" value="#{evaluacionBean.vo.convenioCodigo}"/>
-                                                        </div>
-
-                                                    </div>                                                                
-                                                </div>        
+                        <div id="tabOCSProc mt-2">                                
+                            <div id="infEva" class="row"> 
+                                <div class="col-6">
+                                    <div class="input-group">
+                                        <div class="form-group col-12 col-xs-12">
+                                            <strong><h:outputText styleClass="col-2 col-xs-12 control-label" value="Prestador de Servicios:" /></strong> 
+                                            <div class="col-12 col-xs-12">
+                                                <h:outputText styleClass="control-label" value="#{evaluacionBean.vo.nombreProveedor}"/>
                                             </div>
                                         </div>
-                                        <div class="col-12" style="margin-top: 5px; margin-bottom: 5px;">
-                                            <h:outputText id="outputText0" style="text-align: left;" value="#{evaluacionBean.vo.templateDescripcion}" 
-                                                          styleClass="col-12 col-xs-12 f11gris"/>
+                                    </div>
+                                    <div class="input-group">
+                                        <strong><h:outputText styleClass="col-12 col-xs-12 control-label" value="Gerencia:"/></strong>
+                                        <div class="col-12 col-xs-12">
+                                            <h:outputText styleClass="control-label" value="#{evaluacionBean.vo.nombreGerencia}"/>
                                         </div>
+                                    </div>                                                
+                                    <div class="input-group">
+                                        <strong><h:outputText styleClass="col-12 col-xs-12 control-label" value="Correo electrónico:"/></strong>
+                                        <div class="col-12 col-xs-12">
+                                            <h:outputText styleClass="control-label" value="#{evaluacionBean.vo.correoProveedor}" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-6">                           
+                                    <div class="input-group">
+                                        <strong><h:outputText styleClass="col-12 col-xs-12 control-label" value="Fecha evaluación:"/></strong>
+                                        <div class="col-12 col-xs-12">                                                        
+                                            <h:outputText styleClass="control-label" value="#{evaluacionBean.vo.fechaEvaluacion}" >
+                                                <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                            </h:outputText>
+                                        </div>
+                                    </div>            
+                                    <div class="input-group">
+                                        <strong><h:outputText styleClass="col-12 col-xs-12 control-label" value="Contrato/Orden No:"/></strong>
+                                        <div class="col-12 col-xs-12">
+                                            <h:outputText styleClass="control-label" value="#{evaluacionBean.vo.convenioCodigo}"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>        
+                            <div class="col-12 mt-2" >
+                                <h:outputText id="outputText0" style="text-align: left;" value="#{evaluacionBean.vo.templateDescripcion}" 
+                                              styleClass="col-12 col-xs-12 f11gris"/>
+                            </div>
+                            <div class="ui-datatable ui-widget table table-striped" style="width: 99.9%">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th class="ui-widget-header" style="font-size: small; border-color:  #2e6da4;">
 
-
-                                        <div class="ui-datatable ui-widget table table-striped" style="width: 99.9%">
-                                            <table>
-                                                <thead>
-                                                    <tr>
-                                                        <th class="ui-widget-header" style="font-size: small; border-color:  #2e6da4;">
-
-                                                        </th>
-                                                    </tr>
-                                                    <tr>
-                                                        <th class="ui-widget-header" colspan="2" rowspan="2" style="border-color: #2e6da4; width: 80%;">
-                                                            <div class="ui-header-column" >
-                                                                <div>
-                                                                    <span class="ui-header-text">#{evaluacionBean.vo.templateTitulo}</span>
-                                                                </div>
-                                                            </div>
-                                                        </th>
-                                                        <th class="ui-widget-header" rowspan="2" style="font-size: small; border-color:  #2e6da4; width: 5%;">
-                                                            <div class="ui-header-column" >
-                                                                <div>
-                                                                    <span class="ui-header-text">Cumple</span>
-                                                                </div>
-                                                            </div>
-                                                        </th>
-                                                        <th class="ui-widget-header" colspan="2" style="font-size: small; border-color:  #2e6da4; width: 15%;">
-                                                            <div class="ui-header-column" >
-                                                                <div>
-                                                                    <span class="ui-header-text">Puntaje</span>
-                                                                </div>
-                                                            </div>
-                                                        </th>
-                                                    </tr>
-                                                    <tr>
-                                                        <th class="ui-widget-header" style="font-size: small; border-color:  #2e6da4; width: 5%;">
-                                                            <div class="ui-header-column" >
-                                                                <div>
-                                                                    <span class="ui-header-text">Maximo</span>
-                                                                </div>
-                                                            </div>
-                                                        </th>
-                                                        <th class="ui-widget-header" style="font-size: small; border-color:  #2e6da4; width: 10%;">
-                                                            <div class="ui-header-column" >
-                                                                <div>
-                                                                    <span class="ui-header-text">Asi.</span>
-                                                                </div>
-                                                            </div>
-                                                        </th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody class="ui-datatable-data ui-widget-content" >
-                                                    <ui:repeat value="#{evaluacionBean.vo.secciones}" var="seccion">
-                                                        <ui:repeat value="#{seccion.preguntas}" var="preg" varStatus="indice">                                                    
-                                                            <ui:fragment rendered="#{indice.index eq 0}">
-                                                                <tr class=" ui-datatable-even  ">
-                                                                    <td class="ui-widget-content" style="font-size: small; border-color:  #2e6da4;" rowspan="#{seccion.preguntas.size()}">#{seccion.seccionNombre}</td>
-                                                                    <td class="ui-widget-content" style="font-size: small; border-color:  #2e6da4;">#{preg.pregunta}</td>
-                                                                    <td class="ui-widget-content" style="font-size: small; border-color:  #2e6da4;">
-                                                                        <h:selectBooleanCheckbox value="#{preg.respuesta}" onchange="return validaTotal(this, #{seccion.seccionId}, (#{seccion.seccionMaximo/seccion.preguntas.size()}));">
-                                                                        </h:selectBooleanCheckbox>
-                                                                    </td>
-                                                                    <td class="ui-widget-content" style="font-size: small; border-color:  #2e6da4;" rowspan="#{seccion.preguntas.size()}">
-                                                                        <h:outputText value="#{seccion.seccionMaximo}" style="font-weight:  bold;"/>
-                                                                    </td>
-                                                                    <td class="ui-widget-content" style="font-size: small; border-color:  #2e6da4;" rowspan="#{seccion.preguntas.size()}">                                                                        
-                                                                        <h:inputText class="form-control secTotal#{seccion.seccionId}" onkeydown="return false;" onkeypress="return false;" onkeyup="return false;" value="#{seccion.total}"/>
-
-                                                                    </td>
-                                                                </tr>
-                                                            </ui:fragment>
-                                                            <ui:fragment rendered="#{indice.index gt 0}">
-                                                                <tr class=" ui-datatable-even  ">
-                                                                    <td class="ui-widget-content" style="font-size: small; border-color:  #2e6da4;">#{preg.pregunta}</td>
-                                                                    <td class="ui-widget-content" style="font-size: small; border-color:  #2e6da4;">
-                                                                        <h:selectBooleanCheckbox value="#{preg.respuesta}" onchange="return validaTotal(this, #{seccion.seccionId}, (#{seccion.seccionMaximo/seccion.preguntas.size()}));">
-                                                                        </h:selectBooleanCheckbox>
-                                                                    </td>
-                                                                </tr>
-                                                            </ui:fragment>
-                                                        </ui:repeat>
-                                                    </ui:repeat>
-
+                                            </th>
+                                        </tr>
+                                        <tr>
+                                            <th class="ui-widget-header" colspan="2" rowspan="2" style="border-color: #2e6da4; width: 80%;">
+                                                <div class="ui-header-column" >
+                                                    <div>
+                                                        <span class="ui-header-text">#{evaluacionBean.vo.templateTitulo}</span>
+                                                    </div>
+                                                </div>
+                                            </th>
+                                            <th class="ui-widget-header" rowspan="2" style="font-size: small; border-color:  #2e6da4; width: 5%;">
+                                                <div class="ui-header-column" >
+                                                    <div>
+                                                        <span class="ui-header-text">Cumple</span>
+                                                    </div>
+                                                </div>
+                                            </th>
+                                            <th class="ui-widget-header" colspan="2" style="font-size: small; border-color:  #2e6da4; width: 15%;">
+                                                <div class="ui-header-column" >
+                                                    <div>
+                                                        <span class="ui-header-text">Puntaje</span>
+                                                    </div>
+                                                </div>
+                                            </th>
+                                        </tr>
+                                        <tr>
+                                            <th class="ui-widget-header" style="font-size: small; border-color:  #2e6da4; width: 5%;">
+                                                <div class="ui-header-column" >
+                                                    <div>
+                                                        <span class="ui-header-text">Maximo</span>
+                                                    </div>
+                                                </div>
+                                            </th>
+                                            <th class="ui-widget-header" style="font-size: small; border-color:  #2e6da4; width: 10%;">
+                                                <div class="ui-header-column" >
+                                                    <div>
+                                                        <span class="ui-header-text">Asi.</span>
+                                                    </div>
+                                                </div>
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="ui-datatable-data ui-widget-content" >
+                                        <ui:repeat value="#{evaluacionBean.vo.secciones}" var="seccion">
+                                            <ui:repeat value="#{seccion.preguntas}" var="preg" varStatus="indice">                                                    
+                                                <ui:fragment rendered="#{indice.index eq 0}">
                                                     <tr class=" ui-datatable-even  ">
-                                                        <td class="ui-widget-content" colspan="2" style="font-size: small; border-color:  #2e6da4;"></td>
-                                                        <td class="ui-widget-content" style="font-size: small; border-color:  #2e6da4;">Suma:</td>
-                                                        <td class="ui-widget-content" style="font-size: small; border-color:  #2e6da4;">#{evaluacionBean.vo.sumatoriaMax}</td>
+                                                        <td class="ui-widget-content" style="font-size: small; border-color:  #2e6da4;" rowspan="#{seccion.preguntas.size()}">#{seccion.seccionNombre}</td>
+                                                        <td class="ui-widget-content" style="font-size: small; border-color:  #2e6da4;">#{preg.pregunta}</td>
                                                         <td class="ui-widget-content" style="font-size: small; border-color:  #2e6da4;">
-                                                            <h:inputText class="form-control sumaTotal"  onkeydown="return false;" onkeypress="return false;" onkeyup="return false;" value="#{evaluacionBean.vo.sumatoriaResp}"/>    
+                                                            <h:selectBooleanCheckbox value="#{preg.respuesta}" onchange="return validaTotal(this, #{seccion.seccionId}, (#{seccion.seccionMaximo/seccion.preguntas.size()}));">
+                                                            </h:selectBooleanCheckbox>
+                                                        </td>
+                                                        <td class="ui-widget-content" style="font-size: small; border-color:  #2e6da4;" rowspan="#{seccion.preguntas.size()}">
+                                                            <h:outputText value="#{seccion.seccionMaximo}" style="font-weight:  bold;"/>
+                                                        </td>
+                                                        <td class="ui-widget-content" style="font-size: small; border-color:  #2e6da4;" rowspan="#{seccion.preguntas.size()}">                                                                        
+                                                            <h:inputText class="form-control secTotal#{seccion.seccionId}" onkeydown="return false;" onkeypress="return false;" onkeyup="return false;" value="#{seccion.total}"/>
+
                                                         </td>
                                                     </tr>
-
-                                                </tbody>
-                                            </table>                                            
-                                        </div>
-
-
-                                        <div class="col-12" style="margin-top: 5px; margin-bottom: 15px;">
-                                            <div class="row">
-                                                <div class="form-group col-12">
-                                                    <strong><h:outputText class="col-2 control-label" value="Observaciones:"/></strong>
-                                                    <div class="col-12">
-                                                        <h:inputTextarea styleClass="form-control" rows="3" value="#{evaluacionBean.vo.observaciones}" />
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div class="col-12" style="margin-top: 5px; margin-bottom: 15px;">
-                                            <div class="row">
-                                                <div class="form-group">                                                    
-                                                    <div class="col-12">
-                                                        <strong><h:outputText class="col-4 control-label" value="Gerencia que realiza la evaluación:"/></strong>
-                                                        <h:outputText class="col-4 control-label" value="#{evaluacionBean.vo.nombreGerencia}"/>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div class="ui-datatable ui-widget table table-striped" style="width: 99.9%; padding-top: 10px;">
-                                            <table>
-                                                <thead>
-                                                    <tr>
-                                                        <th class="ui-widget-header" colspan="2" style="border-color: #2e6da4;">
-                                                            <div class="ui-header-column" >
-                                                                <div>
-                                                                    <span class="ui-header-text">INTERPRETACIÓN</span>
-                                                                </div>
-                                                            </div>
-                                                        </th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody >
-                                                    <tr>
-                                                        <td class="ui-widget-header" style="border-color: #2e6da4;" width="20%">
-                                                            <span class="ui-header-text">CALIFICACIÓN:</span>
+                                                </ui:fragment>
+                                                <ui:fragment rendered="#{indice.index gt 0}">
+                                                    <tr class=" ui-datatable-even  ">
+                                                        <td class="ui-widget-content" style="font-size: small; border-color:  #2e6da4;">#{preg.pregunta}</td>
+                                                        <td class="ui-widget-content" style="font-size: small; border-color:  #2e6da4;">
+                                                            <h:selectBooleanCheckbox value="#{preg.respuesta}" onchange="return validaTotal(this, #{seccion.seccionId}, (#{seccion.seccionMaximo/seccion.preguntas.size()}));">
+                                                            </h:selectBooleanCheckbox>
                                                         </td>
-                                                        <td class="ui-widget-header" style="font-size: small; border-color:  #2e6da4;">
-                                                            <div class="ui-header-column" >
-                                                                <div style="text-align: left;">
-                                                                    <span class="ui-header-text" style="text-align: left;">Muy Bueno: > 85 -100 puntos. • El Prestador de Servicio permanece por un periodo más.
-                                                                        <br></br><br></br>Bueno:  > 70 - 85 puntos • El prestador de servicio queda en periodo de prueba,debe atender hallazgos. 
-                                                                        <br></br><br></br>Regular: > 60 - 70 puntos • El prestador de servicio requiere plan de mejoras y debe atender hallazgos.
-                                                                        <br></br><br></br>Malo: 0 - 60 puntos • El prestador de servicioi  es dado de baja del listado de proveedores.</span>
-                                                                </div>
-                                                            </div>
-                                                        </td>                                                        
                                                     </tr>
-                                                    <tr>
-                                                        <td class="ui-widget-header" colspan="2" style="font-size: small; border-color:  #2e6da4;">
-                                                            <div class="" >
-                                                                <div style="text-align: left;">
-                                                                    <span class="ui-header-text" style="text-align: left;">Nota 1: En caso de no aplicar parcial o totalmente alguno de los numerales a evaluar el valor de este se deberá repartir proporcionalmente entre los demás.<br></br><br></br>Nota 2: Imprimir y guardar copia de este formato junto con el acto administrativo.</span>
-                                                                </div>
-                                                            </div>
-                                                        </td>                                                        
-                                                    </tr>
+                                                </ui:fragment>
+                                            </ui:repeat>
+                                        </ui:repeat>
 
-                                                </tbody>
-                                            </table>                                            
+                                        <tr class=" ui-datatable-even  ">
+                                            <td class="ui-widget-content" colspan="2" style="font-size: small; border-color:  #2e6da4;"></td>
+                                            <td class="ui-widget-content" style="font-size: small; border-color:  #2e6da4;">Suma:</td>
+                                            <td class="ui-widget-content" style="font-size: small; border-color:  #2e6da4;">#{evaluacionBean.vo.sumatoriaMax}</td>
+                                            <td class="ui-widget-content" style="font-size: small; border-color:  #2e6da4;">
+                                                <h:inputText class="form-control sumaTotal"  onkeydown="return false;" onkeypress="return false;" onkeyup="return false;" value="#{evaluacionBean.vo.sumatoriaResp}"/>    
+                                            </td>
+                                        </tr>
+
+                                    </tbody>
+                                </table>                                            
+                            </div>
+
+
+                            <div class="col-12" style="margin-top: 5px; margin-bottom: 15px;">
+                                <div class="row">
+                                    <div class="form-group col-12">
+                                        <strong><h:outputText class="col-2 control-label" value="Observaciones:"/></strong>
+                                        <div class="col-12">
+                                            <h:inputTextarea styleClass="form-control" rows="3" value="#{evaluacionBean.vo.observaciones}" />
                                         </div>
-
-
-
                                     </div>
                                 </div>
                             </div>
+
+                            <div class="col-12" style="margin-top: 5px; margin-bottom: 15px;">
+                                <div class="row">
+                                    <div class="form-group">                                                    
+                                        <div class="col-12">
+                                            <strong><h:outputText class="col-4 control-label" value="Gerencia que realiza la evaluación:"/></strong>
+                                            <h:outputText class="col-4 control-label" value="#{evaluacionBean.vo.nombreGerencia}"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="ui-datatable ui-widget table table-striped" style="width: 99.9%; padding-top: 10px;">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th class="ui-widget-header" colspan="2" style="border-color: #2e6da4;">
+                                                <div class="ui-header-column" >
+                                                    <div>
+                                                        <span class="ui-header-text">INTERPRETACIÓN</span>
+                                                    </div>
+                                                </div>
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody >
+                                        <tr>
+                                            <td class="ui-widget-header" style="border-color: #2e6da4;" width="20%">
+                                                <span class="ui-header-text">CALIFICACIÓN:</span>
+                                            </td>
+                                            <td class="ui-widget-header" style="font-size: small; border-color:  #2e6da4;">
+                                                <div class="ui-header-column" >
+                                                    <div style="text-align: left;">
+                                                        <span class="ui-header-text" style="text-align: left;">Muy Bueno: > 85 -100 puntos. • El Prestador de Servicio permanece por un periodo más.
+                                                            <br></br><br></br>Bueno:  > 70 - 85 puntos • El prestador de servicio queda en periodo de prueba,debe atender hallazgos. 
+                                                            <br></br><br></br>Regular: > 60 - 70 puntos • El prestador de servicio requiere plan de mejoras y debe atender hallazgos.
+                                                            <br></br><br></br>Malo: 0 - 60 puntos • El prestador de servicioi  es dado de baja del listado de proveedores.</span>
+                                                    </div>
+                                                </div>
+                                            </td>                                                        
+                                        </tr>
+                                        <tr>
+                                            <td class="ui-widget-header" colspan="2" style="font-size: small; border-color:  #2e6da4;">
+                                                <div class="" >
+                                                    <div style="text-align: left;">
+                                                        <span class="ui-header-text" style="text-align: left;">Nota 1: En caso de no aplicar parcial o totalmente alguno de los numerales a evaluar el valor de este se deberá repartir proporcionalmente entre los demás.<br></br><br></br>Nota 2: Imprimir y guardar copia de este formato junto con el acto administrativo.</span>
+                                                    </div>
+                                                </div>
+                                            </td>                                                        
+                                        </tr>
+
+                                    </tbody>
+                                </table>                                            
+                            </div>
+
+
+
                         </div>
                     </div>
                 </h:form>                
