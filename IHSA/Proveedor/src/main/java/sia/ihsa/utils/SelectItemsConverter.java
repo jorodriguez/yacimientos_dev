@@ -5,8 +5,6 @@
  */
 package sia.ihsa.utils;
 
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.NoneScoped;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;

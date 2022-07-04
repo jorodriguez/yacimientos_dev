@@ -2,7 +2,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:ui="http://java.sun.com/jsf/facelets"
-      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
       xmlns:p="http://primefaces.org/ui"
       xmlns:f="http://java.sun.com/jsf/core">
     <body>
@@ -10,8 +10,8 @@
             <ui:define name="title">
                 #{msgs['sia.carta.intencion']}
             </ui:define>
-            <ui:define name="content">
-                <h:form>
+            <ui:define name="contenido">
+                <h:form id="frmCarta">
                     <div >
                         <div class="col-lg-6">
                             <h:outputLabel value="#{msgs['sia.factura.mensaje.rojo.carta.intencion']}"
@@ -26,7 +26,7 @@
                         </div>
                     </div>
                     <p:dataTable id="dtCompras" value="#{cartaIntencionBean.ordenes}" var="dataCarta"
-                                   rowIndexVar="index">
+                                 rowIndexVar="index" size="small" showGridlines="true">
                         <p:column headerText="Código" style="#{dataCarta.totalCartaIntencionRechazadas gt 0 ? 'color: maroon' : ''}">
                             <h:outputText value="#{dataCarta.consecutivo}"/>
                         </p:column>
@@ -39,7 +39,7 @@
                             </h:outputText>
                         </p:column>
                         <p:column headerText="Lugar de entrega" 
-                                    style="#{dataCarta.totalCartaIntencionRechazadas gt 0 ? 'color: maroon' : ''}">  
+                                  style="#{dataCarta.totalCartaIntencionRechazadas gt 0 ? 'color: maroon' : ''}">  
                             <h:outputText value="#{dataCarta.destino}"/>
                         </p:column>
                         <p:column headerText="Término de pago" style="#{dataCarta.totalCartaIntencionRechazadas gt 0 ? 'color: maroon' : ''}"> 
@@ -53,34 +53,31 @@
                         <p:column headerText="Moneda" style="#{dataCarta.totalCartaIntencionRechazadas gt 0 ? 'color: maroon' : ''}"> 
                             <h:outputText value="#{dataCarta.monedaSiglas}"/>
                         </p:column>
-                        <p:column > 
-                            <h:commandLink actionListener="#{cartaIntencionBean.inicioRechazarCompra(e)}"
-                                           title="Rechazar la compra">
-                                <i class="fa fa-remove text-danger"/>
-                                <f:param name="indice" value="#{index}"/>
-                            </h:commandLink>
+                        <p:column width="40"> 
+                            <p:commandLink action="#{cartaIntencionBean.inicioRechazarCompra(indice)}"
+                                           title="Rechazar la compra" process="@this" update="frmRechazar">
+                                <i class="fa fa-trash text-danger"/>
+                            </p:commandLink>
                         </p:column>
-                        <p:column > 
-                            <h:commandLink actionListener="#{cartaIntencionBean.aceptarCompra(e)}"
-                                           title="Aceptar la compra"
-                                           onclick="return  confirm('La operación aceptará la Carta de Intención de Compra, ¿está seguro? ');">
-                                <i class="fa fa-check text-primary"/>                                
-                                <f:param name="indice" value="#{index}"/>
-                            </h:commandLink>
+                        <p:column width="40"> 
+                            <p:commandLink action="#{cartaIntencionBean.aceptarCompra(index)}"
+                                           title="Aceptar la compra" process="@this" update="frmCarta">
+                                <i class="fa fa-check text-primary"/>      
+                                <p:confirm header="Confirmar" message="La operación aceptará la Carta de Intención de Compra, ¿está seguro?" 
+                                           icon="pi pi-exclamation-triangle"/>                          
+                            </p:commandLink>
                         </p:column>
-                        <p:column>
-                            <h:commandLink actionListener="#{cartaIntencionBean.agregarRepse(e)}"
-                                           title="Clic para subir el REPSE " >
+                        <p:column width="40">
+                            <p:commandLink action="#{cartaIntencionBean.agregarRepse(index)}"
+                                           title="Clic para subir el REPSE " process="@this" update="frmDocArch">
                                 <i class="fa fa-file #{(dataCarta.repse eq true or sesion.proveedorVo.repse eq true)? 'text-warning' : 'text-success'}"/>
-                                <f:param name="indice" value="#{index}"/>
-                            </h:commandLink>
+                            </p:commandLink>
                         </p:column>
-                        <p:column > 
-                            <h:commandLink actionListener="#{cartaIntencionBean.seleccionarCompra(e)}"
-                                           title="Ver datos de la compra">
+                        <p:column width="40"> 
+                            <p:commandLink action="#{cartaIntencionBean.seleccionarCompra(index)}"
+                                           title="Ver datos de la compra" process="@this" update="frmDatosCompra">
                                 <i class="fa fa-eye text-primary"/>                                 
-                                <f:param name="indice" value="#{index}"/>
-                            </h:commandLink>
+                            </p:commandLink>
                         </p:column>
                     </p:dataTable>
                 </h:form>

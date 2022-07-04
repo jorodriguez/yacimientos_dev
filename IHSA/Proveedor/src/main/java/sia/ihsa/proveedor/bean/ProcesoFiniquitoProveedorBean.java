@@ -13,13 +13,9 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
-import javax.ejb.EJB;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ManagedProperty;
-import javax.faces.bean.ViewScoped;
-import javax.faces.context.FacesContext;
-import javax.faces.event.ActionEvent;
+
 import javax.faces.event.AjaxBehaviorEvent;
+import javax.faces.view.ViewScoped;
 import lombok.Getter;
 import lombok.Setter;
 import org.primefaces.event.FileUploadEvent;
@@ -58,7 +54,7 @@ import javax.inject.Inject;
 @ViewScoped
 public class ProcesoFiniquitoProveedorBean implements Serializable {
 
-    @ManagedProperty("#{sesion}")
+    @Inject
     private Sesion sesion;
 
     @Inject
@@ -125,8 +121,7 @@ public class ProcesoFiniquitoProveedorBean implements Serializable {
         contratoFormas = convenioFormasImpl.traerFormasPorConvenio(contratoVo.getId());
     }
 
-    public void administrar(ActionEvent event) {
-        String cod = FacesUtilsBean.getRequestParameter("convnum");
+    public void administrar(String cod) {
         contratoVo = convenioImpl.traerConveniosPorCodigo(cod);
         //
         llenarContratoFormas();
@@ -136,20 +131,17 @@ public class ProcesoFiniquitoProveedorBean implements Serializable {
         PrimeFaces.current().executeScript("$(dialogoProceso).modal('show');");
     }
 
-    public void mostrarNotas(ActionEvent event) {
-        int indFor = Integer.parseInt(FacesUtilsBean.getRequestParameter("indice"));
+    public void mostrarNotas(int indFor) {
         contratoFormasNotas = convenioFormasNotasImpl.traerNotasPorContratoForma(contratoFormas.get(indFor).getId());
         PrimeFaces.current().executeScript("$(dialogoNotas).modal('show');");
     }
 
-    public void subirArchivo(ActionEvent event) {
-        int indFor = Integer.parseInt(FacesUtilsBean.getRequestParameter("indice"));
+    public void subirArchivo(int indFor) {
         contratoFormasVo = contratoFormas.get(indFor);
         PrimeFaces.current().executeScript("$(dialogoSubirFormas).modal('show');");
     }
 
-    public void eliminarArchivoForma(ActionEvent event) {
-        int indFor = Integer.parseInt(FacesUtilsBean.getRequestParameter("indice"));
+    public void eliminarArchivoForma(int indFor) {
         //
         convenioFormasImpl.eliminarArchivo(sesion.getProveedorVo().getRfc(), contratoFormas.get(indFor));
         contratoFormas.get(indFor).setIdAdjunto(0);
@@ -158,8 +150,7 @@ public class ProcesoFiniquitoProveedorBean implements Serializable {
 
     }
 
-    public void notificarForma(ActionEvent event) {
-        int indFor = Integer.parseInt(FacesUtilsBean.getRequestParameter("indice"));
+    public void notificarForma(int indFor) {
         //
         contratoFormas.get(indFor).setIdCampo(contratoVo.getIdCampo());
         convenioFormasImpl.notificarForma(sesion.getProveedorVo().getRfc(), contratoFormas.get(indFor));
@@ -203,13 +194,13 @@ public class ProcesoFiniquitoProveedorBean implements Serializable {
 
     }
 
-    public void cancelarEnviarSolicitud(ActionEvent event) {
+    public void cancelarEnviarSolicitud() {
         contratoFormasVo = new ContratoFormasVo();
         llenarContratos();
         PrimeFaces.current().executeScript("$(dialogoProceso).modal('hide');");
     }
 
-    public void enviarSolicitud(ActionEvent event) {
+    public void enviarSolicitud() {
         try {
             //
             boolean enviar = true;

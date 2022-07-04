@@ -1,8 +1,8 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:f="http://java.sun.com/jsf/core"
-                xmlns:c="http://java.sun.com/jsp/jstl/core"
-                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
                 xmlns:p="http://primefaces.org/ui">
     <h:form id="frmProvFactura">
         <div class="modal fade" data-backdrop="static" id="dialogoRegFactura" data-keyboard="false">
@@ -36,16 +36,17 @@
                             <h:outputLabel value="#{msgs['sia.factura.fecha.emision']}: " class="col-lg-2"/>
                             <div class="col-lg-4">
                                 <p:datePicker id="fechaGuardar" value="#{administrarCompraBean.facturaVo.fechaEmision}" pattern="dd/MM/yyyy"
-                                                   required="true" requiredMessage="#{msgs['sistema.agregar.fecha']}">
+                                              required="true" requiredMessage="#{msgs['sistema.agregar.fecha']}">
                                 </p:datePicker>
                                 <h:message for="fechaGuardar" id="msgFechaGuardar"  class="text-danger"/>
                             </div>
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <h:commandLink value="#{msgs['sistema.guardar']}" class="btn btn-info"  actionListener="#{administrarCompraBean.registroFactura(event)}"/>
-                        <h:commandLink value="#{msgs['sistema.cancelar']}" class="btn btn-default" 
-                                       actionListener="#{administrarCompraBean.cerrarRegistroFactura(event)}" immediate="true"/>
+                        <p:commandLink value="#{msgs['sistema.guardar']}" class="btn btn-info"  action="#{administrarCompraBean.registroFactura}"
+                                       process="@this" update="frmAdminCompras:tbCompras"/>
+                        <p:commandLink value="#{msgs['sistema.cancelar']}" class="btn btn-default" 
+                                       action="#{administrarCompraBean.cerrarRegistroFactura}" immediate="true"/>
                     </div>
                 </div><!-- /.modal-content -->
             </div><!-- /.modal-dialog -->
@@ -91,9 +92,9 @@
                                     <h:outputLabel value="#{msgs['sia.factura.fecha.emision']} (dd/MM/yyyy):*"/>
                                     <div>
                                         <p:datePicker id="dateFac" value="#{administrarCompraBean.facturaVo.fechaEmision}"
-                                                           pattern="dd/MM/yyyy" 
-                                                           maxdate="#{administrarCompraBean.maxDate}"                                                           
-                                                           required="true" requiredMessage="Agregue la fecha"/>
+                                                      pattern="dd/MM/yyyy" 
+                                                      maxdate="#{administrarCompraBean.maxDate}"                                                           
+                                                      required="true" requiredMessage="Agregue la fecha"/>
                                     </div>
                                     <h:message  id="msg-fecha-emi" for="dateFac" styleClass="text-danger" showDetail="false" showSummary="true"/>
                                 </div>
@@ -105,8 +106,9 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <h:commandLink value="#{msgs['sistema.guardar']}" actionListener="#{administrarCompraBean.registrarFacturaExtranjera(e)}" styleClass="btn btn-primary" />
-                        <h:commandLink value="#{msgs['sistema.cancelar']}" onclick="$(dialogoRegistroFacturaExtr).modal('hide');" styleClass="btn btn-default" 
+                        <p:commandLink value="#{msgs['sistema.guardar']}" action="#{administrarCompraBean.registrarFacturaExtranjera}" styleClass="btn btn-primary" 
+                                       process="@form" update="frmAdminCompras:tbCompras"/>
+                        <p:commandLink value="#{msgs['sistema.cancelar']}" onclick="$(dialogoRegistroFacturaExtr).modal('hide');" styleClass="btn btn-default" 
                                        immediate="true"/>
                     </div>
                 </h:form>
@@ -118,17 +120,17 @@
          style="z-index: 100002;">
         <div class="modal-dialog">
             <div class="modal-content">
-                <div class="modal-header">
-                    <h:outputLabel value="#{msgs['sia.factura.xml.valida.sat']}" rendered="#{administrarCompraBean.tipoCarga.get('archivoFacturaXML')}"/>
-                    <h:outputLabel value="Cargar el archivo XML de la nota de credito" rendered="#{administrarCompraBean.tipoCarga.get('notaCreditoXML')}"/>
-                    <h:outputLabel value="Soportes y/o evidencias de la factura" class="modal-title" rendered="#{administrarCompraBean.tipoCarga.get('soporteFactura')}"/>
-                    <h:outputLabel value="#{msgs['sia.pdf.factura']}" class="modal-title" rendered="#{administrarCompraBean.tipoCarga.get('facturaPDF')}"/>
-                    <h:outputLabel value="Archivos de la Nota de Crédito" class="modal-title" rendered="#{administrarCompraBean.tipoCarga.get('soporteNotaCredito')}"/>
-                    <h:outputLabel value="Carta de Contenido Nacional" class="modal-title" rendered="#{administrarCompraBean.tipoCarga.get('cartaContenido')}"/>
-                    <h:outputLabel value="#{msgs['sia.documento.aduanal']}" class="modal-title" rendered="#{administrarCompraBean.tipoCarga.get('documentoAduanalpdf')}"/>
-                </div>
                 <h:form id="frmArchivoFact">
-                    <div class="modal-body container-fluid">
+                    <div class="modal-header">
+                        <h:outputLabel value="#{msgs['sia.factura.xml.valida.sat']}" rendered="#{administrarCompraBean.tipoCarga.get('archivoFacturaXML')}"/>
+                        <h:outputLabel value="Cargar el archivo XML de la nota de credito" rendered="#{administrarCompraBean.tipoCarga.get('notaCreditoXML')}"/>
+                        <h:outputLabel value="Soportes y/o evidencias de la factura" class="modal-title" rendered="#{administrarCompraBean.tipoCarga.get('soporteFactura')}"/>
+                        <h:outputLabel value="#{msgs['sia.pdf.factura']}" class="modal-title" rendered="#{administrarCompraBean.tipoCarga.get('facturaPDF')}"/>
+                        <h:outputLabel value="Archivos de la Nota de Crédito" class="modal-title" rendered="#{administrarCompraBean.tipoCarga.get('soporteNotaCredito')}"/>
+                        <h:outputLabel value="Carta de Contenido Nacional" class="modal-title" rendered="#{administrarCompraBean.tipoCarga.get('cartaContenido')}"/>
+                        <h:outputLabel value="#{msgs['sia.documento.aduanal']}" class="modal-title" rendered="#{administrarCompraBean.tipoCarga.get('documentoAduanalpdf')}"/>
+                    </div>
+                    <div class="modal-body">
                         <div class="col-lg-12">
                             <h4> <h:outputText value="* Carta de Contenido Nacional firmada por el Representante Legal" style="font-style: italic"
                                                rendered="#{administrarCompraBean.tipoCarga.get('cartaContenido')}"/></h4>
@@ -137,11 +139,11 @@
                             <h:outputLabel value="Archivo"/>
                             <div>
                                 <p:fileUpload id="file-entry"
-                                               style=" color: maroon;"
-                                               required="true"
-                                               requiredMessage="Debe seleccionar un archivo"                                           
-                                               listener="#{administrarCompraBean.uploadFile}"
-                                               />
+                                              style=" color: maroon;"
+                                              required="true"
+                                              requiredMessage="Debe seleccionar un archivo"                                           
+                                              listener="#{administrarCompraBean.uploadFile}"
+                                              update="frmAdminCompras:tbCompras"/>
                             </div>
                         </div>
                         <h:message  id="msg-file" for="file-entry" styleClass="text-danger" showDetail="false" showSummary="true"/>
@@ -151,15 +153,10 @@
                             <h:outputText value="#{msgs['sia.validando.archivo']}" 
                                           rendered="#{administrarCompraBean.tipoCarga.get('archivoFacturaXML')}"/>
                         </div>
-                        <h:commandButton id="submit" type="submit" 
-                                         value="Guardar" class="btn btn-info"
-                                         onclick="$('#msjValidando').css('visibility', 'visible')"
-                                         />
-                        <h:commandLink value="Cerrar" class="btn btn-default" 
-                                       actionListener="#{administrarCompraBean.cerrarCargaSoporte(event)}"
+                        <p:commandLink value="Cerrar" class="btn btn-default" 
+                                       action="#{administrarCompraBean.cerrarCargaSoporte}"
                                        immediate="true">
-                            <f:ajax render="@all"/>
-                        </h:commandLink>
+                        </p:commandLink>
                     </div>
                 </h:form>
             </div>
@@ -214,8 +211,9 @@
                         </p:dataTable>
                     </div>
                     <div class="modal-footer">
-                        <h:commandLink value="Guardar" class="btn btn-info" actionListener="#{administrarCompraBean.guardarDetalleFactura(event)}"/>
-                        <h:commandLink value="Cerrar" class="btn btn-default" actionListener="#{administrarCompraBean.cerrarAgregarDetalleFactura(event)}"
+                        <p:commandLink value="Guardar" class="btn btn-info" action="#{administrarCompraBean.guardarDetalleFactura}"
+                                       process="@form" update="frmAdminCompras:tbCompras"/>
+                        <p:commandLink value="Cerrar" class="btn btn-default" action="#{administrarCompraBean.cerrarAgregarDetalleFactura}"
                                        immediate="true"/>
                     </div>
                 </h:form>
@@ -235,7 +233,7 @@
                         <div class="row">
                             <div class="col-lg-12">
                                 <p:dataTable value="#{administrarCompraBean.listaFacturaDetalle}" var="dataFac"
-                                               >
+                                             >
                                     <p:column headerText="Partida OC/S" style="width: 38%">                                        
                                         <h:selectOneMenu value="#{dataFac.idOrdenDetalle}" class="form-control">
                                             <f:selectItems value="#{administrarCompraBean.listaOrdenDetalle}"/>
@@ -261,10 +259,11 @@
                         </div>      
                     </div>
                     <div class="modal-footer">
-                        <h:commandLink value="Guardar" class="btn btn-info" 
-                                       actionListener="#{administrarCompraBean.guaradarRelacionDetOcsDetFac(event)}" />
-                        <h:commandLink value="Cancelar" class="btn btn-default"
-                                       actionListener="#{administrarCompraBean.cerrarRelacionDetOcsDetFac(event)}" immediate="true"/>
+                        <p:commandLink value="Guardar" class="btn btn-info" 
+                                       action="#{administrarCompraBean.guaradarRelacionDetOcsDetFac}"
+                                       process="@form" update="frmAdminCompras:tbCompras"/>
+                        <p:commandLink value="Cancelar" class="btn btn-default"
+                                       action="#{administrarCompraBean.cerrarRelacionDetOcsDetFac}" immediate="true"/>
                     </div>              
                 </h:form>
             </div>
@@ -350,10 +349,11 @@
                         <small><b><h:message for=""  class="text-danger"/></b></small>
                     </div>
                     <div class="modal-footer">
-                        <h:commandLink value="Aplicar" class="btn btn-info"
-                                       actionListener="#{administrarCompraBean.agregarContenidoNacional(event)}"/>
-                        <h:commandLink value="Cerrar" class="btn btn-default"
-                                       actionListener="#{administrarCompraBean.cerrarAgregarContenido(event)}" immediate="true"/>
+                        <p:commandLink value="Aplicar" class="btn btn-info"
+                                       action="#{administrarCompraBean.agregarContenidoNacional}"
+                                       process="@form" update="frmAdminCompras:tbCompras"/>
+                        <p:commandLink value="Cerrar" class="btn btn-default"
+                                       action="#{administrarCompraBean.cerrarAgregarContenido}" immediate="true"/>
                     </div>
                 </div>              
             </h:form>
@@ -362,19 +362,19 @@
     <div class="modal fade" data-backdrop="static" id="dialogoDetNotaCredito" data-keyboard="false">
         <div class="modal-dialog">
             <div class="modal-content">
-                <h:form>
+                <h:form id="frmPopNotaCred">
                     <div class="modal-header">
                         <h4 class="modal-title">Datos generales de la nota de crédito</h4>
                     </div>
                     <div class="modal-body">
                         <div class="form-group row">
-                            <p:tabView>
+                            <p:tabView id="tbPopNota">
                                 <p:tab title="Partidas">
                                     <div class="row">
                                         <h:form>
                                             <p:dataTable value="#{administrarCompraBean.listaNotaDetalle}" var="dataDet"
-                                                           rowIndexVar="indice"  paginator="true" rows="10" paginatorPosition="bottom"  
-                                                           >
+                                                         rowIndexVar="indice"  paginator="true" rows="10" paginatorPosition="bottom"  
+                                                         size="small" showGridlines="true">
                                                 <p:column headerText="Descripción" style="text-align: justify">
                                                     #{dataDet.descripcion}
                                                 </p:column>
@@ -397,24 +397,24 @@
                                         <div class="row input-group col-lg-10 panel">   
                                             <ui:fragment id="btnPDFNC" rendered="#{administrarCompraBean.notaCreditoVo.soportesNCSize lt 2}">
                                                 <div class="col-lg-5">
-                                                    <h:commandLink class="btn btn-info" 
-                                                                   actionListener="#{administrarCompraBean.iniciarCargaPDFNotaCredito(event)}">
+                                                    <p:commandLink class="btn btn-info" 
+                                                                   action="#{administrarCompraBean.iniciarCargaPDFNotaCredito}"
+                                                                   process="@this" update="frmbtnPDFNC">
                                                         <i class="fa fa-paperclip"/> PDF(Nota Credito)
-                                                        <f:ajax execute="@this" render="frmbtnPDFNC"/>
-                                                    </h:commandLink>                                                    
+                                                    </p:commandLink>                                                    
                                                 </div>
                                             </ui:fragment>
                                             <div class="col-lg-5">
-                                                <h:commandLink class="btn btn-info" 
-                                                               actionListener="#{administrarCompraBean.iniciarCargaSoporteNotaCredito(event)}">
+                                                <p:commandLink class="btn btn-info" 
+                                                               action="#{administrarCompraBean.iniciarCargaSoporteNotaCredito}"
+                                                               process="@this" update="frmArchivoFact">
                                                     <i class="fa fa-paperclip"/> Documentos
-                                                    <f:ajax execute="@this" render="@all"/>
-                                                </h:commandLink>                                                    
+                                                </p:commandLink>                                                    
                                             </div>
                                         </div>
                                         <div class="row">
                                             <p:dataTable value="#{administrarCompraBean.listaSoporteNotaCredito}" var="dataSopNot"
-                                                           >
+                                                         >
                                                 <p:column headerText="Tipo" style="text-align: left;" >
                                                     #{dataSopNot.tipo}
                                                 </p:column>
@@ -432,11 +432,10 @@
                                                 </p:column>                                                
                                                 <p:column>
                                                     <ui:fragment rendered="#{dataSopNot.tipo ne 'XML (Nota Credito)'}">
-                                                        <h:commandLink  actionListener="#{administrarCompraBean.eliminarSoporteNotaCredito(event)}">
+                                                        <p:commandLink  action="#{administrarCompraBean.eliminarSoporteNotaCredito(dataSopNot.id)}"
+                                                                        process="@this" update="frmPopNotaCred:tbPopNota">
                                                             <i class="fa fa-trash fa-2x text text-danger"/>
-                                                            <f:param name="idNotaSoporte" value="#{dataSopNot.id}"/>
-                                                            <f:ajax execute="@form" render="@all"/>
-                                                        </h:commandLink>
+                                                        </p:commandLink>
                                                     </ui:fragment>
                                                 </p:column>
                                             </p:dataTable>
@@ -447,8 +446,8 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <h:commandLink value="Cerrar" class="btn btn-default"
-                                       actionListener="#{administrarCompraBean.cerrarDetalleNotaCredito(event)}" immediate="true"/>
+                        <p:commandLink value="Cerrar" class="btn btn-default"
+                                       action="#{administrarCompraBean.cerrarDetalleNotaCredito}" immediate="true"/>
                     </div>
                 </h:form>
             </div>   

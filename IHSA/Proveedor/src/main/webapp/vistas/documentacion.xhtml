@@ -1,26 +1,25 @@
 <?xml version='1.0' encoding='UTF-8' ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:ui="http://java.sun.com/jsf/facelets"
-      xmlns:h="http://java.sun.com/jsf/html"
-      xmlns:p="http://primefaces.org/ui"
-      xmlns:f="http://java.sun.com/jsf/core">
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui">
     <body>
         <ui:composition template="./../WEB-INF/template/plantilla.xhtml">
             <ui:define name="title">
                 #{msgs['sia.documentacion']}
             </ui:define>
-            <ui:define name="content">
-                <h:form>
+            <ui:define name="contenido">
+                <h:form id="frmDoc">
                     <div class="row">
                         <div class="col-lg-10">
                             <div class="table table-responsive">
                                 <p:dataTable value="#{documentacionBean.listaDoctos}" var="data"
-                                               rowIndexVar="index" >
+                                             rowIndexVar="index" showGridlines="true" size="small" >
                                     <p:column headerText="#{msgs['sia.nombre']}" style="text-align: left;">
                                         #{data.documento}
                                     </p:column>
-                                    <p:column headerText="Archivo">
+                                    <p:column headerText="Archivo" width="30%"> 
                                         <h:outputLink   
                                             style="color: blue"
                                             target="_blank"  
@@ -31,17 +30,17 @@
                                             #{data.adjuntoVO.nombre}
                                         </h:outputLink>
                                     </p:column>
-                                    <p:column >
-                                        <h:commandLink actionListener="#{documentacionBean.eliminarArchivo(event)}"
-                                                       rendered="#{data.adjuntoVO.id gt 0}" title="Eliminar archivo">
+                                    <p:column width="5%">
+                                        <p:commandLink action="#{documentacionBean.eliminarArchivo(index)}"
+                                                       rendered="#{data.adjuntoVO.id gt 0}" title="Eliminar archivo"
+                                                       process="@this" update="frmDoc" >
                                             <i class="fa fa-trash text-danger"/>
-                                            <f:param name="indice" value="#{index}"/>
-                                        </h:commandLink>
-                                        <h:commandLink actionListener="#{documentacionBean.agregarArchivo(event)}"
-                                                       rendered="#{data.adjuntoVO.id eq 0}">
+                                        </p:commandLink>
+                                        <p:commandLink action="#{documentacionBean.agregarArchivo(index)}"
+                                                       rendered="#{data.adjuntoVO.id eq 0}"
+                                                       process="@this" update="frmDocArch">
                                             <i class="fa fa-file text-primary"/>
-                                            <f:param name="indice" value="#{index}"/>
-                                        </h:commandLink>
+                                        </p:commandLink>
                                     </p:column>
                                 </p:dataTable>
                             </div>

@@ -5,7 +5,6 @@
  */
 package sia.ihsa.proveedor.bean;
 
-import com.google.common.base.Preconditions;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
@@ -14,13 +13,9 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
-import javax.ejb.EJB;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ManagedProperty;
-import javax.faces.bean.ViewScoped;
-import javax.faces.context.FacesContext;
-import javax.faces.event.ActionEvent;
-import javax.faces.event.AjaxBehaviorEvent;
+
+
+import javax.faces.view.ViewScoped;
 import lombok.Getter;
 import lombok.Setter;
 import org.primefaces.event.FileUploadEvent;
@@ -28,7 +23,6 @@ import org.primefaces.model.file.UploadedFile;
 import sia.archivador.AlmacenDocumentos;
 import sia.archivador.DocumentoAnexo;
 import sia.archivador.ProveedorAlmacenDocumentos;
-import sia.constantes.Constantes;
 import sia.excepciones.SIAException;
 import sia.ihsa.admin.Sesion;
 import sia.ihsa.utils.FacesUtilsBean;
@@ -53,7 +47,7 @@ import javax.inject.Inject;
 @ViewScoped
 public class ExhortoProveedorBean implements Serializable {
 
-    @ManagedProperty("#{sesion}")
+    @Inject
     private Sesion sesion;
 
     @Inject
@@ -109,8 +103,7 @@ public class ExhortoProveedorBean implements Serializable {
         contratos = convenioExhortoImpl.traerExhortosPorProveedor(sesion.getProveedorVo().getIdProveedor());
     }
 
-    public void iniciarProceso(ActionEvent event) {
-        String cod = FacesUtilsBean.getRequestParameter("convnum");
+    public void iniciarProceso(String cod) {
         contratoVo = convenioImpl.traerConveniosPorCodigo(cod);
         //
         PrimeFaces.current().executeScript("$(dialogoIniciar).modal('show');");
@@ -148,12 +141,12 @@ public class ExhortoProveedorBean implements Serializable {
         return new StringBuilder().append("Proveedor/Exhorto/").toString();
     }
 
-    public void cancelarEnviarSolicitud(ActionEvent event) {
+    public void cancelarEnviarSolicitud() {
         documentoAnexo = null;
         PrimeFaces.current().executeScript("$(dialogoIniciar).modal('hide');");
     }
 
-    public void enviarSolicitud(ActionEvent event) {
+    public void enviarSolicitud() {
         try {
             if (documentoAnexo != null) {
                 AlmacenDocumentos almacenDocumentos = proveedorAlmacenDocumentos.getAlmacenDocumentos();
@@ -186,7 +179,7 @@ public class ExhortoProveedorBean implements Serializable {
         return "CV/Proveedor" + File.separator + sesion.getProveedorVo().getRfc() + File.separator + "finiquito" + File.separator;
     }
 
-    public void eliminarSolicitud(AjaxBehaviorEvent event) {
+    public void eliminarSolicitud() {
         documentoAnexo = null;
     }
 

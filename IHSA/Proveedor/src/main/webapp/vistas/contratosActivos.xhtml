@@ -2,7 +2,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:ui="http://java.sun.com/jsf/facelets"
-      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
       xmlns:p="http://primefaces.org/ui"
       xmlns:f="http://java.sun.com/jsf/core">
 
@@ -13,55 +13,55 @@
             <ui:define name="title">
                 #{msgs['sia.seguimiento.documentos']}
             </ui:define>
-            <ui:define name="content">
+            <ui:define name="contenido">
                 <h:form id="frmDoctosCon">
                     <p:dataTable id="dtContratos" value="#{documentosContratoProveedorBean.contratos}" var="dataC"
-                                   rowIndexVar="index">
-                        <p:column headerText="#{msgs['sia.numero']}" style="text-align: left;">
+                                 rowIndexVar="index" size="small" showGridlines="true">
+                        <p:column headerText="#{msgs['sia.numero']}" style="text-align: left;" width="15%">
                             <h:outputText value="#{dataC.numero}"/>
                         </p:column>
                         <p:column headerText="#{msgs['sia.nombre']}Nombre" style="text-align: left;">
                             <h:outputText value="#{dataC.nombre}"/>
                         </p:column>
-                        <p:column headerText="#{msgs['menu.paginaPrincipal']}">
+                        <p:column headerText="#{msgs['menu.paginaPrincipal']}" width="8%">
                             <h:outputText value="#{dataC.fechaInicio}">
                                 <f:convertDateTime pattern="dd/MM/yyyy"/>
                             </h:outputText>
                         </p:column>
-                        <p:column headerText="Vencimiento">
+                        <p:column headerText="Vencimiento" width="8%">
                             <h:outputText value="#{dataC.fechaVencimiento}">
                                 <f:convertDateTime pattern="dd/MM/yyyy"/>
                             </h:outputText>
                         </p:column>
-                        <p:column>
-                            <h:commandLink actionListener="#{documentosContratoProveedorBean.seleccionarContrato(e)}">
+                        <p:column width="5%">
+                            <p:commandLink action="#{documentosContratoProveedorBean.seleccionarContrato(index)}"
+                                           process="@this" update="frmDoctos">
                                 <i class="fa fa-cog text-primary fa-2x"/>
-                                <f:param name="indice" value="#{index}"/>
-                            </h:commandLink>
+                            </p:commandLink>
                         </p:column>
                     </p:dataTable>
-                    <p:dataExporter fileName="Contratos" target="dtContratos" type="xls">
-                        Exportar tabla
-                    </p:dataExporter>
+                    <p:commandButton value="Exportar">
+                        <p:dataExporter fileName="Contratos" target="dtContratos" type="xls"/>
+                    </p:commandButton>
                 </h:form>
                 <!-- cargar documento -->
                 <div class="modal fade" data-backdrop="static" id="dialogoDocumentoContrato" 
                      data-keyboard="false" style="z-index: 100002;">
-                    <div class="modal-dialog modal-lg">
+                    <div class="modal-dialog modal-xl">
                         <div class="modal-content">
                             <div class="modal-header">
                                 <h4 class="modal-title">Documentos de contrato</h4>
                             </div>
                             <h:form id="frmDoctos">
                                 <div class="modal-body ">
-                                    <p:tabView>
+                                    <p:tabView id="tbDoc">
                                         <p:tab title="Documentos generales">
                                             <p:dataTable value="#{documentosContratoProveedorBean.listaDoctos}" 
-                                                           var="dataDoc" rowIndexVar="index">
+                                                         var="dataDoc" rowIndexVar="index" size="small" showGridlines="true">
                                                 <p:column headerText="Documento" style="text-align:  left;">
                                                     <h:outputText value="#{dataDoc.documento}"/>
                                                 </p:column>
-                                                <p:column headerText="Descargar">
+                                                <p:column headerText="Descargar" width="10%">
                                                     <h:outputLink   
                                                         target="_blank"  id="abrirDoc"
                                                         title="Click aqui para abrir el archivo..." 
@@ -70,30 +70,28 @@
                                                         <i class="fa fa-arrow-circle-o-down text-primary fa-2x"/>
                                                     </h:outputLink>
                                                 </p:column>
-                                                <p:column headerText="Acción">
-                                                    <h:commandLink actionListener="#{documentosContratoProveedorBean.seleccionarDocumento(e)}"
+                                                <p:column headerText="Acción" width="8%">
+                                                    <p:commandLink action="#{documentosContratoProveedorBean.seleccionarDocumento(index)}"
                                                                    rendered="#{dataDoc.adjuntoVO.id eq 0}"
-                                                                   title="Subir el archivo">
+                                                                   title="Subir el archivo" process="@this" update="frmDocArch">
                                                         <i class="fa fa-upload  text-primary fa-2x"/>
-                                                        <f:param name="indice" value="#{index}"/>
-                                                    </h:commandLink>
-                                                    <h:commandLink actionListener="#{documentosContratoProveedorBean.eliminarArchivo(e)}"
+                                                    </p:commandLink>
+                                                    <p:commandLink action="#{documentosContratoProveedorBean.eliminarArchivo(index)}"
                                                                    rendered="#{dataDoc.adjuntoVO.id gt 0}"
-                                                                   title="Eliminar el archivo">
+                                                                   title="Eliminar el archivo" process="@this" update="frmDoctos:tbDoc">
                                                         <i class="fa fa-trash  text-danger fa-2x"/>
-                                                        <f:param name="indice" value="#{index}"/>
-                                                    </h:commandLink>
+                                                    </p:commandLink>
                                                 </p:column>
                                             </p:dataTable>
                                         </p:tab>
                                         <p:tab title="Documentos de RH (No periódicos)">
                                             <h3>Documentos sin periodicidad</h3>
                                             <p:dataTable value="#{documentosContratoProveedorBean.doctosRhNoPeriodicos}" 
-                                                           var="dataNoPer" rowIndexVar="index">
+                                                         var="dataNoPer" rowIndexVar="index">
                                                 <p:column headerText="Documento" style="text-align:  left;">
                                                     <h:outputText value="#{dataNoPer.documento}"/>
                                                 </p:column>
-                                                <p:column headerText="Descargar">
+                                                <p:column headerText="Descargar" width="8%">
                                                     <h:outputLink   
                                                         target="_blank"  id="abrirDoc"
                                                         title="Click aqui para abrir el archivo..." 
@@ -102,44 +100,42 @@
                                                         <i class="fa fa-arrow-circle-o-down text-primary fa-2x"/>
                                                     </h:outputLink>
                                                 </p:column>
-                                                <p:column headerText="Acción">
-                                                    <h:commandLink actionListener="#{documentosContratoProveedorBean.agregarDoctoNoPeriodico(e)}"
+                                                <p:column headerText="Acción" width="5%">
+                                                    <p:commandLink action="#{documentosContratoProveedorBean.agregarDoctoNoPeriodico(index)}"
                                                                    rendered="#{dataNoPer.idAdjunto eq 0}"
-                                                                   title="Subir el archivo">
+                                                                   title="Subir el archivo" process="@this" update="frmDocArch">
                                                         <i class="fa fa-upload  text-primary fa-2x"/>
-                                                        <f:param name="indice" value="#{index}"/>
-                                                    </h:commandLink>
-                                                    <h:commandLink actionListener="#{documentosContratoProveedorBean.eliminarDoctoNoPeriodico(e)}"
+                                                    </p:commandLink>
+                                                    <p:commandLink action="#{documentosContratoProveedorBean.eliminarDoctoNoPeriodico(index)}"
                                                                    rendered="#{dataNoPer.idAdjunto gt 0}"
                                                                    title="Eliminar el archivo">
                                                         <i class="fa fa-trash  text-danger fa-2x"/>
-                                                        <f:param name="indice" value="#{index}"/>
-                                                    </h:commandLink>
+                                                    </p:commandLink>
                                                 </p:column>
                                             </p:dataTable>
                                         </p:tab>
                                         <p:tab title="Documentos de RH (Periódicos)">
                                             <h3>Documentos con periodicidad</h3>
-                                            <div class="form-group">
+                                            <div class="input-group">
                                                 <div class="col-lg-8">
                                                     <h:selectOneMenu value="#{documentosContratoProveedorBean.idDoctoRh}" 
                                                                      styleClass="form-control">
                                                         <f:selectItem itemLabel="Todos . . ." itemValue="0"/>
                                                         <f:selectItems value="#{documentosContratoProveedorBean.listDoctosPeriodicos}"/>
-                                                        <f:ajax listener="#{documentosContratoProveedorBean.cambiarTipoDoctoPeriodico}" 
-                                                                render="dtDoctosPeriodicos"/>
+                                                        <p:ajax listener="#{documentosContratoProveedorBean.cambiarTipoDoctoPeriodico}" 
+                                                                update="frmDoctos:tbDoc:dtDoctosPeriodicos"/>
                                                     </h:selectOneMenu>
                                                 </div>
-                                                <h:commandLink class="btn btn-primary" 
-                                                               actionListener="#{documentosContratoProveedorBean.nuevoDoctoPeriodico(e)}"
-                                                               >
+                                                <p:commandLink class="btn btn-primary text-white" 
+                                                               action="#{documentosContratoProveedorBean.nuevoDoctoPeriodico}"
+                                                               process="@this" update="frmDocArch">
                                                     <i class="fa fa-plus"/>
-                                                </h:commandLink>
+                                                </p:commandLink>
                                             </div>
                                             <p:dataTable id="dtDoctosPeriodicos" 
-                                                           value="#{documentosContratoProveedorBean.doctosRhPeriodicos}" 
-                                                           var="dataPer" rowIndexVar="index" rows="15"
-                                                           paginator="true" paginatorPosition="bottom" >
+                                                         value="#{documentosContratoProveedorBean.doctosRhPeriodicos}" 
+                                                         var="dataPer" rowIndexVar="index" rows="15"
+                                                         paginator="true" paginatorPosition="bottom" >
                                                 <p:column headerText="Documento" style="text-align:  left;">
                                                     <h:outputText value="#{dataPer.documento}"/>
                                                 </p:column>
@@ -158,18 +154,16 @@
                                                     </h:outputLink>
                                                 </p:column>
                                                 <p:column headerText="Acción">
-                                                    <h:commandLink actionListener="#{documentosContratoProveedorBean.agregarDoctoPeriodico(e)}"
+                                                    <p:commandLink action="#{documentosContratoProveedorBean.agregarDoctoPeriodico(index)}"
                                                                    rendered="#{dataPer.idAdjunto eq 0}"
-                                                                   title="Subir el archivo">
+                                                                   title="Subir el archivo" process="@this" update="frmDocArch">
                                                         <i class="fa fa-upload  text-primary fa-2x"/>
-                                                        <f:param name="indice" value="#{index}"/>
-                                                    </h:commandLink>
-                                                    <h:commandLink actionListener="#{documentosContratoProveedorBean.eliminarDoctoPeriodico(e)}"
+                                                    </p:commandLink>
+                                                    <p:commandLink action="#{documentosContratoProveedorBean.eliminarDoctoPeriodico(index)}"
                                                                    rendered="#{dataPer.idAdjunto gt 0}"
-                                                                   title="Eliminar el archivo">
+                                                                   title="Eliminar el archivo" process="@this" update="frmDoctos:tbDoc:dtDoctosPeriodicos">
                                                         <i class="fa fa-trash  text-danger fa-2x"/>
-                                                        <f:param name="indice" value="#{index}"/>
-                                                    </h:commandLink>
+                                                    </p:commandLink>
                                                 </p:column>
                                             </p:dataTable>
 
@@ -177,7 +171,7 @@
                                     </p:tabView>
                                 </div>
                                 <div class="modal-footer">
-                                    <h:commandButton value="Cerrar" class="btn btn-default" onclick="$(dialogoDocumentoContrato).modal('hide');"
+                                    <p:commandButton value="Cerrar" class="btn btn-default" onclick="$(dialogoDocumentoContrato).modal('hide');"
                                                      immediate="true"/>
                                 </div>
                             </h:form>
@@ -207,25 +201,23 @@
                                                     <h:selectOneMenu id="cmbDocto" value="#{documentosContratoProveedorBean.idDoctoRh}" 
                                                                      rendered="#{documentosContratoProveedorBean.tipoDoctoSubir eq  1 
                                                                                  and empty documentosContratoProveedorBean.doctoRhPeriodicoVo.documento}"
-                                                                     styleClass="form-control">
+                                                                     styleClass="custom-select">
                                                         <f:selectItem itemLabel="Todos . . ." itemValue="0"/>
                                                         <f:selectItems value="#{documentosContratoProveedorBean.listDoctosPeriodicos}"/>
                                                     </h:selectOneMenu>
                                                 </div>
                                             </div>
                                             <p:fileUpload id="fileEntryDoc" 
-                                                           label="Archivo "
-                                                           listener="#{documentosContratoProveedorBean.uploadFile}"                                                           
-                                                           styleClass="col-lg-11 col-xs-12 btn btn-default"/>
+                                                          label="Archivo "
+                                                          listener="#{documentosContratoProveedorBean.uploadFile}"                                                           
+                                                          styleClass="col-lg-11 col-xs-12 btn btn-default"
+                                                          process="@form" update="frmDoctos:tbDoc"/>
                                             <h:message  id="msg-docto" for="fileEntryDoc" styleClass="text-danger" showDetail="false" showSummary="true"/>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="modal-footer">
-                                    <h:commandButton id="uploadFile" 
-                                                     value="Subir" 
-                                                     styleClass="btn btn-primary"/>
-                                    <h:commandButton value="Cerrar" class="btn btn-default" onclick="$(dialogoCargarDocumentoContrato).modal('hide');"
+                                    <p:commandButton value="Cerrar" class="btn btn-default" onclick="$(dialogoCargarDocumentoContrato).modal('hide');"
                                                      immediate="true"/>
                                 </div>
                             </h:form>

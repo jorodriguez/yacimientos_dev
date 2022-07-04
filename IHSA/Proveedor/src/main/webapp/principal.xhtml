@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:ui="http://java.sun.com/jsf/facelets"
-      xmlns:h="http://java.sun.com/jsf/html"      
+      xmlns:h="http://xmlns.jcp.org/jsf/html"      
       xmlns:p="http://primefaces.org/ui"
       xmlns:f="http://java.sun.com/jsf/core">
     <body>
@@ -15,7 +15,7 @@
                     <h2 style="color: red;text-align: center;">**#{proveedorBean.bloquearFacturasMsg}**</h2>                
                 </ui:fragment>
             </ui:define>
-            <ui:define name="content">
+            <ui:define name="contenido">
 
                 <!-- ui:include src="vistas/fragmento/popAgregarSoportes.xhtml"/ -->
                 <ui:include src="vistas/fragmento/popMensaje.xhtml"/>
@@ -24,9 +24,6 @@
 
                 <script type="text/javascript">
                     $(document).ready(function () {
-                        $('#frmOcs\\:codOcs').attr('placeholder', 'Código Interno');
-                        $('#frmOcs\\:folioHIST').attr('placeholder', 'Folio Factura');
-
                         document.onkeydown = function ()
                         {
                             switch (event.keyCode)
@@ -47,59 +44,52 @@
                     });
                 </script>
                 <div class="row">
-
-                    <p:tabView rendered="#{!proveedorBean.bloquearFacturas}" >
-                        <p:tab id="tabOrdenes" title="#{msgs['sia.orden.asignadas']} ( #{proveedorBean.mapaTotales.get('totalOCS')} )"  >
-                            <h:form id="frmOcs">
+                    <h:form id="frmPrincipal">
+                        <p:tabView id="tbPrincipal" rendered="#{!proveedorBean.bloquearFacturas}" >
+                            <p:tab id="tabOrdenes" title="#{msgs['sia.orden.asignadas']} ( #{proveedorBean.mapaTotales.get('totalOCS')} )"  >
                                 <div class="row" 
                                      data-hint='Seleccione una de las órdenes pulsando en el engrane azul en la última columna de cada renglón.'>
-                                    <!-- div class="col-lg-12" >
-                                        <h4 style="color: red;">
-                                            <h:outputText 
-                                                rendered="#{proveedorBean.mapaInicial.get('facturaCXP').size() gt 0}"
-                                                value="**Para ingresar facturas se requiere que se ingresen los Complementos de Pago pendientes."/>
-                                        </h4>
-                                    </div -->
-                                    <div class="col-lg-5">                                        
-                                        <div class="col-lg-3">
+                                    <div class="col-5">                                        
+                                        <div class="col-3">
                                             <h4>#{msgs['presupuesto.nuevos.campoCompania']}: </h4>
                                         </div>
-                                        <div class="col-lg-9">
+                                        <div class="col-9">
                                             <h:selectOneMenu id="companias" value="#{sesion.rfcCompania}" 
                                                              class="form-control" >
-                                                <f:ajax execute="@form" render="@all"/>
                                                 <f:selectItems value="#{sesion.empresas}"/>
-                                                <f:ajax listener="#{proveedorBean.seleccionarEmpresa}"/>
+                                                <p:ajax  listener="#{proveedorBean.seleccionarEmpresa}"
+                                                         update="frmMensajePrincipal" process="@this"/>
                                             </h:selectOneMenu>
                                         </div>
                                     </div>
-                                    <div class="col-lg-4">
-                                        <div class="col-lg-3">
+                                    <div class="col-4">
+                                        <div class="col-3">
                                             <h4>#{msgs['sia.bloque.nombre']}: </h4>
                                         </div>
-                                        <div class="col-lg-8">
+                                        <div class="col-8">
                                             <h:selectOneMenu id="campos"
                                                              value="#{proveedorBean.campo}" 
-                                                             valueChangeListener="#{proveedorBean.seleccionarCliente}"
                                                              class="form-control" >
-                                                <f:ajax execute="@form" render="@all"/>
+                                                <p:ajax process="@this" update="frmPrincipal:tbPrincipal" 
+                                                        listener="#{proveedorBean.seleccionarCliente}"/>
                                                 <f:selectItems value="#{proveedorBean.selectCampo.get('asignada')}"/>
                                             </h:selectOneMenu>
                                         </div>
                                     </div>
-                                    <div class="col-lg-3">
-                                        <div class="col-lg-6">
-                                            <h:inputText id="codOcs" class="form-control" value="#{proveedorBean.codigoOrden}">
-                                            </h:inputText>
+                                    <div class="col-3 input-group">
+                                        <p:inputText id="codOcs" class="form-control" value="#{proveedorBean.codigoOrden}"
+                                                     placeholder="Códido de orden"/>
+                                        <div>
+                                            <p:commandLink id="buscarOrden" action="#{proveedorBean.buscarOrden()}" class="btn btn-info text-white" 
+                                                           process="@this frmPrincipal:tbPrincipal:codOcs" update="frmPrincipal:tbPrincipal">
+                                                <i class="fa fa-search"/>
+                                            </p:commandLink>
                                         </div>
-                                        <h:commandLink id="buscarOrden" action="#{proveedorBean.buscarOrden()}" class="btn btn-info" >
-                                            <i class="fa fa-search"/>
-                                        </h:commandLink>
                                     </div>
                                 </div>
                                 <div class="table table-responsive" id="tablaOrdenes">
                                     <p:dataTable value="#{proveedorBean.mapaInicial.get('ordenCompra')}" var="data" paginator="true" 
-                                                   rows="10" paginatorPosition="bottom">
+                                                 rows="10" paginatorPosition="bottom" size="small" showGridlines="true">
                                         <p:column headerText="#{msgs['sia.orden']}" style="#{data.fcreada ? 'color: blue' : ''}">
                                             #{data.consecutivo}
                                         </p:column>
@@ -120,62 +110,42 @@
                                                 <f:convertNumber pattern="#,###.0000" />
                                             </h:outputText>
                                         </p:column>
-                                        <p:column style="#{data.fcreada ? 'color: blue' : ''}">  
+                                        <p:column style="#{data.fcreada ? 'color: blue' : ''}"  width="5%">  
                                             #{data.monedaSiglas}
                                         </p:column>
-                                        <!--p:column>
-                                            <h:commandLink  title="Mostrar facturas" actionListener="{proveedorBean.seleccionarCompra(event)}"
-                                                            rendered="{data.totalFactura gt 0}">
-                                                <i class="fa fa-file-o fa-2x text text-success"/>
-                                                <f:param name="compraId" value="#{data.id}"/>
-                                            </h:commandLink>
-                                        </p:column-->  
-                                        <!-- p:column style="#{data.fcreada ? 'color: red' : ''}">                            
-                                            <h:commandLink  
-                                                title="Seleccionar" 
-                                                rendered="#{proveedorBean.mapaInicial.get('facturaCXP').size() eq 0}"
-                                                action="#{proveedorBean.seleccionar()}">
-                                                <i class="fa fa-cog fa-2x text text-primary"/>
-                                                <f:param name="idCompra" value="#{data.id}"/>
-                                                <f:ajax execute="@all"/>
-                                            </h:commandLink>
-                                        </p:column -->
-                                        <p:column style="#{data.fcreada ? 'color: red' : ''}">                            
-                                            <h:commandLink  
+                                        <p:column style="#{data.fcreada ? 'color: red' : ''}" width="2%">                            
+                                            <p:commandLink  
                                                 title="#{msgs['sistema.seleccionar']}"                                                 
-                                                action="#{proveedorBean.seleccionar()}">
+                                                action="#{proveedorBean.seleccionar(data.id)}">
                                                 <i class="fa fa-cog fa-2x text text-primary"/>
-                                                <f:param name="idCompra" value="#{data.id}"/>
-                                                <f:ajax execute="@all"/>
-                                            </h:commandLink>
+                                            </p:commandLink>
                                         </p:column>
                                     </p:dataTable>
                                 </div>
-                                <div class="col-lg-12">
+                                <div class="col-12">
                                     <h4 style="color: blue;">#{msgs['sia.factura.mensaje.pendiente']} </h4>
                                 </div>
-                            </h:form>
-                        </p:tab>
-                        <p:tab id="tabEnviadas" title="#{msgs['sia.factura.enviadas']}( #{proveedorBean.mapaTotales.get('totalFacint')} ) " >
-                            <h:form>
+                            </p:tab>
+                            <p:tab id="tabEnviadas" title="#{msgs['sia.factura.enviadas']}( #{proveedorBean.mapaTotales.get('totalFacint')} ) " >
                                 <div class="row">
-                                    <div class="input-group col-lg-6">
-                                        <div class="col-lg-2">
+                                    <div class="input-group col-6">
+                                        <div class="col-2">
                                             <h4>Bloque: </h4>
                                         </div>
-                                        <div class="col-lg-10">
-                                            <h:selectOneMenu value="#{proveedorBean.campoEnv}" valueChangeListener="#{proveedorBean.seleccionarCampoFacEnviada}"
+                                        <div class="col-10">
+                                            <h:selectOneMenu value="#{proveedorBean.campoEnv}" 
                                                              class="form-control" >
-                                                <f:ajax execute="@form" render="@all"/>
+                                                <p:ajax process="@this" update="frmPrincipal:tbPrincipal:tabEnviadas"
+                                                        listener="#{proveedorBean.seleccionarCampoFacEnviada}"/>
                                                 <f:selectItems value="#{proveedorBean.selectCampo.get('enviadas')}"/>
                                             </h:selectOneMenu>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="table table-responsive">
-                                    <p:dataTable value="#{proveedorBean.mapaInicial.get('facturaCliente')}" 
-                                                   var="dataFacEnv" rows="15" paginatorAlwaysVisible="true" 
-                                                   paginatorPosition="bottom" paginator="true">
+                                    <p:dataTable id="dtEnviadas" value="#{proveedorBean.mapaInicial.get('facturaCliente')}"  size="small" showGridlines="true"
+                                                 var="dataFacEnv" rows="15" paginatorAlwaysVisible="true" 
+                                                 paginatorPosition="bottom" paginator="true">
                                         <p:column headerText="#{msgs['sia.orden']}">
                                             <h:outputText value="#{dataFacEnv.codigoOrden}"/>
                                         </p:column>
@@ -196,31 +166,29 @@
                                                 <f:convertNumber pattern="#,###.0000"/>
                                             </h:outputText>
                                         </p:column>
-                                        <p:column headerText="#{msgs['sia.orden.total']}">
+                                        <p:column headerText="#{msgs['sia.orden.moneda']}">
                                             <h:outputText value="#{dataFacEnv.moneda}"/>
                                         </p:column>
-                                        <p:column >
-                                            <h:commandLink value="#{msgs['sia.factura.soportes']}" class="text-primary btn btn-link"
-                                                           actionListener="#{proveedorBean.agregarSoporte(event)}"
+                                        <p:column width="2%">
+                                            <p:commandLink value="#{msgs['sia.factura.soportes']}" class="text-primary btn btn-link "
+                                                           action="#{proveedorBean.agregarSoporte(dataFacEnv.id)}"
                                                            rendered="#{dataFacEnv.idStatus eq 730 and sesion.proveedorVo.nacional eq true}"/>
-                                            <f:param name="idFactura" value="#{dataFacEnv.id}"/>
                                         </p:column>
                                     </p:dataTable>
                                 </div>
-                            </h:form>
-                        </p:tab>
-                        <p:tab id="tabDevueltas" title="#{msgs['sia.factura.devueltas']}( #{proveedorBean.mapaTotales.get('totalFacturaRechazada')} )" >
-                            <h:form >
+                            </p:tab>
+                            <p:tab id="tabDevueltas" title="#{msgs['sia.factura.devueltas']}( #{proveedorBean.mapaTotales.get('totalFacturaRechazada')} )" >
                                 <div class="row">
-                                    <div class="input-group col-lg-6">
-                                        <div class="col-lg-2">
+                                    <div class="input-group col-6">
+                                        <div class="col-2">
                                             <h4>#{msgs['sia.bloque.nombre']}:</h4>
                                         </div>
-                                        <div class="col-lg-10">
-                                            <h:selectOneMenu value="#{proveedorBean.campoRec}" valueChangeListener="#{proveedorBean.seleccionarCampoFacRechazada}"
+                                        <div class="col-10">
+                                            <h:selectOneMenu value="#{proveedorBean.campoRec}" 
                                                              class="form-control">
-                                                <f:ajax execute="@form" render="@all"/>
                                                 <f:selectItems value="#{proveedorBean.selectCampo.get('rechazada')}"/>
+                                                <p:ajax process="@this" update="frmPrincipal:tbPrincipal"
+                                                        listener="#{proveedorBean.seleccionarCampoFacRechazada}"/>
                                             </h:selectOneMenu>
                                         </div>
                                     </div>
@@ -228,7 +196,7 @@
                                 <div class="table table-responsive">
                                     <div class="table table-responsive">
                                         <p:dataTable value="#{proveedorBean.mapaInicial.get('facturaRechazada')}" var="dataFacRec" paginator="true" 
-                                                       rows="10" paginatorPosition="bottom" >
+                                                     rows="10" paginatorPosition="bottom"  size="small" showGridlines="true">
                                             <p:column headerText="#{msgs['sia.orden']}">
                                                 <h:outputText value="#{dataFacRec.codigoOrden}"/>
                                             </p:column>
@@ -251,131 +219,124 @@
                                                     <f:convertNumber pattern="#,###.0000"/>
                                                 </h:outputText>
                                             </p:column>
-                                            <p:column headerText="#{msgs['sia.orden.total']}">
+                                            <p:column headerText="#{msgs['sia.orden.moneda']}">
                                                 <h:outputText value="#{dataFacRec.moneda}"/>
                                             </p:column>
-                                            <p:column>
-                                                <h:commandLink  title="#{msgs['sia.factura.seleccionar.devuelta']}" action="#{proveedorBean.seleccionar()}"
-                                                                actionListener="#{proveedorBean.seleccionar()}">
+                                            <p:column width="2%">
+                                                <p:commandLink  title="#{msgs['sia.factura.seleccionar.devuelta']}" 
+                                                                action="#{proveedorBean.seleccionarFactura(dataFacRec.id)}"
+                                                                >
                                                     <i class="fa fa-cog fa-2x text text-primary"/>
-                                                    <f:param name="idFactura" value="#{dataFacRec.id}"/>
-                                                    <f:ajax execute="@all"/>
-                                                </h:commandLink>
+                                                </p:commandLink>
                                             </p:column>
                                         </p:dataTable>
                                     </div>
                                 </div>
-                            </h:form>
-                        </p:tab>
-                        <p:tab title="#{msgs['sia.factura.complemento.pago']} ( #{proveedorBean.mapaTotales.get('totalCXP')} )" >
-                            <h:form>
-                                <div class="table table-responsive">                                    
-                                    <div class="table table-responsive">
-                                        <p:dataTable id="histFacturaCXP" value="#{proveedorBean.mapaInicial.get('facturaCXP')}" var="dataFacProc"
-                                                        paginator="true" rows="20" paginatorPosition="bottom">
-                                            <p:column headerText="#{msgs['sia.orden']}">
-                                                <h:outputText value="#{dataFacProc.codigoOrden}"/>
-                                            </p:column>
-                                            <p:column headerText="#{msgs['sia.orden.pedido']}">
-                                                <h:outputText value="#{dataFacProc.pedidoNav}"/>
-                                            </p:column>
-                                            <p:column headerText="#{msgs['sia.bloque.nombre']}">
-                                                <h:outputText value="#{dataFacProc.campo}"/>
-                                            </p:column>
-                                            <p:column headerText="#{msgs['sia.nombre.referencia']}">
-                                                <h:outputText value="#{dataFacProc.concepto}"/>
-                                            </p:column>
-                                            <p:column headerText="#{msgs['sia.factura.folio']}">
-                                                <h:outputText value="#{dataFacProc.folio}"/>
-                                            </p:column>
-                                            <p:column headerText="#{msgs['sia.factura.fecha.emision']}">
-                                                <h:outputText value="#{dataFacProc.fechaEmision}"/>
-                                            </p:column>
-                                            <p:column headerText="#{msgs['sia.orden.total']}">
-                                                <h:outputText value="#{dataFacProc.monto}">
-                                                    <f:convertNumber maxFractionDigits="2"/>
-                                                </h:outputText>
-                                            </p:column>
-                                            <p:column headerText="#{msgs['sia.orden.total']}">
-                                                <h:outputText value="#{dataFacProc.moneda}"/>
-                                            </p:column>
+                            </p:tab>
+                            <p:tab id="tabComplentoPago" title="#{msgs['sia.factura.complemento.pago']} ( #{proveedorBean.mapaTotales.get('totalCXP')} )" >
+                                <p:dataTable id="histFacturaCXP" value="#{proveedorBean.mapaInicial.get('facturaCXP')}" var="dataFacProc"
+                                             paginator="true" rows="20" paginatorPosition="bottom"  size="small" showGridlines="true">
+                                    <p:column headerText="#{msgs['sia.orden']}">
+                                        <h:outputText value="#{dataFacProc.codigoOrden}"/>
+                                    </p:column>
+                                    <p:column headerText="#{msgs['sia.orden.pedido']}">
+                                        <h:outputText value="#{dataFacProc.pedidoNav}"/>
+                                    </p:column>
+                                    <p:column headerText="#{msgs['sia.bloque.nombre']}">
+                                        <h:outputText value="#{dataFacProc.campo}"/>
+                                    </p:column>
+                                    <p:column headerText="#{msgs['sia.nombre.referencia']}">
+                                        <h:outputText value="#{dataFacProc.concepto}"/>
+                                    </p:column>
+                                    <p:column headerText="#{msgs['sia.factura.folio']}">
+                                        <h:outputText value="#{dataFacProc.folio}"/>
+                                    </p:column>
+                                    <p:column headerText="#{msgs['sia.factura.fecha.emision']}">
+                                        <h:outputText value="#{dataFacProc.fechaEmision}"/>
+                                    </p:column>
+                                    <p:column headerText="#{msgs['sia.orden.total']}">
+                                        <h:outputText value="#{dataFacProc.monto}">
+                                            <f:convertNumber maxFractionDigits="2"/>
+                                        </h:outputText>
+                                    </p:column>
+                                    <p:column headerText="#{msgs['sia.orden.moneda']}" width="5%">
+                                        <h:outputText value="#{dataFacProc.moneda}"/>
+                                    </p:column>
 
-                                            <p:column >                                                
-                                                <h:commandLink class="btn btn-info" 
-                                                               rendered="#{dataFacProc.complementoPago eq 0}"
-                                                               actionListener="#{proveedorBean.seleccionarFacturaCXPXml(event)}"                                                               
-                                                               title="#{msgs['sia.factura.cargar.xml']}">
-                                                    <i class="fa fa-file-code-o"/> <b>CXP XML</b>
-                                                    <f:param name="idFactura" value="#{dataFacProc.id}"/>
-                                                </h:commandLink> 
+                                    <p:column width="5%">                                                
+                                        <p:commandLink class="btn btn-info text-white" 
+                                                       rendered="#{dataFacProc.complementoPago eq 0}"
+                                                       action="#{proveedorBean.seleccionarFacturaCXPXml(dataFacProc.id)}"
+                                                       title="#{msgs['sia.factura.cargar.xml']}"
+                                                       process="@this" update="frmArchivoFact">
+                                            <i class="fa fa-file-code-o"/> <b>CXP XML</b>
+                                        </p:commandLink> 
 
-                                                <h:commandLink class="" 
-                                                               rendered="#{dataFacProc.complementoPago gt 0}"
-                                                               title="#{msgs['sia.factura.archivo.xml.cargado']}">
-                                                    <i class="fa fa-file"/> <b>XML Cargado</b>
-                                                    <f:param name="idFactura" value="#{dataFacProc.id}"/>
-                                                </h:commandLink>      
+                                        <p:commandLink action="#{proveedorBean.seleccionarFacturaCXPPdf(dataFacProc.id)}"
+                                                       rendered="#{dataFacProc.complementoPago gt 0}"
+                                                       title="#{msgs['sia.factura.archivo.xml.cargado']}"
+                                                       process="@this" update="frmArchivoFact">
+                                            <i class="fa fa-file"/> <b>XML Cargado</b>
+                                        </p:commandLink>      
 
-                                                <h:commandLink class="btn btn-info" 
-                                                               style="float: right;"
-                                                               actionListener="#{proveedorBean.borrarFacturaCXPXml(event)}"  
-                                                               rendered="#{dataFacProc.complementoPago gt 0}"
-                                                               title="#{msgs['sia.factura.complemento.pago.xml']}">
-                                                    <i class="fa fa-trash"/> <b> </b>
-                                                    <f:param name="idFactura" value="#{dataFacProc.id}"/>
-                                                </h:commandLink>      
-                                            </p:column>
+                                        <p:commandLink class="btn btn-info" 
+                                                       style="float: right;"
+                                                       action="#{proveedorBean.borrarFacturaCXPXml(dataFacProc.id)}"  
+                                                       rendered="#{dataFacProc.complementoPago gt 0}"
+                                                       title="#{msgs['sia.factura.complemento.pago.xml']}"
+                                                       process="@this" update="frmPrincipal:tbPrincipal:tabComplentoPago">
+                                            <i class="fa fa-trash"/> <b> </b>
+                                        </p:commandLink>      
+                                    </p:column>
 
-                                            <p:column >                                              
+                                    <p:column width="4%">                                              
 
-                                                <h:commandLink class="#{dataFacProc.complementoPago eq 0 and dataFacProc.complementoPagoPdf eq 0 ? '' : 'btn btn-info'}" 
-                                                               actionListener="#{proveedorBean.seleccionarFacturaCXPPdf(event)}"
-                                                               disabled="#{dataFacProc.complementoPago eq 0 and dataFacProc.complementoPagoPdf eq 0}"
-                                                               title="#{msgs['sia.factura.complemento.pdf']}">
-                                                    <i class="fa fa-file-pdf-o"/> <b>CXP PDF</b>
-                                                    <f:param name="idFactura" value="#{dataFacProc.id}"/>
-                                                </h:commandLink>      
+                                        <p:commandLink class="#{dataFacProc.complementoPago eq 0 and dataFacProc.complementoPagoPdf eq 0 ? '' : 'btn btn-info'}" 
+                                                       action="#{proveedorBean.seleccionarFacturaCXPPdf(dataFacProc.id)}"
+                                                       disabled="#{dataFacProc.complementoPago eq 0 and dataFacProc.complementoPagoPdf eq 0}"
+                                                       title="#{msgs['sia.factura.complemento.pdf']}"
+                                                       process="@this" update="frmArchivoFact">
+                                            <i class="fa fa-file-pdf-o"/> <b>CXP PDF</b>
+                                        </p:commandLink>      
 
-                                            </p:column>
-                                            <p:column >
-                                                <h:commandLink actionListener="#{proveedorBean.seleccionarFacturaHistorial(e)}">
-                                                    <i class="fa fa-eye text-primary"/>
-                                                    <f:param name="idFactura" value="#{dataFacProc.id}"/>
-                                                </h:commandLink>
-                                            </p:column>
+                                    </p:column>
+                                    <p:column width="2%">
+                                        <p:commandLink action="#{proveedorBean.seleccionarFacturaHistorial(dataFacProc.id)}"
+                                                       process="@this" update="frmDatosFac">
+                                            <i class="fa fa-eye text-primary"/>
+                                        </p:commandLink>
+                                    </p:column>
 
-                                        </p:dataTable>
-                                        <p:dataExporter fileName="histFacturaCXP" target="histFacturaCXP" type="xlsx" >
-                                            Exportar
-                                        </p:dataExporter>
-                                    </div>
-                                </div>
-                            </h:form>
-                        </p:tab>
-
-                        <p:tab title="#{msgs['sia.factura.historial']}" >
-                            <h:form>
+                                </p:dataTable>
+                                <p:commandButton value="Exportar">
+                                    <p:dataExporter fileName="histFacturaCXP" target="histFacturaCXP" type="xlsx" />
+                                </p:commandButton>
+                            </p:tab>
+                            <p:tab id="tabFacHist" title="#{msgs['sia.factura.historial']}" >
                                 <div class="table table-responsive">
                                     <div class="form-inline">
-                                        <div class="col-lg-2">
+                                        <div class="col-2">
                                             <p:datePicker value="#{proveedorBean.inicio}"
-                                                               pattern="dd/MM/yyyy"/>
+                                                          pattern="dd/MM/yyyy"/>
                                         </div>
-                                        <div class="col-lg-2">
+                                        <div class="col-2">
                                             <p:datePicker value="#{proveedorBean.fin}"
-                                                               pattern="dd/MM/yyyy"/>
+                                                          pattern="dd/MM/yyyy"/>
                                         </div>
-                                        <div class="col-lg-2">                                            
-                                            <h:inputText id="folioHIST" class="form-control" value="#{proveedorBean.folioHist}">
-                                            </h:inputText>                                            
+                                        <div class="col-2">                                            
+                                            <p:inputText id="folioHIST" class="form-control" value="#{proveedorBean.folioHist}"
+                                                         placeholder="Folio Factura"/>
                                         </div>
-                                        <div class="col-lg-2">
-                                            <h:commandLink value="#{msgs['sia.factura.buscar']}" actionListener="#{proveedorBean.buscarHistorial(e)}" styleClass="btn btn-primary"/>
+                                        <div class="col-2">
+                                            <p:commandLink value="#{msgs['sia.factura.buscar']}" action="#{proveedorBean.buscarHistorial()}" 
+                                                           styleClass="btn btn-primary text-white" 
+                                                           process="@this frmPrincipal:tbPrincipal:tabFacHist" 
+                                                           update="frmPrincipal:tbPrincipal:histFactura"/>
                                         </div>
                                     </div>
                                     <div class="table table-responsive">
                                         <p:dataTable id="histFactura" value="#{proveedorBean.mapaInicial.get('facturaPorProveedor')}" var="dataFacProc"
-                                                        paginator="true" rows="20" paginatorPosition="bottom">
+                                                     paginator="true" rows="20" paginatorPosition="bottom"  size="small" showGridlines="true">
                                             <p:column headerText="#{msgs['sia.orden']}">
                                                 <h:outputText value="#{dataFacProc.codigoOrden}"/>
                                             </p:column>
@@ -402,24 +363,21 @@
                                             <p:column headerText="#{msgs['sia.orden.moneda']}">
                                                 <h:outputText value="#{dataFacProc.moneda}"/>
                                             </p:column>
-                                            <p:column >
-                                                <h:commandLink actionListener="#{proveedorBean.seleccionarFacturaHistorial(e)}">
-                                                    <i class="fa fa-eye text-primary"/>
-                                                    <f:param name="idFactura" value="#{dataFacProc.id}"/>
-                                                </h:commandLink>
+                                            <p:column width="5%" >
+                                                <p:commandLink action="#{proveedorBean.seleccionarFacturaHistorial(dataFacProc.id)}"
+                                                               process="@this" update="frmDatosFac">
+                                                    <i class="fa fa-eye text-primary"/>/>
+                                                </p:commandLink>
                                             </p:column>
                                         </p:dataTable>
-                                        <p:dataExporter fileName="histFactura" target="histFactura" type="xlsx">
-                                            Exportar
-                                        </p:dataExporter>
+                                        <p:commandButton value="Exportar">
+                                            <p:dataExporter fileName="histFactura" target="histFactura" type="xlsx"/>
+                                        </p:commandButton>
                                     </div>
                                 </div>
-                            </h:form>
-                        </p:tab>
-
-
-
-                    </p:tabView>
+                            </p:tab>
+                        </p:tabView>
+                    </h:form>
                 </div>
 
                 <script type="text/javascript">

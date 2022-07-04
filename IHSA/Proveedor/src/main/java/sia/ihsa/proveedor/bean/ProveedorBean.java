@@ -9,7 +9,6 @@ import com.google.common.base.Strings;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -17,18 +16,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.PostConstruct;
-import javax.ejb.EJB;
 import javax.ejb.EJBException;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ManagedProperty;
-import javax.faces.bean.ViewScoped;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
-import javax.faces.event.ActionEvent;
-import javax.faces.event.AjaxBehaviorEvent;
 import javax.faces.event.ValueChangeEvent;
 import javax.faces.model.SelectItem;
-import org.apache.commons.io.FilenameUtils;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.model.file.UploadedFile;
 import sia.archivador.AlmacenDocumentos;
@@ -58,7 +50,6 @@ import sia.servicios.sistema.impl.SiFacturaAdjuntoImpl;
 import sia.servicios.sistema.impl.SiFacturaContenidoNacionalImpl;
 import sia.servicios.sistema.impl.SiFacturaDetalleImpl;
 import sia.servicios.sistema.impl.SiFacturaImpl;
-import sia.servicios.sistema.impl.SiManejoFechaImpl;
 import sia.util.FacturaEstadoEnum;
 import sia.util.OrdenEstadoEnum;
 import sia.util.TipoArchivoFacturaEnum;
@@ -69,9 +60,13 @@ import org.primefaces.PrimeFaces;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import javax.faces.view.ViewScoped;
 import org.apache.commons.io.FilenameUtils;
 import javax.inject.Named;
 import javax.inject.Inject;
+import lombok.Getter;
+import lombok.Setter;
+import sia.util.Env;
 
 /**
  *
@@ -81,7 +76,7 @@ import javax.inject.Inject;
 @ViewScoped
 public class ProveedorBean implements Serializable {
 
-    @ManagedProperty("#{sesion}")
+    @Inject
     private Sesion sesion;
     @Inject
     private OrdenImpl ordenImpl;
@@ -139,9 +134,14 @@ public class ProveedorBean implements Serializable {
 
     private static final UtilLog4j LOGGER = UtilLog4j.log;
 
+    @Getter
+    @Setter
+    private boolean mensajeLeido;
+
     @PostConstruct
     public void iniciar() {
         idFactura = 0;
+        mensajeLeido = false;
         if (sesion.getCompaniaVoSesion() == null) {
             mapaInicial = new HashMap<>();
             mapaTotales = new HashMap<>();
@@ -304,7 +304,7 @@ public class ProveedorBean implements Serializable {
         cargarTotalCXP();
     }
 
-    public void seleccionarEmpresa(AjaxBehaviorEvent event) {
+    public void seleccionarEmpresa() {
         sesion.setCompaniaVoSesion(companiaImpl.traerPorRFC(sesion.getRfcCompania()));
         //
         PrimeFaces.current().executeScript("entendido('checkAceptoPrin','divEntendidoPrin');");
@@ -326,50 +326,43 @@ public class ProveedorBean implements Serializable {
         return "/principal";
     }
 
-    public void seleccionarCliente(ValueChangeEvent event) {
-        if (event != null) {
-            mapaInicial.put(
-                    "ordenCompra",
-                    autorizacionesOrdenImpl.traerOrdenPorRangoStatusCompania(
-                            OrdenEstadoEnum.RECIBIDA_PARCIAL.getId(),
-                            OrdenEstadoEnum.POR_RECIBIR_FACTURA.getId(),
-                            sesion.getProveedorVo().getIdProveedor(),
-                            sesion.getCompaniaVoSesion().getRfcCompania(),
-                            Integer.parseInt(event.getNewValue().toString())
-                    )
-            );
-        }
+    public void seleccionarCliente() {
+        mapaInicial.put(
+                "ordenCompra",
+                autorizacionesOrdenImpl.traerOrdenPorRangoStatusCompania(
+                        OrdenEstadoEnum.RECIBIDA_PARCIAL.getId(),
+                        OrdenEstadoEnum.POR_RECIBIR_FACTURA.getId(),
+                        sesion.getProveedorVo().getIdProveedor(),
+                        sesion.getCompaniaVoSesion().getRfcCompania(),
+                        campo)
+        );
     }
 
-    public void seleccionarCampoFacEnviada(ValueChangeEvent event) {
-        if (event != null) {
-            mapaInicial.put(
-                    "facturaCliente",
-                    siFacturaImpl.traerFacturaPorStatus(
-                            FacturaEstadoEnum.ENVIADA_CLIENTE.getId(),
-                            Integer.parseInt(event.getNewValue().toString()),
-                            sesion.getProveedorVo().getIdProveedor(),
-                            sesion.getCompaniaVoSesion().getRfcCompania()
-                    )
-            );
-        }
+    public void seleccionarCampoFacEnviada() {
+        mapaInicial.put(
+                "facturaCliente",
+                siFacturaImpl.traerFacturaPorStatus(
+                        FacturaEstadoEnum.ENVIADA_CLIENTE.getId(),
+                        campo,
+                        sesion.getProveedorVo().getIdProveedor(),
+                        sesion.getCompaniaVoSesion().getRfcCompania()
+                )
+        );
     }
 
-    public void seleccionarCampoFacRechazada(ValueChangeEvent event) {
-        if (event != null) {
-            mapaInicial.put(
-                    "facturaRechazada",
-                    siFacturaImpl.traerFacturaDevuelta(
-                            FacturaEstadoEnum.CREADA.getId(),
-                            Integer.parseInt(event.getNewValue().toString()),
-                            sesion.getProveedorVo().getIdProveedor(),
-                            sesion.getCompaniaVoSesion().getRfcCompania()
-                    )
-            );
-        }
+    public void seleccionarCampoFacRechazada() {
+        mapaInicial.put(
+                "facturaRechazada",
+                siFacturaImpl.traerFacturaDevuelta(
+                        FacturaEstadoEnum.CREADA.getId(),
+                        campo,
+                        sesion.getProveedorVo().getIdProveedor(),
+                        sesion.getCompaniaVoSesion().getRfcCompania()
+                )
+        );
     }
 
-    public void seleccionarCompra(ActionEvent event) {
+    public void seleccionarCompra() {
         int compraId = Integer.parseInt(FacesUtilsBean.getRequestParameter("compraId"));
         facturas = siFacturaImpl.facturasPorOrden(compraId);
         //
@@ -378,15 +371,13 @@ public class ProveedorBean implements Serializable {
         PrimeFaces.current().executeScript("$(dialogoFacturaOrden).modal('show');");
     }
 
-    public void agregarSoporte(ActionEvent event) {
+    public void agregarSoporte(int idFac) {
         soportes = new ArrayList<>();
-        idFactura = Integer.parseInt(FacesUtilsBean.getRequestParameter("idFactura"));
+        idFactura = idFac;
         llenarSoportes(idFactura);
     }
 
-    public void agregarArchivoPortal(ActionEvent event) {
-        int idDDoc = Integer.parseInt(FacesUtilsBean.getRequestParameter("idDoc"));
-        String tipoDDoc = FacesUtilsBean.getRequestParameter("tipoDoc");
+    public void agregarArchivoPortal(int idDDoc, String tipoDDoc) {
         if (idDDoc > 0 && tipoDDoc != null && !tipoDDoc.isEmpty()) {
             DocumentoVO vvo = new DocumentoVO();
             vvo.setTipoDoc(idDDoc);
@@ -397,9 +388,7 @@ public class ProveedorBean implements Serializable {
         }
     }
 
-    public void borrarArchivoPortal(ActionEvent event) {
-        int idDDoc = Integer.parseInt(FacesUtilsBean.getRequestParameter("idDoc"));
-        String uuid = FacesUtilsBean.getRequestParameter("tipoUUID");
+    public void borrarArchivoPortal(int idDDoc, String uuid) {
         if (idDDoc > 0 && uuid != null && !uuid.isEmpty()) {
             if (proveedorServicioImpl.eliminarArchivosPortal(sesion.getProveedorVo().getIdProveedor(),
                     Constantes.LISTA_TIPO_PORTAL, sesion.getCompaniaVoSesion().getRfcCompania(),
@@ -485,18 +474,25 @@ public class ProveedorBean implements Serializable {
         }
     }
 
-    public String seleccionar() {
-        return "/vistas/administraCompra.xhtml";
+    public String seleccionar(int idOrd) {
+        Env.setContext(sesion.getCtx(), "idCompra", idOrd);
+        return "/vistas/administraCompra.xhtml?faces-redirect=true";
     }
 
-    public void buscarHistorial(ActionEvent event) {
+    public String seleccionarFactura(int fac) {
+        Env.setContext(sesion.getCtx(), "idFactura", fac);
+        return "/vistas/administraCompra.xhtml?faces-redirect=true";
+    }
+
+    public void buscarHistorial() {
         traerFacturaPorProveedor();
     }
 
-    public void seleccionarFacturaHistorial(ActionEvent event) {
+    public void seleccionarFacturaHistorial(int idFac) {
         soportes = new ArrayList<>();
         facturaVo = new FacturaVo();
-        idFactura = Integer.parseInt(FacesUtilsBean.getRequestParameter("idFactura"));
+        facturaVo.setDetalleFactura(new ArrayList<>());
+        idFactura = idFac;
         facturaVo = siFacturaImpl.buscarFactura(idFactura);
         soportes = facturaAdjuntoImpl.traerSoporteFactura(idFactura, false);
         setComprobantes(facturaAdjuntoImpl.traerSoporteFactura(idFactura, false, "'" + TipoArchivoFacturaEnum.TIPO_PAGO.toString() + "'"));
@@ -519,27 +515,27 @@ public class ProveedorBean implements Serializable {
         PrimeFaces.current().executeScript("$(dialogoDatosFactura).modal('show');");
     }
 
-    public void seleccionarFacturaCXPPdf(ActionEvent event) {
+    public void seleccionarFacturaCXPPdf(int idFac) {
         facturaVo = new FacturaVo();
-        idFactura = Integer.parseInt(FacesUtilsBean.getRequestParameter("idFactura"));
+        idFactura = idFac;
         facturaVo = siFacturaImpl.buscarFactura(idFactura);
         this.setIsTipoCXPXML(false);
 
-        PrimeFaces.current().executeScript( CXP_MODAL_SHOW);
+        PrimeFaces.current().executeScript(CXP_MODAL_SHOW);
     }
 
-    public void seleccionarFacturaCXPXml(ActionEvent event) {
+    public void seleccionarFacturaCXPXml(int idFac) {
         facturaVo = new FacturaVo();
-        idFactura = Integer.parseInt(FacesUtilsBean.getRequestParameter("idFactura"));
+        idFactura = idFac;
         facturaVo = siFacturaImpl.buscarFactura(idFactura);
         this.setIsTipoCXPXML(true);
 
-        PrimeFaces.current().executeScript( CXP_MODAL_SHOW);
+        PrimeFaces.current().executeScript(CXP_MODAL_SHOW);
     }
 
-    public void borrarFacturaCXPXml(ActionEvent event) {
+    public void borrarFacturaCXPXml(int idFac) {
         facturaVo = new FacturaVo();
-        idFactura = Integer.parseInt(FacesUtilsBean.getRequestParameter("idFactura"));
+        idFactura = idFac;
         facturaVo = siFacturaImpl.buscarFactura(idFactura);
 
         siFacturaImpl.borrarCXPXml(sesion.getProveedorVo().getRfc(), facturaVo);
@@ -547,8 +543,8 @@ public class ProveedorBean implements Serializable {
         cargarCXP();
     }
 
-    public void cerrarCargaSoporte(ActionEvent event) {
-        PrimeFaces.current().executeScript( CXP_MODAL_HIDE);
+    public void cerrarCargaSoporte() {
+        PrimeFaces.current().executeScript(CXP_MODAL_HIDE);
     }
 
     public void uploadFile(FileUploadEvent fileEvent) {
@@ -589,7 +585,7 @@ public class ProveedorBean implements Serializable {
         FacesUtilsBean.addInfoMessage("El archivo fue agregado correctamente.");
         cargarCXP();
         cargarTotalCXP();
-        PrimeFaces.current().executeScript( CXP_MODAL_HIDE);
+        PrimeFaces.current().executeScript(CXP_MODAL_HIDE);
     }
 
     private void procesarCXPXML(UploadedFile fileInfo) {
@@ -612,7 +608,7 @@ public class ProveedorBean implements Serializable {
                 siFacturaImpl.guardarCXPXml(sesion.getProveedorVo().getRfc(), facturaVo, adj);
                 cargarCXP();
                 cargarTotalCXP();
-                PrimeFaces.current().executeScript( CXP_MODAL_HIDE);
+                PrimeFaces.current().executeScript(CXP_MODAL_HIDE);
             }
         } catch (IllegalStateException | EJBException e) {
             PrimeFaces.current().executeScript("$(msjValidando).css('visibility', 'hidden')");
@@ -650,20 +646,20 @@ public class ProveedorBean implements Serializable {
 
         return pag;
     }
-    
+
     private File getFileFromUploadedFile(UploadedFile uploadedFileX) {
         try {
             Path tmpFile = Files.createTempFile(FilenameUtils.getBaseName(uploadedFileX.getFileName()), "." + FilenameUtils.getExtension(uploadedFileX.getFileName()));
             Files.copy(uploadedFileX.getInputStream(), tmpFile, StandardCopyOption.REPLACE_EXISTING);
             return tmpFile.toFile();
-        } catch (IOException e) {                        
+        } catch (IOException e) {
             FacesUtilsBean.addErrorMessage(ARCHIVO_FACT_FILE_ENTRY, e.getMessage());
             return null;
         }
     }
 
     public void cargarSoporte(UploadedFile fileInfo) {
-        ValidadorNombreArchivo validadorNombreArchivo = new ValidadorNombreArchivo();        
+        ValidadorNombreArchivo validadorNombreArchivo = new ValidadorNombreArchivo();
         //
         boolean addArchivo = validadorNombreArchivo.isNombreValido(fileInfo.getFileName());
         if (addArchivo) {
@@ -680,7 +676,7 @@ public class ProveedorBean implements Serializable {
                     .append(validadorNombreArchivo.getCaracteresNoValidos())
                     .toString());
         }
-        
+
     }
 
     private SiAdjunto guardarAdjunto(UploadedFile fileInfo) {

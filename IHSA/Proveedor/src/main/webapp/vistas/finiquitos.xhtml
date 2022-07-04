@@ -2,7 +2,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:ui="http://java.sun.com/jsf/facelets"
-      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
       xmlns:p="http://primefaces.org/ui"
       xmlns:f="http://java.sun.com/jsf/core">
 
@@ -13,11 +13,11 @@
             <ui:define name="title">
                 Contratos en proceso de finiquito
             </ui:define>
-            <ui:define name="content">
+            <ui:define name="contenido">
                 <h:form id="frmExhProv">
                     <p:dataTable id="dtConvenios" value="#{procesoFiniquitoProveedorBean.contratos}" var="dataConv"
-                                   rows="15" paginator="true" paginatorPosition="bottom" paginatorAlwaysVisible="true"
-                                   style="font-size: 1em;">
+                                 rows="15" paginator="true" paginatorPosition="bottom" paginatorAlwaysVisible="true"
+                                 style="font-size: 1em;">
                         <p:column headerText="Número" style="text-align: left;" >
                             <h:outputText value="#{dataConv.numero}" />
                         </p:column>
@@ -40,12 +40,11 @@
                         <p:column headerText="Formas">
                             <h:outputText value="#{dataConv.totalFormas}"/>
                         </p:column>
-                        <p:column>
-                            <h:commandLink actionListener="#{procesoFiniquitoProveedorBean.administrar(event)}"
-                                           styleClass="text text-primary">
+                        <p:column width="5%">
+                            <p:commandLink action="#{procesoFiniquitoProveedorBean.administrar(dataConv.numero)}"
+                                           styleClass="text text-primary" process="@this" update="frmFinProcConv">
                                 <i class="fa fa-cog text-primary fa-2x"/>
-                                <f:param name="convnum" value="#{dataConv.numero}"/>
-                            </h:commandLink>
+                            </p:commandLink>
                         </p:column>
                     </p:dataTable>
                 </h:form> 
@@ -71,13 +70,13 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <p:tabView>
+                                    <p:tabView id="tbFiniquito">
                                         <p:tab title="Proceso de finiquito">
                                             <div class="row">
                                                 <h:message  id="msg-file" for="file-entry" styleClass="text-danger" showDetail="false" showSummary="true"/>
                                                 <div class="col-lg-12">
                                                     <p:dataTable id="dtSol" value="#{procesoFiniquitoProveedorBean.contratoFormas}" var="dataFor"
-                                                                   rowIndexVar="index">
+                                                                 rowIndexVar="index" size="small" showGridlines="true">
                                                         <p:column headerText="Forma" style="text-align: left;" >
                                                             <h:outputText id="txtRutaDoc" 
                                                                           value="#{dataFor.forma}"/>
@@ -100,37 +99,38 @@
                                                         <p:column headerText="Validado">
                                                             <h:outputText value="#{dataFor.validado ? 'Si' : 'No'}"/>
                                                         </p:column>
-                                                        <p:column headerText="Notas">
-                                                            <h:commandLink rendered="#{dataFor.totalNotas gt 0}"
-                                                                           actionListener="#{procesoFiniquitoProveedorBean.mostrarNotas(e)}">
+                                                        <p:column headerText="Notas" width="5%">
+                                                            <p:commandLink rendered="#{dataFor.totalNotas gt 0}"
+                                                                           action="#{procesoFiniquitoProveedorBean.mostrarNotas(index)}"
+                                                                           process="@this" update="frmFormaObs">
                                                                 <i class="fa fa-exclamation-circle text-warning fa-2x"/>
-                                                                <f:param name="indice" value="#{index}"/>
-                                                            </h:commandLink>
+                                                            </p:commandLink>
                                                         </p:column>
-                                                        <p:column >
-                                                            <h:commandLink rendered="#{dataFor.validado eq false}" 
+                                                        <p:column  width="5%">
+                                                            <p:commandLink rendered="#{dataFor.validado eq false}" 
                                                                            title="Eliminar el archivo"
-                                                                           actionListener="#{procesoFiniquitoProveedorBean.eliminarArchivoForma(e)}">
+                                                                           action="#{procesoFiniquitoProveedorBean.eliminarArchivoForma(index)}"
+                                                                           process="@this" update="frmFinProcConv:tbFiniquito">
                                                                 <i class="fa fa-trash text-danger fa-2x"/>
-                                                                <f:param name="indice" value="#{index}"/>
-                                                            </h:commandLink>
+                                                            </p:commandLink>
                                                         </p:column>
-                                                        <p:column>
-                                                            <h:commandLink rendered="#{dataFor.idAdjunto eq 0}" 
+                                                        <p:column  width="5%">
+                                                            <p:commandLink rendered="#{dataFor.idAdjunto eq 0}" 
                                                                            title="Subir el archivo correspondiente a la forma #{dataFor.forma}"
-                                                                           actionListener="#{procesoFiniquitoProveedorBean.subirArchivo(e)}">
+                                                                           action="#{procesoFiniquitoProveedorBean.subirArchivo(index)}"
+                                                                           process="@this" update="frmDocArch">
                                                                 <i class="fa fa-arrow-up text-primary fa-2x"/>
-                                                                <f:param name="indice" value="#{index}"/>
-                                                            </h:commandLink>
+                                                            </p:commandLink>
                                                         </p:column>
-                                                        <p:column >
-                                                            <h:commandLink rendered="#{dataFor.idAdjunto gt 0 and dataFor.idGerencia gt 0}" 
+                                                        <p:column  width="5%">
+                                                            <p:commandLink rendered="#{dataFor.idAdjunto gt 0 and dataFor.idGerencia gt 0}" 
                                                                            title="Notificar documentación"
-                                                                           actionListener="#{procesoFiniquitoProveedorBean.notificarForma(e)}"
-                                                                           onclick="return confirm('Se enviará la notificación para revisión de la documentación, ¿está seguro?');">
+                                                                           action="#{procesoFiniquitoProveedorBean.notificarForma(index)}"
+                                                                           process="@this" update="frmFinProcConv:tbFiniquito">
                                                                 <i class="fa fa-send text-primary fa-2x"/>
-                                                                <f:param name="indice" value="#{index}"/>
-                                                            </h:commandLink>
+                                                                <p:confirm header="Confirmar" message="Se enviará la notificación para revisión de la documentación, ¿está seguro?'" 
+                                                                           icon="pi pi-exclamation-triangle" />
+                                                            </p:commandLink>
 
                                                         </p:column>
                                                     </p:dataTable>
@@ -162,9 +162,9 @@
                                                     <h:outputText  value="#{dataOc.moneda}"/>
                                                 </p:column>
                                             </p:dataTable>
-                                            <p:dataExporter fileName="compras" target="dtCompras" type="xls">
-                                                Exportar compras
-                                            </p:dataExporter>
+                                            <p:commandButton value="Exportar">
+                                                <p:dataExporter fileName="compras" target="dtCompras" type="xls"/>
+                                            </p:commandButton>
                                         </p:tab>
                                         <p:tab title="Facturas">
                                             <p:dataTable id="dtFacturas" value="#{procesoFiniquitoProveedorBean.facturasProveedor}" var="dataOc">
@@ -188,19 +188,20 @@
                                                     <h:outputText  value="#{dataOc.moneda}"/>
                                                 </p:column>
                                             </p:dataTable>
-                                            <p:dataExporter fileName="facturas" target="dtFacturas" type="xls">
-                                                Exportar facturas
-                                            </p:dataExporter>
+                                            <p:commandButton value="Exportar">
+                                                <p:dataExporter fileName="facturas" target="dtFacturas" type="xls"/>
+                                            </p:commandButton>
                                         </p:tab>
                                     </p:tabView>
 
                                 </div>
                                 <div class="modal-footer">
-                                    <h:commandButton id="btnCerrar" value="Cancelar" class="btn btn-default"
-                                                     actionListener="#{procesoFiniquitoProveedorBean.cancelarEnviarSolicitud(e)}"/>
-                                    <h:commandButton value="Procesar" 
+                                    <p:commandLink id="btnCerrar" value="Cancelar" class="btn btn-default"
+                                                     action="#{procesoFiniquitoProveedorBean.cancelarEnviarSolicitud}"
+                                                     immediate="true"/>
+                                    <p:commandButton value="Procesar" process="@form" update="frmExhProv"
                                                      styleClass="btn btn-primary"
-                                                     actionListener="#{procesoFiniquitoProveedorBean.enviarSolicitud(e)}"/>
+                                                     action="#{procesoFiniquitoProveedorBean.enviarSolicitud}"/>
                                 </div>
                             </div>
                         </div>
@@ -219,7 +220,7 @@
                                         <div class="col-lg-12 ">
                                             <h:outputText value="Observaciones"/>
                                             <p:dataTable value="#{procesoFiniquitoProveedorBean.contratoFormasNotas}" var="dataNot"
-                                                           style="font-size: 1.0em;">
+                                                         style="font-size: 1.0em;">
                                                 <p:column headerText="Generó" style="text-align: left;">
                                                     <h:outputText value="#{dataNot.usuario}"/>
                                                 </p:column>
@@ -241,7 +242,7 @@
                                     </div>
                                 </div>
                                 <div class="modal-footer">
-                                    <h:commandButton value="Cerrar" class="btn btn-default" 
+                                    <p:commandButton value="Cerrar" class="btn btn-default" 
                                                      onclick="$(dialogoNotas).modal('hide');"
                                                      immediate="true"/>
                                 </div>
@@ -252,7 +253,7 @@
 
                 <!-- subir archivos formas-->
                 <div class="modal fade" data-backdrop="static" id="dialogoSubirFormas" 
-                     data-keyboard="false" style="z-index: 100002;">
+                     data-keyboard="false" >
                     <div class="modal-dialog">
                         <div class="modal-content">
                             <div class="modal-header">
@@ -270,18 +271,15 @@
                                             </div>
                                         </div>
                                         <p:fileUpload id="fileEntryDoc" 
-                                                       label="Archivo "                                                                                                              
-                                                       listener="#{procesoFiniquitoProveedorBean.uploadFile}"                                                       
-                                                       styleClass="col-lg-11 col-xs-12 btn btn-default"/>
+                                                      label="Archivo "                                                                                                              
+                                                      listener="#{procesoFiniquitoProveedorBean.uploadFile}"                                                       
+                                                      process="@this" update="frmFinProcConv"/>
                                         <h:message  id="msg-docto" for="fileEntryDoc" styleClass="text-danger" showDetail="false" showSummary="true"/>
                                     </div>
                                 </div>
                                 <div class="modal-footer">
-                                    <h:commandButton value="Cerrar" class="btn btn-default" onclick="$(dialogoSubirFormas).modal('hide');"
+                                    <p:commandButton value="Cerrar" class="btn btn-default" onclick="$(dialogoSubirFormas).modal('hide');"
                                                      immediate="true"/>
-                                    <h:commandButton id="uploadFile" 
-                                                     value="Subir" 
-                                                     styleClass="btn btn-primary"/>
                                 </div>
                             </h:form>
                         </div>

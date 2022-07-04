@@ -1,10 +1,10 @@
 <?xml version='1.0' encoding='UTF-8' ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:ui="http://java.sun.com/jsf/facelets"
-      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
       xmlns:p="http://primefaces.org/ui"
-      xmlns:f="http://java.sun.com/jsf/core">
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
 
     <body>
 
@@ -13,7 +13,7 @@
             <ui:define name="title">
                 Contratos y Exhortos
             </ui:define>
-            <ui:define name="content">
+            <ui:define name="contenido">
                 <h:form id="frmExhProv">
                     <div class="col-lg-12">
                         <h:outputLink  rendered="#{not empty exhortoProveedorBean.contratos}"
@@ -28,7 +28,7 @@
                     </div>
                     <p:dataTable id="dtConvenios" value="#{exhortoProveedorBean.contratos}" var="dataConv"
                                    rows="15" paginator="true" paginatorPosition="bottom" paginatorAlwaysVisible="true"
-                                   style="font-size: 0.9em;">
+                                   size="small" showGridlines="true">
                         <p:column headerText="Número" style="text-align: left;" >
                             <h:outputText value="#{dataConv.numero}" />
                         </p:column>
@@ -49,10 +49,10 @@
                             <h:outputText value="#{dataConv.vigencia}"/>
                         </p:column>
                         <p:column>
-                            <h:commandLink value="Iniciar" actionListener="#{exhortoProveedorBean.iniciarProceso(event)}"
-                                           styleClass="text text-primary" style="color: cornflowerblue;">
-                                <f:param name="convnum" value="#{dataConv.numero}"/>
-                            </h:commandLink>
+                            <p:commandLink value="Iniciar" action="#{exhortoProveedorBean.iniciarProceso(dataConv.numero)}"
+                                           styleClass="text text-primary" style="color: cornflowerblue;"
+                                           process="@this " update="frmFinConv">
+                            </p:commandLink>
                         </p:column>
                     </p:dataTable>
 
@@ -105,9 +105,7 @@
                                             <p:fileUpload id="file-entry"
                                                            style=" color: maroon;"                                                         
                                                            listener="#{exhortoProveedorBean.uploadFile}"                                                           
-                                                           immediate="true" />
-                                            <h:commandButton id="uploadFile" 
-                                                             value="Subir" />
+                                                           process="@this" update="frmFinConv:dtSol" />
                                         </div>
                                         <h:message  id="msg-file" for="file-entry" styleClass="text-danger" showDetail="false" showSummary="true"/>
                                         <div class="col-lg-12">
@@ -119,22 +117,24 @@
                                                     <h:outputText id="txtDoc" value="#{exhortoProveedorBean.documentoAnexo.nombreBase}"/>
                                                 </p:column>
                                                 <p:column>
-                                                    <h:commandLink > 
+                                                    <p:commandLink > 
                                                         <i class="fa fa-trash text-danger"/>
-                                                        <f:ajax listener="#{exhortoProveedorBean.eliminarSolicitud(event)}"
-                                                                render="dtSol txtDoc @this"/>
-                                                    </h:commandLink>
+                                                        <p:ajax listener="#{exhortoProveedorBean.eliminarSolicitud(event)}"
+                                                                process="@this" update="frmFinConv:dtSol"/>
+                                                    </p:commandLink>
                                                 </p:column>
                                             </p:dataTable>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="modal-footer">
-                                    <h:commandButton id="btnCerrar" value="Cancelar" class="btn btn-default"
-                                                     actionListener="#{exhortoProveedorBean.cancelarEnviarSolicitud(e)}"/>
-                                    <h:commandButton value="Enviar" 
+                                    <p:commandButton id="btnCerrar" value="Cancelar" class="btn btn-default"
+                                                     action="#{exhortoProveedorBean.cancelarEnviarSolicitud}"
+                                                     immediate="true"/>
+                                    <p:commandButton value="Enviar" 
                                                      styleClass="btn btn-primary"
-                                                     actionListener="#{exhortoProveedorBean.enviarSolicitud(e)}"/>
+                                                     action="#{exhortoProveedorBean.enviarSolicitud}"
+                                                     process="@form" update="frmExhProv"/>
                                 </div>
                             </h:form>
                         </div>

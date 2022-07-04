@@ -1,6 +1,6 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
-                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:f="http://java.sun.com/jsf/core">
     <div class="modal fade" data-backdrop="static" id="dialogoSubirRepse" 
@@ -15,7 +15,8 @@
                         <p:fileUpload id="fileDocto" 
                                        label="#{msgs['sia.archivo']}"
                                        listener="#{cartaIntencionBean.uploadFile}"                                       
-                                       styleClass="col-lg-12 col-xs-12 btn btn-default"/>
+                                       styleClass="col-lg-12 col-xs-12 btn btn-default"
+                                       process="@this" update="frmCarta:dtCompras"/>
                         <h:message  for="" style="display: block;" infoClass="alert alert-success" warnClass="alert alert-warning"
                                     styleClass="col-lg-12"
                                     errorClass="alert alert-danger" fatalClass="alert alert-danger"  />
@@ -24,11 +25,8 @@
                                     style="display: none;"/>
                     </div>
                     <div class="modal-footer">
-                        <h:commandButton value="#{msgs['sistema.cerrar']}" class="btn btn-default" onclick="$(dialogoSubirRepse).modal('hide');"
+                        <p:commandLink value="#{msgs['sistema.cerrar']}" class="btn btn-default" onclick="$(dialogoSubirRepse).modal('hide');"
                                          immediate="true"/>
-                        <h:commandButton id="uploadFile" 
-                                         value="#{msgs['sistema.subir']}" 
-                                         styleClass="btn btn-primary"/>
                     </div>
                 </h:form>
             </div>
@@ -38,14 +36,14 @@
 
     <div class="modal fade" data-backdrop="static" id="dialogoDatosCompra" 
          data-keyboard="false" style="z-index: 100002;">
-        <div class="modal-dialog" style="width: 80%;">
+        <div class="modal-dialog modal-xl" >
             <div class="modal-content">
                 <div class="modal-header">
                     <h4 class="modal-title">#{msgs['sia.compra.datos']}</h4>
                 </div>
                 <h:form id="frmDatosCompra">
                     <div class="modal-body">
-                        <p:tabView>
+                        <p:tabView id="tbDatosCarta">
                             <p:tab title="#{msgs['sia.datos']}">
                                 <div class="row">
                                     <div class="col-lg-4">
@@ -111,23 +109,23 @@
                                     </div>
                                 </div>
                                 <div class="col-lg-12">
-                                    <p:dataTable value="#{cartaIntencionBean.items}" 
+                                    <p:dataTable value="#{cartaIntencionBean.items}" showGridlines="true" size="small"
                                                    var="dataItems" paginator="true" paginatorPosition="bottom">
                                         <p:column headerText="#{msgs['sia.descripcion']}" style="text-align: left;">
                                             <h:outputText value="#{dataItems.artNombre}"/>
                                         </p:column>
-                                        <p:column headerText="#{msgs['sistema.unidad']}">
+                                        <p:column headerText="#{msgs['sistema.unidad']}" width="5%">
                                             <h:outputText value="#{dataItems.artUnidad}"/>
                                         </p:column>
-                                        <p:column headerText="#{msgs['sia.cantidad']}">
+                                        <p:column headerText="#{msgs['sia.cantidad']}" width="5%">
                                             <h:outputText value="#{dataItems.cantidad}"/>
                                         </p:column>
-                                        <p:column headerText="#{msgs['sia.orden.precio.unitario']}">
+                                        <p:column headerText="#{msgs['sia.orden.precio.unitario']}" width="5%">
                                             <h:outputText value="#{dataItems.precioUnitario}">
                                                 <f:convertNumber maxFractionDigits="2" pattern="#,###.##"/>
                                             </h:outputText>
                                         </p:column>
-                                        <p:column headerText="#{msgs['sia.factura.importe']}">
+                                        <p:column headerText="#{msgs['sia.factura.importe']}" width="5%">
                                             <h:outputText value="#{dataItems.importe}">
                                                 <f:convertNumber maxFractionDigits="2" pattern="#,###.##"/>
                                             </h:outputText>
@@ -136,12 +134,12 @@
                                 </div>
                             </p:tab>
                             <p:tab title="#{msgs['sia.documentos']}">
-                                <p:dataTable value="#{cartaIntencionBean.doctosOrden}" 
-                                               var="dataD" rowIndexVar="index" style="width: 40%">     
+                                <p:dataTable id="dtDocCarta" value="#{cartaIntencionBean.doctosOrden}" 
+                                             var="dataD" rowIndexVar="index" showGridlines="true" size="small">     
                                     <p:column headerText="#{msgs['sia.nombre']}">
                                         <h:outputText value="#{dataD.nombre}"/>
                                     </p:column>
-                                    <p:column>                                        
+                                    <p:column width="50">                                        
                                         <h:outputLink   
                                             style="color: blue"
                                             target="_blank"  
@@ -152,19 +150,19 @@
                                             Descargar
                                         </h:outputLink>                                      
                                     </p:column>
-                                    <p:column> 
-                                        <h:commandLink actionListener="#{cartaIntencionBean.eliminarRepse(e)}"
+                                    <p:column width="40"> 
+                                        <p:commandLink action="#{cartaIntencionBean.eliminarRepse(index)}"
                                                        title="Elimina el archivo registrado"
-                                                       rendered="#{dataD.genero eq sesion.proveedorVo.rfc}"> 
+                                                       rendered="#{dataD.genero eq sesion.proveedorVo.rfc}"
+                                                       process="@this" update="frmDatosCompra:tbDatosCarta:dtDocCarta"> 
                                             <i class="fa fa-trash text-danger"/>
-                                            <f:param name="indice" value="#{index}"/>
-                                        </h:commandLink>
+                                        </p:commandLink>
                                     </p:column>                                        
                                 </p:dataTable>
                             </p:tab>
                             <p:tab title="#{msgs['sia.movimientos']}">                                
-                                <p:dataTable value="#{cartaIntencionBean.rechazos}" 
-                                               var="dataRec" rowIndexVar="index" style="width: 60%">     
+                                <p:dataTable value="#{cartaIntencionBean.rechazos}"  showGridlines="true" size="small"
+                                               var="dataRec" rowIndexVar="index" >     
                                     <p:column headerText="#{msgs['sistema.rechazo']}">
                                         <h:outputText value="#{dataRec.genero}"/>
                                     </p:column>
@@ -179,7 +177,7 @@
                         </p:tabView>
                     </div>
                     <div class="modal-footer">
-                        <h:commandLink value="#{msgs['sistema.cerrar']}" onclick="$(dialogoDatosCompra).modal('hide');"
+                        <p:commandLink value="#{msgs['sistema.cerrar']}" onclick="$(dialogoDatosCompra).modal('hide');"
                                        immediate="true" styleClass="btn btn-default"/>
                     </div>
                 </h:form>
@@ -237,11 +235,12 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <h:commandLink value="#{msgs['sistema.cerrar']}" styleClass="btn btn-default"
+                        <p:commandLink value="#{msgs['sistema.cerrar']}" styleClass="btn btn-default"
                                        onclick="$(dialogoRechazarCompra).modal('hide');"
                                        immediate="true"/>
-                        <h:commandLink value="#{msgs['sistema.rechazar']}"  styleClass="btn btn-primary" 
-                                       actionListener="#{cartaIntencionBean.rechazarCompra(e)}"/>
+                        <p:commandLink value="#{msgs['sistema.rechazar']}"  styleClass="btn btn-primary" 
+                                       action="#{cartaIntencionBean.rechazarCompra}"
+                                       process="@form" update="frmCarta:dtCompras"/>
                     </div>
                 </h:form>
             </div>
