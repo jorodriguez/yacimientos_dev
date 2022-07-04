@@ -107,7 +107,7 @@ public class Sesion implements Serializable {
         String pagina = "";
         pVo = proveedorImpl.traerProveedorPorRfc(rfc, clave, Constantes.CERO, Constantes.VACIO);
         if (pVo == null) {
-            FacesUtilsBean.addErrorMessage("El rfc o la clave del proveedor esta incorrecta");
+            FacesUtilsBean.addErrorMessage("El rfc o la clave del proveedor está incorrecta");
         } else {
             if (pVo.isPrimerSesion()) {
                 proveedorVo = pVo;
@@ -138,7 +138,7 @@ public class Sesion implements Serializable {
                 subirValoresContexto();
                 formasPendientes = convenioFormasImpl.totalFormasSinValidar(proveedorVo.getIdProveedor());
                 pVo = null;
-                pagina = "principal.xhml?faces-redirect=true";
+                pagina = "principal.xhml";
             } else {
                 PrimeFaces.current().executeScript(";$(dialogoPrimerSesion).modal('show');");
             }

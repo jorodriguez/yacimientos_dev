@@ -116,8 +116,9 @@ public class ExhortoProveedorBean implements Serializable {
             boolean addArchivo = validadorNombreArchivo.isNombreValido(fileInfo.getFileName());
 
             if (addArchivo) {
-                DocumentoAnexo documentoAnexo = new DocumentoAnexo(fileInfo.getContent());
+                documentoAnexo = new DocumentoAnexo(fileInfo.getContent());
                 documentoAnexo.setTipoMime(fileInfo.getContentType());
+                documentoAnexo.setNombreBase(fileInfo.getFileName());
                 documentoAnexo.setRuta(directorioProve());
                 AlmacenDocumentos almacenDocumentos = proveedorAlmacenDocumentos.getAlmacenDocumentos();
                 almacenDocumentos.guardarDocumento(documentoAnexo);

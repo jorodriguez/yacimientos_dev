@@ -171,6 +171,7 @@ public class ProcesoFiniquitoProveedorBean implements Serializable {
                 documentoAnexo = new DocumentoAnexo(fileInfo.getContent());
                 documentoAnexo.setNombreBase(forma_nombre);
                 documentoAnexo.setRuta(directorioProve());
+                documentoAnexo.setTipoMime(fileInfo.getContentType());
                 AlmacenDocumentos almacenDocumentos = proveedorAlmacenDocumentos.getAlmacenDocumentos();
                 almacenDocumentos.guardarDocumento(documentoAnexo);
                 //                

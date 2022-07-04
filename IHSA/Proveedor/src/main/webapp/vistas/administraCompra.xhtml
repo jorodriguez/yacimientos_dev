@@ -168,8 +168,8 @@
                                             <p:commandLink class="btn btn-info col-lg-12" 
                                                            action="#{administrarCompraBean.procesarFactura}"
                                                            rendered="#{administrarCompraBean.facturaVo.id gt 0}"
-                                                           process="@this" update="frmAdinCompra:tbCompras">
-                                                <i class="fa fa-check text-primary"/><b> </b>
+                                                           process="@this" update="frmAdminCompras:tbCompras">
+                                                <i class="fa fa-check text-white"/><b> </b>
                                                 <p:confirm header="Confirmar" message="#{msgs['sia.factura.procesar']}" 
                                                            icon="pi pi-exclamation-triangle" />
                                             </p:commandLink>
@@ -186,7 +186,7 @@
                                             </p:commandLink>
                                         </div>
                                         <div class="col-lg-2">
-                                            <p:commandLink class="btn btn-info col-lg-12" 
+                                            <p:commandLink class="btn btn-info col-lg-12 text-white" 
                                                            action="#{administrarCompraBean.procesarFacturaExtranjera}"
                                                            rendered="#{administrarCompraBean.facturaVo.id gt 0}">
                                                 <i class="fa fa-check text-primary"/>
@@ -199,7 +199,7 @@
                                     <div class="col-lg-2">
                                         <p:commandLink action="#{administrarCompraBean.eliminarFactura()}" class="btn btn-info col-lg-12"
                                                        rendered="#{administrarCompraBean.facturaVo.id gt 0}"
-                                                       process="@this" update="frmAdinCompra:tbCompras" >
+                                                       process="@this" update="frmAdminCompras:tbCompras" >
                                             <i class="fa fa-trash text text-danger"/>
                                             <p:confirm header="Confirmar" message="#{msgs['sistema.eliminar']}" 
                                                        icon="pi pi-exclamation-triangle" 
@@ -284,7 +284,7 @@
                                         <p:tab id="tabPartidasFactura" title="#{msgs['sia.factura.partidas']}" 
                                                rendered="#{sesion.proveedorVo.nacional eq true}">
                                             <div class="row panel">
-                                                <p:commandLink value="#{msgs['sia.factura.conciliar']}" class="btn btn-info"
+                                                <p:commandLink value="#{msgs['sia.factura.conciliar']}" class="btn btn-info text-white"
                                                                action="#{administrarCompraBean.inicioRelacionDetOcsDetFac}"
                                                                rendered="#{administrarCompraBean.facturaVo.id gt 0}"
                                                                process="@this" update="frmRelPartidaFacturaOcs"/>
@@ -294,7 +294,7 @@
                                                              rowIndexVar="indice"  paginator="true" rows="10" 
                                                              paginatorPosition="bottom"  paginatorAlwaysVisible="true"
                                                              size="small" showGridlines="true">
-                                                    <p:column headerText="Conc.">
+                                                    <p:column headerText="Conc." width="35">
                                                         <i class="#{dataDet.idOrdenDetalle gt 0 ? 'fa fa-check text-primary' : 'fa fa-remove text-warning'}"
                                                            title="#{dataDet.idOrdenDetalle gt 0 ? ' Partida relacionada con partida de la compra' : 'Falta relacionar con una partida de la orden de compra'}"/>
                                                     </p:column>
@@ -322,7 +322,7 @@
                                         <p:tab id="tabContenidoNal" title="Contenido Nacional" rendered="#{sesion.proveedorVo.nacional eq true}">
                                             <div class="row panel">                                                
                                                 <div class="col-lg-2">
-                                                    <p:commandLink class="btn btn-info"
+                                                    <p:commandLink class="btn btn-info text-white"
                                                                    rendered="#{administrarCompraBean.facturaVo.id gt 0}"
                                                                    action="#{administrarCompraBean.iniciarAgragarContNac}"
                                                                    process="@this" update="frmContNac">
@@ -330,7 +330,8 @@
                                                     </p:commandLink>
                                                 </div>
                                                 <div class="col-lg-1">
-                                                    <p:commandLink id="btnCarta"  action="#{administrarCompraBean.iniciarCartaContenido}" class="btn btn-info"
+                                                    <p:commandLink id="btnCarta"  action="#{administrarCompraBean.iniciarCartaContenido}" 
+                                                                   class="btn btn-info text-white"
                                                                    rendered="#{administrarCompraBean.facturaVo.idAdjunto eq 0 and
                                                                                administrarCompraBean.facturaVo.id gt 0}" title="Iniciar la carta de Contenido Nacional"
                                                                    process="@this" update="frmArchivoFact">
@@ -343,7 +344,7 @@
                                             </div>
                                             <div class="row">                                                
                                                 <div class="col-lg-8">
-                                                    <p:dataTable value="#{administrarCompraBean.contenidoNacionalPorFactura}" var="dataCN"
+                                                    <p:dataTable id="dtCN" value="#{administrarCompraBean.contenidoNacionalPorFactura}" var="dataCN"
                                                                  size="small" showGridlines="true"> 
                                                         <p:column headerText="Código">                                    
                                                             <h:outputText value="#{dataCN.codigoCatalogoHidro}" rendered="#{dataCN.id gt 0}"/>
@@ -363,10 +364,11 @@
                                                                 <f:convertNumber pattern="#,###.0000"/>
                                                             </h:outputLabel>
                                                         </p:column>
-                                                        <p:column>
+                                                        <p:column width="40">
                                                             <p:commandLink action="#{administrarCompraBean.eliminarContNac(dataCN.id)}"
-                                                                           rendered="#{dataCN.id gt 0}" process="@this" update="frmAdinCompra:tbCompras"> 
-                                                                <i class="fa fa-remove text-danger fa-2x"/>
+                                                                           rendered="#{dataCN.id gt 0}" process="@this" 
+                                                                           update="frmAdminCompras:tbCompras:tbFacturas:dtCN"> 
+                                                                <i class="fa fa-trash text-danger fa-2x"/>
                                                             </p:commandLink>
                                                         </p:column>                                                        
                                                     </p:dataTable>                                                    
@@ -374,36 +376,34 @@
                                             </div>
                                         </p:tab>
                                         <p:tab id="tabSoportes" title="#{msgs['sia.factura.soporte.evidencias']}">
-                                            <div class="row input-group col-lg-6 panel">
-                                                <div class="form-row">
-                                                    <ui:fragment rendered="#{administrarCompraBean.listaSoporteFacturaXmlPdf.size() lt 2}">
-                                                        <div class="col-lg-4">
-                                                            <p:commandLink class="btn btn-info" 
-                                                                           action="#{administrarCompraBean.iniciarCargaPDF}"
-                                                                           rendered="#{administrarCompraBean.facturaVo.id gt 0}"
-                                                                           title="#{msgs['sia.pdf.factura']}" process="@this" update="frmArchivoFact">
-                                                                <i class="fa fa-file"/> <b>#{msgs['sia.pdf.factura']}</b>
-                                                            </p:commandLink>      
-                                                        </div>
-                                                    </ui:fragment>
-                                                    <div class="col-lg-4">
-                                                        <p:commandLink id="btnSoportes" class="btn btn-info" action="#{administrarCompraBean.iniciarCargaSoporte}"
-                                                                       rendered="#{administrarCompraBean.facturaVo.id gt 0 and sesion.proveedorVo.nacional eq true}"
-                                                                       title="#{msgs['sia.factura.generadores']}" process="@this" update="frmArchivoFact">
-                                                            <i class="fa fa-paperclip"/> <b>Soportes y/o Evidencias</b>
-                                                        </p:commandLink>      
-                                                        <p:commandLink id="btnDoctoAd" class="btn btn-info" 
-                                                                       action="#{administrarCompraBean.iniciarCargaDocumentoAduanal}"
-                                                                       rendered="#{administrarCompraBean.facturaVo.id gt 0 and sesion.proveedorVo.nacional eq false}"
-                                                                       title="* #{msgs['sia.factura.documento.aduana']}" process="@this" update="frmArchivoFact">
-                                                            <i class="fa fa-paperclip"/> <b>#{msgs['sia.documento.aduanal']}</b>
+                                            <div class="row input-group">
+                                                <ui:fragment rendered="#{administrarCompraBean.listaSoporteFacturaXmlPdf.size() lt 2}">
+                                                    <div class="col-6">
+                                                        <p:commandLink class="btn btn-info text-white" 
+                                                                       action="#{administrarCompraBean.iniciarCargaPDF}"
+                                                                       rendered="#{administrarCompraBean.facturaVo.id gt 0}"
+                                                                       title="#{msgs['sia.pdf.factura']}" process="@this" update="frmArchivoFact">
+                                                            <i class="fa fa-file"/> <b>#{msgs['sia.pdf.factura']}</b>
                                                         </p:commandLink>      
                                                     </div>
-
+                                                </ui:fragment>
+                                                <div class="col-6">
+                                                    <p:commandLink id="btnSoportes" class="btn btn-info text-white" action="#{administrarCompraBean.iniciarCargaSoporte}"
+                                                                   rendered="#{administrarCompraBean.facturaVo.id gt 0 and sesion.proveedorVo.nacional eq true}"
+                                                                   title="#{msgs['sia.factura.generadores']}" process="@this" update="frmArchivoFact">
+                                                        <i class="fa fa-paperclip"/> <b>Soportes y/o Evidencias</b>
+                                                    </p:commandLink>      
+                                                    <p:commandLink id="btnDoctoAd" class="btn btn-info text-white" 
+                                                                   action="#{administrarCompraBean.iniciarCargaDocumentoAduanal}"
+                                                                   rendered="#{administrarCompraBean.facturaVo.id gt 0 and sesion.proveedorVo.nacional eq false}"
+                                                                   title="* #{msgs['sia.factura.documento.aduana']}" process="@this" update="frmArchivoFact">
+                                                        <i class="fa fa-paperclip"/> <b>#{msgs['sia.documento.aduanal']}</b>
+                                                    </p:commandLink>      
                                                 </div>
+
                                             </div>
                                             <div class="row">
-                                                <p:dataTable value="#{administrarCompraBean.listaSoporteFactura}" var="data"
+                                                <p:dataTable id="dtSoportes" value="#{administrarCompraBean.listaSoporteFactura}" var="data"
                                                              size="small" showGridlines="true">
                                                     <p:column headerText="#{msgs['sia.factura.soportes']}" style="text-align: left;" >
                                                         #{data.tipo}
@@ -411,7 +411,7 @@
                                                     <p:column headerText="#{msgs['sia.archivo']}">
                                                         #{data.adjuntoVo.nombre}
                                                     </p:column>
-                                                    <p:column>
+                                                    <p:column width="40">
                                                         <h:outputLink id="abrir" target="_blank" 
                                                                       style="color: blue;"
                                                                       title="#{msgs['sia.clic.abrir.archivo']}" 
@@ -419,9 +419,10 @@
                                                             <h:outputText value=" #{msgs['sistema.abrir']}"/>
                                                         </h:outputLink>  
                                                     </p:column>
-                                                    <p:column>
+                                                    <p:column width="40">
                                                         <p:commandLink  action="#{administrarCompraBean.eliminarSoporteFactura(data.id)}"
-                                                                        rendered="#{data.tipo ne 'XML (Factura)'}" process="@this" update="frmAdinCompra:tbCompras">
+                                                                        rendered="#{data.tipo ne 'XML (Factura)'}" process="@this" 
+                                                                        update="frmAdminCompras:tbCompras:tbFacturas:dtSoportes">
                                                             <i class="fa fa-trash fa-2x text text-danger"/>
                                                         </p:commandLink>
                                                     </p:column>
@@ -429,8 +430,8 @@
                                             </div>
                                         </p:tab>
                                         <p:tab id="tabNotaCred" title="Nota de crédito" rendered="#{sesion.proveedorVo.nacional eq true}">
-                                            <div class="col-lg-2">
-                                                <p:commandLink class="btn btn-info col-lg-12" 
+                                            <div class="col-12">
+                                                <p:commandLink class="btn btn-info text-white" 
                                                                action="#{administrarCompraBean.inicioRegistroNotaCreditoXML}"
                                                                rendered="#{administrarCompraBean.facturaVo.id gt 0}"
                                                                process="@this" update="frmArchivoFact">
@@ -439,7 +440,7 @@
                                             </div>
                                             <div class="table table-responsive">
                                                 <p:dataTable id="tblNotaCre" value="#{administrarCompraBean.listaNotaCredito}" var="dataNota"
-                                                             rowIndexVar="index">                                            
+                                                             rowIndexVar="index" size="small" showGridlines="true">                                            
                                                     <p:column headerText="Factura">                                                
                                                         #{administrarCompraBean.facturaVo.folio}
                                                     </p:column>
@@ -451,16 +452,17 @@
                                                             <f:convertNumber maxFractionDigits="2"/>
                                                         </h:outputText>                                                
                                                     </p:column>
-                                                    <p:column>
+                                                    <p:column width="5%">
                                                         <p:commandLink action="#{administrarCompraBean.seleccionarNotaCredito(index)}"
                                                                        process="@this" update="frmPopNotaCred">
                                                             <i class="fa fa-cog fa-2x text-primary"/>
                                                         </p:commandLink>
                                                     </p:column>
-                                                    <p:column>
+                                                    <p:column width="5%">
                                                         <p:commandLink action="#{administrarCompraBean.eliminarNotaCredito(index)}"
-                                                                       title="Elimina la nota de crédito"  process="@this" update="frmAdminCompras:tbCompras">
-                                                            <i class="fa fa-remove fa-2x text-danger"/>
+                                                                       title="Elimina la nota de crédito"  process="@this" 
+                                                                       update="frmAdminCompras:tbCompras:tbFacturas:tblNotaCre">
+                                                            <i class="fa fa-trash fa-2x text-danger"/>
                                                         </p:commandLink>
                                                     </p:column>
                                                 </p:dataTable>
@@ -468,11 +470,11 @@
                                         </p:tab>
                                         <p:tab id="tabRechazos" title="#{msgs['sia.factura.motivo.rechazo']}">
                                             <p:dataTable id="tblMov" value="#{administrarCompraBean.movimientosFactura}" var="dataMov"
-                                                         rowIndexVar="index">                                            
-                                                <p:column headerText="#{msgs['sistema.genero']}">                                                
+                                                         rowIndexVar="index" size="small" showGridlines="true">                                            
+                                                <p:column headerText="#{msgs['sistema.genero']}" width="20%">                                                
                                                     #{dataMov.genero}
                                                 </p:column>
-                                                <p:column headerText="#{msgs['sia.factura.fecha']}">
+                                                <p:column headerText="#{msgs['sia.factura.fecha']}" width="8%">
                                                     <h:outputText value="#{dataMov.fecha}">
                                                         <f:convertDateTime pattern="dd/MM/yyyy"/>
                                                     </h:outputText>

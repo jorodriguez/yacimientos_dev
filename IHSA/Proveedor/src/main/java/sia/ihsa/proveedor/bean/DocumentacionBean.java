@@ -94,6 +94,7 @@ public class DocumentacionBean implements Serializable {
                 DocumentoAnexo documentoAnexo = new DocumentoAnexo(fileInfo.getContent());
                 documentoAnexo.setRuta(directorioProve());
                 documentoAnexo.setTipoMime(fileInfo.getContentType());
+                documentoAnexo.setNombreBase(fileInfo.getFileName());
                 almacenDocumentos.guardarDocumento(documentoAnexo);
                 //
                 SiAdjunto adj = siAdjuntoImpl.save(documentoAnexo.getNombreBase(),

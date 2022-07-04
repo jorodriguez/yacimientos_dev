@@ -342,7 +342,7 @@ public class AdministrarCompraBean implements Serializable {
         //
         if (BigDecimal.valueOf(totalFacturado).compareTo(BigDecimal.valueOf(compraVo.getSubTotal())) < 1) {
             if (facturaVo.getId() == 0) {
-                siFacturaImpl.guardarFactura(facturaVo, sesion.getProveedorVo().getRfc(), new ArrayList<OrdenDetalleVO>(), compraVo.getTipo());
+                siFacturaImpl.guardarFactura(facturaVo, sesion.getProveedorVo().getRfc(), new ArrayList<>(), compraVo.getTipo());
             } else {
                 siFacturaImpl.modificarFactura(facturaVo, sesion.getProveedorVo().getRfc());
             }
@@ -676,20 +676,27 @@ public class AdministrarCompraBean implements Serializable {
                 //
                 if (tipoCarga.get(CARTA_CONTENIDO)) {
                     procesarCartaContenido(fileInfo);
+                    PrimeFaces.current().ajax().update("frmAdminCompras:tbCompras:tbFacturas");
                 } else if (tipoCarga.get(FACTURA_PDF)) {
                     procesarFacturaPdf(fileInfo);
+                    PrimeFaces.current().ajax().update("frmAdminCompras:tbCompras:tbFacturas:tabSoportes");
                 } else if (tipoCarga.get(SOPORTE_FACTURA)) {
                     procesarSoporteFactura(fileInfo);
+                    PrimeFaces.current().ajax().update("frmAdminCompras:tbCompras:tbFacturas:tabSoportes");
                 } else if (tipoCarga.get(NOTA_CREDITO_XML)) {
                     procesarNotaCredXml(fileInfo);
+                    PrimeFaces.current().ajax().update("frmAdminCompras:tbCompras:tbFacturas:tblNotaCre");
                 } else if (tipoCarga.get(NOTA_CREDITO_PDF)) {
                     procesarPDFNotaCred(fileInfo);
+                    PrimeFaces.current().ajax().update("frmPopNotaCred:tbPopNota:tabFrmBtnPDFNC:dtSopNotaCre");
                 } else if (tipoCarga.get(SOPORTE_NOTA_CREDITO)) {
                     procesarSoporteNotaCred(fileInfo);
+                    PrimeFaces.current().ajax().update("frmPopNotaCred:tbPopNota:tabFrmBtnPDFNC:dtSopNotaCre");
                 } else if (tipoCarga.get(DOCUMENTO_ADUANAL)) {
                     procesarFacturaExtranjeraPdf(fileInfo);
                 } else {
                     procesarXml(fileInfo);
+                    PrimeFaces.current().ajax().update("frmAdminCompras:tbCompras:tabFactura");
                 }
 
                 fileInfo.delete();
@@ -954,6 +961,7 @@ public class AdministrarCompraBean implements Serializable {
             DocumentoAnexo documentoAnexo = new DocumentoAnexo(fileInfo.getContent());
             documentoAnexo.setRuta(uploadDirectory());
             documentoAnexo.setNombreBase(fileInfo.getFileName());
+            documentoAnexo.setTipoMime(fileInfo.getContentType());
             almacenDocumentos.guardarDocumento(documentoAnexo);
             retVal = siAdjuntoImpl.save(
                     documentoAnexo.getNombreBase(),
@@ -1005,10 +1013,6 @@ public class AdministrarCompraBean implements Serializable {
         } else {
             PrimeFaces.current().executeScript("alert('Es necesario agregar el desglose del contenido nacional');");
         }
-    }
-
-    public void eliminarCartaContenido() {
-
     }
 
     public void inicioGuardarDetalleFactura() {
