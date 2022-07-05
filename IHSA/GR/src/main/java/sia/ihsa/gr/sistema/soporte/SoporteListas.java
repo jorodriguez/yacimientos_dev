@@ -8,18 +8,16 @@ package sia.ihsa.gr.sistema.soporte;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import javax.ejb.EJB;
-import javax.faces.bean.CustomScoped;
-import javax.faces.bean.ManagedBean;
 import javax.faces.model.SelectItem;
+import javax.faces.view.ViewScoped;
+import javax.inject.Inject;
+import javax.inject.Named;
 import sia.modelo.campo.usuario.puesto.vo.CampoUsuarioPuestoVo;
-import sia.modelo.gr.vo.GrRutaZonasVO;
 import sia.modelo.gr.vo.MapaVO;
 import sia.modelo.sgl.viaje.vo.InvitadoVO;
 import sia.modelo.usuario.vo.UsuarioVO;
 import sia.servicios.campo.nuevo.impl.ApCampoUsuarioRhPuestoImpl;
 import sia.servicios.gr.impl.GrMapaImpl;
-import sia.servicios.gr.impl.GrRutasZonasImpl;
 import sia.servicios.sgl.impl.SgInvitadoImpl;
 import sia.util.UtilLog4j;
 
@@ -28,16 +26,15 @@ import sia.util.UtilLog4j;
  *
  * @author ihsa
  */
-//@ViewScoped
-@ManagedBean(name = "soporteListas")
-@CustomScoped(value = "#{window}")
+@Named(value = "soporteListas")
+@ViewScoped
 public class SoporteListas implements Serializable{
         
-    @EJB
+    @Inject
     private ApCampoUsuarioRhPuestoImpl apCampoUsuarioRhPuestoImpl;
-    @EJB
+    @Inject
     private SgInvitadoImpl sgInvitadoImpl;
-    @EJB
+    @Inject
     private GrMapaImpl grMapaImpl;
 
     private List<CampoUsuarioPuestoVo> listaUsuario = null;    

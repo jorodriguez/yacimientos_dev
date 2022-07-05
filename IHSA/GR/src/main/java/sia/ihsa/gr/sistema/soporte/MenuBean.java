@@ -7,25 +7,24 @@ package sia.ihsa.gr.sistema.soporte;
 
 import java.io.Serializable;
 import java.util.List;
-import javax.ejb.EJB;
-import javax.faces.bean.CustomScoped;
-import javax.faces.bean.ManagedBean;
+import javax.faces.view.ViewScoped;
+import javax.inject.Inject;
+import javax.inject.Named;
 
 import sia.modelo.gr.vo.MapaVO;
 import sia.servicios.gr.impl.GrMapaImpl;
-import sia.util.UtilLog4j;
 
 /**
  *
  * @author ihsa
  */
-@ManagedBean(name = "menuBean")
-@CustomScoped(value = "#{window}")
+@Named(value = "menuBean")
+@ViewScoped
 public class MenuBean implements Serializable {
 
     //ManagedBeans
     //Servicios
-    @EJB
+    @Inject
     private GrMapaImpl grMapaImpl;
     
     

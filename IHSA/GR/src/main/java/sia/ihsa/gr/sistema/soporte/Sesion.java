@@ -1,7 +1,6 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package sia.ihsa.gr.sistema.soporte;
 
@@ -13,14 +12,16 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeMap;
-import javax.ejb.EJB;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
 import javax.faces.event.ValueChangeEvent;
 import javax.faces.model.SelectItem;
+import javax.faces.view.ViewScoped;
+import javax.inject.Inject;
 import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
 import sia.constantes.Constantes;
 import sia.excepciones.SIAException;
 import sia.modelo.SgViaje;
@@ -58,49 +59,47 @@ import sia.util.UtilSia;
 
 /**
  *
- * @author ihsa
+ * @author jcarranza
  */
-@Named
+@Named(value = "sesion")
 @SessionScoped
 public class Sesion implements Serializable {
 
-    //ManagedBeans
-    //Servicios
-    @EJB
+    @Inject
     private UsuarioImpl usuarioImpl;
-    @EJB
+    @Inject
     private ApCampoUsuarioRhPuestoImpl apCampoUsuarioRhPuestoImpl;
-    @EJB
+    @Inject
     private SiModuloImpl siModuloImpl;
-    @EJB
+    @Inject
     private GrArchivoImpl grArchivoImpl;
-    @EJB
+    @Inject
     private SiUsuarioRolImpl siUsuarioRolImpl;
-    @EJB
+    @Inject
     private SgRutaTerrestreImpl sgRutaTerrestreImpl;
-    @EJB
+    @Inject
     private SgViajeImpl sgViajeImpl;
-    @EJB
+    @Inject
     private CoNoticiaImpl coNoticiaImpl;
-    @EJB
+    @Inject
     private SgViajeroSiMovimientoImpl sgViajeroSiMovimientoImpl;
-    @EJB
+    @Inject
     private SgViajeroImpl sgViajeroImpl;
-    @EJB
+    @Inject
     private SiMovimientoImpl siMovimientoImpl;
-    @EJB
+    @Inject
     private SiOperacionImpl siOperacionImpl;
-    @EJB
+    @Inject
     private ApCampoGerenciaImpl apCampoGerenciaImpl;
-    @EJB
+    @Inject
     private GrInterseccionImpl grInterseccionImpl;
-    @EJB
+    @Inject
     private SgViajeSiMovimientoImpl sgViajeSiMovimientoImpl;
-    @EJB
+    @Inject
     private GrPuntoImpl grPuntoImpl;
-    @EJB
+    @Inject
     private SgViajeVehiculoImpl sgViajeVehiculoImpl;
-    @EJB
+    @Inject
     private CoComentarioImpl coComentarioImpl;
 
     //private GrViaje grViaje = (GrViaje) FacesUtilsBean.getManagedBean("grViaje");

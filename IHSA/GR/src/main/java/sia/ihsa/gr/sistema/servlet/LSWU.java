@@ -1,7 +1,6 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package sia.ihsa.gr.sistema.servlet;
 
@@ -19,6 +18,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 import sia.constantes.Constantes;
 import sia.util.UtilLog4j;
 import sia.ihsa.gr.sistema.soporte.Sesion;
@@ -26,9 +26,10 @@ import sia.ihsa.gr.sistema.soporte.Sesion;
 
 /**
  *
- * @author ihsa
+ * @author jcarranza
  */
 @WebServlet(name = "LSWU", urlPatterns = {"/LSWUGR"})
+@Slf4j
 public class LSWU extends HttpServlet {
     
     @Inject

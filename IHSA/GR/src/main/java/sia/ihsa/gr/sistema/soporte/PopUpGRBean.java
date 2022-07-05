@@ -13,13 +13,12 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
-import javax.ejb.EJB;
-import javax.faces.bean.CustomScoped;
-import javax.faces.bean.ManagedBean;
-import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
 import javax.faces.event.ValueChangeEvent;
 import javax.faces.model.SelectItem;
+import javax.faces.view.ViewScoped;
+import javax.inject.Inject;
+import javax.inject.Named;
 import org.apache.commons.io.FilenameUtils;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.model.file.UploadedFile;
@@ -53,36 +52,36 @@ import sia.util.ValidadorNombreArchivo;
  *
  * @author ihsa
  */
-@ManagedBean(name = PopUpGRBean.BEAN_NAME)
-@CustomScoped(value = "#{window}")
+@Named(value = "popupGrBean")
+@ViewScoped
 public class PopUpGRBean implements Serializable {
 
     //------------------------------------------------------
     public static final String BEAN_NAME = "popupGrBean";
     //------------------------------------------------------
 
-    @EJB
+    @Inject
     private GrArchivoImpl grArchivoImpl;
-    @EJB
+    @Inject
     private GrMapaImpl grMapaImpl;
-    @EJB
+    @Inject
     private GrSitioImpl grSitioImpl;
-    @EJB
+    @Inject
     private SgSemaforoImpl sgSemaforoImpl;
-    @EJB
+    @Inject
     private SiParametroImpl parametrosSistema;
-    @EJB
+    @Inject
     private SiAdjuntoImpl servicioSiAdjuntoImpl;
-    @EJB
+    @Inject
     private SgRutaTerrestreImpl sgRutaTerrestreImpl;
-    @EJB
+    @Inject
     private GrRutasZonasImpl grRutasZonasImpl;
-    @EJB
+    @Inject
     private GrPuntoImpl grPuntoImpl;
-    @EJB
+    @Inject
     private SgEstadoSemaforoImpl sgEstadoSemaforoImpl;
 
-    @EJB
+    @Inject
     private ProveedorAlmacenDocumentos proveedorAlmacenDocumentos;
 
     private SoporteListas soporteListas = (SoporteListas) FacesUtilsBean.getManagedBean("soporteListas");
@@ -172,7 +171,7 @@ public class PopUpGRBean implements Serializable {
                     && this.getSitio().getDescripcion() != null && !this.getSitio().getDescripcion().isEmpty()
                     && this.getSitio().getLiga() != null && !this.getSitio().getLiga().isEmpty()) {
                 grSitioImpl.crearSitio(sitio, this.sesionBean.getUsuarioVO().getId());
-                confBean.cargarSitios();
+                confBean.cargarSitiosDt();
                 FacesUtilsBean.addInfoMessage("Se registró el sitio recomendado correctamente. ");
                 String jsFuncion = ";cerrarDialogoSitiosRecomendados();";
                 PrimeFaces.current().executeScript(jsFuncion);
@@ -189,7 +188,7 @@ public class PopUpGRBean implements Serializable {
                     && this.getZona().getNombre() != null && !this.getZona().getNombre().isEmpty()
                     && this.getZona().getDescripcion() != null && !this.getZona().getDescripcion().isEmpty()) {
                 grMapaImpl.crearZona(this.getZona(), this.sesionBean.getUsuarioVO().getId());
-                confBean.cargarZonas();
+                confBean.cargarZonasDt();
                 FacesUtilsBean.addInfoMessage("Se registró la zona correctamente. ");
                 String jsFuncion = ";cerrarDialogoZonas();";
                 PrimeFaces.current().executeScript(jsFuncion);
@@ -205,7 +204,7 @@ public class PopUpGRBean implements Serializable {
             if (this.getEstadoSemaforoVO() != null
                     && this.getEstadoSemaforoVO().getGrMapaID() > 0 && this.getEstadoSemaforoVO().getSemaforoID() > 0) {
                 if (sgEstadoSemaforoImpl.crearEstadoSemaforoZona(this.getEstadoSemaforoVO(), this.sesionBean.getUsuarioVO().getId()) != null) {
-                    confBean.cargarSemaforos();
+                    confBean.cargarSemaforosDt();
                     FacesUtilsBean.addInfoMessage("Se registró el semáforo correctamente. ");
                     String jsFuncion = ";cerrarDialogoSemaforos();";
                     PrimeFaces.current().executeScript(jsFuncion);
@@ -225,7 +224,7 @@ public class PopUpGRBean implements Serializable {
                     && this.getPunto().getNombre() != null && !this.getPunto().getNombre().isEmpty()
                     && this.getPunto().getDescripcion() != null && !this.getPunto().getDescripcion().isEmpty()) {
                 grPuntoImpl.crearPunto(this.getPunto(), this.sesionBean.getUsuarioVO().getId());
-                confBean.cargarPuntos();
+                confBean.cargarPuntosDt();
                 FacesUtilsBean.addInfoMessage("Se registró el punto de seguridad correctamente. ");
                 String jsFuncion = ";cerrarDialogoPuntos();";
                 PrimeFaces.current().executeScript(jsFuncion);
@@ -303,7 +302,7 @@ public class PopUpGRBean implements Serializable {
             sgRutaTerrestreImpl.modificarRutaTerrestre(this.sesionBean.getUsuario(), getEditHorario(), Constantes.BOOLEAN_FALSE);
 
             setEditHorario(null);
-            confBean.cargarRutas();
+            confBean.cargarRutasDt();
             String jsFuncion = ";cerrarDialogoEditRutaCodigosHorarioss();";
             PrimeFaces.current().executeScript(jsFuncion);
         } catch (Exception e) {
@@ -371,22 +370,22 @@ public class PopUpGRBean implements Serializable {
 
                         switch (getArchivo().getGrTipoArchivo()) {
                             case Constantes.GR_TIPO_ARCHIVO_Mapas:
-                                confBean.cargarMapas();
+                                confBean.cargarMapasDt();
                                 jsFuncion = ";cerrarDialogoPopUpFE();";
                                 msj = "Se registró el mapa correctamente. ";
                                 break;
                             case Constantes.GR_TIPO_ARCHIVO_Recomendaciones:
-                                confBean.cargarRecomendaciones();
+                                confBean.cargarRecomendacionesDt();
                                 jsFuncion = ";cerrarDialogoPopUpFE();";
                                 msj = "Se registró la recomendación correctamente. ";
                                 break;
                             case Constantes.GR_TIPO_ARCHIVO_Sitios:
-                                confBean.cargarSitios();
+                                confBean.cargarSitiosDt();
                                 jsFuncion = ";cerrarDialogoSitiosRecomendados();";
                                 msj = "Se registró el sitio correctamente. ";
                                 break;
                             case Constantes.GR_TIPO_ARCHIVO_Situacion:
-                                confBean.cargarSituaciones();
+                                confBean.cargarSituacionesDt();
                                 jsFuncion = ";cerrarDialogoPopUpFE();";
                                 msj = "Se registró la situación de riesgo correctamente. ";
                                 break;
@@ -435,22 +434,22 @@ public class PopUpGRBean implements Serializable {
             switch (this.getArchivo().getGrTipoArchivo()) {
                 case 1:
                     jsFuncion = ";cerrarDialogoPopUpFEedit();";
-                    confBean.cargarMapas();
+                    confBean.cargarMapasDt();
                     FacesUtilsBean.addInfoMessage("Se registró el mapa correctamente. ");
                     break;
                 case 2:
                     jsFuncion = ";cerrarDialogoPopUpFEedit();";
-                    confBean.cargarRecomendaciones();
+                    confBean.cargarRecomendacionesDt();
                     FacesUtilsBean.addInfoMessage("Se registró la recomendación correctamente. ");
                     break;
                 case 3:
                     jsFuncion = ";cerrarDialogoSitiosRecomendados();";
-                    confBean.cargarSitios();
+                    confBean.cargarSitiosDt();
                     FacesUtilsBean.addInfoMessage("Se registró el sitio correctamente. ");
                     break;
                 case 4:
                     jsFuncion = ";cerrarDialogoPopUpFEedit();";
-                    confBean.cargarSituaciones();
+                    confBean.cargarSituacionesDt();
                     FacesUtilsBean.addInfoMessage("Se registró la situación de riesgo correctamente. ");
                     break;
             }
@@ -572,7 +571,7 @@ public class PopUpGRBean implements Serializable {
         }
         return ret;
     }
-    
+
     private boolean enviarMsg(String msgCentops) {
         boolean ret = false;
         try {
@@ -584,7 +583,7 @@ public class PopUpGRBean implements Serializable {
                 msg.append("<td style=\"background-color:#A8CEF0\"><font color=\"black\" face=\"font-family: Gill, Helvetica, sans-serif; font-size:11px;text-align:left;\"><b>QUIÉN, QUÉ, DÓNDE, CUÁNDO Y CÓMO</b></font></td>");
                 msg.append("</tr><tr><td style=\"text-align:left\"><font size=\"-1\" face=\"arial\"><b>");
                 msg.append(this.getMsgCentops());
-                msg.append("</b></font></td></tr></tbody></table>");                
+                msg.append("</b></font></td></tr></tbody></table>");
             }
         } catch (Exception e) {
             UtilLog4j.log.fatal(this, e);
@@ -625,11 +624,13 @@ public class PopUpGRBean implements Serializable {
         }
     }
 
-    public void goPopupImagen(ActionEvent actionEvent) {
+    public void goPopupImagen(int idArchivo) {
         try {
-            int idArchivo = Integer.parseInt(FacesUtilsBean.getRequestParameter("idArchivo"));
-            setImagen(grArchivoImpl.getArchivoById(idArchivo));
-            PrimeFaces.current().executeScript(";abrirDialogoImagen();");
+            //int idArchivo = Integer.parseInt(FacesUtilsBean.getRequestParameter("idArchivo"));
+            if (idArchivo > 0) {
+                setImagen(grArchivoImpl.getArchivoById(idArchivo));
+                PrimeFaces.current().executeScript(";abrirDialogoImagen();");
+            }
         } catch (Exception e) {
             UtilLog4j.log.fatal(this, e);
             FacesUtilsBean.addErrorMessage("Ocurrió una excepción, favor de comunicar a sia@ihsa.mx");

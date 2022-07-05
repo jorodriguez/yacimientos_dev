@@ -11,11 +11,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.PostConstruct;
-import javax.ejb.EJB;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ManagedProperty;
-import javax.faces.bean.ViewScoped;
-import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
 import javax.faces.event.AjaxBehaviorEvent;
 import javax.faces.model.SelectItem;
@@ -48,14 +43,15 @@ import sia.servicios.sistema.impl.SiFacturaImpl;
 import sia.util.TicketEstadoEnum;
 import sia.util.UtilLog4j;
 import sia.util.ValidadorNombreArchivo;
-
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.faces.view.ViewScoped;
 /**
  *
  * @author mluis
  */
-@ManagedBean(name = "incidenciaBean")
+@Named(value = "incidenciaGrBean")
 @ViewScoped
-//@Named(value = "incidenciaBean")
 public class IncidenciaGrBean implements Serializable {
 
     /**
@@ -64,33 +60,32 @@ public class IncidenciaGrBean implements Serializable {
     public IncidenciaGrBean() {
 
     }
+    
+    private Sesion sesion = (Sesion) FacesUtilsBean.getManagedBean("sesion");
 
-    @ManagedProperty(value = "#{sesion}")
-    private Sesion sesion;
-
-    @EJB
+    @Inject
     SiIncidenciaImpl incidenciaImpl;
-    @EJB
+    @Inject
     SiIncidenciaAdjuntoImpl incidenciaAdjuntoImpl;
-    @EJB
+    @Inject
     PrioridadImpl prioridadImpl;
-    @EJB
+    @Inject
     SiCategoriaIncidenciaImpl categoriaIncidenciaImpl;
-    @EJB
+    @Inject
     ProveedorAlmacenDocumentos proveedorAlmacenDocumentos;
-    @EJB
+    @Inject
     SiAdjuntoImpl adjuntoImpl;
-    @EJB
+    @Inject
     FolioImpl folioImpl;
-    @EJB
+    @Inject
     RequisicionImpl requisicionImpl;
-    @EJB
+    @Inject
     OrdenImpl ordenImpl;
-    @EJB
+    @Inject
     SgSolicitudViajeImpl solicitudViajeImpl;
-    @EJB
+    @Inject
     SgViajeImpl sgViajeImpl;
-    @EJB
+    @Inject
     SiFacturaImpl facturaImpl;
     //
     private List<IncidenciaVo> incidencias;

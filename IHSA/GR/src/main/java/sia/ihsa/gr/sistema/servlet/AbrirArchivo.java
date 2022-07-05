@@ -35,9 +35,9 @@ import sia.util.UtilLog4j;
 public class AbrirArchivo extends HttpServlet {
 
     @EJB
-    private SiAdjuntoImpl servicioSiAdjuntoImpl;
+    private SiAdjuntoImpl servicioSiAdjunto;
     @EJB
-    private SiParametroImpl parametrosSistemaServicioRemoto;
+    private SiParametroImpl parametrosSistemaServicio;
     @Inject
     private Sesion sesion;
     @EJB
@@ -73,8 +73,8 @@ public class AbrirArchivo extends HttpServlet {
 		    // si inicio sesion buscar el convenio q viene en el parametro del servlet
 		    String SAId = request.getParameter("ZWZ2W");
 		    String SAUUID = request.getParameter("ZWZ3W");
-		    AdjuntoVO ets = servicioSiAdjuntoImpl.buscarArchivo(Integer.parseInt(SAId), SAUUID);
-		    String path = this.parametrosSistemaServicioRemoto.find(1).getUploadDirectory();
+		    AdjuntoVO ets = servicioSiAdjunto.buscarArchivo(Integer.parseInt(SAId), SAUUID);
+		    String path = this.parametrosSistemaServicio.find(1).getUploadDirectory();
 
 		    if (ets == null) {
 			response.setContentType("text/html");

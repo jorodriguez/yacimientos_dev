@@ -7,12 +7,12 @@ package sia.ihsa.gr.sistema.soporte;
 
 import java.io.Serializable;
 import java.util.List;
-import javax.ejb.EJB;
-import javax.faces.bean.CustomScoped;
-import javax.faces.bean.ManagedBean;
 import javax.faces.event.ActionEvent;
 import javax.faces.event.ValueChangeEvent;
 import javax.faces.model.SelectItem;
+import javax.faces.view.ViewScoped;
+import javax.inject.Inject;
+import javax.inject.Named;
 import sia.constantes.Constantes;
 import sia.modelo.gr.vo.GrArchivoVO;
 import sia.modelo.gr.vo.GrPuntoVO;
@@ -34,25 +34,26 @@ import sia.util.UtilLog4j;
  *
  * @author ihsa
  */
-@ManagedBean(name = "configuracionBean")
-@CustomScoped(value = "#{window}")
+
+@Named(value = "configuracionBean")
+@ViewScoped
 public class ConfiguracionBean implements Serializable {
 
     //ManagedBeans
     //Servicios
-    @EJB
+    @Inject
     private GrMapaImpl grMapaImpl;
-    @EJB
+    @Inject
     private GrArchivoImpl grArchivoImpl;
-    @EJB
+    @Inject
     private GrSitioImpl grSitioImpl;
-    @EJB
+    @Inject
     private SgOficinaImpl sgOficinaImpl;
-    @EJB
+    @Inject
     private SgRutaTerrestreImpl sgRutaTerrestreImpl;
-    @EJB
+    @Inject
     private GrPuntoImpl grPuntoImpl;
-    @EJB
+    @Inject
     private SgEstadoSemaforoImpl sgEstadoSemaforoImpl;
 
     private List<GrArchivoVO> mapas;
@@ -213,14 +214,15 @@ public class ConfiguracionBean implements Serializable {
 	} catch (Exception e) {
 	    this.setSemZonaID(0);
 	}
-	cargarSemaforos();
+	cargarSemaforosDt();
     }
 
-    public void cargarMapas(ActionEvent actionEvent) {
-	this.cargarMapas();
+    public String cargarMapas() {
+	this.cargarMapasDt();
+        return "/vistas/gr/confMapas";
     }
 
-    public void cargarMapas() {
+    public void cargarMapasDt() {
 	try {
 	    this.setMapas(grArchivoImpl.getArchivos(Constantes.GR_TIPO_ARCHIVO_Mapas, false));
 	} catch (Exception ex) {
@@ -228,11 +230,12 @@ public class ConfiguracionBean implements Serializable {
 	}
     }
 
-    public void cargarPuntos(ActionEvent actionEvent) {
-	this.cargarPuntos();
+    public String cargarPuntos() {
+	this.cargarPuntosDt();
+        return "/vistas/gr/confPuntos";
     }
 
-    public void cargarPuntos() {
+    public void cargarPuntosDt() {
 	try {
 	    this.setPuntos(grPuntoImpl.getPuntos());
 	} catch (Exception ex) {
@@ -240,11 +243,12 @@ public class ConfiguracionBean implements Serializable {
 	}
     }
 
-    public void cargarRutas(ActionEvent actionEvent) {
-	this.cargarRutas();
+    public String cargarRutas() {
+	this.cargarRutasDt();
+        return "/vistas/gr/confTrayectos";
     }
 
-    public void cargarRutas() {
+    public void cargarRutasDt() {
 	try {
 	    List<RutaTerrestreVo> lstRutas = sgRutaTerrestreImpl.traerRutaTerrestrePorOficina(getOficinaID(), Constantes.RUTA_TIPO_OFICINA);
 	    lstRutas.addAll(sgRutaTerrestreImpl.traerRutaTerrestrePorOficina(getOficinaID(), Constantes.RUTA_TIPO_CIUDAD));
@@ -254,13 +258,14 @@ public class ConfiguracionBean implements Serializable {
 	}
     }
 
-    public void cargarSemaforos(ActionEvent actionEvent) {
+    public String cargarSemaforos() {
 	this.setSemZonaID(0);
-	this.cargarSemaforos();
+	this.cargarSemaforosDt();
 	this.setZonasSem(grMapaImpl.getMapasItems(true, true));
+        return "/vistas/gr/confSemaforo";
     }
 
-    public void cargarSemaforos() {
+    public void cargarSemaforosDt() {
 	try {
 	    this.setSemaforos(sgEstadoSemaforoImpl.getEstadoSemaforos(this.getSemZonaID()));
 	} catch (Exception ex) {
@@ -268,11 +273,12 @@ public class ConfiguracionBean implements Serializable {
 	}
     }
 
-    public void cargarSitios(ActionEvent actionEvent) {
-	this.cargarSitios();
+    public String cargarSitios() {
+	this.cargarSitiosDt();
+        return "/vistas/gr/confSitios";
     }
 
-    public void cargarSitios() {
+    public void cargarSitiosDt() {
 	try {
 	    this.setSitios(grSitioImpl.getSitios(true));
 	} catch (Exception ex) {
@@ -280,11 +286,12 @@ public class ConfiguracionBean implements Serializable {
 	}
     }
 
-    public void cargarRecomendaciones(ActionEvent actionEvent) {
-	this.cargarRecomendaciones();
+    public String cargarRecomendaciones() {
+	this.cargarRecomendacionesDt();
+        return "/vistas/gr/confRecomendaciones";
     }
 
-    public void cargarRecomendaciones() {
+    public void cargarRecomendacionesDt() {
 	try {
 	    this.setRecomendaciones(grArchivoImpl.getArchivos(Constantes.GR_TIPO_ARCHIVO_Recomendaciones, true));
 	} catch (Exception ex) {
@@ -292,11 +299,12 @@ public class ConfiguracionBean implements Serializable {
 	}
     }
 
-    public void cargarSituaciones(ActionEvent actionEvent) {
-	this.cargarSituaciones();
+    public String cargarSituaciones() {
+	this.cargarSituacionesDt();
+        return "/vistas/gr/confSituaciones";
     }
 
-    public void cargarSituaciones() {
+    public void cargarSituacionesDt() {
 	try {
 	    this.setSituaciones(grArchivoImpl.getArchivos(Constantes.GR_TIPO_ARCHIVO_Situacion, true));
 	} catch (Exception ex) {
@@ -304,11 +312,12 @@ public class ConfiguracionBean implements Serializable {
 	}
     }
 
-    public void cargarZonas(ActionEvent actionEvent) {
-	this.cargarZonas();
+    public String cargarZonas() {
+	this.cargarZonasDt();
+        return "/vistas/gr/confZonas";
     }
 
-    public void cargarZonas() {
+    public void cargarZonasDt() {
 	try {
 	    this.setZonas(grMapaImpl.getMapas(null));
 	} catch (Exception ex) {

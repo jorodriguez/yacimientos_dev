@@ -11,48 +11,38 @@
         <ui:composition template="/vistas/template/template.xhtml">
             <ui:define name="content"> 
                 <style>
-                    .hero-widget { text-align: center; padding-top: 20px; padding-bottom: 20px; }
-                    .hero-widget .icon { display: block; font-size: 96px; line-height: 96px; margin-bottom: 10px; text-align: center; }
-                    .hero-widget var { display: block; height: 64px; font-size: 64px; line-height: 64px; font-style: normal; }
-                    .hero-widget label { font-size: 13px; }
-                    .hero-widget .options { margin-top: 10px; }
+
                 </style>
                 <ui:include src="/vistas/gr/popUpGR.xhtml"/>
-                <div class="container">
-                    <div class="row"> 
-                        <div class="panel panel-primary">
-                            <div class="panel-heading">Situaciones de Riesgo</div>
-                            <div class="panel-body" style="background-color: #e7e7e7;">
-                                <h:form id="frmSitua">
-                                    <c:forEach items="#{grBean.situaciones}" var="situa">
-                                        <div class="col-lg-2 col-sm-3 col-xs-12" title="">
-                                            <div class="hero-widget well well-sm">
-                                                <div class="icon">
-                                                    <!-- span class="glyphicon glyphicon-link" style="color: #303030; "></span -->
-                                                </div>
-                                                <div class="text" style="height: 70px;">                                            
-                                                    <label class="text-muted">#{situa.titulo}</label>
-                                                </div>
-                                                <div class="options">
-                                                    <h:commandLink
-                                                        styleClass="btn btn-primary btn-lg"
-                                                        title="Abrir imagen" 
-                                                        action="#{popupGrBean.goPopupImagen(event)}">                                                
-                                                        <i class="glyphicon glyphicon-link"></i> Abrir
-                                                        <f:param name="idArchivo" value="#{situa.id}"/>
-                                                    </h:commandLink>                                              
-                                                </div>
-                                            </div>
-                                        </div>                                
-                                    </c:forEach>
-                                </h:form>
-                            </div>
-                        </div>
+
+                <h:form id="frmSitua">
+                    <div class="table table-responsive">
+                        <p:dataTable size="small" stripedRows="true" showGridlines="true"  id="dataTable1" rows="10"   
+                                     value="#{grBean.situaciones}"
+                                     var="currentRow" styleClass="table table-striped">
+                            <f:facet name="header"><h:outputText style="font-size: large;" value="Situaciones de Riesgo"/></f:facet>
+                            <p:column style="text-align: center;">
+                                <h:outputText value="#{currentRow['titulo']}"/>
+                                <f:facet name="header">
+                                    <h:outputText value="Titulo"/>
+                                </f:facet>
+                            </p:column>
+                            <p:column style="text-align: center;">                                
+                                <p:commandLink value="Abrir"                                                   
+                                               action="#{popupGrBean.goPopupImagen(currentRow.id)}"
+                                               title="Click aqui para ver imagen..." 
+                                               process="@this" update="frmViewImg">
+                                </p:commandLink>
+                                <f:facet name="header">
+                                    <h:outputText value="Liga"/>
+                                </f:facet>
+                            </p:column>
+                        </p:dataTable>                            
                     </div>
-                </div>                
+                </h:form>
                 <script>
                     $(document).ready(function () {
-                        startDate();
+                        //                        startDate();
                     });
                 </script>
             </ui:define>            

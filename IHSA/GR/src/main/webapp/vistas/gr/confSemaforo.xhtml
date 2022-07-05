@@ -1,0 +1,197 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+    <h:body>
+        <ui:composition template="/vistas/template/template.xhtml">
+            <ui:define name="content">
+                <script>
+                    $(document).ready(function () {
+                        $("div.bhoechie-tab-menu>div.list-group>a").click(function (e) {
+                            e.preventDefault();
+                            $(this).siblings('a.active').removeClass("active");
+                            $(this).addClass("active");
+                            var index = $(this).index();
+                            $("div.bhoechie-tab>div.bhoechie-tab-content").removeClass("active");
+                            $("div.bhoechie-tab>div.bhoechie-tab-content").eq(index).addClass("active");
+                        });
+                    });
+                </script>
+                <style>
+
+                    /*  bhoechie tab */
+                    div.bhoechie-tab-container{
+                        z-index: 10;
+                        background-color: #ffffff;
+                        padding: 0 !important;
+                        border-radius: 4px;
+                        -moz-border-radius: 4px;
+                        border:1px solid #ddd;
+                        margin-top: 20px;
+                        margin-left: 0px;
+                        -webkit-box-shadow: 0 6px 12px rgba(0,0,0,.175);
+                        box-shadow: 0 6px 12px rgba(0,0,0,.175);
+                        -moz-box-shadow: 0 6px 12px rgba(0,0,0,.175);
+                        background-clip: padding-box;
+                        opacity: 0.97;
+                        filter: alpha(opacity=97);
+                    }
+                    div.bhoechie-tab-menu{
+                        padding-right: 0;
+                        padding-left: 0;
+                        padding-bottom: 0;
+                    }
+                    div.bhoechie-tab-menu div.list-group{
+                        margin-bottom: 0;
+                    }
+                    div.bhoechie-tab-menu div.list-group>a{
+                        margin-bottom: 0;
+                    }
+                    div.bhoechie-tab-menu div.list-group>a .glyphicon,
+                    div.bhoechie-tab-menu div.list-group>a .fa {
+                        color: #5A55A3;
+                    }
+                    div.bhoechie-tab-menu div.list-group>a:first-child{
+                        border-top-right-radius: 0;
+                        -moz-border-top-right-radius: 0;
+                    }
+                    div.bhoechie-tab-menu div.list-group>a:last-child{
+                        border-bottom-right-radius: 0;
+                        -moz-border-bottom-right-radius: 0;
+                    }
+                    div.bhoechie-tab-menu div.list-group>a.active,
+                    div.bhoechie-tab-menu div.list-group>a.active .glyphicon,
+                    div.bhoechie-tab-menu div.list-group>a.active .fa{
+                        background-color: #5A55A3;
+                        background-image: #5A55A3;
+                        color: #ffffff;
+                    }
+                    div.bhoechie-tab-menu div.list-group>a.active:after{
+                        content: '';
+                        position: absolute;
+                        left: 100%;
+                        top: 50%;
+                        margin-top: -13px;
+                        border-left: 0;
+                        border-bottom: 13px solid transparent;
+                        border-top: 13px solid transparent;
+                        border-left: 10px solid #5A55A3;
+                    }
+
+                    div.bhoechie-tab-content{
+                        background-color: #ffffff;
+                        /* border: 1px solid #eeeeee; */
+                        padding-left: 20px;
+                        padding-top: 10px;
+                    }
+
+                    div.bhoechie-tab div.bhoechie-tab-content:not(.active){
+                        display: none;
+                    }
+
+
+                </style>
+                <ui:include src="/vistas/gr/popUpGR.xhtml"/>                
+                <h:form id="form1">                    
+
+                    <div class="container">
+                        <div class="row">                                
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 bhoechie-tab-container">
+                                
+                                <div class="col-lg-9 col-md-9 col-sm-9 col-xs-10 bhoechie-tab" style="padding-left: 10px;">
+                                    
+                                    <div class="bhoechie-tab-content">
+                                        <center>
+                                            <div class="row" style="margin-bottom: 10px;">
+                                                <h:commandLink value="Registrar Semáforo"                                                                     
+                                                               action="#{popupGrBean.goPopupSemaforo(event)}"
+                                                               title="Click aquí para generar una nueva zona..."                                               
+                                                               styleClass="btn btn-primary col-lg-4 col-xs-12"
+                                                               />                    
+                                            
+                                            <div class="form-group col-lg-8 col-xs-12" >
+                                                    <strong><h:outputText class="col-lg-3 control-label" value="Filtro Zona:"/></strong>
+                                                    <div class="col-lg-9">                                            
+                                                        <p:selectOneMenu id="idZonaSem" styleClass="form-control"
+                                                                           value="#{configuracionBean.semZonaID}"
+                                                                           valueChangeListener="#{configuracionBean.cambiarValorZonaSem}">                    
+                                                            <f:selectItem itemValue="0" itemLabel="Seleccione . . . "/>
+                                                            <f:selectItems value="#{configuracionBean.zonasSem}"/>
+                                                        </p:selectOneMenu>
+                                                    </div>
+                                                </div>
+                                                </div>
+                                            <div class="table table-responsive">
+                                                <p:dataTable id="SemOP" rows="10" 
+                                                               value="#{configuracionBean.semaforos}" var="currentRow" styleClass="table table-striped"
+                                                               style="font-size:12px; color: black;">                                                                                  
+                                                    <p:column>
+                                                        <h:outputText value="#{currentRow.mapa.nombre}"/>
+                                                        <f:facet name="header">
+                                                            <h:outputText value="Zona"/>
+                                                        </f:facet>
+                                                    </p:column>                                                    
+                                                    <p:column>
+                                                        <h:outputText value="#{currentRow.semaforoVO.color}"/>
+                                                        <f:facet name="header">
+                                                            <h:outputText value="Semáforo"/>
+                                                        </f:facet>
+                                                    </p:column>                                                    
+                                                    <p:column>
+                                                        <h:outputText value="#{currentRow.fechaInicio}">
+                                                            <f:convertDateTime dateStyle="default" type="date"/>
+                                                        </h:outputText>
+                                                        <f:facet name="header">
+                                                            <h:outputText value="Fec. Ini"/>
+                                                        </f:facet>
+                                                    </p:column>
+                                                    <p:column>
+                                                        <h:outputText value="#{currentRow.horaInicio}">
+                                                            <f:convertDateTime dateStyle="default" type="time"/>
+                                                        </h:outputText>
+                                                        <f:facet name="header">
+                                                            <h:outputText value="Hr. Ini"/>
+                                                        </f:facet>
+                                                    </p:column>
+                                                    <p:column>
+                                                        <h:outputText value="#{currentRow.fechaFin}">
+                                                            <f:convertDateTime dateStyle="default" type="date"/>
+                                                        </h:outputText>
+                                                        <f:facet name="header">
+                                                            <h:outputText value="Fec. Fin"/>
+                                                        </f:facet>
+                                                    </p:column>
+                                                    <p:column>
+                                                        <h:outputText value="#{currentRow.horaFin}">
+                                                            <f:convertDateTime dateStyle="default" type="time"/>
+                                                        </h:outputText>
+                                                        <f:facet name="header">
+                                                            <h:outputText value="Hr. Fin"/>
+                                                        </f:facet>
+                                                    </p:column>
+                                                </p:dataTable>
+                                                <!-- aqui va el paginador -->
+                                            </div>                                            
+                                        </center>
+                                    </div>                                    
+                                                                        
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </h:form>  
+                <script>
+                    $(document).ready(function () {                        
+                        startDate();
+                    });
+                </script>
+            </ui:define>
+        </ui:composition>
+    </h:body>
+</html>

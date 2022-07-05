@@ -8,13 +8,12 @@ import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.ejb.EJB;
-import javax.faces.bean.CustomScoped;
-import javax.faces.bean.ManagedBean;
-import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
 import javax.faces.event.ValueChangeEvent;
 import javax.faces.model.SelectItem;
+import javax.faces.view.ViewScoped;
+import javax.inject.Inject;
+import javax.inject.Named;
 import sia.constantes.Constantes;
 import sia.modelo.SgAsignarVehiculo;
 import sia.modelo.SgViaje;
@@ -43,29 +42,29 @@ import sia.util.UtilLog4j;
  *
  * @author ihsa
  */
-@ManagedBean(name = "grViaje")
-@CustomScoped(value = "#{window}")
+@Named(value = "grViaje")
+@ViewScoped
 public class GrViaje implements Serializable {
 
-    @EJB
+    @Inject
     private SgOficinaImpl oficinaService;
-    @EJB
+    @Inject
     private SgVehiculoImpl sgVehiculoImpl;
-    @EJB
+    @Inject
     private SgRutaTerrestreImpl sgRutaTerrestreImpl;
-    @EJB
+    @Inject
     private SgViajeImpl sgViajeImpl;
-    @EJB
+    @Inject
     private UsuarioImpl usuarioImpl;
-    @EJB
+    @Inject
     private SgInvitadoImpl sgInvitadoImpl;
-    @EJB
+    @Inject
     private SgViajeroImpl sgViajeroImpl;
-    @EJB
+    @Inject
     private CoCompartidaImpl coCompartidaImpl;
-    @EJB
+    @Inject
     private SiUsuarioRolImpl siUsuarioRolImpl;
-    @EJB
+    @Inject
     private GrRutasZonasImpl grRutasZonasImpl;
 
     private SoporteListas soporteListas = (SoporteListas) FacesUtilsBean.getManagedBean("soporteListas");

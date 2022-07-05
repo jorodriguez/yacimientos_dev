@@ -9,9 +9,9 @@ import com.google.gson.Gson;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import javax.ejb.EJB;
-import javax.faces.bean.CustomScoped;
-import javax.faces.bean.ManagedBean;
+import javax.faces.view.ViewScoped;
+import javax.inject.Inject;
+import javax.inject.Named;
 import sia.constantes.Constantes;
 import sia.modelo.SgDetalleRutaTerrestre;
 import sia.modelo.SgViaje;
@@ -31,23 +31,23 @@ import sia.util.UtilLog4j;
  *
  * @author ihsa
  */
-@ManagedBean(name = "grBean")
-@CustomScoped(value = "#{window}")
+@Named(value = "grBean")
+@ViewScoped
 public class GrBean implements Serializable {
 
     //ManagedBeans
     //Servicios
-    @EJB
+    @Inject
     private GrArchivoImpl grArchivoImpl;
-    @EJB
+    @Inject
     private GrSitioImpl grSitioImpl;
-    @EJB
+    @Inject
     private SgViajeImpl sgViajeImpl;
-    @EJB
+    @Inject
     private SgDetalleRutaTerrestreImpl sgDetalleRutaTerrestreImpl;
-    @EJB
+    @Inject
     private SiLocalizacionImpl siLocalizacionImpl;
-    @EJB
+    @Inject
     private SgDetalleRutaCiudadImpl sgDetalleRutaCiudadImpl;
 
     private PopUpGRBean popUpGRBean = (PopUpGRBean) FacesUtilsBean.getManagedBean("popupGrBean");
@@ -69,206 +69,205 @@ public class GrBean implements Serializable {
     }
 
     /**
-     * @param tipo
      * @return the mapa
      */
     public GrArchivoVO getMapa() {
-	return mapa;
+        return mapa;
     }
 
     /**
      * @param mapa the mapas to set
      */
     public void setMapa(GrArchivoVO mapa) {
-	this.mapa = mapa;
+        this.mapa = mapa;
     }
 
     /**
      * @return the sitios
      */
     public List<GrSitioVO> getSitios() {
-	return sitios;
+        return sitios;
     }
 
     /**
      * @param sitios the sitios to set
      */
     public void setSitios(List<GrSitioVO> sitios) {
-	this.sitios = sitios;
+        this.sitios = sitios;
     }
 
     /**
      * @return the recomendaciones
      */
     public List<GrArchivoVO> getRecomendaciones() {
-	return recomendaciones;
+        int tipo = 2;//Integer.parseInt(FacesUtilsBean.getRequestParameter("tipoArchivo"));
+        setRecomendaciones(grArchivoImpl.getArchivos(tipo, false));
+        return recomendaciones;
     }
 
     /**
      * @param recomendaciones the recomendaciones to set
      */
     public void setRecomendaciones(List<GrArchivoVO> recomendaciones) {
-	this.recomendaciones = recomendaciones;
+        this.recomendaciones = recomendaciones;
     }
 
     /**
      * @return the situaciones
      */
     public List<GrArchivoVO> getSituaciones() {
-	return situaciones;
+        int tipo = 4; //Integer.parseInt(FacesUtilsBean.getRequestParameter("tipoArchivo"));
+        setSituaciones(grArchivoImpl.getArchivos(tipo, false));
+        return situaciones;
     }
 
     /**
      * @param situaciones the situaciones to set
      */
     public void setSituaciones(List<GrArchivoVO> situaciones) {
-	this.situaciones = situaciones;
+        this.situaciones = situaciones;
     }
 
     public String goMapa() {
-	int tipo = Integer.parseInt(FacesUtilsBean.getRequestParameter("tipoArchivo"));
-	setMapa(grArchivoImpl.getArchivo(tipo));
-	return "/vistas/gr/mapa";
+        int tipo = Integer.parseInt(FacesUtilsBean.getRequestParameter("tipoArchivo"));
+        setMapa(grArchivoImpl.getArchivo(tipo));
+        return "/vistas/gr/mapa";
     }
 
     public String goGPS() {
-	try {
-	    int idViaje = Integer.parseInt(FacesUtilsBean.getRequestParameter("idViaje"));
-	    if (idViaje > 0) {
-		SgViaje viaje = sgViajeImpl.find(idViaje);
-		List<GrMapaGPSVO> puntosOrGPS = new ArrayList<GrMapaGPSVO>();
-		List<GrMapaGPSVO> puntosDeGPS = new ArrayList<GrMapaGPSVO>();
-		GrMapaGPSVO origen = new GrMapaGPSVO(String.valueOf(idViaje), viaje.getSgRutaTerrestre().getSgOficina().getLongitud(), viaje.getSgRutaTerrestre().getSgOficina().getLatitud());
-		//new StringBuilder().append(Constantes.FMT_yyyy_MM_dd.format(new Date())).append("T").append(Constantes.FMT_HHmmss.format(new Date())).append(".511Z").toString());
-		puntosOrGPS.add(origen);
+        try {
+            int idViaje = Integer.parseInt(FacesUtilsBean.getRequestParameter("idViaje"));
+            if (idViaje > 0) {
+                SgViaje viaje = sgViajeImpl.find(idViaje);
+                List<GrMapaGPSVO> puntosOrGPS = new ArrayList<GrMapaGPSVO>();
+                List<GrMapaGPSVO> puntosDeGPS = new ArrayList<GrMapaGPSVO>();
+                GrMapaGPSVO origen = new GrMapaGPSVO(String.valueOf(idViaje), viaje.getSgRutaTerrestre().getSgOficina().getLongitud(), viaje.getSgRutaTerrestre().getSgOficina().getLatitud());
+                //new StringBuilder().append(Constantes.FMT_yyyy_MM_dd.format(new Date())).append("T").append(Constantes.FMT_HHmmss.format(new Date())).append(".511Z").toString());
+                puntosOrGPS.add(origen);
                 if (Constantes.RUTA_TIPO_OFICINA == viaje.getSgRutaTerrestre().getSgTipoEspecifico().getId()) {
                     SgDetalleRutaTerrestre detRuta = sgDetalleRutaTerrestreImpl.findSgDetalleRutaTerrestreDestinoBySgRutaTerrestre(viaje.getSgRutaTerrestre().getId());
-                    GrMapaGPSVO destino = new GrMapaGPSVO(String.valueOf(idViaje), detRuta.getSgOficina().getLongitud(), detRuta.getSgOficina().getLatitud());                    
+                    GrMapaGPSVO destino = new GrMapaGPSVO(String.valueOf(idViaje), detRuta.getSgOficina().getLongitud(), detRuta.getSgOficina().getLatitud());
                     puntosDeGPS.add(destino);
                 } else if (Constantes.RUTA_TIPO_CIUDAD == viaje.getSgRutaTerrestre().getSgTipoEspecifico().getId()) {
                     SgDetalleRutaTerrestreVo detRuta = sgDetalleRutaCiudadImpl.buscarDetalleRutaCiudadDestinoPorRuta(viaje.getSgRutaTerrestre().getId());
-                    GrMapaGPSVO destino = new GrMapaGPSVO(String.valueOf(idViaje), detRuta.getLongitud(), detRuta.getLatitud());                    
+                    GrMapaGPSVO destino = new GrMapaGPSVO(String.valueOf(idViaje), detRuta.getLongitud(), detRuta.getLatitud());
                     puntosDeGPS.add(destino);
                 }
-		this.setOrigenGPS(puntosOrGPS);
-		this.setDestinoGPS(puntosDeGPS);
-		this.setMapasGPS(siLocalizacionImpl.obtenerCoordenadas(idViaje));
-	    }
-	} catch (Exception e) {
-	    UtilLog4j.log.fatal(this, e.toString());
-	    FacesUtilsBean.addErrorMessage("Ocurrió una excepción, favor de comunicar a sia@ihsa.mx");
-	}
-	return "/vistas/gr/mapaGPS";
+                this.setOrigenGPS(puntosOrGPS);
+                this.setDestinoGPS(puntosDeGPS);
+                this.setMapasGPS(siLocalizacionImpl.obtenerCoordenadas(idViaje));
+            }
+        } catch (Exception e) {
+            UtilLog4j.log.fatal(this, e.toString());
+            FacesUtilsBean.addErrorMessage("Ocurrió una excepción, favor de comunicar a sia@ihsa.mx");
+        }
+        return "/vistas/gr/mapaGPS";
     }
 
     public String goRecomendaciones() {
-	int tipo = Integer.parseInt(FacesUtilsBean.getRequestParameter("tipoArchivo"));
-	setRecomendaciones(grArchivoImpl.getArchivos(tipo, false));
-	return "/vistas/gr/recomendaciones";
+        return "/vistas/gr/recomendaciones";
     }
 
     public String goSitios() {
-	setSitios(grSitioImpl.getSitios(false));
-	return "/vistas/gr/sitios";
+        setSitios(grSitioImpl.getSitios(false));
+        return "/vistas/gr/sitios";
     }
 
     public String goSituaciones() {
-	int tipo = Integer.parseInt(FacesUtilsBean.getRequestParameter("tipoArchivo"));
-	setSituaciones(grArchivoImpl.getArchivos(tipo, false));
-	return "/vistas/gr/situaciones";
+        return "/vistas/gr/situaciones.xhtml";
     }
 
     public String goMensaje() {
-	popUpGRBean.setDirectorioArchivos("GR/Mensajes/");
-	return "/vistas/gr/mensaje";
+        popUpGRBean.setDirectorioArchivos("GR/Mensajes/");
+        return "/vistas/gr/mensaje";
     }
 
     public String goAutorizar() {
-	popUpGRBean.setDirectorioArchivos("GR/Autorizar/");	
+        popUpGRBean.setDirectorioArchivos("GR/Autorizar/");
         sesionBean.actualizarRutasPausaGerente();
-	return "/vistas/gr/autorizarViaje";
+        return "/vistas/gr/autorizarViaje";
     }
 
     public boolean isResponsable() {
-	return this.sesionBean.isResponsable();
+        return this.sesionBean.isResponsable();
     }
 
     /**
      * @return the admin
      */
     public boolean isAdmin() {
-	return this.sesionBean.isAdmin();
+        return this.sesionBean.isAdmin();
     }
 
     public boolean isGrvia() {
-	return this.sesionBean.isGrVia();
+        return this.sesionBean.isGrVia();
     }
 
     /**
      * @return the mapasGPS
      */
     public List<GrMapaGPSVO> getMapasGPS() {
-	return mapasGPS;
+        return mapasGPS;
     }
 
     /**
      * @param mapasGPS the mapasGPS to set
      */
     public void setMapasGPS(List<GrMapaGPSVO> mapasGPS) {
-	this.mapasGPS = mapasGPS;
+        this.mapasGPS = mapasGPS;
     }
 
     /**
      * @return the origenGPS
      */
     public List<GrMapaGPSVO> getOrigenGPS() {
-	return origenGPS;
+        return origenGPS;
     }
 
     /**
      * @param origenGPS the origenGPS to set
      */
     public void setOrigenGPS(List<GrMapaGPSVO> origenGPS) {
-	this.origenGPS = origenGPS;
+        this.origenGPS = origenGPS;
     }
 
     /**
      * @return the destinoGPS
      */
     public List<GrMapaGPSVO> getDestinoGPS() {
-	return destinoGPS;
+        return destinoGPS;
     }
 
     /**
      * @param destinoGPS the destinoGPS to set
      */
     public void setDestinoGPS(List<GrMapaGPSVO> destinoGPS) {
-	this.destinoGPS = destinoGPS;
+        this.destinoGPS = destinoGPS;
     }
 
     public String loadMarkerData() {
-	if (this.getMapasGPS() != null && this.getMapasGPS().size() > 0) {
-	    return gson.toJson(this.getMapasGPS());
-	} else {
-	    return gson.toJson("");
-	}
+        if (this.getMapasGPS() != null && this.getMapasGPS().size() > 0) {
+            return gson.toJson(this.getMapasGPS());
+        } else {
+            return gson.toJson("");
+        }
 
     }
 
     public String loadMarkerDataOrg() {
-	if (this.getOrigenGPS() != null && this.getOrigenGPS().size() > 0) {
-	    return gson.toJson(this.getOrigenGPS());
-	} else {
-	    return gson.toJson("");
-	}
+        if (this.getOrigenGPS() != null && this.getOrigenGPS().size() > 0) {
+            return gson.toJson(this.getOrigenGPS());
+        } else {
+            return gson.toJson("");
+        }
     }
 
     public String loadMarkerDataDes() {
-	if (this.getDestinoGPS() != null && this.getDestinoGPS().size() > 0) {
-	    return gson.toJson(this.getDestinoGPS());
-	} else {
-	    return gson.toJson("");
-	}
+        if (this.getDestinoGPS() != null && this.getDestinoGPS().size() > 0) {
+            return gson.toJson(this.getDestinoGPS());
+        } else {
+            return gson.toJson("");
+        }
     }
 
     /**
@@ -292,14 +291,14 @@ public class GrBean implements Serializable {
      * @return the idNoticia
      */
     public int getIdNoticia() {
-	return idNoticia;
+        return idNoticia;
     }
 
     /**
      * @param idNoticia the idNoticia to set
      */
     public void setIdNoticia(int idNoticia) {
-	this.idNoticia = idNoticia;
+        this.idNoticia = idNoticia;
     }
 
 }
