@@ -43,8 +43,7 @@ public class MostraImagen extends HttpServlet implements Serializable{
         byte[] logoc = companiaImpl.traeLogo(cadena);
         //System.out.println("Compania: " + c.getNombre());
         if (logoc != null) {
-                ByteArrayOutputStream output = new ByteArrayOutputStream();
-                try {
+                try (ByteArrayOutputStream output = new ByteArrayOutputStream()) {
                     output.write(logoc, 0, logoc.length);
                     response.setContentType("image/jpeg");
                     response.setHeader("content-disposition", "inline;");
@@ -54,8 +53,6 @@ public class MostraImagen extends HttpServlet implements Serializable{
                     output.writeTo(out);
                     out.flush();
                     out.close();
-                } finally {
-                    output.close();
                 }
         }
     }
