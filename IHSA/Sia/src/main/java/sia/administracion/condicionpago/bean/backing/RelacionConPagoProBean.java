@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package sia.administracion.condicionPago.bean.backing;
+package sia.administracion.condicionpago.bean.backing;
 
 import java.io.Serializable;
 import java.util.logging.Level;
@@ -12,7 +12,7 @@ import javax.faces.model.DataModel;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
-import sia.administracion.condicionPago.bean.model.RelacionConPagoProModel;
+import sia.administracion.condicionpago.bean.model.RelacionConPagoProModel;
 import sia.modelo.orden.vo.ProveedorConPagoVo;
 import sia.sistema.bean.backing.GenericPanelPopup;
 import sia.sistema.bean.support.FacesUtils;

@@ -1878,10 +1878,10 @@ public class RequisicionImpl extends AbstractFacade<Requisicion> {
     
     
     public List<SiOpcionVo> totalRevPagina(String id, int idCampo, List<RequisicionEstadoEnum> estadosReq) {
-        List<SiOpcionVo> lo = new ArrayList<SiOpcionVo>();
+        List<SiOpcionVo> lo = new ArrayList<>();
         for (RequisicionEstadoEnum requisicionEstadoEnum : estadosReq) {
             SiOpcionVo so = totalRevPagina(id, idCampo, requisicionEstadoEnum.getId());
-            if (so != null) {
+            if (so != null && so.getTotal()> 0) {
                 so.setIdCampo(idCampo);
                 lo.add(so);
             }

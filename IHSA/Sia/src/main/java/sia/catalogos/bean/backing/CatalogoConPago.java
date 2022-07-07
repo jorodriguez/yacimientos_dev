@@ -17,7 +17,7 @@ import javax.faces.model.DataModel;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
-import sia.administracion.condicionPago.bean.model.RelacionConPagoProModel;
+import sia.administracion.condicionpago.bean.model.RelacionConPagoProModel;
 import sia.catalogos.bean.model.CatalogoConPagoModel;
 import sia.modelo.orden.vo.CondicionPagoVO;
 import sia.sistema.bean.backing.GenericPanelPopup;
