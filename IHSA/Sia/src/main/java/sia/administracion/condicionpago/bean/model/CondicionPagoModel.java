@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package sia.administracion.condicionPago.bean.model;
+package sia.administracion.condicionpago.bean.model;
 
 import java.io.Serializable;
 import java.util.ArrayList;

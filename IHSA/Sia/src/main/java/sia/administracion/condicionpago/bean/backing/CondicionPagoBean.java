@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package sia.administracion.condicionPago.bean.backing;
+package sia.administracion.condicionpago.bean.backing;
 
 import java.io.Serializable;
 import java.util.List;
@@ -21,7 +21,7 @@ import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.primefaces.PrimeFaces;
-import sia.administracion.condicionPago.bean.model.CondicionPagoModel;
+import sia.administracion.condicionpago.bean.model.CondicionPagoModel;
 import sia.modelo.Proveedor;
 import sia.modelo.orden.vo.ProveedorConPagoVo;
 import sia.sistema.bean.backing.GenericPanelPopup;
