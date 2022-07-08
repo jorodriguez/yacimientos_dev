@@ -11,14 +11,10 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.PostConstruct;
-import javax.ejb.EJB;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ManagedProperty;
-import javax.faces.bean.ViewScoped;
-import javax.faces.context.FacesContext;
-import javax.faces.event.ActionEvent;
+
 import javax.faces.event.AjaxBehaviorEvent;
 import javax.faces.model.SelectItem;
+import javax.faces.view.ViewScoped;
 import lombok.Getter;
 import lombok.Setter;
 import org.primefaces.event.FileUploadEvent;
@@ -58,8 +54,7 @@ public class DocumentosContratoProveedorBean implements Serializable {
      */
     public DocumentosContratoProveedorBean() {
     }
-    @ManagedProperty("#{sesion}")
-    @Setter
+    @Inject
     private Sesion sesion;
 
     @Inject
@@ -140,8 +135,7 @@ public class DocumentosContratoProveedorBean implements Serializable {
         doctosRhNoPeriodicos = rhConvenioDocumentosImpl.traerDoctosNoPeriodicosPorConvenio(contratoVo.getId());
     }
 
-    public void seleccionarContrato(ActionEvent event) {
-        int ind = Integer.parseInt(FacesUtilsBean.getRequestParameter("indice"));
+    public void seleccionarContrato(int ind) {
         contratoVo = new ContratoVO();
         contratoVo = contratos.get(ind);
         llenarDocumentos();
@@ -151,16 +145,15 @@ public class DocumentosContratoProveedorBean implements Serializable {
         PrimeFaces.current().executeScript("$(dialogoDocumentoContrato).modal('show');");
     }
 
-    public void seleccionarDocumento(ActionEvent event) {
-        int ind = Integer.parseInt(FacesUtilsBean.getRequestParameter("indice"));
+    public void seleccionarDocumento(int ind) {
         contratoDocumentoVo = new ContratoDocumentoVo();
         contratoDocumentoVo = listaDoctos.get(ind);
         //
         PrimeFaces.current().executeScript("$(dialogoCargarDocumentoContrato).modal('show');");
     }
 
-    public void eliminarArchivo(ActionEvent event) {
-        int idCF = Integer.parseInt(FacesUtilsBean.getRequestParameter("indice"));
+    public void eliminarArchivo(int ind) {
+        int idCF = ind;
         convenioDocumentoImpl.quitarArchivoDocumento(sesion.getProveedorVo().getRfc(), listaDoctos.get(idCF).getId());
         //
         llenarDocumentos();
@@ -175,7 +168,7 @@ public class DocumentosContratoProveedorBean implements Serializable {
         }
     }
 
-    public void nuevoDoctoPeriodico(ActionEvent event) {
+    public void nuevoDoctoPeriodico() {
         tipoDoctoSubir = Constantes.UNO;
         doctoRhPeriodicoVo = new RhConvenioDocumentoVo();
         doctoRhPeriodicoVo.setIdConvenio(contratoVo.getId());
@@ -183,33 +176,33 @@ public class DocumentosContratoProveedorBean implements Serializable {
         PrimeFaces.current().executeScript("$(dialogoCargarDocumentoContrato).modal('show');");
     }
 
-    public void agregarDoctoPeriodico(ActionEvent event) {
+    public void agregarDoctoPeriodico(int ind) {
         doctoRhPeriodicoVo = new RhConvenioDocumentoVo();
-        int idCF = Integer.parseInt(FacesUtilsBean.getRequestParameter("indice"));
+        int idCF = ind;
         //
         tipoDoctoSubir = Constantes.UNO;
         doctoRhPeriodicoVo = doctosRhPeriodicos.get(idCF);
         PrimeFaces.current().executeScript("$(dialogoCargarDocumentoContrato).modal('show');");
     }
 
-    public void eliminarDoctoPeriodico(ActionEvent event) {
-        int idCF = Integer.parseInt(FacesUtilsBean.getRequestParameter("indice"));
+    public void eliminarDoctoPeriodico(int ind) {
+        int idCF = ind;
         rhConvenioDocumentosImpl.quitarArchivo(sesion.getProveedorVo().getRfc(), doctosRhPeriodicos.get(idCF).getId());
         //
         llenarDocumentosPeriodicos();
     }
 
-    public void agregarDoctoNoPeriodico(ActionEvent event) {
+    public void agregarDoctoNoPeriodico(int ind) {
         doctoRhPeriodicoVo = new RhConvenioDocumentoVo();
-        int idCF = Integer.parseInt(FacesUtilsBean.getRequestParameter("indice"));
+        int idCF = ind;
         //
         tipoDoctoSubir = Constantes.UNO;
         doctoRhPeriodicoVo = doctosRhNoPeriodicos.get(idCF);
         PrimeFaces.current().executeScript("$(dialogoCargarDocumentoContrato).modal('show');");
     }
 
-    public void eliminarDoctoNoPeriodico(ActionEvent event) {
-        int idCF = Integer.parseInt(FacesUtilsBean.getRequestParameter("indice"));
+    public void eliminarDoctoNoPeriodico(int ind) {
+        int idCF = ind;
         rhConvenioDocumentosImpl.quitarArchivo(sesion.getProveedorVo().getRfc(), doctosRhNoPeriodicos.get(idCF).getId());
         //
         llenarDocumentosNoPeriodicos();
@@ -231,6 +224,7 @@ public class DocumentosContratoProveedorBean implements Serializable {
                     DocumentoAnexo documentoAnexo = new DocumentoAnexo(fileInfo.getContent());
                     documentoAnexo.setRuta(directorioProve());
                     documentoAnexo.setNombreBase(fileInfo.getFileName());
+                    documentoAnexo.setTipoMime(fileInfo.getContentType());
                     almacenDocumentos.guardarDocumento(documentoAnexo);
                     //
                     SiAdjunto adj = siAdjuntoImpl.save(documentoAnexo.getNombreBase(),

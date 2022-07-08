@@ -336,7 +336,7 @@ public class ContactoProveedorImpl extends AbstractFacade<ContactoProveedor> {
     private void guardarContacto(int idProveedor, ContactoProveedorVO contactoProveedorVO, String sesion) {
         try {
             if (!contactoProveedorVO.getNombre().isEmpty()) {
-                ContactoProveedor contactoProveedor = traerContactoPorProveedor(idProveedor, contactoProveedorVO.getNombre(), contactoProveedorVO.getIdContactoProveedor());
+                ContactoProveedor contactoProveedor = traerContactoPorProveedor(idProveedor, contactoProveedorVO.getNombre(), contactoProveedorVO.getTipoID());
                 if (contactoProveedor == null) {
                     contactoProveedor = new ContactoProveedor();
                     contactoProveedor.setProveedor(new Proveedor(idProveedor));

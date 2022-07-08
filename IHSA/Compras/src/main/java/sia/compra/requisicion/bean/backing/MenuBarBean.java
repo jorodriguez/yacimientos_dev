@@ -16,6 +16,7 @@ package sia.compra.requisicion.bean.backing;
  */
 import java.io.Serializable;
 import javax.faces.bean.CustomScoped;
+import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.primefaces.PrimeFaces;
@@ -37,7 +38,7 @@ import sia.util.UtilLog4j;
  * orientation of the Menu Bar.</p>
  */
 @Named(value = "menuBarBean")
-@CustomScoped(value = "#{window}")
+@ViewScoped
 public class MenuBarBean implements Serializable {
 
     //------------------------------------------------------
@@ -258,14 +259,14 @@ public class MenuBarBean implements Serializable {
 
     public String cambiarPaginaPendiente(String pagina, int campoId) {
         //------------------------------------------------------------
-        setAccionMenu(pagina);
+        setAccionMenu((pagina.contains(".xthml") ? pagina : pagina + ".xhtml?faces-redirect=true"));
         //
         usuarioImpl.cambiarCampoUsuario(usuarioBean.getUsuarioConectado().getId(), usuarioBean.getUsuarioConectado().getId(), campoId);
         usuarioBean.setUsuarioConectado(usuarioImpl.find(usuarioBean.getUsuarioConectado().getId()));
         usuarioBean.setCompania(usuarioBean.getUsuarioConectado().getApCampo().getCompania());
         //
 
-        return getAccionMenu() + ".xhtml?faces-redirect=true";
+        return getAccionMenu();
     }
     // Este metodo lo utilizo cuando uso botones y paso un solo parametro
 

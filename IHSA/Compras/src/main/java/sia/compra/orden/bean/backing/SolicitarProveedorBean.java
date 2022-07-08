@@ -7,6 +7,7 @@ package sia.compra.orden.bean.backing;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Serializable;
 import java.nio.file.Files;
@@ -156,7 +157,7 @@ public class SolicitarProveedorBean implements Serializable {
                     break;
             }
 
-        } catch (Exception e) {
+        } catch (IOException e) {
             UtilLog4j.log.error(e);
         }
     }
@@ -268,6 +269,7 @@ public class SolicitarProveedorBean implements Serializable {
                 String extFile = FilenameUtils.getExtension(fileInfo.getFileName());
                 documentoAnexo.setNombreBase(proveedorDocumentoVO.getDocumento() + '.' + extFile);
                 documentoAnexo.setRuta(getDirectorioDocumentoProveedor());
+                documentoAnexo.setTipoMime(fileInfo.getContentType());
                 almacenDocumentos.guardarDocumento(documentoAnexo);
                 //
                 AdjuntoVO adjunto = new AdjuntoVO();
@@ -279,6 +281,7 @@ public class SolicitarProveedorBean implements Serializable {
                 proveedorDocumentoVO.setAdjuntoVO(adjunto);
                 agregarAdjuntoProveedor();
             }
+            PrimeFaces.current().executeScript("$(adjuntarArchivo).modal('hide');");
             FacesUtilsBean.addInfoMessage("Se agrego la documentación. ");
         } catch (Exception e) {
             FacesUtilsBean.addErrorMessage("Ocurrio un error: " + e.getMessage());

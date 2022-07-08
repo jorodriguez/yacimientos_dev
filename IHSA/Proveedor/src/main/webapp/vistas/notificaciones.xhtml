@@ -1,8 +1,8 @@
 <?xml version='1.0' encoding='UTF-8' ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:ui="http://java.sun.com/jsf/facelets"
-      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
       xmlns:p="http://primefaces.org/ui"
       xmlns:f="http://java.sun.com/jsf/core">
     <body>
@@ -10,18 +10,18 @@
             <ui:define name="title">
                 #{msgs['sia.proveedor.reciben.notificaciones']}
             </ui:define>
-            <ui:define name="content">
-                <h:form>
+            <ui:define name="contenido">
+                <h:form id="frmNot">
                     <div class="row">
-                        <h:commandLink actionListener="#{notificacionBean.inicioRegistroContacto(e)}" class="btn btn-info">
-                            <i class="fa fa-plus fa-2x"/> 
-                        </h:commandLink>
+                        <p:commandLink action="#{notificacionBean.inicioRegistroContacto}" class="btn btn-info">
+                            <i class="fa fa-plus fa-2x text-white"/> 
+                        </p:commandLink>
                     </div>
                     <div class="row">
                         <div class="table table-responsive">
-                            <p:dataTable value="#{notificacionBean.listaContacto}" var="dataN"
+                            <p:dataTable id="dtNot" value="#{notificacionBean.listaContacto}" var="dataN"
                                            paginator="true" paginatorAlwaysVisible="true" paginatorPosition="bottom"
-                                           rows="10" rowIndexVar="indice">
+                                           rows="10" rowIndexVar="indice" size="small" showGridlines="true">
                                 <p:column headerText="#{msgs['sia.nombre']}" style="text-align: left;">
                                     <h:outputText value="#{dataN.nombre}" rendered="#{dataN.editar eq false}"/>
                                     <h:inputText value="#{dataN.nombre}" rendered="#{dataN.editar}" class="form-control"/>
@@ -41,21 +41,21 @@
                                     <h:outputText value="#{dataN.telefono}" rendered="#{dataN.editar eq false}"/>
                                     <h:inputText value="#{dataN.telefono}" rendered="#{dataN.editar}" class="form-control"/>
                                 </p:column>
-                                <p:column>
-                                    <h:commandLink actionListener="#{notificacionBean.editar(event)}" rendered="#{dataN.editar eq false}">
+                                <p:column width="5%">
+                                    <p:commandLink action="#{notificacionBean.editar(indice)}" rendered="#{dataN.editar eq false}"
+                                                   process="@this" update="frmNot:dtNot">
                                         <i class="fa fa-edit fa-2x text-primary"></i>
-                                        <f:param name="indice" value="#{indice}"/>
-                                    </h:commandLink>                    
-                                    <h:commandLink actionListener="#{notificacionBean.completarEditar(event)}" rendered="#{dataN.editar}">
+                                    </p:commandLink>                    
+                                    <p:commandLink action="#{notificacionBean.completarEditar(indice)}" rendered="#{dataN.editar}"
+                                                   process="@form" update="frmNot:dtNot">
                                         <i class="fa fa-check fa-2x text-primary"></i>
-                                        <f:param name="indice" value="#{indice}"/>
-                                    </h:commandLink>                    
+                                    </p:commandLink>                    
                                 </p:column>
-                                <p:column>
-                                    <h:commandLink actionListener="#{notificacionBean.eliminar(event)}">
-                                        <i class="fa fa-remove fa-2x text-danger"></i>
-                                        <f:param name="indice" value="#{indice}"/>
-                                    </h:commandLink>
+                                <p:column width="5%">
+                                    <p:commandLink action="#{notificacionBean.eliminar(indice)}"
+                                                   process="@this" update="frmNot:dtNot" >
+                                        <i class="fa fa-trash fa-2x text-danger"></i>
+                                    </p:commandLink>
                                 </p:column>
                             </p:dataTable>
                         </div>

@@ -16,12 +16,16 @@
             </ui:define>
             <ui:define name="contenido">
                 <h:form id="frmNoticiaOCS" >
+                    <p:confirmDialog global="true" showEffect="fade" hideEffect="fade" responsive="true" width="350">
+                        <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no ui-button-flat"/>
+                        <p:commandButton value="Si" type="button" styleClass="ui-confirmdialog-yes" />
+                    </p:confirmDialog>
                     <h:dataTable id="dtNotasOcs"  value="#{notaOrdenBean.listaNoticia}" var="data" cellpadding="0"  
                                  styleClass="table table-striped textoIzquierda">
                         <p:column> 
                             <div class="col-12">
                                 <div class="col-1" >
-                                    <p:graphicImage url="/sia/resources/img/logo.png" width="50" height="40"/>
+                                    <img src="/sia/resources/img/logo.png" width="50" height="40"/>
                                 </div>
                                 <div class="col-10">
                                     <div class="row">
@@ -47,10 +51,10 @@
                                                     <h:outputText styleClass="f11gris" value=" - " />  
                                                     <p:commandLink value="#{msgs['sistema.eliminar']}" 
                                                                    title="#{msgs['comunicacion.clic.aqui.para']} #{msgs['sistema.eliminar']} #{msgs['comunicacion.esta']} #{msgs['comunicacion.publicacion']}"
-                                                                   onclick="if (!confirm('Está seguro de eliminar esta noticia ...? '))
-                                                                               return false;"
                                                                    action="#{notaOrdenBean.eliminarNoticia(data.id)}"
                                                                    process="@this" update="frmNoticiaOCS:dtNotasOcs">
+                                                        <p:confirm header="Confirmar" message="Está seguro de eliminar esta noticia ..." 
+                                                                   icon="pi pi-exclamation-triangle"/>
                                                     </p:commandLink>
                                                     <h:outputText style="color: graytext; font-size: 11px;" value=" - "/>                                                                                                
                                                     <p:commandLink title="#{msgs['comunicacion.clic.agregar.archivos']}"                                                             
@@ -62,7 +66,7 @@
                                             </div>
                                             <div class="container-fluid">
                                                 <h:outputText style=" text-align: justify; font-size: 1.0em; padding-left: 4px;" 
-                                                              value="#{data['mensajeAutomatico']}"/><br/>
+                                                              value="#{data['mensajeAutomatico']}"/>
                                                 <h:inputTextarea id="comentarioText"  
                                                                  title="#{msgs['comunicacion.escribe.tu.comentario']}" 
                                                                  styleClass="form-control" cols="85" rows="3"
@@ -88,10 +92,10 @@
                                                         </h:column>
                                                         <h:column rendered="#{data['genero'] eq usuarioBean.usuarioConectado.id}">                                        
                                                             <p:commandLink value="#{msgs['sistema.eliminar']}" 
-                                                                           action="#{notaOrdenBean.eliminarArchivo(arch.id, arch.idNoticiaAdjunto,data.id)}"
-                                                                           onclick="if (!confirm('Está seguro de eliminar el archivo . . . ? '))
-                                                                                       return false;"
+                                                                           action="#{notaOrdenBean.eliminarArchivo(arch.id, arch.idNoticiaAdjunto,data.id)}"                                                                           
                                                                            process="@this" update="frmNoticiaOCS:dtNotasOcs">
+                                                                <p:confirm header="Confirmar" message="Está seguro de eliminar el archivo..." 
+                                                                           icon="pi pi-exclamation-triangle"/>
                                                             </p:commandLink>
                                                         </h:column>
                                                     </h:dataTable>
@@ -129,10 +133,10 @@
                                                                                     </p:commandLink>
                                                                                     <h:outputText value=" | "/>
                                                                                     <p:commandLink value="#{msgs['sistema.eliminar']}" title="#{msgs['comunicacion.clic.aqui.para']} #{msgs['sistema.eliminar']} #{msgs['comunicacion.este']} #{msgs['comunicacion.comentario']}" 
-                                                                                                   onclick="if (!confirm('Está seguro de eliminar el comentario ...? '))
-                                                                                                               return false;"
                                                                                                    action="#{notaOrdenBean.eliminarComentario(comentario.id)}"                                                                                              
-                                                                                                   process="@this" update="frmNoticiaOCS">                                       
+                                                                                                   process="@this" update="frmNoticiaOCS">
+                                                                                        <p:confirm header="Confirmar" message="Está seguro de eliminar el comentario ..." 
+                                                                                                   icon="pi pi-exclamation-triangle"/>
                                                                                     </p:commandLink>
                                                                                 </div>
                                                                             </ui:fragment>
@@ -175,8 +179,10 @@
                                              value="#{notaOrdenBean.noticiaActual.mensajeAutomatico}" cols="60" rows="3"
                                              required="true" requiredMessage="Agrege el comentario"/>
                             <div class="row">                                
-                                <p:commandLink action="#{notaOrdenBean.modificarNoticia}"  value="#{msgs['sistema.guardar']}" styleClass="btn btn-info"
-                                               process="@form" update="frmNoticiaOCS:dtNotasOcs"/>        
+                                <p:commandLink action="#{notaOrdenBean.modificarNoticia}"  
+                                               value="#{msgs['sistema.guardar']}" styleClass="btn btn-info"
+                                               process="@form" update="frmNoticiaOCS:dtNotasOcs"
+                                               oncomplete="PF('dlgNotaModNot').hide()"/>        
                             </div>                   
                         </p:panel>
                     </h:form>

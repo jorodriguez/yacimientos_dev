@@ -297,7 +297,7 @@ public class NotaOrdenBean implements Serializable {
                         );
                 traerNoticiaPorUsuario();
                 setMrSubirArchivo(false);
-
+                PrimeFaces.current().executeScript("PF('dlgNotaSubArh').hide()");
             } else {
                 FacesUtilsBean.addInfoMessage(new StringBuilder()
                         .append("No se permiten los siguientes caracteres especiales en el nombre del Archivo: ")
@@ -412,7 +412,7 @@ public class NotaOrdenBean implements Serializable {
 
     public void mostrarPopupModificarNoticia(int idN) {
         this.setIdNoticiaActiva(idN);
-        setNoticiaActual(coNoticiaImpl.find(idNoticiaActiva));        
+        setNoticiaActual(coNoticiaImpl.find(idNoticiaActiva));
         this.setMrPopupModificarNoticia(true);
     }
 
@@ -462,7 +462,6 @@ public class NotaOrdenBean implements Serializable {
     public Integer getIdNoticiaActiva() {
         return this.idNoticiaActiva;
     }
-
 
     /**
      * @return the textoNoticia

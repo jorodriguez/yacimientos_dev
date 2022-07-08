@@ -7,6 +7,7 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
 import javax.inject.Named;
 import javax.faces.view.ViewScoped;
@@ -17,7 +18,6 @@ import javax.faces.validator.ValidatorException;
 import javax.inject.Inject;
 import sia.excepciones.SIAException;
 import sia.inventarios.service.ArticuloRemote;
-import sia.inventarios.service.UnidadImpl;
 import sia.inventarios.service.UnidadRemote;
 import sia.modelo.campo.usuario.puesto.vo.CampoUsuarioPuestoVo;
 import sia.modelo.sistema.vo.CategoriaVo;
@@ -62,8 +62,8 @@ public class ArticuloBean extends LocalAbstractBean<ArticuloVO, Integer> impleme
         super(ArticuloVO.class);
     }
 
-    @Override
-    protected void init() {
+    @PostConstruct
+    public void init() {
         super.init();
         super.getFiltro().setCampoId(roles.getUsuario().getIdCampo());
         unidadBean.addObserver(this);

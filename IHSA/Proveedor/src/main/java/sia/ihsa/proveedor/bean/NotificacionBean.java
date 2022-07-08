@@ -9,19 +9,14 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.PostConstruct;
-import javax.ejb.EJB;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ManagedProperty;
-import javax.faces.bean.ViewScoped;
-import javax.faces.context.FacesContext;
-import javax.faces.event.ActionEvent;
+
+
 import javax.faces.model.SelectItem;
+import javax.faces.view.ViewScoped;
 import sia.constantes.Constantes;
 import sia.ihsa.admin.Sesion;
-import sia.ihsa.utils.FacesUtilsBean;
 import sia.modelo.PvArea;
 import sia.modelo.proveedor.Vo.ContactoProveedorVO;
-import sia.notificaciones.proveedor.impl.NotificacionProveedorImpl;
 import sia.servicios.proveedor.impl.ContactoProveedorImpl;
 import sia.servicios.proveedor.impl.PvAreaServicioImpl;
 import org.primefaces.PrimeFaces;
@@ -36,8 +31,8 @@ import javax.inject.Inject;
 @ViewScoped
 public class NotificacionBean implements Serializable {
 
-    @ManagedProperty("#{sesion}")
-    private Sesion sesion;
+    @Inject
+    Sesion sesion;
 
     @Inject
     private ContactoProveedorImpl contactoProveedorImpl;
@@ -62,32 +57,31 @@ public class NotificacionBean implements Serializable {
         }
     }
 
-    public void editar(ActionEvent event) {
-        int indice = Integer.parseInt(FacesUtilsBean.getRequestParameter("indice"));
+    public void editar(int indice) {        
         listaContacto.get(indice).setEditar(Constantes.TRUE);
     }
 
-    public void completarEditar(ActionEvent event) {
-        int indice = Integer.parseInt(FacesUtilsBean.getRequestParameter("indice"));
+    public void completarEditar(int indice) {
+        
         //
         contactoProveedorImpl.actualizarContacto(listaContacto.get(indice).getIdContactoProveedor(), listaContacto.get(indice).getNombre(), listaContacto.get(indice).getCorreo(), listaContacto.get(indice).getTelefono(), listaContacto.get(indice).isNotifica(), sesion.getProveedorVo().getRfc());
         //
         listaContacto.get(indice).setEditar(Constantes.FALSE);
     }
 
-    public void eliminar(ActionEvent event) {
-        int indice = Integer.parseInt(FacesUtilsBean.getRequestParameter("indice"));
+    public void eliminar(int indice) {
+        
         //
-        contactoProveedorImpl.eliminarContacto(indice, sesion.getProveedorVo().getRfc());
+        contactoProveedorImpl.eliminarContacto(listaContacto.get(indice).getIdContactoProveedor(), sesion.getProveedorVo().getRfc());
         listaContacto.remove(indice);
     }
 
-    public void inicioRegistroContacto(ActionEvent event) {
+    public void inicioRegistroContacto() {
         contactoProveedorVO = new ContactoProveedorVO();
         PrimeFaces.current().executeScript(";$(dialogoRegContacto).modal('show');");
     }
 
-    public void registroContacto(ActionEvent event) {
+    public void registroContacto() {
         List<ContactoProveedorVO> lc = new ArrayList<>();
         lc.add(contactoProveedorVO);
         contactoProveedorImpl.guardar(sesion.getProveedorVo().getIdProveedor(), lc, sesion.getProveedorVo().getRfc());
@@ -96,7 +90,7 @@ public class NotificacionBean implements Serializable {
 
     }
 
-    public void cerrarRegistroContacto(ActionEvent event) {
+    public void cerrarRegistroContacto() {
         contactoProveedorVO = new ContactoProveedorVO();
         PrimeFaces.current().executeScript(";$(dialogoRegContacto).modal('hide');");
     }

@@ -9,47 +9,49 @@
     <ui:define name="titulo">
         Entregar material
     </ui:define>    
-    <ui:define name="tabla"> 
-        <div class="row">
-            <p:dataTable value="#{entregaMaterialBean.solicitudes}" var="data">
-                <p:column headerText="Almacén">
-                    <h:outputText value="#{data.almacen}" />
-                </p:column>
-                <p:column headerText="Folio">
-                    <h:outputText value="#{data.folio}" />
-                </p:column>
-                <p:column headerText="Solicita material">
-                    <h:outputText value="#{data.solicita}" />
-                </p:column>
-                <p:column headerText="Recogerá el material">
-                    <h:outputText value="#{data.usuarioRecoge}" />
-                </p:column>
-                <p:column headerText="Requerida">
-                    <h:outputText value="#{data.fechaRequiere}" >
-                        <f:convertDateTime pattern="dd/MM/yyyyy"/>
-                    </h:outputText>
-                </p:column>
-                <p:column headerText="Total de materiales">
-                    <h:outputText value="#{data.totalDetalle}" />
-                </p:column>
-                <p:column headerText="Cantidad solicitada">
-                    <h:outputText value="#{data.cantidadSolicitada}" />
-                </p:column>
-                <p:column >
-                    <h:commandLink value="Finalizar" action="#{entregaMaterialBean.finalizarSolicitud(data.id)}"/>
-                </p:column>
-                <p:column >
-                    <h:commandLink value="Ver" action="#{entregaMaterialBean.verSolicitud(data.id)}"/>
-                </p:column>
-            </p:dataTable>
-        </div>
-        <h:form> <!-- Inicia popup  -->
+    <ui:define name="contenido"> 
+        <h:form id="frmEntMat">
+            <div class="row">
+                <p:dataTable value="#{entregaMaterialBean.solicitudes}" var="data">
+                    <p:column headerText="Almacén">
+                        <h:outputText value="#{data.almacen}" />
+                    </p:column>
+                    <p:column headerText="Folio">
+                        <h:outputText value="#{data.folio}" />
+                    </p:column>
+                    <p:column headerText="Solicita material">
+                        <h:outputText value="#{data.solicita}" />
+                    </p:column>
+                    <p:column headerText="Recogerá el material">
+                        <h:outputText value="#{data.usuarioRecoge}" />
+                    </p:column>
+                    <p:column headerText="Requerida">
+                        <h:outputText value="#{data.fechaRequiere}" >
+                            <f:convertDateTime pattern="dd/MM/yyyyy"/>
+                        </h:outputText>
+                    </p:column>
+                    <p:column headerText="Total de materiales">
+                        <h:outputText value="#{data.totalDetalle}" />
+                    </p:column>
+                    <p:column headerText="Cantidad solicitada">
+                        <h:outputText value="#{data.cantidadSolicitada}" />
+                    </p:column>
+                    <p:column width="80">
+                        <p:commandLink value="Finalizar" action="#{entregaMaterialBean.finalizarSolicitud(data.id)}"
+                                       process="@this" update="frmDialogFin" oncomplete="PF('crearDialogoFinalizaSolicitud').show()"/>
+                    </p:column>
+                    <p:column width="50">
+                        <p:commandLink value="Ver" action="#{entregaMaterialBean.verSolicitud(data.id)}"
+                                       process="@this" update="frmDialogEntrega" oncomplete="PF('crearDialogoEntregaMaterial').show()"/>
+                    </p:column>
+                </p:dataTable>
+            </div>
+        </h:form>
             <h:panelGroup id="solicitudComponente" >
                 <ui:include src="../../resources/widgets/entrega.xhtml"/>
             </h:panelGroup>
-        </h:form> <!-- Termina popup --> 
-        
-        <h:form> <!-- Inicia popup  -->
+
+        <h:form id="frmDialogFin"> <!-- Inicia popup  -->
             <h:panelGroup id="solicitudComponente" >
                 <ui:include src="../../resources/widgets/finalizarSolicitud.xhtml"/>
             </h:panelGroup>

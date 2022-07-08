@@ -539,6 +539,7 @@ public class RequisicionBean implements Serializable {
 
     @PostConstruct
     public void inicializar() {
+        requisicionActual = new Requisicion();
         listaAyuda = new ArrayList<>();
         esperaVO = new RequisicionEsperaVO();
         esperaVO.setMsgs(new ArrayList<>());
@@ -553,8 +554,14 @@ public class RequisicionBean implements Serializable {
         // Recibir parametro
         Integer parametro = Env.getContextAsInt(usuarioBean.getCtx(), "REQ_ID");
         if (parametro > 0) {
-            requisicionActual = requisicionServicioRemoto.find(parametro);
+            setRequisicionActual(requisicionServicioRemoto.find(parametro));
+            itemsActualizar();
+            //
+            rechazosRequisicion();
+            ordenBean.ordenesDeRequisicion(parametro);
             itemsProcesoAprobar();
+            //
+            listaEts = servicioReRequisicion.traerAdjuntosPorRequisicion(requisicionActual.getId());
             Env.removeContext(usuarioBean.getCtx(), "REQ_ID");
         } else {
             requisicionActual = null;
@@ -740,10 +747,9 @@ public class RequisicionBean implements Serializable {
     }
 
     //--- Lista de Monedas
-    public List getListaMonedas() {
-        return monedaBean.getListaMonedas(requisicionActual.getApCampo().getId());
-    }
-
+//    public List getListaMonedas() {
+//        return monedaBean.getListaMonedas(requisicionActual.getApCampo().getId());
+//    }
 //    public void cambiarValorMoneda() {
 //        itemActual.setMoneda(monedaBean.buscarPorNombre(event.getNewValue().toString(), requisicionActual.getApCampo().getCompania().getRfc()));
 //    }
@@ -982,7 +988,7 @@ public class RequisicionBean implements Serializable {
             crearItem = true;
             //.println("Selección: " + requisicionActual.getCompania().getNombre());
             notaRequisicionBean.setFiltrar(true);
-            getItemsActualizar();
+            itemsActualizar();
             rechazosRequisicion();
             if (Constantes.REQUISICION_EN_ESPERA == requisicionActual.getEstatus().getId()) {
                 enEsperaDet();
@@ -1060,41 +1066,37 @@ public class RequisicionBean implements Serializable {
     }
 
     public String verDetalle(int idReq) {
-        setRequisicionActual(requisicionServicioRemoto.find(idReq));
-        getItemsActualizar();
-        //
-        rechazosRequisicion();
-        ordenBean.ordenesDeRequisicion(idReq);
+        Env.setContext(usuarioBean.getCtx(), "REQ_ID", idReq);
         return "/vistas/SiaWeb/Requisiciones/DetalleHistorial.xhtml?faces-redirect=true";
     }
 
     public void verDetalleRevisadas() {
         setRequisicionActual(requisicionServicioRemoto.find(requiVO.getId()));
-        getItemsActualizar();
+        itemsActualizar();
         menuBarBean.procesarAccion("detalleHistorial");
     }
 
     public void verDetalleAprobadas() {
         setRequisicionActual(requisicionServicioRemoto.find(requiVO.getId()));
-        getItemsActualizar();
+        itemsActualizar();
         menuBarBean.procesarAccion("detalleHistorial");
     }
 
     public void verDetalleAutorizadas() {
         setRequisicionActual((Requisicion) requisicionesAutorizadas.getRowData());
-        getItemsActualizar();
+        itemsActualizar();
         menuBarBean.procesarAccion("detalleHistorial");
     }
 
     public void verDetalleVistoBueno() {
         setRequisicionActual((Requisicion) requisicionesVistoBueno.getRowData());
-        getItemsActualizar();
+        itemsActualizar();
         menuBarBean.procesarAccion("detalleHistorial");
     }
 
     public void verDetalleAsignadas() {
         setRequisicionActual(requisicionServicioRemoto.find(requiVO.getId()));
-        getItemsActualizar();
+        itemsActualizar();
         menuBarBean.procesarAccion("detalleHistorial");
     }
 
@@ -1391,7 +1393,7 @@ public class RequisicionBean implements Serializable {
         for (RequisicionDetalleVO requisicionDetalleVO : lrd) {
             requisicionDetalleImpl.limpiarTareaItems(requisicionDetalleVO.getIdRequisicionDetalle(), proyOTID, ocUnidadCID, usuarioBean.getUsuarioConectado().getId());
         }
-        getItemsActualizar();
+        itemsActualizar();
     }
 
     public void cancelarModificaRequisicion() {
@@ -2551,7 +2553,7 @@ public class RequisicionBean implements Serializable {
         return listaItems;
     }
 
-    public void getItemsActualizar() {
+    public void itemsActualizar() {
         try {
             if (requisicionActual != null && requisicionActual.getId() != null && requisicionActual.getId() > 0) {
                 List<RequisicionDetalleVO> lo = new ArrayList<>();
@@ -2815,10 +2817,6 @@ public class RequisicionBean implements Serializable {
         } catch (Exception ex) {
             LOGGER.fatal(this, ex.getMessage(), ex);
         }
-    }
-
-    public List<SelectItem> getListaUnidad() {
-        return listaUnidad;
     }
 
     /**
@@ -3178,7 +3176,7 @@ public class RequisicionBean implements Serializable {
                 if (idPartida > 0) {
                     setItemActual(requisicionServicioRemoto.buscarItemPorId(idPartida));
                     requisicionServicioRemoto.eliminarItem(getItemActual());
-                    getItemsActualizar();
+                    itemsActualizar();
 
                 }
             }
@@ -4135,7 +4133,7 @@ public class RequisicionBean implements Serializable {
     /**
      * @return the multiProyectosEtiqueta
      */
-    public String getMultiProyectosEtiqueta() {
+    public String ponerEtiquetamultiProyectos() {
         multiProyectosEtiqueta = "";
         if (listaItems != null && listaItems.getRowCount() > 0) {
             multiProyectosEtiqueta = ((List<RequisicionDetalleVO>) listaItems.getWrappedData()).get(0).getMultiProyectos();

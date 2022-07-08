@@ -412,6 +412,8 @@ public class CvConvenioExhortoImpl extends AbstractFacade<CvConvenioExhorto> {
             exhortoVo.setPuestoRepresentante(cex.getPuestoRepresentante());
             exhortoVo.setCodigo(cex.getCodigo());
             //
+            contratoVo.setProveedorVo(new ProveedorVo());
+            contratoVo.setProveedorVo(proveedorSesion);
             notificacionConvenioLocal.notificacionSolicitudFiniquito(correos(contratoVo.getIdCampo()), "", "Confirmación de Inicio Proceso de Finiquito de Contrato",
                     contratoVo, exhortoVo);
         } catch (Exception e) {

@@ -11,12 +11,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.PostConstruct;
-import javax.ejb.EJB;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ManagedProperty;
-import javax.faces.bean.ViewScoped;
-import javax.faces.context.FacesContext;
-import javax.faces.event.ActionEvent;
+
+import javax.faces.view.ViewScoped;
 import lombok.Getter;
 import lombok.Setter;
 import org.primefaces.event.FileUploadEvent;
@@ -28,8 +24,6 @@ import sia.constantes.Constantes;
 import sia.excepciones.SIAException;
 import sia.ihsa.admin.Sesion;
 import sia.ihsa.utils.FacesUtilsBean;
-import sia.modelo.OcOrdenEts;
-import sia.modelo.OrdenSiMovimiento;
 import sia.modelo.SiAdjunto;
 import sia.modelo.Usuario;
 import sia.modelo.orden.vo.MovimientoVO;
@@ -63,7 +57,7 @@ public class CartaIntencionBean implements Serializable {
     public CartaIntencionBean() {
     }
 
-    @ManagedProperty("#{sesion}")
+    @Inject
     private Sesion sesion;
 
     @Inject
@@ -100,10 +94,10 @@ public class CartaIntencionBean implements Serializable {
 
     @PostConstruct
     public void init() {
-        ordenes = new ArrayList<OrdenVO>();
-        items = new ArrayList<OrdenDetalleVO>();
+        ordenes = new ArrayList<>();
+        items = new ArrayList<>();
         llenarCartas();
-        rechazos = new ArrayList<MovimientoVO>();
+        rechazos = new ArrayList<>();
     }
 
     private void llenarCartas() {
@@ -114,8 +108,7 @@ public class CartaIntencionBean implements Serializable {
         doctosOrden = ordenEtsImpl.traerEtsPorOrdenCategoria(ordeneVo.getId(), Constantes.OCS_CATEGORIA_REPSE);
     }
 
-    public void agregarRepse(ActionEvent event) {
-        int indice = Integer.parseInt(FacesUtilsBean.getRequestParameter("indice"));
+    public void agregarRepse(int indice) {
         ordeneVo = new OrdenVO();
         //
         ordeneVo = ordenes.get(indice);
@@ -123,23 +116,21 @@ public class CartaIntencionBean implements Serializable {
         PrimeFaces.current().executeScript("$(dialogoSubirRepse).modal('show');");
     }
 
-    public void seleccionarCompra(ActionEvent event) {
-        int indice = Integer.parseInt(FacesUtilsBean.getRequestParameter("indice"));
+    public void seleccionarCompra(int indice) {
         ordeneVo = new OrdenVO();
         //
         ordeneVo = ordenes.get(indice);
         //
         items = ordenImpl.itemsPorOrdenCompra(ordeneVo.getId());
-        doctosOrden = new ArrayList<OrdenEtsVo>();
+        doctosOrden = new ArrayList<>();
         llenarDoctos();
         rechazos = ordenSiMovimientoImpl.traerMovimientsoOrdenOperacion(ordeneVo.getId(), Constantes.ID_SI_RECHAZAR_REPSE);
         //
         PrimeFaces.current().executeScript("$(dialogoDatosCompra).modal('show');");
     }
 
-    public void aceptarCompra(ActionEvent event) {
+    public void aceptarCompra(int indice) {
         boolean continuar = false;
-        int indice = Integer.parseInt(FacesUtilsBean.getRequestParameter("indice"));
         ordeneVo = new OrdenVO();
         //
         ordeneVo = ordenes.get(indice);
@@ -183,8 +174,7 @@ public class CartaIntencionBean implements Serializable {
         return continuar;
     }
 
-    public void inicioRechazarCompra(ActionEvent event) {
-        int indice = Integer.parseInt(FacesUtilsBean.getRequestParameter("indice"));
+    public void inicioRechazarCompra(int indice) {
         ordeneVo = new OrdenVO();
         //
         motivo = "";
@@ -193,7 +183,7 @@ public class CartaIntencionBean implements Serializable {
 
     }
 
-    public void rechazarCompra(ActionEvent event) {
+    public void rechazarCompra() {
         if (motivo.length() > 49) {
             UsuarioVO userSesion = new UsuarioVO();
             userSesion.setId(sesion.getProveedorVo().getRfc());
@@ -261,8 +251,7 @@ public class CartaIntencionBean implements Serializable {
 
     }
 
-    public void eliminarRepse(ActionEvent event) {
-        int indice = Integer.parseInt(FacesUtilsBean.getRequestParameter("indice"));
+    public void eliminarRepse(int indice) {
         //
         ordenEtsImpl.eliminarOcOrdenEts(doctosOrden.get(indice).getIdEtsOrden(), sesion.getProveedorVo().getRfc());
         //

@@ -16,9 +16,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Properties;
 import javax.enterprise.context.SessionScoped;
+import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 
 import javax.faces.model.SelectItem;
@@ -29,8 +29,7 @@ import javax.servlet.http.HttpSession;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import sia.compra.orden.bean.backing.NotaOrdenBean;
-import sia.compra.orden.bean.backing.OrdenBean;
+import org.primefaces.PrimeFaces;
 import sia.compra.sistema.bean.backing.ContarBean;
 import sia.constantes.Constantes;
 import sia.modelo.Compania;
@@ -41,11 +40,13 @@ import sia.modelo.campo.usuario.puesto.vo.CampoUsuarioPuestoVo;
 import sia.modelo.usuario.vo.UsuarioRolVo;
 import sia.modelo.usuario.vo.UsuarioVO;
 import sia.servicios.catalogos.impl.UsuarioImpl;
+import sia.servicios.orden.impl.OcUsuarioOpcionImpl;
 import sia.servicios.orden.impl.OrdenImpl;
 import sia.servicios.proveedor.impl.PvProveedorSinCartaIntencionImpl;
 import sia.servicios.requisicion.impl.RequisicionImpl;
+import sia.servicios.sistema.impl.SiOpcionImpl;
 import sia.servicios.sistema.impl.SiUsuarioRolImpl;
-import sia.sistema.servlet.support.SessionUtils;
+import sia.servicios.sistema.vo.SiOpcionVo;
 import sia.util.Env;
 import sia.util.UtilLog4j;
 import sia.util.UtilSia;
@@ -74,6 +75,10 @@ public class UsuarioBean implements Serializable {
     private RequisicionImpl requisicionImpl;
     @Inject
     private PvProveedorSinCartaIntencionImpl pvProveedorSinCartaIntencionImpl;
+    @Inject
+    private SiOpcionImpl siOpcionImpl;
+    @Inject
+    private OcUsuarioOpcionImpl usuarioOpcionImpl;
     //
     @Inject
     CadenasMandoBean cadenasMandoBean;
@@ -103,6 +108,9 @@ public class UsuarioBean implements Serializable {
     private Map<String, Boolean> mapaRoles;
     @Getter
     private Properties ctx;
+    @Getter
+    @Setter
+    private SiOpcionVo opcionVo;
 
     /**
      * Creates a new instance of ManagedBeanUsuario
@@ -111,6 +119,7 @@ public class UsuarioBean implements Serializable {
     }
 
     public void iniciar() {
+        opcionVo = new SiOpcionVo();
         direccionar();
     }
 
@@ -167,28 +176,7 @@ public class UsuarioBean implements Serializable {
         }
 
         setCompania(usuarioConectado.getApCampo().getCompania());
-        RequisicionBean requisicionBean = (RequisicionBean) FacesUtilsBean.getManagedBean("requisicionBean");
-//        RecepcionRequisicionBean recepcionRequisicionBean = (RecepcionRequisicionBean) FacesUtilsBean.getManagedBean("recepcionRequisicionBean");
-//        recepcionRequisicionBean.setActualizar(true);
-        OrdenBean ordenBean = (OrdenBean) FacesUtilsBean.getManagedBean("ordenBean");
-        ordenBean.setOrdenActual(null);
-
-        //Listas de historial
-        requisicionBean.setRequisicionesSolicitadas(null);
-        requisicionBean.setRequisicionesRevisadas(null);
-        requisicionBean.setRequisicionesAprobadas(null);
-        requisicionBean.setRequisicionesAprobadas(null);
-        requisicionBean.setRequisicionesAutorizadas(null);
-        requisicionBean.setRequisicionesVistoBueno(null);
-        requisicionBean.setRequisicionesAsignadas(null);
-        requisicionBean.setRequisicionActual(null);
-
         llenarRoles();
-//
-        NotaOrdenBean notaOrdenBean = (NotaOrdenBean) FacesUtilsBean.getManagedBean("notaOrdenBean");
-        notaOrdenBean.setNotaActual(null);
-        notaOrdenBean.setListaNotas(null);
-        setCambioCampo(false);
         //
         ContarBean contarBean = (ContarBean) FacesUtilsBean.getManagedBean("contarBean");
         contarBean.taerPendiente();
@@ -206,13 +194,6 @@ public class UsuarioBean implements Serializable {
         this.usuarioConectado = null;
 
         // realizar limpieza de informacion
-        RequisicionBean requisicionBean = (RequisicionBean) FacesUtilsBean.getManagedBean("requisicionBean");
-        requisicionBean.setRequisicionesAprobadas(null);
-        requisicionBean.setRequisicionesSolicitadas(null);
-        requisicionBean.setRequisicionesRevisadas(null);
-        requisicionBean.setRequisicionesAutorizadas(null);
-        requisicionBean.setRequisicionesAsignadas(null);
-        requisicionBean.setPanelSeleccionado(0);
     }
 
     /**
@@ -237,6 +218,49 @@ public class UsuarioBean implements Serializable {
             LOGGER.info(this, "Error de IO al redireccionar: {0}", new Object[]{url}, ex);
         }
 
+    }
+
+    public void inicioEstablecerPaginaInicio() {
+        FacesContext facesContext = FacesContext.getCurrentInstance();
+        HttpServletRequest servletRequest = (HttpServletRequest) facesContext.getExternalContext().getRequest();
+        String fullURI = servletRequest.getRequestURI();
+        //out.println("URI:" + fullURI);
+        String[] url = servletRequest.getRequestURI().split("/");
+        String lastPart = url[url.length - 1];
+        //out.println("URI last part:" + lastPart);
+        opcionVo = siOpcionImpl.buscarOpcionPorUltimaParteURL(lastPart);
+        if (opcionVo != null) {
+            PrimeFaces.current().executeScript("$(popAgregarPagina).modal('show');");
+        } else {
+            PrimeFaces.current().dialog().showMessageDynamic(new FacesMessage("No se puede establecer está página como principal."));
+        }
+    }
+
+    public void marcarComoPrincipal() {
+        try {
+            //   
+            if (opcionVo != null) {
+                usuarioOpcionImpl.guardar(getUsuarioConectado().getId(), opcionVo.getId());
+            } else {
+                usuarioOpcionImpl.guardar(getUsuarioConectado().getId(), opcionVo.getId());
+                //
+            }
+            PrimeFaces.current().executeScript(";cerrarDialogoModal(popAgregarPagina);");
+        } catch (Exception e) {
+            UtilLog4j.log.fatal(this, "Ocurrio un error al guardar la opcion principal. " + e.getMessage());
+            PrimeFaces.current().executeScript(";cerrarDialogoModal(popAgregarPagina);");
+        }
+    }
+
+    public String cambiarPaginaPendiente(String pagina, int campoId) {
+        //------------------------------------------------------------
+        //
+        usuarioServicioRemoto.cambiarCampoUsuario(getUsuarioConectado().getId(), getUsuarioConectado().getId(), campoId);
+        setUsuarioConectado(usuarioServicioRemoto.find(getUsuarioConectado().getId()));
+        setCompania(getUsuarioConectado().getApCampo().getCompania());
+        //
+
+        return (pagina.contains(".xthml") ? pagina : pagina + ".xhtml?faces-redirect=true");
     }
 
     private void log(String mensaje) {

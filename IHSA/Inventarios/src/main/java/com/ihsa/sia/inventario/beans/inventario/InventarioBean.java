@@ -23,16 +23,20 @@ import javax.faces.context.FacesContext;
 
 import javax.faces.event.AjaxBehaviorEvent;
 import javax.inject.Inject;
+import lombok.Getter;
+import lombok.Setter;
 import org.primefaces.PrimeFaces;
 import sia.constantes.Constantes;
 import sia.excepciones.SIAException;
 import sia.inventarios.service.AlmacenRemote;
+import sia.inventarios.service.ArticuloRemote;
 import sia.inventarios.service.InvCeldaImpl;
 import sia.inventarios.service.InvInventarioCeldaImpl;
 import sia.inventarios.service.InventarioImpl;
 import sia.inventarios.service.Utilitarios;
 import sia.modelo.InvRack;
 import sia.modelo.vo.inventarios.AlmacenVO;
+import sia.modelo.vo.inventarios.ArticuloVO;
 import sia.modelo.vo.inventarios.CeldaVo;
 import sia.modelo.vo.inventarios.InventarioVO;
 
@@ -46,6 +50,8 @@ public class InventarioBean implements Serializable, SaveObserver {
 
     @Inject
     protected InventarioImpl servicio;
+    @Inject
+    protected ArticuloRemote articuloRemote;
     @Inject
     protected InvCeldaImpl invCeldaImpl;
     @Inject
@@ -66,6 +72,9 @@ public class InventarioBean implements Serializable, SaveObserver {
     private List<InvRack> racks;
     private List<CeldaVo> pisos;
     private InventarioVO inventarioVO;
+    @Getter
+    @Setter
+    private ArticuloVO articuloVo;
     private boolean esNuevoElemento;
     final protected SessionBean principal = (SessionBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("principal");
 
@@ -83,6 +92,7 @@ public class InventarioBean implements Serializable, SaveObserver {
         almacenBean.addObserver(this);
         articuloBean.addObserver(this);
         setCeldaVo(new CeldaVo());
+        articuloVo = new ArticuloVO();
         //
         cargarAlmacenes();
         //
@@ -101,6 +111,10 @@ public class InventarioBean implements Serializable, SaveObserver {
         } catch (Exception ex) {
             ManejarExcepcion(ex);
         }
+    }
+
+    public List<ArticuloVO> completarArticulo(String cadena) {
+        return articuloRemote.buscarPorPalabras(cadena, principal.getUser().getCampo());
     }
 
     public void seleccionarAlmacen(AjaxBehaviorEvent event) {
@@ -156,8 +170,19 @@ public class InventarioBean implements Serializable, SaveObserver {
         }
     }
 
-    public void buscarInventario() {
+    public void reestablecer() {
+        inventarioVO = new InventarioVO();
         inventarios = servicio.traerInventario(inventarioVO, principal.getUser().getIdCampo());
+
+    }
+
+    public void buscarInventario() {
+        if (articuloVo.getId() > 0) {
+            inventarioVO.setArticuloId(articuloVo.getId());
+            inventarioVO.setArticuloNombre(articuloVo.getNombre());
+        }
+        inventarios = servicio.traerInventario(inventarioVO, principal.getUser().getIdCampo());
+        articuloVo = new ArticuloVO();
     }
 
     public void reestablecerTabla() {
@@ -176,7 +201,7 @@ public class InventarioBean implements Serializable, SaveObserver {
         return "sia.inventarios.inventarios.eliminarMensaje";
     }
 
-    public void cargarElementParaEditar(Integer id) {
+    public void cargarElementParaEditar(int id) {
         try {
             celdas = new ArrayList<>();
             getAlmacenBean().setEmbedded(false);
@@ -187,6 +212,8 @@ public class InventarioBean implements Serializable, SaveObserver {
             racks = invCeldaImpl.racksPorAlmacen(inventarioVO.getAlmacenId());
             //
             celdas = inventarioCeldaImpl.celdas(inventarioVO.getId());
+            //
+            PrimeFaces.current().executeScript("$(dialogoInventario).modal('show');");
         } catch (SIAException ex) {
             Logger.getLogger(InventarioBean.class.getName()).log(Level.SEVERE, null, ex);
         }

@@ -48,18 +48,11 @@
                               onsuccess="PF('statusDialog').hide()" />
 
                 <p:dialog widgetVar="statusDialog" modal="true" draggable="false"
-                          closable="false" resizable="false" showHeader="false">
-                    <p:graphicImage name="/resources/img/wait.gif" width="550px" />
+                          closable="false" resizable="false" showHeader="false" style="z-index: 100000045;">
+                    <img src="/resources/img/wait.gif" width="150px"  alt="Procesando . . . "/>
                 </p:dialog>
                 <!-- Navbar -->
-                <nav class="main-header navbar navbar-expand navbar-white navbar-light">
-                    <!-- Left navbar links -->
-                    <ul class="navbar-nav">
-                        <li class="nav-item">
-                            <a class="nav-link" data-widget="pushmenu" href="#" role="button">
-                                <i class="fas fa-bars"></i></a>
-                        </li>
-                    </ul>
+                <nav class="main-header navbar navbar-expand navbar-white navbar-light">                  
                     <!-- Right navbar links -->
                     <h:form class="navbar-nav ml-auto">
                         <ul class="navbar-nav ml-auto">
@@ -70,68 +63,70 @@
                 <!-- Main Sidebar Container -->
                 <aside class="main-sidebar sidebar-light-primary elevation-4">
                     <!-- Brand Logo -->
-                    <img src="/resources/img/logo.png" alt="SIA" 
-                         class="brand-image img-circle elevation-3" style="opacity: .8"/>
+                    <h:graphicImage value="/Compras/MostraImagen?ZWZ2W=#{usuarioBean.compania.rfc}" 
+                                    style="width: 97px; height: 49px;" alt="SIA" 
+                                    class="brand-image img-circle elevation-3" />
                     <span class="brand-text font-weight-light">SIA</span>
                     <!-- Sidebar -->
-                    <div class="user-panel mt-3 pb-3 mb-3 d-flex">
-                        <div class="image">
-                            <span class="fa fa-user img-circle elevation-2"/>                                     
+                    <div class="sidebar">
+                        <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+                            <div class="image">
+                                <span class="fa fa-user img-circle elevation-2"/>                                     
+                            </div>
+                            <div class="info">
+                                <ui:include src="datosUsuario.xhtml"/>
+                            </div>
                         </div>
-                        <div class="info">
-                            <ui:include src="datosUsuario.xhtml"/>
-                        </div>
-                    </div>
-                    <!-- SidebarSearch Form -->
-                    <div class="container-fluid">
+                        <!-- SidebarSearch Form -->
                         <h:form id="frmBuscar">
-                            <div class="input-group" data-widget="sidebar-search">
-                                <p:selectOneRadio  value="#{usuarioBean.seleccion}" styleClass="custom-form" 
-                                                   >
-                                    <f:selectItem itemLabel="Req." itemValue="REQUISICIÓN."/>
-                                    <f:selectItem itemLabel="OC/S" itemValue="OCS"/>
-                                </p:selectOneRadio>
-                                <div class="input-group">
-                                    <p:inputText id="inpCodigo"  value="#{usuarioBean.codigo}" class="form-control"
-                                                 placeholder="22-0001" />
-                                    <p:commandLink id="btnBuscar" styleClass="btn btn-default"
-                                                   title="Buscar"
-                                                   action="#{usuarioBean.buscarElemento()}"
-                                                   process="@this frmBuscar frmBuscar:inpCodigo" update="@form">
-                                        <span class="fa fa-search" style="font-weight: bold; color: #303030; "></span>
-                                    </p:commandLink>
+                            <div class="container">
+                                <div class="input-group" data-widget="sidebar-search">
+                                    <p:selectOneRadio  value="#{usuarioBean.seleccion}" styleClass="custom-form" 
+                                                       >
+                                        <f:selectItem itemLabel="Req." itemValue="REQUISICIÓN."/>
+                                        <f:selectItem itemLabel="OC/S" itemValue="OCS"/>
+                                    </p:selectOneRadio>
+                                    <div class="input-group">
+                                        <p:inputText id="inpCodigo"  value="#{usuarioBean.codigo}" class="form-control"
+                                                     placeholder="22-0001" />
+                                        <p:commandLink id="btnBuscar" class="btn btn-sidebar"
+                                                       title="Buscar"
+                                                       action="#{usuarioBean.buscarElemento()}"
+                                                       process="@this frmBuscar frmBuscar:inpCodigo" update="@form">
+                                            <span class="fa fa-search" style="font-weight: bold; color: #303030; "></span>
+                                        </p:commandLink>
+                                    </div>
+                                </div>
+                                <div class="input-group-append">
+                                    <p:commandLink  action="/vistas/SiaWeb/Orden/buscarAvanzada.xhtml?faces-redirect=true" 
+                                                    ajax="false" value="Busqueda avanzada"/>
                                 </div>
                             </div>
-                            <p:commandLink  action="/vistas/SiaWeb/Orden/buscarAvanzada.xhtml?faces-redirect=true" 
-                                            ajax="false" value="Busqueda avanzada"/>
                         </h:form>
-                    </div>
 
-                    <!-- Sidebar Menu -->
-                    <nav class="mt-2">
-                        <li class="nav-link">
-                            <h4 style="color: #337ab7; cursor: pointer; font-weight: bold;" 
-                                onclick="$(modalBloqueActivo).modal('show');">
-                                #{usuarioBean.usuarioConectado.apCampo.nombre}</h4>
-                        </li>
-                        <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
-                            <h:form class="nav-item">
-                                <ui:include src="menuLateral.xhtml" />
-                            </h:form>
-                        </ul>
-                    </nav>
+                        <!-- Sidebar Menu -->
+                        <nav class="mt-2">
+                            <li class="nav-link">
+                                <h4 style="color: #337ab7; cursor: pointer; font-weight: bold;" 
+                                    onclick="$(modalBloqueActivo).modal('show');">
+                                    #{usuarioBean.usuarioConectado.apCampo.nombre}</h4>
+                            </li>
+                            <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+                                <h:form class="nav-item">
+                                    <ui:include src="menuLateral.xhtml" />
+                                </h:form>
+                            </ul>
+                        </nav>
+                    </div>
+                    <!-- /.sidebar -->
                 </aside>
                 <!-- Content Wrapper. Contains page content -->
                 <div class="content-wrapper">
                     <!-- Main content -->
                     <section class="content">
-                        <div id="titulo" class="font-weight-bold text-large text-large" >
-                            <ui:insert name="tituloPagina"> 
-                                Título
-                            </ui:insert>
-                        </div>
+                        <h1 class="center">     <ui:insert name="tituloPagina"/></h1>
                         <div  class="row">
-                            <p:messages id="messages" showDetail="true" closable="true" 
+                            <p:messages id="messages" showDetail="false" closable="true" 
                                         class="col-12">
                                 <p:autoUpdate />
                             </p:messages>
@@ -140,13 +135,14 @@
                             <h:outputText id="mensajeError"/>
                             Por favor pongase en contacto con el equipo de desarrollo al correo soportesia@ihsa.mx
                         </div>
-
-                        <ui:insert name="contenido"/>                    
+                        <div  class="col-12">
+                            <ui:insert name="contenido"/>                    
+                        </div>
                     </section>
                     <div id="areaBlock" style="display: none;position: fixed;top: 0;left: 0;z-index: 250006;width: 100%;height: 100%;
                          background: #dddddd;opacity: 0.6;">
                         <div style="position:absolute;top:50%;left: 50%;">
-                            <img  src="/resources/img/wait.gif" alt="Procesando"/><br/>
+                            <img  src="/resources/img/wait.gif" alt="Procesando"/>
                             <font style="font-weight: bold; font-style: italic; font-size: 11px;">Procesando . . .</font>
                         </div>                            
                     </div> 
@@ -159,8 +155,8 @@
                         <b>Version</b> 1.0
                     </div>
                     <strong>Copyright &#xA9; 2020 <a
-                            href="http://www.kubicsoft.com" target="_blank"
-                            rel="noopener noreferrer">KubicSoft, S. A. de C. V.</a>
+                            href="http://www.ihsa.mx" target="_blank"
+                            rel="noopener noreferrer">Iberoamericana de Hidrocarburos S.A.</a>
                     </strong> All rights reserved.
                 </footer>
 
@@ -181,13 +177,13 @@
         <script src="/resources/js/jquery.min.js"></script>
         <!-- jQuery UI 1.11.4 -->
         <script>
-                                    $.noConflict(true);
-                                    // Code that uses other library's $ can follow here.
+                                        $.noConflict(true);
+                                        // Code that uses other library's $ can follow here.
         </script>
         <script src="/resources/js/jquery-ui.min.js"></script>
         <!-- Resolve conflict in jQuery UI tooltip with Bootstrap tooltip -->
         <script>
-                                    $.widget.bridge('uibutton', $.ui.button)
+                                        $.widget.bridge('uibutton', $.ui.button)
         </script>
         <!-- Bootstrap 4 -->
         <script src="/resources/js/bootstrap.bundle.min.js"></script>

@@ -2,12 +2,12 @@
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:ice="http://www.icesoft.com/icefaces/component"
                 xmlns:f="http://java.sun.com/jsf/core"
-                xmlns:c="http://java.sun.com/jsp/jstl/core"
-                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
                 xmlns:p="http://primefaces.org/ui">
     <h:form id="frmMensaje">
         <div class="modal fade" data-backdrop="static" id="dialogoMensaje" data-keyboard="false" style="overflow-y: scroll;">
-            <div class="modal-dialog">
+            <div class="modal-dialog modal-lg">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h4 class="modal-title">Bienvenido </h4>
@@ -20,7 +20,7 @@
                             <div class="row-fluid">
                                 <h:selectOneMenu value="#{sesion.rfcCompania}" class="form-control">
                                     <f:selectItems value="#{sesion.empresas}"/> 
-                                    <f:ajax listener="#{sesion.seleccionarEmpresa}" render="@this lblReq"/>
+                                    <p:ajax listener="#{sesion.seleccionarEmpresa}" update="frmMensaje:lblReq"/>
                                 </h:selectOneMenu>
                             </div>
                         </div>
@@ -37,10 +37,10 @@
                             <div class="row">
                                 <div class="input-group col-lg-12">
                                     <div class="col-lg-1">
-                                        <h:selectBooleanCheckbox id="checkAcepto"  class="form-control" 
-                                                                 onclick="entendido(this, 'divEntendido');">
-                                            <f:ajax render="@this btnEntendido"/>
-                                        </h:selectBooleanCheckbox>
+                                        <p:selectBooleanCheckbox id="checkAcepto" 
+                                                                 value="#{proveedorBean.mensajeLeido}">
+                                            <p:ajax update="frmMensaje:btnEntendido"/>
+                                        </p:selectBooleanCheckbox>
                                     </div>
                                     <div class="col-lg-10">
                                         <label for="checkAcepto">He leido y acepto las condiciones de recepción de facturas mostradas en está ventana y en la Orden de Compra.</label>
@@ -50,9 +50,10 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <div id="divEntendido" style="display: none;">
-                            <h:commandLink id="btnEntendido" class="btn btn-primary" value="Entendido" 
-                                           action="#{sesion.irPrincipalFactura()}"></h:commandLink>
+                        <div id="divEntendido" style="display: block;">
+                            <p:commandLink id="btnEntendido" class="btn btn-primary text-white" value="Entendido" 
+                                           disabled="#{proveedorBean.mensajeLeido eq false}"
+                                           action="#{sesion.irPrincipalFactura()}"></p:commandLink>
                         </div>
                     </div>
                 </div>
@@ -80,10 +81,9 @@
                             <div class="row">
                                 <div class="input-group col-lg-12">
                                     <div class="col-lg-1">
-                                        <h:selectBooleanCheckbox id="checkAceptoPrin"  class="form-control" 
-                                                                 onclick="entendido(this, 'divEntendidoPrin');">
-                                            <f:ajax render="@this btnEntendidoPrin"/>
-                                        </h:selectBooleanCheckbox>
+                                        <p:selectBooleanCheckbox value="#{proveedorBean.mensajeLeido}" >
+                                            <p:ajax update="frmMensajePrincipal:btnEntendidoPrin"/>
+                                        </p:selectBooleanCheckbox>
                                     </div>
                                     <div class="col-lg-10">
                                         <label for="checkAcepto">He leido y acepto las condiciones de recepción de facturas mostradas en está ventana y en la Orden de Compra.</label>
@@ -93,10 +93,11 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <div id="divEntendidoPrin" style="display: none;">
-                            <h:commandLink id="btnEntendidoPrin" class="btn btn-primary" value="Entendido" 
+                        <div id="divEntendidoPrin" >
+                            <p:commandLink id="btnEntendidoPrin" class="btn btn-primary text-white" value="Entendido" 
+                                           disabled="#{proveedorBean.mensajeLeido eq false}"
                                            action="#{proveedorBean.refrescarPrincipalFactura()}">
-                            </h:commandLink>
+                            </p:commandLink>
                         </div>
                     </div>
                 </div>
@@ -106,7 +107,7 @@
 
     <div class="modal fade" data-backdrop="static" id="dialogoMensajeArchivo" data-keyboard="false">
         <h:form id="frmMensajeArchivos">        
-            <div class="modal-dialog" style="width: 90%; height: 90%">
+            <div class="modal-dialog modal-lg">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h4 class="modal-title">Carga de archivos requeridos </h4>
@@ -226,47 +227,43 @@
                                     <div class="col-lg-12 col-xs-12">
                                         <div class="input-group col-lg-12 col-xs-12">                                
                                             <div class="table table-responsive" style="margin-bottom: 0px;">
-                                                <ice:dataTable rows="10" 
-                                                               value="#{sesion.proveedorVo.lstDocsPortal}" var="currentRow" styleClass="table table-striped"
-                                                               style="font-size:12px; color: black;">
-                                                    <ice:column style="width: 5%">
+                                                <p:dataTable rows="10" 
+                                                             value="#{sesion.proveedorVo.lstDocsPortal}" var="currentRow"
+                                                             size="small" showGridlines="true">
+                                                    <p:column style="width: 5%">
                                                         <button type="button" class="btn btn-info"
                                                                 title="#{currentRow.ayuda}">
-                                                            <i class="glyphicon glyphicon-question-sign"></i>
+                                                            <i class="fa fa-question"></i>
                                                         </button>                                                        
-                                                    </ice:column>
-                                                    <ice:column style="width: 45%">                                                        
-                                                        <ice:outputText value="#{currentRow.documento}"/>
+                                                    </p:column>
+                                                    <p:column style="width: 45%">                                                        
+                                                        <h:outputText value="#{currentRow.documento}"/>
                                                         <f:facet name="header">
-                                                            <ice:outputText value="Archivo"/>
+                                                            <h:outputText value="Archivo"/>
                                                         </f:facet>
-                                                    </ice:column>
-                                                    <ice:column style="width: 30%">
-                                                        <ice:outputText rendered="#{currentRow.id gt 0}" value="Ya fue cargado el archivo"/>
-                                                        <ice:outputText rendered="#{currentRow.id lt 1 and currentRow.obligatoria}" value="*El archivo es requerido"/>                                            
-                                                        <ice:outputText rendered="#{currentRow.id lt 1 and !currentRow.obligatoria}" value="Favor de cargar el archivo"/>                                            
-                                                    </ice:column> 
-                                                    <ice:column style="width: 20%">
-                                                        <ice:commandLink 
+                                                    </p:column>
+                                                    <p:column style="width: 30%">
+                                                        <h:outputText rendered="#{currentRow.id gt 0}" value="Ya fue cargado el archivo"/>
+                                                        <h:outputText rendered="#{currentRow.id lt 1 and currentRow.obligatoria}" value="*El archivo es requerido"/>                                            
+                                                        <h:outputText rendered="#{currentRow.id lt 1 and !currentRow.obligatoria}" value="Favor de cargar el archivo"/>                                            
+                                                    </p:column> 
+                                                    <p:column style="width: 10%">
+                                                        <p:commandLink 
                                                             rendered="#{currentRow.id gt 0}"
                                                             styleClass="btn btn-danger btn-sm"  
-                                                            actionListener="#{proveedorBean.borrarArchivoPortal(event)}"
+                                                            action="#{proveedorBean.borrarArchivoPortal(currentRow.id, currentRow.adjuntoVO.uuid)}"
                                                             title="Click aquí para eliminar archivo..." >
-                                                            <i class="glyphicon glyphicon-trash"></i>                                                
-                                                            <f:param name="idDoc" value="#{currentRow.id}"/>                                                            
-                                                            <f:param name="tipoUUID" value="#{currentRow.adjuntoVO.uuid}"/>
-                                                        </ice:commandLink>                                                        
-                                                        <ice:commandLink 
+                                                            <i class="fa fa-trash text-white"></i>                                                
+                                                        </p:commandLink>                                                        
+                                                        <p:commandLink 
                                                             rendered="#{currentRow.id lt 1}"
                                                             styleClass="btn btn-info btn-sm"  
-                                                            actionListener="#{proveedorBean.agregarArchivoPortal(event)}"
+                                                            action="#{proveedorBean.agregarArchivoPortal(currentRow.idDocumento, currentRow.adjuntoVO.tipoArchivo)}"
                                                             title="Click aquí para cargar archivo..." >
-                                                            <i class="glyphicon glyphicon-open"></i>                                                
-                                                            <f:param name="idDoc" value="#{currentRow.idDocumento}"/>
-                                                            <f:param name="tipoDoc" value="#{currentRow.adjuntoVO.tipoArchivo}"/>
-                                                        </ice:commandLink>                                                        
-                                                    </ice:column>					
-                                                </ice:dataTable>
+                                                            <i class="fa fa-file-pdf text-white"></i>                                                
+                                                        </p:commandLink>                                                        
+                                                    </p:column>					
+                                                </p:dataTable>
 
                                             </div>
 
@@ -280,12 +277,11 @@
                     </div>
                     <div class="modal-footer">
                         <div id="divLogOutArchivos">
-                            <h:commandLink title="Salir del portal de proveedores" 
-                                           action="/principal"
+                            <p:commandLink title="Salir del portal de proveedores" 
                                            id="linkLogout"
                                            value="Salir del portal de proveedores"
-                                           actionListener="#{sesion.cerrarSesion(event)}">                                            
-                            </h:commandLink>
+                                           action="#{sesion.cerrarSesion}">                                            
+                            </p:commandLink>
                         </div>
                     </div>
                 </div>
@@ -301,24 +297,18 @@
                     <h4 class="modal-title">Agregar archivo</h4>
                 </div>
                 <h:form id="frmArchivo">
-                    <div class="modal-body panel-body">
+                    <div class="modal-body ">
                         <div class="input-group">
-                            <div class="form-group col-lg-12">
-                                <p:fileUpload  styleClass="form-control"
-                                                id="fileEntryDoc22"                                                
-                                                label="Archivo "
-                                                listener="#{proveedorBean.subirArchivoPortal}"
-                                                /> 
-                                <h:message for="fileEntryDoc22" infoStyle="display:none" />
-
-                            </div>
+                            <p:fileUpload  
+                                id="fileEntryDoc22"                                                
+                                label="Archivo "
+                                listener="#{proveedorBean.subirArchivoPortal}"
+                                process="@this" update="frmMensajeArchivos"/> 
+                            <h:message for="fileEntryDoc22" infoStyle="display:none" />
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <h:commandButton value="Cargar archivo" 
-                                         styleClass="col-lg-3 col-xs-12 btn btn-info"
-                                         onclick="$(adjuntarArchivo).modal('hide');"/>
-                        <h:commandButton id="btnCerrar" value="Cancelar" class="btn btn-default"
+                        <p:commandButton id="btnCerrar" value="Cancelar" class="btn btn-default"
                                          onclick="$(adjuntarArchivoPortal).modal('hide');"/>                        
                     </div>
                 </h:form>

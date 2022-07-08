@@ -1,12 +1,12 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
-                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:f="http://java.sun.com/jsf/core">
 
     <div class="modal fade" data-backdrop="static" id="dialogoDatosFactura" data-keyboard="false">
-        <h:form> 
-            <div class="modal-dialog"  style="width: 50%; ">
+        <h:form id="frmDatosFac"> 
+            <div class="modal-dialog modal-lg"  >
                 <div class="modal-content">
                     <div class="modal-header">
                         <h4 class="modal-title">Datos de la factura</h4>
@@ -54,22 +54,23 @@
                             <p:tab id="tabOrdenCompra" title="Partidas de la factura">
                                 <div class="row">
                                     <p:dataTable value="#{proveedorBean.facturaVo.detalleFactura}" var="dataDet"
-                                                   rowIndexVar="indice"  paginator="true" rows="10" 
-                                                   paginatorPosition="bottom"  paginatorAlwaysVisible="true">
+                                                 rowIndexVar="indice"  paginator="true" rows="10"  lazy="true"
+                                                 paginatorPosition="bottom"  paginatorAlwaysVisible="true"
+                                                 size="small" showGridlines="true">
                                         <p:column headerText="Descripción" style="text-align: justify">
                                             #{dataDet.descripcion}
                                         </p:column>
-                                        <p:column headerText="Cant.">
+                                        <p:column headerText="Cant." width="8%">
                                             <h:outputText value="#{dataDet.cantidad}">
                                                 <f:convertNumber maxFractionDigits="2"/>
                                             </h:outputText>
                                         </p:column>
-                                        <p:column headerText="Precio" style="text-align: right;">
+                                        <p:column headerText="Precio" style="text-align: right;" width="8%">
                                             <h:outputText value="#{dataDet.precio}">
                                                 <f:convertNumber maxFractionDigits="2"  pattern="#####.##"/>
                                             </h:outputText>
                                         </p:column>
-                                        <p:column headerText="Importe" style="text-align: right;">
+                                        <p:column headerText="Importe" style="text-align: right;" width="8%">
                                             <h:outputText value="#{dataDet.importe}">
                                                 <f:convertNumber maxFractionDigits="2" pattern="#####.##"/>
                                             </h:outputText>
@@ -79,14 +80,15 @@
                             </p:tab>
                             <p:tab title="Soportes">
                                 <div class="row">
-                                    <p:dataTable value="#{proveedorBean.soportes}" var="data">
+                                    <p:dataTable value="#{proveedorBean.soportes}" var="data"
+                                                 size="small" showGridlines="true">
                                         <p:column headerText="Tipo" style="text-align: left;" >
                                             #{data.tipo}
                                         </p:column>
                                         <p:column headerText="Archivo">
                                             #{data.adjuntoVo.nombre}
                                         </p:column>
-                                        <p:column>
+                                        <p:column width="5%">
                                             <h:outputLink id="abrir" target="_blank" 
                                                           style="color: blue;"
                                                           title="Click aqui para abrir el archivo..." 
@@ -99,7 +101,8 @@
                             </p:tab>
                             <p:tab title="Contenido Nacional">
                                 <div class="row">
-                                    <p:dataTable value="#{proveedorBean.contenidoNacionalFactura}" var="dataCN"> 
+                                    <p:dataTable value="#{proveedorBean.contenidoNacionalFactura}" var="dataCN"
+                                                 size="small" showGridlines="true"> 
                                         <p:column headerText="Código">                                    
                                             <h:outputText value="#{dataCN.codigoCatalogoHidro}" />
                                         </p:column>
@@ -130,7 +133,7 @@
                                         <p:column headerText="Archivo">
                                             #{data.adjuntoVo.nombre}
                                         </p:column>
-                                        <p:column>
+                                        <p:column width="8%">
                                             <h:outputLink id="abrir" target="_blank" 
                                                           style="color: blue;"
                                                           title="Click aqui para abrir el archivo..." 
@@ -144,7 +147,7 @@
                         </p:tabView>
                     </div>
                     <div class="modal-footer">
-                        <h:commandLink value="Cerrar" styleClass="btn btn-default"
+                        <p:commandLink value="Cerrar" styleClass="btn btn-default"
                                        onclick="$(dialogoDatosFactura).modal('hide');"/>
                     </div>
                 </div>
@@ -153,23 +156,23 @@
     </div>
 
     <div class="modal fade" data-backdrop="static" id="dialogoDatosFacturaCXP" data-keyboard="false">
-        
-            <div class="modal-dialog">
+
+        <div class="modal-dialog">
             <div class="modal-content">
-                <div class="modal-header">
-                    
-                    <h:outputLabel value="Cargar complemento de pago XML" class="modal-title" rendered="#{proveedorBean.isTipoCXPXML}"/>
-                    <h:outputLabel value="Cargar complemento de pago PDF" class="modal-title" rendered="#{!proveedorBean.isTipoCXPXML}"/>
-                </div>
                 <h:form id="frmArchivoFact">
+                    <div class="modal-header">
+
+                        <h:outputLabel value="Cargar complemento de pago XML" class="modal-title" rendered="#{proveedorBean.isTipoCXPXML}"/>
+                        <h:outputLabel value="Cargar complemento de pago PDF" class="modal-title" rendered="#{!proveedorBean.isTipoCXPXML}"/>
+                    </div>
                     <div class="modal-body container-fluid">                        
                         <div class="col-lg-12">                            
                             <p:fileUpload id="file-entry"
-                                           style=" color: maroon;"
-                                           required="true"
-                                           requiredMessage="Debe seleccionar un archivo"                                           
-                                           listener="#{proveedorBean.uploadFile}"
-                                           />
+                                          style=" color: maroon;"
+                                          required="true"
+                                          requiredMessage="Debe seleccionar un archivo"                                           
+                                          listener="#{proveedorBean.uploadFile}"
+                                          process="@this" update="frmPrincipal:tbPrincipal"/>
                         </div>
                         <h:message  id="msg-file" for="file-entry" styleClass="text-danger" showDetail="false" showSummary="true"/>
                     </div>
@@ -177,20 +180,15 @@
                         <div id="msjValidando" style="visibility: hidden">
                             <h:outputText value="Por favor espere, se está validando el archivo ..." rendered="#{proveedorBean.isTipoCXPXML}"/>
                         </div>
-                        <h:commandButton id="submit" type="submit" 
-                                         value="Guardar" class="btn btn-info"
-                                         onclick="$('#msjValidando').css('visibility', 'visible')"
-                                         />
-                        <h:commandLink value="Cerrar" class="btn btn-default" 
-                                       actionListener="#{proveedorBean.cerrarCargaSoporte(event)}"
+                        <p:commandLink value="Cerrar" class="btn btn-default" 
+                                       action="#{proveedorBean.cerrarCargaSoporte}"
                                        immediate="true">
-                            <f:ajax render="@all"/>
-                        </h:commandLink>
+                        </p:commandLink>
                     </div>
                 </h:form>
             </div>
         </div>
-        
+
     </div>
 
 </ui:composition>

@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.faces.bean.CustomScoped;
 import javax.faces.model.SelectItem;
+import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import sia.constantes.Constantes;
@@ -27,9 +28,9 @@ import sia.util.UtilLog4j;
  * @version 1.0
  * @author-mail hacosta.0505@gmail.com @date 30/06/2009
  */
-@Named (value = EstatusBean.BEAN_NAME)
-@CustomScoped(value = "#{window}")
-public class EstatusBean implements Serializable{
+@Named(value = EstatusBean.BEAN_NAME)
+@ViewScoped
+public class EstatusBean implements Serializable {
 
     //------------------------------------------------------
     public static final String BEAN_NAME = "estatusBean";
@@ -65,6 +66,7 @@ public class EstatusBean implements Serializable{
             return null;
         }
     }
+
     public List<SelectItem> getListaStatusOrden() {
         List<StatusVO> le = estatusServicioRemoto.traerPorTipo("ODC");
         List<SelectItem> li = null;

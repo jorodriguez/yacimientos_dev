@@ -1215,9 +1215,9 @@ function graficaRequisicion(datos, dias) {
                     events: {
                         click: function () {
                             var comprador = this.category
-                            $("#frmReporteSinSol\\:" + "hidenTitulo").val('Requisiciones asignadas');
-                            $("#frmReporteSinSol\\:" + "hidenComprador").val(comprador);
-                            $("#frmReporteSinSol\\:btnBuscarPorComprador").click();
+                            $("#frmRep\\:tbReportes\\:" + "hidenTitulo").val('Requisiciones asignadas');
+                            $("#frmRep\\:tbReportes\\:" + "hidenComprador").val(comprador);
+                            $("#frmRep\\:tbReportes\\:btnBuscarPorComprador").click();
                         }
                     }
                 },
@@ -1256,9 +1256,9 @@ function graficaRequisicion(datos, dias) {
                     events: {
                         click: function () {
                             var comprador = this.category
-                            $("#frmReporteSinSol\\:" + "hidenTitulo").val('Ocs sin solicitar');
-                            $("#frmReporteSinSol\\:" + "hidenComprador").val(comprador);
-                            $("#frmReporteSinSol\\:btnBuscarOCSPorComprador").click();
+                            $("#frmRep\\:tbReportes\\:" + "hidenTitulo").val('Ocs sin solicitar');
+                            $("#frmRep\\:tbReportes\\:" + "hidenComprador").val(comprador);
+                            $("#frmRep\\:tbReportes\\:btnBuscarOCSPorComprador").click();
                         }
                     }
                 }
@@ -1307,7 +1307,7 @@ function graficaGerencia(datos, inicio, fin, autorizada) {
     var compradores = datos.Gerencia;
     var total = datos.total;
     var totalDolar = datos.totalDolar;
-    var status = $("#frmReporteOCSGerencia\\:cmbStatus option:selected").text();
+    var status = $("#frmRep\\:tbReportes\\:cmbStatus option:selected").text();
     //     bootbox.alert(compradores);
     //     bootbox.alert(total);
     //bootbox.alert(datos.jfechas)
@@ -1491,7 +1491,7 @@ function graficaOCSSolDevCan(datos, inicio, fin) {
                     events: {
                         click: function () {
                             var comprador = this.category
-                            //cambiarTab("frmOCSSolDevCan", "btnBuscarPorComprador", "hidenTab", 1)
+                            $("#frmRep\\:tbReportes\\:hidenIndTab").val(1);
                             $("#frmRep\\:tbReportes\\:hidenComprador").val(comprador);
                             $("#frmRep\\:tbReportes\\:btnPorComprador").click();
                         }
@@ -1517,7 +1517,7 @@ function graficaOCSSolDevCan(datos, inicio, fin) {
                     events: {
                         click: function () {
                             var comprador = this.category
-                           // cambiarTab("frmOCSSolDevCan", "btnBuscarPorComprador", "hidenTab", 2)
+                            $("#frmRep\\:tbReportes\\:hidenIndTab").val(2);
                             $("#frmRep\\:tbReportes\\:hidenComprador").val(comprador);
                             $("#frmRep\\:tbReportes\\:btnPorComprador").click();
                         }
@@ -1543,7 +1543,7 @@ function graficaOCSSolDevCan(datos, inicio, fin) {
                     events: {
                         click: function () {
                             var comprador = this.category
-                           // cambiarTab("frmOCSSolDevCan", "btnBuscarPorComprador", "hidenTab", 3)
+                            $("#frmRep\\:tbReportes\\:hidenIndTab").val(3);
                             $("#frmRep\\:tbReportes\\:hidenComprador").val(comprador);
                             $("#frmRep\\:tbReportes\\:btnPorComprador").click();
                         }

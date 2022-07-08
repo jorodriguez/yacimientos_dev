@@ -107,7 +107,7 @@ public class EstiloBean implements Serializable {
                         if (requisicion.isMultiproyecto()) {
                             requisicionBean.itemsProcesoAprobarMulti();
                         } else {
-                            requisicionBean.getItemsActualizar();
+                            requisicionBean.itemsActualizar();
                         }
                         requisicionBean.rechazosRequisicion();
                         //

@@ -10,14 +10,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.SessionScoped;
-import javax.faces.context.FacesContext;
-import javax.faces.event.ActionEvent;
+import javax.enterprise.context.SessionScoped;
+
 import javax.faces.event.AjaxBehaviorEvent;
 import javax.faces.model.SelectItem;
+import javax.inject.Named;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -32,12 +32,13 @@ import sia.servicios.proveedor.impl.ProveedorServicioImpl;
 import sia.servicios.sistema.impl.DdSesionImpl;
 import sia.util.OrdenEstadoEnum;
 import org.primefaces.PrimeFaces;
+import sia.util.Env;
 
 /**
  *
  * @author mluis
  */
-@ManagedBean(name = "sesion")
+@Named(value = "sesion")
 @SessionScoped
 @Slf4j
 public class Sesion implements Serializable {
@@ -48,10 +49,10 @@ public class Sesion implements Serializable {
     OrdenImpl ordenImpl;
     @EJB
     CompaniaImpl companiaImpl;
-    
+
     @EJB
     private DdSesionImpl sesionImpl;
-    
+
     @EJB
     CvConvenioFormasImpl convenioFormasImpl;
 
@@ -87,17 +88,26 @@ public class Sesion implements Serializable {
     @Getter
     @Setter
     private long formasPendientes;
+    @Getter
+    private Properties ctx;
+    public static final String USER = "user";
 
     @PostConstruct
     public void iniciar() {
-        
+        ctx = new Properties();
+    }
+
+    private void subirValoresContexto() {
+        Env.setContext(ctx, Env.SESSION_ID, SessionUtils.getSession().getId());
+        Env.setContext(ctx, Env.CLIENT_INFO, SessionUtils.getClientInfo(SessionUtils.getRequest()));
+        Env.setContext(ctx, Env.PUNTO_ENTRADA, "Proveedor");
     }
 
     public String login() {
         String pagina = "";
-        pVo = proveedorImpl.traerProveedorPorRfc(rfc, clave, Constantes.CERO,Constantes.VACIO);
+        pVo = proveedorImpl.traerProveedorPorRfc(rfc, clave, Constantes.CERO, Constantes.VACIO);
         if (pVo == null) {
-            FacesUtilsBean.addErrorMessage("El rfc o la clave del proveedor esta incorrecta");
+            FacesUtilsBean.addErrorMessage("El rfc o la clave del proveedor está incorrecta");
         } else {
             if (pVo.isPrimerSesion()) {
                 proveedorVo = pVo;
@@ -120,12 +130,15 @@ public class Sesion implements Serializable {
                 if (companiaVoSesion != null) {
                     PrimeFaces.current().executeScript("$(dialogoMensaje).modal('show');");
                 }
-                
+
                 guardarDatosSesion();
-                
+
+                SessionUtils.setAttribute(USER, proveedorVo);
+                ctx = new Properties();
+                subirValoresContexto();
                 formasPendientes = convenioFormasImpl.totalFormasSinValidar(proveedorVo.getIdProveedor());
                 pVo = null;
-                pagina = "principal";
+                pagina = "principal.xhml";
             } else {
                 PrimeFaces.current().executeScript(";$(dialogoPrimerSesion).modal('show');");
             }
@@ -145,25 +158,25 @@ public class Sesion implements Serializable {
         PrimeFaces.current().executeScript("$(dialogoMensajePrincipal).modal('hide');");
         //
 
-        return "/principal";
+        return "/principal.xhtml?faces-redirect=true";
     }
 
     public String irPrincipalFactura() {
         PrimeFaces.current().executeScript("$(dialogoMensaje).modal('hide');");
-        return "/principal";
+        return "/principal.xhtml?faces-redirect=true";
     }
 
-    public void cerrarSesion(ActionEvent event) {
+    public String cerrarSesion() {
         //registrar salida normal del sistema
         sesionImpl.registrarSalida(FacesUtilsBean.getHttpSession(false).getId(), proveedorVo.getRfc());
-        
+
 //        FacesUtilsBean.getHttpSession(false).invalidate();
         proveedorVo = null;
         companiaVoSesion = null;
-        
+        return "/principal.xhtml?faces-redirect=true";
     }
 
-    public void cambioClave(ActionEvent event) {
+    public void cambioClave() {
         if (getClave().equals(getClaveNueva())) {
             proveedorImpl.cambiarPass(proveedorVo.getIdProveedor(), getClaveNueva());
             PrimeFaces.current().executeScript(";$(dialogoCambiarClave).modal('hide');");
@@ -173,12 +186,12 @@ public class Sesion implements Serializable {
         }
     }
 
-    public void cerrarCambioClave(ActionEvent event) {
+    public void cerrarCambioClave() {
         PrimeFaces.current().executeScript(";$(dialogoCambiarClave).modal('hide');");
         mensajeClave = "";
     }
 
-    public void cambioClavePrimerSesion(ActionEvent event) {
+    public void cambioClavePrimerSesion() {
         if (getClave().equals(getClaveNueva())) {
             proveedorImpl.cambiarPass(pVo.getIdProveedor(), getClaveNueva());
             PrimeFaces.current().executeScript(";$(dialogoPrimerSesion).modal('hide');");
@@ -187,19 +200,18 @@ public class Sesion implements Serializable {
             FacesUtilsBean.addErrorMessage("msgClavePrimer", "Las claves no coinciden.");
         }
     }
-    
-    
+
     private void guardarDatosSesion() {
-        sia.modelo.sistema.vo.Sesion datosSesion = 
-                sia.modelo.sistema.vo.Sesion.builder()
-                .sesionId(FacesUtilsBean.getHttpSession(false).getId())
-                .datosCliente(FacesUtilsBean.getClientInfo(FacesUtilsBean.getRequest(FacesUtilsBean.getExternalContext())))
-                .puntoAcceso(FacesUtilsBean.getServletContext().getContextPath())
-                .genero(pVo.getRfc())
-                .build();
-        
+        sia.modelo.sistema.vo.Sesion datosSesion
+                = sia.modelo.sistema.vo.Sesion.builder()
+                        .sesionId(FacesUtilsBean.getHttpSession(false).getId())
+                        .datosCliente(FacesUtilsBean.getClientInfo(FacesUtilsBean.getRequest(FacesUtilsBean.getExternalContext())))
+                        .puntoAcceso(FacesUtilsBean.getServletContext().getContextPath())
+                        .genero(pVo.getRfc())
+                        .build();
+
         sesionImpl.guardarSesion(datosSesion);
-        
+
         log.info("*** Client info : Vendor {} , browser {}", datosSesion);
     }
 }

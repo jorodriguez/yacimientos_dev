@@ -184,7 +184,7 @@ public class Sesion implements Serializable {
                         //
                         taerPendiente();
 
-                        accion = "/principal";
+                        accion = "/principal.xhtml?faces-redirect=true";
                         setU(Constantes.VACIO);
                         setC(Constantes.VACIO);
                         log.info("USUARIO CONECTADO : {}", usuario.getId());

@@ -11,8 +11,8 @@ package sia.compra.requisicion.bean.backing;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import javax.faces.bean.CustomScoped;
 import javax.faces.model.SelectItem;
+import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import sia.modelo.Moneda;
@@ -28,7 +28,7 @@ import sia.util.UtilLog4j;
  * @date 7/07/2009
  */
 @Named (value= MonedaBean.BEAN_NAME)
-@CustomScoped(value = "#{window}")
+@ViewScoped
 public class MonedaBean implements Serializable{
 
     //------------------------------------------------------

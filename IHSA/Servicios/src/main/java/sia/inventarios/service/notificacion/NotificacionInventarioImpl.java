@@ -44,7 +44,7 @@ public class NotificacionInventarioImpl extends CodigoHtml {
     public boolean enviarCorreoAutorizarMaterial(SolicitudMaterialAlmacenVo solicitudMaterialAlmacenVo, String idUsuarioNotifica) {
         boolean v;
         UsuarioVO uVo = usuarioRemote.findById(idUsuarioNotifica);
-        System.out.println("correo auto: " + uVo.getMail());
+        //println("correo auto: " + uVo.getMail());
         v = enviarCorreoRemote.enviarCorreoIhsa(uVo.getMail(), solicitudMaterialAlmacenVo.getCorreoSolicita(),
                 "",
                 "Autorizar materiales -- " + solicitudMaterialAlmacenVo.getFolio(),

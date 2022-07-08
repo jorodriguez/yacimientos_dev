@@ -11,6 +11,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.PostConstruct;
+import javax.faces.context.FacesContext;
 
 import javax.faces.model.DataModel;
 import javax.inject.Inject;
@@ -59,9 +60,7 @@ public abstract class LocalAbstractBean<ClaseVO, TipoID> extends AbstractBean im
         try {
             setFiltro(claseVO.newInstance());
             setElemento(claseVO.newInstance());
-        } catch (InstantiationException ex) {
-            ManejarExcepcion(ex);
-        } catch (IllegalAccessException ex) {
+        } catch (InstantiationException | IllegalAccessException ex) {
             ManejarExcepcion(ex);
         }
         cargarListaConFiltros();
@@ -72,7 +71,7 @@ public abstract class LocalAbstractBean<ClaseVO, TipoID> extends AbstractBean im
             LazyDataModel lazyLista = new LazyDataModel() {
                 @Override
                 public int count(Map filterBy) {
-                    throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+                    return lista.getRowCount();
                 }
 
                 @Override
@@ -87,7 +86,7 @@ public abstract class LocalAbstractBean<ClaseVO, TipoID> extends AbstractBean im
             contarFilas(principal.getUser().getIdCampo());
             lazyLista.setRowCount(filasTotales);
             this.lista = lazyLista;
-        } catch (Exception ex) {
+        } catch (SIAException ex) {
             ManejarExcepcion(ex);
         }
     }
@@ -109,9 +108,7 @@ public abstract class LocalAbstractBean<ClaseVO, TipoID> extends AbstractBean im
         try {
             setFiltro(claseVO.newInstance());
             cargarListaConFiltros();
-        } catch (InstantiationException ex) {
-            ManejarExcepcion(ex);
-        } catch (IllegalAccessException ex) {
+        } catch (InstantiationException | IllegalAccessException ex) {
             ManejarExcepcion(ex);
         }
     }
@@ -120,9 +117,7 @@ public abstract class LocalAbstractBean<ClaseVO, TipoID> extends AbstractBean im
         try {
             setElemento(claseVO.newInstance());
             esNuevoElemento = true;
-        } catch (InstantiationException ex) {
-            ManejarExcepcion(ex);
-        } catch (IllegalAccessException ex) {
+        } catch (InstantiationException | IllegalAccessException ex) {
             ManejarExcepcion(ex);
         }
     }
@@ -131,7 +126,7 @@ public abstract class LocalAbstractBean<ClaseVO, TipoID> extends AbstractBean im
         try {
             setElemento(getServicio().buscar(id));
             esNuevoElemento = false;
-        } catch (Exception ex) {
+        } catch (SIAException ex) {
             ManejarExcepcion(ex);
         }
     }
@@ -147,7 +142,7 @@ public abstract class LocalAbstractBean<ClaseVO, TipoID> extends AbstractBean im
                 addInfoMessage(obtenerCadenaDeRecurso(mensajeEditarKey()));
             }
             cargarListaConFiltros();
-        } catch (Exception ex) {
+        } catch (SIAException ex) {
             ManejarExcepcion(ex);
         }
     }
@@ -158,7 +153,7 @@ public abstract class LocalAbstractBean<ClaseVO, TipoID> extends AbstractBean im
             getServicio().eliminar(id, getUserName(), principal.getUser().getIdCampo());
             addInfoMessage(obtenerCadenaDeRecurso(mensajeEliminarKey()));
             cargarListaConFiltros();
-        } catch (Exception ex) {
+        } catch (SIAException ex) {
             ManejarExcepcion(ex);
         }
         return null;

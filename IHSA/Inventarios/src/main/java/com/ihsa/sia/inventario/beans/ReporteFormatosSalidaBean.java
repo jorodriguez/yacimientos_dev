@@ -7,6 +7,8 @@ package com.ihsa.sia.inventario.beans;
 
 import com.ihsa.sia.commons.SessionBean;
 import java.io.Serializable;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -56,21 +58,23 @@ public class ReporteFormatosSalidaBean implements Serializable {
     private List<DetalleSolicitudMaterialAlmacenVo> detalleSolicitudMaterialAlmacenVos;
     private SolicitudMaterialAlmacenVo solicitudeVo;
     private List<EstadoAprobacionSolicitudVo> datosSolicitud;
-    private Date inicio;
-    private Date fin;
-    private Date maximaFecha;
+    private LocalDate inicio;
+    private LocalDate fin;
+    private LocalDate maximaFecha;
     private List<SelectItem> estados;
     private int idStatus;
 
     @PostConstruct
     public void inciar() {
-        setSolicitudes(new ArrayList<SolicitudMaterialAlmacenVo>());
+        setSolicitudes(new ArrayList<>());
+        fin = LocalDate.now();
+        inicio = fin.minusDays(30);
         llenar();
         setSolicitudeVo(new SolicitudMaterialAlmacenVo());
         datosSolicitud = new ArrayList<>();
         detalleSolicitudMaterialAlmacenVos = new ArrayList<>();
-        estados = new ArrayList<SelectItem>();
-        maximaFecha = new Date();
+        estados = new ArrayList<>();
+        maximaFecha = LocalDate.now();
         //
         llenarEstados();
     }
@@ -83,7 +87,8 @@ public class ReporteFormatosSalidaBean implements Serializable {
     }
 
     private void llenar() {
-        setSolicitudes(solicitudMaterialImpl.traerSolicitudesPorCampo(sesion.getUser().getIdCampo(), inicio, fin, idStatus));
+        ZoneId defaultZoneId = ZoneId.systemDefault();
+        setSolicitudes(solicitudMaterialImpl.traerSolicitudesPorCampo(sesion.getUser().getIdCampo(), Date.from(inicio.atStartOfDay(defaultZoneId).toInstant()), Date.from(fin.atStartOfDay(defaultZoneId).toInstant()), idStatus));
     }
 
     public void seleccionarSolicitud(int idSol) {
@@ -91,13 +96,12 @@ public class ReporteFormatosSalidaBean implements Serializable {
         datosSolicitud = estadoAprobacionSolicitudImpl.traerProcesoAprobacionPorSolicitud(idSol);
         detalleSolicitudMaterialAlmacenVos = solicitudeVo.getMateriales();
         //
-        PrimeFaces.current().executeScript( ";mostrarDialogoFormatosSalidaMaterial();");
     }
 
     public void cerrarFormatosSalidaMaterial() {
         solicitudeVo = new SolicitudMaterialAlmacenVo();
         datosSolicitud = new ArrayList<>();
-        PrimeFaces.current().executeScript( ";cerrarDialogoFormatosSalidaMaterial();");
+        PrimeFaces.current().executeScript("PF('dialogoDatosProcesoFolio').hide();");
     }
 
     public void buscarFormatos() {
@@ -171,35 +175,35 @@ public class ReporteFormatosSalidaBean implements Serializable {
     /**
      * @return the inicio
      */
-    public Date getInicio() {
+    public LocalDate getInicio() {
         return inicio;
     }
 
     /**
      * @param inicio the inicio to set
      */
-    public void setInicio(Date inicio) {
+    public void setInicio(LocalDate inicio) {
         this.inicio = inicio;
     }
 
     /**
      * @return the fin
      */
-    public Date getFin() {
+    public LocalDate getFin() {
         return fin;
     }
 
     /**
      * @param fin the fin to set
      */
-    public void setFin(Date fin) {
+    public void setFin(LocalDate fin) {
         this.fin = fin;
     }
 
     /**
      * @return the maximaFecha
      */
-    public Date getMaximaFecha() {
+    public LocalDate getMaximaFecha() {
         return maximaFecha;
     }
 

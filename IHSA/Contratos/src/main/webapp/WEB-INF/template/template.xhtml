@@ -1,0 +1,378 @@
+<?xml version='1.0' encoding='UTF-8' ?> 
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"      
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+    <h:head>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" ></meta>
+        <meta content="text/html; charset=UTF-8" http-equiv="Content-Type" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />		
+        <!-- Font Awesome -->
+        <link rel="stylesheet" href="/resources/css/all.min.css" />
+        <!-- Theme style -->
+        <link rel="stylesheet" href="/resources/css/adminlte.min.css" />
+        <!-- overlayScrollbars -->
+        <link rel="stylesheet" href="/resources/css/OverlayScrollbars.min.css"/>
+
+
+        <!-- Google Font -->
+        <link rel="stylesheet"
+              href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic"></link>
+
+        <noscript>
+            <p>Su navegador no soporta javaScript</p>
+        </noscript>
+        <title>Sistema Integral de Administración</title>
+        <style type="text/css">
+            .ui-datepicker {
+                z-index: 1000004 !important;
+            }
+
+            .filaConSombra{
+                background-color: #EEE;
+            }
+
+            .filaSinSombra{
+                background-color: #f8f8f8;
+            }
+            .ui-selectonemenu-panel{
+                z-index: 1000009 !important;
+            }
+            .ui-autocomplete-panel{
+                z-index: 1000009 !important;
+            }
+        </style>
+
+
+        <noscript>
+            <p>Su navegador no soporta javaScript</p>
+        </noscript>
+        <title>Sistema Integral de Administración</title>
+        <script type="text/javascript">
+            //var json;
+            var proveedores;
+            var jsonUsuario;
+            function ejecutarFiltros(frm, boton) {
+                $("#" + frm + "\\:" + boton).click();
+            }
+            function llenarEtiqueta(forma, etiqueta, valor) {
+                //   alert(valor);
+                $("#" + forma + "\\:" + etiqueta).text(valor);
+            }
+
+
+
+            function validaGuardarRol(seleccion) {
+                var val = false;
+                if (verificaSeleccion(seleccion) > 0) {
+                    val = true;
+                } else {
+                    alert('Debe seleccionar al menos una gerencia');
+                }
+                return val;
+            }
+            function verificaSeleccion(clase) {
+                var sel = 0;
+                $("." + clase).each(function () {
+                    if ($(this).is(':checked')) {
+                        sel++;
+                    }
+                });
+                return sel;
+            }
+            function validaGuardar(forma, combo, caja, seleccion) {
+                var v = false;
+                if (validarCombo(forma + "\\:" + combo, 0)) {
+                    if (verificaSeleccion(seleccion) > 0) {
+                        if (validarCajaTexto(forma, caja)) {
+                            v = true;
+                        } else {
+                            alert('Agregue el objetivo del contrato.');
+                        }
+                    } else {
+                        alert('Seleccione al menos una gerencia.');
+                    }
+                } else {
+                    alert('Seleccione un servicio.');
+                }
+                return v;
+            }
+
+
+            function validarFormato() {
+                if (validarCajaTexto('frmFormato', 'nombreFormato')) {
+                    if (validarCajaTexto('frmFormato', 'descFormato')) {
+                        if (validarCajaTexto('frmFormato', 'tituloFormato')) {
+                            if (validarCombo('frmFormato\\:tipoFormato', '0')) {
+                                return true;
+                            }
+                        }
+                    }
+                }
+                alert('Todos los campos son requeridos.');
+                return false;
+
+            }
+
+            function validarSeccion() {
+                if (validarCajaTexto('frmSeccion', 'nombreSeccion')) {
+                    if (validarCajaTexto('frmSeccion', 'maxSeccion')) {
+                        return true;
+                    }
+                }
+                alert('Todos los campos son requeridos.');
+                return false;
+
+            }
+
+            function validarPregunta() {
+                if (validarCajaTexto('frmPregunta', 'nombrePregunta')) {
+                    return true;
+                } else {
+                    alert('Todos los campos son requeridos.');
+                    return false;
+                }
+            }
+
+
+            /* 
+             * funcion que valida que una caja de texto contenga valor
+             *  Retorna true si la caja evaluada esta vacia.
+             **/
+
+            function validarCajaTexto(forma, idComponente) {
+                var componente = "#" + forma + "\\:" + idComponente;
+                if ($(componente).val() == '' || $(componente).val() == undefined || $(componente).val() == null) {
+                    //alert("Es necesario agregar valor.");
+                    return false;
+                } else {
+                    return true;
+                }
+            }
+
+            function filtro(divMostrar, divM, divMos, divMostr, divOcultar, divO) {
+                mostrarDiv(divMostrar);
+                //
+                mostrarDiv(divM);
+                //
+                mostrarDiv(divMos);
+                //
+                mostrarDiv(divMostr);
+                //
+                ocultarDiv(divOcultar);
+                //
+                ocultarDiv(divO);
+            }
+            function mostrarDiv(divM) {
+                $("#" + divM).css({
+                    "display": "block"
+                });
+            }
+
+            function ocultarDiv(divOcultar) {
+                $("#" + divOcultar).css({
+                    "display": "none"
+                });
+            }
+            function  mostrarElemento(forma, elemento) {
+                $("#" + forma + "\\:" + elemento).css({
+                    "display": "block"
+                });
+            }
+            function  ocultarElemento(forma, elemento) {
+                $("#" + forma + '\\:' + elemento).css({
+                    "display": "none"
+                });
+            }
+            function limpiarCaja(forma, etiqueta) {
+                $("#" + forma + "\\:" + etiqueta).text('');
+            }
+
+            function quitarProveedor(forma, etiqueta, componente) {
+                limpiarCaja(forma, etiqueta);
+                ocultarElemento(forma, componente);
+            }
+            function activarTab(tab) {
+                $('.nav-tabs a[href="#' + tab + '"]').tab('show');
+            }
+            function valorSeleccionado(forma, combo, etiqueta) {
+                var se = $("#" + forma + "\\:" + combo + " option:selected");
+                if (se.text() !== 'Seleccione . . . ')
+                    llenarEtiqueta(forma, etiqueta, se.text());
+            }
+
+            function obtenerValorEtiqueta(forma, elemento, elementoHidden) {
+                var se = $("#" + forma + "\\:" + elemento).val();
+                $("#" + forma + "\\:" + elementoHidden).val(se);
+            }
+
+            function seleccionarTodo(todos, seleccion) {
+                if ($("." + todos).is(":checked")) {
+                    $("." + seleccion).prop("checked", "checked");
+                } else {
+                    $("." + seleccion).prop("checked", "");
+                }
+            }
+
+            function confirmar(mensaje) {
+                if (confirm(mensaje)) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+
+            function validaSeleccion(seleccion) {
+                v = false;
+                if (verificaSeleccion(seleccion) > 0) {
+                    v = true;
+                } else {
+                    alert('Es necesario seleccionar al menos un elemento de la lista.');
+                }
+                return v;
+            }
+        </script>
+    </h:head>
+    <h:body  class="hold-transition sidebar-mini layout-fixed">
+        <div class="wrapper">
+            <c:if test="#{not empty sesion.usuarioSesion}">
+                <!-- Navbar -->
+                <nav class="main-header navbar navbar-expand navbar-white navbar-light">
+                    <!-- Left navbar links -->
+                    <ul class="navbar-nav">
+                        <li class="nav-item">
+                            <a class="nav-link" data-widget="pushmenu" href="#" role="button">
+                                <i class="fas fa-bars"></i></a>
+                        </li>
+                    </ul>
+
+                    <!-- Right navbar links -->
+
+                    <ul class="navbar-nav ml-auto">
+                        <ui:include src="datosUsuario.xhtml"/>
+                    </ul>
+                </nav>
+
+                <!-- Main Sidebar Container -->
+                <aside class="main-sidebar sidebar-light-primary elevation-4">
+                    <!-- Brand Logo -->
+                    <img src="/resources/img/sia.png"  alt="SIA"
+                         height="45" style="padding: 0px; margin: 0px;"
+                         />
+                    <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+                        <div class="image">
+                            <span class="fa fa-user img-circle elevation-2"/>                                     
+                        </div>
+                        <div class="info">
+                            <h:outputLabel value="#{sesion.usuarioSesion.nombre}" styleClass="control-label"/>
+                        </div>
+                    </div>
+
+                    <!-- Sidebar Menu -->
+                    <nav class="mt-2">
+                        <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+                            <h:form class="nav-item">
+                                <ui:include src="menuLateral.xhtml"/>
+                            </h:form>
+                        </ul>
+                    </nav>
+                </aside>
+                <!-- Content Wrapper. Contains page content -->
+                <div class="content-wrapper">
+                    <!-- Main content -->
+                    <section class="content">
+
+                        <p:ajaxStatus onstart="PF('statusDialog').show()"
+                                      onsuccess="PF('statusDialog').hide()" />
+
+                        <p:dialog widgetVar="statusDialog" modal="true" draggable="false"
+                                  closable="false" resizable="false" showHeader="false" >
+                            <img src="/resources/img/wait.gif" width="150px" alt="Procesando" />
+                        </p:dialog>
+                        <div id="titulo" class="font-weight-bold text-large text-large" >
+                            <ui:insert name="tituloPagina"> 
+                                Título
+                            </ui:insert>
+                        </div>
+                        <div  class="row">
+                            <p:messages id="messages" showDetail="true" closable="true" 
+                                        class="col-12">
+                                <p:autoUpdate />
+                            </p:messages>
+                        </div>
+                        <ui:insert name="contenido"/>                    
+                    </section>
+                </div>                    
+                <!-- /.content-wrapper -->
+                <footer class="main-footer">
+                    <ui:include src="pie.xhtml" /> 
+                </footer>
+
+                <!-- Registro de categoría -->
+                <div class="modal fade" id="dialogoUsuarioCampo" data-backdrop="static" data-keyboard="false">
+                    <div class="modal-dialog" style="z-index: 1000006;">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h4 class="modal-title">Campos</h4>
+                            </div>
+                            <h:form id="frmCampos">
+                                <div class="modal-body">				    
+                                    <p:dataTable id="dtCampos" value="#{sesion.lista}" var="data"
+                                                 styleClass="table table-responsive"
+                                                 selectionMode="single"
+                                                 selection="#{sesion.campoUsuarioPuestoVo}" 
+                                                 rowKey="#{data.idCampoUsuarioPuesto}">
+                                        <p:ajax event="rowSelect" listener="#{sesion.cambioCampoUsuario}" 
+                                                update="@all"/>
+                                        <p:column style="text-align: left;">
+                                            <h:outputText value="#{data.campo}"
+                                                          class="#{sesion.usuarioSesion.campo eq data.campo ? 'text text-primary' : ''}">
+                                            </h:outputText>
+                                        </p:column>
+                                    </p:dataTable>
+                                </div>
+                                <div class="modal-footer">
+                                    <p:commandLink value="Cerrar" styleClass="btn btn-default"
+                                                   immediate="true"
+                                                   onclick="$(dialogoUsuarioCampo).modal('hide');"/>
+                                </div>
+                            </h:form>
+                        </div>
+                    </div>	
+                </div>
+            </c:if>
+
+            <c:if test="#{empty sesion.usuarioSesion}">
+                <ui:include src="/login.xhtml"/>
+            </c:if>
+        </div>
+
+        <!-- jQuery -->
+        <script src="/resources/js/jquery.min.js"></script>
+        <!-- jQuery UI 1.11.4 -->
+        <script>
+                                                       $.noConflict(true);
+// Code that uses other library's $ can follow here.
+        </script>
+        <script src="/resources/js/jquery-ui.min.js"></script>
+        <!-- Resolve conflict in jQuery UI tooltip with Bootstrap tooltip -->
+        <script type="text/javascript" src="/resources/js/bootstrap.bundle.min.js"></script>
+        <!-- overlayScrollbars -->
+        <script type="text/javascript" src="/resources/js/jquery.overlayScrollbars.min.js"></script>
+        <!-- AdminLTE App -->
+        <script type="text/javascript" src="/resources/js/adminlte.js"></script>
+
+        <script type="text/javascript" src="#{request.contextPath}/recursos/js/bootbox.js"></script>
+
+
+        <script type="text/javascript" src="#{request.contextPath}/recursos/js/validaContrato.js"></script>
+        <!--script type="text/javascript" src="{request.contextPath}/recursos/js/jquery.typeahead.js"></script-->
+
+        <script type="text/javascript" src="#{request.contextPath}/recursos/js/highcharts.js"></script>
+        <script type="text/javascript" src="#{request.contextPath}/recursos/js/exporting.js"></script>
+        <!--	INICIO	-->
+        <script type="text/javascript" src="#{request.contextPath}/recursos/js/graficaContrato.js"></script>
+    </h:body>
+</html>

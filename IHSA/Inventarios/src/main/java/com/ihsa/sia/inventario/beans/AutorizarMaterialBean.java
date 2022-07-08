@@ -28,7 +28,7 @@ import sia.util.SolicitudMaterialEstadoEnum;
  */
 @Named(value = "autorizarMaterialBean")
 @ViewScoped
-public class AutorizarMaterialBean implements Serializable{
+public class AutorizarMaterialBean implements Serializable {
 
     /**
      * Creates a new instance of AutorizarMaterialBean
@@ -67,7 +67,7 @@ public class AutorizarMaterialBean implements Serializable{
     public void rechazarSolicitud(int idSolicitud) {
         solicitudeVo = solicitudMaterialImpl.solicitudesPorId(idSolicitud);
         //
-        PrimeFaces.current().executeScript(";mostrarDialogo(dialogoSolicitudRechazo);");
+        PrimeFaces.current().executeScript("PF('dialogoSolicitudRechazo').hide()");
     }
 
     public void completarRechazarSolicitud() {
@@ -75,7 +75,7 @@ public class AutorizarMaterialBean implements Serializable{
             estadoAprobacionSolicitudImpl.rechazarSolicitud(solicitudeVo.getId(), sesion.getUser().getId(), motivo, sesion.getUser().getIdCampo());
             //
             llenar();
-            PrimeFaces.current().executeScript( ";cerrarDialogo(dialogoSolicitudRechazo);");
+            PrimeFaces.current().executeScript("PF('dialogoSolicitudRechazo').hide()");
         } else {
 
             FacesMessage facesMessage = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Agregar el motivo", null);
@@ -84,13 +84,14 @@ public class AutorizarMaterialBean implements Serializable{
     }
 
     public void cerrarRechazoSolicitud() {
-        PrimeFaces.current().executeScript( ";cerrarDialogo(dialogoSolicitudRechazo);");
+        PrimeFaces.current().executeScript("PF('dialogoSolicitudRechazo').hide()");
     }
 
     public void cancelarSolicitud(int idSolicitud) {
         solicitudeVo = solicitudMaterialImpl.solicitudesPorId(idSolicitud);
         //
-        PrimeFaces.current().executeScript( ";mostrarDialogo(dialogoSolicitudCancela);");
+        PrimeFaces.current().executeScript("PF('dialogoSolicitudCancela').show()");
+
     }
 
     public void completarCancelarSolicitud() {
@@ -98,7 +99,7 @@ public class AutorizarMaterialBean implements Serializable{
             estadoAprobacionSolicitudImpl.cancelarSolicitud(solicitudeVo.getId(), sesion.getUser().getId(), motivo, sesion.getUser().getIdCampo());
             //
             llenar();
-            PrimeFaces.current().executeScript( ";cerrarDialogo(dialogoSolicitudCancela);");
+            PrimeFaces.current().executeScript("PF('dialogoSolicitudCancela').hide()");
         } else {
 
             FacesMessage facesMessage = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Agregar el motivo", null);
@@ -107,17 +108,17 @@ public class AutorizarMaterialBean implements Serializable{
     }
 
     public void cerrarCancelaSolicitud() {
-        PrimeFaces.current().executeScript( ";cerrarDialogo(dialogoSolicitudCancela);");
+        PrimeFaces.current().executeScript("PF('dialogoSolicitudCancela').hide()");
     }
 
     public void verSolicitud(int idSolicitud) {
         solicitudeVo = solicitudMaterialImpl.solicitudesPorId(idSolicitud);
         //
-        PrimeFaces.current().executeScript( ";mostrarDialogo(crearDialogoDatosSolicitud);");
+        PrimeFaces.current().executeScript("PF('crearDialogoDatosSolicitud').show()");
     }
 
     public void cerrarVerSolicitud() {
-        PrimeFaces.current().executeScript( ";cerrarDialogo(crearDialogoDatosSolicitud);");
+        PrimeFaces.current().executeScript("PF('crearDialogoDatosSolicitud').hide()");
     }
 
     /**

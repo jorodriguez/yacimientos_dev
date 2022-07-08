@@ -11,12 +11,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.PostConstruct;
-import javax.ejb.EJB;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ManagedProperty;
-import javax.faces.bean.ViewScoped;
-import javax.faces.context.FacesContext;
-import javax.faces.event.ActionEvent;
+import javax.faces.view.ViewScoped;
+
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.model.file.UploadedFile;
 import sia.archivador.AlmacenDocumentos;
@@ -44,7 +40,7 @@ import javax.inject.Inject;
 @ViewScoped
 public class DocumentacionBean implements Serializable {
 
-    @ManagedProperty("#{sesion}")
+    @Inject
     private Sesion sesion;
 
     @Inject
@@ -63,18 +59,17 @@ public class DocumentacionBean implements Serializable {
         listaDoctos = pvClasificacionArchivoImpl.traerArchivoPorProveedor(sesion.getProveedorVo().getIdProveedor());
     }
 
-    public void eliminarArchivo(ActionEvent event) {
-        int ind = Integer.parseInt(FacesUtilsBean.getRequestParameter("indice"));
+    public void eliminarArchivo(int ind) {
+        
         pvClasificacionArchivoImpl.eliminarArchivo(listaDoctos.get(ind).getId(), listaDoctos.get(ind).getAdjuntoVO().getId(), sesion.getProveedorVo().getRfc());
         listaDoctos.get(ind).setAdjuntoVO(new AdjuntoVO());
 //
         listaDoctos = pvClasificacionArchivoImpl.traerArchivoPorProveedor(sesion.getProveedorVo().getIdProveedor());
     }
 
-    public void agregarArchivo(ActionEvent event) {
-        System.out.println("asdasdad:");
+    public void agregarArchivo(int ind) {
         proveedorDocumentoVO = new ProveedorDocumentoVO();
-        int ind = Integer.parseInt(FacesUtilsBean.getRequestParameter("indice"));
+        
         proveedorDocumentoVO = listaDoctos.get(ind);
         //
         FacesUtilsBean.addErrorMessage("frmDocArch:fileEntryDoc", "");
@@ -98,6 +93,8 @@ public class DocumentacionBean implements Serializable {
             if (addArchivo) {
                 DocumentoAnexo documentoAnexo = new DocumentoAnexo(fileInfo.getContent());
                 documentoAnexo.setRuta(directorioProve());
+                documentoAnexo.setTipoMime(fileInfo.getContentType());
+                documentoAnexo.setNombreBase(fileInfo.getFileName());
                 almacenDocumentos.guardarDocumento(documentoAnexo);
                 //
                 SiAdjunto adj = siAdjuntoImpl.save(documentoAnexo.getNombreBase(),

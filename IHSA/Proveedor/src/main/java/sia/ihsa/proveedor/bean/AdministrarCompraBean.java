@@ -1,6 +1,5 @@
 package sia.ihsa.proveedor.bean;
 
-import com.google.common.base.Objects;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import java.io.File;
@@ -14,16 +13,12 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Stream;
 import javax.annotation.PostConstruct;
-import javax.ejb.EJB;
 import javax.ejb.EJBException;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ManagedProperty;
-import javax.faces.bean.ViewScoped;
+
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
-import javax.faces.event.ActionEvent;
+
 import javax.faces.model.SelectItem;
 import lombok.Getter;
 import lombok.Setter;
@@ -68,9 +63,12 @@ import org.primefaces.PrimeFaces;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import javax.faces.view.ViewScoped;
 import org.apache.commons.io.FilenameUtils;
 import javax.inject.Named;
 import javax.inject.Inject;
+import sia.util.Env;
+
 /**
  *
  * @author mluis
@@ -96,9 +94,7 @@ public class AdministrarCompraBean implements Serializable {
 
     private static final UtilLog4j LOGGER = UtilLog4j.log;
 
-    @ManagedProperty("#{sesion}")
-    @Getter
-    @Setter
+    @Inject
     private Sesion sesion;
     @Inject
     private OrdenImpl ordenImpl;
@@ -208,19 +204,19 @@ public class AdministrarCompraBean implements Serializable {
 
     @PostConstruct
     public void iniciar() {
-        setTipoCarga(new HashMap<String, Boolean>());
+        setTipoCarga(new HashMap<>());
         listaCatagoloHidro = new ArrayList<>();
         listaCatagoloHidro.add(new SelectItem(Constantes.CERO, "Seleccione . . . "));
         //
         ExternalContext ex = FacesContext.getCurrentInstance().getExternalContext();
         Map<String, Object> map = ex.getSessionMap();
 
-        String paramOcs = FacesUtilsBean.getRequestParameter(ID_COMPRA);
+        String paramOcs = Env.getContext(sesion.getCtx(), ID_COMPRA);
         //
-        String paramFact = FacesUtilsBean.getRequestParameter("idFactura");
+        String paramFact = Env.getContext(sesion.getCtx(), "idFactura");
         int value;
-
         if (!Strings.isNullOrEmpty(paramOcs)) {
+            Env.removeContext(sesion.getCtx(), ID_COMPRA);
             value = Integer.parseInt(paramOcs);
             compraVo = ordenImpl.buscarOrdenPorId(value, 0, Boolean.FALSE);
 
@@ -230,6 +226,7 @@ public class AdministrarCompraBean implements Serializable {
         }
 
         if (!Strings.isNullOrEmpty(paramFact)) {
+            Env.removeContext(sesion.getCtx(), "idFactura");
             value = Integer.parseInt(paramFact);
 
             facturaVo = siFacturaImpl.buscarFactura(value);
@@ -245,7 +242,7 @@ public class AdministrarCompraBean implements Serializable {
         }
 
         if (compraVo != null) {
-            compraVo.setDetalleOrden(new ArrayList<OrdenDetalleVO>());
+            compraVo.setDetalleOrden(new ArrayList<>());
             if (compraVo.isMultiproyecto()) {
                 compraVo.setDetalleOrden(ordenDetalleImpl.traerDetalleOrdenAgrupadoMultiProyecto(compraVo.getId()));
             } else {
@@ -285,13 +282,13 @@ public class AdministrarCompraBean implements Serializable {
         contenidoNacionalPorFactura = facturaContenidoNacionalImpl.contedinoNacionaPorFactura(facturaVo.getId());
     }
 
-    public void inicioRegistroFacturaExtranjera(ActionEvent event) {
+    public void inicioRegistroFacturaExtranjera() {
         maxDate = new Date();
         facturaVo.setMonto(BigDecimal.ZERO);
         PrimeFaces.current().executeScript("$(dialogoRegistroFacturaExtr).modal('show');");
     }
 
-    public void inicioRegistroFacturaXML(ActionEvent event) {
+    public void inicioRegistroFacturaXML() {
         tipoCarga.put(ARCHIVO_FACTURA_XML, Boolean.TRUE);
         tipoCarga.put(CARTA_CONTENIDO, Constantes.BOOLEAN_FALSE);
         tipoCarga.put(SOPORTE_FACTURA, Constantes.BOOLEAN_FALSE);
@@ -302,10 +299,10 @@ public class AdministrarCompraBean implements Serializable {
         tipoCarga.put(DOCUMENTO_ADUANAL, Constantes.BOOLEAN_FALSE);
         FacesUtilsBean.addErrorMessage(ARCHIVO_FACT_FILE_ENTRY, "");
 
-        PrimeFaces.current().executeScript( DIA_ARCH_FACT_MODALSHOW);
+        PrimeFaces.current().executeScript(DIA_ARCH_FACT_MODALSHOW);
     }
 
-    public void inicioRegistroNotaCreditoXML(ActionEvent event) {
+    public void inicioRegistroNotaCreditoXML() {
         tipoCarga.put(NOTA_CREDITO_XML, Constantes.BOOLEAN_TRUE);
         tipoCarga.put(ARCHIVO_FACTURA_XML, Constantes.BOOLEAN_FALSE);
         tipoCarga.put(CARTA_CONTENIDO, Constantes.BOOLEAN_FALSE);
@@ -315,10 +312,10 @@ public class AdministrarCompraBean implements Serializable {
         tipoCarga.put(SOPORTE_NOTA_CREDITO, Constantes.BOOLEAN_FALSE);
         tipoCarga.put(DOCUMENTO_ADUANAL, Constantes.BOOLEAN_FALSE);
         FacesUtilsBean.addErrorMessage(ARCHIVO_FACT_FILE_ENTRY, "");
-        PrimeFaces.current().executeScript( DIA_ARCH_FACT_MODALSHOW);
+        PrimeFaces.current().executeScript(DIA_ARCH_FACT_MODALSHOW);
     }
 
-    public void inicioRegistroFactura(ActionEvent event) {
+    public void inicioRegistroFactura() {
         //validaciones
         double totalFacturado = siFacturaImpl.totalPorOrden(compraVo.getId());
 
@@ -334,7 +331,7 @@ public class AdministrarCompraBean implements Serializable {
         }
     }
 
-    public void registroFactura(ActionEvent event) {
+    public void registroFactura() {
         //List<OrdenDetalleVO> li = ordenDetalleImpl.traerOrdenNoFacturado(compraVo.getId());
         double totalFacturado = siFacturaImpl.totalPorOrden(compraVo.getId());
         facturaVo.setIdCampo(compraVo.getIdBloque());
@@ -345,7 +342,7 @@ public class AdministrarCompraBean implements Serializable {
         //
         if (BigDecimal.valueOf(totalFacturado).compareTo(BigDecimal.valueOf(compraVo.getSubTotal())) < 1) {
             if (facturaVo.getId() == 0) {
-                siFacturaImpl.guardarFactura(facturaVo, sesion.getProveedorVo().getRfc(), new ArrayList<OrdenDetalleVO>(), compraVo.getTipo());
+                siFacturaImpl.guardarFactura(facturaVo, sesion.getProveedorVo().getRfc(), new ArrayList<>(), compraVo.getTipo());
             } else {
                 siFacturaImpl.modificarFactura(facturaVo, sesion.getProveedorVo().getRfc());
             }
@@ -357,11 +354,11 @@ public class AdministrarCompraBean implements Serializable {
         PrimeFaces.current().executeScript(";$(dialogoRegFactura).modal('hide');");
     }
 
-    public void cerrarRegistroFactura(ActionEvent event) {
+    public void cerrarRegistroFactura() {
         PrimeFaces.current().executeScript(";$(dialogoRegFactura).modal('hide');");
     }
 
-    public void seleccionarFactura(ActionEvent event) {
+    public void seleccionarFactura() {
         int idFact = Integer.parseInt(FacesUtilsBean.getRequestParameter("idFac"));
         listaFacturaDetalle = siFacturaDetalleImpl.traerDetalle(idFact);
         listaSoporteFactura = siFacturaAdjuntoImpl.traerSoporteFactura(idFact, Constantes.BOOLEAN_TRUE);
@@ -388,11 +385,11 @@ public class AdministrarCompraBean implements Serializable {
         listaSoporteFactura.add(fav);
     }
 
-    public void regresarTablaFactura(ActionEvent event) {
+    public void regresarTablaFactura() {
         PrimeFaces.current().executeScript(";seleccinarFactura('divFactura','divProcesoFactura');");
     }
 
-    public void iniciarAgragarContNac(ActionEvent event) {
+    public void iniciarAgragarContNac() {
         totalAcumuladoContenidoNacional
                 = facturaContenidoNacionalImpl.totalPorFactura(facturaVo.getId()).doubleValue();
         //
@@ -402,15 +399,14 @@ public class AdministrarCompraBean implements Serializable {
         PrimeFaces.current().executeScript(";$(dialogoContNac).modal('show');");
     }
 
-    public void eliminarContNac(ActionEvent event) {
-        int idFacConNac = Integer.parseInt(FacesUtilsBean.getRequestParameter("idContNac"));
+    public void eliminarContNac(int idFacConNac) {
         //
         facturaContenidoNacionalImpl.eliminar(sesion.getProveedorVo().getRfc(), idFacConNac);
         //
         contenidoNacionalPorFactura = facturaContenidoNacionalImpl.contedinoNacionaPorFactura(facturaVo.getId());
     }
 
-    public void agregarContenidoNacional(ActionEvent event) {
+    public void agregarContenidoNacional() {
         //
         try {
             Preconditions.checkState(
@@ -475,7 +471,7 @@ public class AdministrarCompraBean implements Serializable {
         }
     }
 
-    public void cerrarAgregarContenido(ActionEvent event) {
+    public void cerrarAgregarContenido() {
         idCatalogoHidro = 0;
         montoContenidoNacional = BigDecimal.ZERO;//0.0;
         contenidoNacional = BigDecimal.ZERO;
@@ -612,18 +608,17 @@ public class AdministrarCompraBean implements Serializable {
         return "/principal";
     }
 
-    public void iniciarModificarFactura(ActionEvent event) {
+    public void iniciarModificarFactura() {
         PrimeFaces.current().executeScript(";$(dialogoRegFactura).modal('show');");
     }
 
-    public void modificarFactura(ActionEvent event) {
+    public void modificarFactura() {
         siFacturaImpl.modificarFactura(facturaVo, sesion.getProveedorVo().getRfc());
         PrimeFaces.current().executeScript(";$(dialogoRegFactura).modal('hide');");
     }
 
     //    
-    public void eliminarSoporteFactura(ActionEvent event) {
-        int idFacSop = Integer.parseInt(FacesUtilsBean.getRequestParameter("idFacturaSoporte"));
+    public void eliminarSoporteFactura(int idFacSop) {
         if (idFacSop > 0) {
             siFacturaAdjuntoImpl.eliminar(idFacSop, sesion.getProveedorVo().getRfc());
         } else {
@@ -642,7 +637,7 @@ public class AdministrarCompraBean implements Serializable {
         }
     }
 
-    public void iniciarCargaPDF(ActionEvent event) {
+    public void iniciarCargaPDF() {
         tipoCarga.put(ARCHIVO_FACTURA_XML, Boolean.FALSE);
         tipoCarga.put(NOTA_CREDITO_XML, Boolean.FALSE);
         tipoCarga.put(CARTA_CONTENIDO, Constantes.BOOLEAN_FALSE);
@@ -651,12 +646,12 @@ public class AdministrarCompraBean implements Serializable {
         tipoCarga.put(NOTA_CREDITO_PDF, Constantes.BOOLEAN_FALSE);
         tipoCarga.put(SOPORTE_FACTURA, Constantes.BOOLEAN_FALSE);
         tipoCarga.put(DOCUMENTO_ADUANAL, Constantes.BOOLEAN_FALSE);
-        PrimeFaces.current().executeScript( DIA_ARCH_FACT_MODALSHOW);
+        PrimeFaces.current().executeScript(DIA_ARCH_FACT_MODALSHOW);
         FacesUtilsBean.addErrorMessage(ARCHIVO_FACT_FILE_ENTRY, "");
     }
 
     //
-    public void iniciarCargaSoporte(ActionEvent event) {
+    public void iniciarCargaSoporte() {
         tipoCarga.put(ARCHIVO_FACTURA_XML, Boolean.FALSE);
         tipoCarga.put(NOTA_CREDITO_XML, Boolean.FALSE);
         tipoCarga.put(CARTA_CONTENIDO, Constantes.BOOLEAN_FALSE);
@@ -666,7 +661,7 @@ public class AdministrarCompraBean implements Serializable {
         tipoCarga.put(FACTURA_PDF, Constantes.BOOLEAN_FALSE);
         tipoCarga.put(NOTA_CREDITO_PDF, Constantes.BOOLEAN_FALSE);
         tipoCarga.put(SOPORTE_FACTURA, Constantes.BOOLEAN_TRUE);
-        PrimeFaces.current().executeScript( DIA_ARCH_FACT_MODALSHOW);
+        PrimeFaces.current().executeScript(DIA_ARCH_FACT_MODALSHOW);
         FacesUtilsBean.addErrorMessage(ARCHIVO_FACT_FILE_ENTRY, "");
     }
 
@@ -681,20 +676,27 @@ public class AdministrarCompraBean implements Serializable {
                 //
                 if (tipoCarga.get(CARTA_CONTENIDO)) {
                     procesarCartaContenido(fileInfo);
+                    PrimeFaces.current().ajax().update("frmAdminCompras:tbCompras:tbFacturas");
                 } else if (tipoCarga.get(FACTURA_PDF)) {
                     procesarFacturaPdf(fileInfo);
+                    PrimeFaces.current().ajax().update("frmAdminCompras:tbCompras:tbFacturas:tabSoportes");
                 } else if (tipoCarga.get(SOPORTE_FACTURA)) {
                     procesarSoporteFactura(fileInfo);
+                    PrimeFaces.current().ajax().update("frmAdminCompras:tbCompras:tbFacturas:tabSoportes");
                 } else if (tipoCarga.get(NOTA_CREDITO_XML)) {
                     procesarNotaCredXml(fileInfo);
+                    PrimeFaces.current().ajax().update("frmAdminCompras:tbCompras:tbFacturas:tblNotaCre");
                 } else if (tipoCarga.get(NOTA_CREDITO_PDF)) {
                     procesarPDFNotaCred(fileInfo);
+                    PrimeFaces.current().ajax().update("frmPopNotaCred:tbPopNota:tabFrmBtnPDFNC:dtSopNotaCre");
                 } else if (tipoCarga.get(SOPORTE_NOTA_CREDITO)) {
                     procesarSoporteNotaCred(fileInfo);
+                    PrimeFaces.current().ajax().update("frmPopNotaCred:tbPopNota:tabFrmBtnPDFNC:dtSopNotaCre");
                 } else if (tipoCarga.get(DOCUMENTO_ADUANAL)) {
                     procesarFacturaExtranjeraPdf(fileInfo);
                 } else {
                     procesarXml(fileInfo);
+                    PrimeFaces.current().ajax().update("frmAdminCompras:tbCompras:tabFactura");
                 }
 
                 fileInfo.delete();
@@ -726,7 +728,7 @@ public class AdministrarCompraBean implements Serializable {
 
         FacesUtilsBean.addInfoMessage("El archivo fue agregado correctamente.");
         //
-        PrimeFaces.current().executeScript( FACTURA_MODAL_HIDE);
+        PrimeFaces.current().executeScript(FACTURA_MODAL_HIDE);
     }
 
     private void procesarPDFNotaCred(UploadedFile fileInfo) {
@@ -741,7 +743,7 @@ public class AdministrarCompraBean implements Serializable {
         listaSoporteNotaCredito.addAll(siFacturaAdjuntoImpl.traerSoporteFactura(notaCreditoVo.getId(), Constantes.BOOLEAN_FALSE, "'SOPORTES'"));
         FacesUtilsBean.addInfoMessage("El archivo fue agregado correctamente.");
         //
-        PrimeFaces.current().executeScript( FACTURA_MODAL_HIDE);
+        PrimeFaces.current().executeScript(FACTURA_MODAL_HIDE);
     }
 
     private void procesarSoporteFactura(UploadedFile fileInfo) {
@@ -761,7 +763,7 @@ public class AdministrarCompraBean implements Serializable {
         if (facturaVo.getIdAdjunto() > 0) {
             agregarCarta(facturaVo);
         }
-        PrimeFaces.current().executeScript( FACTURA_MODAL_HIDE);
+        PrimeFaces.current().executeScript(FACTURA_MODAL_HIDE);
     }
 
     private void procesarFacturaPdf(UploadedFile fileInfo) {
@@ -774,7 +776,7 @@ public class AdministrarCompraBean implements Serializable {
         if (facturaVo.getIdAdjunto() > 0) {
             agregarCarta(facturaVo);
         }
-        PrimeFaces.current().executeScript( FACTURA_MODAL_HIDE);
+        PrimeFaces.current().executeScript(FACTURA_MODAL_HIDE);
     }
 
     private void procesarCartaContenido(UploadedFile fileInfo) {
@@ -791,18 +793,18 @@ public class AdministrarCompraBean implements Serializable {
 
             agregarCarta(facturaVo);
 
-            PrimeFaces.current().executeScript( FACTURA_MODAL_HIDE);
+            PrimeFaces.current().executeScript(FACTURA_MODAL_HIDE);
         } else {
             FacesUtilsBean.addInfoMessage(ARCHIVO_FACT_FILE_ENTRY, "La carta de Contenido Nacional debe ser un archivo en formato PDF.");
         }
     }
-    
+
     private File getFileFromUploadedFile(UploadedFile uploadedFileX) {
         try {
             Path tmpFile = Files.createTempFile(FilenameUtils.getBaseName(uploadedFileX.getFileName()), "." + FilenameUtils.getExtension(uploadedFileX.getFileName()));
             Files.copy(uploadedFileX.getInputStream(), tmpFile, StandardCopyOption.REPLACE_EXISTING);
             return tmpFile.toFile();
-        } catch (IOException e) {                        
+        } catch (IOException e) {
             FacesUtilsBean.addErrorMessage(ARCHIVO_FACT_FILE_ENTRY, e.getMessage());
             return null;
         }
@@ -843,7 +845,7 @@ public class AdministrarCompraBean implements Serializable {
 
             listaNotaCredito = siFacturaImpl.traerNotaCredito(facturaVo.getId());
 
-            PrimeFaces.current().executeScript( FACTURA_MODAL_HIDE);
+            PrimeFaces.current().executeScript(FACTURA_MODAL_HIDE);
         } catch (EJBException | IllegalStateException e) {
             FacesUtilsBean.addErrorMessage(ARCHIVO_FACT_FILE_ENTRY, e.getMessage());
         }
@@ -888,7 +890,7 @@ public class AdministrarCompraBean implements Serializable {
                 listaSoporteFactura = siFacturaAdjuntoImpl.traerSoporteFactura(idFact, Constantes.BOOLEAN_TRUE);
                 listaFacturaDetalle = siFacturaDetalleImpl.traerDetalle(idFact);
 
-                PrimeFaces.current().executeScript( FACTURA_MODAL_HIDE);
+                PrimeFaces.current().executeScript(FACTURA_MODAL_HIDE);
             }
         } catch (IllegalStateException | EJBException e) {
             PrimeFaces.current().executeScript("$(msjValidando).css('visibility', 'hidden')");
@@ -896,7 +898,7 @@ public class AdministrarCompraBean implements Serializable {
         }
     }
 
-    public void registrarFacturaExtranjera(ActionEvent event) {
+    public void registrarFacturaExtranjera() {
 
         facturaVo.setIdProveedor(sesion.getProveedorVo().getIdProveedor());
         facturaVo.setIdMoneda(compraVo.getIdMoneda());
@@ -944,7 +946,7 @@ public class AdministrarCompraBean implements Serializable {
 
                 listaSoporteFactura = siFacturaAdjuntoImpl.traerSoporteFactura(facturaVo.getId(), Constantes.BOOLEAN_TRUE);
                 listaSoporteFacturaXmlPdf = siFacturaAdjuntoImpl.traerSoporteFactura(facturaVo.getId(), Constantes.BOOLEAN_TRUE);
-                PrimeFaces.current().executeScript( FACTURA_MODAL_HIDE);
+                PrimeFaces.current().executeScript(FACTURA_MODAL_HIDE);
             }
         } catch (Exception e) {
             LOGGER.error(e);
@@ -959,6 +961,7 @@ public class AdministrarCompraBean implements Serializable {
             DocumentoAnexo documentoAnexo = new DocumentoAnexo(fileInfo.getContent());
             documentoAnexo.setRuta(uploadDirectory());
             documentoAnexo.setNombreBase(fileInfo.getFileName());
+            documentoAnexo.setTipoMime(fileInfo.getContentType());
             almacenDocumentos.guardarDocumento(documentoAnexo);
             retVal = siAdjuntoImpl.save(
                     documentoAnexo.getNombreBase(),
@@ -993,11 +996,11 @@ public class AdministrarCompraBean implements Serializable {
         return ruta.toString();
     }
 
-    public void cerrarCargaSoporte(ActionEvent event) {
-        PrimeFaces.current().executeScript( FACTURA_MODAL_HIDE);
+    public void cerrarCargaSoporte() {
+        PrimeFaces.current().executeScript(FACTURA_MODAL_HIDE);
     }
 
-    public void iniciarCartaContenido(ActionEvent event) {
+    public void iniciarCartaContenido() {
         totalAcumuladoContenidoNacional = facturaContenidoNacionalImpl.totalPorFactura(facturaVo.getId()).doubleValue();
 
         if (facturaVo.getSubTotalPesos().compareTo(BigDecimal.valueOf(totalAcumuladoContenidoNacional)) == 0) {
@@ -1006,32 +1009,28 @@ public class AdministrarCompraBean implements Serializable {
             tipoCarga.put(SOPORTE_FACTURA, Constantes.BOOLEAN_FALSE);
             tipoCarga.put(NOTA_CREDITO_XML, Constantes.BOOLEAN_FALSE);
             //
-            PrimeFaces.current().executeScript( DIA_ARCH_FACT_MODALSHOW);
+            PrimeFaces.current().executeScript(DIA_ARCH_FACT_MODALSHOW);
         } else {
             PrimeFaces.current().executeScript("alert('Es necesario agregar el desglose del contenido nacional');");
         }
     }
 
-    public void eliminarCartaContenido(ActionEvent event) {
-
-    }
-
-    public void inicioGuardarDetalleFactura(ActionEvent event) {
+    public void inicioGuardarDetalleFactura() {
         PrimeFaces.current().executeScript(";$(dialogoDetalleFactura).modal('show');");
     }
 
-    public void cerrarDetalleFactura(ActionEvent event) {
+    public void cerrarDetalleFactura() {
         PrimeFaces.current().executeScript(";$(dialogoDetalleFactura).modal('hide');");
     }
 
-    public void eliminarDetalleFactura(ActionEvent event) {
+    public void eliminarDetalleFactura() {
         int indice = Integer.parseInt(FacesUtilsBean.getRequestParameter("idDetalleFactura"));
         siFacturaDetalleImpl.eliminar(listaFacturaDetalle.get(indice).getId(), sesion.getProveedorVo().getRfc());
         listaFacturaDetalle.remove(Integer.parseInt(FacesUtilsBean.getRequestParameter("idDetalleFactura")));
         facturaVo.setMonto(siFacturaDetalleImpl.totalPorFactura(facturaVo.getId()));
     }
 
-    public void guardarDetalleFactura(ActionEvent event) {
+    public void guardarDetalleFactura() {
         List<OrdenDetalleVO> ltem = new ArrayList<>();
         boolean continuar = true;
         //BigDecimal total = new BigDecimal(BigInteger.ZERO);
@@ -1063,11 +1062,11 @@ public class AdministrarCompraBean implements Serializable {
         }
     }
 
-    public void cerrarAgregarDetalleFactura(ActionEvent event) {
+    public void cerrarAgregarDetalleFactura() {
         PrimeFaces.current().executeScript(";$(dialogoAgregarDetalleFactura).modal('hide');");
     }
 
-    public void inicioRelacionDetOcsDetFac(ActionEvent event) {
+    public void inicioRelacionDetOcsDetFac() {
         listaOrdenDetalle = new ArrayList<>();
         listaOrdenDetalle.add(new SelectItem("0", "Seleccione . . . . "));
 
@@ -1092,26 +1091,24 @@ public class AdministrarCompraBean implements Serializable {
         PrimeFaces.current().executeScript(";$(dialogoRelacionarDetalleFacturaOcs).modal('show');");
     }
 
-    public void guaradarRelacionDetOcsDetFac(ActionEvent event) {
+    public void guaradarRelacionDetOcsDetFac() {
         siFacturaDetalleImpl.actualizarOrdenDetalleFactura(listaFacturaDetalle, sesion.getProveedorVo().getRfc(), compraVo.isMultiproyecto(), compraVo.getId());
         PrimeFaces.current().executeScript(";$(dialogoRelacionarDetalleFacturaOcs).modal('hide');");
         listaFacturaDetalle = siFacturaDetalleImpl.traerDetalle(facturaVo.getId());
     }
 
-    public void cerrarRelacionDetOcsDetFac(ActionEvent event) {
+    public void cerrarRelacionDetOcsDetFac() {
         PrimeFaces.current().executeScript(";$(dialogoRelacionarDetalleFacturaOcs).modal('hide');");
     }
 
     // NOTA CREDITO
-    public void eliminarNotaCredito(ActionEvent event) {
-        int indice = Integer.parseInt(FacesUtilsBean.getRequestParameter("indNota"));
+    public void eliminarNotaCredito(int indice) {
         siFacturaImpl.eliminarNotaCredito(listaNotaCredito.get(indice).getId(), FacturaEstadoEnum.CREADA.getId(), sesion.getProveedorVo().getRfc());
         //
         listaNotaCredito.remove(indice);
     }
 
-    public void seleccionarNotaCredito(ActionEvent event) {
-        int idNota = Integer.parseInt(FacesUtilsBean.getRequestParameter("indexNota"));
+    public void seleccionarNotaCredito(int idNota) {
         if (listaNotaCredito != null && listaNotaCredito.size() > 0 && idNota > -1) {
             notaCreditoVo = listaNotaCredito.get(idNota);
             //
@@ -1125,7 +1122,7 @@ public class AdministrarCompraBean implements Serializable {
         }
     }
 
-    public void iniciarCargaSoporteNotaCredito(ActionEvent event) {
+    public void iniciarCargaSoporteNotaCredito() {
         tipoCarga.put(ARCHIVO_FACTURA_XML, Boolean.FALSE);
         tipoCarga.put(NOTA_CREDITO_XML, Boolean.FALSE);
         tipoCarga.put(CARTA_CONTENIDO, Constantes.BOOLEAN_FALSE);
@@ -1135,10 +1132,10 @@ public class AdministrarCompraBean implements Serializable {
         tipoCarga.put(SOPORTE_NOTA_CREDITO, Constantes.BOOLEAN_TRUE);
         tipoCarga.put(DOCUMENTO_ADUANAL, Constantes.BOOLEAN_FALSE);
 
-        PrimeFaces.current().executeScript( DIA_ARCH_FACT_MODALSHOW);
+        PrimeFaces.current().executeScript(DIA_ARCH_FACT_MODALSHOW);
     }
 
-    public void iniciarCargaPDFNotaCredito(ActionEvent event) {
+    public void iniciarCargaPDFNotaCredito() {
         tipoCarga.put(ARCHIVO_FACTURA_XML, Boolean.FALSE);
         tipoCarga.put(NOTA_CREDITO_XML, Boolean.FALSE);
         tipoCarga.put(CARTA_CONTENIDO, Constantes.BOOLEAN_FALSE);
@@ -1147,11 +1144,10 @@ public class AdministrarCompraBean implements Serializable {
         tipoCarga.put(SOPORTE_NOTA_CREDITO, Constantes.BOOLEAN_FALSE);
         tipoCarga.put(NOTA_CREDITO_PDF, Constantes.BOOLEAN_TRUE);
 
-        PrimeFaces.current().executeScript( DIA_ARCH_FACT_MODALSHOW);
+        PrimeFaces.current().executeScript(DIA_ARCH_FACT_MODALSHOW);
     }
 
-    public void eliminarSoporteNotaCredito(ActionEvent event) {
-        int idNotaSop = Integer.parseInt(FacesUtilsBean.getRequestParameter("idNotaSoporte"));
+    public void eliminarSoporteNotaCredito(int idNotaSop) {
         siFacturaAdjuntoImpl.eliminar(idNotaSop, sesion.getProveedorVo().getRfc());
         //
 //        listaSoporteNotaCredito = siFacturaAdjuntoImpl.traerSoporteFactura(notaCreditoVo.getId(), Constantes.BOOLEAN_FALSE);
@@ -1161,11 +1157,11 @@ public class AdministrarCompraBean implements Serializable {
         listaSoporteNotaCredito.addAll(siFacturaAdjuntoImpl.traerSoporteFactura(notaCreditoVo.getId(), Constantes.BOOLEAN_FALSE, "'SOPORTES'"));
     }
 
-    public void cerrarDetalleNotaCredito(ActionEvent event) {
+    public void cerrarDetalleNotaCredito() {
         PrimeFaces.current().executeScript(";$(dialogoDetNotaCredito).modal('hide');");
     }
 
-    public void iniciarCargaDocumentoAduanal(ActionEvent event) {
+    public void iniciarCargaDocumentoAduanal() {
         tipoCarga.put(ARCHIVO_FACTURA_XML, Boolean.FALSE);
         tipoCarga.put(NOTA_CREDITO_XML, Boolean.FALSE);
         tipoCarga.put(CARTA_CONTENIDO, Constantes.BOOLEAN_FALSE);
@@ -1174,7 +1170,7 @@ public class AdministrarCompraBean implements Serializable {
         tipoCarga.put(NOTA_CREDITO_PDF, Constantes.BOOLEAN_FALSE);
         tipoCarga.put(SOPORTE_FACTURA, Constantes.BOOLEAN_FALSE);
         tipoCarga.put(DOCUMENTO_ADUANAL, Constantes.BOOLEAN_TRUE);
-        PrimeFaces.current().executeScript( DIA_ARCH_FACT_MODALSHOW);
+        PrimeFaces.current().executeScript(DIA_ARCH_FACT_MODALSHOW);
         FacesUtilsBean.addErrorMessage(ARCHIVO_FACT_FILE_ENTRY, "");
     }
     /*

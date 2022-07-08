@@ -82,7 +82,7 @@ public class CargaEtsBean implements Serializable {
     @Inject
     UsuarioBean usuarioBean;
 
-    private final RequisicionBean requisicionBean = (RequisicionBean) FacesUtilsBean.getManagedBean("requisicionBean");
+//    private final RequisicionBean requisicionBean = (RequisicionBean) FacesUtilsBean.getManagedBean("requisicionBean");
 
     private DataModel<ReRequisicionEts> listaEts; //almacena la lista Especificacion tecnica de suministro
     private DataModel<OcCategoriaEts> listaOcCategoriaEts;
@@ -134,48 +134,48 @@ public class CargaEtsBean implements Serializable {
         Env.removeContext(usuarioBean.getCtx(), "ORDEN_ID");
     }
 
-    public DataModel getEtsPorRequisicion() {
-        if (requisicionBean.getRequisicionActual() == null) {
-            listaEts = null;
-        } else {
-            try {
-                if (requisicionBean.getRequisicionActual() != null && requisicionBean.getRequisicionActual().getId() != null) {
-
-                    listaEts
-                            = new ListDataModel(
-                                    servicioReRequisicion.traerAdjuntosPorRequisicion(
-                                            requisicionBean.getRequisicionActual().getId()
-                                    )
-                            );
-                }
-            } catch (Exception ex) {
-                listaEts = null;
-                LOGGER.fatal(this, null, ex);
-            }
-        }
-        return getListaEts();
-    }
-
-    public DataModel getEtsPorRequisicionEspera() {
-        if (requisicionBean.getRequisicionActual() == null) {
-            listaEts = null;
-        } else {
-            try {
-
-                if (requisicionBean.getRequisicionActual() != null && requisicionBean.getRequisicionActual().getId() != null) {
-
-                    listaEtsEspera
-                            = new ListDataModel(servicioReRequisicion.traerAdjuntosPorRequisicionVisibleTipo(
-                                    requisicionBean.getRequisicionActual().getId(),
-                                    false, "ESPERA"));
-                }
-            } catch (Exception ex) {
-                listaEts = null;
-                LOGGER.fatal(this, null, ex);
-            }
-        }
-        return getListaEtsEspera();
-    }
+//    public DataModel getEtsPorRequisicion() {
+//        if (requisicionBean.getRequisicionActual() == null) {
+//            listaEts = null;
+//        } else {
+//            try {
+//                if (requisicionBean.getRequisicionActual() != null && requisicionBean.getRequisicionActual().getId() != null) {
+//
+//                    listaEts
+//                            = new ListDataModel(
+//                                    servicioReRequisicion.traerAdjuntosPorRequisicion(
+//                                            requisicionBean.getRequisicionActual().getId()
+//                                    )
+//                            );
+//                }
+//            } catch (Exception ex) {
+//                listaEts = null;
+//                LOGGER.fatal(this, null, ex);
+//            }
+//        }
+//        return getListaEts();
+//    }
+//
+//    public DataModel getEtsPorRequisicionEspera() {
+//        if (requisicionBean.getRequisicionActual() == null) {
+//            listaEts = null;
+//        } else {
+//            try {
+//
+//                if (requisicionBean.getRequisicionActual() != null && requisicionBean.getRequisicionActual().getId() != null) {
+//
+//                    listaEtsEspera
+//                            = new ListDataModel(servicioReRequisicion.traerAdjuntosPorRequisicionVisibleTipo(
+//                                    requisicionBean.getRequisicionActual().getId(),
+//                                    false, "ESPERA"));
+//                }
+//            } catch (Exception ex) {
+//                listaEts = null;
+//                LOGGER.fatal(this, null, ex);
+//            }
+//        }
+//        return getListaEtsEspera();
+//    }
 
     public void eliminarEts(Object adjReq) {
         try {
@@ -186,7 +186,7 @@ public class CargaEtsBean implements Serializable {
             eliminarEtsComplemento();
 
             FacesUtilsBean.addInfoMessage("Se eliminó correctamente el archivo...");
-            getEtsPorRequisicion();
+        //    getEtsPorRequisicion();
         } catch (SIAException e) {
             LOGGER.fatal(this, "Excepcion en eliminar ETS", e);
             FacesUtilsBean.addErrorMessage("Ocurrió un problema al eliminar el archivo, por favor contacte al equipo de soporte SIA (soportesia@ihsa.mx)");
@@ -201,7 +201,7 @@ public class CargaEtsBean implements Serializable {
 
             proveedorAlmacenDocumentos.getAlmacenDocumentos().borrarDocumento(etsActualAdjunto.getUrl());
             eliminarEtsComplemento();
-            getEtsPorRequisicionEspera();
+//            getEtsPorRequisicionEspera();
 
             FacesUtilsBean.addInfoMessage("Se eliminó correctamente el archivo...");
         } catch (SIAException e) {
@@ -258,17 +258,17 @@ public class CargaEtsBean implements Serializable {
                 .append(getOrdenActual().getId()).toString();
     }
 
-    public String getUploadDirectoryRequi() {
-        setRequi(true);
-        /*setPreDirectorio(
-	 new StringBuilder().append("ETS/Requisicion/")
-	 .append(requisicionBean.getRequisicionActual().getId()).toString()
-	 );
-	 return new StringBuilder().append(getUploadDirectory()).append(getPreDirectorio()).toString();*/
-
-        return new StringBuilder().append("ETS/Requisicion/")
-                .append(requisicionBean.getRequisicionActual().getId()).toString();
-    }
+//    public String getUploadDirectoryRequi() {
+//        setRequi(true);
+//        /*setPreDirectorio(
+//	 new StringBuilder().append("ETS/Requisicion/")
+//	 .append(requisicionBean.getRequisicionActual().getId()).toString()
+//	 );
+//	 return new StringBuilder().append(getUploadDirectory()).append(getPreDirectorio()).toString();*/
+//
+//        return new StringBuilder().append("ETS/Requisicion/")
+//                .append();requisicionBean.getRequisicionActual().getId()).toString();
+//    }
 
     /*
      * *********************** CARGA DE ETS DESDE REQUISICION****************
@@ -555,7 +555,7 @@ public class CargaEtsBean implements Serializable {
                 DocumentoAnexo documentoAnexo = new DocumentoAnexo(fileInfo.getContent());
                 documentoAnexo.setTipoMime(fileInfo.getContentType());
                 if (isRequi()) {
-                    documentoAnexo.setRuta(getUploadDirectoryRequi());
+//                    documentoAnexo.setRuta(getUploadDirectoryRequi());
                 } else {
                     documentoAnexo.setRuta(getUploadDirectoryOrden());
                 }
@@ -576,11 +576,11 @@ public class CargaEtsBean implements Serializable {
 
                 if (adj != null) {
                     if (isRequi()) {
-                        servicioReRequisicion.crear(
-                                requisicionBean.getRequisicionActual(),
-                                adj,
-                                usuarioBean.getUsuarioConectado()
-                        );
+//                        servicioReRequisicion.crear(
+//                                requisicionBean.getRequisicionActual(),
+//                                adj,
+//                                usuarioBean.getUsuarioConectado()
+//                        );
                     } else {
                         servicioOcOrdenEts.crearOcOrdenEts(
                                 getOrdenActual().getId(), getIdCategoriaSelccionada(),
@@ -630,7 +630,7 @@ public class CargaEtsBean implements Serializable {
                 DocumentoAnexo documentoAnexo = new DocumentoAnexo(fileInfo.getContent());
                 documentoAnexo.setTipoMime(fileInfo.getContentType());
                 documentoAnexo.setNombreBase(fileInfo.getFileName());
-                documentoAnexo.setRuta(getUploadDirectoryRequi());
+          //      documentoAnexo.setRuta(getUploadDirectoryRequi());
                 almacenDocumentos.guardarDocumento(documentoAnexo);
 
                 SiAdjunto adj
@@ -645,18 +645,18 @@ public class CargaEtsBean implements Serializable {
                                 usuarioBean.getUsuarioConectado().getId()
                         );
 
-                if (adj != null) {
-                    servicioReRequisicion.crear(
-                            requisicionBean.getRequisicionActual(),
-                            adj,
-                            usuarioBean.getUsuarioConectado(),
-                            false
-                    );
-                }
-                requisicionSiMovimientoImpl.saveRequestMove(this.usuarioBean.getUsuarioConectado().getId(), "ADJUNTAR ARCHIVO " + documentoAnexo.getNombreBase(), requisicionBean.getRequisicionActual().getId(), Constantes.ID_SI_OPERACION_ESPERAADJ);
-                FacesUtilsBean.addInfoMessage("El archivo fue agregado correctamente.");
-                PrimeFaces.current().executeScript(";cerrarDialogoModal(dialogoAdjuntoEsperaReq);");
-                requisicionBean.enEsperaDet();
+//                if (adj != null) {
+//                    servicioReRequisicion.crear(
+//                            requisicionBean.getRequisicionActual(),
+//                            adj,
+//                            usuarioBean.getUsuarioConectado(),
+//                            false
+//                    );
+//                }
+//                requisicionSiMovimientoImpl.saveRequestMove(this.usuarioBean.getUsuarioConectado().getId(), "ADJUNTAR ARCHIVO " + documentoAnexo.getNombreBase(), requisicionBean.getRequisicionActual().getId(), Constantes.ID_SI_OPERACION_ESPERAADJ);
+//                FacesUtilsBean.addInfoMessage("El archivo fue agregado correctamente.");
+//                PrimeFaces.current().executeScript(";cerrarDialogoModal(dialogoAdjuntoEsperaReq);");
+//                requisicionBean.enEsperaDet();
             } else {
                 FacesUtilsBean.addErrorMessage(new StringBuilder()
                         .append("No se permiten los siguientes caracteres especiales en el nombre del Archivo: ")

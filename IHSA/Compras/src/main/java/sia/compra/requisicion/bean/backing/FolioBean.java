@@ -11,6 +11,7 @@ package sia.compra.requisicion.bean.backing;
 
 import java.io.Serializable;
 import javax.faces.bean.CustomScoped;
+import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import sia.servicios.sistema.impl.FolioImpl;
@@ -23,7 +24,7 @@ import sia.servicios.sistema.impl.FolioImpl;
  * @date 8/07/2009
  */
 @Named (value= FolioBean.BEAN_NAME)
-@CustomScoped(value = "#{window}")
+@ViewScoped
 public class FolioBean implements Serializable{
 
     //------------------------------------------------------
