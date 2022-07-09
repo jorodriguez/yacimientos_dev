@@ -5,168 +5,137 @@
       xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
       xmlns:h="http://xmlns.jcp.org/jsf/html"
       xmlns:f="http://xmlns.jcp.org/jsf/core"
-      
+
       xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
       >
 
     <body>
 
         <ui:composition template="./../../../WEB-INF/facelets/templates/templateGrupos.xhtml">
+            <ui:define name="tituloPagina" >
+                Catálogo de Monedas
+            </ui:define>
             <ui:define name="contenido" >
-                <div id="page">
-                    <div class="row">
-                        <h:form styleClass="textoIzquierda"  rendered="#{not empty sesion.usuario}" >
-                            <div class="col-lg-12">
-                                <div class="col-lg-4"></div>
-                                <div class="col-lg-6">
-                                    <h2 class="page-header">Catálogo de Monedas</h2>
-                                </div>
-                            </div>
-                            <center><h:messages globalOnly="true" errorClass="errorMessage" infoClass="infoMessage"/></center>
+                <h:form   id="cataMoneda">
+                    <center><h:messages globalOnly="true" errorClass="errorMessage" infoClass="infoMessage"/></center>
 
+                    <p:commandLink title="#{msgs['sistema.crear']} Moneda" 
+                                   action="#{monedaCatalogoBean.crearMoneda}" styleClass="btn btn-primary"
+                                   process="@this" update="frmPnlMoneda">
+                        <i class="fa fa-plus text-white"/>
+                    </p:commandLink>
 
-                            <p:panelGrid>
-                                <p:commandLink title="#{msgs['sistema.crear']} Moneda" action="#{monedaCatalogoBean.crearMoneda}" styleClass="btn btn-default">
-                                    <p:graphicImage title="#{msgs['sistema.crear']} Moneda" alt="#{msgs['sistema.crear']} Moneda" url="./resources/imagenes/button_create.png" styleClass="imagenSinBorde"/>
-                                </p:commandLink>
-                                <p:commandLink value="#{msgs['sistema.crear']} Moneda" title="#{msgs['sistema.crear']} Moneda" action="#{monedaCatalogoBean.crearMoneda}" styleClass="linkPequenio" />
-                            </p:panelGrid>  
-                        </h:form>
-
-                        <h:form id="cataMoneda">	
-                            <div class="row" style="margin-top: 15px; margin-bottom: 15px;">                                
-                                <strong><h:outputText class="col-lg-1 col-xs-12 control-label" value="Filtro:"/></strong>
-                                <div class="col-lg-5 col-xs-12">                                            
-                                    <p:selectOneMenu id="idMonedaUsuario" styleClass="form-control"
-                                                       value="#{monedaCatalogoBean.companiaSeleccionada}" 
-                                                       valueChangeListener="#{monedaCatalogoBean.cambiarValorCompania}"
-                                                       
-                                                       >                                        
-                                        <f:selectItems value="#{monedaCatalogoBean.companias}"/>
-                                    </p:selectOneMenu>
-                                </div>
-                                <div class="visible-lg col-lg-6" ></div>                                                
-                            </div>
-                            <div class="row">
-                                <p:dataTable size="small" stripedRows="true" showGridlines="true" id="dgMoneda" rows="10" var="data" styleClass="table table-bordered table-striped "
-                                               value="#{monedaCatalogoBean.lstMoneda}"   style="text-align: center;" >
-                                    <p:column style="text-align: center;">
-                                        <f:facet name="header"><h:outputText value="Nombre"/></f:facet>
-                                        <h:outputText value="#{data.nombre}"/>
-                                    </p:column>
-                                    <p:column style="text-align: center;">
-                                        <f:facet name="header"><h:outputText value="Siglas"/></f:facet>
-                                        <h:outputText value="#{data.siglas}"/>
-                                    </p:column>
-                                    <p:column style="text-align: center;">
-                                        <f:facet name="header"><h:outputText value="Compañia"/></f:facet>
-                                        <h:outputText value="#{data.compania}"/>
-                                    </p:column>
-                                    <p:column style="text-align: center;">
-                                        <f:facet name="header"><h:outputText value="Activa"/></f:facet>                                    
-                                        <h:selectBooleanCheckbox value="#{data.activo}" disabled="true" />
-                                    </p:column>
-                                    <p:column style="text-align: center;">
-                                        <center>
-                                            <p:commandLink value="#{msgs['sistema.modificar']}" action="#{monedaCatalogoBean.editarMoneda}" styleClass="link">
-                                                <f:param name="idMoneda" value="#{data.id}"/>
-                                            </p:commandLink>
-                                        </center>
-                                    </p:column>
-                                    <p:column style="text-align: center;">
-                                        <center>
-                                            <p:commandLink value="#{msgs['sistema.eliminar']}" 
-                                                             action="#{monedaCatalogoBean.deleteMoneda}" styleClass="link">
-                                                <f:param name="idMoneda" value="#{data.id}"/>
-                                            </p:commandLink>
-                                        </center>                                    
-                                    </p:column>
-                                </p:dataTable>
-                            </div>
-                            
-                            <br/>
-                        </h:form>          
+                    <div class="row mt-2">
+                        <strong><h:outputText class="col-1 col-xs-12 control-label" value="Filtro:"/></strong>
+                        <div class="col-5 col-xs-12">                                            
+                            <p:selectOneMenu id="idMonedaUsuario" styleClass="form-control"
+                                             value="#{monedaCatalogoBean.companiaSeleccionada}" 
+                                             >                                        
+                                <f:selectItems value="#{monedaCatalogoBean.companias}"/>
+                                <p:ajax listener="#{monedaCatalogoBean.cambiarValorCompania}" update="cataMoneda:dgMoneda"/>
+                            </p:selectOneMenu>
+                        </div>
                     </div>
-                </div>
+                    <div class="row">
+                        <p:dataTable size="small" stripedRows="true" showGridlines="true" id="dgMoneda" rows="10" var="data" 
+                                     value="#{monedaCatalogoBean.lstMoneda}"   >
+                            <p:column style="text-align: center;">
+                                <f:facet name="header"><h:outputText value="Nombre"/></f:facet>
+                                <h:outputText value="#{data.nombre}"/>
+                            </p:column>
+                            <p:column style="text-align: center;">
+                                <f:facet name="header"><h:outputText value="Siglas"/></f:facet>
+                                <h:outputText value="#{data.siglas}"/>
+                            </p:column>
+                            <p:column style="text-align: center;">
+                                <f:facet name="header"><h:outputText value="Compañia"/></f:facet>
+                                <h:outputText value="#{data.compania}"/>
+                            </p:column>
+                            <p:column style="text-align: center;">
+                                <f:facet name="header"><h:outputText value="Activa"/></f:facet>                                    
+                                <h:selectBooleanCheckbox value="#{data.activo}" disabled="true" />
+                            </p:column>
+                            <p:column style="text-align: center;" width="80">
+                                <p:commandLink value="#{msgs['sistema.modificar']}" 
+                                               action="#{monedaCatalogoBean.editarMoneda(data.id)}" 
+                                               process="@this" update="frmPnlMoneda">
+                                </p:commandLink>
+                            </p:column>
+                            <p:column style="text-align: center;" width="80">
+                                <p:commandLink value="#{msgs['sistema.eliminar']}" 
+                                               action="#{monedaCatalogoBean.deleteMoneda(data.id)}"
+                                               process="@this" update="cataMoneda:dgMoneda">
+                                </p:commandLink>
+                            </p:column>
+                        </p:dataTable>
+                    </div>
+                </h:form>          
 
                 <div class="modal fade" id="dialogoPopUpMoneda" data-backdrop="static" data-keyboard="false" style="color: black;">
-                    <div class="modal-dialog" style="width: 70%;">
+                    <div class="modal-dialog" >
                         <div class="modal-content">
                             <div class="modal-header">                    
                                 <h4 class="modal-title">Crear/Editar Moneda</h4>                                                                
                             </div>
-                            <h:form id="frmPnlMoneda" styleClass="textoIzquierda">
+                            <h:form id="frmPnlMoneda" >
                                 <div class="modal-body">                                                                                                        
                                     <div class="container-fluid">
-                                        <div class="form-group panel">                                          
-                                            <div style="margin-top: 0px;" class="col-lg-12 col-xs-12">                        
+                                        <div class="form-group">                                          
+                                            <div style="margin-top: 0px;" class="col-12 col-xs-12">                        
                                                 <h:message  for="" style="display: block;" infoClass="alert alert-success" warnClass="alert alert-warning"
                                                             errorClass="alert alert-danger" fatalClass="alert alert-danger"  />
                                             </div>
-                                            <div class="form-group col-lg-12 col-xs-12" >
+                                            <div class="form-group col-12 col-xs-12" >
                                                 <div class="row">
-                                                    <div class="visible-lg col-lg-2" ></div>
-                                                    <div class="col-lg-2 col-xs-12" >
+                                                    <div class="col-2 col-xs-12" >
                                                         <strong><h:outputText class="control-label" value="Nombre:"/></strong>
                                                     </div>
-                                                    <div class="col-lg-6 col-xs-12">                                            
+                                                    <div class="col-6 col-xs-12">                                            
                                                         <p:inputText maxlength="15"                                                     
-                                                            styleClass="form-control"                                                    
-                                                            value="#{monedaCatalogoBean.newMoneda.nombre}"
-                                                            />  
+                                                                     styleClass="form-control"                                                    
+                                                                     value="#{monedaCatalogoBean.newMoneda.nombre}"
+                                                                     />  
                                                     </div>
-                                                    <div class="visible-lg col-lg-2" ></div>
                                                 </div>
                                                 <div class="row">
-                                                    <div class="visible-lg col-lg-2" ></div>
-                                                    <strong><h:outputText class="col-lg-2 col-xs-12 control-label" value="Siglas:"/></strong>
-                                                    <div class="col-lg-6 col-xs-12">                                            
+                                                    <strong><h:outputText class="col-2 col-xs-12 control-label" value="Siglas:"/></strong>
+                                                    <div class="col-6 col-xs-12">                                            
                                                         <p:inputText maxlength="5"
-                                                            styleClass="form-control"                                                    
-                                                            value="#{monedaCatalogoBean.newMoneda.siglas}"
-                                                            />  
+                                                                     styleClass="form-control"                                                    
+                                                                     value="#{monedaCatalogoBean.newMoneda.siglas}"
+                                                                     />  
                                                     </div>
-                                                    <div class="visible-lg col-lg-2" ></div>                                                
                                                 </div>
                                                 <div class="row">
-                                                    <div class="visible-lg col-lg-2" ></div>
-                                                    <strong><h:outputText class="col-lg-2 col-xs-12 control-label" value="Compañia:"/></strong>
-                                                    <div class="col-lg-6 col-xs-12">                                            
-                                                        <p:selectOneMenu id="idmonedasedit" styleClass="form-control"
-                                                                           value="#{monedaCatalogoBean.newMoneda.compania}"  
-                                                                           disabled="#{monedaCatalogoBean.newMoneda.id > 0}"
-                                                                           >
+                                                    <strong><h:outputText class="col-2 col-xs-12 control-label" value="Compañia:"/></strong>
+                                                    <div class="col-8 col-xs-12">                                            
+                                                        <p:selectOneMenu id="idmonedasedit" 
+                                                                         value="#{monedaCatalogoBean.newMoneda.compania}"  
+                                                                         disabled="#{monedaCatalogoBean.newMoneda.id > 0}"
+                                                                         >
                                                             <f:selectItem itemValue="0" itemLabel="Seleccione . . . "/>
                                                             <f:selectItems value="#{monedaCatalogoBean.companias}"/>
                                                         </p:selectOneMenu>
                                                     </div>
-                                                    <div class="visible-lg col-lg-2" ></div>                                                
                                                 </div>
                                                 <div class="row">
-                                                    <div class="visible-lg col-lg-2" ></div>
-                                                    <strong><h:outputText class="col-lg-2 col-xs-12 control-label" value="Activo:"/></strong>
-                                                    <div class="col-lg-6 col-xs-12">                                            
+                                                    <strong><h:outputText class="col-2 col-xs-12 control-label" value="Activo:"/></strong>
+                                                    <div class="col-6 col-xs-12">                                            
                                                         <h:selectBooleanCheckbox value="#{monedaCatalogoBean.newMoneda.activo}" />
                                                     </div>
-                                                    <div class="visible-lg col-lg-2" ></div>                                                
                                                 </div>
                                             </div>            
-
-
                                         </div>
                                     </div>
-                                    <div class="col-lg-9"></div>  
                                 </div>
-                                <div class="modal-footer" style="border-top: white;">
-                                    <h:commandButton id="saveLlegada"
+                                <div class="modal-footer" >
+                                    <p:commandButton id="saveLlegada"
                                                      value="Guardar"
                                                      styleClass="btn btn-info" 
-                                                     onclick="return window.confirm('¿Está seguro de guardar la moneda?');"
                                                      action="#{monedaCatalogoBean.guardarMoneda}"
-                                                     />
-                                    <p:commandButton
+                                                     process="@form" update="cataMoneda frmPnlMoneda"/>
+                                    <p:commandLink immediate="true"
                                         value="Cerrar"
-                                        styleClass="btn btn-cancelar"
                                         onclick="$(dialogoPopUpMoneda).modal('hide');"
                                         title="Cerrar ventana..." 
                                         />

@@ -13,14 +13,18 @@ import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 
 import javax.faces.event.ValueChangeEvent;
+import javax.faces.model.SelectItem;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import lombok.Getter;
 import lombok.Setter;
+import org.primefaces.PrimeFaces;
 import org.primefaces.event.SelectEvent;
+import sia.constantes.Constantes;
 import sia.modelo.Orden;
 import sia.modelo.Usuario;
+import sia.modelo.campo.usuario.puesto.vo.CampoUsuarioPuestoVo;
 import sia.modelo.sgl.vo.OrdenVO;
 import sia.servicios.campo.nuevo.impl.ApCampoUsuarioRhPuestoImpl;
 import sia.servicios.catalogos.impl.UsuarioImpl;
@@ -52,6 +56,9 @@ public class CancelarReenviarOrdenBean implements Serializable {
     private ApCampoUsuarioRhPuestoImpl apCampoUsuarioRhPuestoImpl;
     @Inject
     private UsuarioImpl usuarioImpl;
+    @Getter
+    @Setter
+    private List<SelectItem> listaCamposSelect;
     //
     //
     @Setter
@@ -110,6 +117,8 @@ public class CancelarReenviarOrdenBean implements Serializable {
         setOrden(null);
         setUsuarioSolicita("");
         setConsecutivo("");
+        listaCamposSelect = new ArrayList<>();
+        camposCancelar();
     }
 
     public void buscarOrden() {
@@ -120,6 +129,19 @@ public class CancelarReenviarOrdenBean implements Serializable {
             setMostrar(true);
         }
 
+    }
+
+    public void camposCancelar() {
+        List<CampoUsuarioPuestoVo> lc;
+        try {
+            lc = apCampoUsuarioRhPuestoImpl.getAllPorUsurioCategoriaCodigo(sesion.getUsuario().getId(), Constantes.CODIGO_ROL_CANCELAR_OCS);
+            for (CampoUsuarioPuestoVo ca : lc) {
+                SelectItem item = new SelectItem(ca.getIdCampo(), ca.getCampo());
+                listaCamposSelect.add(item);
+            }
+        } catch (Exception e) {
+            UtilLog4j.log.error(e);
+        }
     }
 
     public Orden buscarOrden(String consecutivo) {
@@ -180,7 +202,7 @@ public class CancelarReenviarOrdenBean implements Serializable {
                         true);
                 if ((puedoCancelarReq || !this.isCancelReq())
                         && (puedoRegresarReq || this.isCancelReq())
-                        && ordenServicioRemoto.cancelarOrden(getOrden(),  getUsuarioSolicita(), sesion.getUsuario().getId(), (Object) getMotivo(), true, isCancelReq())) {
+                        && ordenServicioRemoto.cancelarOrden(getOrden(), getUsuarioSolicita(), sesion.getUsuario().getId(), (Object) getMotivo(), true, isCancelReq())) {
                     StringBuilder msg = new StringBuilder();
                     msg.append("Se canceló correctamente la orden de C/S ").append(getOrden().getConsecutivo());
 
@@ -193,6 +215,8 @@ public class CancelarReenviarOrdenBean implements Serializable {
                     setOrden(null);
                     setUsuarioSolicita("");
                     setConsecutivo("");
+                    //
+                    PrimeFaces.current().executeScript("PF('dlgCancelar').hide();");
                 } else if (!puedoCancelarReq) {
                     FacesUtils.addErrorMessage("No se puede cancelar la requisición, ya que esta cuenta con órdenes de compra en proceso.");
                 } else if (!this.isCancelReq() && !puedoRegresarReq) {
@@ -230,7 +254,7 @@ public class CancelarReenviarOrdenBean implements Serializable {
     private void completarDevolucionOrden() {
         try {
             if (getMotivoDev().length() > 10) {
-                if (ordenServicioRemoto.devolverOrden(getOrden(), getUsuarioSolicita(), sesion.getUsuario().getId(),  getMotivoDev())) {
+                if (ordenServicioRemoto.devolverOrden(getOrden(), getUsuarioSolicita(), sesion.getUsuario().getId(), getMotivoDev())) {
                     StringBuilder msg = new StringBuilder();
                     msg.append("Se devolvió correctamente la orden de C/S ").append(getOrden().getConsecutivo());
 
@@ -254,7 +278,7 @@ public class CancelarReenviarOrdenBean implements Serializable {
     public void reeviarOrden() {
         try {
             boolean v;
-            
+
             v = ordenServicioRemoto.reenviarOrdenCompras(orden, this.sesion.getUsuario());//(getOrden());
             if (v) {
                 setOrden(null);

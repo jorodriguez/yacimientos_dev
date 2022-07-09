@@ -37,7 +37,6 @@ import lombok.Getter;
 import lombok.Setter;
 import org.primefaces.PrimeFaces;
 import org.primefaces.event.SelectEvent;
-import sia.catalogos.bean.model.UsuarioListModel;
 import sia.constantes.Constantes;
 import sia.excepciones.EmailNotFoundException;
 import sia.excepciones.SIAException;
@@ -101,6 +100,8 @@ public class UsuarioBean implements Serializable {
 
     @Inject
     Sesion sesion;
+    private static final int OFICINA_MONTERREY = 1;
+    private static final int SUBDIRECCION_ADMINISTRATIVA = 48;
     private static final int STAFF_HOUSE = 8;
     private static final int CONFIGURACION_CORREO = 15;
 
@@ -108,6 +109,7 @@ public class UsuarioBean implements Serializable {
     private static final int SERVICIOS_INFORMATICOS = 61;
     private static final int SERVICIOS_GENERALES = 33;
     private static final int HSE = 47;
+
 
     //@ManagedProperty(value = "#{soporteProveedor}")
     private SoporteProveedor soporteProveedor;
