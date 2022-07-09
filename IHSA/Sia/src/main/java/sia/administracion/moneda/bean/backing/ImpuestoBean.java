@@ -9,8 +9,6 @@ import java.io.Serializable;
 import java.util.List;
 import javax.enterprise.context.RequestScoped;
 
-
-
 import javax.faces.event.ValueChangeEvent;
 import javax.faces.model.SelectItem;
 import javax.inject.Inject;
@@ -28,13 +26,11 @@ import sia.util.UtilLog4j;
  */
 @Named(value = "impuestoBean")
 @RequestScoped
-public class ImpuestoBean implements Serializable{
-    
+public class ImpuestoBean implements Serializable {
+
     @Inject
     private ImpuestoBeanModel impuestoBeanModel;
 
-    
-    
     /**
      * @return the impuestoBeanModel
      */
@@ -132,30 +128,27 @@ public class ImpuestoBean implements Serializable{
     public void setCompaniaSeleccionada(String companiaSeleccionada) {
         getImpuestoBeanModel().setCompaniaSeleccionada(companiaSeleccionada);
     }
-    
+
     public void crearImpuesto() {
         try {
-            this.setNewImpuesto(new ImpuestoVO());            
-            String metodo = ";abrirDialogoCrearImpuesto();";
-            PrimeFaces.current().executeScript(metodo);
+            this.setNewImpuesto(new ImpuestoVO());
+                PrimeFaces.current().executeScript("$('dialogoPopUpImpuesto').modal(show);");
         } catch (Exception ex) {
             UtilLog4j.log.fatal(this, ex);
         }
     }
 
-    public void editarImpuesto() {
+    public void editarImpuesto(int idImpuesto) {
         try {
-            int idImpuesto = Integer.parseInt(FacesUtils.getRequestParameter("idImpuesto"));
-            if (idImpuesto > 0) {                
+            if (idImpuesto > 0) {
                 cargarImpuesto(idImpuesto);
-                String metodo = ";abrirDialogoCrearImpuesto();";
-                PrimeFaces.current().executeScript(metodo);
+                PrimeFaces.current().executeScript("$('dialogoPopUpImpuesto').modal(show);");
             }
         } catch (Exception ex) {
             UtilLog4j.log.fatal(this, ex);
         }
     }
-    
+
     public void guardarImpuesto() {
         try {
             getImpuestoBeanModel().guardarImpuesto();
@@ -167,22 +160,18 @@ public class ImpuestoBean implements Serializable{
             UtilLog4j.log.fatal(this, ex);
         }
     }
-    
-    public void cargarImpuesto(int idImpuesto){
+
+    public void cargarImpuesto(int idImpuesto) {
         getImpuestoBeanModel().cargarImpuesto(idImpuesto);
     }
-    
+
     public void refrescarTabla() {
         getImpuestoBeanModel().refrescarTabla();
     }
-    
-    public void cambiarValorCompania(ValueChangeEvent event) {	
-        try {            
-            String idCompania = (String) event.getNewValue();
-            if(idCompania != null && !idCompania.isEmpty()){
-                this.setCompaniaSeleccionada(idCompania);
-                this.refrescarTabla();               
-            }            
+
+    public void cambiarValorCompania() {
+        try {
+            this.refrescarTabla();
         } catch (Exception ex) {
             UtilLog4j.log.fatal(this, ex);
         }

@@ -11,19 +11,18 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
-
-
-
 import javax.faces.model.SelectItem;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
+import lombok.Getter;
+import lombok.Setter;
 import org.primefaces.PrimeFaces;
-import org.primefaces.event.SelectEvent;
-import sia.catalogos.bean.backing.UsuarioBean;
 import sia.inventarios.service.InvCadenaAprobacionImpl;
+import sia.modelo.Usuario;
 import sia.modelo.cadena.aprobacion.vo.CadenaAprobacionVo;
 import sia.modelo.usuario.vo.UsuarioVO;
 import sia.servicios.campo.nuevo.impl.ApCampoUsuarioRhPuestoImpl;
+import sia.servicios.catalogos.impl.UsuarioImpl;
 import sia.sistema.bean.backing.Sesion;
 import sia.sistema.bean.support.FacesUtils;
 import sia.util.UtilLog4j;
@@ -51,16 +50,21 @@ public class CadenaAprobacionAlmacenBean implements Serializable {
     InvCadenaAprobacionImpl cadenaAprobacionLocal;
     @Inject
     ApCampoUsuarioRhPuestoImpl apCampoUsuarioRhPuestoImpl;
+    @Inject
+    UsuarioImpl usuarioImpl;
 
     private List<SelectItem> usuarios;
     private List<UsuarioVO> listaUsuaarios;
     private CadenaAprobacionVo cadenaAprobacionVo;
-
+@Getter
+@Setter
+    private String solicita;
+    private String aprueba;
     @PostConstruct
     public void iniciar() {
-        usuarios = new ArrayList<SelectItem>();
-        listaUsuaarios = new ArrayList<UsuarioVO>();
-        cadenas = new ArrayList<CadenaAprobacionVo>();
+        usuarios = new ArrayList<>();
+        listaUsuaarios = new ArrayList<>();
+        cadenas = new ArrayList<>();
         //
         llenar();
         //
@@ -92,8 +96,12 @@ public class CadenaAprobacionAlmacenBean implements Serializable {
         return null;
     }
 
-    public void onItemSelectSolicita(SelectEvent<String> event) {
-        cadenaAprobacionVo.setSolicita(event.getObject());
+    public void onItemSelectSolicita() {
+        Usuario usSol = usuarioImpl.buscarPorNombre(cadenaAprobacionVo.getSolicita());
+        if (usSol != null) {
+            cadenaAprobacionVo.setIdSolicita(usSol.getId());
+            cadenaAprobacionVo.setSolicita(usSol.getNombre());
+        }
     }
 
     public List<String> seleccionarAutoriza(String cadena) {
@@ -112,8 +120,13 @@ public class CadenaAprobacionAlmacenBean implements Serializable {
         return null;
     }
 
-    public void onItemSelectAprueba(SelectEvent<String> event) {
-        cadenaAprobacionVo.setAprueba(event.getObject());
+    public void onItemSelectAprueba() {
+
+        Usuario usSol = usuarioImpl.buscarPorNombre(cadenaAprobacionVo.getAprueba());
+        if (usSol != null) {
+            cadenaAprobacionVo.setIdAprueba(usSol.getId());
+            cadenaAprobacionVo.setAprueba(usSol.getNombre());
+        }
     }
 
     public void guardar() {
@@ -133,15 +146,12 @@ public class CadenaAprobacionAlmacenBean implements Serializable {
         }
     }
 
-    public void eliminarCadena() {
-        int idCad = Integer.parseInt(FacesUtils.getRequestParameter("idCad"));
+    public void eliminarCadena(int idCad) {
         //
         cadenaAprobacionLocal.eliminar(idCad, sesion.getUsuarioVo().getId());
         //
         llenar();
     }
-
-
 
     /**
      * @return the cadenas

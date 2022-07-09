@@ -380,7 +380,7 @@ public class Sesion implements Serializable {
         } else {
             resultado = url.replace("@@AM@@", getArrancarModulo(0, ""));
         }
-        return /*Configurador.urlSia() +*/ resultado;
+        return /*Configurador.urlSia() +*/ resultado + "?faces-redirect=true";
     }
 
     public void cerrarSesionExterno() {

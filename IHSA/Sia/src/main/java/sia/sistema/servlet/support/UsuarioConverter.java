@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package sia.ihsa.contratos.servlet;
+package sia.sistema.servlet.support;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;

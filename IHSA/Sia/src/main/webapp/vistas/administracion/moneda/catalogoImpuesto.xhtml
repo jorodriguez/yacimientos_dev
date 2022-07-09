@@ -5,7 +5,7 @@
       xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
       xmlns:h="http://xmlns.jcp.org/jsf/html"
       xmlns:f="http://xmlns.jcp.org/jsf/core"
-      
+
       xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
       >
 
@@ -25,12 +25,12 @@
                         return patt.test($("#" + idComponente).val());
                     }
 
-                    function validarDecimal(event, idComponente) {                        
-                        var x = event.which || event.keyCode;                        
-                        var xx = String.fromCharCode(x);                        
+                    function validarDecimal(event, idComponente) {
+                        var x = event.which || event.keyCode;
+                        var xx = String.fromCharCode(x);
                         if (!validarCajaTextoCantidad(idComponente)) {
-                            var str = $("#" + idComponente).val();                            
-                            str = removeSpecialChars(str);                            
+                            var str = $("#" + idComponente).val();
+                            str = removeSpecialChars(str);
                             var n = str.replace(xx, "");
                             var n = n.replace(xx.toLowerCase(), "");
                             $("#" + idComponente).val(n);
@@ -40,80 +40,69 @@
                     }
 
                 </script>
-                <div id="page">
-                    <div class="row">
-                        <h:form styleClass="textoIzquierda"  rendered="#{not empty sesion.usuario}" >
-                            <div class="col-lg-12">
-                                <div class="col-lg-4"></div>
-                                <div class="col-lg-6">
-                                    <h2 class="page-header">Catálogo de Impuestos</h2>
-                                </div>
+                <div class="row">
+                    <h:form id="cataImpuesto">
+                        <div class="col-lg-12">
+                            <div class="col-lg-4"></div>
+                            <div class="col-lg-6">
+                                <h2 class="page-header">Catálogo de Impuestos</h2>
                             </div>
-                            <center><h:messages globalOnly="true" errorClass="errorMessage" infoClass="infoMessage"/></center>
+                        </div>
+                        <h:messages globalOnly="true" errorClass="errorMessage" infoClass="infoMessage"/>
+                        <p:commandLink title="#{msgs['sistema.crear']} Impuesto" 
+                                       action="#{impuestoBean.crearImpuesto}" styleClass="btn btn-primary text-white"
+                                       process="@this" update="frmPnlImpuesto">
+                            <i class="fa fa-plus text-white"/>
+                        </p:commandLink>
 
-
-                            <p:panelGrid>
-                                <p:commandLink title="#{msgs['sistema.crear']} Impuesto" action="#{impuestoBean.crearImpuesto}" styleClass="btn btn-default">
-                                    <p:graphicImage title="#{msgs['sistema.crear']} Impuesto" alt="#{msgs['sistema.crear']} Impuesto" url="./resources/imagenes/button_create.png" styleClass="imagenSinBorde"/>
-                                </p:commandLink>
-                                <p:commandLink value="#{msgs['sistema.crear']} Impuesto" title="#{msgs['sistema.crear']} Impuesto" action="#{impuestoBean.crearImpuesto}" styleClass="linkPequenio" />
-                            </p:panelGrid>  
-                        </h:form>
-
-                        <h:form id="cataImpuesto">	
-                            <div class="row" style="margin-top: 15px; margin-bottom: 15px;">                                
-                                <strong><h:outputText class="col-lg-1 col-xs-12 control-label" value="Filtro:"/></strong>
-                                <div class="col-lg-5 col-xs-12">                                            
-                                    <p:selectOneMenu id="idImpuestoUsuario" styleClass="form-control"
-                                                       value="#{impuestoBean.companiaSeleccionada}" 
-                                                       valueChangeListener="#{impuestoBean.cambiarValorCompania}"
-                                                       
-                                                       >                                        
-                                        <f:selectItems value="#{impuestoBean.companias}"/>
-                                    </p:selectOneMenu>
-                                </div>
-                                <div class="visible-lg col-lg-6" ></div>                                                
+                        <div class="row" style="margin-top: 15px; margin-bottom: 15px;">                                
+                            <strong><h:outputText class="col-lg-1 col-xs-12 control-label" value="Filtro:"/></strong>
+                            <div class="col-lg-5 col-xs-12">                                            
+                                <p:selectOneMenu id="idImpuestoUsuario" styleClass="form-control"
+                                                 value="#{impuestoBean.companiaSeleccionada}" 
+                                                 >       
+                                    <f:selectItems value="#{impuestoBean.companias}"/>
+                                    <p:ajax listener="#{impuestoBean.cambiarValorCompania}" update="cataImpuesto:dgImpuesto"/>
+                                </p:selectOneMenu>
                             </div>
-                            <div class="row">
-                                <p:dataTable size="small" stripedRows="true" showGridlines="true" id="dgImpuesto" rows="10" var="data" styleClass="table table-bordered table-striped "
-                                               value="#{impuestoBean.lstImpuesto}"   style="text-align: center;" >
-                                    <p:column style="text-align: center;">
-                                        <f:facet name="header"><h:outputText value="Compañia"/></f:facet>
-                                        <h:outputText value="#{data.compania}"/>
-                                    </p:column>
-                                    <p:column style="text-align: center;">
-                                        <f:facet name="header"><h:outputText value="Impuesto"/></f:facet>
-                                        <h:outputText value="#{data.nombre}"/>
-                                    </p:column>
-                                    <p:column style="text-align: center;">
-                                        <f:facet name="header"><h:outputText value="Valor"/></f:facet>
-                                        <h:outputText value="#{data.valor}"/>
-                                    </p:column>
-                                    <p:column style="text-align: center;">
-                                        <center>
-                                            <p:commandLink value="#{msgs['sistema.modificar']}" action="#{impuestoBean.editarImpuesto}" styleClass="link">
-                                                <f:param name="idImpuesto" value="#{data.id}"/>
-                                            </p:commandLink>
-                                        </center>
-                                    </p:column>                                    
-                                </p:dataTable>
-                            </div>
-                            
-                            <br/>
-                        </h:form>          
-                    </div>
+                            <div class="visible-lg col-lg-6" ></div>                                                
+                        </div>
+                        <div class="row">
+                            <p:dataTable size="small" stripedRows="true" showGridlines="true" id="dgImpuesto" rows="10" var="data" styleClass="table table-bordered table-striped "
+                                         value="#{impuestoBean.lstImpuesto}"   style="text-align: center;" >
+                                <p:column style="text-align: center;">
+                                    <f:facet name="header"><h:outputText value="Compañia"/></f:facet>
+                                    <h:outputText value="#{data.compania}"/>
+                                </p:column>
+                                <p:column style="text-align: center;">
+                                    <f:facet name="header"><h:outputText value="Impuesto"/></f:facet>
+                                    <h:outputText value="#{data.nombre}"/>
+                                </p:column>
+                                <p:column style="text-align: center;">
+                                    <f:facet name="header"><h:outputText value="Valor"/></f:facet>
+                                    <h:outputText value="#{data.valor}"/>
+                                </p:column>
+                                <p:column style="text-align: center;">
+                                    <p:commandLink value="#{msgs['sistema.modificar']}" 
+                                                   action="#{impuestoBean.editarImpuesto(data.id)}" styleClass="link"
+                                                   process="@this" update="frmPnlImpuesto">
+                                    </p:commandLink>
+                                </p:column>                                    
+                            </p:dataTable>
+                        </div>
+                    </h:form>          
                 </div>
 
-                <div class="modal fade" id="dialogoPopUpImpuesto" data-backdrop="static" data-keyboard="false" style="color: black;">
-                    <div class="modal-dialog" style="width: 70%;">
+                <div class="modal fade" id="dialogoPopUpImpuesto" data-backdrop="static" data-keyboard="false" >
+                    <div class="modal-dialog" >
                         <div class="modal-content">
                             <div class="modal-header">                    
                                 <h4 class="modal-title">Crear/Editar Impuesto</h4>                                                                
                             </div>
-                            <h:form id="frmPnlImpuesto" styleClass="textoIzquierda">
+                            <h:form id="frmPnlImpuesto" >
                                 <div class="modal-body">                                                                                                        
                                     <div class="container-fluid">
-                                        <div class="form-group panel">                                          
+                                        <div class="form-group">                                          
                                             <div style="margin-top: 0px;" class="col-lg-12 col-xs-12">                        
                                                 <h:message  for="" style="display: block;" infoClass="alert alert-success" warnClass="alert alert-warning"
                                                             errorClass="alert alert-danger" fatalClass="alert alert-danger"  />
@@ -126,9 +115,9 @@
                                                     </div>
                                                     <div class="col-lg-6 col-xs-12">                                            
                                                         <p:inputText maxlength="15"                                                     
-                                                            styleClass="form-control"                                                    
-                                                            value="#{impuestoBean.newImpuesto.nombre}"
-                                                            />  
+                                                                     styleClass="form-control"                                                    
+                                                                     value="#{impuestoBean.newImpuesto.nombre}"
+                                                                     />  
                                                     </div>
                                                     <div class="visible-lg col-lg-2" ></div>
                                                 </div>
@@ -147,8 +136,8 @@
                                                     </div>
                                                     <div class="visible-lg col-lg-2" ></div>                                                
                                                 </div>
-                                                
-                                                
+
+
                                             </div>            
 
 
@@ -157,17 +146,16 @@
                                     <div class="col-lg-9"></div>  
                                 </div>
                                 <div class="modal-footer" style="border-top: white;">
-                                    <h:commandButton id="saveLlegada"
+                                    <p:commandButton id="saveLlegada"
                                                      value="Guardar"
-                                                     styleClass="btn btn-info" 
-                                                     onclick="return window.confirm('¿Está seguro de guardar el Impuesto?');"
+                                                     styleClass="btn btn-info text-whtie" 
                                                      action="#{impuestoBean.guardarImpuesto}"
-                                                     />
-                                    <p:commandButton
+                                                     process="@form" update="cataImpuesto"/>
+                                    <p:commandLink
                                         value="Cerrar"
                                         styleClass="btn btn-cancelar"
                                         onclick="$(dialogoPopUpImpuesto).modal('hide');"
-                                        title="Cerrar ventana..." 
+                                        title="Cerrar ventana..."  immediate="true"
                                         />
                                 </div>    
                             </h:form>
