@@ -787,10 +787,8 @@ public class Sesion implements Serializable {
         }
     }
 
-    public void goGRViajeDet(ActionEvent actionEvent) {
+    public void goGRViajeDet(int idViaje, int idInter) {
         try {
-            int idViaje = Integer.parseInt(FacesUtilsBean.getRequestParameter("idViaje"));
-            int idInter = Integer.parseInt(FacesUtilsBean.getRequestParameter("idInter"));
 
             if (idViaje > 0) {
                 cargarViajeD(idViaje);
