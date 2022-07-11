@@ -4,158 +4,135 @@
       xmlns:ui="http://xmlns.jcp.org/jsf/facelets"    
       xmlns:h="http://xmlns.jcp.org/jsf/html"
       xmlns:p="http://primefaces.org/ui"  
-      
-      xmlns:my="http://www.mytags.com/schema/mytags"
+
       xmlns:f="http://xmlns.jcp.org/jsf/core"
       xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
 
     <body>
 
         <ui:composition template="./../../../WEB-INF/facelets/templates/templateGrupos.xhtml">
-	    <ui:define name="contenido">
-		<div id="page">
-		    <div class="row"> 
-			<h:form   id="frmUserCampo">
-			    <div class="col-lg-12">
-				<div class="col-lg-4"></div>
-				<div class="col-lg-6">
-				    <h2 class="page-header">#{msgs['usuario.agregar.bloque']}</h2>
-				</div>
-			    </div>
-			    <div class="col-lg-12 col-xs-12">
-				<p:commandLink title="#{msgs['usuario.agregar.bloque']}" styleClass="btn btn-default" 
-					       onclick="mostrarDialogoBloqueUsuario('dialogoBloqueUsuario', 'frmPopCampoUsuario', 'btnCerrar', 'btnGuardar', 'autocompleteUsuario', 'autocompletePuesto', 'cmbBloque');"
-					       immediate="true" action="#{usuarioBean.agregarCampoUsuario}">
-				    <p:graphicImage url="./resources/imagenes/agregar.png" styleClass="imagenSinBorde" />
-				</p:commandLink>
-				<p:commandLink  styleClass="linkPequenio" immediate="true"  
-                                                onclick="mostrarDialogoBloqueUsuario('dialogoBloqueUsuario', 'frmPopCampoUsuario', 'btnCerrar', 'btnGuardar', 'autocompleteUsuario', 'autocompletePuesto', 'cmbBloque');"
-						value="#{msgs['usuario.agregar.bloque']}" title="#{msgs['usuario.agregar.bloque']}" 
-                                                action="#{usuarioBean.agregarCampoUsuario}"
-                                                />   
-			    </div>
-			    <div class="col-lg-12 col-xs-12">
-				<f:facet name="header"><h:panelGroup><h:outputText value="#{msgs['sistema.filtro']}"/></h:panelGroup></f:facet>
-				<p:selectOneRadio value="#{usuarioBean.idCampo}" 
-						    valueChangeListener="#{usuarioBean.cambiarSeleccionCampo}"
-						     layout="lineDirection" >
-				    <f:selectItems value="#{usuarioBean.listaCampoPorUsuario}"/>
-				</p:selectOneRadio>
-			    </div>
-			    <div class="col-lg-12 col-xs-12">
-				<p:dataTable size="small" stripedRows="true" showGridlines="true" id="dtCampoUser" rows="20"
-					       value="#{usuarioBean.traerCampoUsuario}" 
-					       var="data"
-					       paginator="true"  
-					       paginatorPosition="bottom" 
-					       style="width: 80%"  
-					       styleClass="table table-striped">
+            <ui:define name="tituloPagina">
+                #{msgs['usuario.agregar.bloque']}
+            </ui:define>
+            <ui:define name="contenido">
+                <h:form   id="frmUserCampo">
+                    <div class="col-lg-12 col-xs-12">
+                        <p:commandLink title="#{msgs['usuario.agregar.bloque']}" styleClass="btn btn-primary" 
+                                       process="@this" update="frmPopCampoUsuario"
+                                       onclick="mostrarDialogoBloqueUsuario('dialogoBloqueUsuario', 'frmPopCampoUsuario', 'btnCerrar', 'btnGuardar', 'autocompleteUsuario', 'autocompletePuesto', 'cmbBloque');"
+                                       action="#{asignarUsuarioCampoBean.agregarCampoUsuario}">				    
+                            <i class="fa fa-plus text-white"/>
+                        </p:commandLink>
+                    </div>
+                    <div class="col-lg-12 col-xs-12">
+                        <p:selectOneMenu value="#{asignarUsuarioCampoBean.idCampo}" >
+                            <f:selectItems value="#{asignarUsuarioCampoBean.campos}"/>
+                            <p:ajax listener="#{asignarUsuarioCampoBean.cambiarSeleccionCampo}" update="frmUserCampo:dtCampoUser"/>
+                        </p:selectOneMenu>
+                    </div>
+                    <div class="col-lg-12 col-xs-12">
+                        <p:dataTable size="small" stripedRows="true" showGridlines="true" id="dtCampoUser" rows="20"
+                                     value="#{asignarUsuarioCampoBean.lista}" 
+                                     var="data"
+                                     paginator="true"  
+                                     paginatorPosition="bottom" >
 
-				    <p:column headerText="Nombre">
-					<h:outputText value="#{data.usuario}"/>
-				    </p:column>
-				    <p:column headerText="#{msgs['sia.puesto.nombre']}">
-					<h:outputText value="#{data.puesto}"/>
-				    </p:column>
-				    <p:column headerText="">
-					<p:commandLink value="#{msgs['sistema.eliminar']}"  action="#{usuarioBean.eliminarRelacion}"
-							 rendered="#{usuarioBean.usuarioVOAlta.idCampo ne data.idCampo}"
-							 styleClass="link"  
-							 style="color:  blue;"
-							 onclick="if (!confirm('La operación va a eliminar el registro, ¿está seguro?  '))
-								     return false;"/>
-				    </p:column>
-				</p:dataTable>
-			    </div>
-			</h:form>
-			<!---->
-			<div id="dialogoBloqueUsuario" style="display: none;" 
-			     title="#{usuarioBean.accion eq 0 ? msgs['sia.campo.agregar.campo.usuario'] : msgs['sia.campo.actualizar.campo.usuario']}">
-			    <h:form id="frmPopCampoUsuario" >
-				<h:panelGroup>                           
-				    <br/>
-				    <p:panelGrid columns="1">
-					<c:if test="#{usuarioBean.accion eq 1}">
-					    <p:panelGrid columns="2">
-						<h:outputText value="Usuario: "/>
-						<p:inputText value="#{usuarioBean.campoUsuarioPuestoVo.usuario}" disabled="true" size="55"/>
-					    </p:panelGrid>
-					</c:if>
-					<c:if test="#{usuarioBean.accion eq 0}">
-					    <p:panelGrid columns="3">
-						<h:outputText value="Usuario" />   
-						<p:panelGrid columns="2">
-						    <h:inputText id="autocompleteUsuario" size="40"
-								   onclick="autocompletarUsuario(this, 'hidenDesUsuario', 'frmPopCampoUsuario');"/>
-						    <h:inputHidden id="hidenDesUsuario" value="#{usuarioBean.u}"/>
-						</p:panelGrid>  
-					    </p:panelGrid>
-					</c:if>
-					<p:panelGrid columns="2">
-					    <h:outputText value="#{msgs['sia.bloque.nombre']} "/>
-					    <p:selectOneMenu  value="#{usuarioBean.idCampo}" id="cmbBloque"  rendered="#{usuarioBean.accion eq 0}"
-								valueChangeListener="#{usuarioBean.cambiaValorPuesto}" >
-						<f:selectItem itemLabel="#{msgs['sistema.seleccione']}" itemValue="-1"/>
-						<f:selectItems value="#{usuarioBean.listaCampo}"/>
-					    </p:selectOneMenu>
-					    <h:outputText value="Gerencia"/>
-					    <p:selectOneMenu  value="#{usuarioBean.idGerencia}" id="cmbBloqueGerencia" >
-						<f:selectItem itemLabel="#{msgs['sistema.seleccione']}" itemValue="-1"/>
-						<f:selectItems value="#{usuarioBean.listaGerenciasItems}"/>
-					    </p:selectOneMenu>
+                            <p:column headerText="Nombre">
+                                <h:outputText value="#{data.usuario}"/>
+                            </p:column>
+                            <p:column headerText="#{msgs['sia.puesto.nombre']}">
+                                <h:outputText value="#{data.puesto}"/>
+                            </p:column>
+                            <p:column headerText="">
+                                <p:commandLink value="#{msgs['sistema.eliminar']}"  action="#{asignarUsuarioCampoBean.eliminarRelacion(data.idCampoUsuarioPuesto)}"
+                                               process="@this" update="frmUserCampo:dtCampoUser"/>
+                            </p:column>
+                        </p:dataTable>
+                    </div>
+                </h:form>
+                <!---->
+                <div class="modal fade" data-backdrop="static" id="dialogoRegFactura" data-keyboard="false">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h4 class="modal-title">msgs['sia.campo.agregar.campo.usuario']</h4>
+                            </div>
+                            <div class="modal-body">
+                                <h:form id="frmPopCampoUsuario" >
+                                    <h:panelGroup>                           
+                                        <p:panelGrid columns="1">
+                                            <c:if test="#{asignarUsuarioCampoBean.accion eq 1}">
+                                                <p:panelGrid columns="2">
+                                                    <h:outputText value="Usuario: "/>
+                                                    <p:inputText value="#{asignarUsuarioCampoBean.campoUsuarioPuestoVo.usuario}" disabled="true" size="55"/>
+                                                </p:panelGrid>
+                                            </c:if>
+                                            <c:if test="#{asignarUsuarioCampoBean.accion eq 0}">
+                                                <p:panelGrid columns="3">
+                                                    <h:outputText value="Usuario" />   
+                                                    <p:panelGrid columns="2">
+                                                        <p:autoComplete value="#{asignarUsuarioCampoBean.u}"
+                                                                        />
+                                                    </p:panelGrid>  
+                                                </p:panelGrid>
+                                            </c:if>
+                                            <p:panelGrid columns="2">
+                                                <h:outputText value="#{msgs['sia.bloque.nombre']} "/>
+                                                <p:selectOneMenu  value="#{asignarUsuarioCampoBean.idCampo}" id="cmbBloque"  rendered="#{asignarUsuarioCampoBean.accion eq 0}"
+                                                                  >
+                                                    <f:selectItem itemLabel="#{msgs['sistema.seleccione']}" itemValue="-1"/>
+                                                    <f:selectItems value="#{asignarUsuarioCampoBean.listaCamposItems}"/>
+                                                    <p:ajax listener="#{asignarUsuarioCampoBean.cambiaValorPuesto}"/>
+                                                </p:selectOneMenu>
+                                                <h:outputText value="Gerencia"/>
+                                                <p:selectOneMenu  value="#{asignarUsuarioCampoBean.idGerencia}" id="cmbBloqueGerencia" >
+                                                    <f:selectItem itemLabel="#{msgs['sistema.seleccione']}" itemValue="-1"/>
+                                                    <f:selectItems value="#{asignarUsuarioCampoBean.lstGerencia}"/>
+                                                </p:selectOneMenu>
 
-					    <p:inputText value="#{usuarioBean.campoUsuarioPuestoVo.campo}" disabled="true" size="55" 
-							   rendered="#{usuarioBean.accion eq 1}"/>
-					    <h:outputText value="#{msgs['sia.puesto.nombre']}"/>
-					    <p:panelGrid columns="2">
-						<p:inputText id="autocompletePuesto" size="40" 
-							       onclick="autocompletarPuesto(this, 'hidenDesPuesto', 'frmPopCampoUsuario');"/>
-						<h:inputHidden id="hidenDesPuesto" value="#{usuarioBean.rhPuestoVo.id}"/>
-					    </p:panelGrid>   
-					</p:panelGrid>
-				    </p:panelGrid>
-				    <!--p:panelGrid columns="1" rendered="#{usuarioBean.accion eq 0}"-->
-				    <p:panelGrid columns="1" rendered="#{usuarioBean.accion eq 0}" >
-					<h:outputText value="Responsable de gerencia: "/>
-					<p:selectOneRadio value="#{usuarioBean.c}" >
-					    <f:selectItem itemValue="si" itemLabel="Si"/>
-					    <f:selectItem itemValue="no" itemLabel="No"/>
-					</p:selectOneRadio>
-                                        <!--p:panelStack selectedPanel="#{usuarioBean.c}">
-					<p:panelStack selectedPanel="#{usuarioBean.c}">
-					    <h:panelGroup id="si">
-						<p:panelGrid columns="2">
-						    <h:outputText value="Gerencias"/>
-						    <p:selectOneMenu value="#{usuarioBean.idGerencia}">
-							<f:selectItem itemValue="-1" itemLabel="Seleccione . . . "/>
-							<f:selectItems value="#{usuarioBean.listaGerencia}"/>
-						    </p:selectOneMenu>
-						</p:panelGrid>
-					    </h:panelGroup>
-					    <h:panelGroup id="no"></h:panelGroup>
-					</p:panelStack-->                                    
-				    </p:panelGrid>
-				    <br/>
-				    <center>
-					<p:panelGrid columns="2" >
-					    <p:commandLink id="btnGuardar" value="#{msgs['sistema.aceptar']}" 
-							   action="#{usuarioBean.guardarUsuarioCampo}" 
-							   styleClass="btn btn-info" style="display: none;"/>
-					    <p:commandLink id="btnCerrar" value="#{msgs['sistema.cancelar']}" 
-							   action="#{usuarioBean.cancelarUsuarioCampo}" style="display: none;"  />
-					</p:panelGrid>
-				    </center>
-				</h:panelGroup>
-			    </h:form>
-			</div>
-			<div id="dialogOK" style="display: none;" title="#{msgs['sia.mensaje.titulo.operacion.realizada']}">
-			    <h:outputText value="#{msgs['sia.mensaje.operacion.realizada']}"
-					  styleClass="textoNegrita10" style="color: blue;"/><br/><br/>
-			</div>
-		    </div>
-		</div>
+                                                <p:inputText value="#{asignarUsuarioCampoBean.campoUsuarioPuestoVo.campo}" disabled="true" size="55" 
+                                                             rendered="#{asignarUsuarioCampoBean.accion eq 1}"/>
+                                                <h:outputText value="#{msgs['sia.puesto.nombre']}"/>
+                                                <p:autoComplete value="#{asignarUsuarioCampoBean.rhPuestoVo.nombre}"
+                                                                />
+                                            </p:panelGrid>
+                                        </p:panelGrid>
+                                        <!--p:panelGrid columns="1" rendered="#{asignarUsuarioCampoBean.accion eq 0}"-->
+                                        <p:panelGrid columns="1" rendered="#{asignarUsuarioCampoBean.accion eq 0}" >
+                                            <h:outputText value="Responsable de gerencia: "/>
+                                            <p:selectOneRadio value="#{asignarUsuarioCampoBean.responsableGerencia}" >
+                                                <f:selectItem itemValue="si" itemLabel="Si"/>
+                                                <f:selectItem itemValue="no" itemLabel="No"/>
+                                            </p:selectOneRadio>
+                                            <!--p:panelStack selectedPanel="#{asignarUsuarioCampoBean.c}">
+                                            <p:panelStack selectedPanel="#{asignarUsuarioCampoBean.c}">
+                                                <h:panelGroup id="si">
+                                                    <p:panelGrid columns="2">
+                                                        <h:outputText value="Gerencias"/>
+                                                        <p:selectOneMenu value="#{asignarUsuarioCampoBean.idGerencia}">
+                                                            <f:selectItem itemValue="-1" itemLabel="Seleccione . . . "/>
+                <f:selectItems value="#{asignarUsuarioCampoBean.lstGerencia}"/>
+                                                        </p:selectOneMenu>
+                                                    </p:panelGrid>
+                                                </h:panelGroup>
+                                                <h:panelGroup id="no"></h:panelGroup>
+                                            </p:panelStack-->                                    
+                                        </p:panelGrid>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <p:commandLink id="btnGuardar" value="#{msgs['sistema.aceptar']}" 
+                                                           action="#{asignarUsuarioCampoBean.guardarUsuarioCampo}" 
+                                                           styleClass="btn btn-info" style="display: none;"/>
+                                            <p:commandLink id="btnCerrar" value="#{msgs['sistema.cancelar']}" 
+                                                           action="#{asignarUsuarioCampoBean.cancelarUsuarioCampo}" style="display: none;"  />
+                                    </h:panelGroup>
+                                </h:form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-	    </ui:define>
+            </ui:define>
 
         </ui:composition>
 

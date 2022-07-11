@@ -1,4 +1,4 @@
-    /*
+/*
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
@@ -7,17 +7,26 @@ package sia.catalogos.bean.backing;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-
-
-
+import javax.annotation.PostConstruct;
 
 import javax.faces.event.ValueChangeEvent;
 import javax.faces.model.SelectItem;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
-import sia.catalogos.bean.model.RolBeanModel;
+import lombok.Getter;
+import lombok.Setter;
+import sia.modelo.campo.usuario.puesto.vo.CampoUsuarioPuestoVo;
+import sia.modelo.rol.vo.RolVO;
 import sia.modelo.usuario.vo.UsuarioRolVo;
+import sia.modelo.usuario.vo.UsuarioVO;
+import sia.servicios.campo.nuevo.impl.ApCampoUsuarioRhPuestoImpl;
+import sia.servicios.catalogos.impl.UsuarioImpl;
+import sia.servicios.sistema.impl.SiModuloImpl;
+import sia.servicios.sistema.impl.SiRolImpl;
+import sia.servicios.sistema.impl.SiUsuarioRolImpl;
+import sia.servicios.sistema.vo.SiModuloVo;
+import sia.sistema.bean.backing.Sesion;
 import sia.sistema.bean.support.FacesUtils;
 
 /**
@@ -33,225 +42,172 @@ public class RolBean implements Serializable {
      */
     public RolBean() {
     }
+
     @Inject
-    private RolBeanModel rolBeanModel;
+    private Sesion sesion;
+    @Inject
+    private SiUsuarioRolImpl siUsuarioRolImpl;
+    @Inject
+    private UsuarioImpl usuarioImpl;
+    @Inject
+    ApCampoUsuarioRhPuestoImpl apCampoUsuarioRhPuestoImpl;
+
+    @Inject
+    private SiModuloImpl siModuloImpl;
+    @Inject
+    private SiRolImpl siRolImpl;
+    //
+    @Getter
+    @Setter
+    private int idModulo;
+    @Getter
+    @Setter
+    private int idRol;
+
+    @Getter
+    @Setter
+    private String nombreUsuario;
+    @Getter
+    @Setter
+    private String idUsuario;
+    @Getter
+    @Setter
+    private List<UsuarioVO> listaUsuario;
+    @Getter
+    @Setter
+    private List<String> usuariosFiltrados;
+    @Getter
+    @Setter
+    private List<UsuarioRolVo> lista;
+    @Getter
+    @Setter
+    private boolean principal = false;
+    @Getter
+    @Setter
+    private boolean viewAll = false;
+    @Getter
+    @Setter
+    private int idCampo;
+    @Getter
+    @Setter
+    private String rfcCompania;
+    @Getter
+    @Setter
+    private List<SelectItem> modulos;
+    @Getter
+    @Setter
+    private List<SelectItem> roles;
+    @Getter
+    @Setter
+    private List<SelectItem> campos;
+
+    @PostConstruct
+    public void iniciarIdCampo() {
+        modulos = new ArrayList<>();
+        roles = new ArrayList<>();
+        campos = new ArrayList<>();
+        usuariosFiltrados = new ArrayList<>();
+        listaUsuario = new ArrayList<>();
+        setLista(new ArrayList<>());
+        setIdCampo(sesion.getUsuario().getApCampo().getId());
+        setRfcCompania(regresaRfcCompania());
+        //
+        listaUsuario = apCampoUsuarioRhPuestoImpl.traerUsuarioCampo(idCampo);
+        llenarModulo();
+        listaCampoPorUsuario();
+    }
 
     public void limpiarRol() {
-	rolBeanModel.setIdCampo(rolBeanModel.regresaIdCampo());
-	rolBeanModel.setRfcCompania(rolBeanModel.regresaRfcCompania());
-	setIdModulo(-1);
-	setIdRol(-1);
-	setNombreUsuario("");
-	setLista(new ArrayList<UsuarioRolVo>());
+        setIdCampo(sesion.getUsuario().getApCampo().getId());
+        setRfcCompania(regresaRfcCompania());
+        setIdModulo(-1);
+        setIdRol(-1);
+        setNombreUsuario("");
+        setLista(new ArrayList<>());
     }
 
-    public List<SelectItem> getListaModulo() {
-	return rolBeanModel.listaModulo();
+    public String regresaRfcCompania() {
+        return sesion.getUsuario().getApCampo().getCompania().getRfc();
     }
 
-    public void cambiarSeleccionCampo(ValueChangeEvent valueChangeListener) {
-	rolBeanModel.setIdCampo((Integer) valueChangeListener.getNewValue());
+    public void llenarModulo() {
+        modulos.clear();
+        for (SiModuloVo siModuloVo : siModuloImpl.getAllSiModuloList("nombre", true, false)) {
+            SelectItem item = new SelectItem(siModuloVo.getId(), siModuloVo.getNombre());
+            modulos.add(item);
+        }
     }
 
-    public void cambiarSeleccionCompania(ValueChangeEvent valueChangeListener) {
-	rolBeanModel.setRfcCompania((String) valueChangeListener.getNewValue());
+    public void listaCampoPorUsuario() {
+        for (CampoUsuarioPuestoVo cuVo : apCampoUsuarioRhPuestoImpl.getAllPorUsurio(sesion.getUsuarioVo().getId())) {
+            SelectItem item = new SelectItem(cuVo.getIdCampo(), cuVo.getCampo());
+            campos.add(item);
+        }
     }
 
-    public List<SelectItem> getListaCampoPorUsuario() {
-	return rolBeanModel.listaCampoPorUsuario();
+    public void listaRol() {
+        roles.clear();
+        for (RolVO rolVO : siRolImpl.traerRol(idModulo)) {
+            SelectItem item = new SelectItem(rolVO.getId(), rolVO.getNombre());
+            roles.add(item);
+        }
     }
 
-    public List<SelectItem> getListaCompaniaPorUsuario() {
-	return rolBeanModel.listaCompaniaPorUsuario();
-    }
-
-    public List<SelectItem> getListaRol() {
-	return rolBeanModel.listaRol();
-    }
-
-    public void usuarioListener(String cadena) {
-	rolBeanModel.setListaUsuario(rolBeanModel.traerUsuario(cadena));
-	//listaUsuariosAlta = soporteProveedor.regresaUsuarioActivoVO(event.getNewValue().toString());
-    }
-
-    public void guardarUsuarioRol() {
-	if (rolBeanModel.getIdModulo() > 0) {
-	    if (rolBeanModel.getIdRol() > 0) {
-		if (!rolBeanModel.getNombreUsuario().isEmpty()) {
-		    if (rolBeanModel.buscarUsuarioRol()) {
-			rolBeanModel.guardarUsuarioRol();
-		    } else {
-			FacesUtils.addErrorMessage("Ya existe el usuario con el rol seleccionado");
-		    }
-		} else {
-		    FacesUtils.addErrorMessage("Agregue un usuario");
-		}
-	    } else {
-		FacesUtils.addErrorMessage("Seleccione un rol");
-	    }
-	} else {
-	    FacesUtils.addErrorMessage("Seleccione un módulo");
-	}
+    public List<String> usuarioListener(String cadena) {
+        usuariosFiltrados.clear();
+        listaUsuario.stream().filter(us -> us.getNombre().toUpperCase().startsWith(cadena.toUpperCase())).forEach(u -> {
+            usuariosFiltrados.add(u.getNombre());
+        });
+        return usuariosFiltrados;
     }
 
     public void buscarRol() {
-	rolBeanModel.buscarRol();
+        lista = siUsuarioRolImpl.traerUsuarioPorRolModulo(getIdRol(), getIdModulo(), getIdCampo());
     }
 
-    public void eliminarUsuarioRol() {
-	int idUrol = Integer.parseInt(FacesUtils.getRequestParameter("idUsuarioRol"));
-	rolBeanModel.eliminarUsuarioRol(idUrol);
+    public void cambiarModulo() {
+        listaRol();
     }
 
-    //
-    /**
-     * @param rolBeanModel the rolBeanModel to set
-     */
-    public void setRolBeanModel(RolBeanModel rolBeanModel) {
-	this.rolBeanModel = rolBeanModel;
+    public void cambiarSeleccionCampo() {
+        llenarModulo();
+        roles.clear();
     }
 
-    public List<UsuarioRolVo> getListaUsuarioRol() {
-	return rolBeanModel.listaUsuarioRol();
+    public void guardarUsuarioRol() {
+        if (getIdModulo() > 0) {
+            if (getIdRol() > 0) {
+                if (!getNombreUsuario().isEmpty()) {
+                    if (buscarUsuarioRol()) {
+                        boolean v = siUsuarioRolImpl.guardarUsuarioRol(getIdRol(), getNombreUsuario(), isPrincipal(), sesion.getUsuario().getId(), getIdCampo());
+                        if (v) {
+                            setIdModulo(-1);
+                            setIdRol(-1);
+                            setNombreUsuario("");
+                            buscarRol();
+                        }
+                    } else {
+                        FacesUtils.addErrorMessage("Ya existe el usuario con el rol seleccionado");
+                    }
+                } else {
+                    FacesUtils.addErrorMessage("Agregue un usuario");
+                }
+            } else {
+                FacesUtils.addErrorMessage("Seleccione un rol");
+            }
+        } else {
+            FacesUtils.addErrorMessage("Seleccione un módulo");
+        }
     }
 
-    /**
-     * @return the idModulo
-     */
-    public int getIdModulo() {
-	return rolBeanModel.getIdModulo();
+    public boolean buscarUsuarioRol() {
+        UsuarioRolVo uvo = siUsuarioRolImpl.findNombreUsuarioRolVO(getIdRol(), getNombreUsuario(), getIdCampo());
+        return uvo == null;
     }
 
-    /**
-     * @param idModulo the idModulo to set
-     */
-    public void setIdModulo(int idModulo) {
-	rolBeanModel.setIdModulo(idModulo);
+    public void eliminarUsuarioRol(int idUrol) {
+        siUsuarioRolImpl.eliminarUsuarioRol(idUrol, sesion.getUsuario().getId());
+        lista = siUsuarioRolImpl.traerUsuarioPorRolModulo(idUrol, getIdModulo(), getIdCampo());
     }
 
-    /**
-     * @return the idRol
-     */
-    public int getIdRol() {
-	return rolBeanModel.getIdRol();
-    }
-
-    /**
-     * @param idRol the idRol to set
-     */
-    public void setIdRol(int idRol) {
-	rolBeanModel.setIdRol(idRol);
-    }
-
-    /**
-     * @return the nombreUsuario
-     */
-    public String getNombreUsuario() {
-	return rolBeanModel.getNombreUsuario();
-    }
-
-    /**
-     * @param nombreUsuario the nombreUsuario to set
-     */
-    public void setNombreUsuario(String nombreUsuario) {
-	rolBeanModel.setNombreUsuario(nombreUsuario);
-    }
-
-    /**
-     * @return the idUsuario
-     */
-    public String getIdUsuario() {
-	return rolBeanModel.getIdUsuario();
-    }
-
-    /**
-     * @param idUsuario the idUsuario to set
-     */
-    public void setIdUsuario(String idUsuario) {
-	rolBeanModel.setIdUsuario(idUsuario);
-    }
-
-    /**
-     * @return the listaUsuario
-     */
-    public List<SelectItem> getListaUsuario() {
-	return rolBeanModel.getListaUsuario();
-    }
-
-    /**
-     * @param listaUsuario the listaUsuario to set
-     */
-    public void setListaUsuario(List<SelectItem> listaUsuario) {
-	rolBeanModel.setListaUsuario(listaUsuario);
-    }
-
-    /**
-     * @return the lista
-     */
-    public List getLista() {
-	return rolBeanModel.getLista();
-    }
-
-    /**
-     * @param lista the lista to set
-     */
-    public void setLista(List lista) {
-	rolBeanModel.setLista(lista);
-    }
-
-    /**
-     * @return the principal
-     */
-    public boolean isPrincipal() {
-	return rolBeanModel.isPrincipal();
-    }
-
-    /**
-     * @param principal the principal to set
-     */
-    public void setPrincipal(boolean principal) {
-	rolBeanModel.setPrincipal(principal);
-    }
-
-    /**
-     * @return the idCampo
-     */
-    public int getIdCampo() {
-	return rolBeanModel.getIdCampo();
-    }
-
-    /**
-     * @param idCampo the idCampo to set
-     */
-    public void setIdCampo(int idCampo) {
-	rolBeanModel.setIdCampo(idCampo);
-    }
-
-    /**
-     * @return the rfcCompania
-     */
-    public String getRfcCompania() {
-	return rolBeanModel.getRfcCompania();
-    }
-
-    /**
-     * @param rfcCompania the rfcCompania to set
-     */
-    public void setRfcCompania(String rfcCompania) {
-	rolBeanModel.setRfcCompania(rfcCompania);
-    }
-
-    /**
-     * @return the viewAll
-     */
-    public boolean isViewAll() {
-	return rolBeanModel.isViewAll();
-    }
-
-    /**
-     * @param principal the principal to set
-     */
-    public void setViewAll(boolean viewAll) {
-	rolBeanModel.setViewAll(viewAll);
-    }
 }

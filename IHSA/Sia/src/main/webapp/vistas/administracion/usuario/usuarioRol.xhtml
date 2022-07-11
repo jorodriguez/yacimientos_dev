@@ -5,130 +5,101 @@
       xmlns:p="http://primefaces.org/ui"
       xmlns:h="http://xmlns.jcp.org/jsf/html"
       xmlns:f="http://xmlns.jcp.org/jsf/core"
-      
-      xmlns:my="http://www.mytags.com/schema/mytags"
-      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+      >
     <body>
 
         <ui:composition template="./../../../WEB-INF/facelets/templates/templateGrupos.xhtml">
+            <ui:define name="tituloPagina">
+                Administrar roles
+            </ui:define>
             <ui:define name="contenido">
-		<div id="Pa">
-		    <div class="row"> 
-                        <h:form id="frmRolContrato"  		  
-				  >
-			    <div class="col-lg-12">
-				<div class="col-lg-4"></div>
-				<div class="col-lg-6">
-				    <h2 class="page-header">Administrar roles</h2>
-				</div>
-			    </div>
-			    <div class="col-lg-12 col-xs-12">
-				<h:outputText value="Esta opción solo agrega y muestra los roles por módulo con las opciones de agregarlos y quitarlos. "
-					      style="color: red; font-weight:  bold; float: right;"/>
-			    </div>
-			    <div class="col-lg-12 col-xs-12">
-                                <!-- tabChangeListener="#{rolBean.limpiarRol}"-->
-				<p:tabView >
-				    <p:tab title="Roles Modulos"  >
-					<p:panelGrid styleClass="bordePanelGrid">
-					    <f:facet name="header"><h:panelGroup><h:outputText value="#{msgs['sistema.filtro']}"/></h:panelGroup></f:facet>
-					    <p:selectOneRadio value="#{rolBean.idCampo}" 
-								valueChangeListener="#{rolBean.cambiarSeleccionCampo}"
-								 layout="lineDirection" >
-						<f:selectItems value="#{rolBean.listaCampoPorUsuario}"/>
-					    </p:selectOneRadio>
-					</p:panelGrid>
-					<p:panelGrid columns="2">
-					    <h:outputLabel value="Módulo"/>
-					    <p:selectOneMenu value="#{rolBean.idModulo}" >
-						<f:selectItem itemLabel="Seleccione . . . " itemValue="-1"/>
-						<f:selectItems value="#{rolBean.listaModulo}"/>
-					    </p:selectOneMenu>
+                <div class="row">
+                    <h:form id="frmRolContrato">
+                        <div class="row">
+                            <h:outputText value="Esta opción solo agrega y muestra los roles por módulo con las opciones de agregarlos y quitarlos. "
+                                          style="color: red; font-weight:  bold; float: right;"/>
+                        </div>
+                        <p:tabView id="tbRoles">
+                            <p:tab title="Roles Modulos"  >
+                                <p:panel id="pnlAdd">
+                                    <h:panelGrid columns="2">
+                                        <h:outputLabel value="Módulo"/>
+                                        <p:selectOneMenu value="#{rolBean.idCampo}" >
+                                            <f:selectItems value="#{rolBean.campos}"/>
+                                            <p:ajax listener="#{rolBean.cambiarSeleccionCampo}" update="frmRolContrato:tbRoles:cmbRolAdd frmRolContrato:tbRoles:cmbModuloAdd"/>
+                                        </p:selectOneMenu>
+                                        <h:outputLabel value="Módulo"/>
+                                        <p:selectOneMenu value="#{rolBean.idModulo}" id="cmbModuloAdd">
+                                            <f:selectItem itemLabel="Seleccione . . . " itemValue="-1"/>
+                                            <f:selectItems value="#{rolBean.modulos}"/>
+                                            <p:ajax listener="#{rolBean.cambiarModulo}" update="frmRolContrato:tbRoles:cmbRolAdd"/>
+                                        </p:selectOneMenu>
 
-					    <h:outputLabel value="Rol"/>
-					    <p:selectOneMenu value="#{rolBean.idRol}">
-						<f:selectItem itemLabel="Seleccione . . . " itemValue="-1"/>
-						<f:selectItems value="#{rolBean.listaRol}"/>
-					    </p:selectOneMenu>
+                                        <h:outputLabel value="Rol"/>
+                                        <p:selectOneMenu id="cmbRolAdd" value="#{rolBean.idRol}">
+                                            <f:selectItem itemLabel="Seleccione . . . " itemValue="-1"/>
+                                            <f:selectItems value="#{rolBean.roles}"/>
+                                        </p:selectOneMenu>
 
-					    <h:outputLabel value="Usuario"/>
-                                            <!--textChangeListener="#{rolBean.usuarioListener}"-->
-                                            <p:autoComplete id="userSelect"
-								 value="#{rolBean.nombreUsuario}">
-						<f:selectItems value="#{rolBean.listaUsuario}" />
-					    </p:autoComplete>
-					    <h:outputLabel value="Rol principal"/>
-					    <p:selectBooleanCheckbox value="#{rolBean.principal}"/>
-					</p:panelGrid>
-					<p:panelGrid>
-					    <p:commandLink value="Guardar" styleClass="btn btn-primary" 
-							     action="#{rolBean.guardarUsuarioRol}"/>
-					</p:panelGrid>
-					<center><h:messages errorClass="errorMessage" infoClass="infoMessage" styleClass="textoMensajeError"/></center>
-					<hr/>
-				    </p:tab>
-				    <p:tab title="Consulta">
-					<p:panelGrid styleClass="bordePanelGrid">
-					    <f:facet name="header"><h:panelGroup><h:outputText 
-							value="#{msgs['sistema.filtro']}"/></h:panelGroup></f:facet>
-					    <p:selectOneRadio value="#{rolBean.idCampo}" 
-								valueChangeListener="#{rolBean.cambiarSeleccionCampo}"
-								 layout="lineDirection" >
-						<f:selectItems value="#{rolBean.listaCampoPorUsuario}"/>
-					    </p:selectOneRadio>
-					</p:panelGrid>
-					<p:panelGrid columns="2">
-					    <h:outputLabel value="Módulo"/>
-					    <p:selectOneMenu value="#{rolBean.idModulo}" >
-						<f:selectItem itemLabel="Seleccione . . . " itemValue="-1"/>
-						<f:selectItems value="#{rolBean.listaModulo}"/>
-					    </p:selectOneMenu>
-					    <h:outputLabel value="Rol"/>
-					    <p:selectOneMenu value="#{rolBean.idRol}">
-						<f:selectItem itemLabel="Seleccione . . . " itemValue="-1"/>
-						<f:selectItems value="#{rolBean.listaRol}"/>
-					    </p:selectOneMenu>
-					    <h:outputLabel value="Rol principal"/>
-					    <p:selectBooleanCheckbox value="#{rolBean.principal}"/>
-					    <h:outputText/>
-					    <p:commandLink value="Buscar" styleClass="btn btn-primary" action="#{rolBean.buscarRol}"/>
-					</p:panelGrid>
+                                        <h:outputLabel value="Usuario"/>
+                                        <p:autoComplete id="userSelect" value="#{rolBean.nombreUsuario}"
+                                                        completeMethod="#{rolBean.usuarioListener}" forceSelection="true" size="40">
+                                        </p:autoComplete>
+                                        <h:outputLabel value="Rol principal"/>
+                                        <p:selectBooleanCheckbox value="#{rolBean.principal}"/>
+                                        <p:commandLink value="Guardar" styleClass="btn btn-primary text-white" 
+                                                       action="#{rolBean.guardarUsuarioRol}" process="frmRolContrato:tbRoles:pnlAdd" 
+                                                       update="frmRolContrato:tbRoles frmRolContrato:dtRolUser"/>
+                                    </h:panelGrid>
+                                </p:panel>
+                                <h:messages errorClass="errorMessage" infoClass="infoMessage" styleClass="textoMensajeError"/>
+                                <hr/>
+                            </p:tab>
+                            <p:tab title="Consulta">
+                                <p:panel id="pnlDatos">
+                                    <h:panelGrid columns="2" >
+                                        <h:outputLabel value="Campo"/>
+                                        <p:selectOneMenu value="#{rolBean.idCampo}"  >
+                                            <f:selectItems value="#{rolBean.campos}"/>
+                                            <p:ajax listener="#{rolBean.cambiarSeleccionCampo}" update="frmRolContrato:tbRoles:cmbRol frmRolContrato:tbRoles:cmbModulo"/>
+                                        </p:selectOneMenu>
+                                        <h:outputLabel value="Módulo"/>
+                                        <p:selectOneMenu id="cmbModulo" value="#{rolBean.idModulo}" >
+                                            <f:selectItem itemLabel="Seleccione . . . " itemValue="-1"/>
+                                            <f:selectItems value="#{rolBean.modulos}"/>
+                                            <p:ajax listener="#{rolBean.cambiarModulo}" update="frmRolContrato:tbRoles:cmbRol"/>
+                                        </p:selectOneMenu>
+                                        <h:outputLabel value="Rol"/>
+                                        <p:selectOneMenu id="cmbRol" value="#{rolBean.idRol}">
+                                            <f:selectItem itemLabel="Seleccione . . . " itemValue="-1"/>
+                                            <f:selectItems value="#{rolBean.roles}"/>
+                                        </p:selectOneMenu>
+                                        <h:outputLabel value="Rol principal"/>
+                                        <p:selectBooleanCheckbox value="#{rolBean.principal}"/>
+                                        <p:commandLink value="Buscar" styleClass="btn btn-primary text-white" action="#{rolBean.buscarRol}"
+                                                       process="@this frmRolContrato:tbRoles:pnlDatos" update="frmRolContrato:dtRolUser"/>
+                                    </h:panelGrid>
+                                </p:panel>
+                            </p:tab>
+                        </p:tabView>
 
-					<hr/>
-					<center>
-					    <p:dataTable size="small" stripedRows="true" showGridlines="true" id="dtRolUser" value="#{rolBean.lista}" var="lr" rows="20"
-							   styleClass="table table-bordered table-striped">
-						<p:column>
-						    <f:facet name="header">
-							<h:outputLabel value="Usuario"/>
-						    </f:facet>
-						    <h:outputText value="#{lr.usuario}"/>
-						</p:column>
-						<p:column>
-						    <p:commandLink value="Eliminar" action="#{rolBean.eliminarUsuarioRol}" 
-								     styleClass="link" style="color:  blue;">
-							<f:param name="idUsuarioRol" value="#{lr.idUsuarioRol}"/>
-						    </p:commandLink>
-						</p:column>
-					    </p:dataTable>
-					    
-					</center>
-				    </p:tab>
-				</p:tabView>
-				<p:dialog widgetVar="dialogoAgregado"
-					    modal="true"
-					    showEffect="header"
-					    showHeader="true"
-					    closable="true">
-				    <p:panelGrid>
-					<h:outputLabel value="Se agregó el rol, para consultarlo seleccione la pestaña de consultas." style="color:  blue;"/>
-				    </p:panelGrid>
-				    <br/>
-				</p:dialog>
-			    </div>
-			</h:form>
-		    </div>
-		</div>
+                        <p:dataTable size="small" stripedRows="true" showGridlines="true" id="dtRolUser" 
+                                     value="#{rolBean.lista}" var="lr" rows="20">
+                            <p:column>
+                                <f:facet name="header">
+                                    <h:outputLabel value="Usuario"/>
+                                </f:facet>
+                                <h:outputText value="#{lr.usuario}"/>
+                            </p:column>
+                            <p:column>
+                                <p:commandLink value="Eliminar" action="#{rolBean.eliminarUsuarioRol(lr.idUsuarioRol)}" 
+                                               process="@this" update="frmRolContrato:dtRolUser"
+                                               >
+                                </p:commandLink>
+                            </p:column>
+                        </p:dataTable>
+                    </h:form>
+                </div>
             </ui:define>
         </ui:composition>
 

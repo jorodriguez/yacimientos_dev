@@ -36,7 +36,6 @@ import javax.mail.internet.InternetAddress;
 import lombok.Getter;
 import lombok.Setter;
 import org.primefaces.PrimeFaces;
-import org.primefaces.event.SelectEvent;
 import sia.constantes.Constantes;
 import sia.excepciones.EmailNotFoundException;
 import sia.excepciones.SIAException;
@@ -80,6 +79,7 @@ import sia.sistema.bean.backing.Sesion;
 import sia.sistema.bean.support.FacesUtils;
 import sia.sistema.bean.support.SoporteListas;
 import sia.sistema.bean.support.SoporteProveedor;
+import sia.util.Env;
 import sia.util.UtilLog4j;
 
 /**
@@ -109,7 +109,6 @@ public class UsuarioBean implements Serializable {
     private static final int SERVICIOS_INFORMATICOS = 61;
     private static final int SERVICIOS_GENERALES = 33;
     private static final int HSE = 47;
-
 
     //@ManagedProperty(value = "#{soporteProveedor}")
     private SoporteProveedor soporteProveedor;
@@ -539,7 +538,7 @@ public class UsuarioBean implements Serializable {
         //
     }
 
-    public String guardarUsuarioNuevoIngreso(String param) throws NoSuchAlgorithmException {
+    public String guardarUsuarioNuevoIngreso(String param) {
         boolean v;
         if (!this.validateTextHastNotPunctuation(getNombre())) {
             if (!this.validateTextHastNotPunctuation(getPrimerApellido())) {
@@ -548,7 +547,6 @@ public class UsuarioBean implements Serializable {
                         if (getUsuarioVOAlta().getIdOficina() > 0) {
                             if (getIdGerencia() > 0) {
                                 if (verificaPuesto()) {
-
                                     //if (!getUsuarioVOAlta().getIdJefe().isEmpty()) {
                                     if (getUsuarioVOAlta().getFechaIngreso() != null) {
                                         UtilLog4j.log.info(this, "nombre puesto: " + getRhPuestoVo().getNombre());
@@ -564,14 +562,14 @@ public class UsuarioBean implements Serializable {
                                                 if (v) {
                                                     this.limpiar();
                                                     setListaPuestos(null);
-                                                    //    setListaUsuariosAlta(null);
                                                     traerListaMateriales();
                                                     if (param != null && !param.isEmpty() && "AD".equals(param)) {
                                                         FacesUtils.addInfoMessage("El usuario se guardo exitosamente. ");
                                                         cancelarNuevoIngreso();
-                                                        return "/vistas/recursos/altaNuevoIngresoAdmin";
+                                                        return "/vistas/recursos/altaNuevoIngresoAdmin.xhtml";
                                                     } else {
-                                                        return "solicitudMaterialEmpleado";
+                                                        Env.setContext(sesion.getCtx(), "USER_NAME", usuarioVOAlta.getNombre());
+                                                        return "/vistas/recursos/solicitudMaterialEmpleado.xhtml?faces-redirect=true";
                                                     }
                                                 } else {
                                                     FacesUtils.addInfoMessage("frmUser:error", "Ocurrio un error . . .  + + + ");
@@ -718,7 +716,7 @@ public class UsuarioBean implements Serializable {
     }
 
     public boolean verificaPuesto() {
-        setRhPuestoVo(rhPuestoImpl.findById(getRhPuestoVo().getId(), false));
+        setRhPuestoVo(rhPuestoImpl.findByName(getRhPuestoVo().getNombre(), false));
         return getRhPuestoVo() != null;
     }
 
@@ -922,8 +920,16 @@ public class UsuarioBean implements Serializable {
         return retVal;
     }
 
-    public void cancelarNuevoIngreso() {
-        cancelarNuevoIngreso();
+    public String cancelarNuevoIngreso() {
+        setU("");
+        setUsuarioVOAlta(new UsuarioVO());
+        setRhPuestoVo(new RhPuestoVo());
+        setIdGerencia(-1);
+        setNombre("");
+        setPrimerApellido("");
+        setSegundoApellido("");
+        this.getFilaSeleccionada().clear();
+        return "/vistas/administracion/principalAdministrar.xhtml?faces-redirect=true";
     }
 
     public void guardarUsuarioCampo(int campo, int puesto) {
@@ -1226,19 +1232,15 @@ public class UsuarioBean implements Serializable {
     public List<String> puestoListener(String texto) {
         List<String> puestos = new ArrayList<>();
         setListaPuestos(regresaPuesto(texto));
-        for (SelectItem listaPuesto : getListaPuestos()) {
+        getListaPuestos().stream().forEach(listaPuesto -> {
             puestos.add(listaPuesto.getLabel());
-        }
+        });
         return puestos;
 
     }
 
     public List<SelectItem> regresaPuesto(String cadena) {
         return soporteProveedor.regresaPuesto(cadena);
-    }
-
-    public void onPuestoSelected(SelectEvent<String> event) {
-        setListaPuestos(regresaPuesto(event.getObject()));
     }
 
 //Lista de oficinas
@@ -1601,10 +1603,7 @@ public class UsuarioBean implements Serializable {
         //return "agregarUsuarioCampo";
     }
 
-    public DataModel getTraerCampoUsuario() {
-        setLista(new ListDataModel(apCampoUsuarioRhPuestoImpl.traerUsurioPorCampo(getIdCampo(), usuarioVO)));
-        return getLista();
-    }
+   
 
     public void cambiarSeleccionCampo(ValueChangeEvent valueChangeEvent) {
         setIdCampo((Integer) valueChangeEvent.getNewValue());
@@ -1657,15 +1656,7 @@ public class UsuarioBean implements Serializable {
         return l;
     }
 
-    public void agregarCampoUsuario() {
-        setCampoUsuarioPuestoVo(new CampoUsuarioPuestoVo());
-        getCampoUsuarioPuestoVo().setIdCampo(-1);
-        setRhPuestoVo(new RhPuestoVo());
-        getRhPuestoVo().setNombre("");
-        //setUsuarioCampoPop(true);
-        setC("no");
-        setAccion(0);
-    }
+ 
 
     public void seleccionarCampoUsuario() {
         setCampoUsuarioPuestoVo((CampoUsuarioPuestoVo) getLista().getRowData());
@@ -1697,88 +1688,15 @@ public class UsuarioBean implements Serializable {
         return 0;
     }
 
-    public void eliminarRelacion() {
-        setCampoUsuarioPuestoVo((CampoUsuarioPuestoVo) getLista().getRowData());
-        eliminarRelacion();
-        setCampoUsuarioPuestoVo(null);
-    }
+ 
 
-    public void cambiaValorPuesto(ValueChangeEvent valueChangeEvent) {
-        setIdCampo((Integer) valueChangeEvent.getNewValue());
-        setIdGerencia(-1);
-        getRhPuestoVo().setNombre("");
-        setC("no");
-        setListaGerenciasItems(listaGerencia());
-    }
 //listener usuario capmpo
 
-    public void guardarUsuarioCampo() {
-        if (getAccion() == 0) {
-            if (verificaUsuarioCampoGuardar()) {
-                setRhPuestoVo(buscarPuestoPorId());
-                if (getRhPuestoVo() != null) {
-                    guardarUsuarioCampo(getIdCampo(), getRhPuestoVo().getId());
-                    UtilLog4j.log.info(this, "Guardó");
-                    limpiarVariables();
-                    PrimeFaces.current().executeScript(";dialogoOK('dialogoBloqueUsuario');");
-                    //Limpiar las cajas
-                    PrimeFaces.current().executeScript(";limpiarComponenteCaja();");
-                } else {
-                    PrimeFaces.current().executeScript(";alertaGeneral('Seleccione el puesto.');");
-                }
-            } else {
-                PrimeFaces.current().executeScript(";alertaGeneral('" + FacesUtils.getKeyResourceBundle("sia.campo.usuario.existe") + "');");
-            }
-//
-        } else if (getAccion() == 1) { //Modificar
-            setRhPuestoVo(buscarPuestoPorNombre());
-//                    if (getRhPuestoVo(   ) != null) {
-
-            apCampoUsuarioRhPuestoImpl.edit(sesion.getUsuarioVo().getId(), getIdCampo(), getCampoUsuarioPuestoVo().getIdUsuario(), getRhPuestoVo().getId(), getCampoUsuarioPuestoVo().getIdCampoUsuarioPuesto());
-            UtilLog4j.log.info(this, "Modificó");
-            limpiarVariables();
-        }
-    }
-
-    public RhPuestoVo buscarPuestoPorId() {
-        return rhPuestoImpl.findById(getRhPuestoVo().getId(), false);
-    }
 
     public RhPuestoVo buscarPuestoPorNombre() {
         return rhPuestoImpl.findByName(getRhPuestoVo().getNombre(), false);
     }
 
-    public boolean verificaUsuarioCampoGuardar() {
-        List<CampoUsuarioPuestoVo> lcup
-                = apCampoUsuarioRhPuestoImpl.getCampoPorUsurio(getU(), getCampoUsuarioPuestoVo().getIdCampo());
-
-        boolean retVal = true;
-
-        for (CampoUsuarioPuestoVo cupv : lcup) {
-            if (getCampoUsuarioPuestoVo().getIdCampo() == cupv.getIdCampo()) {
-                retVal = false;
-                break;
-            }
-        }
-        return retVal;
-    }
-
-    private void limpiarVariables() {
-        //Limpia variables
-        setCampoUsuarioPuestoVo(null);
-        setRhPuestoVo(null);
-        setUsuarioVOAlta(null);
-        setC("");
-        setU("");
-        setIdGerencia(-1);
-    }
-
-    public void cancelarUsuarioCampo() {
-        setCampoUsuarioPuestoVo(null);
-        setRhPuestoVo(null);
-        setU("");
-        limpiarVariables();
-    }
 
     public void limpiarListaUser() {
         setListaUsuario(null);

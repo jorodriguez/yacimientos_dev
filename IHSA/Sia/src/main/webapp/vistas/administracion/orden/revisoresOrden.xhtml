@@ -21,29 +21,30 @@
                             </div>
                             <div class="card panel-default">
                                 <p:selectOneRadio value="#{revisarOrdenBean.usuarioVO.idCampo}" 
-                                                    valueChangeListener="#{revisarOrdenBean.cambiarSeleccionCampo}"
-                                                     layout="lineDirection">
+                                                  layout="lineDirection">
                                     <f:selectItems value="#{revisarOrdenBean.listaCampo}"/>
+                                    <p:ajax listener="#{revisarOrdenBean.cambiarSeleccionCampo}" update="frmRevOcs:dtCampoUser"/>
                                 </p:selectOneRadio>
                             </div>
                             <div class="card panel-info">
                                 <div class="card-heading">
                                     <p:commandLink title="Agregar" styleClass="btn btn-primary" 
-                                                     immediate="true" action="#{revisarOrdenBean.agregarAprobadorOrdenCompra}">
-                                        <i class="fa fa-plus-circle">Agregar</i>
+                                                   immediate="true" action="#{revisarOrdenBean.agregarAprobadorOrdenCompra}"
+                                                   process="@this" update="frmUserRev">
+                                        <i class="fa fa-plus text-white"/>
                                     </p:commandLink>
                                 </div>
                                 <div class="card-body">
                                     <div class="col-lg-8">
                                         <p:dataTable size="small" stripedRows="true" showGridlines="true" id="dtCampoUser" 
-                                                       value="#{revisarOrdenBean.listaRevisa}" var="data">
+                                                     value="#{revisarOrdenBean.listaRevisa}" var="data">
                                             <p:column headerText="Nombre" style="text-align: left;">
                                                 <h:outputText value="#{data.usuario}"/>
                                             </p:column>
                                             <p:column>
-                                                <p:commandLink value="#{msgs['sistema.eliminar']}"  action="#{revisarOrdenBean.eliminarUsuarioApruebaOC}"
-                                                                 style="color: blue;">
-                                                    <f:param name="idRev" value="#{data.id}"/>
+                                                <p:commandLink value="#{msgs['sistema.eliminar']}"  
+                                                               action="#{revisarOrdenBean.eliminarUsuarioApruebaOC(data.id)}"
+                                                               process="@this" update="frmRevOcs:dtCampoUser">
                                                 </p:commandLink>
 
                                             </p:column>
@@ -61,19 +62,18 @@
                                     </div>
 
                                     <h:form id="frmUserRev">
-                                        <div class="modal-body card card-footer">
-
-                                            <p:panelGrid columns="2">
-                                                <h:outputText value="Usuario: "/>
-                                                <p:inputText id="autocompleteUsuario" size="40" 
-                                                               style="z-index: 10000015;"
-                                                               onclick="autocompletarUsuario(this, 'hidenDesUsuario', 'frmUserRev');"/>                            
-                                                <h:inputHidden id="hidenDesUsuario" value="#{revisarOrdenBean.usuarioVO.nombre}"/>
-                                            </p:panelGrid>
+                                        <div class="modal-body">
+                                            <h:outputText value="Usuario: "/>
+                                            <p:autoComplete value="#{revisarOrdenBean.usuarioVO.nombre}" 
+                                                            completeMethod="#{revisarOrdenBean.completarUsuario}"
+                                                            size="40" forceSelection="true" >
+                                            </p:autoComplete>
                                         </div>                                        
                                         <div class="modal-footer">
-                                            <p:commandLink value="#{msgs['sistema.aceptar']}" action="#{revisarOrdenBean.guardarUsuarioApruebaOC}" styleClass="btn btn-info" />
-                                            <p:commandLink value="#{msgs['sistema.cancelar']}" action="#{revisarOrdenBean.cancelarUsuarioApruebaOC}" styleClass="btn btn-default"  />
+                                            <p:commandButton value="#{msgs['sistema.aceptar']}" action="#{revisarOrdenBean.guardarUsuarioApruebaOC}" 
+                                                             styleClass="btn btn-info text-white" process="@form" update="frmRevOcs"/>
+                                            <p:commandLink value="#{msgs['sistema.cancelar']}" action="#{revisarOrdenBean.cancelarUsuarioApruebaOC}" styleClass="btn btn-default"  
+                                                           immediate="true"/>
                                         </div>
                                     </h:form>
                                 </div>

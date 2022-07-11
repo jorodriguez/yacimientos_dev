@@ -11,13 +11,11 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
-
-
-
-import javax.faces.event.ValueChangeEvent;
 import javax.faces.model.SelectItem;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.primefaces.PrimeFaces;
 import sia.constantes.Constantes;
@@ -39,7 +37,6 @@ import sia.sistema.bean.support.FacesUtils;
 @Slf4j
 public class RevisarOrdenBean implements Serializable {
 
-    
     @Inject
     private Sesion sesion;
 
@@ -53,13 +50,22 @@ public class RevisarOrdenBean implements Serializable {
     private UsuarioVO usuarioVO;
     private List<UsuarioTipoVo> listaRevisa;
     private List<SelectItem> listaCampo;
+    @Getter
+    @Setter
+    private List<UsuarioVO> usuarios;
+    @Getter
+    @Setter
+    private List<String> usuariosFiltrados;
 
     @PostConstruct
     public void iniciar() {
+        usuarios = new ArrayList<>();
+        usuariosFiltrados = new ArrayList<>();
         usuarioVO = new UsuarioVO();
         usuarioVO.setIdCampo(sesion.getUsuario().getApCampo().getId());
         listaRevisa = ocFlujoImpl.getUsuariosPorAccion(Constantes.OCFLUJO_ACTION_REVISAR, usuarioVO.getIdCampo(), Constantes.NO_ELIMINADO);
         listaCampoUsuario();
+        traerUsuarios();
     }
 
     public void listaCampoUsuario() {
@@ -76,33 +82,40 @@ public class RevisarOrdenBean implements Serializable {
         }
     }
 
-    public void cambiarSeleccionCampo(ValueChangeEvent valueChangeEvent) {
-        if (valueChangeEvent != null) {
-            listaRevisa = ocFlujoImpl.getUsuariosPorAccion(Constantes.OCFLUJO_ACTION_REVISAR, Integer.parseInt(valueChangeEvent.getNewValue().toString()), Constantes.NO_ELIMINADO);
-        }
+    public void cambiarSeleccionCampo() {
+        listaRevisa = ocFlujoImpl.getUsuariosPorAccion(Constantes.OCFLUJO_ACTION_REVISAR, usuarioVO.getIdCampo(), Constantes.NO_ELIMINADO);
     }
 
     public void agregarAprobadorOrdenCompra() {
-        traerUsuarioJson();
         PrimeFaces.current().executeScript(";$(dialogoAgregarRev).modal('show');");
     }
 
-    public void traerUsuarioJson() {
-        PrimeFaces.current().executeScript(";llenarJsonUsuario(" + apCampoUsuarioRhPuestoImpl.traerUsuarioJsonPorCampo(usuarioVO.getIdCampo()) + ");");
+    public List<String> completarUsuario(String cadena) {
+        usuariosFiltrados.clear();
+        usuarios.stream().filter(us -> us.getNombre().toUpperCase().contains(cadena.toUpperCase())).forEach(u -> {
+            usuariosFiltrados.add(u.getNombre());
+        });
+        return usuariosFiltrados;
     }
 
-    public void eliminarUsuarioApruebaOC() {
-        int idRev = Integer.parseInt(FacesUtils.getRequestParameter("idRev"));
+    public void traerUsuarios() {
+        usuarios = apCampoUsuarioRhPuestoImpl.traerUsuarioCampo(usuarioVO.getIdCampo());
+    }
+
+    public void eliminarUsuarioApruebaOC(int idRev) {
         ocFlujoImpl.eliminar(sesion.getUsuario().getId(), idRev);
         listaRevisa = ocFlujoImpl.getUsuariosPorAccion(Constantes.OCFLUJO_ACTION_REVISAR, usuarioVO.getIdCampo(), Constantes.NO_ELIMINADO);
     }
 
     public void guardarUsuarioApruebaOC() {
         if (!getUsuarioVO().getNombre().trim().isEmpty()) {
-            usuarioImpl.aprobarOrdenCompra(sesion.getUsuario().getId(), usuarioVO.getNombre(), usuarioVO.getIdCampo(), Constantes.OCFLUJO_ACTION_REVISAR);
-            PrimeFaces.current().executeScript(";$(dialogoAgregarRev).modal('hide');");
-            listaRevisa = ocFlujoImpl.getUsuariosPorAccion(Constantes.OCFLUJO_ACTION_REVISAR, usuarioVO.getIdCampo(), Constantes.NO_ELIMINADO);
-            usuarioVO.setNombre("");
+            UsuarioVO usVo = usuarioImpl.findByName(usuarioVO.getNombre());
+            if (usVo != null) {
+                usuarioImpl.aprobarOrdenCompra(sesion.getUsuario().getId(), usVo.getId(), usuarioVO.getIdCampo(), Constantes.OCFLUJO_ACTION_REVISAR);
+                listaRevisa = ocFlujoImpl.getUsuariosPorAccion(Constantes.OCFLUJO_ACTION_REVISAR, usuarioVO.getIdCampo(), Constantes.NO_ELIMINADO);
+                usuarioVO.setNombre("");
+                PrimeFaces.current().executeScript(";$(dialogoAgregarRev).modal('hide');");
+            }
         } else {
             FacesUtils.addErrorMessage("frmRevOcs", FacesUtils.getKeyResourceBundle("sia.usuario.necesario"));
         }

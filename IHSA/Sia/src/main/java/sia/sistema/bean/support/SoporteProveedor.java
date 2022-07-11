@@ -277,7 +277,7 @@ public class SoporteProveedor implements Serializable {
     private List<RhPuestoVo> puestoVo;
 
     public List<SelectItem> regresaPuesto(String cadenaDigitada) {
-        List<SelectItem> list = new ArrayList<SelectItem>();
+        List<SelectItem> list = new ArrayList<>();
         for (RhPuestoVo p : this.getPuesto(cadenaDigitada)) {
             if (p.getNombre() != null) {
                 String cadenaPersona = p.getNombre().toLowerCase();
