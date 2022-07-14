@@ -8,66 +8,62 @@
       >
     <body>
         <ui:composition template="./../../../WEB-INF/facelets/templates/templateGrupos.xhtml">
+            <ui:define name="tituloPagina">
+                Agregar proveedor
+            </ui:define>
             <ui:define name="contenido">
-                <script type="text/javascript">
-                    $(document).ready(function () {
-                        $('#frmRelRegProveedor\\:nombreP').attr('placeholder', 'Nombre o parte del nombre');
-                    });
-                </script>
-                <div id="Pa">
-                    <div class="col-lg-12"> 
-                        <h:form id="frmRelRegProveedor"  >
-                            <div class="col-lg-12">
-                                <div class="input-group ">
-                                    <p:fileUpload  styleClass="form-control"
-                                                    title="Archivo "
-                                                    listener="#{agregarProveedorBean.subirArchivo}"
-                                                    immediate="false"/> 
-                                    <p:commandButton value="Agregar proveedores" class="btn btn-primary"/>                                
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-lg-12">
-                                    <small>*Para reducir la busqueda agrega al menos 3 letras del nombre del proveedor </small>
-                                </div>
-                                <div class="col-lg-12">
-                                    <div class="input-group">
-                                        <div class="col-lg-2">
-                                            <p:commandLink value="Todos" class="btn btn-default" action="#{agregarProveedorBean.traerTodos}">
-                                                <f:ajax execute="@form" render="@all"/>
-                                            </p:commandLink>
-                                        </div>
-                                        <div class="form-group  col-lg-8">
-                                            <h:inputText id="nombreP" class="form-control" value="#{agregarProveedorBean.nombre}" />
-                                        </div>
-                                        <div class="col-lg-2">
-                                            <p:commandLink value="Buscar" class="btn btn-default" action="#{agregarProveedorBean.buscarProveedor}">
-                                                <f:ajax execute="@form" render="@all"/>
-                                            </p:commandLink>
-                                        </div>
-                                    </div>
-                                </div>
-                                <!--rowSelectListener="#{agregarProveedorBean.seleccionar}"-->
-                                <p:dataTable size="small" stripedRows="true" showGridlines="true" value="#{agregarProveedorBean.listaProveedor}" var="data" paginator="true" paginatorPosition="bottom"
-                                               paginatorAlwaysVisible="true" rows="20"
-                                               selectionMode="single" >
-                                    <f:facet name="header">Proveedores</f:facet>
-                                    <p:column headerText="RFC" filterBy="#{data.rfc}" filterMatchMode="contains"
-                                                style="width: 20%;">
-                                        <h:outputText value="#{data.rfc}"/>
-                                    </p:column>
-                                    <p:column headerText="Nombre"  filterBy="#{data.nombre}" filterMatchMode="contains"
-                                                style="text-align: left;">
-                                        #{data.nombre}
-                                    </p:column >
-                                    <p:column headerText="Dirección"  filterBy="#{data.calle}" filterMatchMode="contains"
-                                                style="text-align: left;">
-                                        #{data.calle} #{data.numero} #{data.colonia} #{data.estado} #{data.pais}
-                                    </p:column>
-                                </p:dataTable>
-                            </div>
-                        </h:form>
+                <h:form id="frmRelRegProveedor"  >
+                    <div class="col-lg-12">
+                        <p:fileUpload   title="Archivo "
+                                        listener="#{agregarProveedorBean.subirArchivo}"
+                                        />                             
                     </div>
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <small>*Para reducir la busqueda agrega al menos 3 letras del nombre del proveedor </small>
+                        </div>
+                        <div class="col-lg-12">
+                            <div class="input-group">
+                                <div class="col-lg-2">
+                                    <p:commandLink value="Todos" class="btn btn-default" action="#{agregarProveedorBean.traerTodos}">
+                                        <f:ajax execute="@form" render="@all"/>
+                                    </p:commandLink>
+                                </div>
+                                <div class="form-group  col-lg-8">
+                                    <p:autoComplete value="#{agregarProveedorBean.nombre}" 
+                                                    size="40" forceSelection="true" minQueryLength="3"
+                                                    placeholder="Nombre o parte del nombre del proveedor">
+                                        <p:ajax listener="#{usuarioBean.buscarUsuarioConsulta}" update="frmUser:pnlDatos"/>
+                                    </p:autoComplete>
+                                </div>
+                                <div class="col-lg-2">
+                                    <p:commandLink value="Buscar" class="btn btn-default" action="#{agregarProveedorBean.buscarProveedor}"
+                                                   process="@this" update="@form">
+                                    </p:commandLink>
+                                </div>
+                            </div>
+                        </div>
+                        <!--rowSelectListener="#{agregarProveedorBean.seleccionar}"-->
+                        <p:dataTable size="small" stripedRows="true" showGridlines="true" value="#{agregarProveedorBean.listaProveedor}" var="data" paginator="true" paginatorPosition="bottom"
+                                     paginatorAlwaysVisible="true" rows="20"
+                                     selectionMode="single" >
+                            <f:facet name="header">Proveedores</f:facet>
+                            <p:column headerText="RFC" filterBy="#{data.rfc}" filterMatchMode="contains"
+                                      style="width: 20%;">
+                                <h:outputText value="#{data.rfc}"/>
+                            </p:column>
+                            <p:column headerText="Nombre"  filterBy="#{data.nombre}" filterMatchMode="contains"
+                                      style="text-align: left;">
+                                #{data.nombre}
+                            </p:column >
+                            <p:column headerText="Dirección"  filterBy="#{data.calle}" filterMatchMode="contains"
+                                      style="text-align: left;">
+                                #{data.calle} #{data.numero} #{data.colonia} #{data.estado} #{data.pais}
+                            </p:column>
+                        </p:dataTable>
+                    </div>
+                </h:form>
+                </div>
                 </div>
                 <!--- proveedor - contactos -->
                 <div class="modal fade" id="dialogoContacto" data-backdrop="static" data-keyboard="false" style="color: black;">
@@ -144,7 +140,7 @@
                                         <h:form id="frmContacto" >
                                             <div class="modal-body">     
                                                 <p:dataTable size="small" stripedRows="true" showGridlines="true" value="#{agregarProveedorBean.listaContactoProveedor}" var="dataC"
-                                                               rowIndexVar="indice">
+                                                             rowIndexVar="indice">
                                                     <p:column headerText="Nombre">
                                                         <h:outputText value="#{dataC.nombre}" rendered="#{dataC.editar eq false}"/>
                                                         <h:inputText value="#{dataC.nombre}" rendered="#{dataC.editar}" class="form-control"/>

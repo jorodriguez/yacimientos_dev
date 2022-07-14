@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
@@ -22,6 +23,7 @@ import sia.modelo.Usuario;
 import sia.modelo.cadena.aprobacion.vo.CadenaAprobacionVo;
 import sia.modelo.requisicion.vo.CadenasMandoVo;
 import sia.modelo.sistema.AbstractFacade;
+import sia.servicios.catalogos.impl.UsuarioImpl;
 import sia.util.UtilLog4j;
 
 /**
@@ -30,13 +32,13 @@ import sia.util.UtilLog4j;
  * @version 1.0
  * @author-mail hacosta.0505@gmail.com @date 7/07/2009
  */
-@Stateless 
+@Stateless
 public class CadenasMandoImpl extends AbstractFacade<CadenasMando> {
 
     @PersistenceContext(unitName = "Sia-ServiciosPU")
     private EntityManager em;
     //    
-    
+
     @Override
     protected EntityManager getEntityManager() {
         return em;
@@ -46,15 +48,17 @@ public class CadenasMandoImpl extends AbstractFacade<CadenasMando> {
         super(CadenasMando.class);
     }
 
-    
+    @Inject
+    UsuarioImpl usuarioImpl;
+
     public boolean registroCadenaMando(int idApCampo, String solicita, String revisa, String aprueba, String idUsuario) {
         UtilLog4j.log.info(this, "CadenasMandoImpl.registroCadenaMando()");
         boolean v;
         try {
             CadenasMando cadenasMando = new CadenasMando();
-            cadenasMando.setUsuario(new Usuario(solicita));
-            cadenasMando.setRevisa(new Usuario(revisa));
-            cadenasMando.setAprueba(new Usuario(aprueba));
+            cadenasMando.setUsuario(usuarioImpl.buscarPorNombre(solicita));
+            cadenasMando.setRevisa(usuarioImpl.buscarPorNombre(revisa));
+            cadenasMando.setAprueba(usuarioImpl.buscarPorNombre(aprueba));
             cadenasMando.setApCampo(new ApCampo(idApCampo));
             cadenasMando.setGenero(new Usuario(idUsuario));
             cadenasMando.setFechaGenero(new Date());
@@ -70,27 +74,22 @@ public class CadenasMandoImpl extends AbstractFacade<CadenasMando> {
         return v;
     }
 
-    
     public boolean completarModificacion(int idCad, String revisa, String aprueba, String idUsuario) {
         UtilLog4j.log.info(this, "CadenasMandoImpl.completarModificacion()");
         boolean v;
         try {
             CadenasMando cadenasMando = this.find(idCad);
-//            this.beforeEvent = cadenasMando.toString();
-            if(revisa != null &&!revisa.isEmpty()){
-                cadenasMando.setRevisa(new Usuario(revisa));
+            if (revisa != null && !revisa.isEmpty()) {
+                cadenasMando.setRevisa(usuarioImpl.buscarPorNombre(revisa));
             }
-            if(aprueba !=null && !aprueba.isEmpty()){
-                 cadenasMando.setAprueba(new Usuario(aprueba));
+            if (aprueba != null && !aprueba.isEmpty()) {
+                cadenasMando.setAprueba(usuarioImpl.buscarPorNombre(aprueba));
             }
             cadenasMando.setModifico(new Usuario(idUsuario));
             cadenasMando.setFechaModifico(new Date());
             cadenasMando.setHoraModifico(new Date());
             edit(cadenasMando);
-
-//            siLogRemote.createLog(CadenasMando.class.getName(), cadenasMando.getId(), siEventoRemote.find(2), idUsuario, this.beforeEvent, cadenasMando.toString());
             UtilLog4j.log.info(this, "CadenasMando UPDATED SUCCESSFULLY");
-
             v = true;
         } catch (Exception e) {
             UtilLog4j.log.fatal(this, "Excepcion al modificar: " + e.getMessage() + " + + + " + e.getCause().toString());
@@ -99,15 +98,12 @@ public class CadenasMandoImpl extends AbstractFacade<CadenasMando> {
         return v;
     }
 
-    
     public List<CadenasMando> findAll(int idApCampo, boolean eliminado) {
         UtilLog4j.log.info(this, "CadenasMandoImpl.findAll()");
 
 //        return em.createQuery("select object(o) from CadenasMando as o WHERE o.apCampo.id = : idApCampo")
 //                .setParameter("idApCampo", idApCampo)
 //                .getResultList();
-
-
         List<CadenasMando> list = null;
         String consulta = "SELECT object(o) FROM CadenasMando AS o WHERE o.eliminado = :eliminado";
 
@@ -133,7 +129,6 @@ public class CadenasMandoImpl extends AbstractFacade<CadenasMando> {
         return list;
     }
 
-    
     public List<Usuario> getRevisan(Object idUsuario, int idApCampo, boolean eliminado) {
         UtilLog4j.log.info(this, "CadenasMandoImpl.getRevisan()");
         List<Usuario> list = null;
@@ -163,7 +158,6 @@ public class CadenasMandoImpl extends AbstractFacade<CadenasMando> {
         return list;
     }
 
-    
     public List<Usuario> getAprueban(Object idUsuario, int idApCampo, boolean eliminado) {
         UtilLog4j.log.info(this, "CadenasMandoImpl.getAprueban()");
         List<Usuario> list = null;
@@ -193,7 +187,6 @@ public class CadenasMandoImpl extends AbstractFacade<CadenasMando> {
         return list;
     }
 
-    
     public List<CadenasMandoVo> traerUsuarioRevisa(String solicita, int idApCampo, boolean eliminado) {
         clearQuery();
         query.append("select cm.id, cm.revisa, (select u.nombre from usuario u where u.id = cm.revisa) from cadenas_mando cm, ap_campo c");
@@ -216,7 +209,6 @@ public class CadenasMandoImpl extends AbstractFacade<CadenasMando> {
         return lr;
     }
 
-    
     public CadenaAprobacionVo traerPorId(int idCadMando) {
         clearQuery();
         query.append("select cm.id, u.id, u.nombre, r.id, r.nombre, a.id, a.nombre from cadenas_mando cm");
@@ -240,7 +232,6 @@ public class CadenasMandoImpl extends AbstractFacade<CadenasMando> {
         return lr;
     }
 
-    
     public List<CadenasMandoVo> traerUsuarioAprueba(String solicita, String revisa, int idApCampo, boolean eliminado) {
         clearQuery();
         query.append("select cm.id, cm.aprueba, (select u.nombre from usuario u where u.id = cm.aprueba) from cadenas_mando cm, ap_campo c");
@@ -265,12 +256,11 @@ public class CadenasMandoImpl extends AbstractFacade<CadenasMando> {
     }
 
     //NUEVOS
-    
     public List<CadenaAprobacionVo> traerCadenaAprobacion(String idUsuario, int idApCampo, int idOrdena, boolean eliminado, boolean revisa, boolean aprueba) {
         UtilLog4j.log.info(this, "CadenasMandoImpl.traerCadenaAprobacion()");
         //Recupera todas las cadenas de aprobacion 
         StringBuilder q = new StringBuilder();
-                q.append("select c.id,  c.ap_campo,   c.usuario,   u.nombre,  c.revisa,   r.nombre,"
+        q.append("select c.id,  c.ap_campo,   c.usuario,   u.nombre,  c.revisa,   r.nombre,"
                 + " c.aprueba, "
                 + " a.nombre "
                 + " from cadenas_mando c, usuario u, usuario r, usuario a, ap_campo  cp  "
@@ -288,27 +278,26 @@ public class CadenasMandoImpl extends AbstractFacade<CadenasMando> {
 
         String ordena = null;
         if (idUsuario != null) {
-             ordena = "usuario";
-            if(revisa && aprueba){
+            ordena = "usuario";
+            if (revisa && aprueba) {
                 q.append(" and (r.id = ? or a.id = ?) ");
-            } else if(revisa){
+            } else if (revisa) {
                 q.append(" and r.id = ?");
-            } else if(aprueba){
+            } else if (aprueba) {
                 q.append(" and a.id = ?");
             } else {
                 if (idOrdena == 1) {
-                ordena = "usuario";
-                q.append(" and u.id = ?"); // Filtra por usuario + operacion
-            } else if (idOrdena == 2) {
-                ordena = "revisa";
-                q.append(" and r.id = ?");
-            } else {
-                ordena = "aprueba";
-                q.append(" and a.id = ?");
-            } 
+                    ordena = "usuario";
+                    q.append(" and u.id = ?"); // Filtra por usuario + operacion
+                } else if (idOrdena == 2) {
+                    ordena = "revisa";
+                    q.append(" and r.id = ?");
+                } else {
+                    ordena = "aprueba";
+                    q.append(" and a.id = ?");
+                }
             }
-            
-           
+
         } else {
             if (idOrdena == 1) {
                 ordena = "usuario";
@@ -321,13 +310,13 @@ public class CadenasMandoImpl extends AbstractFacade<CadenasMando> {
         q.append(" order by c.").append(ordena).append(" ASC"); //Ordena por operacion
         Query query2 = em.createNativeQuery(q.toString())
                 .setParameter(1, idApCampo);
-                if(idUsuario != null){
-                    query2.setParameter(2, idUsuario);
-                } 
-                if(revisa && aprueba){
-                    query2.setParameter(3, idUsuario);
-                }
-                
+        if (idUsuario != null) {
+            query2.setParameter(2, idUsuario);
+        }
+        if (revisa && aprueba) {
+            query2.setParameter(3, idUsuario);
+        }
+
         UtilLog4j.log.info(this, "Query cadena mando: " + query2.toString());
         List<Object[]> lo = query2.getResultList();
         List<CadenaAprobacionVo> lc = new ArrayList<CadenaAprobacionVo>();
@@ -383,14 +372,12 @@ public class CadenasMandoImpl extends AbstractFacade<CadenasMando> {
         return cadenaAprobacionVo;
     }
 
-    
     public List<CadenasMando> traerPorCadenaPorSolicita(String solicita, int idApCampo, boolean eliminado) {
         UtilLog4j.log.info(this, "CadenasMandoImpl.traerPorCadenaPorSolicita()");
         try {
 //            return em.createQuery("SELECT c FROM CadenasMando c WHERE c.usuario.nombre = :user ORDER BY c.usuario.nombre ASC")
 //                    .setParameter("user", solicita)
 //                    .getResultList();
-
 
             List<CadenasMando> list = null;
 
@@ -425,7 +412,6 @@ public class CadenasMandoImpl extends AbstractFacade<CadenasMando> {
         }
     }
 
-    
     public void eliminar(int idCadena, String idUser) {
         CadenasMando cadenasMando = find(idCadena);
         cadenasMando.setEliminado(Constantes.ELIMINADO);

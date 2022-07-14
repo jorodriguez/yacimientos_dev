@@ -11,10 +11,6 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
-
-
-
-import javax.faces.event.AjaxBehaviorEvent;
 import javax.faces.model.SelectItem;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
@@ -23,6 +19,7 @@ import lombok.Setter;
 import org.primefaces.PrimeFaces;
 import sia.constantes.Constantes;
 import sia.modelo.proveedor.Vo.ProveedorSinCartaIntencionVo;
+import sia.modelo.proveedor.Vo.ProveedorVo;
 import sia.modelo.vo.ApCampoVo;
 import sia.servicios.campo.nuevo.impl.ApCampoImpl;
 import sia.servicios.proveedor.impl.ProveedorServicioImpl;
@@ -79,6 +76,9 @@ public class ProveedorSinCartaBean implements Serializable {
     @Getter
     @Setter
     private boolean aplicarTodosCampos;
+    @Getter
+    @Setter
+    private String proveedorSeleccionado;
 
     @PostConstruct
     public void init() {
@@ -88,7 +88,6 @@ public class ProveedorSinCartaBean implements Serializable {
         camposProveedores = new ArrayList<SelectItem>();
         campoId = Constantes.CERO;
         //
-        llenarJson();
         llearProveedores(campoId);
         //
         List<ApCampoVo> camposUser = campoImpl.traerCampoConCartaIntencion();
@@ -108,12 +107,19 @@ public class ProveedorSinCartaBean implements Serializable {
 
     }
 
-    public void llenarJson() {
-        String jsonProveedores
-                = proveedorImpl.traerProveedorPorCompaniaSesionJson("'" + sesion.getUsuario().getApCampo().getCompania().getRfc() + "'",
-                        ProveedorEnum.ACTIVO.getId());
-        //
-        PrimeFaces.current().executeScript(";setJson(" + jsonProveedores + ");");
+    public List<String> completaProveedor(String query) {
+        return proveedorImpl.traerRfcNombreLikeProveedorQueryNativo(query, sesion.getUsuarioVo().getRfcEmpresa(), ProveedorEnum.ACTIVO.getId());
+
+    }
+
+    public void llenarDatosProveedor() {
+        ProveedorVo proveedorVo;
+        String[] cad = proveedorSeleccionado.split("/");
+        proveedorVo = proveedorImpl.traerProveedorPorRFC(cad[0].trim());
+        if (proveedorVo != null) {
+            proveedorId = proveedorVo.getIdProveedor();
+        }
+        proveedorSeleccionado = "";
     }
 
     private void llearProveedores(int campoId) {
@@ -124,7 +130,7 @@ public class ProveedorSinCartaBean implements Serializable {
         }
     }
 
-    public void cambiarCampo(AjaxBehaviorEvent event) {
+    public void cambiarCampo() {
         llearProveedores(campoProveedorId);
     }
 
@@ -172,8 +178,7 @@ public class ProveedorSinCartaBean implements Serializable {
 
     }
 
-    public void elimianar() {
-        int ind = Integer.parseInt(FacesUtils.getRequestParameter("indice"));
+    public void elimianar(int ind) {
         ProveedorSinCartaIntencionVo ppVo = proveedores.get(ind);
         proveedorSinCartaIntencionLocal.eliminar(sesion.getUsuario().getId(), ppVo.getId());
 //

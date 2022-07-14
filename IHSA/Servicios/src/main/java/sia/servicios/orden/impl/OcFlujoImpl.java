@@ -9,6 +9,7 @@ import java.util.Date;
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import sia.constantes.Constantes;
 import sia.modelo.OcFlujo;
@@ -91,9 +92,12 @@ public class OcFlujoImpl extends AbstractFacade<OcFlujo>{
     
     public OcFlujo getByUsrActionCampo(String accion, int campo, String usrID) {
         try {
-            return (OcFlujo) em.createQuery("SELECT u FROM OcFlujo u WHERE u.apCampo.id = :APCAMPO AND u.ejecuta.id = :eJECUTA AND u.accion = :aCCION").setParameter("APCAMPO", campo).setParameter("eJECUTA", (Object) usrID).setParameter("aCCION", (Object) accion).getResultList().get(0);
-        } catch (Exception e) {
-            UtilLog4j.log.error(e);
+            return (OcFlujo) em.createQuery("SELECT u FROM OcFlujo u WHERE u.apCampo.id = :APCAMPO AND u.ejecuta.id = :eJECUTA AND u.accion = :aCCION")
+                    .setParameter("APCAMPO", campo)
+                    .setParameter("eJECUTA", usrID)
+                    .setParameter("aCCION", accion)
+                    .getSingleResult();
+        } catch (NoResultException e) {
             return null;
         }
     }

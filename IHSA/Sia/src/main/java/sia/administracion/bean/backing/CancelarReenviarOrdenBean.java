@@ -12,7 +12,6 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 
-import javax.faces.event.ValueChangeEvent;
 import javax.faces.model.SelectItem;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
@@ -26,6 +25,7 @@ import sia.modelo.Orden;
 import sia.modelo.Usuario;
 import sia.modelo.campo.usuario.puesto.vo.CampoUsuarioPuestoVo;
 import sia.modelo.sgl.vo.OrdenVO;
+import sia.modelo.usuario.vo.UsuarioVO;
 import sia.servicios.campo.nuevo.impl.ApCampoUsuarioRhPuestoImpl;
 import sia.servicios.catalogos.impl.UsuarioImpl;
 import sia.servicios.orden.impl.AutorizacionesOrdenImpl;
@@ -94,6 +94,9 @@ public class CancelarReenviarOrdenBean implements Serializable {
     @Setter
     @Getter
     private List<Usuario> listaUsuarios;
+    @Setter
+    @Getter
+    private List<SelectItem> analistas;
     //
     @Setter
     @Getter
@@ -110,6 +113,7 @@ public class CancelarReenviarOrdenBean implements Serializable {
 
     @PostConstruct
     public void llenaCampo() {
+        analistas = new ArrayList<>();
         listaUsuarios = new ArrayList<>();
         listaUsuarios = usuarioImpl.getActivos();
         setIdCampo(sesion.getUsuario().getApCampo().getId());
@@ -119,6 +123,7 @@ public class CancelarReenviarOrdenBean implements Serializable {
         setConsecutivo("");
         listaCamposSelect = new ArrayList<>();
         camposCancelar();
+        llenarListaAnalista();
     }
 
     public void buscarOrden() {
@@ -129,6 +134,18 @@ public class CancelarReenviarOrdenBean implements Serializable {
             setMostrar(true);
         }
 
+    }
+
+    public void llenarListaAnalista() {
+        try {
+            List<UsuarioVO> tempList = usuarioImpl.traerListaRolPrincipalUsuarioRolModulo(Constantes.ROL_COMPRADOR, Constantes.MODULO_COMPRA, getIdCampo());
+            for (UsuarioVO usuarioVO : tempList) {
+                SelectItem item = new SelectItem(usuarioVO.getId(), usuarioVO.getNombre());
+                analistas.add(item);
+            }
+        } catch (RuntimeException ex) {
+            UtilLog4j.log.fatal(this, "Error  : :  :" + ex.getMessage());
+        }
     }
 
     public void camposCancelar() {
@@ -154,13 +171,9 @@ public class CancelarReenviarOrdenBean implements Serializable {
 
     }
 
-    public void cambiarSeleccionCampo(ValueChangeEvent valueChangeEvent) {
-        Integer var = (Integer) valueChangeEvent.getNewValue();
-        if (var != null) {
-            setIdCampo(var);
+    public void cambiarSeleccionCampo() {
             UtilLog4j.log.info(this, "campo: " + getIdCampo());
             setOrden(null);
-        }
 
     }
 

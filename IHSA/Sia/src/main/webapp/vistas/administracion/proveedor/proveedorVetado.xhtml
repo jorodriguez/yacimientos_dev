@@ -8,31 +8,26 @@
       >
     <body>
         <ui:composition template="./../../../WEB-INF/facelets/templates/templateGrupos.xhtml">
+            <ui:define name="tituloPagina">
+                Proveedores Vetados
+            </ui:define>
             <ui:define name="contenido">
                 <div id="Pa">
                     <div class="row"> 
                         <h:form id="frmRelCampoPro"   >
-                            <div class="col-lg-12">
-                                <div class="col-lg-4"></div>
-                                <div class="col-lg-6">
-                                    <h2 class="page-header">Proveedores Vetados</h2>
-                                </div>
-                            </div>
                             <center><h:messages errorClass="mensaje" infoClass="mensaje"/></center> 
                             <div class="col-lg-6 col-xs-1">
-                                <p:panelGrid>
-                                    <p:commandLink title="#{msgs['sistema.crear']} Proveedor vetado" action="#{proveedorVetadoBean.crearVetado}" styleClass="btn btn-default">
-                                        <p:graphicImage title="#{msgs['sistema.crear']} Proveedor vetado" alt="#{msgs['sistema.crear']} Vetado" url="./resources/imagenes/button_create.png" styleClass="imagenSinBorde"/>
-                                    </p:commandLink>
-                                    <p:commandLink value="#{msgs['sistema.crear']} Proveedor vetado" title="#{msgs['sistema.crear']} Vetado" action="#{proveedorVetadoBean.crearVetado}" styleClass="linkPequenio" />
-                                </p:panelGrid>  
-
+                                <p:commandLink title="#{msgs['sistema.crear']} Proveedor vetado" 
+                                               action="#{proveedorVetadoBean.crearVetado}" 
+                                               styleClass="btn btn-primary"
+                                               process="@this" update="frmPnlMoneda">
+                                    <i class="fa fa-plus text-white"/>
+                                </p:commandLink>
                             </div>
                             <div class="row">
-
-
-                                <p:dataTable size="small" stripedRows="true" showGridlines="true" id="dgVetados" rows="10" var="data" styleClass="table table-bordered table-striped "
-                                               value="#{proveedorVetadoBean.listaVetados}"   style="text-align: center;" >
+                                <p:dataTable size="small" stripedRows="true" showGridlines="true" 
+                                             id="dgVetados" rows="10" var="data"
+                                             value="#{proveedorVetadoBean.lstVetado}">
                                     <p:column style="text-align: center;">
                                         <f:facet name="header"><h:outputText value="RFC"/></f:facet>
                                         <h:outputText value="#{data.rfc}"/>
@@ -50,37 +45,25 @@
                                         <h:selectBooleanCheckbox value="#{data.activo}" disabled="true" />
                                     </p:column>
                                     <p:column style="text-align: center;">
-                                        <center>
-                                            <p:commandLink value="#{msgs['sistema.modificar']}" action="#{proveedorVetadoBean.editarVetado}" styleClass="link">
-                                                <f:param name="idVetado" value="#{data.id}"/>
-                                                <f:param name="rfc" value="#{data.rfc}"/>
-                                                <f:param name="nombre" value="#{data.nombre}"/>
-                                                <f:param name="descr" value="#{data.descripcion}"/>
-                                                <f:param name="activo" value="#{data.activo}"/>
-                                            </p:commandLink>
-                                        </center>
+                                        <p:commandLink value="#{msgs['sistema.modificar']}" 
+                                                       action="#{proveedorVetadoBean.editarVetado(data.id, data.rfc, data.descripcion, data.activo, data.nombre)}"
+                                                       process="@this" update="frmRelCampoPro:dgVetados">
+                                        </p:commandLink>
                                     </p:column>
                                     <p:column style="text-align: center;">
-                                        <center>
-                                            <p:commandLink value="#{msgs['sistema.eliminar']}" 
-                                                             action="#{proveedorVetadoBean.deleteVetado}" styleClass="link">
-                                                <f:param name="idVetado" value="#{data.id}"/>
-                                            </p:commandLink>
-                                        </center>                                    
+                                        <p:commandLink value="#{msgs['sistema.eliminar']}" 
+                                                       action="#{proveedorVetadoBean.deleteVetado(data.id)}" 
+                                                       process="@this" update="frmRelCampoPro:dgVetados">
+                                        </p:commandLink>
                                     </p:column>
                                 </p:dataTable>
-                            </div>
-
-                            <div class="col-lg-12 col-xs-12">
-
                             </div>
                         </h:form>
                     </div>
                 </div>
 
-
                 <div class="modal fade" id="dialogoPopUpVetado" data-backdrop="static" data-keyboard="false" style="color: black;">
-                    <div class="modal-dialog" style="width: 70%;">
+                    <div class="modal-dialog" >
                         <div class="modal-content">
                             <div class="modal-header">                    
                                 <h4 class="modal-title">Crear/Editar Moneda</h4>                                                                
@@ -101,20 +84,19 @@
                                                     </div>
                                                     <div class="col-lg-6 col-xs- col-lg-6">                                            
                                                         <p:inputText maxlength="15" size="15"                                                     
-                                                                       styleClass="form-control"                                                    
-                                                                       value="#{proveedorVetadoBean.newVetado.rfc}"
-                                                                       />  
+                                                                     styleClass="form-control"                                                    
+                                                                     value="#{proveedorVetadoBean.newVetado.rfc}"
+                                                                     />  
                                                     </div>
-                                                    <div class="visible-lg col-lg-2" ></div>
                                                 </div>
                                                 <div class="row">
                                                     <div class="visible-lg col-lg-2" ></div>
                                                     <strong><h:outputText class="col-lg-2 col-xs-12 control-label" value="Nombre:"/></strong>
                                                     <div class="col-lg-6 col-xs-12">                                            
                                                         <p:inputText maxlength="100"
-                                                                       styleClass="form-control"                                                    
-                                                                       value="#{proveedorVetadoBean.newVetado.nombre}"
-                                                                       />  
+                                                                     styleClass="form-control"                                                    
+                                                                     value="#{proveedorVetadoBean.newVetado.nombre}"
+                                                                     />  
                                                     </div>
                                                     <div class="visible-lg col-lg-2" ></div>                                                
                                                 </div>
@@ -123,9 +105,9 @@
                                                     <strong><h:outputText class="col-lg-2 col-xs-12 control-label" value="Descripción:"/></strong>
                                                     <div class="col-lg-6 col-xs-12">                                            
                                                         <p:inputTextarea maxlength="500"
-                                                                           styleClass="form-control"                                                    
-                                                                           value="#{proveedorVetadoBean.newVetado.descripcion}"
-                                                                           />  
+                                                                         styleClass="form-control"                                                    
+                                                                         value="#{proveedorVetadoBean.newVetado.descripcion}"
+                                                                         />  
                                                     </div>
                                                     <div class="visible-lg col-lg-2" ></div>                                                
                                                 </div>
@@ -144,19 +126,15 @@
                                     </div>
                                     <div class="col-lg-9"></div>  
                                 </div>
-                                <div class="modal-footer" style="border-top: white;">
+                                <div class="modal-footer">
                                     <p:commandButton id="saveLlegada"
                                                      value="Guardar"
                                                      styleClass="btn btn-info" 
-                                                     onclick="return window.confirm('¿Está seguro de guardar el proveedor?');"
                                                      action="#{proveedorVetadoBean.guardarVetado}"
-                                                     />
-                                    <p:commandButton
-                                        value="Cerrar"
-                                        styleClass="btn btn-cancelar"
-                                        onclick="$(dialogoPopUpVetado).modal('hide');"
-                                        title="Cerrar ventana..." 
-                                        />
+                                                     process="@this" update="frmRelCampoPro"/>
+                                    <p:commandButton value="Cerrar" styleClass="btn btn-cancelar"
+                                                     onclick="$(dialogoPopUpVetado).modal('hide');"
+                                                     title="Cerrar ventana..." immediate="true"/>
                                 </div>    
                             </h:form>
                         </div>

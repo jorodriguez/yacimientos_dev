@@ -8,62 +8,51 @@
       >
     <body>
         <ui:composition template="./../../../WEB-INF/facelets/templates/templateGrupos.xhtml">
+            <ui:define name="tituloPagina">
+                Enviar archivos del portal de proveedores
+            </ui:define>
             <ui:define name="contenido">
-                <div id="page">
-                    <div class="row"> 
-                        <h:form id="frmArcPro"  >
-                            <div class="col-lg-12">
-                                <div class="col-lg-4"></div>
-                                <div class="col-lg-6">
-                                    <h2 class="page-header">Enviar archivos del portal de proveedores</h2>
+                <h:form id="frmArcPro"  >
+                    <div class="col-lg-12 col-xs-12">
+                        <h:outputLabel value="#{msgs['orden.proveedor']}"/>
+                        <p:autoComplete value="#{proveedorBean.nombreProveedor}" 
+                                        size="40" forceSelection="true" minQueryLength="3"
+                                        completeMethod="#{proveedorBean.completaProveedor}"
+                                        placeholder="Nombre o parte del nombre del proveedor">
+                            <p:ajax listener="#{proveedorBean.buscarCompaniaPorProveedor}"  update="frmArcPro"/>
+                        </p:autoComplete>  
+                    </div>
+                    <h:messages style="color: red;"/>
+                    <ui:fragment rendered="#{proveedorBean.proveedorVo.idProveedor gt 0}">
+                        <div class="col-lg-12 col-xs-12">
+                            <div class="col-lg-12 col-xs-12">
+                                <div class="col-lg-2 col-xs-12">
+                                    <h:outputText  value="Nombre: "/>
+                                </div>
+                                <div class="col-lg-10 col-xs-12">
+                                    <h:outputLabel value="#{proveedorBean.proveedorVo.nombre}"/>
+                                </div>
+                                <div class="col-lg-2 col-xs-12">
+                                    <h:outputText  value="Rfc: "/>
+                                </div>                                        
+                                <div class="col-lg-10 col-xs-12">
+                                    <h:outputLabel value="#{proveedorBean.proveedorVo.rfc}"/>
                                 </div>
                             </div>
                             <div class="col-lg-12 col-xs-12">
-                                <h:outputLabel value="#{msgs['orden.proveedor']}"/>
-                                <p:inputText id="autocomplete"
-                                               size="40"            
-                                               onclick="autocompletar(this, 'hidenDes', 'frmArcPro');">
-                                </p:inputText>
-                                <h:inputHidden id="hidenDes" value="#{proveedorBean.idProveedor}"/>  
-                                <p:commandLink value="#{msgs['sistema.aceptar']}" id="btnFiltro" 
-                                               action="#{proveedorBean.buscarCompaniaPorProveedor}"
-                                               style="display: none;"/>
+                                <p:commandLink title="Enviar archivos del portal" 
+                                               value="Enviar archivos del portal" 
+                                               rendered="#{proveedorBean.proveedorVo.archivosCargados}"
+                                               action="#{proveedorBean.enviarArchivos}"
+                                               styleClass="btn btn-info" process="@this" update="frmArcPro">
+                                </p:commandLink>
+                                <h:outputText rendered="#{!proveedorBean.proveedorVo.archivosCargados}"
+                                              value="El proveedor no ha cargado los archivos al portal de proveedores."/>
                             </div>
-                            <h:messages style="color: red;"/>
-                            <ui:fragment rendered="#{proveedorBean.proveedorVo.idProveedor gt 0}">
-                                <div class="col-lg-12 col-xs-12">
-                                    <div class="col-lg-12 col-xs-12">
-                                        <div class="col-lg-2 col-xs-12">
-                                            <h:outputText  value="Nombre: "/>
-                                        </div>
-                                        <div class="col-lg-10 col-xs-12">
-                                            <h:outputLabel value="#{proveedorBean.proveedorVo.nombre}"/>
-                                        </div>
-                                        <div class="col-lg-2 col-xs-12">
-                                            <h:outputText  value="Rfc: "/>
-                                        </div>                                        
-                                        <div class="col-lg-10 col-xs-12">
-                                            <h:outputLabel value="#{proveedorBean.proveedorVo.rfc}"/>
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-12 col-xs-12">
-                                        <p:commandLink title="Enviar archivos del portal" 
-                                                       value="Enviar archivos del portal" 
-                                                       rendered="#{proveedorBean.proveedorVo.archivosCargados}"
-                                                       action="#{proveedorBean.enviarArchivos}"
-                                                       styleClass="btn btn-info">
-                                        </p:commandLink>
-                                        <h:outputText rendered="#{!proveedorBean.proveedorVo.archivosCargados}"
-                                                        value="El proveedor no ha cargado los archivos al portal de proveedores."/>
-                                    </div>
 
-                                </div>
-                            </ui:fragment>
-                        </h:form>
-
-                    </div>
-                </div>
-
+                        </div>
+                    </ui:fragment>
+                </h:form>
             </ui:define>
         </ui:composition>
 

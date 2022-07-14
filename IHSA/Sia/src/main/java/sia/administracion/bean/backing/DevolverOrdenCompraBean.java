@@ -7,6 +7,7 @@ package sia.administracion.bean.backing;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -15,6 +16,7 @@ import javax.annotation.PostConstruct;
 
 import javax.faces.event.ValueChangeEvent;
 import javax.faces.model.DataModel;
+import javax.faces.model.ListDataModel;
 import javax.faces.model.SelectItem;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
@@ -28,9 +30,12 @@ import sia.modelo.Orden;
 import sia.modelo.Usuario;
 import sia.modelo.campo.usuario.puesto.vo.CampoUsuarioPuestoVo;
 import sia.modelo.requisicion.vo.RequisicionReporteVO;
+import sia.modelo.sgl.vo.EstatusAprobacionVO;
 import sia.modelo.sgl.vo.RequisicionVO;
 import sia.modelo.usuario.vo.UsuarioResponsableGerenciaVo;
 import sia.modelo.usuario.vo.UsuarioRolVo;
+import sia.modelo.vo.StatusVO;
+import sia.modelo.vo.inventarios.SolicitudMaterialAlmacenVo;
 import sia.notificaciones.requisicion.impl.NotificacionRequisicionImpl;
 import sia.servicios.campo.nuevo.impl.ApCampoUsuarioRhPuestoImpl;
 import sia.servicios.catalogos.impl.EstatusImpl;
@@ -173,6 +178,53 @@ public class DevolverOrdenCompraBean implements Serializable {
         }
 
         return usuarioFiltrados.stream().filter(t -> t.toLowerCase().startsWith(queryLowerCase)).collect(Collectors.toList());
+    }
+
+    public boolean pasarSolicitudes() {
+        boolean exito;
+        List<EstatusAprobacionVO> lo = new ArrayList<EstatusAprobacionVO>();
+        for (Object object : getLista()) {
+            EstatusAprobacionVO o = (EstatusAprobacionVO) object;
+            if (o.isSelected()) {
+                lo.add(o);
+            }
+        }
+        exito = sgEstatusAprobacionImpl.pasarSolicitudes(lo, getUsuarioSolicita(), getUsuarioAprobara(), sesion.getUsuarioVo().getId(),
+                sesion.getUsuarioVo().getRfcEmpresa(), sesion.getUsuarioVo().getMail(), getIdStatus());
+        buscarSolicitud();
+
+        return exito;
+    }
+
+    public void buscarSolicitud() {
+        List<EstatusAprobacionVO> le = new ArrayList<>();
+        List<EstatusAprobacionVO> tmpList = sgEstatusAprobacionImpl.traerEstatusAprobacionPorUsuario(getUsuarioSolicita(), Constantes.ESTATUS_APROBAR, Constantes.SOLICITUDES_TERRESTRES);
+        for (EstatusAprobacionVO estatusAprobacionVO : tmpList) {
+            if (siManejoFechaLocal.compare(estatusAprobacionVO.getFechaSalida(), new Date()) >= 0) {
+                le.add(estatusAprobacionVO);
+            }
+        }
+        setLista(new ListDataModel(le));
+
+    }
+
+    public boolean pasarSolicitudMaterial() {
+        boolean exito;
+        List<SolicitudMaterialAlmacenVo> lo = new ArrayList<SolicitudMaterialAlmacenVo>();
+        for (Object object : getLista()) {
+            SolicitudMaterialAlmacenVo o = (SolicitudMaterialAlmacenVo) object;
+            if (o.isSelected()) {
+                lo.add(o);
+            }
+        }
+        exito = estadoAprobacionSolicitudLocal.pasarSolicitud(lo, getUsuarioSolicita(), getUsuarioAprobara(), sesion.getUsuarioVo(), getIdStatus(), getIdCampo());
+        buscarSolicitudesMaterial();
+
+        return exito;
+    }
+
+    public void buscarSolicitudesMaterial() {
+        setLista(new ListDataModel(estadoAprobacionSolicitudLocal.traerSolicitudesUsuarioStatus(getIdCampo(), getUsuarioSolicita(), getIdStatus())));
     }
 
     public void completarDevolucionOrden() {

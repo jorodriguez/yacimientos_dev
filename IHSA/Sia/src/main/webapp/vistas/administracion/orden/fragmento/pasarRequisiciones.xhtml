@@ -3,59 +3,51 @@
                 xmlns:h="http://xmlns.jcp.org/jsf/html"
                 xmlns:p="http://primefaces.org/ui"       
                 xmlns:f="http://xmlns.jcp.org/jsf/core"
-                xmlns:my="http://www.mytags.com/schema/mytags"
                 >
     <div class="row">
-	<p:panelGrid columns="3">
-	    <p:panelGrid>
-		<f:facet name="header"> <h:outputText value="Status"/></f:facet>
-		<p:selectOneMenu value="#{devolverOrdenCompraBean.idStatus}" id="cmbStatusReq"  style="width: 200px;"
-                                   onchange="cambiarValorCombo('frmCambioUsuarioOrden', 'btnBuscarReq');"
-				   >
-		    <f:selectItem itemLabel="Sin Solicitar" itemValue="1"/>
-		    <f:selectItem itemLabel="Revisar" itemValue="10"/>
-		    <f:selectItem itemLabel="Aprobar" itemValue="15"/>
-		    <f:selectItem itemLabel="Asignada" itemValue="40"/>
-		</p:selectOneMenu>
-	    </p:panelGrid>
-	    <p:panelGrid style="margin-top:  15px;">
-		<p:commandLink id="btnBuscarReq" value="Buscar" 
-			       action="#{devolverOrdenCompraBean.buscarRequisiones}" styleClass="btn btn-default" style="margin-top: 15px;"/>
-	    </p:panelGrid>
-	</p:panelGrid>
+        <p:panelGrid columns="2">
+            <f:facet name="header"> <h:outputText value="Status"/></f:facet>
+            <p:selectOneMenu value="#{transfereriTrabajoBean.idStatus}" id="cmbStatusReq"  >
+                <f:selectItem itemLabel="Sin Solicitar" itemValue="1"/>
+                <f:selectItem itemLabel="Revisar" itemValue="10"/>
+                <f:selectItem itemLabel="Aprobar" itemValue="15"/>
+                <f:selectItem itemLabel="Asignada" itemValue="40"/>
+            </p:selectOneMenu>
+            <p:commandLink id="btnBuscarReq" value="Buscar" 
+                           action="#{transfereriTrabajoBean.buscarRequisiones}" styleClass="btn btn-primary text-white"
+                           process="@this frmCambioUsuarioOrden:cmbStatusReq" update="frmCambioUsuarioOrden:dtOcs"/>
+        </p:panelGrid>
     </div>
     <div class="row">
-	<my:dataGrid id="dtReq" rows="30" value="#{devolverOrdenCompraBean.lista}" showPaginator="true" 
-		     textoResultado="Mostrando del" 
-		     textoPagina="#{msgs['sistema.paginador.pagina']}" 
-		     textoDe="#{msgs['sistema.paginador.de']}" >
-	    <p:column>
-		<f:facet name="header">
-		    <h:selectBooleanCheckbox  class="todos" onchange="seleccionarTodo('todos', 'seleccion')"/>
-		</f:facet>
-		<h:selectBooleanCheckbox value="#{data.selected}" class="seleccion"/>
-	    </p:column>
-	    <p:column>
-		<f:facet name="header"><h:outputText value="Consecutivo"/></f:facet>
-		<h:outputText value="#{data.consecutivo}"/>
-	    </p:column>
+        <p:dataTable id="dtReq" rows="30" value="#{transfereriTrabajoBean.lista}" 
+                     paginator="true" paginatorPosition="bottom" var="data">
+            <p:column>
+                <f:facet name="header">
+                    <h:selectBooleanCheckbox  class="todos" onchange="seleccionarTodo('todos', 'seleccion')"/>
+                </f:facet>
+                <h:selectBooleanCheckbox value="#{data.selected}" class="seleccion"/>
+            </p:column>
+            <p:column>
+                <f:facet name="header"><h:outputText value="Consecutivo"/></f:facet>
+                <h:outputText value="#{data.consecutivo}"/>
+            </p:column>
 
-	    <p:column>
-		<f:facet name="header"><h:outputText value="Fecha"/></f:facet>
-		<h:outputText value="#{data.fechaSolicitada}">
-		    <f:convertDateTime pattern="dd/MM/yyyy"/>
-		</h:outputText>
-	    </p:column>                            
-	    <p:column>
-		<f:facet name="header"><h:outputText value="Referencia"/></f:facet>
-		<h:outputText value="#{data.referencia}"/>
-	    </p:column>                            
-	    <p:column>
-		<f:facet name="header"><h:outputText value="Total Pesos"/></f:facet>
-		<h:outputText value="#{data.montoPesos}">
-		    <f:convertNumber maxFractionDigits="2"/>
-		</h:outputText>
-	    </p:column>                            
-	</my:dataGrid>
+            <p:column>
+                <f:facet name="header"><h:outputText value="Fecha"/></f:facet>
+                <h:outputText value="#{data.fechaSolicitada}">
+                    <f:convertDateTime pattern="dd/MM/yyyy"/>
+                </h:outputText>
+            </p:column>                            
+            <p:column>
+                <f:facet name="header"><h:outputText value="Referencia"/></f:facet>
+                <h:outputText value="#{data.referencia}"/>
+            </p:column>                            
+            <p:column>
+                <f:facet name="header"><h:outputText value="Total Pesos"/></f:facet>
+                <h:outputText value="#{data.montoPesos}">
+                    <f:convertNumber maxFractionDigits="2"/>
+                </h:outputText>
+            </p:column>                            
+        </p:dataTable>
     </div>
 </ui:composition>
