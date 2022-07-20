@@ -1,0 +1,112 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      
+     
+      
+      xmlns:c="http://java.sun.com/jsp/jstl/core">
+    <body>
+        <ui:composition template="./../../../../WEB-INF/facelets/templates/templateServiciosGenerales.xhtml">
+            <ui:define name="contenido">
+
+                <h:form >
+                    <br/>
+                    <p class="tituloEncabezado">#{msgs['sgl.viaje.catalogo.ruta']}</p>
+                    <h:panelGrid>
+                        <p:selectOneRadio value="#{rutaBean.idTipoEspecifico}" valueChangeListener="#{rutaBean.cambiarTipoRuta}" >
+                            <f:selectItems value="#{rutaBean.listaTipoEspecificoRuta}"/>
+                        </p:selectOneRadio>
+                    </h:panelGrid>
+                    <h:panelGrid columns="2">
+                        <h:outputText value="#{msgs['sgl.viaje.ruta']}"/>
+                        <p:selectOneMenu value="#{rutaBean.idRuta}" valueChangeListener="#{rutaBean.buscarDetalleRuta}" 
+                                            styleClass="form-control">
+                            <f:selectItem itemLabel="#{msgs['sistema.seleccionar.combo']}" itemValue="-1"/>
+                            <f:selectItems value="#{rutaBean.listaRuta}"/>
+                        </p:selectOneMenu>
+                        <br/>
+                    </h:panelGrid>
+                    <h:panelGrid rendered="#{rutaBean.lista.rowCount lt 1 and rutaBean.idRuta gt 0}">
+                        <p:commandLink title="#{msgs['sgl.viaje.ruta.agregar.detalle']}" 
+                                         actionListener="#{rutaBean.agregarDetalleRuta(event)}" styleClass="btn btn-default">
+                            <h:graphicImage url="#{msgs['sgl.ruta.imagen']}button_create.png" 
+                                              styleClass="imagenSinBorde"/>
+                        </p:commandLink>
+                        <p:commandLink value="#{msgs['sgl.viaje.ruta.agregar.detalle']}" styleClass="linkPequenio" actionListener="#{rutaBean.agregarDetalleRuta(event)}"
+                                         title="#{msgs['sgl.viaje.ruta.agregar.detalle']}"/>
+                    </h:panelGrid>
+                    <br/>
+
+
+                </h:form>
+                <!--Agregar detalle de ruta-->
+                <h:form styleClass="textoIzquierda">
+                    <p:dialog  header="#{msgs['sistema.crear']} #{msgs['sgl.viaje.detalle.ruta']}" 
+                                    >
+			<h:outputText value="#{msgs['sgl.viaje.ruta.agregar.detalle']}" styleClass="tituloEncabezado" />
+                        <c:choose>
+                            <c:when test="#{rutaBean.idTipoEspecifico eq 21}">
+                                <center><h:messages  globalOnly="true" errorClass="mensaje" infoClass="mensaje"/></center>  
+                                <h:panelGrid columns="2" cellspacing="8" >
+                                    <h:panelGrid style="text-align: center;" styleClass="bordePanelGrid">                                
+                                        <h:outputText value="#{sesion.oficinaActual.nombre}" styleClass="fNegrita12"/>
+                                        <h:outputText value="#{sesion.oficinaActual.ciudad}"/>
+                                        <p:selectBooleanCheckbox disabled="true" />
+                                        <p:selectBooleanCheckbox disabled="true" />
+                                    </h:panelGrid>
+                                    <h:panelGrid>
+                                        <ui:repeat value="#{rutaBean.traerOficina}" var="psDet">
+                                            <h:panelGroup style="float: left; margin-left: 10px; cursor: pointer;" styleClass="bordePanelGrid">
+                                                <h:panelGrid style="text-align: center;" >
+                                                    <h:outputText value="#{psDet.nombre}" styleClass="fNegrita12"/>
+                                                    <h:panelGrid columns="2">
+                                                        <h:outputText value="#{psDet.ciudad}"/>
+                                                        <p:selectBooleanCheckbox value="#{rutaBean.filasSeleccionadas[psDet.id]}"/>
+                                                        <h:outputText value="Destino: "/>
+                                                        <p:selectBooleanCheckbox value="#{psDet.destino}" label="Destino"/>                                           
+                                                    </h:panelGrid>
+                                                </h:panelGrid>  
+                                            </h:panelGroup>
+                                        </ui:repeat>
+                                    </h:panelGrid>
+                                </h:panelGrid>
+                            </c:when>
+                            <c:when test="#{rutaBean.idTipoEspecifico eq 22}">
+                                <center><h:messages  globalOnly="true" errorClass="mensaje" infoClass="mensaje"/></center>  
+                                <h:panelGrid columns="2" cellspacing="8" >
+                                    <h:panelGrid style="text-align: center;" styleClass="bordePanelGrid">                                
+                                        <h:outputText value="#{sesion.oficinaActual.nombre}" styleClass="fNegrita12"/>
+                                        <h:outputText value="#{sesion.oficinaActual.ciudad}"/>
+                                    </h:panelGrid>
+                                    <h:panelGrid>
+                                        <h:outputText value="#{msgs['sgl.solicitudViaje.destino']}"/>
+                                        <p:selectOneMenu value="#{rutaBean.idCiudad}">
+                                            <f:selectItems value="#{rutaBean.listaCiudad}"/>
+                                        </p:selectOneMenu>
+                                    </h:panelGrid>
+                                </h:panelGrid>
+
+                            </c:when>
+
+                        </c:choose>
+
+                        <center>
+                            <h:panelGrid columns="2">
+                                <p:commandLink value="#{msgs['sistema.guardar']}" styleClass="btn btn-info" actionListener="#{rutaBean.guardarDetalleRuta(event)}"/>
+                                <p:commandLink value="#{msgs['sistema.cancelar']}" styleClass="btn btn-default" actionListener="#{rutaBean.cancelarDetalleRuta(event)}"/>
+                            </h:panelGrid>
+                        </center>
+                        <h:panelGroup>
+
+                        </h:panelGroup>
+                    </my:panelPopup>                    
+                </h:form> 
+
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

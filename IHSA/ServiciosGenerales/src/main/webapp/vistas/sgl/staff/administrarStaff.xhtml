@@ -1,0 +1,1373 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html" 
+
+      xmlns:p="http://primefaces.org/ui"
+
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets">
+    <body>
+        <ui:composition template="./../../../WEB-INF/facelets/templates/templateServiciosGenerales.xhtml">
+
+            <ui:define name="contenido">
+                <h:panelGroup  >
+                    <h:panelGrid  rendered="#{empty sesion.usuario}" styleClass="altura">
+                        <ui:include src="./../../../login.xhtml"/>
+                    </h:panelGrid>
+
+                    <h:form  >
+                        <h:panelGrid  >
+                            <p class="tituloEncabezado">#{msgs['sgl.staff.titulo.administracionStaff']} - #{staffBean.staff.nombre} </p>
+                        </h:panelGrid>         
+                        <h:panelGrid columns="6">
+                            <h:panelGrid columns="2">
+                                <p:commandLink type="submit" title="Regresar" action="#{staffBean.goToCatalogoStaff()}" styleClass="btn btn-default">
+                                    <h:graphicImage url="#{msgs['sgl.ruta.imagen']}button_back.png" alt="#{msgs['sgl.staff.link.regresarCatalogoStaff']}" styleClass="imagenSinBorde" />
+                                </p:commandLink>
+                                <p:commandLink value="Regresar a Catálogo de Staff House's" styleClass="linkPequenio" action="#{staffBean.goToCatalogoStaff()}" />
+                            </h:panelGrid>          
+                            <h:panelGrid columns="2">
+                                <p:commandLink type="submit" title="Características Generales" action="#{staffBean.mostrarPopupAgregarCaracteristicaStaff(actionEvent)}" styleClass="btn btn-default"  style="margin-top: 5px" >
+                                    <h:graphicImage url="#{msgs['sgl.ruta.imagen']}button_create.png" alt="#{msgs['sgl.staff.caracteristica.crear']}" styleClass="imagenSinBorde" />
+                                </p:commandLink>
+                                <p:commandLink value="Características Generales" styleClass="linkPequenio" action="#{staffBean.mostrarPopupAgregarCaracteristicaStaff(actionEvent)}" />
+                            </h:panelGrid>   
+
+                            <h:panelGrid  columns="2">
+                                <p:commandLink type="submit" title="Convenio" actionListener="#{staffBean.mostrarPopupAgregarConvenioProveedor(actionEvent)}" styleClass="btn btn-default"  style="margin-top: 5px" >
+                                    <h:graphicImage url="#{msgs['sgl.ruta.imagen']}button_create.png" styleClass="imagenSinBorde" />
+                                </p:commandLink>
+                                <p:commandLink value="Convenio" styleClass="linkPequenio" actionListener="#{staffBean.mostrarPopupAgregarConvenioProveedor(actionEvent)}" />
+                            </h:panelGrid>                            
+
+                            <h:panelGrid columns="2">
+                                <p:commandLink type="submit" title="Habitación" action="#{staffBean.mostrarPopupAgregarHabitacionStaff(actionEvent)}" styleClass="btn btn-default"  style="margin-top: 5px" >
+                                    <h:graphicImage url="#{msgs['sgl.ruta.imagen']}button_create.png" alt="#{msgs['sgl.sttaff.habitacion.crear']}" styleClass="imagenSinBorde" />
+                                </p:commandLink> 
+                                <p:commandLink value="Habitación" styleClass="linkPequenio" action="#{staffBean.mostrarPopupAgregarHabitacionStaff(actionEvent)}" />
+                            </h:panelGrid>
+
+                            <h:panelGrid columns="2">
+                                <p:commandLink type="submit" title="Gimnasio" action="#{staffBean.mostrarPopupAgregarGimnasioStaff(actionEvent)}" styleClass="btn btn-default"  style="margin-top: 5px" >
+                                    <h:graphicImage url="#{msgs['sgl.ruta.imagen']}button_create.png" alt="#{msgs['sgl.staff.gimnasio.crear']}" styleClass="imagenSinBorde" />
+                                </p:commandLink>
+                                <p:commandLink value="Gimnasio" styleClass="linkPequenio" action="#{staffBean.mostrarPopupAgregarGimnasioStaff(actionEvent)}" />
+                            </h:panelGrid>
+
+                            <h:panelGrid columns="2">
+                                <p:commandLink type="submit" title="Cocina" action="#{staffBean.mostrarPopupAgregarCocinaStaff(actionEvent)}" styleClass="btn btn-default"  style="margin-top: 5px" >
+                                    <h:graphicImage url="#{msgs['sgl.ruta.imagen']}button_create.png" alt="#{msgs['sgl.staff.cocina.crear']}" styleClass="imagenSinBorde" />
+                                </p:commandLink>
+                                <p:commandLink value="Cocina" styleClass="linkPequenio" action="#{staffBean.mostrarPopupAgregarCocinaStaff(actionEvent)}" />
+                            </h:panelGrid>
+
+                        </h:panelGrid>
+
+                        <br />                       
+                        <p:accordionPanel>
+                            <p:tab   title="#{msgs['sgl.staff.titulo.accordionPane.generales']}">  
+                                <h:commandLink value="#{msgs['sistema.modificar']} #{msgs['sgl.staff.create.datosGenerales']}" actionListener="#{staffBean.mostrarPopupModificarGeneralesStaff(actionEvent)}" styleClass="linkPequenio" />
+
+                                <br /><br />
+
+                                <h:panelGrid columns="2" styleClass="bordePanelGrid" cellspacing="10" >
+                                    <h:panelGrid columns="2" styleClass="bordePanelGrid" cellspacing="7" width="70%" >
+                                        <f:facet name="header"><h:outputText value="#{msgs['sgl.staff.create.datosGenerales']}" /></f:facet>
+                                        <h:outputLabel value="#{msgs['sgl.staff.nombreStaff']}: " styleClass="fNegrita12" />
+                                        <h:outputText id="nombreStaff" value="#{staffBean.staff.nombre}" styleClass="f10" />                                
+                                        <h:outputLabel value="#{msgs['sgl.staff.numeroStaff']}: " styleClass="fNegrita12" />
+                                        <h:outputText id="numeroStaff" value="#{staffBean.staff.numeroStaff}" styleClass="f10" />                                
+                                        <h:outputLabel value="#{msgs['sgl.staff.numeroCuartos']}: " styleClass="fNegrita12" />
+                                        <h:outputText id="numeroCuartos" value="#{staffBean.staff.numeroCuartos}" styleClass="f10" />                                
+                                        <h:outputLabel value="#{msgs['sgl.staff.telefonoStaff']}: " styleClass="fNegrita12" />
+                                        <h:outputText id="telefonoStaff" value="#{staffBean.staff.numeroTelefono}" styleClass="f10" /> 
+                                    </h:panelGrid>
+
+                                    <h:panelGrid columns="2" styleClass="bordePanelGrid" cellspacing="10" width="67%" >
+                                        <f:facet name="header"><h:outputText value="#{msgs['sgl.staff.create.direccion']}" /></f:facet>
+                                        <h:panelGrid columns="2"  cellspacing="7" >
+                                            <h:outputLabel value="#{msgs['sgl.direccion.pais']}: "/>
+                                            <h:outputText id="pais" value="#{staffBean.staff.sgDireccion.siPais.nombre}" styleClass="f11" />
+                                            <h:outputLabel value="#{msgs['sgl.direccion.estado']}: "/>
+                                            <h:outputText id="estado" value="#{staffBean.staff.sgDireccion.estado}" styleClass="f11" />
+                                            <h:outputLabel value="#{msgs['sgl.direccion.municipio']}: "/>
+                                            <h:outputText id="municipio" value="#{staffBean.staff.sgDireccion.municipio}" styleClass="f11" />
+                                            <h:outputLabel value="#{msgs['sgl.direccion.ciudad']}: "/>
+                                            <h:outputText id="ciudad" value="#{staffBean.staff.sgDireccion.ciudad}" styleClass="f11" />                                            
+                                            <h:outputLabel value="#{msgs['sgl.direccion.colonia']}: "/>
+                                            <h:outputText id="colonia" value="#{staffBean.staff.sgDireccion.colonia}" styleClass="f11" />             
+                                            <h:outputLabel value="#{msgs['sgl.direccion.calle']}: "/>
+                                            <h:outputText id="calle" value="#{staffBean.staff.sgDireccion.calle}" styleClass="f11" />             
+                                        </h:panelGrid>
+
+                                        <h:panelGrid columns="2" width="100%%" cellspacing="7" >
+                                            <h:outputLabel value="#{msgs['sgl.direccion.numeroExterior']}: "/>
+                                            <h:outputText id="numeroExterior" value="#{staffBean.staff.sgDireccion.numeroExterior}" styleClass="f11" /> 
+                                            <h:outputLabel value="#{msgs['sgl.direccion.numeroInterior']}: "/>
+                                            <h:outputText id="numeroInterior" value="#{staffBean.staff.sgDireccion.numeroInterior}" styleClass="f11" />
+                                            <h:outputLabel value="#{msgs['sgl.direccion.piso']}: "/>
+                                            <h:outputText id="piso" value="#{staffBean.staff.sgDireccion.piso}" styleClass="f11" />
+                                            <h:outputLabel value="#{msgs['sgl.direccion.codigoPostal']}: "/>
+                                            <h:outputText id="codigoPostal" value="#{staffBean.staff.sgDireccion.codigoPostal}" styleClass="f11" />
+                                        </h:panelGrid>
+                                    </h:panelGrid>
+                                </h:panelGrid>
+                            </p:tab  >
+
+                            <!-- Características Generales -->
+                            <p:tab   title="#{msgs['sgl.staff.titulo.accordionPane.caracteristicas']}">
+                                <h:panelGrid  >
+                                    <h:panelGrid columns="2">
+                                        <p:commandLink type="submit" title="#{msgs['sgl.staff.caracteristica.generales.crear']}" action="#{staffBean.mostrarPopupAgregarCaracteristicaStaff(actionEvent)}" styleClass="btn btn-default"  style="margin-top: 5px" >
+                                            <h:graphicImage url="#{msgs['sgl.ruta.imagen']}button_create.png" alt="#{msgs['sgl.staff.caracteristica.generales.crear']}" title="#{msgs['sgl.staff.caracteristica.generales.crear']}" styleClass="imagenSinBorde" />
+                                        </p:commandLink>
+                                        <p:commandLink value="#{msgs['sgl.staff.caracteristica.generales.crear']}" styleClass="linkPequenio" action="#{staffBean.mostrarPopupAgregarCaracteristicaStaff(actionEvent)}" />
+                                    </h:panelGrid>    
+
+                                    <br />
+
+                                    <p:dataTable id="dataGridCaracteristicasStaff" rows=""  value="#{staffBean.caracteristicasStaffDataModel}"
+                                                 var="data">
+                                        <p:column>
+                                            <f:facet name="header">
+                                                <h:outputText value="Cantidad" />
+                                            </f:facet>
+                                            <h:outputText value="#{data.cantidad}" />
+                                        </p:column> 
+                                        <p:column>
+                                            <f:facet name="header">
+                                                <h:outputText value="Nombre" />
+                                            </f:facet>
+                                            <h:outputText value="#{data.nombre}" />
+                                        </p:column>
+                                    </p:dataTable>
+
+                                    <!--<br />
+
+                                    <h:commandLink value="#{msgs['sistema.modificar']} #{msgs['sgl.staff.titulo.accordionPane.caracteristicas']}" actionListener="#{staffBean.mostrarPopupAgregarCaracteristicaStaff(actionEvent)}" styleClass="link" />-->
+                                </h:panelGrid>
+                            </p:tab  >
+
+                            <!-- Convenios -->
+                            <p:tab   title="Convenios">                                
+                                <h:panelGrid >   
+                                    <h:panelGrid  columns="2">
+                                        <p:commandLink type="submit" title="Convenio" actionListener="#{staffBean.mostrarPopupAgregarConvenioProveedor(actionEvent)}" styleClass="btn btn-default"  style="margin-top: 5px" >
+                                            <h:graphicImage url="#{msgs['sgl.ruta.imagen']}button_create.png" styleClass="imagenSinBorde" />
+                                        </p:commandLink>
+                                        <p:commandLink value="Convenios" styleClass="linkPequenio" actionListener="#{staffBean.mostrarPopupAgregarConvenioProveedor(actionEvent)}" />
+                                    </h:panelGrid>
+
+                                    <br />
+
+                                    <h:outputText value="Convenio vigente" rendered="#{staffBean.ultimoHistorialConvenioStaff != null}" styleClass="fNegrita12"/>
+                                    <h:outputText value="Sin convenio vigente" rendered="#{staffBean.ultimoHistorialConvenioStaff == null}" styleClass="fNegrita12"/>
+                                    <h:panelGrid columns="8"  
+                                                 rendered="#{staffBean.ultimoHistorialConvenioStaff != null}"
+                                                 bgcolor="white" >
+                                        <h:panelGrid >                                        
+                                            <h:outputLabel value="No. convenio"/>
+                                            <h:outputText value="#{staffBean.ultimoHistorialConvenioStaff.convenio.codigo}"/>
+                                        </h:panelGrid>
+                                        <h:panelGrid >
+                                            <h:outputLabel value="Proveedor"/>
+                                            <h:outputText value="#{staffBean.ultimoHistorialConvenioStaff.convenio.proveedor.nombre}"/>
+                                        </h:panelGrid>
+                                        <h:panelGrid >                                        
+                                            <h:outputLabel value="Inicio"/>
+                                            <h:outputText value="#{staffBean.ultimoHistorialConvenioStaff.convenio.fechaInicio}">
+                                                <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                            </h:outputText>
+                                        </h:panelGrid>     
+                                        <h:panelGrid>
+                                            <h:outputLabel value="Fin"/>
+                                            <h:outputText value="#{staffBean.ultimoHistorialConvenioStaff.convenio.fechaVencimiento}">
+                                                <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                            </h:outputText>
+                                        </h:panelGrid>
+                                        <h:panelGrid >                                                                                
+                                            <h:outputLabel value="Monto"/>
+                                            <h:outputText value="#{staffBean.ultimoHistorialConvenioStaff.convenio.monto}"/>
+                                        </h:panelGrid>
+                                        <h:panelGrid>
+                                            <h:outputLabel value="Moneda"/>
+                                            <h:outputText value="#{staffBean.ultimoHistorialConvenioStaff.convenio.moneda.siglas}"/>
+                                        </h:panelGrid>
+                                        <h:panelGrid >
+                                            <p:commandLink value="#{msgs['sistema.eliminar']}" actionListener="#{staffBean.mostrarPopupEliminarConvenio(event)}" styleClass ="link"/>
+                                        </h:panelGrid>
+                                        <h:panelGrid >
+                                            <p:commandLink value="#{msgs['sistema.historial']}" actionListener="#{staffBean.mostrarPopupVerHistorialConvenios(event)}" styleClass ="link"/>
+                                        </h:panelGrid>
+                                    </h:panelGrid>
+                                    <br />
+                                    <h:outputText value="Archivos del convenio" styleClass="fNegrita12"/>
+                                    <p:dataTable showGridlines="true" size="small"  id="dtContrato" value="#{staffBean.traerContratoStaff}" var="cont" >
+                                        <p:column>
+                                            <f:facet name="header"><h:outputText value="Archivo"/></f:facet> 
+                                            <h:outputText value="#{cont.nombre}"/>
+                                        </p:column>
+                                        <p:column>
+                                            <f:facet name="header"><h:outputText value="Tipo"/></f:facet> 
+                                            <h:outputText value="#{cont.tipoArchivo}"/>
+                                        </p:column>
+                                        <p:column>
+                                            <center>
+                                                <h:outputLink target="_blank" value="/ServiciosGenerales/AbrirArchivo?ZWZ2W=#{cont.id}&amp;ZWZ3W=#{cont.uuid}">
+                                                    <h:graphicImage url="#{msgs['sgl.ruta.imagen']}icon_attach.gif"/>
+                                                </h:outputLink>                                        
+                                            </center>
+                                        </p:column>
+                                    </p:dataTable>
+                                </h:panelGrid>                            
+                            </p:tab  >             
+
+                            <!-- Habitaciones -->
+                            <p:tab   title="#{msgs['sgl.staff.titulo.accordionPane.habitaciones']}" >
+                                <h:panelGrid >
+                                    <h:panelGrid columns="2">
+                                        <p:commandLink type="submit" title="#{msgs['sgl.staff.habitacion.crear']}" action="#{staffBean.mostrarPopupAgregarHabitacionStaff(actionEvent)}" styleClass="btn btn-default"  style="margin-top: 5px" >
+                                            <h:graphicImage url="#{msgs['sgl.ruta.imagen']}button_create.png" alt="#{msgs['sgl.staff.habitacion.crear']}" title="#{msgs['sgl.staff.habitacion.crear']}" styleClass="imagenSinBorde" />
+                                        </p:commandLink> 
+                                        <p:commandLink value="#{msgs['sgl.staff.habitacion.crear']}" styleClass="linkPequenio" action="#{staffBean.mostrarPopupAgregarHabitacionStaff(actionEvent)}" />
+                                    </h:panelGrid>
+
+                                    <br/>
+
+                                    <p:dataTable id="dataGridHabitaciones" rows="5"  value="#{staffBean.habitacionesDataModel}" var="data" 
+                                                 >
+                                        <p:column>
+                                            <f:facet name="header">
+                                                <h:outputText value="#{msgs['sgl.staff.habitacion.nombre']}"/>
+                                            </f:facet>
+                                            <h:outputText value="#{data['nombre']}" />
+                                        </p:column>
+                                        <p:column style="text-align: center">
+                                            <f:facet name="header">
+                                                <h:outputText value="#{msgs['sgl.staff.habitacion.estado.desocupada']}"/>
+                                            </f:facet>
+                                            <h:outputText value="#{data.ocupada eq 'True' ? 'No' : 'Si'}" />
+                                        </p:column>
+                                        <p:column>
+                                            <h:commandLink value="#{msgs['sistema.modificar']}" actionListener="#{staffBean.mostrarPopupModificarHabitacionStaff(actionEvent)}" styleClass="link" />
+                                        </p:column>
+                                        <p:column>
+                                            <h:commandLink value="#{msgs['sistema.eliminar']}" actionListener="#{staffBean.mostrarPopupEliminarHabitacionStaff(actionEvent)}" styleClass="link" />
+                                        </p:column>
+                                        <p:column>
+                                            <h:commandLink value="#{msgs['sgl.staff.titulo.caracteristicas']}" actionListener="#{staffBean.mostrarPopupCaracteristicasHabitacionStaff(actionEvent)}" styleClass="link" />
+                                        </p:column>                                        
+                                        <p:column>
+                                            <h:commandLink value="#{msgs['sistema.detalle']}"  actionListener="#{staffBean.mostrarPopupDetalleHabitacionStaff(actionEvent)}" styleClass ="link"/>
+                                        </p:column>
+                                    </p:dataTable>                            
+                                </h:panelGrid>
+                            </p:tab  >
+
+                            <!-- Gimansios -->
+                            <p:tab   title="#{msgs['sgl.staff.titulo.accordionPane.gimnasios']}" >
+                                <h:panelGrid >
+                                    <h:panelGrid columns="2">
+                                        <p:commandLink type="submit" title="#{msgs['sgl.staff.gimnasio.crear']}" action="#{staffBean.mostrarPopupAgregarGimnasioStaff(actionEvent)}" styleClass="btn btn-default"  style="margin-top: 5px" >
+                                            <h:graphicImage url="#{msgs['sgl.ruta.imagen']}button_create.png" alt="#{msgs['sgl.staff.gimnasio.crear']}" title="#{msgs['sgl.staff.gimnasio.crear']}" styleClass="imagenSinBorde" />
+                                        </p:commandLink>
+                                        <p:commandLink value="#{msgs['sgl.staff.gimnasio.crear']}" styleClass="linkPequenio" action="#{staffBean.mostrarPopupAgregarGimnasioStaff(actionEvent)}" />
+                                    </h:panelGrid>                                    
+                                    <br />
+                                    <p:dataTable id="dataGridGimnasios" rows="5"  value="#{staffBean.gimnasiosDataModel}" var="data" 
+                                                 >
+                                        <p:column>
+                                            <f:facet name="header">
+                                                <h:outputText value="#{msgs['sgl.staff.gimnasio.nombre']}"/>
+                                            </f:facet>
+                                            <h:outputText value="#{data['nombre']}" />
+                                        </p:column>
+                                        <p:column>
+                                            <h:commandLink value="#{msgs['sistema.modificar']}" actionListener="#{staffBean.mostrarPopupModificarGimnasioStaff(actionEvent)}" styleClass="link" />
+                                        </p:column>
+                                        <p:column>
+                                            <h:commandLink value="#{msgs['sistema.eliminar']}" actionListener="#{staffBean.mostrarPopupEliminarGimnasioStaff(actionEvent)}" styleClass="link" />
+                                        </p:column>
+                                        <p:column>
+                                            <h:commandLink value="#{msgs['sgl.staff.titulo.caracteristicas']}" actionListener="#{staffBean.mostrarPopupCaracteristicasGimnasioStaff(actionEvent)}" styleClass="link" />
+                                        </p:column>                                         
+                                        <p:column>
+                                            <h:commandLink value="#{msgs['sistema.detalle']}"  actionListener="#{staffBean.mostrarPopupDetalleGimnasioStaff(actionEvent)}" styleClass ="link"/>
+                                        </p:column>
+                                    </p:dataTable>                            
+                                </h:panelGrid>
+                            </p:tab  >
+
+                            <!-- Cocinas -->
+                            <p:tab   title="#{msgs['sgl.staff.titulo.accordionPane.cocinas']}">
+                                <h:panelGrid >
+                                    <h:panelGrid columns="2">
+                                        <p:commandLink type="submit" title="#{msgs['sgl.staff.cocina.crear']}" action="#{staffBean.mostrarPopupAgregarCocinaStaff(actionEvent)}" styleClass="btn btn-default"  style="margin-top: 5px" >
+                                            <h:graphicImage url="#{msgs['sgl.ruta.imagen']}button_create.png" alt="#{msgs['sgl.staff.cocina.crear']}" title="#{msgs['sgl.staff.cocina.crear']}" styleClass="imagenSinBorde" />
+                                        </p:commandLink>
+                                        <p:commandLink value="#{msgs['sgl.staff.cocina.crear']}" styleClass="linkPequenio" action="#{staffBean.mostrarPopupAgregarCocinaStaff(actionEvent)}" />
+                                    </h:panelGrid>                                    
+                                    <br />
+                                    <p:dataTable id="dataGridCocinas" rows="5"  value="#{staffBean.cocinasDataModel}" var="data" 
+                                                 >
+                                        <p:column>
+                                            <f:facet name="header">
+                                                <h:outputText value="#{msgs['sgl.staff.cocina.nombre']}"/>
+                                            </f:facet>
+                                            <h:outputText value="#{data['nombre']}" />
+                                        </p:column>
+                                        <p:column>
+                                            <h:commandLink value="#{msgs['sistema.modificar']}" actionListener="#{staffBean.mostrarPopupModificarCocinaStaff(actionEvent)}" styleClass="link" />
+                                        </p:column>
+                                        <p:column>
+                                            <h:commandLink value="#{msgs['sistema.eliminar']}" actionListener="#{staffBean.mostrarPopupEliminarCocinaStaff(actionEvent)}" styleClass="link" />
+                                        </p:column>
+                                        <p:column>
+                                            <h:commandLink value="#{msgs['sgl.staff.titulo.caracteristicas']}" actionListener="#{staffBean.mostrarPopupCaracteristicasCocinaStaff(actionEvent)}" styleClass="link" />
+                                        </p:column>                                         
+                                        <p:column>
+                                            <h:commandLink value="#{msgs['sistema.detalle']}"  actionListener="#{staffBean.mostrarPopupDetalleCocinaStaff(actionEvent)}" styleClass="link" />
+                                        </p:column>
+                                    </p:dataTable>                            
+                                </h:panelGrid>                            
+                            </p:tab  >
+
+                            </ace:accordion>                        
+                    </h:form>                    
+                </h:panelGroup>
+
+                <!-- Agregar contrato -->                
+                <h:form styleClass="textoIzquierda">
+                    <p:dialog  header="#{msgs['sgl.staff.contrato.create']}"   >
+                        <f:facet name="header"><h:outputText value="#{msgs['sgl.staff.contrato.datoscontrato']}" /></f:facet>   
+                        <h:panelGrid>
+                            <h:outputText value="#{staffBean.mensajeError}" style="color:Red;"/>
+                        </h:panelGrid>
+                        <h:panelGrid columns="2" >
+                            <h:outputLabel value="Proveedor : " />      
+                            <p:selectOneMenu  id="userDatos" 
+                                              value="#{staffBean.nombreProveedorSeleccionado}"
+                                              valueChangeListener="#{staffBean.proveedorListener}">
+                                <f:selectItems value="#{staffBean.listaProveedor}"/>
+                                <f:facet name="selectInputText">
+                                    <h:outputText id="autoCompleteDatos" value="#{userTDatos}"/>
+                                </f:facet>
+                            </p:selectOneMenu>   
+                        </h:panelGrid>
+                        <h:panelGrid  >                        
+                            <p:dataTable  id="dataGridConvenios" rows="10" value="#{staffBean.conveniosProveedor}"
+                                          var="data" >
+                                <p:column>
+                                    <f:facet name="header">
+                                        <h:outputText value="Código"/>
+                                    </f:facet>
+                                    <h:outputText value="#{data['codigo']}" />
+                                </p:column>  
+                                <p:column>
+                                    <f:facet name="header">
+                                        <h:outputText value="Fecha Inicio"/>
+                                    </f:facet>
+                                    <h:outputText value="#{data['fechaInicio']}">                                    
+                                        <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                    </h:outputText>
+                                </p:column>                                       
+                                <p:column>
+                                    <f:facet name="header">
+                                        <h:outputText value="Fecha Fin"/>
+                                    </f:facet>
+                                    <h:outputText value="#{data['fechaVencimiento']}">
+                                        <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                    </h:outputText>
+                                </p:column>                                       
+                                <p:column>
+                                    <p:commandLink value="#{msgs['sistema.seleccionar']}" actionListener="#{staffBean.addConvenioToProveedorToStaff(actionEvent)}" styleClass="link" />
+                                </p:column>                                                                                                                                                              
+                            </p:dataTable>  
+                        </h:panelGrid>                        
+                        <center>
+                            <h:panelGrid columns="2">
+                                <p:commandButton value="#{msgs['sistema.cerrar']}" actionListener="#{staffBean.ocultarPopupAgregarConvenioProveedor(actionEvent)}" styleClass="btn btn-default"/>                                
+                            </h:panelGrid>            
+                        </center>                       
+                        <h:messages infoClass="textoMensajeError"/>
+                        </my:panelPopup>
+                </h:form>
+
+                <!-- Eliminar Contrato -->
+                <h:form styleClass="textoIzquierda">
+                    <p:dialog  header="Eliminar convenio" >
+                        <center><h:messages errorClass="mensaje" infoClass="mensaje"/></center>  
+                        <h:panelGrid columns="3">                            
+                            <h:outputText value="#{msgs['sgl.staff.contrato.eliminar']}" style="font-weight: bold;" />                            
+                        </h:panelGrid>
+                        <center>
+                            <h:panelGrid columns="2">
+                                <p:commandButton value="#{msgs['sistema.eliminar']}" actionListener="#{staffBean.deleteRelacionHistorialConvenio(actionEvent)}" styleClass="btn btn-info"/>
+                                <p:commandButton value="#{msgs['sistema.cancelar']}" actionListener="#{staffBean.ocultarPopupEliminarConvenio(actionEvent)}" styleClass="btn btn-default"/>        
+                            </h:panelGrid>                        
+                        </center>
+                        </my:panelPopup>
+                </h:form>
+
+                <!-- Historial de convenios -->                    
+                <h:form styleClass="textoIzquierda">
+                    <p:dialog  header="#{msgs['sgl.staff.contrato.ver.historial']}"                         >                       
+                        <h:panelGrid>
+                            <p:dataTable  id="dataGridHistorial" rows="10" value="#{staffBean.todoHistorialModelConvenios}" 
+                                          var="data">                                       
+                                <p:column>
+                                    <f:facet name="header"><h:outputText value="Proveedor"/></f:facet>
+                                    <h:outputText value="#{data['convenio'].proveedor.nombre}"/>
+                                </p:column>
+                                <p:column>
+                                    <f:facet name="header"><h:outputText value="Código"/></f:facet>
+                                    <h:outputText value="#{data['convenio'].codigo}"/>
+                                </p:column>
+                                <p:column>
+                                    <f:facet name="header"><h:outputText value="Fecha Inicio"/></f:facet>
+                                    <h:outputText value="#{data['convenio'].fechaInicio}">
+                                        <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                    </h:outputText>
+                                </p:column>
+                                <p:column>
+                                    <f:facet name="header"><h:outputText value="Fecha Fin"/></f:facet>
+                                    <h:outputText value="#{data['convenio'].fechaVencimiento}">
+                                        <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                    </h:outputText>
+                                </p:column>                                 
+                                <p:column>
+                                    <f:facet name="header"><h:outputText value="Vigente"/></f:facet>
+                                    <center>
+                                        <h:graphicImage rendered="#{data['vigente'] eq 'True'}" url="#{msgs['sgl.ruta.imagen']}icon_check_good.gif"/>
+                                    </center>
+                                </p:column>                               
+                                <p:column>
+                                    <center>
+                                        <p:commandLink value="Datos del convenio" actionListener="#{staffBean.abrirAdjuntoConvenioHistorial(event)}" styleClass="link"/>
+                                    </center>
+                                </p:column>
+                            </p:dataTable>
+                        </h:panelGrid>
+                        <h:panelGrid>
+                            <h:panelGrid columns="8">
+                                <h:panelGrid >                                        
+                                    <h:outputText value="No. convenio"/>
+                                    <h:outputLabel value="#{staffBean.convenioSeleccionado.codigo}"/>
+                                </h:panelGrid>
+                                <h:panelGrid >
+                                    <h:outputText value="Proveedor"/>
+                                    <h:outputLabel value="#{staffBean.convenioSeleccionado.proveedor.nombre}"/>
+                                </h:panelGrid>
+                                <h:panelGrid >                                        
+                                    <h:outputText value="Inicio"/>
+                                    <h:outputLabel value="#{staffBean.convenioSeleccionado.fechaInicio}">
+                                        <f:convertDateTime pattern="dd/MM/yyyy" timeZone="America/Mexico_City"/>
+                                    </h:outputLabel>
+                                </h:panelGrid>   
+                                <h:panelGrid>
+                                    <h:outputText value="Fin"/>
+                                    <h:outputLabel value="#{staffBean.convenioSeleccionado.fechaVencimiento}">
+                                        <f:convertDateTime pattern="dd/MM/yyyy" timeZone="America/Mexico_City"/>
+                                    </h:outputLabel>
+                                </h:panelGrid>
+                                <h:panelGrid >                                                                                
+                                    <h:outputText value="Monto"/>
+                                    <h:outputLabel value="#{staffBean.convenioSeleccionado.monto}">                                        
+                                    </h:outputLabel>
+                                </h:panelGrid>
+                                <h:panelGrid>
+                                    <h:outputText value="Moneda"/>
+                                    <h:outputLabel value="#{staffBean.convenioSeleccionado.moneda.siglas}"/>
+                                </h:panelGrid>
+                            </h:panelGrid>
+                        </h:panelGrid>
+                        <p:dataTable showGridlines="true" size="small"  id="dtConArc" value="#{staffBean.traerAdjuntoContrato}" var="a" rows="7" >
+                            <f:facet name="header"><h:outputText value="Lista de archivos"/> </f:facet>                                    
+                            <p:column>
+                                <f:facet name="header"><h:outputText value="Archivo"/></f:facet>
+                                <h:outputText value="#{a.nombre}"/>
+                            </p:column>
+                            <p:column>
+                                <h:outputLink target="_blank"  value="/ServiciosGenerales/AbrirArchivo?ZWZ2W=#{a.id}&amp;ZWZ3W=#{a.uuid}">
+                                    <center><h:graphicImage url="#{msgs['sgl.ruta.imagen']}icon_attach.gif"  alt="Abrir archivo"/></center>
+                                </h:outputLink>
+                            </p:column>   
+                        </p:dataTable>
+                        <br/>
+                        <center>
+                            <h:panelGrid>
+                                <p:commandLink value="#{msgs['sistema.cerrar']}" actionListener="#{staffBean.ocultarPopupVerHistorialConvenios(actionEvent)}"  styleClass="btn btn-default"/>        
+                            </h:panelGrid>
+                        </center>
+                        </my:panelPopup>
+                </h:form>
+
+                <!-- Popup Abrir archivo del contrato vigente-->               
+                <h:form >
+                    <p:dialog   style="background: #FFFFFF;" visible="#{staffBean.mrPopupAbrirArchivo}"
+                                draggable="false" modal="true">
+                        <f:facet name="header">
+                            <h:panelGroup > 
+                                <h:outputText  value="Abrir archivo convenio"
+                                               style="float: left; padding: 4px;text-align: center; vertical-align: middle;font: 11px;color: #484848; font-weight: bold;"/>
+                            </h:panelGroup>
+                        </f:facet>
+                        <f:facet name="body">
+                            <h:panelGroup>
+                                <h:panelGrid columns="1">
+                                    <p:dataTable id="dataGridAdjunto" rows="10" value="#{staffBean.traerArchivoConvenioStafffHistorial}"
+                                                 var="data">
+                                        <p:column>
+                                            <f:facet name="header">
+                                                <h:outputText value="convenio"/>
+                                            </f:facet>
+                                            <h:outputText value="#{data['nombre']}" />
+                                        </p:column>                                                                                                                                                           
+                                        <p:column>                                            
+                                            <h:outputLink value="/ServiciosGenerales/AbrirArchivo?ZWZ2W=#{data.id}&amp;ZWZ3W=#{data.uuid}" target="_blank">
+                                                <h:graphicImage url="#{msgs['sgl.ruta.imagen']}icon_attach.gif"  />
+                                            </h:outputLink>   
+                                        </p:column>                                                                                                                                                                                                                                         
+                                    </p:dataTable> 
+                                </h:panelGrid>
+                                <br/>
+                                <center>
+                                    <h:panelGrid>
+                                        <p:commandLink value="Cerrar" styleClass="btn btn-default" actionListener="#{staffBean.ocultarPopupAbrirArchivo(actionEvent)}"/>
+                                    </h:panelGrid>                                        
+                                </center>
+                            </h:panelGroup> 
+                        </f:facet>
+                        </<p:dialog >
+                            </h:form>     
+
+                            <!-- Popup Abrir contrato del Historial -->                
+                            <h:form >
+                                <p:dialog   style="background: #FFFFFF;" visible="#{staffBean.mrPopupAbrirArchivoTodoHistorial}"
+                                            draggable="false" modal="true">
+                                    <f:facet name="header">
+                                        <h:panelGroup > 
+                                            <h:outputText  value="Abrir archivo convenio"
+                                                           style="float: left; padding: 4px;text-align: center; vertical-align: middle;font: 11px;color: #484848; font-weight: bold;"/>
+                                        </h:panelGroup>
+                                    </f:facet>
+                                    <f:facet name="body">
+                                        <h:panelGroup>
+                                            <h:panelGrid columns="1">
+                                                <p:dataTable id="dataGridAdjunto" rows="10" value="#{staffBean.traerArchivoConvenioStafffHistorial}"
+                                                             var="data">                                       
+                                                    <p:column>
+                                                        <f:facet name="header">
+                                                            <h:outputText value="Convenio"/>
+                                                        </f:facet>
+                                                        <h:outputText value="#{data['nombre']}" />
+                                                    </p:column>                                                                                                                                                           
+                                                    <p:column>                                            
+                                                        <h:outputLink value="/ServiciosGenerales/AbrirArchivo?ZWZ2W=#{data.id}&amp;ZWZ3W=#{data.uuid}" target="_blank">
+                                                            <h:graphicImage url="#{msgs['sgl.ruta.imagen']}icon_attach.gif"  />
+                                                        </h:outputLink>   
+                                                    </p:column>                                                                                                                                                                                                                                         
+                                                </p:dataTable> 
+                                            </h:panelGrid>
+                                            <br/>
+                                            <center>
+                                                <h:panelGrid>
+                                                    <p:commandLink value="Cerrar" styleClass="btn btn-default" actionListener="#{staffBean.ocultarPopupAbrirArchivoTodoHistorial(actionEvent)}"/>
+                                                </h:panelGrid>                                        
+                                            </center>
+                                        </h:panelGroup> 
+                                    </f:facet>
+                                    </<p:dialog >
+                                        </h:form>
+
+                                        <!-- Crear Habitación -->
+                                        <h:form id="popupAgregarHabitacion" styleClass="textoIzquierda" >
+                                            <p:dialog  header="#{msgs['sgl.staff.habitacion.crear']}">
+                                                <h:panelGrid columns="2" styleClass="bordePanelGrid"  >
+                                                    <f:facet name="header"><h:outputText value="Datos Habitación" /></f:facet>
+                                                    <h:outputLabel value="#{msgs['sgl.staff']}: " />
+                                                    <h:outputText id="nombreStaff" value="#{staffBean.staff.nombre}" style="width: 200px" styleClass="f11" />
+
+                                                    <h:panelGrid columns="2">
+                                                        <h:outputLabel value="#{msgs['sgl.staff.habitacion.nombre']}: " />
+                                                        <h:outputText value="*" styleClass="textoRojo" />
+                                                    </h:panelGrid>
+                                                    <h:panelGrid columns="2">
+                                                        <p:inputText id="nombreHabitacion" value="#{staffBean.habitacion.nombre}" style="width: 200px" styleClass="f11" maxlength="32" required="true" requiredMessage="Nombre es requerido" />
+                                                        <h:message for="nombreHabitacion" errorClass="mensaje" infoClass="mensaje"/>
+                                                    </h:panelGrid>
+
+                                                    <h:panelGrid columns="2">
+                                                        <h:outputLabel value="#{msgs['sgl.staff.habitacion.numeroHabitacion']}: " />
+                                                        <h:outputText value="*" styleClass="textoRojo" />
+                                                    </h:panelGrid>
+                                                    <h:panelGrid columns="2">
+                                                        <p:inputText id="numeroHabitacion" value="#{staffBean.habitacion.numeroHabitacion}" style="width: 200px" styleClass="f11" maxlength="8" required="true" requiredMessage="Número es requerido" />
+                                                        <h:message for="numeroHabitacion" errorClass="mensaje" infoClass="mensaje"/>
+                                                    </h:panelGrid>                            
+                                                </h:panelGrid>
+                                                <center>
+                                                    <h:panelGrid columns="2">
+                                                        <p:commandButton value="#{msgs['sistema.agregar']}" actionListener="#{staffBean.addHabitacionToStaff(actionEvent)}" styleClass="btn btn-info"/>
+                                                        <p:commandButton value="#{msgs['sistema.cancelar']}" actionListener="#{staffBean.ocultarPopupAgregarHabitacionStaff(actionEvent)}" immediate="true" styleClass="btn btn-default"/>        
+                                                    </h:panelGrid>            
+                                                </center>
+                                                </my:panelPopup>
+                                        </h:form>
+
+                                        <!-- Crear Gimnasio -->
+                                        <h:form id="formCrearGimnasio">
+                                            <p:dialog  header="#{msgs['sgl.staff.gimnasio.crear']}">
+
+                                                <h:panelGrid columns="2" styleClass="bordePanelGrid"  >
+                                                    <h:outputLabel value="#{msgs['sgl.staff']}: " />
+                                                    <h:outputText  value="#{staffBean.staff.nombre}" style="width: 200px" styleClass="f11" />                            
+
+                                                    <h:panelGrid columns="2">
+                                                        <h:outputLabel value="#{msgs['sgl.staff.gimnasio.nombre']}: " />
+                                                        <h:outputText value="*" styleClass="textoRojo" />
+                                                    </h:panelGrid>
+                                                    <h:panelGrid columns="2">
+                                                        <p:inputText id="nombreGym" value="#{staffBean.gimnasio.nombre}" 
+                                                                     style="width: 200px" styleClass="f11" maxlength="56" required="true" 
+                                                                     requiredMessage="Nombre es requerido" />
+                                                        <h:message for="nombreGimnasio" errorClass="mensaje" infoClass="mensaje"/>
+                                                    </h:panelGrid>                            
+                                                </h:panelGrid>
+                                                <center>
+                                                    <h:panelGrid columns="2">
+                                                        <p:commandButton value="#{msgs['sistema.agregar']}" actionListener="#{staffBean.addGimnasioToStaff(actionEvent)}" styleClass="btn btn-info"/>
+                                                        <p:commandButton value="#{msgs['sistema.cancelar']}" actionListener="#{staffBean.ocultarPopupAgregarGimnasioStaff(actionEvent)}" immediate="true" styleClass="btn btn-default"/>        
+                                                    </h:panelGrid>            
+                                                </center>
+                                                </my:panelPopup>
+                                        </h:form>
+
+                                        <!-- Crear Cocina -->
+                                        <h:form id="formPopupCrearCocina">
+                                            <p:dialog  header="#{msgs['sgl.staff.cocina.crear']}" >
+
+                                                <h:panelGrid columns="2" styleClass="bordePanelGrid"  >
+                                                    <h:outputLabel value="#{msgs['sgl.staff']}: " />
+                                                    <h:outputText id="nombreStaff" value="#{staffBean.staff.nombre}" style="width: 200px" styleClass="f11" />                            
+
+                                                    <h:panelGrid columns="2">
+                                                        <h:outputLabel value="#{msgs['sgl.staff.cocina.nombre']}: " />
+                                                        <h:outputText value="*" styleClass="textoRojo" />
+                                                    </h:panelGrid>
+                                                    <h:panelGrid columns="2">
+                                                        <p:inputText id="nombreCocina" value="#{staffBean.cocina.nombre}"  style="width: 200px" styleClass="f11" maxlength="56" required="true" requiredMessage="Nombre es requerido" />
+                                                        <h:message for="nombreCocina" errorClass="mensaje" infoClass="mensaje"/>
+                                                    </h:panelGrid>                            
+                                                </h:panelGrid>
+                                                <center>
+                                                    <h:panelGrid columns="2">
+                                                        <p:commandButton value="#{msgs['sistema.agregar']}" actionListener="#{staffBean.addCocinaToStaff(actionEvent)}" styleClass="btn btn-info"/>
+                                                        <p:commandButton value="#{msgs['sistema.cancelar']}" actionListener="#{staffBean.ocultarPopupAgregarCocinaStaff(actionEvent)}" immediate="true" styleClass="btn btn-default"/>        
+                                                    </h:panelGrid>            
+                                                </center>
+                                                </my:panelPopup>
+                                        </h:form> 
+
+                                        <!-- Actualizar Habitación -->
+                                        <h:form id="formActualizarHabitacionStaff">
+                                            <p:dialog  header="#{msgs['sistema.actualizar']} #{msgs['sgl.staff.habitacion']}" 
+                                                       >
+                                                <h:panelGrid columns="2" styleClass="bordePanelGrid"  >
+                                                    <h:outputLabel value="#{msgs['sgl.staff']}: " />
+                                                    <h:outputText id="nombreStaff" value="#{staffBean.staff.nombre}" style="width: 200px" styleClass="f11" />
+
+                                                    <h:panelGrid columns="2">
+                                                        <h:outputLabel value="#{msgs['sgl.staff.habitacion.nombre']}: " />
+                                                        <h:outputText value="*" styleClass="textoRojo" />
+                                                    </h:panelGrid>
+                                                    <h:panelGrid columns="2">
+                                                        <p:inputText id="nombreHabitacion" value="#{staffBean.habitacion.nombre}" style="width: 200px" styleClass="f11" maxlength="32" required="true" requiredMessage="Nombre es requerido" />
+                                                        <h:message for="nombreHabitacion" errorClass="mensaje" infoClass="mensaje"/>
+                                                    </h:panelGrid>
+
+                                                    <h:panelGrid columns="2">
+                                                        <h:outputLabel value="#{msgs['sgl.staff.habitacion.numeroHabitacion']}: " />
+                                                        <h:outputText value="*" styleClass="textoRojo" />
+                                                    </h:panelGrid>
+                                                    <h:panelGrid columns="2">
+                                                        <p:inputText id="numeroHabitacion" value="#{staffBean.habitacion.numeroHabitacion}" style="width: 200px" styleClass="f11" maxlength="8" required="true" requiredMessage="Número es requerido" />
+                                                        <h:message for="numeroHabitacion" errorClass="mensaje" infoClass="mensaje"/>
+                                                    </h:panelGrid>                            
+                                                </h:panelGrid>
+                                                <center>
+                                                    <h:panelGrid columns="2">
+                                                        <p:commandButton value="#{msgs['sistema.actualizar']}" actionListener="#{staffBean.updateHabitacionStaff(actionEvent)}" styleClass="btn btn-info"/>
+                                                        <p:commandButton value="#{msgs['sistema.cancelar']}" actionListener="#{staffBean.ocultarPopupModificarHabitacionStaff(actionEvent)}" immediate="true" styleClass="btn btn-default"/>        
+                                                    </h:panelGrid>                        
+                                                </center>
+                                                </my:panelPopup>
+                                        </h:form>
+
+                                        <!-- Actualizar Gimnasio -->
+                                        <h:form id="formActualizarGimnasio">
+                                            <p:dialog  header="#{msgs['sistema.actualizar']} #{msgs['sgl.staff.gimnasio']}" >
+                                                <h:panelGrid columns="2" styleClass="bordePanelGrid"  >
+                                                    <h:outputLabel value="#{msgs['sgl.staff']}: " />
+                                                    <h:outputText id="nombreStaff" value="#{staffBean.staff.nombre}" style="width: 200px" styleClass="f11" />                            
+
+                                                    <h:panelGrid columns="2">
+                                                        <h:outputLabel value="#{msgs['sgl.staff.gimnasio.nombre']}: " />
+                                                        <h:outputText value="*" styleClass="textoRojo" />
+                                                    </h:panelGrid>
+                                                    <h:panelGrid columns="2">
+                                                        <p:inputText id="nombreGimnasio" value="#{staffBean.gimnasio.nombre}" 
+                                                                     style="width: 200px" styleClass="f11" maxlength="56" required="true" requiredMessage="Nombre es requerido" />
+                                                        <h:message for="nombreGimnasio" errorClass="mensaje" infoClass="mensaje"/>
+                                                    </h:panelGrid>                            
+                                                </h:panelGrid>
+                                                <center>
+                                                    <h:panelGrid columns="2">
+                                                        <p:commandButton value="#{msgs['sistema.actualizar']}" actionListener="#{staffBean.updateGimnasioStaff(actionEvent)}" styleClass="btn btn-info"/>
+                                                        <p:commandButton value="#{msgs['sistema.cancelar']}" actionListener="#{staffBean.ocultarPopupModificarGimnasioStaff(actionEvent)}" immediate="true" styleClass="btn btn-default"/>        
+                                                    </h:panelGrid>                        
+                                                </center>
+                                                </my:panelPopup>
+                                        </h:form>
+
+                                        <!-- Actualizar Cocina -->
+                                        <h:form id="formPopupActualizarCocina">
+                                            <p:dialog  header="#{msgs['sistema.actualizar']} #{msgs['sgl.staff.cocina']}">
+                                                <h:panelGrid columns="2" styleClass="bordePanelGrid"  >
+                                                    <h:outputLabel value="#{msgs['sgl.staff']}: " />
+                                                    <h:outputText id="nombreStaff" value="#{staffBean.staff.nombre}" style="width: 200px" styleClass="f11" />                            
+
+                                                    <h:panelGrid columns="2">
+                                                        <h:outputLabel value="#{msgs['sgl.staff.cocina.nombre']}: " />
+                                                        <h:outputText value="*" styleClass="textoRojo" />
+                                                    </h:panelGrid>
+                                                    <h:panelGrid columns="2">
+                                                        <p:inputText id="nombreCocina" value="#{staffBean.cocina.nombre}"  style="width: 200px" styleClass="f11" maxlength="56" required="true" requiredMessage="Nombre es requerido" />
+                                                        <h:message for="nombreCocina" errorClass="mensaje" infoClass="mensaje"/>
+                                                    </h:panelGrid>                            
+                                                </h:panelGrid>
+                                                <center>
+                                                    <h:panelGrid columns="2">
+                                                        <p:commandButton value="#{msgs['sistema.actualizar']}" actionListener="#{staffBean.updateCocinaStaff(actionEvent)}" styleClass="btn btn-info"/>
+                                                        <p:commandButton value="#{msgs['sistema.cancelar']}" actionListener="#{staffBean.ocultarPopupModificarCocinaStaff(actionEvent)}" immediate="true" styleClass="btn btn-default"/>        
+                                                    </h:panelGrid>                        
+                                                </center>
+                                                </my:panelPopup>
+                                        </h:form>
+
+                                        <!-- Actualizar Datos Generales -->
+                                        <h:form id="formActualizarDatosGeneralesStaff">
+                                            <p:dialog  header="#{msgs['sistema.actualizar']} #{msgs['sgl.staff.create.datosGenerales']}" >
+                                                <h:panelGrid columns="1" >
+                                                    <h:panelGrid columns="2" styleClass="bordePanelGrid" >
+                                                        <f:facet name="header"><h:outputText value="#{msgs['sgl.staff.create.datosGenerales']}" /></f:facet>
+
+                                                        <h:panelGrid columns="2">
+                                                            <h:outputLabel value="#{msgs['sgl.staff.nombreStaff']}: "/>
+                                                            <h:outputText value="*" styleClass="textoRojo" />
+                                                        </h:panelGrid>
+                                                        <h:panelGrid columns="2">
+                                                            <p:inputText id="nombreStaff" value="#{staffBean.staff.nombre}" style="width: 200px" styleClass="f11" maxlength="32" required="true" requiredMessage="Nombre es requerido" />
+                                                            <h:message for="nombreStaff" errorClass="mensaje" infoClass="mensaje"/>
+                                                        </h:panelGrid>
+
+                                                        <h:panelGrid columns="2">
+                                                            <h:outputLabel value="#{msgs['sgl.staff.numeroStaff']}: "/>
+                                                            <h:outputText value="*" styleClass="textoRojo" />
+                                                        </h:panelGrid>
+                                                        <h:panelGrid columns="2">
+                                                            <p:inputText id="numeroStaff" value="#{staffBean.staff.numeroStaff}" style="width: 200px" styleClass="f11" maxlength="8" required="true" requiredMessage="Número Staff es requerido" />                                
+                                                            <h:message for="numeroStaff" errorClass="mensaje" infoClass="mensaje"/>
+                                                        </h:panelGrid>
+
+                                                        <h:outputLabel value="#{msgs['sgl.staff.telefonoStaff']}: "/>
+                                                        <p:inputText id="telefonoStaff" value="#{staffBean.staff.numeroTelefono}" style="width: 200px" styleClass="f11" maxlength="15" />                                
+                                                    </h:panelGrid>
+
+                                                    <br />
+
+                                                    <h:panelGrid columns="2" styleClass="bordePanelGrid" >
+                                                        <f:facet name="header"><h:outputText value="#{msgs['sgl.staff.create.direccion']}" /></f:facet>
+                                                        <h:panelGrid columns="2">
+                                                            <h:outputLabel value="#{msgs['sgl.direccion.pais']}: "/>
+                                                            <h:outputText value="*" styleClass="textoRojo" />
+                                                        </h:panelGrid>
+                                                        <h:panelGrid columns="2">                                    
+                                                            <p:selectOneMenu id="paisM" value="#{staffBean.idPais}" >
+                                                                <f:selectItem itemLabel="#{msgs['sistema.seleccionar.combo']}" itemValue="-1"/>
+                                                                <f:selectItems value="#{staffBean.listaPais}"/>
+                                                            </p:selectOneMenu>
+                                                            <!--p:inputText id="pais" value="#{oficinaBean.sgDireccion.pais}" required="true" requiredMessage="País es requerido" style="width: 200px" /-->
+                                                            <h:message for="paisM" errorClass="errorMessage" infoClass="mensaje"/>
+                                                            <!--h:message for="pais" errorClass="mensaje" infoClass="mensaje"/-->
+                                                        </h:panelGrid>
+
+                                                        <h:panelGrid columns="2">
+                                                            <h:outputLabel value="#{msgs['sgl.direccion.estado']}: "/>
+                                                            <h:outputText value="*" styleClass="textoRojo" />
+                                                        </h:panelGrid>
+                                                        <h:panelGrid columns="2">
+                                                            <p:inputText id="estado" value="#{staffBean.staff.sgDireccion.estado}" style="width: 200px" styleClass="f11" maxlength="64" required="true" requiredMessage="Estado es requerido" />                                
+                                                            <h:message for="estado" errorClass="mensaje" infoClass="mensaje"/>
+                                                        </h:panelGrid>
+
+                                                        <h:panelGrid columns="2">
+                                                            <h:outputLabel value="#{msgs['sgl.direccion.municipio']}: "/>
+                                                            <h:outputText value="*" styleClass="textoRojo" />
+                                                        </h:panelGrid>
+                                                        <h:panelGrid columns="2">
+                                                            <p:inputText id="municipio" value="#{staffBean.staff.sgDireccion.municipio}" style="width: 200px" styleClass="f11" maxlength="128" required="true" requiredMessage="Municipio es requerido"  />
+                                                            <h:message for="municipio" errorClass="mensaje" infoClass="mensaje"/>
+                                                        </h:panelGrid>
+
+                                                        <h:panelGrid columns="2">
+                                                            <h:outputLabel value="#{msgs['sgl.direccion.ciudad']}: "/>
+                                                            <h:outputText value="*" styleClass="textoRojo" />
+                                                        </h:panelGrid>
+                                                        <h:panelGrid columns="2">
+                                                            <p:inputText id="ciudad" value="#{staffBean.staff.sgDireccion.ciudad}" style="width: 200px" styleClass="f11" maxlength="128" required="true" requiredMessage="Ciudad es requerido"  />
+                                                            <h:message for="ciudad" errorClass="mensaje" infoClass="mensaje"/>
+                                                        </h:panelGrid>                                
+
+                                                        <h:panelGrid columns="2">
+                                                            <h:outputLabel value="#{msgs['sgl.direccion.colonia']}: "/>
+                                                            <h:outputText value="*" styleClass="textoRojo" />
+                                                        </h:panelGrid>
+                                                        <h:panelGrid columns="2">
+                                                            <p:inputText id="colonia" value="#{staffBean.staff.sgDireccion.colonia}" style="width: 200px" styleClass="f11" maxlength="128" required="true" requiredMessage="Colonia es requerido" />             
+                                                            <h:message for="colonia" errorClass="mensaje" infoClass="mensaje"/>
+                                                        </h:panelGrid>
+
+                                                        <h:panelGrid columns="2">
+                                                            <h:outputLabel value="#{msgs['sgl.direccion.calle']}: "/>
+                                                            <h:outputText value="*" styleClass="textoRojo" />
+                                                        </h:panelGrid>
+                                                        <h:panelGrid columns="2">
+                                                            <p:inputText id="calle" value="#{staffBean.staff.sgDireccion.calle}" style="width: 200px" styleClass="f11" maxlength="128" required="true" requiredMessage="Calle es requerido" />             
+                                                            <h:message for="calle" errorClass="mensaje" infoClass="mensaje"/>
+                                                        </h:panelGrid>
+
+                                                        <h:panelGrid columns="2">
+                                                            <h:outputLabel value="#{msgs['sgl.direccion.numeroExterior']}: "/>
+                                                            <h:outputText value="*" styleClass="textoRojo" />    
+                                                        </h:panelGrid>
+                                                        <h:panelGrid columns="2">
+                                                            <p:inputText id="numeroExterior" value="#{staffBean.staff.sgDireccion.numeroExterior}" style="width: 200px" styleClass="f11" maxlength="8" required="true" requiredMessage="Número Exterior es requerido" /> 
+                                                            <h:message for="numeroExterior" errorClass="mensaje" infoClass="mensaje"/>
+                                                        </h:panelGrid>
+
+                                                        <h:outputLabel value="#{msgs['sgl.direccion.numeroInterior']}: "/>
+                                                        <p:inputText id="numeroInterior" value="#{staffBean.staff.sgDireccion.numeroInterior}" style="width: 200px" styleClass="f11" maxlength="8" />
+
+                                                        <h:outputLabel value="#{msgs['sgl.direccion.piso']}: "/>
+                                                        <p:inputText id="piso" value="#{staffBean.staff.sgDireccion.piso}" style="width: 200px" styleClass="f11" maxlength="8" />
+
+                                                        <h:panelGrid columns="2">
+                                                            <h:outputLabel value="#{msgs['sgl.direccion.codigoPostal']}: "/>
+                                                            <h:outputText value="*" styleClass="textoRojo" /> 
+                                                        </h:panelGrid>
+                                                        <h:panelGrid columns="2">
+                                                            <p:inputText id="codigoPostal" value="#{staffBean.staff.sgDireccion.codigoPostal}" style="width: 200px" styleClass="f11" maxlength="8" required="true" requiredMessage="Código Postal es requerido" />
+                                                            <h:message for="codigoPostal" errorClass="mensaje" infoClass="mensaje"/>
+                                                        </h:panelGrid>
+
+                                                    </h:panelGrid>
+                                                </h:panelGrid>                        
+
+                                                <center>
+                                                    <h:panelGrid columns="2">
+                                                        <p:commandButton value="#{msgs['sistema.actualizar']}" actionListener="#{staffBean.updateStaff(actionEvent)}" styleClass="btn btn-info"/>
+                                                        <p:commandButton value="#{msgs['sistema.cancelar']}" actionListener="#{staffBean.ocultarPopupModificarGeneralesStaff(actionEvent)}" immediate="true" styleClass="btn btn-default"/>        
+                                                    </h:panelGrid>                        
+                                                </center>
+                                                </my:panelPopup>
+                                        </h:form> 
+
+                                        <!-- Eliminar Habitación-->
+                                        <h:form>
+                                            <p:dialog  header="#{msgs['sistema.eliminar']} #{msgs['sgl.staff.habitacion']}" >
+                                                <center><h:messages errorClass="mensaje" infoClass="mensaje"/></center>  
+
+                                                <h:panelGrid>
+                                                    <h:outputText value="#{msgs['sgl.staff.habitacion.mensaje.eliminar1']}" styleClass="textoRojo" style="font-size: 9px;" />
+                                                    <h:outputText value="#{msgs['sgl.staff.habitacion.mensaje.eliminar2']}" styleClass="textoRojo" style="font-size: 9px;" />
+                                                </h:panelGrid>                         
+
+                                                <h:panelGrid columns="3">
+                                                    <h:outputText value="#{msgs['sgl.staff.habitacion.mensaje.eliminar']} " />
+                                                    <h:outputText value="#{staffBean.habitacion.nombre}" style="font-weight: bold;" />
+                                                    <h:outputText value="?" />
+                                                </h:panelGrid>
+
+                                                <center>
+                                                    <h:panelGrid columns="2">
+                                                        <p:commandButton value="#{msgs['sistema.eliminar']}" actionListener="#{staffBean.deleteHabitacionStaff(actionEvent)}" styleClass="btn btn-info"/>
+                                                        <p:commandButton value="#{msgs['sistema.cancelar']}" actionListener="#{staffBean.ocultarPopupEliminarHabitacionStaff(actionEvent)}" styleClass="btn btn-default"/>        
+                                                    </h:panelGrid>                        
+                                                </center>
+                                                </my:panelPopup>
+                                        </h:form> 
+
+                                        <!-- Eliminar Gimnasio -->
+                                        <h:form>
+                                            <p:dialog  header="#{msgs['sistema.eliminar']} #{msgs['sgl.staff.gimnasio']}">
+                                                <center><h:messages errorClass="mensaje" infoClass="mensaje"/></center>  
+
+                                                <h:panelGrid>
+                                                    <h:outputText value="#{msgs['sgl.staff.gimnasio.mensaje.eliminar1']}" styleClass="textoRojo" style="font-size: 9px;" />
+                                                    <h:outputText value="#{msgs['sgl.staff.gimnasio.mensaje.eliminar2']}" styleClass="textoRojo" style="font-size: 9px;" />
+                                                </h:panelGrid>                        
+
+                                                <h:panelGrid columns="3">
+                                                    <h:outputText value="#{msgs['sgl.staff.gimnasio.mensaje.eliminar']} " />
+                                                    <h:outputText value="#{staffBean.gimnasio.nombre}" style="font-weight: bold;" />
+                                                    <h:outputText value="?" />
+                                                </h:panelGrid>
+
+                                                <center>
+                                                    <h:panelGrid columns="2">
+                                                        <p:commandButton value="#{msgs['sistema.eliminar']}" actionListener="#{staffBean.deleteGimnasioStaff(actionEvent)}" styleClass="btn btn-info"/>
+                                                        <p:commandButton value="#{msgs['sistema.cancelar']}" actionListener="#{staffBean.ocultarPopupEliminarGimnasioStaff(actionEvent)}" styleClass="btn btn-default"/>        
+                                                    </h:panelGrid>                        
+                                                </center>
+                                                </my:panelPopup>
+                                        </h:form> 
+
+                                        <!-- Eliminar Cocina -->
+                                        <h:form>
+                                            <p:dialog  header="#{msgs['sistema.eliminar']} #{msgs['sgl.staff.cocina']}" >
+                                                <center><h:messages errorClass="mensaje" infoClass="mensaje"/></center>  
+
+                                                <h:panelGrid>
+                                                    <h:outputText value="#{msgs['sgl.staff.cocina.mensaje.eliminar1']}" styleClass="textoRojo" style="font-size: 9px;" />
+                                                    <h:outputText value="#{msgs['sgl.staff.cocina.mensaje.eliminar2']}" styleClass="textoRojo" style="font-size: 9px;" />
+                                                </h:panelGrid>                           
+
+                                                <h:panelGrid columns="3">
+                                                    <h:outputText value="#{msgs['sgl.staff.cocina.mensaje.eliminar']} " />
+                                                    <h:outputText value="#{staffBean.cocina.nombre}" style="font-weight: bold;" />
+                                                    <h:outputText value="?" />
+                                                </h:panelGrid>
+
+                                                <center>
+                                                    <h:panelGrid columns="2">
+                                                        <p:commandButton value="#{msgs['sistema.eliminar']}" actionListener="#{staffBean.deleteCocinaStaff(actionEvent)}" styleClass="btn btn-info"/>
+                                                        <p:commandButton value="#{msgs['sistema.cancelar']}" actionListener="#{staffBean.ocultarPopupEliminarCocinaStaff(actionEvent)}" styleClass="btn btn-default"/>        
+                                                    </h:panelGrid>                        
+                                                </center>
+                                                </my:panelPopup>
+                                        </h:form> 
+
+                                        <!-- Características Generales a Staff -->
+                                        <h:form id="popupCaracteristicasStaff" styleClass="textoIzquierda" >
+                                            <p:dialog   style="background: #FFFFFF;" visible="#{sesion.controladorPopups['popupCaracteristicasStaff']}"
+                                                        draggable="false" modal="true">
+                                                <f:facet name="header">
+                                                    <h:panelGroup>
+                                                        <h:outputText  value="#{msgs['sistema.agregar']} #{msgs['sgl.staff.titulo.accordionPane.caracteristicas']}"
+                                                                       style="float: left; padding: 4px;text-align: center; vertical-align: middle;font: 11px;color: #484848; font-weight: bold;"/>
+                                                    </h:panelGroup>
+                                                </f:facet>
+                                                <f:facet name="body">
+                                                    <h:panelGroup>
+                                                        <h:panelGrid columns="1">
+
+                                                            <h:panelGrid columns="1" styleClass="bordePanelGrid" >
+
+                                                                <h:panelGrid columns="3"  >
+                                                                    <h:outputText value="Cantidad" />
+                                                                    <h:outputText value="Nombre" />
+                                                                    <h:outputText value="" />
+                                                                    <p:inputText value="#{staffBean.cantidadCaracteristica}" style="width: 40px" />
+                                                                    <p:selectOneMenu id="sinTxtCaracteristica"
+                                                                                     value="#{staffBean.prefijo}">
+                                                                        <f:selectItems value="#{staffBean.matchesList}"/>
+                                                                        <f:facet name="selectInputText">
+                                                                            <h:outputText id="outTxtCaracteristica" value="#{varCaracteristica}"/>
+                                                                        </f:facet>
+                                                                    </p:selectOneMenu>
+                                                                    <p:commandLink value="+" title="Agregar" actionListener="#{staffBean.addCaracteristicaStaff(actionEvent)}" styleClass="btn btn-default" />
+                                                                </h:panelGrid>
+
+                                                                <br />
+
+                                                                <h:panelGrid  >
+                                                                    <h:outputLabel value="Características asignadas al Staff House #{staffBean.staff.nombre}|#{staffBean.staff.numeroStaff}: " />
+
+                                                                    <p:dataTable showGridlines="true" size="small"  value="#{staffBean.caracteristicasStaffDataModel}"
+                                                                                 var="data"
+                                                                                 scrollable="true"
+                                                                                 scrollHeight="300px">
+                                                                        <p:column>
+                                                                            <f:facet name="header" >
+                                                                                <h:outputText value="Cantidad" />
+                                                                            </f:facet>
+                                                                            <h:outputText value="#{data.cantidad}" />
+                                                                        </p:column>                                     
+                                                                        <p:column>
+                                                                            <f:facet name="header">
+                                                                                <h:outputText value="Nombre"/>
+                                                                            </f:facet>
+                                                                            <h:outputText value="#{data.nombre}" />
+                                                                        </p:column>
+                                                                        <p:column>
+                                                                            <h:commandLink value = "Quitar" action="#{staffBean.removeCaracteristicaStaff(actionEvent)}" styleClass="link" />
+                                                                        </p:column>
+                                                                    </p:dataTable>    
+                                                                </h:panelGrid>
+                                                            </h:panelGrid>
+                                                        </h:panelGrid>
+
+                                                        <center>
+                                                            <p:commandButton value="#{msgs['sistema.cerrar']}" actionListener="#{staffBean.ocultarPopupAgregarCaracteristicaStaff(actionEvent)}" styleClass="btn btn-default"/>
+                                                        </center>                                
+
+                                                    </h:panelGroup>
+                                                </f:facet>
+                                                </<p:dialog >
+                                                    </h:form>                       
+
+                                                    <!--Características Habitación -->
+                                                    <h:form id="formCaracteristicasHabitacion" styleClass="textoIzquierda">
+                                                        <p:dialog   style="background: #FFFFFF;" visible="#{sesion.controladorPopups['popupCaracteristicasHabitacion']}"
+                                                                    draggable="false" modal="true">
+                                                            <f:facet name="header">
+                                                                <h:panelGroup> 
+                                                                    <h:outputText  value="Características Habitación"
+                                                                                   style="float: left; padding: 4px;text-align: center; vertical-align: middle;font: 11px;color: #484848; font-weight: bold;"/>
+                                                                </h:panelGroup>
+                                                            </f:facet>
+                                                            <f:facet name="body">
+                                                                <h:panelGroup>                                
+                                                                    <h:panelGrid columns="1">
+
+                                                                        <h:panelGrid columns="1" styleClass="bordePanelGrid" >
+
+                                                                            <h:panelGrid columns="3"  >
+                                                                                <h:outputText value="Cantidad" />
+                                                                                <h:outputText value="Nombre" />
+                                                                                <h:outputText value="" />
+                                                                                <p:inputText value="#{staffBean.cantidadCaracteristica}" style="width: 40px" />
+                                                                                <p:selectOneMenu id="sinTxtCaracteristica"
+                                                                                                 value="#{staffBean.prefijo}">
+                                                                                    <f:selectItems value="#{staffBean.matchesList}"/>
+                                                                                    <f:facet name="selectInputText">
+                                                                                        <h:outputText id="outTxtCaracteristica" value="#{varCaracteristica}"/>
+                                                                                    </f:facet>
+                                                                                </p:selectOneMenu>
+                                                                                <p:commandLink value="+" title="Agregar" actionListener="#{staffBean.addCaracteristicaHabitacion(actionEvent)}" styleClass="btn btn-default" />
+                                                                            </h:panelGrid> 
+
+                                                                            <br />
+
+                                                                            <h:panelGrid  >
+                                                                                <h:outputLabel value="Características asignadas a la Habitación #{staffBean.habitacion.nombre}|#{staffBean.habitacion.numeroHabitacion}: " />
+
+                                                                                <p:dataTable showGridlines="true" size="small"  value="#{staffBean.caracteristicasHabitacionDataModel}"
+                                                                                             var="data"
+                                                                                             scrollable="true"
+                                                                                             scrollHeight="300px">
+                                                                                    <p:column>
+                                                                                        <f:facet name="header" >
+                                                                                            <h:outputText value="Cantidad" />
+                                                                                        </f:facet>
+                                                                                        <h:outputText value="#{data.cantidad}" />
+                                                                                    </p:column>                                     
+                                                                                    <p:column>
+                                                                                        <f:facet name="header">
+                                                                                            <h:outputText value="Nombre"/>
+                                                                                        </f:facet>
+                                                                                        <h:outputText value="#{data.nombre}" />
+                                                                                    </p:column>
+                                                                                    <p:column>
+                                                                                        <h:commandLink value = "Quitar" action="#{staffBean.removeCaracteristicaHabitacion(actionEvent)}" styleClass="link" />
+                                                                                    </p:column>
+                                                                                </p:dataTable>   
+                                                                            </h:panelGrid>
+                                                                        </h:panelGrid>
+                                                                    </h:panelGrid>
+                                                                    <center>
+                                                                        <p:commandButton value="#{msgs['sistema.cerrar']}" actionListener="#{staffBean.ocultarPopupCaracteristicasHabitacionStaff(actionEvent)}" styleClass="btn btn-default"/>
+                                                                    </center>                                 
+                                                                </h:panelGroup>
+                                                            </f:facet>
+                                                            </<p:dialog >
+                                                                </h:form>
+
+                                                                <!--Características Gimnasio -->
+                                                                <h:form id="formCaracteristicasGimnasio" styleClass="textoIzquierda">
+                                                                    <p:dialog   style="background: #FFFFFF;" visible="#{sesion.controladorPopups['popupCaracteristicasGimnasio']}"
+                                                                                draggable="false" modal="true">
+                                                                        <f:facet name="header">
+                                                                            <h:panelGroup> 
+                                                                                <h:outputText  value="Características Gimnasio"
+                                                                                               style="float: left; padding: 4px;text-align: center; vertical-align: middle;font: 11px;color: #484848; font-weight: bold;"/>
+                                                                            </h:panelGroup>
+                                                                        </f:facet>
+                                                                        <f:facet name="body">
+                                                                            <h:panelGroup>
+                                                                                <h:panelGrid columns="1">
+                                                                                    <h:panelGrid columns="1" styleClass="bordePanelGrid" >
+
+                                                                                        <h:panelGrid columns="3"  >
+                                                                                            <h:outputText value="Cantidad" />
+                                                                                            <h:outputText value="Nombre" />
+                                                                                            <h:outputText value="" />
+                                                                                            <p:inputText value="#{staffBean.cantidadCaracteristica}" style="width: 40px" />
+                                                                                            <p:selectOneMenu id="sinTxtCaracteristicaGym"
+                                                                                                             value="#{staffBean.prefijo}">
+                                                                                                <f:selectItems value="#{staffBean.matchesList}"/>
+                                                                                                <f:facet name="selectInputText">
+                                                                                                    <h:outputText id="outTxtCaracteristicaGym" value="#{varCaracteristica}"/>
+                                                                                                </f:facet>
+                                                                                            </p:selectOneMenu>
+                                                                                            <p:commandLink value="+" title="Agregar" actionListener="#{staffBean.addCaracteristicaGimnasio(actionEvent)}" styleClass="btn btn-default" />
+                                                                                        </h:panelGrid> 
+
+                                                                                        <br />
+
+                                                                                        <h:panelGrid  >
+                                                                                            <h:outputLabel value="Características asignadas al Gimnasio #{staffBean.gimnasio.nombre}: " />
+
+                                                                                            <p:dataTable showGridlines="true" size="small"  value="#{staffBean.caracteristicasGimnasioDataModel}"
+                                                                                                         var="data"
+                                                                                                         scrollable="true"
+                                                                                                         scrollHeight="300px">
+                                                                                                <p:column>
+                                                                                                    <f:facet name="header" >
+                                                                                                        <h:outputText value="Cantidad" />
+                                                                                                    </f:facet>
+                                                                                                    <h:outputText value="#{data.cantidad}" />
+                                                                                                </p:column>                                     
+                                                                                                <p:column>
+                                                                                                    <f:facet name="header">
+                                                                                                        <h:outputText value="Nombre"/>
+                                                                                                    </f:facet>
+                                                                                                    <h:outputText value="#{data.nombre}" />
+                                                                                                </p:column>
+                                                                                                <p:column>
+                                                                                                    <h:commandLink value = "Quitar" action="#{staffBean.removeCaracteristicaGimnasio(actionEvent)}" styleClass="link" />
+                                                                                                </p:column>
+                                                                                            </p:dataTable>   
+                                                                                        </h:panelGrid>
+                                                                                    </h:panelGrid>
+                                                                                </h:panelGrid>
+                                                                                <center>
+                                                                                    <p:commandButton value="#{msgs['sistema.cerrar']}" actionListener="#{staffBean.ocultarPopupCaracteristicasGimnasioStaff(actionEvent)}" styleClass="btn btn-default"/>
+                                                                                </center>                                 
+                                                                            </h:panelGroup>
+                                                                        </f:facet>
+                                                                        </<p:dialog >
+                                                                            </h:form>
+
+                                                                            <!--Características Cocina -->
+                                                                            <h:form id="formCaracteristicasCocina" styleClass="textoIzquierda">
+                                                                                <p:dialog   style="background: #FFFFFF;" visible="#{sesion.controladorPopups['popupCaracteristicasCocina']}"
+                                                                                            draggable="false" modal="true">
+                                                                                    <f:facet name="header">
+                                                                                        <h:panelGroup> 
+                                                                                            <h:outputText  value="Características Cocina"
+                                                                                                           style="float: left; padding: 4px;text-align: center; vertical-align: middle;font: 11px;color: #484848; font-weight: bold;"/>
+                                                                                        </h:panelGroup>
+                                                                                    </f:facet>
+                                                                                    <f:facet name="body">
+                                                                                        <h:panelGroup>
+                                                                                            <center><h:messages id="msgCaracteristicas" errorClass="errorMessage" infoClass="infoMessage"/></center>
+                                                                                            <h:panelGrid columns="1">
+
+                                                                                                <h:panelGrid columns="1" styleClass="bordePanelGrid" >
+
+                                                                                                    <h:panelGrid columns="3"  >
+                                                                                                        <h:outputText value="Cantidad" />
+                                                                                                        <h:outputText value="Nombre" />
+                                                                                                        <h:outputText value="" />
+                                                                                                        <p:inputText value="#{staffBean.cantidadCaracteristica}" style="width: 40px" />
+                                                                                                        <p:selectOneMenu id="sinTxtCaracteristica"
+                                                                                                                         value="#{staffBean.prefijo}">
+                                                                                                            <f:selectItems value="#{staffBean.matchesList}"/> 
+                                                                                                            <f:facet name="selectInputText">
+                                                                                                                <h:outputText id="outTxtCaracteristica" value="#{varCaracteristica}"/>
+                                                                                                            </f:facet>
+                                                                                                        </p:selectOneMenu>
+                                                                                                        <p:commandLink value="+" title="Agregar" actionListener="#{staffBean.addCaracteristicaCocina(actionEvent)}" styleClass="btn btn-default" />
+                                                                                                    </h:panelGrid>
+
+                                                                                                    <br />
+
+                                                                                                    <h:panelGrid  >
+                                                                                                        <h:outputLabel value="Características asignadas a la Cocina #{staffBean.cocina.nombre}: " />
+
+                                                                                                        <p:dataTable showGridlines="true" size="small"  value="#{staffBean.caracteristicasCocinaDataModel}"
+                                                                                                                     var="data"
+                                                                                                                     scrollable="true"
+                                                                                                                     scrollHeight="300px">
+                                                                                                            <p:column>
+                                                                                                                <f:facet name="header" >
+                                                                                                                    <h:outputText value="Cantidad" />
+                                                                                                                </f:facet>
+                                                                                                                <h:outputText value="#{data.cantidad}" />
+                                                                                                            </p:column>                                     
+                                                                                                            <p:column>
+                                                                                                                <f:facet name="header">
+                                                                                                                    <h:outputText value="Nombre"/>
+                                                                                                                </f:facet>
+                                                                                                                <h:outputText value="#{data.nombre}" />
+                                                                                                            </p:column>
+                                                                                                            <p:column>
+                                                                                                                <h:commandLink value = "Quitar" action="#{staffBean.removeCaracteristicaCocina(actionEvent)}" styleClass="link" />
+                                                                                                            </p:column>
+                                                                                                        </p:dataTable>    
+                                                                                                    </h:panelGrid>
+                                                                                                </h:panelGrid>
+                                                                                            </h:panelGrid>
+                                                                                            <center>
+                                                                                                <p:commandButton value="#{msgs['sistema.cerrar']}" actionListener="#{staffBean.ocultarPopupCaracteristicasCocinaStaff(actionEvent)}" styleClass="btn btn-default"/> 
+                                                                                            </center>                                 
+                                                                                        </h:panelGroup>
+                                                                                    </f:facet>
+                                                                                    </<p:dialog >
+                                                                                        </h:form>
+
+                                                                                        <!-- Detalle Habitación -->
+                                                                                        <h:form styleClass="textoIzquierda" >
+                                                                                            <p:dialog  header="#{msgs['sgl.staff.habitacion.detalle']} de la #{msgs['sgl.staff.habitacion']}" 
+                                                                                                       >
+                                                                                                <h:panelGrid columns="1" width="200px">
+                                                                                                    <h:panelGrid columns="2" styleClass="bordePanelGrid"  >
+                                                                                                        <f:facet name="header"><h:outputText value="Generales" /></f:facet>
+                                                                                                        <h:outputLabel value="#{msgs['sgl.staff']}: " />
+                                                                                                        <h:outputText id="nombreStaff" value="#{staffBean.staff.nombre}" style="width: 200px" styleClass="f11" />
+
+                                                                                                        <h:outputLabel value="#{msgs['sgl.staff.habitacion.nombre']}: " />
+                                                                                                        <h:outputText id="nombreHabitacion" value="#{staffBean.habitacion.nombre}" style="width: 200px" styleClass="f11" />
+
+                                                                                                        <h:outputLabel value="#{msgs['sgl.staff.habitacion.numeroHabitacion']}: " />
+                                                                                                        <h:outputText id="numeroHabitacion" value="#{staffBean.habitacion.numeroHabitacion}" style="width: 200px" styleClass="f11" />
+
+                                                                                                        <h:outputLabel value="Ocupada: " />
+                                                                                                        <h:outputText value="#{staffBean.habitacion.ocupada eq 'True' ? 'Sí' : 'No'}" />
+                                                                                                    </h:panelGrid>
+
+                                                                                                    <br />
+
+                                                                                                    <h:panelGrid styleClass="bordePanelGrid"  >
+                                                                                                        <f:facet name="header"><h:outputText value="Características" /></f:facet>
+                                                                                                        <p:dataTable id="dataGridDetalleCaracteristicasHabitacion" rows=""  value="#{staffBean.caracteristicasHabitacionDataModel}" 
+                                                                                                                     var="data">
+                                                                                                            <p:column>
+                                                                                                                <f:facet name="header" >
+                                                                                                                    <h:outputText value="Cantidad" />
+                                                                                                                </f:facet>
+                                                                                                                <h:outputText value="#{data.cantidad}" />
+                                                                                                            </p:column>                                     
+                                                                                                            <p:column>
+                                                                                                                <f:facet name="header">
+                                                                                                                    <h:outputText value="Nombre"/>
+                                                                                                                </f:facet>
+                                                                                                                <h:outputText value="#{data.nombre}" />
+                                                                                                            </p:column>
+                                                                                                        </p:dataTable>
+                                                                                                    </h:panelGrid>
+                                                                                                </h:panelGrid>
+                                                                                                <center>
+                                                                                                    <h:panelGrid columns="2">
+                                                                                                        <p:commandButton value="#{msgs['sistema.cerrar']}" actionListener="#{staffBean.ocultarPopupDetalleHabitacionStaff(actionEvent)}" styleClass="btn btn-default"/>        
+                                                                                                    </h:panelGrid>                        
+                                                                                                </center>
+                                                                                                </my:panelPopup>                    
+                                                                                        </h:form> 
+
+                                                                                        <!-- Detalle Gimnasio -->
+                                                                                        <h:form styleClass="textoIzquierda" >
+                                                                                            <p:dialog  header="#{msgs['sgl.staff.gimnasio.detalle']} #{msgs['sgl.staff.gimnasio']}" 
+                                                                                                       >
+                                                                                                <h:panelGrid columns="1" width="200px">
+                                                                                                    <h:panelGrid columns="2" styleClass="bordePanelGrid"  >
+                                                                                                        <f:facet name="header"><h:outputText value="Generales" /></f:facet>
+                                                                                                        <h:outputLabel value="#{msgs['sgl.staff']}: " />
+                                                                                                        <h:outputText id="nombreStaff" value="#{staffBean.staff.nombre}" style="width: 200px" styleClass="f11" />                            
+
+                                                                                                        <h:outputLabel value="#{msgs['sgl.staff.gimnasio.nombre']}: " />
+                                                                                                        <h:outputText id="nombreGimnasio" value="#{staffBean.gimnasio.nombre}" style="width: 200px" styleClass="f11" />
+                                                                                                    </h:panelGrid>
+
+                                                                                                    <br />
+
+                                                                                                    <h:panelGrid styleClass="bordePanelGrid" >
+                                                                                                        <f:facet name="header"><h:outputText value="Características" /></f:facet>
+                                                                                                        <p:dataTable id="dataGridDetalleCaracteristicasGimnasio" rows=""  
+                                                                                                                     value="#{staffBean.caracteristicasGimnasioDataModel}" 
+                                                                                                                     var="data">
+                                                                                                            <p:column>
+                                                                                                                <f:facet name="header" >
+                                                                                                                    <h:outputText value="Cantidad" />
+                                                                                                                </f:facet>
+                                                                                                                <h:outputText value="#{data.cantidad}" />
+                                                                                                            </p:column>                                     
+                                                                                                            <p:column>
+                                                                                                                <f:facet name="header">
+                                                                                                                    <h:outputText value="Nombre"/>
+                                                                                                                </f:facet>
+                                                                                                                <h:outputText value="#{data.nombre}" />
+                                                                                                            </p:column>
+                                                                                                        </p:dataTable>   
+                                                                                                    </h:panelGrid>
+                                                                                                </h:panelGrid>
+                                                                                                <center>
+                                                                                                    <h:panelGrid columns="2">
+                                                                                                        <p:commandButton value="#{msgs['sistema.cerrar']}" actionListener="#{staffBean.ocultarPopupDetalleGimnasioStaff(actionEvent)}" styleClass="btn btn-default"/>        
+                                                                                                    </h:panelGrid>                        
+                                                                                                </center>
+                                                                                                </my:panelPopup>                    
+                                                                                        </h:form>   
+
+                                                                                        <!-- Detalle Cocina -->
+                                                                                        <h:form styleClass="textoIzquierda" >
+                                                                                            <p:dialog  header="#{msgs['sgl.staff.cocina.detalle']} #{msgs['sgl.staff.cocina']}" 
+                                                                                                       >
+                                                                                                <h:panelGrid columns="1" width="200px">
+                                                                                                    <h:panelGrid columns="2" styleClass="bordePanelGrid"  >
+                                                                                                        <f:facet name="header"><h:outputText value="Generales" /></f:facet>
+                                                                                                        <h:outputLabel value="#{msgs['sgl.staff']}: " />
+                                                                                                        <h:outputText id="nombreStaff" value="#{staffBean.staff.nombre}" style="width: 200px" styleClass="f11" />                            
+
+                                                                                                        <h:outputLabel value="#{msgs['sgl.staff.cocina.nombre']}: " />
+                                                                                                        <h:outputText id="nombreGimnasio" value="#{staffBean.cocina.nombre}" style="width: 200px" styleClass="f11" />
+                                                                                                    </h:panelGrid>
+
+                                                                                                    <br />
+
+                                                                                                    <h:panelGrid styleClass="bordePanelGrid" >
+                                                                                                        <f:facet name="header"><h:outputText value="Características" /></f:facet>
+                                                                                                        <p:dataTable id="dataGridDetalleCaracteristicasCocina" rows=""  value="#{staffBean.caracteristicasCocinaDataModel}" 
+                                                                                                                     >
+                                                                                                            <p:column>
+                                                                                                                <f:facet name="header" >
+                                                                                                                    <h:outputText value="Cantidad" />
+                                                                                                                </f:facet>
+                                                                                                                <h:outputText value="#{data.cantidad}" />
+                                                                                                            </p:column>                                     
+                                                                                                            <p:column>
+                                                                                                                <f:facet name="header">
+                                                                                                                    <h:outputText value="Nombre"/>
+                                                                                                                </f:facet>
+                                                                                                                <h:outputText value="#{data.nombre}" />
+                                                                                                            </p:column>
+                                                                                                        </p:dataTable>
+                                                                                                    </h:panelGrid>
+                                                                                                </h:panelGrid>
+
+                                                                                                <center>
+                                                                                                    <h:panelGrid columns="2">
+                                                                                                        <p:commandButton value="#{msgs['sistema.cerrar']}" actionListener="#{staffBean.ocultarPopupDetalleCocinaStaff(actionEvent)}" styleClass="btn btn-default"/>        
+                                                                                                    </h:panelGrid>                        
+                                                                                                </center>
+                                                                                                </my:panelPopup>                    
+                                                                                        </h:form>            
+
+                                                                                        </ui:define>
+
+                                                                                        </ui:composition>
+
+                                                                                        </body>
+                                                                                        </html>

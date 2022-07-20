@@ -1,0 +1,110 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      
+      xmlns:c="http://java.sun.com/jsp/jstl/core">
+    <body>
+        <ui:composition template="./../../../WEB-INF/facelets/templates/templateServiciosGenerales.xhtml">
+            <ui:define name="contenido">
+                <h:panelGroup  rendered="#{empty sesion.usuario}" styleClass="altura">
+                    <ui:include src="./../../../login.xhtml"/>
+                </h:panelGroup>
+                <h:form id="cataPais" >
+
+                    <p class="tituloEncabezado">#{msgs['sgl.catalogo.paises']}</p>
+                    <h:panelGrid>
+                        <p:commandLink title="#{msgs['sistema.crear']} #{msgs['sgl.direccion.pais']}" actionListener="#{catalogoBean.agregarPais(event)}"
+                                         styleClass="btn btn-default">
+                            <h:graphicImage url="#{msgs['sgl.ruta.imagen']}button_create.png" 
+                                              styleClass="imagenSinBorde"/>
+                        </p:commandLink>
+                        <p:commandLink value="#{msgs['sistema.crear']} #{msgs['sgl.direccion.pais']}" styleClass="linkPequenio" actionListener="#{catalogoBean.agregarPais(event)}"  title="#{msgs['sistema.crear']} #{msgs['sgl.direccion.pais']}"/>
+                    </h:panelGrid>  
+                    <center><h:message for="eliminar"  errorClass="errorMessage" infoClass="infoMessage"/></center>             
+                    <p:dataTable showGridlines="true" size="small"  id="eliminar" var="pa"  value="#{catalogoBean.traerPais}" rows="7">
+                        <p:column>
+                            <f:facet name="header"><h:outputText value="#{msgs['sgl.direccion.pais']}"/></f:facet>
+                            <h:outputText value="#{pa.nombre}"/>
+                        </p:column>
+                        <p:column>
+                            <center>
+                                <p:commandLink styleClass="link" value="#{msgs['sistema.modificar']}" actionListener="#{catalogoBean.seleccionarPais(event)}"/>
+                            </center>
+                        </p:column>
+                        <p:column>
+                            <center>
+                                <p:commandLink  value="#{msgs['sistema.eliminar']}" actionListener="#{catalogoBean.eliminarPais(event)}" styleClass="link" />
+                            </center>
+                            <p:confirm id="pnlCon"  message="#{msgs['sgl.catalogo.pais.eliminar']}"
+                                                   />
+                        </p:column>
+                    </p:dataTable>
+                    <br/>
+                </h:form>
+
+                <!--Crear País-->
+                <h:form >
+                    <p:dialog   style="background: #FFFFFF;" visible="#{catalogoBean.popUp and catalogoBean.siPais != null}"
+                                    draggable="false" modal="true">
+                        <f:facet name="header">
+                            <h:panelGroup > 
+                                <h:outputText  value="#{msgs['sistema.agregar']} #{msgs['sgl.direccion.pais']}"
+                                                 style="float: left; padding: 4px;text-align: center; vertical-align: middle;font: 11px;color: #484848; font-weight: bold;"/>
+
+                            </h:panelGroup>
+                        </f:facet>
+                        <f:facet name="body">
+                            <h:panelGroup>
+				<center><h:messages globalOnly="true" errorClass="errorMessage" infoClass="infoMessage"/></center>  
+                                <h:panelGrid columns="2">
+                                    <h:outputText value="#{msgs['sgl.direccion.pais']}"/>
+                                    <p:inputText value="#{catalogoBean.siPais.nombre}" size="45"/>
+                                </h:panelGrid>
+                                <center>
+                                    <h:panelGrid columns="2">
+                                        <p:commandLink value="#{msgs['sistema.aceptar']}" styleClass="btn btn-info" actionListener="#{catalogoBean.guardarPais(event)}"/>
+                                        <p:commandLink value="#{msgs['sistema.cancelar']}" styleClass="btn btn-default" actionListener="#{catalogoBean.cerrarPop(event)}"/>
+                                    </h:panelGrid>
+                                </center>                                  
+                            </h:panelGroup>
+                        </f:facet>
+                    </<p:dialog >
+                </h:form>
+
+                <!--Modificar motivo-->
+                <h:form >
+                    <p:dialog   style="background: #FFFFFF;" visible="#{catalogoBean.modificarPopUp and catalogoBean.siPais != null}"
+                                    draggable="false" modal="true">
+                        <f:facet name="header">
+                            <h:panelGroup > 
+                                <h:outputText  value="#{msgs['sistema.modificar']} #{msgs['sgl.direccion.pais']}"
+                                                 style="float: left; padding: 4px;text-align: center; vertical-align: middle;font: 11px;color: #484848; font-weight: bold;"/>                                
+                            </h:panelGroup>
+                        </f:facet>
+                        <f:facet name="body">
+                            <h:panelGroup>
+				<center><h:messages globalOnly="true" errorClass="errorMessage" infoClass="infoMessage"/></center>  
+                                <h:panelGrid columns="2">
+                                    <h:outputText value="#{msgs['sgl.direccion.pais']}"/>
+                                    <p:inputText value="#{catalogoBean.siPais.nombre}" size="45"/>
+                                </h:panelGrid>
+                                <center>
+                                    <h:panelGrid columns="2">
+                                        <p:commandLink value="#{msgs['sistema.aceptar']}" styleClass="btn btn-info" actionListener="#{catalogoBean.completarModificacionPais(event)}"/>
+                                        <p:commandLink value="#{msgs['sistema.cancelar']}" styleClass="btn btn-default" actionListener="#{catalogoBean.cerrarPopModificar(event)}"/>
+                                    </h:panelGrid>
+                                </center>                                 
+                            </h:panelGroup>
+                        </f:facet>
+                    </<p:dialog >
+                </h:form>
+            </ui:define>
+
+        </ui:composition>
+
+    </body>
+</html>

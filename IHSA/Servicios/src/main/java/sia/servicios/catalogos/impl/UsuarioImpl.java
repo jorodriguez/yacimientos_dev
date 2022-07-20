@@ -2154,66 +2154,66 @@ public class UsuarioImpl extends AbstractFacade<Usuario> {
     }
 
     //TODO : revisar si realmente se usa en algún lugar
-//    public String traerUsuarioActivoJson() {
-//        String retVal = null;
-//
-//        try {
-//            Gson gson = new Gson();
-//            String sql
-//                    = "select u.id, u.nombre from usuario u where u.eliminado = ? and u.activo = ? and u.interno = true ";
-//
-//            List<Object[]> lista = em.createNativeQuery(sql)
-//                    .setParameter(1, Constantes.NO_ELIMINADO)
-//                    .setParameter(2, Constantes.BOOLEAN_TRUE)
-//                    .getResultList();
-//
-//            JsonArray a = new JsonArray();
-//
-//            for (Object[] o : lista) {
-//                if (lista != null) {
-//                    JsonObject ob = new JsonObject();
-//                    ob.addProperty("value", o[0] != null ? (String) o[0] : "-");
-//                    ob.addProperty("label", o[1] != null ? (String) o[1] : "-");
-//                    a.add(ob);
-//                }
-//            }
-//            retVal = gson.toJson(a);
-//
-//        } catch (Exception e) {
-//            log.warn("*** Al traer usuarios en formato JSON ...", e);
-//        }
-//
-//        return retVal;
-//    }
+    public String traerUsuarioActivoJson() {
+        String retVal = null;
+
+        try {
+            Gson gson = new Gson();
+            String sql
+                    = "select u.id, u.nombre from usuario u where u.eliminado = ? and u.activo = ? and u.interno = true ";
+
+            List<Object[]> lista = em.createNativeQuery(sql)
+                    .setParameter(1, Constantes.NO_ELIMINADO)
+                    .setParameter(2, Constantes.BOOLEAN_TRUE)
+                    .getResultList();
+
+            JsonArray a = new JsonArray();
+
+            for (Object[] o : lista) {
+                if (lista != null) {
+                    JsonObject ob = new JsonObject();
+                    ob.addProperty("value", o[0] != null ? (String) o[0] : "-");
+                    ob.addProperty("label", o[1] != null ? (String) o[1] : "-");
+                    a.add(ob);
+                }
+            }
+            retVal = gson.toJson(a);
+
+        } catch (Exception e) {
+            log.warn("*** Al traer usuarios en formato JSON ...", e);
+        }
+
+        return retVal;
+    }
 
     
-//    public List<Object[]> traerUsuarioActivosJson(int idGerencia) {
-//        List<Object[]> usuarios = null;
-//        String gerencia = "";
-//
-//        if (idGerencia > 0) {
-//            gerencia = " AND u.gerencia = " + idGerencia;
-//        }
-//        try {
-//            String sql
-//                    = "select u.id, u.nombre, g.nombre from usuario u "
-//                    + " inner join GERENCIA g on g.id=u.GERENCIA"
-//                    + " where u.eliminado = ? and u.activo = ?"
-//                    + " and u.interno = true"
-//                    + gerencia
-//                    + " order by u.NOMBRE ";
-//
-//            usuarios = em.createNativeQuery(sql)
-//                    .setParameter(1, Constantes.NO_ELIMINADO)
-//                    .setParameter(2, Constantes.BOOLEAN_TRUE)
-//                    .getResultList();
-//
-//        } catch (Exception e) {
-//            LOGGER.fatal(this, "Excepcion los usuarios " + e.getMessage(), e);
-//        }
-//
-//        return usuarios;
-//    }
+    public List<Object[]> traerUsuarioActivosJson(int idGerencia) {
+        List<Object[]> usuarios = null;
+        String gerencia = "";
+
+        if (idGerencia > 0) {
+            gerencia = " AND u.gerencia = " + idGerencia;
+        }
+        try {
+            String sql
+                    = "select u.id, u.nombre, g.nombre from usuario u "
+                    + " inner join GERENCIA g on g.id=u.GERENCIA"
+                    + " where u.eliminado = ? and u.activo = ?"
+                    + " and u.interno = true"
+                    + gerencia
+                    + " order by u.NOMBRE ";
+
+            usuarios = em.createNativeQuery(sql)
+                    .setParameter(1, Constantes.NO_ELIMINADO)
+                    .setParameter(2, Constantes.BOOLEAN_TRUE)
+                    .getResultList();
+
+        } catch (Exception e) {
+            LOGGER.fatal(this, "Excepcion los usuarios " + e.getMessage(), e);
+        }
+
+        return usuarios;
+    }
 
     
     public void modificarDatosUsuario(String sesion, UsuarioVO usuarioVO, int idPuesto) {
@@ -2307,19 +2307,19 @@ public class UsuarioImpl extends AbstractFacade<Usuario> {
      * @param numero
      * @return
      */
-//    public List<Object[]> buscarUsuarioLetras(String cadena, int numero) {
-//        StringBuilder sql = new StringBuilder();
-//
-//        sql.append("select u.ID, u.NOMBRE, u.TELEFONO from USUARIO u")
-//                // TODO : revisar al migrar a PgSQL
-//                .append("where upper(u.NOMBRE COLLATE \"es_ES\") like upper('%").append(cadena).append("%')")
-//                .append("and u.ELIMINADO = false and u.interno = true ")
-//                .append("order by u.NOMBRE asc")
-//                //TODO : cambiar a LIMIT cuando se migre a PgSQL
-//                .append("rows ").append(numero);
-//
-//        return em.createNativeQuery(sql.toString()).getResultList();
-//    }
+    public List<Object[]> buscarUsuarioLetras(String cadena, int numero) {
+        StringBuilder sql = new StringBuilder();
+
+        sql.append("select u.ID, u.NOMBRE, u.TELEFONO from USUARIO u")
+                // TODO : revisar al migrar a PgSQL
+                .append("where upper(u.NOMBRE COLLATE \"es_ES\") like upper('%").append(cadena).append("%')")
+                .append("and u.ELIMINADO = false and u.interno = true ")
+                .append("order by u.NOMBRE asc")
+                //TODO : cambiar a LIMIT cuando se migre a PgSQL
+                .append("rows ").append(numero);
+
+        return em.createNativeQuery(sql.toString()).getResultList();
+    }
 
     
     public String traerUsuarioActivoJsonByGerencia(int gerencia, int idOficina) {

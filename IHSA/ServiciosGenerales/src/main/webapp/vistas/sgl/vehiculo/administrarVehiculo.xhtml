@@ -1,0 +1,1649 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+
+
+      >
+    <body>
+        <ui:composition template="./../../../WEB-INF/facelets/templates/templateServiciosGenerales.xhtml">
+
+            <ui:define name="contenido">
+
+                <h:panelGroup  rendered="#{empty sesion.usuario}" styleClass="altura">
+                    <ui:include src="./../../../login.xhtml"/>
+                </h:panelGroup>                    
+                <p class="tituloEncabezado"> #{msgs['sistema.titulo.administracion']} #{msgs['sistema.proposicion.de']} #{msgs['sgl.vehiculo']} #{vehiculoBean.vehiculo.marca} #{vehiculoBean.vehiculo.modelo} </p>
+                <div class="row">
+                    <h:form styleClass="textoIzquierda">
+                        <p:commandLink title="#{msgs['sistema.regresar']} #{msgs['sistema.proposicion.a']} #{msgs['sgl.vehiculo.titulo.catalogo']}" actionListener="#{vehiculoBean.regresarCatalogoVehiculo(event)}" action="list"
+                                       styleClass="btn btn-default">                               
+                            <i class="fa fa-arrow-circle-left"></i>#{msgs['sistema.regresar']}
+                        </p:commandLink>
+                        <p:commandLink title="#{msgs['sgl.vehiculo.asignar']}"
+                                       styleClass="btn btn-default" actionListener="#{vehiculoBean.paginaAsignarVehiculo(event)}">                               
+                            <i class="fa fa-plus-circle"></i>#{msgs['sistema.asignar']}
+                        </p:commandLink>
+                        <p:commandLink  title="#{msgs['sgl.vehiculo.caracteristicas.asignar']}" action="#{vehiculoBean.openPopupCaracteristicasVehiculo(actionEvent)}" styleClass="btn btn-default" >
+                            <i class="fa fa-plus-circle"></i>#{msgs['sgl.generales.titulo.caracteristicas']}
+                        </p:commandLink>
+                        <p:commandLink title="#{msgs['sgl.mantenimiento.registrar']}" styleClass="btn btn-default" actionListener="#{mantenimientoBean.mostrarPopupEntrada(event)}"  >
+                            <i class="fa fa-plus-circle"></i>#{msgs['sgl.mantenimiento.registrar']}
+                        </p:commandLink>                        
+                        <p:commandLink title="#{msgs['sistema.crear']} #{msgs['sgl.checklist.titulo']} #{msgs['sistema.proposicion.de']} #{msgs['sgl.vehiculo']}" 
+                                       action="#{vehiculoBean.goToChecklistVehiculo()}" styleClass="btn btn-default">
+                            <i class="fa fa-plus-circle"></i>#{msgs['sgl.checklist.titulo']}
+                        </p:commandLink>				    
+                        <p:commandLink title="#{msgs['sistema.registrar']} #{msgs['sgl.pago.titulo']}" action="#{vehiculoBean.pagoServicio()}"
+                                       styleClass="btn btn-default">
+                            <i class="fa fa-plus-circle"></i>#{msgs['sgl.pago.titulo']}
+                        </p:commandLink>
+                        <p:commandLink title="#{msgs['sistema.modificar']} #{msgs['sgl.kilometraje']}" action="#{vehiculoBean.openPopupModifyKilometraje(actionEvent)}"
+                                       styleClass="btn btn-default">
+                            <i class="fa fa-pencil"></i>#{msgs['sistema.modificar']} #{msgs['sgl.kilometraje']}
+                        </p:commandLink>
+                    </h:form>
+                </div>
+                <div class="row">
+                    <div class="card  card-primary">
+                        <div class="card -heading" data-toggle="collapse"  href="#datosGenerales">                        
+                            <h4 class="card -title">
+                                #{msgs['sgl.generales.datos']}
+                            </h4>
+                        </div>		    
+                        <div id="datosGenerales" class="collapse in panel-body">
+                            <h:form styleClass="textoIzquierda">
+                                <div class="col-lg-12 col-xs-12">
+                                    <div class="col-lg-4">
+                                        <div class="card  panel-default">
+                                            <div class="card-body">	
+                                                <div class="input-group col-lg-12" >
+                                                    <div class="form-group col-lg-12" >
+                                                        <h:outputLabel styleClass="col-lg-4 control-label" value="Tipo: "  />
+                                                        <div class="col-lg-8 col-xs-12">
+                                                            <h:outputText styleClass="control-label" value="#{vehiculoBean.vehiculo.tipoEspecifico}"/>   
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group col-lg-12" >
+                                                        <h:outputLabel styleClass="col-lg-4 control-label" value="#{msgs['sgl.marca']}: "  />
+                                                        <div class="col-lg-8 col-xs-12">
+                                                            <h:outputText styleClass="control-label" value="#{vehiculoBean.vehiculo.marca}"/>   
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group col-lg-12" >
+                                                        <h:outputLabel styleClass="col-lg-4 control-label" value="#{msgs['sgl.modelo']}: "  />
+                                                        <div class="col-lg-8 col-xs-12">
+                                                            <h:outputText styleClass="control-label" value="#{vehiculoBean.vehiculo.modelo}"/>   
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group col-lg-12" >
+                                                        <h:outputLabel styleClass="col-lg-4 control-label" value="#{msgs['sgl.vehiculo.serie']}: " />
+                                                        <div class="col-lg-8 col-xs-12">
+                                                            <h:outputText styleClass="control-label" value="#{vehiculoBean.vehiculo.serie}"/>   
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group col-lg-12" >
+                                                        <h:outputLabel styleClass="col-lg-4 control-label" value="#{msgs['sgl.vehiculo.placa']}: " />
+                                                        <div class="col-lg-8 col-xs-12">
+                                                            <h:outputText styleClass="control-label" value="#{vehiculoBean.vehiculo.numeroPlaca}"/>   
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group col-lg-12" >
+                                                        <h:outputLabel styleClass="col-lg-4 control-label" value="#{msgs['sgl.vehiculo.color']}: "  />
+                                                        <div class="col-lg-8 col-xs-12">
+                                                            <h:outputText styleClass="control-label" value="#{vehiculoBean.vehiculo.color}"/>   
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="card -footer">
+                                                <p:commandLink value="#{msgs['sistema.actualizar']} #{msgs['sgl.generales.datos']}" 
+                                                               actionListener="#{vehiculoBean.openPopupUpdateVehiculo(actionEvent)}" 
+                                                               styleClass="link" />				    
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4">
+                                        <div class="card  panel-default">
+                                            <div class="card-body">
+                                                <div class="input-group col-lg-12" >
+                                                    <div class="form-group col-lg-12" >
+                                                        <h:outputLabel styleClass="col-lg-4 control-label" value="#{msgs['sgl.vehiculo.capacidadPasajeros']}: " />
+                                                        <div class="col-lg-1 col-xs-12">
+                                                            <h:outputText styleClass="control-label" value="#{vehiculoBean.vehiculo.capacidadPasajeros}"/>
+                                                        </div>
+                                                        <h:outputLabel styleClass="col-lg-4 control-label" value="Herramientas: " />
+                                                        <div class="col-lg-1 col-xs-12">
+                                                            <h:outputText styleClass="control-label" value="#{vehiculoBean.vehiculo.cajaHerramienta eq 'True' ? 'Si' : 'No'}"/>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group col-lg-12" >
+                                                        <h:outputLabel styleClass="col-lg-4 control-label" value="#{msgs['sgl.vehiculo.cajonEstacionamiento']}: " />
+                                                        <div class="col-lg-8 col-xs-12">
+                                                            <h:outputText styleClass="control-label" value="#{vehiculoBean.vehiculo.cajonEstacionamiento ? msgs['sistema.ninguno'] :  vehiculoBean.vehiculo.cajonEstacionamiento}"/>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group col-lg-12" >
+                                                        <h:outputLabel styleClass="col-lg-4 control-label" value="#{msgs['sgl.kilometraje']}: " />
+                                                        <div class="col-lg-4 col-xs-12">
+                                                            <h:outputText styleClass="control-label" value="#{mantenimientoBean.kilometrajeActualOld}"/>
+                                                        </div>
+                                                        <!--div class="col-lg-4 col-xs-12">
+                                                            <p:commandLink value="#{msgs['sistema.reiniciar']}" title="#{msgs['sistema.reiniciar']}"
+                                                                             actionListener="#{vehiculoBean.openPopupRestartKilometraje(actionEvent)}" />
+                                                        </div-->
+                                                    </div>
+                                                    <!--div class="form-group col-lg-12" >
+                                                        <h:outputLabel styleClass="col-lg-4 control-label" value="Asignado: " />
+                                                        <div class="col-lg-8 col-xs-12">
+                                                            <h:outputText styleClass="control-label" value="#{vehiculoBean.vehiculo.disponible eq 'True'? 'No':'Si'}"/>
+                                                        </div>
+                                                    </div-->
+                                                    <div class="form-group col-lg-12" >
+                                                        <h:outputLabel styleClass="col-lg-4 control-label" value="#{msgs['sgl.vehiculo.estado']}: " />
+                                                        <div class="col-lg-8 col-xs-12">
+                                                            <h:outputText styleClass="control-label" value="#{mantenimientoBean.nombreEstadoOld}"/>  
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group col-lg-12" >
+                                                        <h:outputLabel styleClass="col-lg-4 control-label" value="#{msgs['sgl.generales.observacion']}: "  />
+                                                        <div class="col-lg-8 col-xs-12">
+                                                            <h:outputText styleClass="control-label" value="#{vehiculoBean.vehiculo.observacion}" />
+                                                        </div>
+                                                    </div>
+                                                </div> 
+                                            </div>
+                                            <div class="card -footer">
+                                                <p:commandLink value="#{msgs['sistema.actualizar']} #{msgs['sgl.generales.datos']}" 
+                                                               actionListener="#{vehiculoBean.openPopupUpdateVehiculo(actionEvent)}" 						     
+                                                               styleClass="link" />				    
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-lg-4">
+                                        <div class="card  panel-default">
+                                            <div class="card-body">
+                                                <div class="input-group col-lg-12" >
+                                                    <div class="form-group col-lg-12" >
+                                                        <h:outputLabel styleClass="col-lg-4 control-label" value="Activo: " />
+                                                        <div class="col-lg-8 col-xs-12">
+                                                            <h:outputText styleClass="control-label" value="#{vehiculoBean.vehiculo.numeroActivo}"/>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group col-lg-12" >
+                                                        <h:outputLabel styleClass="col-lg-4 control-label" value="Núm. Eco: "/>
+                                                        <div class="col-lg-8 col-xs-12">
+                                                            <h:outputText styleClass="control-label" value="#{vehiculoBean.vehiculo.numeroEconomico}"/>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group col-lg-12" >
+                                                        <h:outputLabel styleClass="col-lg-4 control-label" value="Seguro: "/>
+                                                        <div class="col-lg-8 col-xs-12">
+                                                            <h:outputText styleClass="control-label" value="#{vehiculoBean.vehiculo.seguro}"/>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group col-lg-12" >
+                                                        <h:outputLabel styleClass="col-lg-4 control-label" value="GPS: "/>
+                                                        <div class="col-lg-8 col-xs-12">
+                                                            <h:outputText styleClass="control-label" value="#{vehiculoBean.vehiculo.gps eq 'True'? 'Si':'No'}"/>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group col-lg-12" >
+                                                        <h:outputLabel styleClass="col-lg-4 control-label" value="Propietario: "/>
+                                                        <div class="col-lg-8 col-xs-12">
+                                                            <div id="divAsignado">
+                                                                <h:outputText styleClass="control-label" value="#{vehiculoBean.vehiculo.proveedor}"/>
+                                                                <a onclick="mostrarDiv('divTaller');
+                                                                        ocultarDiv('divAsignado')"
+                                                                   title="Cambiar de propietario">
+                                                                    <i class="fa fa-edit"></i>						
+                                                                </a>
+                                                            </div>
+                                                            <div id="divTaller" class="form-group col-lg-12" style="display: none;">
+                                                                <p:selectOneMenu  value="#{vehiculoBean.vehiculo.idProveedor}"
+                                                                                  valueChangeListener="#{vehiculoBean.seleccionarTaller}"
+
+                                                                                  styleClass="form-control">
+                                                                    <f:ajax execute="@this"/>
+                                                                    <f:selectItems value="#{vehiculoBean.listaTaller}"/>
+                                                                </p:selectOneMenu>
+                                                                <div>
+                                                                    <a onclick="ocultarDiv('divTaller');
+                                                                            mostrarDiv('divAsignado')"
+                                                                       title="Cambiar de propietario">
+                                                                        <i class="fa fa-remove"></i>						
+                                                                    </a>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group col-lg-12" >
+                                                        <h:outputLabel styleClass="col-lg-4 control-label" value="Estado: "/>
+                                                        <div class="col-lg-8 col-xs-12">
+                                                            <div id="divEstadoActual">
+                                                                <h:outputText styleClass="control-label" value="#{vehiculoBean.vehiculo.estado}"/>
+                                                                <a onclick="mostrarDiv('divEstadoNuevo');
+                                                                        ocultarDiv('divEstadoActual')"
+                                                                   title="Cambiar el estado">
+                                                                    <i class="fa fa-edit"></i>						
+                                                                </a>
+                                                            </div>
+                                                            <div id="divEstadoNuevo" class="form-group col-lg-12" style="display: none;">
+                                                                <p:selectOneMenu  value="#{vehiculoBean.vehiculo.idEstado}"
+                                                                                  valueChangeListener="#{vehiculoBean.seleccionarEstado}"
+
+                                                                                  styleClass="form-control">
+                                                                    <f:selectItems value="#{vehiculoBean.listaEstado}"/>
+                                                                    <f:ajax execute="@this"/>
+                                                                </p:selectOneMenu>
+                                                                <div>
+                                                                    <a onclick="ocultarDiv('divEstadoNuevo');
+                                                                            mostrarDiv('divEstadoActual')"
+                                                                       title="Cambiar de propietario">
+                                                                        <i class="fa fa-remove"></i>						
+                                                                    </a>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>   
+                                            </div>
+                                            <div class="card -footer">
+                                                <p:commandLink value="#{msgs['sistema.actualizar']} #{msgs['sgl.generales.datos']}" 
+                                                               actionListener="#{vehiculoBean.openPopupUpdateVehiculo(actionEvent)}" />				    
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>			    
+                            </h:form>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-8">
+                        <div class="card  card-primary">
+                            <div class="card -heading" data-toggle="collapse"  href="#asignaciones">                        
+                                <h4 class="card -title">
+                                    Asignaciones
+                                </h4>
+                            </div>		    
+                            <div id="asignaciones" class="collapse in panel-body">      
+                                <h:form styleClass="textoIzquierda">                        
+                                    <p:dataTable showGridlines="true" size="small"    value="#{vehiculoBean.mapaDatos.get('asignar')}" var="dtAs" >
+                                        <p:column>
+                                            <f:facet name="header"><h:outputText value="#{msgs['sgl.generales.usuario']}"/></f:facet>
+                                            <h:outputText value="#{dtAs.usuario.nombre}"/>
+                                        </p:column>
+                                        <p:column>
+                                            <f:facet name="header"><h:outputText value="#{msgs['sgl.generales.fecha']}"/></f:facet>
+                                            <h:outputText value="#{dtAs.fechaOperacion}">
+                                                <f:convertDateTime pattern="dd/MM/yyyy" type="date" />
+                                            </h:outputText>
+                                        </p:column>      
+                                        <p:column>
+                                            <f:facet name="header" ><h:outputText value="#{msgs['sgl.operacion']}"/></f:facet>
+                                            <h:outputText value="#{dtAs.siOperacion.nombre}"/>
+                                        </p:column>
+                                        <p:column>
+                                            <p:commandLink title="Recepción de Vehículo" styleClass="btn btn-default" 
+                                                           actionListener="#{vehiculoBean.recibirVehiculo(event)}"
+                                                           rendered="#{dtAs.terminada eq 'False' and dtAs.siAdjunto != null}">
+                                                <i class="fa fa-car"></i><i class="fa fa-user"></i>
+                                            </p:commandLink>
+                                            <h:outputText value="Falta carta" style="color: red;" rendered="#{dtAs.siAdjunto == null}"/>
+                                        </p:column>                              
+                                        <p:column>
+                                            <h:outputLink target="_blank"  value="/ServiciosGenerales/AbrirArchivo?ZWZ2W=#{dtAs.siAdjunto.id}&amp;ZWZ3W=#{dtAs.siAdjunto.uuid}"
+                                                          rendered="#{dtAs.siAdjunto != null}" title="Ver archivo">
+                                                <i class="fa fa-download"></i>
+                                            </h:outputLink>
+                                            <p:commandLink title="Quitar carta" styleClass="btn btn-default" 
+                                                           rendered="#{dtAs.siAdjunto != null and dtAs.terminada eq 'False'}" 
+                                                           actionListener="#{vehiculoBean.quitarCartaAsigna(event)}">
+                                                <i class="fa fa-remove text-danger"></i><i class="fa fa-file text-danger"></i>
+                                            </p:commandLink>
+                                        </p:column>  
+                                        <p:column>
+                                            <p:commandLink title="#{msgs['sistema.modificar']}" rendered="#{dtAs.siAdjunto == null}" 
+                                                           actionListener="#{vehiculoBean.seleccionarAsignacion(event)}">
+                                                <i class="fa fa-pencil"></i>
+                                            </p:commandLink>
+                                        </p:column>
+                                        <p:column>
+                                            <p:commandLink title="#{msgs['sistema.eliminar']}" rendered="#{dtAs.siAdjunto == null}" 
+                                                           actionListener="#{vehiculoBean.eliminarAsignacion(event)}" >
+                                                <i class="fa fa-remove"></i>
+                                            </p:commandLink>
+                                            <p:confirm id="pnlCon" header="Confirmar"  
+                                                       message="La operación va a eliminar la asignación, ¿está seguro?"></p:confirm>
+                                        </p:column>
+                                        <p:column>                            
+                                            <h:outputLink target="_blank"  value="/ServiciosGenerales/GeneraCarta?a=#{dtAs.id}" rendered="#{dtAs.siAdjunto == null}">
+                                                <h:outputText value="Generar carta" />
+                                            </h:outputLink>
+                                        </p:column>                                          
+                                        <p:column>
+                                            <p:commandLink title="Adjuntar carta" rendered="#{dtAs.siAdjunto == null}" 
+                                                           actionListener="#{vehiculoBean.subirCarta(event)}">
+                                                <i class="fa fa-upload"></i>
+                                            </p:commandLink>
+                                        </p:column>
+                                        <p:column>
+                                            <p:commandLink title="#{msgs['sistema.detalle']}" actionListener="#{vehiculoBean.verDetalleAsignacion(event)}">
+                                                <i class="fa fa-eye"></i>
+                                            </p:commandLink>
+                                        </p:column>
+                                    </p:dataTable>   
+                                </h:form>
+                            </div>
+                        </div>
+
+
+
+                        <!--MANTENIMIENTOS PREVENTIVOS- INICIO -->
+
+                        <div class="card  card-primary">
+                            <div class="card -heading" data-toggle="collapse"  href="#mantoPreventivo">                        
+                                <h4 class="card -title">
+                                    #{msgs['sgl.mantenimiento.mantenimiento.preventivo']}
+                                </h4>
+                            </div>		    
+                            <div id="mantoPreventivo" class="collapse in panel-body">      
+                                <h:form id="frmMantenimientoPreventivos" styleClass="textoIzquierda">
+                                    <p:dataTable id="dataGridMantenimientoPre"  
+                                                 value="#{mantenimientoBean.listaMantenimientoPreventivo}"
+                                                 rows="3"                              
+                                                 var="data">
+                                        <p:column>
+                                            <f:facet name="header"><h:outputText value="#{msgs['sgl.mantenimiento.grid.fecha.ingreso']}"/></f:facet>
+                                            <center>
+                                                <h:outputText value="#{data['fechaIngreso']}">
+                                                    <f:convertDateTime pattern="dd/MM/yyyy" type="date" />
+                                                </h:outputText>
+                                            </center>
+                                        </p:column> 
+                                        <p:column>
+                                            <f:facet name="header"><h:outputText value="Proveedor"/></f:facet>
+                                            <h:outputText value="#{data['nombreProveedor']}"/>                                     
+                                        </p:column>                               
+                                        <p:column>
+                                            <f:facet name="header"><h:outputText value="#{msgs['sgl.mantenimiento.grid.importe']}"/></f:facet>
+                                            <center> <h:outputText value="#{data['importe']}">
+                                                    <f:convertNumber currencySymbol="$" maxFractionDigits="2" type="currency" groupingUsed="true" />
+                                                </h:outputText>
+                                                <h:outputText value="(#{data['moneda']})"/>
+                                            </center>
+                                        </p:column>                                
+                                        <p:column>
+                                            <f:facet name="header"><h:outputText value="#{msgs['sgl.mantenimiento.grid.proximo.km']}"/></f:facet>
+                                            <center>
+                                                <h:outputText value="#{data['kilometrajeProximoMantenimiento'] == 0 ? '':data['kilometrajeProximoMantenimiento']}">
+                                                </h:outputText>
+                                            </center>
+                                        </p:column>                                
+                                        <p:column>
+                                            <f:facet name="header"><h:outputText value="Prox. F. para Mtto."/></f:facet>
+                                            <center>
+                                                <h:outputText value="#{data['fechaProximoMantenimiento']}">
+                                                    <f:convertDateTime pattern="dd/MM/yyyy" type="date" />
+                                                </h:outputText>
+                                            </center>
+                                        </p:column>  
+                                        <p:column>
+                                            <h:outputLink rendered="#{data['idAdjunto'] != 0 }"
+                                                          target="_blank" value="/ServiciosGenerales/AbrirArchivo?ZWZ2W=#{data['idAdjunto']}&amp;ZWZ3W=#{data['uuid']}">
+                                                <center>
+                                                    <h:graphicImage 
+                                                        url="#{msgs['sgl.ruta.imagen']}icon_attach.gif"  alt="#{msgs['sistema.abrir.archivo']}"
+                                                        rendered="#{data['idAdjunto'] != 0}"
+                                                        />
+                                                </center>
+                                            </h:outputLink> 
+
+                                        </p:column>
+                                        <p:column>  
+                                            <h:panelGrid columns="2">
+                                                <p:commandLink title="#{msgs['sistema.subir.comprobante']}" rendered="#{data['terminado'] eq 'False' and data['idAdjunto'] == 0 and data['importe'] > 0}"
+                                                               actionListener="#{mantenimientoBean.mostrarPopupSubirArchivo(event)}">
+                                                    <f:param name="idMantenimiento" value="#{data['id']}"/>
+                                                    <i class="fa fa-upload"></i>
+                                                </p:commandLink>
+
+                                                <p:commandLink title="#{msgs['sistema.quitar.comprobante']}" styleClass="btn btn-default" 
+                                                               actionListener="#{mantenimientoBean.eliminarArchivo(event)}" 
+                                                               rendered="#{data['idAdjunto'] != 0 and data['terminado'] eq 'False'}"
+                                                               onclick="if (!confirm('#{msgs['sistema.mensaje.eliminar.archivo']} #{data['nombreAdjunto']} ...? '))
+                                                                           return false;">
+                                                    <f:param name="idMantenimiento" value="#{data['id']}"/>                                   
+                                                    <i class="fa fa-remove text-danger"></i><i class="fa fa-file text-danger"></i>
+                                                </p:commandLink>
+
+                                            </h:panelGrid>
+                                        </p:column>
+                                        <!-- opciones para el registro de entrada a mantenimiento -->
+                                        <p:column>                            
+                                            <p:commandLink rendered="#{data['terminado'] eq 'False' }" 
+                                                           title="#{(data['terminado'] eq 'False' and data['importe'] le 0) ? msgs['sgl.mantenimiento.recibir']: 'Modificar'}" 
+                                                           actionListener="#{mantenimientoBean.mostrarPopupSalidaMantenimiento(event)}"  >
+                                                <f:param name="idMantenimiento" value="#{data['id']}"/>
+                                                <i class="fa fa-pencil"></i>
+                                            </p:commandLink>
+                                        </p:column>
+                                        <p:column>                            
+                                            <p:commandLink rendered="#{data['terminado'] eq 'False' and data['idAdjunto'] == 0 and data['importe'] le 0 }" 
+                                                           title="#{msgs['sistema.modificar']}" actionListener="#{mantenimientoBean.mostrarPopupModificarEntrada(event)}">
+                                                <f:param name="idMantenimiento" value="#{data['id']}"/>
+                                                <i class="fa fa-pencil"></i>
+                                            </p:commandLink>
+                                        </p:column> 
+                                        <p:column>                            
+                                            <p:commandLink rendered="#{data['terminado'] eq 'False' }"
+                                                           title="#{msgs['sistema.eliminar']}" actionListener="#{mantenimientoBean.eliminarRegistroEntradaMantenimiento(event)}"
+                                                           onclick="if (!confirm('#{msgs['sgl.mantenimiento.grid.mensaje.eliminar']} '))
+                                                                       return false;">                            
+                                                <f:param name="idMantenimiento" value="#{data['id']}"/>
+                                                <i class="fa fa-remove"></i>
+                                            </p:commandLink>
+                                        </p:column> 
+                                        <p:column>
+                                            <p:commandLink title="#{msgs['sistema.detalle']}" actionListener="#{mantenimientoBean.mostrarPopupDetalle(event)}"  >
+                                                <f:param name="idMantenimiento" value="#{data['id']}"/>                                            
+                                                <i class="fa fa-eye"></i>
+                                            </p:commandLink>
+                                        </p:column>                                
+
+                                    </p:dataTable>
+                                </h:form>
+                            </div>
+                        </div>
+                        <!--MANTENIMIENTOS CORRECTIVOS- INICIO -->
+                        <div class="card  card-primary">
+                            <div class="card -heading" data-toggle="collapse"  href="#mantoCorrectivo">                        
+                                <h4 class="card -title">
+                                    #{msgs['sgl.mantenimiento.mantenimiento.mantenimiento.correctivo']}
+                                </h4>
+                            </div>		    
+                            <div id="mantoCorrectivo" class="collapse in panel-body">    
+                                <h:form id="frmMantenimientoCorrectivos" styleClass="textoIzquierda">
+                                    <p:dataTable id="dataGridMantenimiento" 
+                                                 var="data"
+                                                 value="#{mantenimientoBean.listaMantenimientoCorrectivo}"
+                                                 rows="3">
+                                        <p:column>
+                                            <f:facet name="header"><h:outputText value="#{msgs['sgl.mantenimiento.grid.fecha.ingreso']}"/></f:facet>
+                                            <center>
+                                                <h:outputText value="#{data['fechaIngreso']}">
+                                                    <f:convertDateTime pattern="dd/MM/yyyy" type="date" />
+                                                </h:outputText>
+                                            </center>
+                                        </p:column>
+                                        <p:column>
+                                            <f:facet name="header"><h:outputText value="Proveedor"/></f:facet>
+                                            <h:outputText value="#{data['nombreProveedor']}"/>                                     
+                                        </p:column> 
+                                        <p:column>
+                                            <f:facet name="header"><h:outputText value="#{msgs['sgl.mantenimiento.grid.importe']}"/></f:facet>
+                                            <center> 
+                                                <h:outputText value="#{data['importe']}">
+                                                    <f:convertNumber currencySymbol="$" maxFractionDigits="2" type="currency" groupingUsed="true" />
+                                                </h:outputText>
+                                                <h:outputText value="(#{data['moneda']})"/>
+                                            </center>
+                                        </p:column>                                
+                                        <p:column>
+                                            <h:outputLink rendered="#{data['idAdjunto'] != 0 }"
+                                                          target="_blank" value="/ServiciosGenerales/AbrirArchivo?ZWZ2W=#{data['idAdjunto']}&amp;ZWZ3W=#{data['uuid']}">
+                                                <center>
+                                                    <h:graphicImage 
+                                                        url="#{msgs['sgl.ruta.imagen']}icon_attach.gif"  alt="#{msgs['sistema.abrir.archivo']}"
+                                                        rendered="#{data['idAdjunto'] != 0}"
+                                                        />
+                                                </center>
+                                            </h:outputLink> 
+
+                                        </p:column>
+                                        <p:column>  
+                                            <h:panelGrid columns="2">
+                                                <p:commandLink title="#{msgs['sistema.subir.comprobante']}" rendered="#{data['terminado'] eq 'False' and data['idAdjunto'] == 0 and data['importe'] > 0}"
+                                                               actionListener="#{mantenimientoBean.mostrarPopupSubirArchivo(event)}">
+                                                    <f:param name="idMantenimiento" value="#{data['id']}"/>
+                                                    <i class="fa fa-upload"></i>
+                                                </p:commandLink>
+
+                                                <p:commandLink title="#{msgs['sistema.quitar.comprobante']}" styleClass="btn btn-default" 
+                                                               actionListener="#{mantenimientoBean.eliminarArchivo(event)}" 
+                                                               rendered="#{data['idAdjunto'] != 0 and data['terminado'] eq 'False'}"
+                                                               onclick="if (!confirm('#{msgs['sistema.mensaje.eliminar.archivo']} #{data['nombreAdjunto']}...? '))
+                                                                           return false;">
+                                                    <f:param name="idMantenimiento" value="#{data['id']}"/>
+                                                    <i class="fa fa-remove text-danger"></i><i class="fa fa-file text-danger"></i>
+                                                </p:commandLink>
+
+                                            </h:panelGrid>
+                                        </p:column>
+                                        <p:column>                            
+                                            <p:commandLink rendered="#{data['terminado'] eq 'False' }" 
+                                                           title="#{(data['terminado'] eq 'False' and data['importe'] le 0) ? msgs['sgl.mantenimiento.recibir']:'Modificar'}" 
+                                                           actionListener="#{mantenimientoBean.mostrarPopupSalidaMantenimiento(event)}"  >
+                                                <f:param name="idMantenimiento" value="#{data['id']}"/>
+                                                <i class="fa fa-pencil"></i>
+                                            </p:commandLink>
+                                        </p:column>
+                                        <p:column>                                                                
+                                            <p:commandLink rendered="#{data['terminado'] eq 'False' and data['idAdjunto'] == 0 and data['importe'] le 0 }"
+                                                           title="#{msgs['sistema.modificar']}" actionListener="#{mantenimientoBean.mostrarPopupModificarEntrada(event)}">                            
+                                                <f:param name="idMantenimiento" value="#{data['id']}"/>                                        
+                                                <i class="fa fa-pencil"></i>
+                                            </p:commandLink>
+                                        </p:column>
+                                        <p:column>                            
+                                            <p:commandLink rendered="#{data['terminado'] eq 'False'}"
+                                                           title="#{msgs['sistema.eliminar']}" actionListener="#{mantenimientoBean.eliminarRegistroEntradaMantenimiento(event)}"
+                                                           onclick="if (!confirm('#{msgs['sgl.mantenimiento.grid.mensaje.eliminar']}'))
+                                                                       return false;">                            
+                                                <f:param name="idMantenimiento" value="#{data['id']}"/>
+                                                <i class="fa fa-remove text-danger"></i>
+                                            </p:commandLink>
+                                        </p:column> 
+                                        <p:column>
+                                            <p:commandLink title="Detalle" actionListener="#{mantenimientoBean.mostrarPopupDetalle(event)}"  >
+                                                <f:param name="idMantenimiento" value="#{data['id']}"/>
+                                                <i class="fa fa-eye"></i>
+                                            </p:commandLink>
+                                        </p:column>                                
+
+                                    </p:dataTable>
+                                </h:form>
+                            </div>
+                        </div>
+
+
+                        <div class="card  card-primary">
+                            <div class="card -heading" data-toggle="collapse"  href="#checkList">                        
+                                <h4 class="card -title">
+                                    Checklist
+                                </h4>
+                            </div>		    
+                            <div id="checkList" class="collapse in panel-body">
+                                <h:form styleClass="textoIzquierda">
+                                    <p:dataTable id="dataGridChecklistVehiculo" rows="3"  value="#{vehiculoBean.mapaDatos.get('checklist')}" 
+                                                 var="data">
+                                        <p:column>
+                                            <f:facet name="header"><h:outputText value="#{msgs['sgl.generales.fechaCreado']}"/></f:facet>
+                                            <center>
+                                                <h:outputText value="#{data.fechaGenero}">
+                                                    <f:convertDateTime pattern="dd/MM/yyyy" type="date" />
+                                                </h:outputText>
+                                            </center>
+                                        </p:column>
+                                        <p:column>
+                                            <f:facet name="header"><h:outputText value="#{msgs['sgl.generales.fechaModificado']}"/></f:facet>
+                                            <center>
+                                                <h:outputText value="#{data.fechaModifico}" rendered="#{data.fechaModifico != null}">
+                                                    <f:convertDateTime pattern="dd/MM/yyyy" type="date" />
+                                                </h:outputText>
+                                                <h:outputText value="#{msgs['sgl.generales.noModificado']}" rendered="#{data.fechaModifico == null}" />
+                                            </center>
+                                        </p:column>  
+                                        <p:column>
+                                            <h:commandLink title="#{msgs['sistema.modificar']}" actionListener="#{vehiculoBean.loadChecklistsVehiculo(actionEvent)}" action="/vistas/sgl/vehiculo/checklist/editChecklistVehiculo" >
+                                                <i class="fa fa-pencil"></i>
+                                            </h:commandLink>
+                                        </p:column>
+                                        <p:column>
+                                            <h:commandLink title="#{msgs['sistema.detalle']}" action="#{vehiculoBean.openDetalleChecklistVehiculo()}" >					    
+                                                <i class="fa fa-eye"></i>
+                                            </h:commandLink>
+                                        </p:column>                                
+                                    </p:dataTable> 
+                                </h:form>
+                            </div>
+                        </div>
+
+                        <div class="card  card-primary">
+                            <div class="card -heading" data-toggle="collapse"  href="#pagos">                        
+                                <h4 class="card -title">
+                                    Pagos
+                                </h4>
+                            </div>		    
+                            <div id="pagos" class="collapse in panel-body">
+                                <h:form styleClass="textoIzquierda">
+                                    <p:dataTable showGridlines="true" size="small"  value="#{vehiculoBean.mapaDatos.get('pagos')}" var="dtP" >
+                                        <p:column>
+                                            <f:facet name="header"><h:outputText value="Servicio"/></f:facet>
+                                            <h:outputText value="#{dtP.sgPagoServicio.sgTipoEspecifico.nombre}"/>
+                                        </p:column>
+                                        <p:column>
+                                            <f:facet name="header"><h:outputText value="Importe"/></f:facet>
+                                            <h:outputText value="#{dtP.sgPagoServicio.importe}">
+                                                <f:convertNumber currencySymbol="$" maxFractionDigits="2" type="currency"/>
+                                            </h:outputText>
+                                        </p:column>
+                                        <p:column>
+                                            <f:facet name="header"><h:outputText value="Moneda"/></f:facet>
+                                            <h:outputText value="#{dtP.sgPagoServicio.moneda.siglas}"/>
+                                        </p:column>
+                                        <p:column>
+                                            <f:facet name="header"><h:outputText value="Inicio"/></f:facet>
+                                            <h:outputText value="#{dtP.sgPagoServicio.fechaInicio}">
+                                                <f:convertDateTime pattern="dd/MM/yyyy" type="date" />
+                                            </h:outputText>
+                                        </p:column>
+                                        <p:column>
+                                            <f:facet name="header"><h:outputText value="Fin"/></f:facet>
+                                            <h:outputText value="#{dtP.sgPagoServicio.fechaFin}">
+                                                <f:convertDateTime pattern="dd/MM/yyyy" type="date" />
+                                            </h:outputText>
+                                        </p:column>
+                                        <p:column>
+                                            <h:outputLink target="_blank"  value="/ServiciosGenerales/AbrirArchivo?ZWZ2W=#{dtP.sgPagoServicio.siAdjunto.id}&amp;ZWZ3W=#{dtP.sgPagoServicio.siAdjunto.uuid}">
+                                                <center><h:graphicImage url="#{msgs['sgl.ruta.imagen']}icon_attach.gif"  alt="Abrir archivo" rendered="#{dtP.sgPagoServicio.siAdjunto != null}"/></center>
+                                            </h:outputLink>
+                                        </p:column>
+                                        <p:column>
+                                            <p:commandLink title="#{msgs['sistema.administrar']}" action="#{vehiculoBean.administrarPagos()}">
+                                                <i class="fa fa-cog"></i>
+                                            </p:commandLink>
+                                        </p:column>         
+                                        <p:column>
+                                            <p:commandLink actionListener="#{vehiculoBean.verDetallePago(event)}" >
+                                                <i class="fa fa-eye"></i>
+                                            </p:commandLink>
+                                        </p:column>         
+                                    </p:dataTable>
+                                </h:form>
+                            </div>
+                        </div>
+                        <!--Movimientos de oficina-->
+
+                        <div class="card  card-primary">
+                            <div class="card -heading" data-toggle="collapse"  href="#movimientoOficina">                        
+                                <h4 class="card -title">
+                                    Movimientos de oficina
+                                </h4>
+                            </div>		    
+                            <div id="movimientoOficina" class="collapse in panel-body">
+                                <h:form styleClass="textoIzquierda">                        
+                                    <p:dataTable showGridlines="true" size="small"  value="#{vehiculoBean.mapaDatos.get('movimiento')}" var="dtP" >
+                                        <p:column>
+                                            <f:facet name="header"><h:outputText value="Oficina Origen"/></f:facet>
+                                            <h:outputText value="#{dtP.oficinaOrigen}"/>
+                                        </p:column>
+                                        <p:column>
+                                            <f:facet name="header"><h:outputText value="Oficina Destino"/></f:facet>
+                                            <h:outputText value="#{dtP.oficinaDestino}">
+                                                <f:convertNumber currencySymbol="$" maxFractionDigits="2" type="currency"/>
+                                            </h:outputText>
+                                        </p:column>
+                                        <p:column>
+                                            <f:facet name="header"><h:outputText value="Motivo"/></f:facet>
+                                            <h:outputText value="#{dtP.movimiento}"/>
+                                        </p:column>
+                                    </p:dataTable>
+                                </h:form>
+                            </div>
+                        </div>
+                        <!--Recibir vehiculo-->
+                    </div>
+
+
+                </div>
+                <div class="col-lg-4">
+
+                </div>
+                <h:form id="recV" >
+                    <p:dialog   id="popupRec" style="background: #FFFFFF;" 
+                                visible="#{vehiculoBean.recibirVehiculoPop and vehiculoBean.sgAsignarVehiculo != null}"
+                                draggable="false" modal="true">
+                        <f:facet name="header">
+                            <h:panelGroup>
+                                <h:outputText  value="Recibir vehículo"
+                                               style="float: left; padding: 4px;text-align: center; vertical-align: middle;font-size: 11px;color: #484848; font-weight: bold;"/>
+                            </h:panelGroup>
+                        </f:facet>
+                        <f:facet id="facet1" name="body">
+                            <h:panelGroup>
+                                <h:outputText value="Recibir vehículo" styleClass="tituloEncabezado"/>
+                                <h:panelGrid  columns="4">
+                                    <h:panelGrid >
+                                        <h:outputText value="Modelo"/>
+                                        <h:outputLabel value="#{vehiculoBean.vehiculo.modelo}"/>
+                                    </h:panelGrid>
+                                    <h:panelGrid>
+                                        <h:outputText value="Marca"/>
+                                        <h:outputLabel value="#{vehiculoBean.vehiculo.marca}"/>
+                                    </h:panelGrid>
+                                    <h:panelGrid>
+                                        <h:outputText value="Placa"/>
+                                        <h:outputLabel value="#{vehiculoBean.vehiculo.numeroPlaca}"/>
+                                    </h:panelGrid>
+                                    <h:panelGrid>
+                                        <h:outputText value="Color"/>
+                                        <h:outputLabel value="#{vehiculoBean.vehiculo.color}"/>
+                                    </h:panelGrid>
+                                </h:panelGrid>
+                                <br/>                                
+                                <h:panelGrid columns="2">
+                                    <h:outputText value="Usuario"/>
+                                    <h:outputLabel value="#{vehiculoBean.sgAsignarVehiculo.usuario.nombre}"/>
+                                    <h:outputText value="Check list"/>
+                                    <h:panelGrid columns="2">
+                                        <h:outputLabel value="#{vehiculoBean.sgVehiculoChecklist.sgChecklist.fechaGenero}">
+                                            <f:convertDateTime pattern="dd/MM/yyyy" type="date" />
+                                        </h:outputLabel>
+                                        <h:outputLabel value="#{vehiculoBean.sgVehiculoChecklist.sgChecklist.horaGenero}">
+                                            <f:convertDateTime pattern="HH:mm:ss"/>
+                                        </h:outputLabel>
+                                    </h:panelGrid>
+                                    <h:outputText value="Fecha"/>
+                                    <p:datePicker value="#{vehiculoBean.sgAsignarVehiculo.fechaOperacion}" 
+                                                  >
+                                        <f:convertDateTime pattern="dd/MM/yyyy" type="date" />
+                                    </p:datePicker>
+                                    <h:outputText value="Observación"/>
+                                    <p:inputTextarea cols="45" value="#{vehiculoBean.sgAsignarVehiculo.observacion}"/>
+                                </h:panelGrid>
+                                <br/>    
+                                <center>
+                                    <h:panelGrid columns="2">
+                                        <p:commandLink styleClass="btn btn-info" value="#{msgs['sistema.recibir']}" 
+                                                       actionListener="#{vehiculoBean.completarRecibirVehiculo(event)}"/>
+                                        <p:commandLink styleClass="btn btn-default" value="#{msgs['sistema.cancelar']}" 
+                                                       actionListener="#{vehiculoBean.cancelarRecibirgVehiculo(event)}"/>
+                                    </h:panelGrid>
+                                </center>
+                                <h:messages infoStyle="textoMensajeError" errorStyle="textoMensajeError" infoClass="textoMensajeError" />
+                                <br/>       
+                            </h:panelGroup>
+                        </f:facet>
+                        </<p:dialog >
+                            </h:form>
+
+                            <!-- Actualizar Vehículo -->
+                            <div class="modal fade" id="dialogoModificarVehiculo" data-backdrop="static" data-keyboard="false">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h4 class="modal-title">Modificar Vehículo</h4>
+                                        </div>
+                                        <h:form id="frmUpdateVehiculo">
+                                            <div class="modal-bodycard panel-body">
+                                                <h:messages  errorClass="errorMessage" infoClass="infoMessage"/>
+                                                <h:panelGrid  styleClass="bordePanelGrid" >
+                                                    <h:panelGrid columns="2" >
+                                                        <h:panelGrid columns="2" >
+                                                            <h:outputLabel value="Tipo de Vehículo: "  />
+                                                            <h:outputText value="*" styleClass="textoRojo" />
+                                                        </h:panelGrid>
+                                                        <h:panelGrid columns="2">
+                                                            <p:selectOneMenu id="tipoVehiculo"
+                                                                             value="#{vehiculoBean.vehiculo.idTipoEspecifico}"
+                                                                             valueChangeListener="#{vehiculoBean.loadModelosInComboModelos}"
+                                                                             styleClass="form-control" >
+                                                                <f:selectItem itemLabel="Seleccione Tipo de Vehículo..." itemValue="-1" />
+                                                                <f:selectItems value="#{vehiculoBean.listaTipoEspecifico}" />
+                                                            </p:selectOneMenu>
+                                                            <h:message for="tipoVehiculo" errorClass="errorMessage" infoClass="infoMessage"/>
+                                                        </h:panelGrid>    
+
+                                                        <h:panelGrid columns="2" >
+                                                            <h:outputLabel value="Marca: "  />
+                                                            <h:outputText value="*" styleClass="textoRojo" />
+                                                        </h:panelGrid>
+                                                        <h:panelGrid columns="2">
+                                                            <p:selectOneMenu id="marca" 
+                                                                             value="#{vehiculoBean.vehiculo.idMarca}"
+                                                                             valueChangeListener="#{vehiculoBean.loadModelosInComboModelosFromComboMarcas}"
+                                                                             styleClass="form-control">
+                                                                <f:selectItem itemLabel="Seleccione Marca..." itemValue="-1" />
+                                                                <f:selectItems value="#{vehiculoBean.marcasByTipoSelectItem}" />
+                                                            </p:selectOneMenu>
+                                                            <h:message for="marca" errorClass="errorMessage" infoClass="infoMessage"/>
+                                                        </h:panelGrid>  
+
+                                                        <h:panelGrid columns="2" >
+                                                            <h:outputLabel value="Modelo: "  />
+                                                            <h:outputText value="*" styleClass="textoRojo" />
+                                                        </h:panelGrid>
+                                                        <h:panelGrid columns="2">
+                                                            <p:selectOneMenu id="modelo" value="#{vehiculoBean.vehiculo.idModelo}" styleClass="form-control" >
+                                                                <f:selectItem itemLabel="Seleccione Modelo..." itemValue="-1" />
+                                                                <f:selectItems value="#{vehiculoBean.modelosSelectItem}" />
+                                                            </p:selectOneMenu>
+                                                            <h:message for="modelo" errorClass="errorMessage" infoClass="infoMessage"/>
+                                                        </h:panelGrid>                                    
+
+                                                        <h:panelGrid columns="2" >
+                                                            <h:outputLabel value="# Serie: "  />
+                                                            <h:outputText value="*" styleClass="textoRojo" />
+                                                        </h:panelGrid>
+                                                        <h:panelGrid columns="2">
+                                                            <p:inputText id="serie" value="#{vehiculoBean.vehiculo.serie}" maxlength="50" required="true" requiredMessage="# Serie es requerido" styleClass="form-control" />                                
+                                                            <h:message for="serie" errorClass="errorMessage" infoClass="infoMessage"/>
+                                                        </h:panelGrid>                                
+                                                        <h:panelGrid columns="2" >
+                                                            <h:outputLabel value="# Placa: "  />
+                                                            <h:outputText value="*" styleClass="textoRojo" />
+                                                        </h:panelGrid>
+                                                        <h:panelGrid columns="2">
+                                                            <p:inputText id="numeroPlaca" value="#{vehiculoBean.vehiculo.numeroPlaca}" maxlength="20" required="true" requiredMessage="# Placa es requerido" styleClass="form-control" />                                
+                                                            <h:message for="numeroPlaca" errorClass="errorMessage" infoClass="infoMessage"/>
+                                                        </h:panelGrid>
+
+                                                        <h:panelGrid columns="2" >
+                                                            <h:outputLabel value="Color: "  />
+                                                            <h:outputText value="*" styleClass="textoRojo" />
+                                                        </h:panelGrid>
+                                                        <h:panelGrid columns="2">
+                                                            <p:selectOneMenu id="sgColor" value="#{vehiculoBean.vehiculo.idColor}" styleClass="form-control" >
+                                                                <f:selectItem itemLabel="Seleccione Color..." itemValue="-1" />
+                                                                <f:selectItems value="#{vehiculoBean.colorSelectItem}" />
+                                                            </p:selectOneMenu>                                    
+                                                            <h:message for="sgColor" errorClass="errorMessage" infoClass="infoMessage"/>                                                                    
+                                                        </h:panelGrid>                                                            
+
+                                                        <h:panelGrid columns="2" >
+                                                            <h:outputLabel value="Capacidad pasajeros: "  />
+                                                            <h:outputText value="*" styleClass="textoRojo" />
+                                                        </h:panelGrid>
+
+                                                        <h:panelGrid columns="2">
+                                                            <p:inputText id="capacidadPasajeros" value="#{vehiculoBean.vehiculo.capacidadPasajeros}" maxlength="5" required="true" requiredMessage="Capacidad es requerido" styleClass="form-control" />
+                                                            <h:message for="capacidadPasajeros" errorClass="errorMessage" infoClass="infoMessage"/>
+                                                        </h:panelGrid> 
+
+                                                        <h:panelGrid columns="2" >
+                                                            <h:outputLabel value="#{msgs['sgl.vehiculo.periodicidadMantenimiento']}: "  />
+                                                            <h:outputText value="*" styleClass="textoRojo" />
+                                                        </h:panelGrid>
+
+                                                        <h:panelGrid columns="2" >
+                                                            <p:inputText id="periodicidadMntto" value="#{vehiculoBean.vehiculo.periodoKmMantenimiento}" maxlength="5" styleClass="form-control"/>                                 
+                                                            <h:message for="periodicidadMntto" errorClass="errorMessage" infoClass="infoMessage"/>                                     
+                                                        </h:panelGrid>                                
+
+                                                        <h:outputLabel value="Cajón de Estacionamiento: "  />
+                                                        <p:inputText id="cajonEstacionamiento" value="#{vehiculoBean.vehiculo.cajonEstacionamiento}" maxlength="8"  styleClass="form-control"/>
+
+                                                        <h:outputLabel value="Observación: "  />
+                                                        <p:inputTextarea id="observacion" value="#{vehiculoBean.vehiculo.observacion}" maxlength="100"  styleClass="form-control"/>
+
+                                                        <h:outputLabel value="Núm Económico: "  />
+                                                        <p:inputText  value="#{vehiculoBean.vehiculo.numeroEconomico}" styleClass="form-control" maxlength="5"/>
+
+                                                        <h:outputLabel value="Activo Fijo: "  />
+                                                        <p:inputText  value="#{vehiculoBean.vehiculo.numeroActivo}" styleClass="form-control"/>
+
+                                                        <h:outputLabel value="Seguro: "  />
+                                                        <p:inputText  value="#{vehiculoBean.vehiculo.seguro}" styleClass="form-control"/>
+
+                                                        <h:outputLabel value="GPS: "  />
+                                                        <p:selectBooleanCheckbox  value="#{vehiculoBean.vehiculo.gps}" styleClass="form-control"/>
+                                                        <h:outputLabel value="Herramientas: "  />
+                                                        <p:selectBooleanCheckbox  value="#{vehiculoBean.vehiculo.cajaHerramienta}" styleClass="form-control"/>
+
+                                                    </h:panelGrid>
+                                                </h:panelGrid>
+                                            </div>
+                                            <div class="card -footer">
+                                                <p:commandButton value="#{msgs['sistema.actualizar']}" actionListener="#{vehiculoBean.updateVehiculo(actionEvent)}" styleClass="btn btn-info"/>
+                                                <p:commandButton value="#{msgs['sistema.cancelar']}" 
+                                                                 onclick="$(dialogoModificarVehiculo).modal('hide');"
+                                                                 immediate="true" styleClass="btn btn-default"/>        
+                                            </div>
+                                        </h:form> 
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- *********************************** MANTENIMIENTO ******************************************** -->
+
+                            <!-- REGISTRAR ENTRADA A MANTENIMIENTO -->
+                            <h:form  rendered="#{not empty sesion.usuario}"   styleClass="textoIzquierda">
+                                <p:dialog  header="#{msgs['sgl.mantenimiento.registrar.entrada']}" 
+                                           >      
+                                    <h:panelGrid >
+                                        <h:panelGrid>
+                                            <center><h:messages errorClass="mensaje" infoClass="mensaje"/></center>  
+                                        </h:panelGrid>                        
+                                    </h:panelGrid>
+                                    <h:panelGrid columns="2" >
+                                        <p:selectOneRadio disabled="#{mantenimientoBean.mrPopupModificarEntrada}"
+                                                          value="#{mantenimientoBean.idTipoMantenimientoEspecifico}" styleClass="fNegrita" >                                    
+                                            <f:selectItems value="#{mantenimientoBean.listaTipoMantenimientoItems}" />
+                                        </p:selectOneRadio> <!-- Hasta aqui puse las literales. -->                                          
+                                    </h:panelGrid> 
+                                    <h:panelGrid  columns="2" > 
+                                        <h:outputLabel value="#{msgs['sgl.taller.proveedor']} :" />
+                                        <h:panelGroup id="Pro">
+                                            <p:selectOneMenu  value="#{mantenimientoBean.idProveedorSeleccionado}" 
+
+                                                              >                                                                                                          
+                                                <f:selectItem itemValue="-1" itemLabel="#{msgs['sistema.seleccionar.combo']}"/>
+                                                <f:selectItems value="#{mantenimientoBean.listaTalleresItems}"/>
+                                            </p:selectOneMenu>
+                                        </h:panelGroup>                          
+                                    </h:panelGrid>
+                                    <h:panelGrid columns="2">
+                                        <h:outputLabel value="Kilometraje actual:"/>                           
+                                        <h:panelGrid columns="2">
+                                            <p:inputText value="#{mantenimientoBean.kilometraje}" />                                                        
+                                            <h:outputText style="color: #666666;" value="actual( #{mantenimientoBean.kilometrajeActualOld} )" />
+                                        </h:panelGrid>
+                                        <h:outputLabel value="Fecha de Ingreso:"/>
+                                        <h:panelGrid columns="2">   
+                                            <p:datePicker  id="rFechaIngreso"   
+                                                           value="#{mantenimientoBean.fechaIngreso}"                                                      
+                                                           required="true"  
+                                                           >
+                                                <f:convertDateTime pattern="dd/MM/yyyy" type="date" />
+                                            </p:datePicker>                                  
+                                        </h:panelGrid>
+                                    </h:panelGrid>
+                                    <h:panelGrid>
+                                        <h:outputLabel value="Observaciones : " />
+                                        <p:inputTextarea value="#{mantenimientoBean.observaciones}" cols="65" rows="3">
+                                        </p:inputTextarea>
+                                    </h:panelGrid>
+                                    <center>
+                                        <h:panelGrid columns="2"> <!-- action="/vistas/sgl/vehiculo/administrarVehiculo"-->                                  
+                                            <p:commandLink value="#{msgs['sistema.guardar']}" 
+                                                           rendered="#{mantenimientoBean.mrPopupModificarEntrada eq false}" 
+                                                           actionListener="#{mantenimientoBean.registrarEntradaMantenimiento(event)}" styleClass="btn btn-info"/>  
+                                            <p:commandLink value="#{msgs['sistema.actualizar']}"  
+                                                           rendered="#{mantenimientoBean.mrPopupModificarEntrada  eq true}" 
+                                                           actionListener="#{mantenimientoBean.modificarRegistroEntradaMantenimiento(event)}" styleClass="btn btn-info"/>                                
+                                            <p:commandLink value="#{msgs['sistema.cancelar']}" 
+                                                           actionListener="#{mantenimientoBean.ocultarPopupEntradaMantenimiento(event)}" styleClass="btn btn-default" immediate="true"/>                                        
+                                        </h:panelGrid>
+                                    </center>
+                                    </my:panelPopup>
+                            </h:form>
+                            <!-- FIN REGISTRAR ENTRADA A MANTENIMIENTO -->
+
+
+                            <!-- RECIBIR VEHICULO DE MANTTO. -->
+                            <h:form id="frmMantenimientoPopup"  >
+                                <p:dialog  header="#{mantenimientoBean.sgMantenimiento.sgKilometraje.sgTipoEspecifico.id eq 4 ? 'Registrar salida de mantenimiento preventivo' : 'Registrar salida de mantenimiento correctivo' } "
+                                           >      
+                                    <h:panelGrid>
+                                        <center><h:messages errorClass="mensaje" infoClass="mensaje"/></center>  
+                                    </h:panelGrid> 
+                                    <h:panelGrid columns="2">
+                                        <h:outputLabel value="Fecha de Salida :" />
+                                        <h:panelGrid columns="2">
+                                            <p:datePicker id="fsalida" 
+
+                                                          value="#{mantenimientoBean.sgMantenimiento.fechaSalida}"                                                      
+                                                          required="true">}
+                                                <f:convertDateTime pattern="dd/MM/yyyy" type="date" />
+                                                <!--<f:convertDateTime dateStyle="default" pattern="dd/MM/yyyy" type="date" timeZone="America/Mexico_City"/>-->
+                                                <!-- <f:convertDateTime pattern="dd/MM/yyyy" />  -->
+                                            </p:datePicker>                                  
+                                        </h:panelGrid>
+                                        <h:outputLabel value="Importe :" />
+                                        <h:panelGrid columns="2">
+                                            <p:inputText  id="sImport" value="#{mantenimientoBean.sgMantenimiento.importe}" />
+                                            <!-- <h:outputLabel value="Moneda :" />-->
+                                            <p:selectOneMenu value="#{mantenimientoBean.idMoneda}" title="#{msgs['sgl.mantenimiento.title.moneda']}.." >                                    
+                                                <f:selectItems value="#{mantenimientoBean.listaMondedaItems}"/>
+                                            </p:selectOneMenu>                            
+                                        </h:panelGrid>
+                                    </h:panelGrid>
+                                    <h:panelGrid columns="2" rendered="#{mantenimientoBean.capturaProximoMtto eq true}" styleClass="borderPanelGrid">
+                                        <h:outputLabel value="Kilometraje para prox. mantenimiento :" />
+                                        <h:panelGrid columns="2">
+                                            <p:inputText id="sKilomentrajeProx" value="#{mantenimientoBean.sgMantenimiento.proxMantenimientoKilometraje}"/>
+                                            <h:outputText style="color: #666666;" value="actual( #{mantenimientoBean.kilometrajeActualOld} )" />
+                                        </h:panelGrid>
+                                        <h:outputLabel value="Fecha para prox. mantenimiento :" />
+                                        <p:datePicker id="fProxMntto"
+
+                                                      value="#{mantenimientoBean.sgMantenimiento.proxMantenimientoFecha}"
+                                                      validator="#{mantenimientoBean.validaFecha}"
+                                                      >
+                                            <f:convertDateTime pattern="dd/MM/yyyy" type="date" />
+                                            <!--<f:convertDateTime dateStyle="default" type="date" pattern="dd/MM/yyyy"/>-->
+                                        </p:datePicker>     
+                                    </h:panelGrid> 
+                                    <center>
+                                        <h:panelGrid columns="2">
+                                            <p:commandLink value="#{msgs['sistema.guardar']}" actionListener="#{mantenimientoBean.registrarSalidaMantenimiento(event)}"  styleClass="btn btn-info"/>                                
+                                            <p:commandLink value="#{msgs['sistema.cancelar']}" actionListener="#{mantenimientoBean.ocultarPopupSalida(event)}" styleClass="btn btn-default" immediate="true" />                                        
+                                        </h:panelGrid>
+                                    </center>
+                                    </my:panelPopup>
+                            </h:form>
+
+                            <!-- VER DETALLE DE MANTENIMIENTO -->
+                            <h:form id="formDetalleMantto" >
+                                <p:dialog  header= "#{mantenimientoBean.sgMantenimiento.sgKilometraje.sgTipoEspecifico.id eq 4 ? 'Detalle de mantenimiento preventivo' : 'Detalle de mantenimiento correctivo' }" 
+                                           >
+                                    <h:panelGrid >
+                                        <h:panelGrid columns="2" >
+                                            <h:outputLabel  value="#{msgs['sgl.vehiculo']}:"/>
+                                            <h:outputText  value="#{mantenimientoBean.sgVehiculo.marca} #{mantenimientoBean.sgVehiculo.modelo}"/>
+                                            <h:outputLabel  value="Serie:"/>
+                                            <h:outputText  value="#{mantenimientoBean.sgVehiculo.serie}"/>
+                                            <h:outputLabel  value="Color:"/>
+                                            <h:outputText  value="#{mantenimientoBean.sgVehiculo.color}"/>                                      
+                                        </h:panelGrid>
+                                        <h:panelGrid >
+                                            <h:outputLabel value="#{mantenimientoBean.sgMantenimiento.sgKilometraje.sgTipoEspecifico.nombre}"/>
+                                        </h:panelGrid>
+                                        <h:panelGrid  rendered="#{mantenimientoBean.sgMantenimiento != null}"  style="padding: 0px 0px 2px 0px;" styleClass="bordePanelGrid">
+                                            <!-- <h:outputText value="Entrada"/> -->
+                                            <h:panelGrid columns="2">
+                                                <h:outputLabel  value="Ingreso:"/>
+                                                <h:outputText  value="#{mantenimientoBean.sgMantenimiento.fechaIngreso}">
+                                                    <f:convertDateTime pattern="dd/MM/yyyy" type="date" />
+                                                    <!--<f:convertDateTime dateStyle="default" type="date" timeZone="America/Mexico_City"/>-->
+                                                </h:outputText>                                    
+                                                <h:outputLabel value="KM :"/>
+                                                <h:outputText  value="#{mantenimientoBean.sgMantenimiento.sgKilometraje.kilometraje}"/>                                    
+                                                <h:outputLabel value="Poveedor de servicio:"/>
+                                                <h:outputText  value="#{mantenimientoBean.sgMantenimiento.proveedor.nombre}"/>
+                                            </h:panelGrid>
+                                            <h:outputLabel  value="Observaciones :"/>
+                                            <p:inputTextarea cols="38" rows="2" disabled="true" value="#{mantenimientoBean.sgMantenimiento.observacion}"/>                                
+                                        </h:panelGrid>
+
+                                        <h:panelGrid rendered="#{mantenimientoBean.sgMantenimiento != null}"  styleClass="bordePanelGrid">
+                                            <!--  <h:outputText value="Salida"/> -->
+                                            <h:panelGrid columns="2" >                                   
+                                                <h:outputLabel  value="Salida:"/>
+                                                <h:outputText  value="#{mantenimientoBean.sgMantenimiento.fechaSalida}">
+                                                    <f:convertDateTime pattern="dd/MM/yyyy" type="date" />
+                                                    <!--<f:convertDateTime dateStyle="default" type="date" />-->
+                                                </h:outputText>             
+                                                <h:outputLabel  value="Importe :"/>
+                                                <h:outputText  value="#{mantenimientoBean.sgMantenimiento.importe}">
+                                                    <f:convertNumber currencySymbol="$" maxFractionDigits="2" type="currency" groupingUsed="true" />
+                                                </h:outputText>
+                                                <h:outputLabel  value="Moneda:"/> 
+                                                <h:outputText  value="#{mantenimientoBean.sgMantenimiento.moneda.nombre}"/>
+                                                <h:outputLabel  value="Fecha de prox. mtto:" rendered="#{mantenimientoBean.sgMantenimiento.sgKilometraje.sgTipoEspecifico.id eq 4}"/>
+                                                <h:outputText  value="#{mantenimientoBean.sgMantenimiento.proxMantenimientoFecha}" rendered="#{mantenimientoBean.sgMantenimiento.sgKilometraje.sgTipoEspecifico.id eq 4}">                                    
+                                                    <f:convertDateTime pattern="dd/MM/yyyy" type="date" />
+                                                    <!--<f:convertDateTime dateStyle="default" type="date" />-->
+                                                </h:outputText>
+                                                <h:outputLabel rendered="#{mantenimientoBean.sgMantenimiento.sgKilometraje.sgTipoEspecifico.id eq 4}" value="Km de prox. mtto. :"/>
+                                                <h:outputText  rendered="#{mantenimientoBean.sgMantenimiento.sgKilometraje.sgTipoEspecifico.id eq 4}" value="#{mantenimientoBean.sgMantenimiento.proxMantenimientoKilometraje}"/>
+                                            </h:panelGrid>
+                                            <!--  <h:outputLabel  value="Observaciones :"/>
+                                            <p:inputTextarea cols="50" rows="2" style="color: #666666;" value="#{mantenimientoBean.sgMantenimiento.observacion}"/>-->
+                                        </h:panelGrid>
+                                    </h:panelGrid>
+                                    <center>
+                                        <h:panelGrid columns="2">                                    
+                                            <p:commandLink value="#{msgs['sistema.cerrar']}" actionListener="#{mantenimientoBean.ocultarPopupDetalle(event)}" styleClass="btn btn-default" immediate="true"/>                                        
+                                        </h:panelGrid>
+                                    </center>                        
+                                    </my:panelPopup>
+                            </h:form>
+                            <!-- FIN VER DETALLE DE MANTENIMIENTO -->
+
+                            <!-- ADJUNTAR COMPROBANTE DE MANTENIMIENTO -->
+                            <h:form >
+                                <p:dialog   style="background: #FFFFFF;" 
+                                            visible="#{mantenimientoBean.mrSubirArchivo}"
+                                            draggable="false" modal="true">
+                                    <f:facet name="header">
+                                        <h:panelGroup > 
+                                            <h:outputText  value="Adjuntar archivo"
+                                                           style="float: left; padding: 4px;text-align: center; vertical-align: middle;font: 11px;color: #484848; font-weight: bold;"/>
+                                        </h:panelGroup>
+                                    </f:facet>
+                                    <f:facet name="body">                           
+                                        <h:panelGroup>
+                                            <h:panelGrid rendered="#{mantenimientoBean.sgMantenimiento != null and mantenimientoBean.archivoMantenimineto}" columns="5">
+                                                <h:outputText value="Archivos"/>
+                                                <p:fileUpload  id="fileEntryMantenimieto"
+                                                               listener="#{mantenimientoBean.subirComprobanteMantenimiento}" 
+                                                               />
+                                                <p:commandLink value="Cancelar" styleClass="btn btn-default" 
+                                                               actionListener="#{mantenimientoBean.ocultarPopupSubirArchivo(event)}" immediate="true"/>
+                                            </h:panelGrid>
+                                            <h:panelGrid rendered="#{vehiculoBean.sgAsignarVehiculo != null and vehiculoBean.subirArchivoPop}" columns="5">
+                                                <h:outputText value="Archivos"/>
+                                                <p:fileUpload id="fileEntry" 
+                                                              listener="#{vehiculoBean.subirCartaAsignacion}"/>
+                                                <p:commandLink value="#{msgs['sistema.cerrar']}" styleClass="btn btn-default" 
+                                                               actionListener="#{vehiculoBean.cerrarPopSubirArchivo(event)}" immediate="true"/>
+                                            </h:panelGrid>
+                                        </h:panelGroup>
+                                    </f:facet>
+                                    </<p:dialog >
+                                        </h:form>
+                                        <!-- *********************************** FIN MANTENIMIENTO ****************************** -->
+
+                                        <!-- *********************************** INICIO DE ASIGNACION****************************** -->
+                                        <!--Asignar vehiculo-->
+                                        <h:form id="asignarV" >
+                                            <p:dialog   id="popupAsi" style="background: #FFFFFF;" 
+                                                        visible="#{vehiculoBean.popUp and vehiculoBean.sgAsignarVehiculo != null}"
+                                                        draggable="false" modal="true">
+                                                <f:facet name="header">
+                                                    <h:panelGroup>
+                                                        <h:outputText  value="Asignar vehículo"
+                                                                       style="float: left; padding: 4px;text-align: center; vertical-align: middle;font: 11px;color: #484848; font-weight: bold;"/>
+                                                    </h:panelGroup>
+                                                </f:facet>
+                                                <f:facet id="facet1" name="body">
+                                                    <h:message  for="" style="display: block;" infoClass="alert alert-success" warnClass="alert alert-warning"
+                                                                errorClass="alert alert-danger" fatalClass="alert alert-danger"  />
+                                                    <h:panelGroup>
+                                                        <h:outputText value="Asignar vehículo" styleClass="tituloEncabezado"/>
+                                                        <h:panelGrid  columns="4"> 
+                                                            <f:facet name="header"><h:outputText value="Datos del vehículo"/> </f:facet>                                  
+                                                            <h:panelGrid>
+                                                                <h:outputText value="Modelo"/>
+                                                                <h:outputLabel value="#{vehiculoBean.vehiculo.modelo}"/>
+                                                            </h:panelGrid>
+                                                            <h:panelGrid>
+                                                                <h:outputText value="Marca"/>
+                                                                <h:outputLabel value="#{vehiculoBean.vehiculo.marca}"/>
+                                                            </h:panelGrid>
+                                                            <h:panelGrid>
+                                                                <h:outputText value="Placa"/>
+                                                                <h:outputLabel value="#{vehiculoBean.vehiculo.numeroPlaca}"/>
+                                                            </h:panelGrid>
+                                                            <h:panelGrid >
+                                                                <h:outputText value="Color"/>
+                                                                <h:outputLabel value="#{vehiculoBean.vehiculo.color}" />
+                                                            </h:panelGrid>
+                                                        </h:panelGrid>
+                                                        <br/>
+                                                        <h:panelGrid columns="2">
+                                                            <h:outputText value="Usuario"/>
+                                                            <h:panelGrid columns="2">
+                                                                <h:inputText  id="autocomplete" class="form-control"
+                                                                              onclick="autocompletarUsuario(this, 'hidenDesUsuario', 'asignarV');"/>
+                                                                <h:inputHidden id="hidenDesUsuario" value="#{vehiculoBean.user}"/>
+                                                            </h:panelGrid>
+                                                            <h:outputText value="Kilometro actual"/>
+                                                            <h:outputLabel value="#{vehiculoBean.vehiculo.kilometraje}"/>
+                                                            <h:outputText value="Fecha"/>
+                                                            <p:datePicker  value="#{vehiculoBean.sgAsignarVehiculo.fechaOperacion}"  
+                                                                           pattern="dd/MM/yyyy">
+                                                                </ace:dateTimeEntry>
+                                                                <h:outputText value="Observación"/>
+                                                                <p:inputTextarea cols="45" value="#{vehiculoBean.sgAsignarVehiculo.observacion}"/>
+                                                        </h:panelGrid>
+                                                        <h:panelGrid columns="2">
+                                                            <p:commandLink value="#{msgs['sistema.asignar']}" actionListener="#{vehiculoBean.completarAsignacionVehiculo(event)}" styleClass="btn btn-info" />
+                                                            <p:commandLink value="#{msgs['sistema.cancelar']}" 
+                                                                           actionListener="#{vehiculoBean.cancelarAsignacion(event)}" styleClass="btn btn-default" />
+                                                        </h:panelGrid>
+                                                    </h:panelGroup>
+                                                </f:facet>
+                                                </<p:dialog >
+                                                    </h:form>
+
+                                                    <!--Modificar Asignar vehiculo-->
+                                                    <h:form  >
+                                                        <p:dialog   id="popup1" style="background: #FFFFFF;" 
+                                                                    visible="#{vehiculoBean.modificarPop and vehiculoBean.sgAsignarVehiculo != null}"
+                                                                    draggable="false" modal="true">
+                                                            <f:facet name="header">
+                                                                <h:panelGroup>
+                                                                    <h:panelGrid rendered="#{vehiculoBean.sgAsignarVehiculo.siOperacion.id eq 1}"  columns="2">
+                                                                        <h:outputText  value="Modificar asignación vehículo"                                                 
+                                                                                       style="float: left; padding: 4px;text-align: center; vertical-align: middle;font: 11px;color: #484848; font-weight: bold;"/>
+                                                                        <p:commandButton title="Cerrar ventana" type="button" alt="Cerrar" immediate="false" 
+                                                                                         actionListener="#{vehiculoBean.cerrarModificaAsigna(event)}"
+
+                                                                                         style="vertical-align: middle;margin: 4px;display: inline; float: right;"/>
+                                                                    </h:panelGrid>
+                                                                    <h:panelGrid rendered="#{vehiculoBean.sgAsignarVehiculo.siOperacion.id eq 2}"  columns="2">
+                                                                        <h:outputText  value="Modificar recepción vehículo"                                                 
+                                                                                       style="float: left; padding: 4px;text-align: center; vertical-align: middle;font: 11px;color: #484848; font-weight: bold;"/>
+                                                                        <p:commandButton title="Cerrar ventana" type="button" alt="Cerrar" immediate="false" 
+                                                                                         actionListener="#{vehiculoBean.cerrarModificaAsigna(event)}"
+
+                                                                                         style="vertical-align: middle;margin: 4px;display: inline; float: right;"/>
+                                                                    </h:panelGrid>
+                                                                </h:panelGroup>
+                                                            </f:facet>
+                                                            <f:facet id="facet1" name="body">
+                                                                <h:panelGroup>
+                                                                    <h:panelGrid rendered="#{vehiculoBean.sgAsignarVehiculo.siOperacion.id eq 1}" >
+                                                                        <h:outputText value="Modificar asignación" styleClass="tituloEncabezado"/>
+                                                                    </h:panelGrid>
+                                                                    <h:panelGrid rendered="#{vehiculoBean.sgAsignarVehiculo.siOperacion.id eq 2}" >
+                                                                        <h:outputText value="Modificar recepción" styleClass="tituloEncabezado"/>
+                                                                    </h:panelGrid>
+                                                                    <h:panelGrid columns="2" >
+                                                                        <h:outputText value="Modelo"/>
+                                                                        <h:outputLabel value="#{vehiculoBean.sgAsignarVehiculo.sgVehiculo.sgModelo.nombre}"/>
+                                                                        <h:outputText value="Marca"/>
+                                                                        <h:outputLabel value="#{vehiculoBean.sgAsignarVehiculo.sgVehiculo.sgMarca.nombre}"/>
+                                                                        <h:outputText value="Color"/>
+                                                                        <h:outputLabel value="#{vehiculoBean.sgAsignarVehiculo.sgVehiculo.sgColor.nombre}" />
+                                                                        <h:outputText value="Check list"/>
+                                                                        <h:outputLabel value="#{vehiculoBean.sgAsignarVehiculo.sgChecklist.fechaGenero}">
+                                                                            <f:convertDateTime pattern="dd/MM/yyyy" />
+                                                                        </h:outputLabel>
+                                                                        <h:outputText value="Fecha"/>
+                                                                        <p:datePicker value="#{vehiculoBean.sgAsignarVehiculo.fechaOperacion}"  >
+                                                                            <f:convertDateTime pattern="dd/MM/yyyy" />
+                                                                        </p:datePicker>
+                                                                        <h:outputText value="Observación"/>
+                                                                        <p:inputTextarea cols="45" value="#{vehiculoBean.sgAsignarVehiculo.observacion}"/>
+                                                                    </h:panelGrid>
+                                                                    <br/>
+                                                                    <center>
+                                                                        <h:panelGrid columns="2">
+                                                                            <p:commandLink value="#{msgs['sistema.actualizar']}" actionListener="#{vehiculoBean.completarModificacionVehiculo(event)}" styleClass="btn btn-info" />
+                                                                            <p:commandLink value="#{msgs['sistema.cancelar']}" actionListener="#{vehiculoBean.cerrarModificaAsigna(event)}" styleClass="btn btn-default"
+                                                                                           immediate="true"/>
+                                                                        </h:panelGrid>
+                                                                    </center>
+                                                                </h:panelGroup>
+                                                            </f:facet>
+                                                            </<p:dialog >
+                                                                </h:form>
+                                                                <!-- *********************************** FIN DE ASIGNACION****************************** -->
+
+                                                                <!-- Características Generales a Vehículo -->
+                                                                <h:form id="popupCaracteristicasVehiculo" styleClass="textoIzquierda" >
+                                                                    <p:dialog  header="#{msgs['sistema.agregar']} #{msgs['sgl.staff.titulo.accordionPane.caracteristicas']}" 
+                                                                               >
+                                                                        <h:panelGrid columns="1" styleClass="bordePanelGrid" >
+                                                                            <center><h:messages id="msgCaracteristicas" errorClass="errorMessage" infoClass="infoMessage"/></center>
+
+                                                                            <h:panelGrid columns="3"  >
+                                                                                <h:outputLabel value="Nombre" styleClass="fNegrita12" />
+                                                                                <p:selectOneMenu id="sinTxtCaracteristica"
+                                                                                                 value="#{vehiculoBean.prefijo}">
+                                                                                    <f:selectItems value="#{vehiculoBean.matchesList}"/>
+                                                                                    <f:facet name="selectInputText">
+                                                                                        <h:outputText id="outTxtCaracteristica" value="#{varCaracteristica}"/>
+                                                                                    </f:facet>
+                                                                                </p:selectOneMenu>
+                                                                                <p:commandLink value="+" title="#{msgs['sistema.agregar']}" actionListener="#{vehiculoBean.addCaracteristicaVehiculo(actionEvent)}" styleClass="btn btn-default" />
+                                                                            </h:panelGrid>
+                                                                            <br />
+                                                                            <h:panelGrid  >
+                                                                                <h:outputLabel value="Características asigandas al Vehículo #{vehiculoBean.vehiculo.marca} #{vehiculoBean.vehiculo.modelo}}" />
+
+                                                                                <p:dataTable showGridlines="true" size="small"  value="#{vehiculoBean.mapaDatos.get('caracteristica')}"
+                                                                                             var="data"
+                                                                                             scrollable="true"
+                                                                                             scrollHeight="300px">
+                                                                                    <p:column>
+                                                                                        <f:facet name="header">
+                                                                                            <h:outputText value="Nombre"/>
+                                                                                        </f:facet>
+                                                                                        <h:outputText value="#{data.nombre}" />
+                                                                                    </p:column>
+                                                                                    <p:column>
+                                                                                        <h:commandLink value="#{msgs['sistema.quitar']}" action="#{vehiculoBean.removeCaracteristicaVehiculo(actionEvent)}" styleClass="link" />
+                                                                                    </p:column>
+                                                                                </p:dataTable>    
+                                                                            </h:panelGrid>
+                                                                        </h:panelGrid>
+
+                                                                        <center>
+                                                                            <p:commandButton value="#{msgs['sistema.cerrar']}" actionListener="#{vehiculoBean.closePopupCaracteristicasVehiculo(actionEvent)}" styleClass="btn btn-default"/>
+                                                                        </center>
+                                                                        </my:panelPopup>
+                                                                </h:form>
+
+                                                                <!--Ver detalle de la asignacion o recepcion-->
+                                                                <h:form  >
+                                                                    <p:dialog   id="popup1" style="background: #FFFFFF;" 
+                                                                                visible="#{vehiculoBean.verDetallePop and vehiculoBean.sgAsignarVehiculo != null}"
+                                                                                draggable="false" modal="true">
+                                                                        <f:facet name="header">
+                                                                            <h:panelGroup>
+                                                                                <h:outputText  value="Detalle de asignaciones"                                                 
+                                                                                               style="float: left; padding: 4px;text-align: center; vertical-align: middle;font: 11px;color: #484848; font-weight: bold;"/>
+                                                                            </h:panelGroup>
+                                                                        </f:facet>
+                                                                        <f:facet name="body">
+                                                                            <h:panelGroup>                                
+                                                                                <h:panelGrid  border="0" >
+                                                                                    <h:panelGrid  border="0" rendered="#{vehiculoBean.sgAsignarVehiculo.siOperacion.id eq 1}">
+                                                                                        <h:outputText value="Datos de la asignación"  />
+                                                                                        <h:panelGrid columns="5"  border="0">
+                                                                                            <h:panelGrid >
+                                                                                                <h:outputLabel value="Usuario"/>
+                                                                                                <h:outputText value="#{vehiculoBean.sgAsignarVehiculo.usuario.nombre}"/>                        
+                                                                                            </h:panelGrid>
+                                                                                            <h:panelGrid >
+                                                                                                <h:outputLabel value="Asignó"/>
+                                                                                                <h:outputText value="#{vehiculoBean.sgAsignarVehiculo.genero.nombre}"/>
+                                                                                            </h:panelGrid>
+                                                                                            <h:panelGrid >
+                                                                                                <h:outputLabel value="Fecha"/>
+                                                                                                <h:outputText value="#{vehiculoBean.sgAsignarVehiculo.fechaOperacion}">
+                                                                                                    <f:convertDateTime pattern="dd/MM/yyyy" type="date" />
+                                                                                                </h:outputText>
+                                                                                            </h:panelGrid>
+                                                                                            <h:panelGrid >
+                                                                                                <h:outputLabel value="Observación"/>
+                                                                                                <h:outputText value="#{vehiculoBean.sgAsignarVehiculo.observacion}"/>
+                                                                                            </h:panelGrid>
+                                                                                            <h:panelGrid rendered="#{vehiculoBean.sgAsignarVehiculo.siAdjunto != null}">
+                                                                                                <h:outputText value="Carta"/>
+                                                                                                <h:outputLink target="_blank"  value="/ServiciosGenerales/AbrirArchivo?ZWZ2W=#{vehiculoBean.sgAsignarVehiculo.siAdjunto.id}&amp;ZWZ3W=#{vehiculoBean.sgAsignarVehiculo.siAdjunto.uuid}">
+                                                                                                    <h:graphicImage url="#{msgs['sgl.ruta.imagen']}icon_attach.gif"  alt="Abrir archivo"/>
+                                                                                                </h:outputLink>
+                                                                                            </h:panelGrid>
+                                                                                        </h:panelGrid>
+                                                                                        <h:outputText value="Checklist general" />
+                                                                                        <h:panelGrid columns="2">
+                                                                                            <h:panelGrid>
+                                                                                                <h:outputLabel value="Realizó"/>
+                                                                                                <h:outputText value="#{vehiculoBean.sgAsignarVehiculo.sgChecklist.genero.nombre}"/>
+                                                                                            </h:panelGrid>
+                                                                                            <h:panelGrid>
+                                                                                                <h:outputLabel value="Fecha"/>
+                                                                                                <h:outputText value="#{vehiculoBean.sgAsignarVehiculo.sgChecklist.fechaGenero}">
+                                                                                                    <f:convertDateTime pattern="dd/MM/yyyy" type="date" />
+                                                                                                </h:outputText>
+                                                                                            </h:panelGrid>
+                                                                                        </h:panelGrid>
+                                                                                        <!-- Detalle Checklist Vehículo-->
+                                                                                        <p:dataTable showGridlines="true" size="small"  value="#{vehiculoBean.mapaDatos.get('checkListVehiAsig')}"
+                                                                                                     var="dtV"
+                                                                                                     scrollable="true"
+                                                                                                     scrollHeight="165px"
+                                                                                                     >
+                                                                                            <p:column>
+                                                                                                <f:facet name="header">
+                                                                                                    <h:outputText value="Nombre"/>
+                                                                                                </f:facet>
+                                                                                                <h:outputText value="#{dtV.caracteristicaVo.nombre}" styleClass="#{data.style}" />
+                                                                                            </p:column>                                 
+                                                                                            <p:column style="text-align: center;">
+                                                                                                <f:facet name="header">
+                                                                                                    <h:outputText value="Correcto" />
+                                                                                                </f:facet>
+                                                                                                <i class="#{dtV.estado eq 'True' ? 'fa fa-check-square-o text-success' : 'fa fa-minus text-warning'}"></i>
+                                                                                            </p:column>   
+                                                                                            <p:column>
+                                                                                                <f:facet name="header">
+                                                                                                    <h:outputText value="Observación" />
+                                                                                                </f:facet>
+                                                                                                <h:outputText value="#{dtV.observacion}" />
+                                                                                            </p:column>                            
+                                                                                        </p:dataTable>
+                                                                                        <h:outputText value="Checklist de llantas" />
+                                                                                        <h:panelGrid columns="6" cellspacing="8" width="80%">
+                                                                                            <h:panelGrid>
+                                                                                                <h:outputLabel value="Delantera izquierda"/>
+                                                                                                <h:outputText value="#{vehiculoBean.sgChecklistLlantas.delanteraIzquierda}"/>
+                                                                                            </h:panelGrid>
+                                                                                            <h:panelGrid>
+                                                                                                <h:outputLabel value="Delantera derecha"/>
+                                                                                                <h:outputText value="#{vehiculoBean.sgChecklistLlantas.delanteraDerecha}"/>
+                                                                                            </h:panelGrid>
+                                                                                            <h:panelGrid>
+                                                                                                <h:outputLabel value="Trasera Izquierda"/>
+                                                                                                <h:outputText value="#{vehiculoBean.sgChecklistLlantas.traseraIzquierda}"/>
+                                                                                            </h:panelGrid>
+                                                                                            <h:panelGrid>
+                                                                                                <h:outputLabel value="Trasera derecha"/>
+                                                                                                <h:outputText value="#{vehiculoBean.sgChecklistLlantas.traseraDerecha}"/>                        
+                                                                                            </h:panelGrid>
+                                                                                            <h:panelGrid>
+                                                                                                <h:outputLabel value="Refacción"/>
+                                                                                                <h:outputText value="#{vehiculoBean.sgChecklistLlantas.refaccion}"/>                        
+                                                                                            </h:panelGrid>
+                                                                                            <h:panelGrid>
+                                                                                                <h:outputLabel value="Buen estado"/>
+                                                                                                <h:outputText value="#{vehiculoBean.sgChecklistLlantas.buenEstado eq 'True' ? 'Si' :'No'}"/>
+                                                                                            </h:panelGrid>
+                                                                                        </h:panelGrid>
+                                                                                        <h:outputText value="Checklist exterior" />
+                                                                                        <h:panelGrid columns="4" cellspacing="8" width="80%">
+                                                                                            <h:panelGrid>
+                                                                                                <h:outputLabel value="Realizó"/>
+                                                                                                <h:outputText value="#{vehiculoBean.sgChecklistExtVehiculo.genero.nombre}"/>
+                                                                                            </h:panelGrid>
+                                                                                            <h:panelGrid>
+                                                                                                <h:outputLabel value="Fecha "/>
+                                                                                                <h:outputText value="#{vehiculoBean.sgChecklistExtVehiculo.fechaGenero}">
+                                                                                                    <f:convertDateTime pattern="dd/MM/yyyy" type="date" />
+                                                                                                </h:outputText>
+                                                                                            </h:panelGrid>
+                                                                                            <h:panelGrid>
+                                                                                                <h:outputLabel value="Observación"/>
+                                                                                                <p:inputTextarea disabled="true" value="#{vehiculoBean.sgChecklistExtVehiculo.observacion}" rows="5" cols="10"/>                                                
+                                                                                            </h:panelGrid>
+                                                                                            <h:panelGrid>
+                                                                                                <h:outputLabel value="Archivo"/>
+                                                                                                <h:outputLink target="_blank"  value="/ServiciosGenerales/AbrirArchivo?ZWZ2W=#{vehiculoBean.sgChecklistExtVehiculo.siAdjunto.id}&amp;ZWZ3W=#{vehiculoBean.sgChecklistExtVehiculo.siAdjunto.uuid}">
+                                                                                                    <h:graphicImage url="#{msgs['sgl.ruta.imagen']}icon_attach.gif"  alt="Abrir archivo"/>
+                                                                                                </h:outputLink>
+                                                                                            </h:panelGrid>
+                                                                                        </h:panelGrid>                            
+                                                                                    </h:panelGrid>
+                                                                                    <h:panelGrid  border="0" rendered="#{vehiculoBean.sgAsignarVehiculo.siOperacion.id eq 2}">
+                                                                                        <h:outputText value="Datos de la recepcion" />
+                                                                                        <h:panelGrid columns="5"  border="0">
+                                                                                            <h:panelGrid >
+                                                                                                <h:outputText value="Entregó"/>
+                                                                                                <h:outputLabel value="#{vehiculoBean.sgAsignarVehiculoRecibido.usuario.nombre}"/>                        
+                                                                                            </h:panelGrid>
+                                                                                            <h:panelGrid >
+                                                                                                <h:outputText value="Recibió"/>
+                                                                                                <h:outputLabel value="#{vehiculoBean.sgAsignarVehiculoRecibido.genero.nombre}"/>
+                                                                                            </h:panelGrid>
+                                                                                            <h:panelGrid >
+                                                                                                <h:outputLabel value="Fecha"/>
+                                                                                                <h:outputText value="#{vehiculoBean.sgAsignarVehiculoRecibido.fechaOperacion}">
+                                                                                                    <f:convertDateTime pattern="dd/MM/yyyy" type="date" />
+                                                                                                </h:outputText>
+                                                                                            </h:panelGrid>
+                                                                                            <h:panelGrid >
+                                                                                                <h:outputLabel value="Observación"/>
+                                                                                                <h:outputText value="#{vehiculoBean.sgAsignarVehiculoRecibido.observacion}"/>
+                                                                                            </h:panelGrid>
+                                                                                        </h:panelGrid>
+                                                                                        <h:outputText value="Checklist general" />
+                                                                                        <h:panelGrid columns="2">
+                                                                                            <h:panelGrid>
+                                                                                                <h:outputLabel value="Realizó"/>
+                                                                                                <h:outputText value="#{vehiculoBean.sgAsignarVehiculoRecibido.sgChecklist.genero.nombre}"/>
+                                                                                            </h:panelGrid>
+                                                                                            <h:panelGrid >
+                                                                                                <h:outputLabel value="Fecha"/>
+                                                                                                <h:outputText value="#{vehiculoBean.sgAsignarVehiculoRecibido.sgChecklist.fechaGenero}">
+                                                                                                    <f:convertDateTime pattern="dd/MM/yyyy" type="date" />
+                                                                                                </h:outputText>
+                                                                                            </h:panelGrid>
+                                                                                        </h:panelGrid>
+                                                                                        <p:dataTable showGridlines="true" size="small"  value="#{vehiculoBean.mapaDatos.get('checkListVehiAsig')}"
+                                                                                                     var="dtV"
+                                                                                                     scrollable="true"
+                                                                                                     scrollHeight="200px"
+                                                                                                     >
+                                                                                            <p:column>
+                                                                                                <f:facet name="header">
+                                                                                                    <h:outputText value="Nombre"/>
+                                                                                                </f:facet>
+                                                                                                <h:outputText value="#{dtV.caracteristicaVo.nombre}"  />
+                                                                                            </p:column>                                 
+                                                                                            <p:column style="text-align: center;">
+                                                                                                <f:facet name="header">
+                                                                                                    <h:outputText value="Correcto" />
+                                                                                                </f:facet>
+                                                                                                <i class="#{data.estado eq 'True' ? 'fa fa-check-square-o text-success' : 'fa fa-minus text-warning'}"></i>
+                                                                                            </p:column>   
+                                                                                            <p:column>
+                                                                                                <f:facet name="header">
+                                                                                                    <h:outputText value="Observación" />
+                                                                                                </f:facet>
+                                                                                                <h:outputText value="#{dtV.observacion}" />
+                                                                                            </p:column>                            
+                                                                                        </p:dataTable>
+                                                                                        <h:outputText value="Checklist de llantas" />
+                                                                                        <h:panelGrid columns="6" cellspacing="8" width="80%">
+                                                                                            <h:panelGrid>
+                                                                                                <h:outputLabel value="Delantera izquierda"/>
+                                                                                                <h:outputText value="#{vehiculoBean.sgChecklistLlantas.delanteraIzquierda}"/>
+                                                                                            </h:panelGrid>
+                                                                                            <h:panelGrid>
+                                                                                                <h:outputLabel value="Delantera derecha"/>
+                                                                                                <h:outputText value="#{vehiculoBean.sgChecklistLlantas.delanteraDerecha}"/>
+                                                                                            </h:panelGrid>
+                                                                                            <h:panelGrid>
+                                                                                                <h:outputLabel value="Trasera Izquierda"/>
+                                                                                                <h:outputText value="#{vehiculoBean.sgChecklistLlantas.traseraIzquierda}"/>
+                                                                                            </h:panelGrid>
+                                                                                            <h:panelGrid>
+                                                                                                <h:outputLabel value="Trasera derecha"/>
+                                                                                                <h:outputText value="#{vehiculoBean.sgChecklistLlantas.traseraDerecha}"/>                        
+                                                                                            </h:panelGrid>
+                                                                                            <h:panelGrid>
+                                                                                                <h:outputLabel value="Refacción"/>
+                                                                                                <h:outputText value="#{vehiculoBean.sgChecklistLlantas.refaccion}"/>                        
+                                                                                            </h:panelGrid>
+                                                                                            <h:panelGrid>
+                                                                                                <h:outputLabel value="Buen estado"/>
+                                                                                                <h:outputText value="#{vehiculoBean.sgChecklistLlantas.buenEstado eq 'True' ? 'Si' :'No'}"/>
+                                                                                            </h:panelGrid>
+                                                                                        </h:panelGrid>
+                                                                                        <h:outputText value="Checklist exterior" />
+                                                                                        <h:panelGrid columns="4" cellspacing="8" width="80%">
+                                                                                            <h:panelGrid>
+                                                                                                <h:outputLabel value="Realizó"/>
+                                                                                                <h:outputText value="#{vehiculoBean.sgChecklistExtVehiculo.genero.nombre}"/>
+                                                                                            </h:panelGrid>
+                                                                                            <h:panelGrid>
+                                                                                                <h:outputLabel value="Fecha "/>
+                                                                                                <h:outputText value="#{vehiculoBean.sgChecklistExtVehiculo.fechaGenero}">
+                                                                                                    <f:convertDateTime pattern="dd/MM/yyyy" type="date" />
+                                                                                                </h:outputText>
+                                                                                            </h:panelGrid>
+                                                                                            <h:panelGrid>
+                                                                                                <h:outputLabel value="Observación"/>
+                                                                                                <h:outputText value="#{vehiculoBean.sgChecklistExtVehiculo.observacion}"/>
+                                                                                            </h:panelGrid>
+                                                                                            <h:panelGrid>
+                                                                                                <h:outputLabel value="Archivo"/>
+                                                                                                <h:outputLink target="_blank"  value="/ServiciosGenerales/AbrirArchivo?ZWZ2W=#{vehiculoBean.sgChecklistExtVehiculo.siAdjunto.id}&amp;ZWZ3W=#{vehiculoBean.sgChecklistExtVehiculo.siAdjunto.uuid}">
+                                                                                                    <h:graphicImage url="#{msgs['sgl.ruta.imagen']}icon_attach.gif"  alt="Abrir archivo"/>
+                                                                                                </h:outputLink>
+                                                                                            </h:panelGrid>
+                                                                                        </h:panelGrid>
+                                                                                    </h:panelGrid>
+                                                                                </h:panelGrid>
+                                                                                <center>
+                                                                                    <p:commandLink value="#{msgs['sistema.cerrar']}" actionListener="#{vehiculoBean.cerrarVerDetallePop(event)}" styleClass="btn btn-default"/>
+                                                                                </center>
+                                                                            </h:panelGroup>
+                                                                        </f:facet>
+                                                                        </<p:dialog >
+                                                                            </h:form>
+
+                                                                            <!--Detalle de pagos-->
+                                                                            <h:form  >
+                                                                                <p:dialog   id="popup1P" style="background: #FFFFFF;" 
+                                                                                            visible="#{vehiculoBean.pagoPop and vehiculoBean.sgPagoServicioVehiculo != null}"
+                                                                                            draggable="false" modal="true">
+                                                                                    <f:facet name="header">
+                                                                                        <h:panelGroup>
+                                                                                            <h:outputText  value="Detalle de pagos"                                                 
+                                                                                                           style="float: left; padding: 4px;text-align: center; vertical-align: middle;font: 11px;color: #484848; font-weight: bold;"/>
+                                                                                        </h:panelGroup>
+                                                                                    </f:facet>
+                                                                                    <f:facet name="body">
+                                                                                        <h:panelGroup>
+                                                                                            <!--<h:outputText value="Información de pagos" styleClass="tituloEncabezado"/>-->
+                                                                                            <h:panelGrid columns="2">
+                                                                                                <h:outputLabel value="Proveedor"/>
+                                                                                                <h:outputText value="#{vehiculoBean.sgPagoServicioVehiculo.sgPagoServicio.proveedor.nombre}"/>
+                                                                                                <h:outputLabel value="Recibo"/>
+                                                                                                <h:outputText value="#{vehiculoBean.sgPagoServicioVehiculo.sgPagoServicio.numeroFactura}"/>
+                                                                                                <h:outputLabel value="Observación"/>
+                                                                                                <p:inputTextarea value="#{vehiculoBean.sgPagoServicioVehiculo.sgPagoServicio.observacion}" rows="3" cols="30" disabled="true"/>                                    
+                                                                                            </h:panelGrid>
+                                                                                            <br/>
+                                                                                            <center>
+                                                                                                <p:commandLink value="#{msgs['sistema.cerrar']}" styleClass="btn btn-default" actionListener="#{vehiculoBean.cerrarPopPago(event)}"/>
+                                                                                            </center>
+                                                                                        </h:panelGroup>
+                                                                                    </f:facet>
+                                                                                    </<p:dialog >
+                                                                                        </h:form>
+
+
+                                                                                        <!-- Modificar kilometraje -->
+                                                                                        <h:form id="popupModifyKilometraje" styleClass="textoIzquierda" >
+                                                                                            <p:dialog  header="#{msgs['sistema.modificar']} #{msgs['sgl.kilometraje']}"
+                                                                                                       >
+                                                                                                <h:outputText id="msgsModifyKilometraje" value="" />
+                                                                                                <center>
+                                                                                                    <h:messages errorClass="mensaje" infoClass="mensaje"/>
+                                                                                                    <h:message for="msgsModifyKilometraje" errorClass="errorMessage" infoClass="infoMessage"/>
+                                                                                                    <span id="errorSpan" class="errorMessage"></span>
+                                                                                                </center>  
+                                                                                                <!-- mantenimientoBean.kilometrajeAnteriorBueno.nombreTipoEspecifico -->
+                                                                                                <h:panelGrid styleClass="bordePanelGrid"  >
+                                                                                                    <h:panelGrid columns="3">
+                                                                                                        <h:outputLabel value="#{msgs['sgl.kilometraje.actual']}: "  />
+                                                                                                        <p:inputText id="txtKilometrajeActual" 
+                                                                                                                     value="#{mantenimientoBean.kilometrajeActualVo.kilometrajeActual}"
+                                                                                                                     disabled="false"/>                                
+                                                                                                        <h:outputText style="color: #666666;" value=" (Km. por #{mantenimientoBean.kilometrajeActualVo.nombreTipoEspecifico})" />
+                                                                                                        <h:outputLabel value="#{msgs['sgl.kilometraje.nuevo']}: "  />
+                                                                                                        <p:inputText id="txtKilometrajeNuevo" value="#{vehiculoBean.idMoneda}"/>                                
+                                                                                                        <h:panelGrid columns="3">
+                                                                                                            <h:outputText style="color: #666666;" value=" (No debe ser menor a" />                                
+                                                                                                            <p:inputText id="txtKilometrajeTope" style="width:32px;" 
+                                                                                                                         value="#{mantenimientoBean.kilometrajeAnteriorBueno.kilometrajeActual}" disabled="true"/>
+                                                                                                            <h:outputText style="color: #666666;" value=")"/>                                
+                                                                                                        </h:panelGrid>
+                                                                                                    </h:panelGrid>
+                                                                                                    <h:outputLabel value="#{msgs['sgl.kilometraje.mensaje.info.modificarKilometraje']}: " />
+                                                                                                    <p:inputTextarea id="motivoModificacionKilometraje" value="#{vehiculoBean.mensaje}" rows="5" style="width: 400px" 
+                                                                                                                     />
+                                                                                                </h:panelGrid>
+                                                                                                <center>
+                                                                                                    <h:panelGrid columns="2">
+                                                                                                        <h:commandButton value="#{msgs['sistema.modificar']}" 
+                                                                                                                         onclick="return validarModificaci
+                                                                                                                                 onKilomentraje();"
+                                                                                                                         actionListener="#{vehiculoBean.modifyKilometrajeVehiculo(actionEvent)}" 
+                                                                                                                         styleClass="btn btn-info"/>        
+                                                                                                        <p:commandButton value="#{msgs['sistema.cancelar']}" actionListener="#{vehiculoBean.closePopupModifyKilometraje(actionEvent)}" styleClass="btn btn-default" immediate="true" />        
+                                                                                                    </h:panelGrid>                        
+                                                                                                </center>
+                                                                                                </my:panelPopup>                    
+                                                                                        </h:form>                
+
+                                                                                        <!--Crear color-->
+                                                                                        <h:form rendered="#{not empty sesion.usuario}" >
+                                                                                            <p:dialog  header="#{msgs['sistema.crear']}" 
+                                                                                                       >      
+                                                                                                <h:panelGroup>
+                                                                                                    <h:messages infoClass="textoMensajeError"/>
+                                                                                                    <h:panelGrid columns="2">
+                                                                                                        <h:outputText value="#{msgs['sgl.generales.nombre']}: "/>
+                                                                                                        <p:inputText value="#{vehiculoBean.sgColor.nombre}" size="50"/>
+                                                                                                        <br/>
+                                                                                                    </h:panelGrid>
+                                                                                                    <center>
+                                                                                                        <h:panelGrid columns="2">
+                                                                                                            <p:commandLink value="#{msgs['sistema.guardar']}" actionListener="#{vehiculoBean.guardarColor(event)}" styleClass="btn btn-info" />
+                                                                                                            <p:commandLink value="#{msgs['sistema.cancelar']}" actionListener="#{vehiculoBean.cerrarPop(event)}" styleClass="btn btn-default" />
+                                                                                                        </h:panelGrid>
+                                                                                                    </center>                                  
+                                                                                                </h:panelGroup>
+                                                                                                </my:panelPopup>
+                                                                                        </h:form>
+                                                                                        <!-- fin crear color -->
+
+
+                                                                                        </ui:define>
+                                                                                        </ui:composition>
+                                                                                        </body>
+                                                                                        </html>

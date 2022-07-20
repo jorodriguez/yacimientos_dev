@@ -1,0 +1,79 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+
+
+      >
+    <body>
+        <ui:composition template="./../../../WEB-INF/facelets/templates/templateServiciosGenerales.xhtml">
+            <ui:define name="contenido">
+                <h:panelGroup   rendered="#{not empty sesion.usuario}"   styleClass="textoIzquierda">                                                         
+                    <h:form  id="form" styleClass="textoIzquierda">
+
+                        <center><h:panelGrid>
+                                <h:messages errorClass="mensaje" infoClass="mensaje"/>
+                            </h:panelGrid> 
+                        </center>  
+                        <p class="tituloEncabezado">#{msgs['sgl.taller.titulo']}</p>
+                        <h:panelGrid columns="3" >                         
+                            <h:outputLabel value="#{msgs['sgl.taller.proveedor']} :" />
+                            <p:selectOneMenu  id="proveedorComplete" value="#{tallerBean.nombreProveedor}"
+                                              valueChangeListener="#{tallerBean.proveedorListener}"                                                     
+                                              title="Por favor seleccione un proveedor de la lista y posteriormente oprima la opcion Agregar" >
+                                <f:selectItems value="#{tallerBean.listaProveedor}"/>
+                                <f:facet name="selectInputText">
+                                    <h:outputText id="autoCompleteDatos" value="#{prov}" />
+                                </f:facet>
+                            </p:selectOneMenu>                                                       
+                            <p:commandLink value="Agregar" 
+                                           title="Clic aqui para agregar el proveedor seleccionado a la lista"
+                                           actionListener="#{tallerBean.createTaller(event)}"
+                                           styleClass="link"/>    
+                        </h:panelGrid>
+                    </h:form>
+                    <h:form styleClass="textoIzquierda">
+                        <center>                                                        
+                            <p:dataTable id="dataGridTaller" 
+                                         value="#{tallerBean.tallerModel}"                                       
+                                         rows="10"                              
+                                         var="data">                       
+                                <p:column>
+                                    <f:facet name="header"><h:outputText value="#{msgs['sgl.taller.proveedor']}"/></f:facet>
+                                    <h:outputText value="#{data['proveedor'].nombre}"/>
+                                </p:column>                                
+                                <p:column>                            
+                                    <p:commandLink value="#{msgs['sistema.eliminar']}" actionListener="#{tallerBean.deleteTaller(event)}"
+                                                   onclick="if (!confirm('#{msgs['sgl.taller.eliminar']} #{data['proveedor'].nombre} ...? '))
+                                                               return false;"
+                                                   styleClass="link"/>                                                              
+                                </p:column>
+                            </p:dataTable>                           
+                        </center>
+                    </h:form>
+                    <h:form styleClass="textoIzquierda">
+                        <p:dialog  header="Detalle " >      
+                            <h:panelGrid >
+                                <h:outputText value="El proveedor seleccionado ' #{tallerBean.nombreProveedor} ' se encuentra como aseguradora"/>
+                                <h:outputText value="Por favor confirme si desea agregarlo tambien como Taller de Mantenimiento"/>
+                                <center>
+                                    <h:panelGrid columns="2">
+                                        <p:commandLink value="Confirmar" actionListener="#{tallerBean.createTaller(event)}" styleClass="btn btn-info" />                 
+                                        <p:commandLink value="Cancelar" actionListener="#{tallerBean.cancelarConfirmacion(event)}" styleClass="btn btn-default" />                 
+                                    </h:panelGrid>
+                                </center>
+                            </h:panelGrid>
+                            </my:panelPopup>
+                    </h:form>
+                </h:panelGroup>
+                <h:panelGrid  rendered="#{empty sesion.usuario}"  styleClass="altura">
+                    <ui:include src="./../../../login.xhtml"/>
+                </h:panelGrid>
+            </ui:define>
+        </ui:composition>
+
+    </body>
+</html>

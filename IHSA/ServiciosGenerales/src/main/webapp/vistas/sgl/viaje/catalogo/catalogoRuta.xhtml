@@ -1,0 +1,238 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:c="http://java.sun.com/jsp/jstl/core"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      
+     
+      >
+    <body>
+        <ui:composition template="./../../../../WEB-INF/facelets/templates/templateServiciosGenerales.xhtml">
+            <ui:define name="contenido">
+                <center><h:messages globalOnly="true" errorClass="errorMessage" infoClass="infoMessage"/></center>  
+
+                <h:form >
+                    <p class="tituloEncabezado">#{msgs['sgl.viaje.catalogo.ruta']}</p>
+                    <h:panelGrid>
+                        <p:commandLink title="#{msgs['sistema.crear']} #{msgs['sgl.viaje.ruta']}" actionListener="#{rutaBean.agregarRuta(event)}"
+                                         styleClass="btn btn-default">
+                            <h:graphicImage url="#{msgs['sgl.ruta.imagen']}button_create.png" 
+                                              styleClass="imagenSinBorde"/>
+                        </p:commandLink>
+                        <p:commandLink value="#{msgs['sistema.crear']} #{msgs['sgl.viaje.ruta']}" styleClass="linkPequenio" actionListener="#{rutaBean.agregarRuta(event)}" title="#{msgs['sistema.crear']} #{msgs['sgl.viaje.ruta']}"/>
+                    </h:panelGrid>
+                    <h:panelGrid>
+                        <p:selectOneRadio value="#{rutaBean.idTipoEspecifico}" valueChangeListener="#{rutaBean.cambiarTipoRuta}" 
+					    >
+                            <f:selectItems value="#{rutaBean.listaTipoEspecificoRuta}"/>
+                        </p:selectOneRadio>
+                    </h:panelGrid>
+                    <p:dataTable  id="dtRuta" rows="5" value="#{rutaBean.traerRuta}" var="data" 
+                                  >
+                        <p:column>
+                            <f:facet name="header"><h:outputText value="Id"/></f:facet>
+                            <h:outputText value="#{data.id}"/>
+                        </p:column>
+                        <p:column>
+                            <f:facet name="header"><h:outputText value="#{msgs['sgl.viaje.ruta']}"/></f:facet>
+                            <h:outputText value="#{data.nombre}"/>
+                        </p:column>
+                        <p:column>
+                            <f:facet name="header"><h:outputText value="#{msgs['sgl.viaje.duracion']}"/></f:facet>
+                            <h:outputText value="#{data.tiempoViaje} horas"/>
+                        </p:column>
+                        <p:column>
+                            <center>
+                                <p:commandLink styleClass="link" value="Agregar Detalle" 
+						 actionListener="#{rutaBean.agregarDetalleRuta(event)}"/>
+                            </center>
+                        </p:column>
+                        <p:column>
+                            <center>
+                                <p:commandLink styleClass="link" value="#{msgs['sistema.modificar']}" 
+						 actionListener="#{rutaBean.seleccionarRuta(event)}"/>
+                            </center>
+                        </p:column>
+                        <p:column>
+                            <center>
+                                <p:commandLink value="#{msgs['sistema.eliminar']}" actionListener="#{rutaBean.eliminarRuta(event)}" styleClass="link" />
+                            </center>
+                            <p:confirm id="pnlCon" message="#{msgs['sistema.ruta.eliminar']}"
+                                                   header="#{msgs['sistema.confirmar']}"/>
+                        </p:column>
+                        <p:column>
+                            <center>
+                                <p:commandLink styleClass="link" value="#{msgs['sistema.detalle']}" actionListener="#{rutaBean.verDetalleRuta(event)}"/>
+                            </center>
+                        </p:column>
+                    </p:dataTable>                  
+                    <br/>
+                </h:form>
+
+                <!--Crear Ruta-->
+                <h:form id="frmCrearRuta" >                    
+                    <p:dialog  header="#{msgs['sistema.crear']} #{msgs['sgl.viaje.ruta']}" 
+                               >
+                        <f:facet name="header"><h:outputText  value="#{msgs['sistema.crear']} #{msgs['sgl.viaje.ruta']}"/></f:facet>   
+                        <h:panelGroup>
+                            <center><h:messages globalOnly="true" errorClass="errorMessage" infoClass="infoMessage"/></center>  
+                            <h:panelGrid columns="2">                                
+                                <h:outputText value="#{msgs['sgl.oficina.nombre']}"/>
+                                <p:inputText  value="#{sesion.oficinaActual.nombre} *" disabled="true" size="45"/>
+                                <h:outputText value="#{msgs['sgl.generales.nombre']}"/>
+                                <h:panelGrid columns="2">
+                                    <p:inputText id="rutaN" value="#{rutaBean.rutaTerrestreVo.nombre}" size="45"/>
+                                    <h:message for="rutaN" errorClass="mensaje" infoClass="mensaje"/>
+                                </h:panelGrid>
+                                <h:outputText value="#{msgs['sgl.viaje.duracion']}"/>
+                                <h:panelGrid columns="2">
+                                    <p:inputText value="#{rutaBean.rutaTerrestreVo.tiempoViaje}" size="5"/>
+                                    <h:outputText value="horas"/>
+                                </h:panelGrid>
+                            </h:panelGrid>
+                            <br/>
+                            <center>
+                                <h:panelGrid columns="2" cellspacing="8"> 
+                                    <p:commandLink value="#{msgs['sistema.aceptar']}" styleClass="btn btn-info" actionListener="#{rutaBean.guardarRuta(event)}"/>
+                                    <p:commandLink value="#{msgs['sistema.cancelar']}" styleClass="btn btn-default" actionListener="#{rutaBean.cerrarPopRuta(event)}"/>
+                                </h:panelGrid>
+                            </center>                                  
+                        </h:panelGroup>
+                    </my:panelPopup>
+                </h:form>
+
+                <!--Modificar ruta-->
+                <h:form >
+                    <p:dialog  header="#{msgs['sistema.modificar']} #{msgs['sgl.viaje.ruta']}" 
+                               >
+                        <f:facet name="header">
+                            <h:panelGroup > 
+                                <h:outputText  value="#{msgs['sistema.modificar']} #{msgs['sgl.viaje.ruta']}"/>                                
+                            </h:panelGroup>
+                        </f:facet>
+                        <h:panelGroup>
+                            <center><h:messages globalOnly="true" errorClass="errorMessage" infoClass="infoMessage"/></center>  
+                            <h:panelGrid columns="2">
+                                <h:outputText value="#{msgs['sgl.oficina.nombre']}"/>
+                                <p:inputText value="#{sesion.oficinaActual.nombre} *" size="55" disabled="true"/>
+                                <h:outputText value="#{msgs['sgl.viaje.ruta']}"/>
+                                <h:panelGrid columns="2">
+                                    <p:inputText id="rutaNM" value="#{rutaBean.rutaTerrestreVo.nombre}" size="45"/>
+                                    <h:message for="rutaNM" errorClass="mensaje" infoClass="mensaje"/>
+                                </h:panelGrid>
+                                <h:outputText value="#{msgs['sgl.viaje.duracion']}"/>
+                                <h:panelGrid columns="2">
+                                    <p:inputText value="#{rutaBean.rutaTerrestreVo.tiempoViaje}" size="5"/>
+                                    <h:outputText value="horas"/>
+                                </h:panelGrid>
+                            </h:panelGrid>
+                            <center>
+                                <h:panelGrid columns="2">
+                                    <p:commandLink value="#{msgs['sistema.actualizar']}" styleClass="btn btn-info" actionListener="#{rutaBean.completarModificacionRuta(event)}"/>
+                                    <p:commandLink value="#{msgs['sistema.cancelar']}" styleClass="btn btn-default" actionListener="#{rutaBean.cerrarPopModificarRuta(event)}"/>
+                                </h:panelGrid>
+                            </center>                                 
+                        </h:panelGroup>
+                    </my:panelPopup>
+                </h:form>
+                <!--DEtalle ruta-->
+                <h:form >
+                    <p:dialog  header="#{msgs['sistema.detalle']} #{msgs['sgl.viaje.ruta']}" 
+                                  >
+                        <h:panelGrid columns="2" cellspacing="8" >
+                            <h:panelGrid style="text-align: center;" styleClass="bordePanelGrid">                                
+                                <h:outputText value="#{sesion.oficinaActual.nombre}" styleClass="fNegrita12"/>
+                                <h:outputText value="#{sesion.oficinaActual.ciudad}"/>
+                            </h:panelGrid>
+                            <h:panelGrid>
+                                <ui:repeat value="#{rutaBean.traerDetalleRutaPop}" var="psDet">
+                                    <h:panelGroup style="float: left; margin-left: 10px; cursor: pointer;" styleClass="bordePanelGrid">
+                                        <h:panelGrid style="text-align: center;" cellspacing="8"  styleClass="bordePanelGrid">
+                                            <h:outputText value="#{rutaBean.idTipoEspecifico eq 21 ? psDet.nombreSgOficina : ''}"/>
+                                            <h:outputText value="#{psDet.ciudad}"
+                                                            rendered="#{rutaBean.idTipoEspecifico eq 22}"/>
+                                            <h:outputText value="#{psDet.destino ? 'Destino: Si':'Destino: No'}" 
+                                                            rendered="#{rutaBean.idTipoEspecifico eq 21}"/>
+                                            <h:outputText value="Destino: Sí" rendered="#{rutaBean.idTipoEspecifico eq 22}"/>
+                                        </h:panelGrid>
+                                    </h:panelGroup>
+                                </ui:repeat>
+                            </h:panelGrid>
+                            <center>
+                                <h:panelGrid>
+                                    <p:commandLink value="#{msgs['sistema.cerrar']}" styleClass="btn btn-default" actionListener="#{rutaBean.cerrarDetalleRuta(event)}"/>
+                                </h:panelGrid>
+                            </center>
+                        </h:panelGrid>
+
+                    </my:panelPopup>
+                </h:form>
+		<!--Agregar detalle de ruta-->
+                <h:form styleClass="textoIzquierda">
+                    <p:dialog  header="#{msgs['sistema.crear']} #{msgs['sgl.viaje.detalle.ruta']}" 
+                                   >
+			<h:outputText value="#{msgs['sgl.viaje.ruta.agregar.detalle']}" styleClass="tituloEncabezado" />
+                        <c:choose>
+                            <c:when test="#{rutaBean.idTipoEspecifico eq 21}">
+                                <center><h:messages  globalOnly="true" errorClass="mensaje" infoClass="mensaje"/></center>  
+                                <h:panelGrid columns="2" cellspacing="8" >
+                                    <h:panelGrid style="text-align: center;" styleClass="bordePanelGrid">                                
+                                        <h:outputText value="#{sesion.oficinaActual.nombre}" styleClass="fNegrita12"/>
+                                        <h:outputText value="#{sesion.oficinaActual.ciudad}"/>
+                                        <p:selectBooleanCheckbox disabled="true" />
+                                        <p:selectBooleanCheckbox disabled="true" />
+                                    </h:panelGrid>
+                                    <h:panelGrid>
+                                        <ui:repeat value="#{rutaBean.traerOficina}" var="psDet">
+                                            <h:panelGroup style="float: left; margin-left: 10px; cursor: pointer;" styleClass="bordePanelGrid">
+                                                <h:panelGrid style="text-align: center;" >
+                                                    <h:outputText value="#{psDet.nombre}" styleClass="fNegrita12"/>
+                                                    <h:panelGrid columns="2">
+                                                        <h:outputText value="#{psDet.ciudad}"/>
+                                                        <p:selectBooleanCheckbox value="#{rutaBean.filasSeleccionadas[psDet.id]}"/>
+                                                        <h:outputText value="Destino: "/>
+                                                        <p:selectBooleanCheckbox value="#{psDet.destino}" label="Destino"/>                                           
+                                                    </h:panelGrid>
+                                                </h:panelGrid>  
+                                            </h:panelGroup>
+                                        </ui:repeat>
+                                    </h:panelGrid>
+                                </h:panelGrid>
+                            </c:when>
+                            <c:when test="#{rutaBean.idTipoEspecifico eq 22}">
+                                <center><h:messages  globalOnly="true" errorClass="mensaje" infoClass="mensaje"/></center>  
+                                <h:panelGrid columns="2" cellspacing="8" >
+                                    <h:panelGrid style="text-align: center;" styleClass="bordePanelGrid">                                
+                                        <h:outputText value="#{sesion.oficinaActual.nombre}" styleClass="fNegrita12"/>
+                                        <h:outputText value="#{sesion.oficinaActual.ciudad}"/>
+                                    </h:panelGrid>
+                                    <h:panelGrid>
+                                        <h:outputText value="#{msgs['sgl.solicitudViaje.destino']}"/>
+                                        <p:selectOneMenu value="#{rutaBean.idCiudad}">
+                                            <f:selectItems value="#{rutaBean.listaCiudad}"/>
+                                        </p:selectOneMenu>
+                                    </h:panelGrid>
+                                </h:panelGrid>
+
+                            </c:when>
+
+                        </c:choose>
+
+                        <center>
+                            <h:panelGrid columns="2">
+                                <p:commandLink value="#{msgs['sistema.guardar']}" styleClass="btn btn-info" actionListener="#{rutaBean.guardarDetalleRuta(event)}"/>
+                                <p:commandLink value="#{msgs['sistema.cancelar']}" styleClass="btn btn-default" actionListener="#{rutaBean.cancelarDetalleRuta(event)}"/>
+                            </h:panelGrid>
+                        </center>
+                        <h:panelGroup>
+
+                        </h:panelGroup>
+                    </my:panelPopup>                    
+                </h:form> 
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

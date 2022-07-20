@@ -467,6 +467,8 @@ public class CategoriaModel implements Serializable {
         }
         invArticuloCampoImpl.guardarArticuloCampo(sesion.getUsuario().getId(), articuloVO.getId(), ltemp);
         llenarDatosCambiarArticulo();
+        //
+        PrimeFaces.current().executeScript("$(dialogoAgregarArticuloCampo).modal('hide');");
     }
 
     public void quitarArticuloCampo(int idRel) {

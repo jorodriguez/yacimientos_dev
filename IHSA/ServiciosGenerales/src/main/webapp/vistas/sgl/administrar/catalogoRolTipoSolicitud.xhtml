@@ -1,0 +1,106 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      
+     
+      xmlns:c="http://java.sun.com/jsp/jstl/core">
+    <body>
+        <ui:composition template="./../../../WEB-INF/facelets/templates/templateServiciosGenerales.xhtml">
+            <ui:define name="contenido">
+                <h:form >
+                    <p class="tituloEncabezado">#{msgs['sgl.titulo.rol.tipo.solicitud']}</p>
+                    <h:messages id="nombre" errorClass="errorMessage" infoClass="infoMessage"/>
+                    <!<!--  tabChangeListener="#{catalogoBean.cambiarTabRolSolicitud(event)}" -->
+                    <p:tabView >
+                        <p:tab title="Rol-Tipo de solicitud">
+                            <h:panelGrid columns="2">
+                                <h:outputText value="Rol"/>
+                                <p:selectOneMenu value="#{catalogoBean.idRol}" valueChangeListener="#{catalogoBean.cambiarRol}" >
+                                    <f:selectItem itemValue="-1" itemLabel="#{msgs['sistema.seleccionar.combo']}"/>
+                                    <f:selectItems value="#{catalogoBean.listaRol}"/>
+                                </p:selectOneMenu>
+                            </h:panelGrid>
+                            <h:panelGrid columns="3" styleClass="bordePanelGrid">
+                                <f:facet name="header"><h:outputLabel value="Agregar tipo de solicitud al rol"/></f:facet>
+                                <h:outputText value="Tipo de solicitud"/>
+                                <p:selectOneMenu value="#{catalogoBean.idTipo}">
+                                    <f:selectItem itemValue="-1" itemLabel="#{msgs['sistema.seleccionar.combo']}"/>
+                                    <f:selectItems value="#{catalogoBean.listaTipoSolicitud}"/>
+                                </p:selectOneMenu>
+                                <p:commandLink title="#{msgs['sgl.solicitud.agregar']}" value="#{msgs['sistema.aceptar']}" actionListener="#{catalogoBean.agregarRolTipoSolicitud(event)}"
+                                                 styleClass="btn btn-info">
+                                </p:commandLink>
+                            </h:panelGrid>
+                            <p:dataTable showGridlines="true" size="small"  var="data" value="#{catalogoBean.traerTipoSolicitud}">
+                                <h:column>
+                                    <f:facet name="header"><h:outputText value="Tipo de solicitud"/></f:facet>
+                                    <h:outputText value="#{data.tipoSolicitud}"/>
+                                </h:column>
+                                <h:column>
+                                    <h:commandLink value="Quitar" actionListener="#{catalogoBean.quitarRelacion(event)}" style="link"
+                                                   onclick="if(!confirm('La operación va a quitar la relación con el rol, ¿está seguro?  ')) return false;"/>
+                                </h:column>
+                            </p:dataTable>
+                        </ice:panelTab>
+                        <p:tab title="Usuario Rol-Gerencia">
+                            <h:panelGrid columns="2">
+                                <h:outputText value="Usuario"/>
+                                <!<!-- actionListener="#{catalogoBean.buscarUsuario(event)}" -->
+                                <p:autoComplete id="userSelect"
+                                                     value="#{catalogoBean.cadena}"
+                                                     completeMethod="#{catalogoBean.usuarioListenerRol}"
+                                                     >
+                                </p:autoComplete>
+                            </h:panelGrid>
+                            <h:panelGrid columns="3" styleClass="bordePanelGrid">
+                                <h:panelGrid columns="2">
+                                    <h:outputText value="#{msgs['sistema.rol.nombre']}"/>
+                                    <p:selectOneMenu value="#{catalogoBean.idRol}" >
+                                        <f:selectItem itemValue="-1" itemLabel="#{msgs['sistema.seleccionar.combo']}"/>
+                                        <f:selectItems value="#{catalogoBean.listaRol}"/>
+                                    </p:selectOneMenu>
+                                </h:panelGrid>
+
+                                <h:panelGrid columns="2">
+                                    <h:outputText value="#{msgs['sistema.gerencia']}"/>
+                                    <p:selectOneMenu value="#{catalogoBean.idGerencia}" >
+                                        <f:selectItem itemValue="-1" itemLabel="#{msgs['sistema.seleccionar.combo']}"/>
+                                        <f:selectItems value="#{catalogoBean.listaGerencia}"/>
+                                    </p:selectOneMenu>
+                                </h:panelGrid>
+                                <p:commandLink title="#{msgs['sgl.solicitud.agregar']}" value="#{msgs['sistema.aceptar']}" 
+                                                 actionListener="#{catalogoBean.agregarUsuarioRolGerencia(event)}"
+                                                 styleClass="btn btn-info">
+                                </p:commandLink>
+                            </h:panelGrid>
+                            <p:dataTable showGridlines="true" size="small"  var="data" value="#{catalogoBean.lista}">
+                                <h:column>
+                                    <h:outputText value="#{data.idUsuarioRolGerencia}"/>
+                                </h:column>
+                                <h:column>
+                                    <f:facet name="header"><h:outputText value="Rol"/></f:facet>
+                                    <h:outputText value="#{data.nombreRol}"/>
+                                </h:column>
+                                <h:column>
+                                    <f:facet name="header"><h:outputText value="Gerencia"/></f:facet>
+                                    <h:outputText value="#{data.gerencia}"/>
+                                </h:column>
+                                <h:column>
+                                    <h:commandLink value="#{msgs['sistema.quitar']}" actionListener="#{catalogoBean.quitarRolGerencia(event)}" style="link"
+                                                   onclick="if(!confirm('La operación va a quitar la relación con el rol y la gerencia, ¿está seguro?  ')) return false;"/>
+                                </h:column>
+                            </p:dataTable>
+                        </ice:panelTab>
+                    </p:tabView>
+
+                </h:form>
+
+            </ui:define>
+        </ui:composition>
+
+    </body>
+</html>

@@ -1,0 +1,195 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+              
+     
+      >
+    <body>
+        <ui:composition template="./../../../WEB-INF/facelets/templates/templateServiciosGenerales.xhtml">
+            <ui:define name="contenido">
+                <h:panelGroup    rendered="#{not empty sesion.usuario}"  >                                                         
+                    <h:form styleClass="textoIzquierda">
+                        <p class="tituloEncabezado"> Administrar avisos de pagos para Oficina</p>
+                        <h:panelGrid   columns="2"> 
+                            <h:panelGrid columns="2" style="text-align: end;">
+                                <p:commandLink title="Nueva Notificación" styleClass="btn btn-default"   actionListener="#{avisoPagoOficinaBean.mostrarPopupCatalogoAviso(event)}">
+                                    <h:graphicImage url="#{msgs['sgl.ruta.imagen']}button_create.png" 
+                                                      styleClass="imagenSinBorde"/>                            
+                                </p:commandLink>                        
+                            </h:panelGrid>           
+                            <p:commandLink value="Crear Notificación" actionListener="#{avisoPagoOficinaBean.mostrarPopupCatalogoAviso(event)}"
+                                             styleClass="linkPequenio" />   
+                        </h:panelGrid>
+                        <center>                                                        
+                            <p:dataTable id="dataGridAvisos"  
+                                         value="#{avisoPagoOficinaBean.avisosPagosOficinaModel}"
+                                         rows="8"                              
+                                         var="data">                       
+                                <p:column>
+                                    <f:facet name="header"><h:outputText value="Servicio "/></f:facet>
+                                    <h:outputText value="#{data['sgTipoEspecifico'].nombre}"/>
+                                </p:column>
+                                <p:column>
+                                    <f:facet name="header"><h:outputText value="Periodo"/></f:facet>
+                                    <h:outputText value="#{data['sgPeriodicidad'].nombre}"/>
+                                </p:column>                               
+                                <p:column>
+                                    <f:facet name="header"><h:outputText value=" Día Estimado de Pago"/></f:facet>                                                                                        
+                                    <h:outputText value="#{data['diaEstimadoPago']}" />
+                                </p:column>                                                                       
+                                <p:column>
+                                    <f:facet name="header"><h:outputText value=" Días de anticipación"/></f:facet>                                                                                        
+                                    <h:outputText value="#{data['diaAnticipadoPago']}" >                                        
+                                    </h:outputText>
+                                </p:column>                                                                      
+                                <p:column>
+                                    <f:facet name="header"><h:outputText value="Día de Notificación"/></f:facet>                                                                                        
+                                    <h:outputText value="#{data['fechaProximoAviso']}" >
+                                        <f:convertDateTime pattern="dd/MM/yyyy" timeZone="America/Monterrey"/>
+                                    </h:outputText>
+                                </p:column>
+                                <p:column>                            
+                                    <p:commandLink value="Modificar" actionListener="#{avisoPagoOficinaBean.mostrarPopupModificarAviso(event)}"  styleClass="link"/>                            
+                                </p:column>
+                                <p:column>                            
+                                    <p:commandLink value="Eliminar" 
+                                                     onclick="if(!confirm('Está seguro de eliminar el registro ...? ')) return false;"
+                                                     actionListener="#{avisoPagoOficinaBean.deleteRelacionAvisoPago(event)}"  styleClass="link"/>                                                              
+                                </p:column>
+                                <!-- <p:column>                            
+                                     <p:commandLink value="Ver Detalle" styleClass="link" />                                                                                                
+                                 </p:column>    -->
+                            </p:dataTable>                           
+                        </center>
+                    </h:form>
+
+                    <h:form styleClass="textoIzquierda">
+                        <p:dialog  header="Agregar Aviso" >
+                            <h:panelGrid>
+                                <center><h:messages errorClass="mensaje" infoClass="mensaje"/></center>  
+                            </h:panelGrid>
+                            <h:panelGrid rendered="#{avisoPagoOficinaBean.mrPopupAgregarAviso eq false}" columns="2"> 
+                                <h:panelGrid columns="2" style="text-align: end;">
+                                    <p:commandLink title="Crear Nuevo" styleClass="btn btn-default" actionListener="#{avisoPagoOficinaBean.mostrarPanelAgregarAviso(event)}"  >
+                                        <h:graphicImage url="#{msgs['sgl.ruta.imagen']}button_create.png" 
+                                                          styleClass="imagenSinBorde"/>                            
+                                    </p:commandLink>                        
+                                </h:panelGrid>                                     
+                                <p:commandLink value="Crear Nuevo " actionListener="#{avisoPagoOficinaBean.mostrarPanelAgregarAviso(event)}"
+                                                 styleClass="linkPequenio" />   
+                            </h:panelGrid>                            
+                            <h:panelGrid   columns="1"  >    
+                                <h:panelGrid >     
+                                    <h:panelGrid columns="2" >
+                                        <h:outputText value="Pago : " />                                                                                           
+                                        <p:selectOneMenu value="#{avisoPagoOficinaBeanModel.idPagoOficinaSeleccionado}" 
+                                                           >
+                                            <f:selectItem itemLabel="Seleccione . . ." itemValue="-1"/>
+                                            <f:selectItems value="#{avisoPagoOficinaBean.listaPagosOficinaItems()}"/>
+                                        </p:selectOneMenu>
+                                        <h:outputText value="Periodo : " />                                                                                           
+                                        <p:selectOneMenu value="#{avisoPagoOficinaBeanModel.idPeriodicidadSeleccionada}" 
+                                                           >
+                                            <f:selectItem itemLabel="Seleccione . . ." itemValue="-1"/>
+                                            <f:selectItems value="#{avisoPagoOficinaBean.listaPeriodosPagoItems()}"/>
+                                        </p:selectOneMenu>          
+                                        <h:outputText value="Día estimado del pago : " />                                                                                           
+                                        <p:inputText value="#{avisoPagoOficinaBean.avisoPago.diaEstimadoPago}" />
+                                        <h:outputText value="Días de anticipación : " />                                                                                           
+                                        <p:inputText value="#{avisoPagoOficinaBean.avisoPago.diaAnticipadoPago}"/>                                
+                                    </h:panelGrid>                                                                                                                                                           
+                                </h:panelGrid>
+				<!--style="margin: 0px auto 0px auto;" -->
+				<h:panelGrid style="margin: 0px auto 0px auto;" columns="2">
+				    <p:commandLink value="Aceptar" actionListener="#{avisoPagoOficinaBean.createAviso(event)}" styleClass="btn btn-info" />   
+				    <p:commandLink value="Cancelar" actionListener="#{avisoPagoOficinaBean.ocultarPopupCatalogoAviso(event)}" styleClass="btn btn-default"  />                                        
+				</h:panelGrid>
+                            </h:panelGrid>
+                            <!-- Seleccionar de la lista de Avisos -->
+                            <h:panelGrid  >
+                                <center> 
+                                    <p:dataTable showGridlines="true" size="small"  value="#{avisoPagoOficinaBean.catalogoAvisosModel}"                                                             
+                                                   var="data" 
+                                                   scrollable="true"
+                                                   scrollHeight="220px"
+                                                   rows="10"
+                                                   >                                                                     
+                                        <p:column>
+                                            <f:facet name="header"><h:outputText value="Tipo "/></f:facet>
+                                            <h:outputText value="#{data['sgTipoEspecifico'].nombre}"/>
+                                        </p:column>
+                                        <p:column>
+                                            <f:facet name="header"><h:outputText value="Periodo"/></f:facet>
+                                            <h:outputText value="#{data['sgPeriodicidad'].nombre}"/>
+                                        </p:column>                               
+                                        <p:column>
+                                            <f:facet name="header"><h:outputText value=" Día de Pago"/></f:facet>                                                                                        
+                                            <h:outputText value="#{data['diaEstimadoPago']}" />
+                                        </p:column>     
+                                        <p:column>
+                                            <f:facet name="header"><h:outputText value="Días de anticipación"/></f:facet>                                                                                        
+                                            <h:outputText value="#{data['diaAnticipadoPago']}" >                                        
+                                            </h:outputText>
+                                        </p:column> 
+                                        <p:column>
+                                            <f:facet name="header"><h:outputText value="Día de Notificación"/></f:facet>                                                                                        
+                                            <h:outputText value="#{data['fechaProximoAviso']}" >
+                                                <f:convertDateTime pattern="dd/MM/yyyy" timeZone="America/Monterrey"/>
+                                            </h:outputText>
+                                        </p:column>
+                                        <p:column>                            
+                                            <p:commandLink value="Agregar" actionListener="#{avisoPagoOficinaBean.seleccionarAvisoCatalogo(event)}"                                                                 
+                                                             styleClass="link"/>                                                              
+                                        </p:column> 
+                                    </p:dataTable>
+                                </center>
+				<!-- <h:panelGrid style="margin: 0px auto 0px auto;">-->                                                                                  
+				<h:panelGrid style="margin: 0px auto 0px auto;">
+				    <p:commandLink value="Cerrar" actionListener="#{avisoPagoOficinaBean.ocultarPopupCatalogoAviso(event)}" styleClass="btn btn-default"  />                                        
+				</h:panelGrid>
+                            </h:panelGrid>                                        
+                        </my:panelPopup>
+                    </h:form>
+
+                    <h:form styleClass="textoIzquierda">
+                        <p:dialog  header="Modificar Aviso "   >
+                            <h:panelGrid>
+                                <center><h:messages errorClass="mensaje" infoClass="mensaje"/></center>  
+                            </h:panelGrid>
+                            <h:panelGrid  >    
+                                <h:panelGrid >    
+                                    <h:panelGrid columns="2" >
+                                        <h:outputText value="Pago : " />                                                                                           
+                                        <p:selectOneMenu value="#{avisoPagoOficinaBeanModel.idPagoOficinaSeleccionado}" 
+                                                            disabled="true">
+                                            <f:selectItem itemLabel="Seleccione . . ." itemValue="-1"/>
+                                            <f:selectItems value="#{avisoPagoOficinaBean.listaPagosOficinaItems()}"/>
+                                        </p:selectOneMenu> 
+                                        <h:outputText value="Periodo : " />                                                                                           
+                                        <p:selectOneMenu value="#{avisoPagoOficinaBeanModel.idPeriodicidadSeleccionada}" 
+                                                           >
+                                            <f:selectItem itemLabel="Seleccione . . ." itemValue="-1"/>
+                                            <f:selectItems value="#{avisoPagoOficinaBean.listaPeriodosPagoItems()}"/>
+                                        </p:selectOneMenu>          
+                                        <h:outputText value="Día estimado del pago : " />                                                                                           
+                                        <p:inputText value="#{avisoPagoOficinaBean.avisoPago.diaEstimadoPago}" />
+                                        <h:outputText value="Días de anticipación : " />                                                                                           
+                                        <p:inputText value="#{avisoPagoOficinaBean.avisoPago.diaAnticipadoPago}"/>                                
+                                    </h:panelGrid>                                           
+				    <h:panelGrid style="margin: 0px auto 0px auto;" columns="2">                                           
+					<p:commandLink value="Aceptar" actionListener="#{avisoPagoOficinaBean.editAviso(event)}" styleClass="btn btn-info" />   
+					<p:commandLink value="Cancelar" actionListener="#{avisoPagoOficinaBean.ocultarPopupModificarAviso(event)}" styleClass="btn btn-default"  />                                        
+				    </h:panelGrid>
+                                </h:panelGrid>
+                            </h:panelGrid>
+                        </my:panelPopup>
+                    </h:form>
+                </h:panelGroup>
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

@@ -1,0 +1,71 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      
+      
+     >
+
+    <body>
+
+        <ui:composition template="./../../../../WEB-INF/facelets/templates/templateServiciosGenerales.xhtml">
+
+            <ui:define name="contenido">
+
+                <h:panelGroup  rendered="#{empty sesion.usuario}" styleClass="altura">
+                    <ui:include src="./../../../../login.xhtml"/>
+                </h:panelGroup>  
+
+                <h:form >
+
+                    <p class="tituloEncabezado">Modificar Modelo de #{catalogoBean.cadena} '#{catalogoBean.modelo.nombre}'</p>
+
+                    <br/>
+
+                    <h:panelGrid columns="1" >
+                        <p:commandLink type="submit" title="Regresar a Detalle de Modelo" action="list" actionListener="#{catalogoBean.removeMemoryModelo(actionEvent)}" immediate="true" styleClass="btn btn-default">
+                            <h:graphicImage url="#{msgs['sgl.ruta.imagen']}button_back.png" alt="Regresar a Detalle de Modelo" styleClass="imagenSinBorde" />
+                        </p:commandLink>
+                        <p:commandLink value="Regresar a Detalle de Modelo" styleClass="linkPequenio" action="list" actionListener="#{catalogoBean.removeMemoryModelo(actionEvent)}" immediate="true" />
+                    </h:panelGrid>
+
+                    <br/>
+
+                    <h:panelGrid width="350px" style="margin-left: 25px" styleClass="bordePanelGrid" >
+                        <h:panelGrid columns="2" >
+                            <h:outputLabel value="Tipo: " styleClass="f11" />
+                            <h:outputText value="#{catalogoBean.tipoEspecificoById.nombre}" />
+                            <h:outputLabel value="Marca: " styleClass="f11" />
+                            <h:outputText value="#{catalogoBean.marcaById.nombre}" />
+                            <h:panelGrid columns="2">
+                                <h:outputLabel value="Nombre: " styleClass="f11" />
+                                <h:outputText value="*" styleClass="textoRojo" />
+                            </h:panelGrid>
+                            <h:panelGrid columns="2">
+                                <p:inputText id="nombreModelo" value="#{catalogoBean.modelo.nombre}" maxlength="50" required="true" requiredMessage="Nombre es requerido" style="width: 200px" styleClass="f11" />
+                                <h:message for="nombreModelo" errorClass="errorMessage" infoClass="infoMessage"/>
+                            </h:panelGrid>
+                            <h:outputLabel value="Descripción: " styleClass="f11" />
+                            <p:inputTextarea id="descripcionModelo" value="#{catalogoBean.modelo.descripcion}" maxlength="512" rows="5" style="width: 250px" />
+                        </h:panelGrid>
+
+                        <br />
+
+                        <h:panelGrid>
+                            <p:commandButton value="#{msgs['sistema.actualizar']}" action="#{catalogoBean.updateModelo()}"  styleClass="btn btn-info"/>
+                        </h:panelGrid>  
+                    </h:panelGrid>
+
+                    <br />
+
+                </h:form>                
+
+            </ui:define>
+
+        </ui:composition>
+
+    </body>
+</html>
