@@ -2311,12 +2311,10 @@ public class UsuarioImpl extends AbstractFacade<Usuario> {
         StringBuilder sql = new StringBuilder();
 
         sql.append("select u.ID, u.NOMBRE, u.TELEFONO from USUARIO u")
-                // TODO : revisar al migrar a PgSQL
                 .append("where upper(u.NOMBRE COLLATE \"es_ES\") like upper('%").append(cadena).append("%')")
                 .append("and u.ELIMINADO = false and u.interno = true ")
                 .append("order by u.NOMBRE asc")
-                //TODO : cambiar a LIMIT cuando se migre a PgSQL
-                .append("rows ").append(numero);
+                .append("limit  ").append(numero);
 
         return em.createNativeQuery(sql.toString()).getResultList();
     }

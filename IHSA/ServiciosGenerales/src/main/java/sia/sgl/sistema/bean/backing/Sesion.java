@@ -17,6 +17,7 @@ import javax.faces.model.ListDataModel;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import lombok.Getter;
 import lombok.Setter;
 import org.primefaces.PrimeFaces;
@@ -163,9 +164,9 @@ public class Sesion implements Serializable {
         menu.getElements().add(opcAyuda);
     }
 
-    public void subirValoresContexto() {
-        Env.setContext(ctx, Env.SESSION_ID, SessionUtils.getSession().getId());
-        Env.setContext(ctx, Env.CLIENT_INFO, SessionUtils.getClientInfo(SessionUtils.getRequest()));
+    public void subirValoresContexto(HttpSession sesion) {
+        Env.setContext(ctx, Env.SESSION_ID, sesion.getId());
+        Env.setContext(ctx, Env.CLIENT_INFO, sesion.getServletContext().getContextPath());
         Env.setContext(ctx, Env.PUNTO_ENTRADA, "Sia");
         Env.setContext(ctx, Env.PROYECTO_ID, usuario.getApCampo().getId());
         Env.setContext(ctx, Env.CODIGO_COMPANIA, usuario.getApCampo().getCompania().getRfc());

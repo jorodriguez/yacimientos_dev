@@ -16,13 +16,17 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
+import javax.faces.event.ActionEvent;
 import javax.inject.Inject;
 
 import javax.inject.Named;
-import javax.faces.bean.ManagedProperty;
 import javax.faces.model.DataModel;
 import javax.faces.model.ListDataModel;
 import javax.faces.model.SelectItem;
+import javax.faces.view.ViewScoped;
+import lombok.Getter;
+import lombok.Setter;
+import org.primefaces.PrimeFaces;
 import sia.constantes.Constantes;
 import sia.excepciones.SIAException;
 import sia.modelo.Gerencia;
@@ -78,22 +82,19 @@ import sia.servicios.sistema.impl.SiParametroImpl;
 import sia.servicios.sistema.impl.SiUsuarioRolImpl;
 import sia.sgl.sistema.bean.backing.Sesion;
 import sia.sgl.sistema.bean.support.FacesUtils;
-import sia.sgl.sistema.bean.support.SoporteProveedor;
 import sia.util.UtilLog4j;
 
 /**
  *
  * @author mluis
  */
-@Named(value = "estanciaBeanModel")
-
+@Named(value = "estanciaBean")
+@ViewScoped
 public class EstanciaBeanModel implements Serializable {
 
     //Sistema //Sistema
     @Inject
     private Sesion sesion;
-    @ManagedProperty(value = "#{soporteProveedor}")
-    private SoporteProveedor soporteProveedor;
     //Servicios
     @Inject
     private SgDetalleSolicitudEstanciaImpl sgDetalleSolicitudEstanciaImpl;
@@ -174,13 +175,15 @@ public class EstanciaBeanModel implements Serializable {
     //private List<DetalleSolicitudVO> lu;
     //Datamodels
     private DataModel dataModel; //DataModel genérico. Úsalo si lo necesitas!  // se usas para mostrar en salida huesped hotel a los que dan VoBo a la carta de huespedes
-    private DataModel listaSolicitud = null;
+    @Getter
+    @Setter
+    private List<SgSolicitudEstanciaVo> listaSolicitud;
     private DataModel listaDetalleSolicitud = null;
     private DataModel staffDataModel;
     private DataModel habitacionesStaffDataModel;
     private DataModel numHabitacionesDisponiblesByStaffDataModel;
-    private DataModel lista;
-    private DataModel serviciosHotelFacturaEmpresa;
+    private List<SgHuespedHotelServicioVo> lista;
+    private List<SgHotelTipoEspecificoVo> serviciosHotelFacturaEmpresa;
     private DataModel listaEstancia;
 
     //Clases
@@ -263,11 +266,12 @@ public class EstanciaBeanModel implements Serializable {
         this.status = 1;
         this.sgSolicitudEstanciaVo = null;
         this.detalleSolicitudVO = null;
-        this.listaSolicitud = null;
+        this.listaSolicitud = new ArrayList<>();
         this.listaDetalleSolicitud = null;
         this.popUp = false;
         this.staffListSelectItem = null;
-        
+        serviciosHotelFacturaEmpresa = new ArrayList();
+
         if (siUsuarioRolImpl.buscarRolPorUsuarioModulo(sesion.getUsuario().getId(), Constantes.MODULO_SGYL, "7", Constantes.AP_CAMPO_DEFAULT)) {
             setGerenciaCapacitacion(this.gerenciaImpl.findByNameAndCompania("Capacitación", "IHI070320FI3", false));
             setIdGerencia(getGerenciaCapacitacion().getId());
@@ -281,52 +285,63 @@ public class EstanciaBeanModel implements Serializable {
         }
     }
 
-
-    public void iniciarConvesacionSalidaHuesped() {
-        //Limpiando Variables
-        this.idHotel = -1;
-        this.lista = null;
-        this.sgHuespedHotel = null;
-        this.serviciosHotelFacturaEmpresa = null;
-        this.dataModel = null;
-        this.id = -1;
-        setGerenciaCapacitacion(null);
+    public void mostrarPopupDetalleSolicitudEstancia(SgSolicitudEstanciaVo solEst) {
+        sgSolicitudEstanciaVo = solEst;
+        try {
+            traerDetalleSolicitud();
+            PrimeFaces.current().executeScript("PF('dlgSolEst').show();");
+        } catch (Exception e) {
+            log(e.getMessage());
+            FacesUtils.addErrorMessage(new SIAException().getMessage());
+        }
     }
 
-    public void beginConversationRegistroHuesped() {
+    public void eliminarSE(SgSolicitudEstanciaVo est) {
+        setConCorreo(Constantes.FALSE);
+        ActionEvent event = null;
+        cancelarSolicitudEstancia(est);
+
+    }
+
+    public void cancelarSolicitudEstancia(SgSolicitudEstanciaVo event) {
+        setSgSolicitudEstanciaVo(event);
+        //Valida si no se han agregado usuarioa staff y hotel
+        DataModel<SgHuespedHotel> lh = traerRegistroHospedadosHotel();
+        DataModel<SgHuespedStaff> ls = traerHospedadosStaff();
+        setListaDetalleSolicitud(traerDetalleSolicitudRegistro());
+        if (ls.getRowCount() < 1 && lh.getRowCount() < 1) {
+            setEliminarPop(true);
+        } else {
+            FacesUtils.addErrorMessage("No es posible marcar como cancelada  la solicitud, debido a que ya se han registrado integrantes");
+        }
+    }
+
+    public void completarCancelarSolicitudEstancia() {
+        try {
+            if (!getMensaje().isEmpty()) {
+                cancelarSolicitudEstancia();
+                setMensaje("");
+                FacesUtils.addInfoMessage("La Solicitud de Estancia " + getSgSolicitudEstanciaVo().getCodigo() + " fue cancelada satisfactoriamente");
+                setSgSolicitudEstanciaVo(null);
+                setListaDetalleSolicitud(null);
+                setEliminarPop(false);
+                setConCorreo(Constantes.TRUE);
+            } else {
+                FacesUtils.addErrorMessage("Es necesario agregar un motivo de cancelación");
+            }
+        } catch (Exception e) {
+            FacesUtils.addErrorMessage("Ocurrio un error al cancelar la solcitud. . .");
+            e.getStackTrace();
+        }
+
+    }
+
+    public String goToAsignarHabitacion(SgSolicitudEstanciaVo estVo) {
         //Limpiando variables
-        this.habitacion = null;
-        this.idHotel = -1;
-        this.listaSolicitud = null;
-        this.listaDetalleSolicitud = null;
-        setPopUp(false);
-        setDisabled(false);
-        setFlag(false);
-        setMensaje("");
-        setIdStaff(-1);
-        setIdHotel(-1);
-        setIdHabitacion(-1);
-        setIdTipoEspecifico(-1);
-        setHabitacion(null);
-        setTipoEspecifico(null);
-        setSgHuespedHotel(null);
-        setFechaSalidaPropuesta(null);
-        setHabitacionesStaffDataModel(null);
-        setSgDetalleSolicitudEstancia(null);
-        setServiciosHotelFacturaEmpresa(null);
-        setGerenciaCapacitacion(null);
-
-    }
-
-    public void beginConversacionCambioHabitacionStaffHuesped() {
-        //Limpiando variables
-        setDataModel(null);
-        setGerenciaCapacitacion(null);
-        setStaffListSelectItem(null);
-    }
-
-    public <T> List<T> dataModelAList(DataModel m) {
-        return (List<T>) m.getWrappedData();
+        setSgSolicitudEstanciaVo(estVo);
+        setListaDetalleSolicitud(null);
+        //Dándole memoria a Solicitud de Estancia
+        return "/vistas/sgl/estancia/asignarHabitacion";
     }
 
     /**
@@ -483,17 +498,13 @@ public class EstanciaBeanModel implements Serializable {
         return this.sgSolicitudEstanciaImpl.totalSgSolicitudEstancia(sesion.getUsuario().getId(), idSgOficina, idEstatus, fromTravel);
     }
 
-    public DataModel trearSolicitudEstancia() {
-        try {
-            if (this.listaSolicitud == null) {
-                this.listaSolicitud = new ListDataModel(sgSolicitudEstanciaImpl.trearSolicitudEstanciaPorUsuario(sesion.getUsuario(), getStatus(), Constantes.BOOLEAN_FALSE));
-            }
-        } catch (Exception e) {
-            UtilLog4j.log.fatal(this, "Ocurrio un error al traer las estancias por solicitud :  :  :  " + e.getMessage());
-        }
-        return this.listaSolicitud;
-    }
-
+//    public void trearSolicitudEstancia() {
+//        try {
+//            listaSolicitud = sgSolicitudEstanciaImpl.trearSolicitudEstanciaPorUsuario(sesion.getUsuario(), getStatus(), Constantes.BOOLEAN_FALSE);
+//        } catch (Exception e) {
+//            UtilLog4j.log.fatal(this, "Ocurrio un error al traer las estancias por solicitud :  :  :  " + e.getMessage());
+//        }
+//    }
     public List<SgSolicitudEstanciaVo> findAllSgSolicitudEstanciaByUsuarioAndEstatus(int idEstatus, Boolean fromTravel) {
         return this.sgSolicitudEstanciaImpl.findAll(sesion.getUsuario().getId(), -1, idEstatus, fromTravel, "id", false, false);
     }
@@ -505,8 +516,7 @@ public class EstanciaBeanModel implements Serializable {
     public List<UsuarioRolVo> listaUsuarioRol() {
         return siUsuarioRolImpl.traerRolPorNombreUsuarioModulo(getUser(), Constantes.MODULO_SGYL, Constantes.AP_CAMPO_DEFAULT);
     }
-    
- 
+
     public int buscarDetalleSolicitud() {
         int v;
         List<DetalleEstanciaVO> l = sgDetalleSolicitudEstanciaImpl.traerDetallePorSolicitud(getSgSolicitudEstanciaVo().getId(), Constantes.NO_ELIMINADO);
@@ -531,11 +541,11 @@ public class EstanciaBeanModel implements Serializable {
         sgDetalleSolicitudEstanciaImpl.eliminarDetalleSolicitud(sesion.getUsuario(), getSgDetalleSolicitudEstancia(), Constantes.BOOLEAN_TRUE);
     }
 
-    public void cancelarSolicitudRegistroHuesped() {
-        sgDetalleSolicitudEstanciaImpl.cancelarSolicitudRegistroHuesped(sesion.getUsuario(), getSgDetalleSolicitudEstancia().getIdDetalleEstancia(), true);
+    public void cancelarSolicitudRegistroHuesped(int idDetSol) {
+        sgDetalleSolicitudEstanciaImpl.cancelarSolicitudRegistroHuesped(sesion.getUsuario(), idDetSol, true);
         List<DetalleEstanciaVO> ld = sgDetalleSolicitudEstanciaImpl.traerDetallePorSolicitud(getSgSolicitudEstanciaVo().getId(), Constantes.NO_ELIMINADO);
         if (ld.size() == 1) {
-            sgSolicitudEstanciaImpl.cancelarSolicitudEstancia(sesion.getUsuario(), getSgSolicitudEstanciaVo(), "Se cancela por cancelación del huésped", Constantes.FALSE,Constantes.TRUE);
+            sgSolicitudEstanciaImpl.cancelarSolicitudEstancia(sesion.getUsuario(), getSgSolicitudEstanciaVo(), "Se cancela por cancelación del huésped", Constantes.FALSE, Constantes.TRUE);
         } else {
             int can = 0;
             int finaliza = 0;
@@ -560,21 +570,44 @@ public class EstanciaBeanModel implements Serializable {
                 + (this.sgDetalleSolicitudEstancia.getIdInvitado() == 0 ? this.sgDetalleSolicitudEstancia.getUsuario() : this.sgDetalleSolicitudEstancia.getInvitado());
     }
 
+    public void goToRegistroStaff(DetalleEstanciaVO detVo) {
+        setFlag(false);
+        setDisabled(true);
+        setDisabledAux(true);
+        setSgDetalleSolicitudEstancia(detVo);
+        setMrPopupRegistrarHuespedEnStaff(!isMrPopupRegistrarHuespedEnStaff());
+
+        PrimeFaces.current().executeScript("PF('dlgRegHuesped').show()");
+        //return "/vistas/sgl/estancia/registroStaff";
+    }
+
+    public void seleccionarHabitacion(SgStaffHabitacion hab) {
+        setHabitacion(hab);
+        hab.setOcupada(Boolean.TRUE);
+
+        if (getHabitacion().isOcupada()) {
+            log("se abrirá el popup");
+        }
+    }
+
+    public void cargarHabitacionesInTableByStaff() {
+        getHabitacionesByStaff(getStaffById());
+    }
+
     /**
      *
      * Registro de huespedes en el staff u hotel
      */
-    public DataModel trearSolicitudEstanciaParaRegistro() {
+    public void trearSolicitudEstanciaParaRegistro() {
         try {
             if (getListaSolicitud() == null) {
                 log("Oficina : " + sesion.getOficinaActual().getId());
-                setListaSolicitud(new ListDataModel(sgSolicitudEstanciaImpl.trearSolicitudEstanciaPorOficina(sesion.getOficinaActual().getId(), getStatus(), sesion.getUsuario().getId(), Constantes.BOOLEAN_FALSE)));
+                setListaSolicitud(sgSolicitudEstanciaImpl.trearSolicitudEstanciaPorOficina(sesion.getOficinaActual().getId(), getStatus(), sesion.getUsuario().getId(), Constantes.BOOLEAN_FALSE));
             }
-            return getListaSolicitud();
         } catch (Exception e) {
-            return null;
         }
     }
+
     public void traerDetalleSolicitud() throws SIAException, Exception {
         listaDetalleSolicitud = new ListDataModel(sgDetalleSolicitudEstanciaImpl.getAllIntegrantesBySolicitud(this.sgSolicitudEstanciaVo.getId(), null, null, false));
     }
@@ -618,21 +651,20 @@ public class EstanciaBeanModel implements Serializable {
     }
 
     public void updateServicios() {
-        List<SgHuespedHotelServicioVo> list = dataModelAList(getServiciosHotelFacturaEmpresa());
+        List<SgHotelTipoEspecificoVo> list = getServiciosHotelFacturaEmpresa();
         log("====================Servicios facturados por la empresa para actualizar (Inicio) =====================");
-        for (SgHuespedHotelServicioVo vo : list) {
-            log(vo.toString());
-        }
+//        for (SgHuespedHotelServicioVo vo : list) {
+//            log(vo.toString());
+//        }
         log("====================Servicios facturados por la empresa para actualizar (Fin) =====================");
-        this.sgHuespedHotelServicioImpl.updateServicios(list, getSgHuespedHotel().getId(), this.sesion.getUsuario().getId());
-        setServiciosHotelFacturaEmpresa(new ListDataModel(getAllServiciosFacturaEmpresa()));
+        //this.sgHuespedHotelServicioImpl.updateServicios(list, getSgHuespedHotel().getId(), this.sesion.getUsuario().getId());
+//        setServiciosHotelFacturaEmpresa((getAllServiciosFacturaEmpresa()));
     }
 
     //Registro de Huéspedes
     public void solicitudEstanciaByStatusEnviado() {
 //        log("EstanciaBeanModel.getSolicitudEstanciaByStatusEnviado()");
-        this.listaSolicitud = new ListDataModel(sgSolicitudEstanciaImpl.trearSolicitudEstanciaPorOficina(sesion.getOficinaActual().getId(), Constantes.ESTATUS_SOLICITUD_ESTANCIA_SOLICITADA, sesion.getUsuario().getId(), Constantes.NO_ELIMINADO));
-        log("Se encontraron " + (this.listaSolicitud != null ? this.listaSolicitud.getRowCount() : 0) + " Solicitudes de Estancia");
+        listaSolicitud = sgSolicitudEstanciaImpl.trearSolicitudEstanciaPorOficina(sesion.getOficinaActual().getId(), Constantes.ESTATUS_SOLICITUD_ESTANCIA_SOLICITADA, sesion.getUsuario().getId(), Constantes.NO_ELIMINADO);
 
     }
 
@@ -643,6 +675,52 @@ public class EstanciaBeanModel implements Serializable {
         for (SgStaff staff : staffList) {
             SelectItem item = new SelectItem(staff.getId(), staff.getNombre() + " | " + staff.getNumeroStaff());
             getStaffListSelectItem().add(item);
+        }
+    }
+
+    public void validateTipoHuesped() {
+        log("EstanciaBeanModel.validateTipoHuesped()");
+
+        SgTipoEspecifico tipoHuesped = getTipoEspecificoById(idTipoEspecifico);
+//
+        if (tipoHuesped != null) {
+            setTipoEspecifico(tipoHuesped);
+            setIdTipoEspecifico(tipoHuesped.getId());
+//
+            setDisabledAux(false);
+            setFechaIngresoHuesped(getSgSolicitudEstanciaVo().getInicioEstancia());
+            log("FechaIngresoHuesped: " + getFechaIngresoHuesped());
+
+            if (getIdTipoEspecifico() == 15) { //Tipo de Huésped Periodo de Prueba
+//            log("Huésped - Periodo de Prueba");
+                Date dp = sumaFecha();
+                setFechaSalidaPropuesta(dp);
+                setDisabled(true); //Deshabilita la fecha de Salida en la vista
+                setFlag(true); //Renderiza la fecha de Salida Propuesta
+
+            } else if (getIdTipoEspecifico() == 16) { //Tipo de Huésped Itinerante
+//            log("Huésped - Itinerante");
+                setFechaSalidaHuesped(getSgSolicitudEstanciaVo().getFinEstancia());
+                log("FechaSalidaHuesped: " + getFechaSalidaHuesped());
+                setFechaSalidaPropuesta(null);
+                setDisabled(false); //Habilita la fecha de Salida en la vista
+                setFlag(false); //Evita que se renderize la fecha de Salida Propuesta
+            } else if (getIdTipoEspecifico() == 17) {  //Tipo de Huésped Base
+//            log("Huésped - Base");
+                setFechaSalidaHuesped(null);
+                log("FechaSalidaHuesped: " + getFechaSalidaHuesped());
+                setFechaSalidaPropuesta(null);
+                log("FechaSalidaPropuesta: " + getFechaSalidaPropuesta());
+                setDisabled(true); //Deshabilita la fecha de Salida en la vista
+                setFlag(false); //Evita que se renderize la fecha de Salida Propuesta
+            }
+        } else {
+            setFlag(false);
+            setDisabled(true);
+            setDisabledAux(true);
+            setFechaIngresoHuesped(null);
+            setFechaSalidaHuesped(null);
+            setFechaSalidaPropuesta(null);
         }
     }
 
@@ -833,7 +911,7 @@ public class EstanciaBeanModel implements Serializable {
     public List<SelectItem> getTiposHuespedesForHotel() {
 //        log("EstanciaBeanModel.getTiposHuespedesForHotel()");
         this.sgTipo = buscarTipo();
-        List<SelectItem> l = new ArrayList<SelectItem>();
+        List<SelectItem> l = new ArrayList<>();
         List<SgTipoTipoEspecifico> lh = sgTipoTipoEspecificoImpl.traerPorTipo(getSgTipo(), Constantes.NO_ELIMINADO);
         for (SgTipoTipoEspecifico sgTipoTipoEspecifico : lh) {
             if (sgTipoTipoEspecifico.getSgTipoEspecifico().getId() != 17) {
@@ -877,7 +955,7 @@ public class EstanciaBeanModel implements Serializable {
             }
 
             //Guardar los Servicios facturados por la empresa
-            List<SgHotelTipoEspecificoVo> list = dataModelAList(getServiciosHotelFacturaEmpresa());
+            List<SgHotelTipoEspecificoVo> list = (getServiciosHotelFacturaEmpresa());
             for (SgHotelTipoEspecificoVo vo : list) {
                 if (vo.isFacturadoEmpresa()) {
                     this.sgHuespedHotelServicioImpl.save(getSgHuespedHotel().getId(), vo.getIdSgTipoEspecifico(), true, this.sesion.getUsuario().getId());
@@ -932,11 +1010,9 @@ public class EstanciaBeanModel implements Serializable {
             }
         } catch (SIAException siae) {
             log(siae.getMensajeParaProgramador());
-            siae.printStackTrace();
             return false;
         } catch (Exception e) {
             log(e.getMessage());
-            e.printStackTrace();
             return false;
         }
     }
@@ -948,11 +1024,11 @@ public class EstanciaBeanModel implements Serializable {
 
     public boolean cancelarSolicitudEstancia() {
         boolean v = sgSolicitudEstanciaImpl.cancelarSolicitudEstancia(sesion.getUsuario(), getSgSolicitudEstanciaVo(), getMensaje(),
-                Constantes.TRUE,isConCorreo());
+                Constantes.TRUE, isConCorreo());
 
         //Recargar lista de Solicitudes
         log("DEspues de cancelar la solicitud:  " + getSgSolicitudEstanciaVo().getId());
-        this.listaSolicitud = new ListDataModel(sgSolicitudEstanciaImpl.trearSolicitudEstanciaPorOficina(sesion.getOficinaActual().getId(), Constantes.ESTATUS_SOLICITUD_ESTANCIA_SOLICITADA, sesion.getUsuario().getId(), Constantes.NO_ELIMINADO));
+        this.listaSolicitud = (sgSolicitudEstanciaImpl.trearSolicitudEstanciaPorOficina(sesion.getOficinaActual().getId(), Constantes.ESTATUS_SOLICITUD_ESTANCIA_SOLICITADA, sesion.getUsuario().getId(), Constantes.NO_ELIMINADO));
         return v;
     }
 
@@ -980,16 +1056,7 @@ public class EstanciaBeanModel implements Serializable {
      * Salida de huespedes en hotel y staff-house
      *
      */
-    public DataModel traerHospedadosHotel() {
-        try {
-            if (getLista() == null) {
-                setLista(new ListDataModel(sgHuespedHotelImpl.traerHuespedPorHotel(getIdHotel(), sesion.getUsuario().getId())));
-            }
-            return getLista();
-        } catch (Exception e) {
-            return null;
-        }
-    }
+   
 
     public void marcarSalidaHuesped() {
         log("Fecha real salida: " + this.sgHuespedHotel.getFechaRealSalida());
@@ -1017,7 +1084,6 @@ public class EstanciaBeanModel implements Serializable {
     public void actualizarFechaSalidaHuespedHotel() {
         try {
             this.sgHuespedHotelImpl.actualizarFechaSalida(getSgHuespedHotel().getId(), getFechaSalidaPropuesta(), sesion.getUsuario().getId());
-            this.setLista(null);
         } catch (Exception e) {
             e.getStackTrace();
         }
@@ -1100,48 +1166,33 @@ public class EstanciaBeanModel implements Serializable {
      *
      * @return
      */
-    public boolean registrarCambioHuespedHotel() {
-        setSgHotel(sgHotelImpl.find(id));
-        boolean v;
-        v = sgHuespedHotelImpl.registrarCambioHuespedHotel(sesion.getUsuario(),
-                getSgHuespedHotel(),
-                getSgHuespedHotelSeleccionado(),
-                getSgHuespedHotel().getSgDetalleSolicitudEstancia(),
-                getId(),
-                getIdHabitacion(),
-                getSgHuespedHotel().getSgDetalleSolicitudEstancia().getSgSolicitudEstancia(),
-                getSgTipo(),
-                getSgHuespedHotel().getSgTipoEspecifico().getId());
-        setLista(new ListDataModel(sgHuespedHotelImpl.traerHuespedPorHotel(getIdHotel(), sesion.getUsuario().getId())));
-        return v;
-    }
 
-    public DataModel getHabitacionesByStaffCambioHuesped() {
-        try {
-            setLista(new ListDataModel(habitacionStaffService.getAllHabitacionesByStaffAndOcupadoList(getHabitacion().getSgStaff(), false, false)));
-            return getLista();
-        } catch (Exception e) {
-            return null;
-        }
-    }
+//    public DataModel getHabitacionesByStaffCambioHuesped() {
+//        try {
+//            setLista((habitacionStaffService.getAllHabitacionesByStaffAndOcupadoList(getHabitacion().getSgStaff(), false, false)));
+//            return getLista();
+//        } catch (Exception e) {
+//            return null;
+//        }
+//    }
 
     /**
      * Cambia a un Huésped de un Hotel a un Staff
      *
      * @return
      */
-    public boolean guardarCambioHuespedStaff() {
-        log("guardarCambioHuespedStaff");
-        boolean v;
-        getHuespedStaff().setSgDetalleSolicitudEstancia(getSgHuespedHotel().getSgDetalleSolicitudEstancia());
-        v = huespedStaffService.guardarCambioHuespedStaff(sesion.getUsuario(), getHuespedStaff(),
-                getHabitacion(),
-                getIdStaff(),
-                getSgTipo(),
-                getSgHuespedHotel());
-        setLista(new ListDataModel(sgHuespedHotelImpl.traerHuespedPorHotel(getIdHotel(), sesion.getUsuario().getId())));
-        return v;
-    }
+//    public boolean guardarCambioHuespedStaff() {
+//        log("guardarCambioHuespedStaff");
+//        boolean v;
+//        getHuespedStaff().setSgDetalleSolicitudEstancia(getSgHuespedHotel().getSgDetalleSolicitudEstancia());
+//        v = huespedStaffService.guardarCambioHuespedStaff(sesion.getUsuario(), getHuespedStaff(),
+//                getHabitacion(),
+//                getIdStaff(),
+//                getSgTipo(),
+//                getSgHuespedHotel());
+//        setLista(sgHuespedHotelImpl.traerHuespedPorHotel(getIdHotel(), sesion.getUsuario().getId()));
+//        return v;
+//    }
 
     /*
      * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -1307,20 +1358,6 @@ public class EstanciaBeanModel implements Serializable {
      */
     public void setListaSelectItem(List<SelectItem> listaSelectItem) {
         this.listaSelectItem = listaSelectItem;
-    }
-
-    /**
-     * @return the listaSolicitud
-     */
-    public DataModel getListaSolicitud() {
-        return listaSolicitud;
-    }
-
-    /**
-     * @param listaSolicitud the listaSolicitud to set
-     */
-    public void setListaSolicitud(DataModel listaSolicitud) {
-        this.listaSolicitud = listaSolicitud;
     }
 
     /**
@@ -1682,7 +1719,6 @@ public class EstanciaBeanModel implements Serializable {
     /*
      * @return the sgHotel
      */
-
     public SgHotel getSgHotel() {
         if (this.sgHotel == null && this.idHotel > 0) {
             this.sgHotel = sgHotelImpl.find(this.idHotel);
@@ -1709,20 +1745,6 @@ public class EstanciaBeanModel implements Serializable {
      */
     public void setHabitacion(SgStaffHabitacion habitacion) {
         this.habitacion = habitacion;
-    }
-
-    /*
-     * @return the lista
-     */
-    public DataModel getLista() {
-        return lista;
-    }
-
-    /**
-     * @param lista the lista to set
-     */
-    public void setLista(DataModel lista) {
-        this.lista = lista;
     }
 
     /**
@@ -2079,7 +2101,7 @@ public class EstanciaBeanModel implements Serializable {
     /**
      * @return the serviciosHotelFacturaEmpresa
      */
-    public DataModel getServiciosHotelFacturaEmpresa() {
+    public List<SgHotelTipoEspecificoVo> getServiciosHotelFacturaEmpresa() {
         return serviciosHotelFacturaEmpresa;
     }
 
@@ -2087,7 +2109,7 @@ public class EstanciaBeanModel implements Serializable {
      * @param serviciosHotelFacturaEmpresa the serviciosHotelFacturaEmpresa to
      * set
      */
-    public void setServiciosHotelFacturaEmpresa(DataModel serviciosHotelFacturaEmpresa) {
+    public void setServiciosHotelFacturaEmpresa(List<SgHotelTipoEspecificoVo> serviciosHotelFacturaEmpresa) {
         this.serviciosHotelFacturaEmpresa = serviciosHotelFacturaEmpresa;
     }
 
@@ -2160,14 +2182,6 @@ public class EstanciaBeanModel implements Serializable {
 //    public void setSgOficinaSelectItem(List<SelectItem> sgOficinaSelectItem) {
 //        this.sgOficinaSelectItem = sgOficinaSelectItem;
 //    }
-
-    /**
-     * @param soporteProveedor the soporteProveedor to set
-     */
-    public void setSoporteProveedor(SoporteProveedor soporteProveedor) {
-        this.soporteProveedor = soporteProveedor;
-    }
-
     /**
      * @return the sgSolicitudEstanciaVo
      */
@@ -2248,7 +2262,6 @@ public class EstanciaBeanModel implements Serializable {
     public void setIdInVitado(int idInVitado) {
         this.idInVitado = idInVitado;
     }
-
 
     /**
      * @return the listaDetalleEstancia

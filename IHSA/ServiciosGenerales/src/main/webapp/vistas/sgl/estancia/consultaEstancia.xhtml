@@ -5,317 +5,297 @@
       xmlns:p="http://primefaces.org/ui"
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:f="http://java.sun.com/jsf/core">
-
     <body>
-
         <ui:composition template="./../../../WEB-INF/facelets/templates/templateServiciosGenerales.xhtml">
-
+            <ui:define name="titulo">
+                Consulta de solicitud de estancia
+            </ui:define>
             <ui:define name="contenido">
-                <h:panelGroup rendered="#{empty sesion.usuario}" styleClass="altura">
-                    <ui:include src="./../../../login.xhtml"/>
-                </h:panelGroup> 
-
-
-		<h:form styleClass="textoIzquierda" rendered="#{not empty sesion.usuario}" >
-		    <p class="tituloEncabezado">Consulta de solicitud de estancia</p>
-		    <center>                        
-			<h:panelGrid columns="3">
-			    <h:outputText value="Código" />
-			    <p:inputText value="#{reporteBean.codigo}" size="10" />                        
-			    <p:commandLink styleClass="btn btn-default"  actionListener="#{reporteBean.buscarEstanciaPorcodigo(event)}" title="Buscar">
-				<h:graphicImage url="#{msgs['sgl.ruta.imagen']}search.png" styleClass="imagenSinBorde" />
-			    </p:commandLink>
-			    <h:outputText/>
-			    <h:outputText value="SE12-1234" style="font-size: xx-small"/>
-			    <h:outputText />
-			</h:panelGrid>
-		    </center>
-		    <h:panelGroup rendered="#{reporteBean.sgSolicitudEstancia != null}"> 
-			<h:panelGrid columns="4" bgcolor="#CCCCCC" >
-			    <h:panelGrid columns="2">
-				<h:outputText value="Solicitud"/>
-				<p:inputText disabled="true" value="#{reporteBean.sgSolicitudEstancia.codigo}"/>
-			    </h:panelGrid>
-			    <h:panelGrid columns="2">
-				<h:outputText value="Destino"/>
-				<p:inputText disabled="true" value="#{reporteBean.sgSolicitudEstancia.sgOficina.sgDireccion.ciudad}"/>
-			    </h:panelGrid>
-			    <h:panelGrid columns="2">
-				<h:outputText value="Estatus"/>
-				<p:inputText disabled="true" value="#{reporteBean.sgSolicitudEstancia.estatus.nombre}"/>
-			    </h:panelGrid>
-			    <h:panelGrid columns="2">
-				<h:outputText value="Fecha solicitada"/>
-				<p:inputText disabled="true" value="#{reporteBean.sgSolicitudEstancia.fechaGenero}">
-				    <f:convertDateTime pattern="dd/MM/yyyy" type="date" />
-				</p:inputText>
-			    </h:panelGrid>                        
-			</h:panelGrid>
-			<br/><br/>
-			<p:tabView>
-			    <p:tab title="Datos generales">
-				<h:panelGrid columns="4"> 
-				    <h:outputText value="Gerencia"/>
-				    <p:inputText disabled="true" value="#{reporteBean.sgSolicitudEstancia.gerencia.nombre}"/>
-				    <h:outputText value="Solicita"/>
-				    <p:inputText disabled="true" value="#{reporteBean.sgSolicitudEstancia.genero.nombre}"/>
-				    <h:outputText value="Inicio de estancia"/>
-				    <p:inputText disabled="true" value="#{reporteBean.sgSolicitudEstancia.inicioEstancia}">
-					<f:convertDateTime pattern="dd/MM/yyyy" type="date" />
-				    </p:inputText>
-				    <h:outputText value="Fin estancia"/>
-				    <p:inputText disabled="true" value="#{reporteBean.sgSolicitudEstancia.finEstancia}">
-					<f:convertDateTime pattern="dd/MM/yyyy" type="date" />
-				    </p:inputText>
-				    <h:outputText value="Días"/>
-				    <p:inputText value="#{reporteBean.sgSolicitudEstancia.diasEstancia}" size="5" disabled="true"/>
-				    <h:outputText value="Motivo"/>
-				    <p:inputTextarea disabled="true" value="#{reporteBean.sgSolicitudEstancia.sgMotivo.nombre}"/>
-				</h:panelGrid>
-				<h:panelGrid>
-				    <hr size="1" style="color: maroon; width: 200px; "/>
-				    <h:outputText value="Integrantes de la solicitud" style="font-weight: bold;"/>
-				    <hr size="1" style="color: maroon; width: 200px;"/>
-				</h:panelGrid>
-				<p:dataTable showGridlines="true" size="small"  value="#{reporteBean.traerDetalleSolicitud}" var="dtSol" >
-				    <p:column>
-					<f:facet name="header"><h:outputText value="Nombre"/></f:facet>                                            
-					<h:outputText value="#{dtSol.usuario eq 'null' ? dtSol.invitado : dtSol.usuario}"/>
-				    </p:column>
-				    <p:column>
-					<f:facet name="header"><h:outputText value="Huésped"/></f:facet>
-					<h:outputText value="#{dtSol.tipoDetalle}"/>
-				    </p:column>
-				    <p:column>
-					<f:facet name="header"><h:outputText value="Descripción"/></f:facet>
-					<h:outputText value="#{dtSol.descripcion}"/>
-				    </p:column>
-				    <p:column>
-					<f:facet name="header"><h:outputText value="Estado"/></f:facet>
-					<h:outputText value="#{dtSol.registrado eq 'True' ? 'Registrado' :'Sin registro'}"/>
-				    </p:column>
-				</p:dataTable>
-			    </ice:panelTab>
-			    <p:tab   title="Hotel">                                
-				<h:panelGrid>
-				    <h:outputText value="Registro de huéspedes en hotel" /><br/>
-				</h:panelGrid>
-				<p:tabView>
-				    <p:tab title="Hospedados ">
-					<h:panelGrid >
-					    <f:facet name="header" ><h:outputText value="Hospedados en hotel"/></f:facet>
-					    <p:dataTable showGridlines="true" size="small"  id="dtHosHo" rows="5" value="#{reporteBean.traerHospedadosHotel}" var="dtHH" >
-						<p:column>
-						    <f:facet name="header"><h:outputText value="Nombre"/></f:facet>
-						    <h:outputText value="#{dtHH.sgDetalleSolicitudEstancia.sgInvitado ne null ? dtHH.sgDetalleSolicitudEstancia.sgInvitado.nombre : dtHH.sgDetalleSolicitudEstancia.usuario.nombre}"/>
-						</p:column>
-						<p:column>
-						    <f:facet name="header"><h:outputText value="Hotel"/></f:facet>
-						    <h:outputText value="#{dtHH.sgHotelHabitacion.sgHotel.proveedor.nombre}"/>
-						</p:column>
-						<p:column style="text-align: center;">
-						    <f:facet name="header"><h:outputText value="Habitación"/></f:facet>
-						    <h:outputText value="#{dtHH.numeroHabitacion}"/>
-						</p:column>
-						<p:column style="text-align: center;">
-						    <f:facet name="header"><h:outputText value="Ingresó"/></f:facet>
-						    <h:outputText value="#{dtHH.fechaIngreso}">
-							<f:convertDateTime pattern="dd/MM/yyyy" type="date" />
-						    </h:outputText>
-						</p:column>
-						<p:column style="text-align: center;">
-						    <f:facet name="header"><h:outputText value="Salida"/></f:facet>
-						    <h:outputText value="#{dtHH.fechaSalida}">
-							<f:convertDateTime pattern="dd/MM/yyyy" type="date" />
-						    </h:outputText>
-						</p:column>                     
-						<p:column>
-						    <h:outputLink target="_blank"  value="/ServiciosGenerales/AbrirArchivo?ZWZ2W=#{dtHH.siAdjunto.id}&amp;ZWZ3W=#{dtHH.siAdjunto.uuid}">
-							<center><h:graphicImage url="#{msgs['sgl.ruta.imagen']}icon_attach.gif" rendered="#{dtHH.siAdjunto != null}" alt="Abrir archivo"/></center>
-						    </h:outputLink>
-						</p:column>     
-					    </p:dataTable>
-					</h:panelGrid>
-				    </ice:panelTab>
-				    <p:tab title="Cancelados">
-					<h:panelGrid >
-					    <f:facet name="header" ><h:outputText value="Hospedados en hotel"/></f:facet>
-					    <p:dataTable showGridlines="true" size="small"  id="dtHosCan" rows="5" 
-							   value="#{reporteBean.traerCanceladosHotel}" 
-							   var="dtHHCa" >
-						<p:column>
-						    <f:facet name="header"><h:outputText value="Nombre"/></f:facet>
-						    <h:outputText value="#{dtHHCa.sgDetalleSolicitudEstancia.sgInvitado ne null ? dtHHCa.sgDetalleSolicitudEstancia.sgInvitado.nombre : dtHHCa.sgDetalleSolicitudEstancia.usuario.nombre}"/>
-						</p:column>
-						<p:column>
-						    <f:facet name="header"><h:outputText value="Hotel"/></f:facet>
-						    <h:outputText value="#{dtHHCa.sgHotelHabitacion.sgHotel.proveedor.nombre}"/>
-						</p:column>
-						<p:column style="text-align: center;">
-						    <f:facet name="header"><h:outputText value="Habitación"/></f:facet>
-						    <h:outputText value="#{dtHHCa.numeroHabitacion}"/>
-						</p:column>
-						<p:column style="text-align: center;">
-						    <f:facet name="header"><h:outputText value="Ingresó"/></f:facet>
-						    <h:outputText value="#{dtHHCa.fechaIngreso}">
-							<f:convertDateTime pattern="dd/MM/yyyy" type="date" />
-						    </h:outputText>
-						</p:column>
-						<p:column style="text-align: center;">
-						    <f:facet name="header"><h:outputText value="Salida"/></f:facet>
-						    <h:outputText value="#{dtHHCa.fechaSalida}">
-							<f:convertDateTime pattern="dd/MM/yyyy" type="date" />
-						    </h:outputText>
-						</p:column>
-					    </p:dataTable>
-					</h:panelGrid>
-				    </ice:panelTab>
-				    <p:tab title="Estancia terminada">
-					<h:panelGrid >
-					    <f:facet name="header" ><h:outputText value="Hospedados en hotel"/></f:facet>
-					    <p:dataTable showGridlines="true" size="small"  id="dtHosSal" rows="5" 
-							   value="#{reporteBean.traerNoHospedadosNoCanceladosHotel}"
-							   var="dtHHSa" >
-						<p:column>
-						    <f:facet name="header"><h:outputText value="Nombre"/></f:facet>
-						    <h:outputText value="#{dtHHSa.sgDetalleSolicitudEstancia.sgInvitado ne null ? dtHHSa.sgDetalleSolicitudEstancia.sgInvitado.nombre : dtHHSa.sgDetalleSolicitudEstancia.usuario.nombre}"/>
-						</p:column>
-						<p:column>
-						    <f:facet name="header"><h:outputText value="Hotel"/></f:facet>
-						    <h:outputText value="#{dtHHSa.sgHotelHabitacion.sgHotel.proveedor.nombre}"/>
-						</p:column>
-						<p:column style="text-align: center;">
-						    <f:facet name="header"><h:outputText value="Habitación"/></f:facet>
-						    <h:outputText value="#{dtHHSa.numeroHabitacion}"/>
-						</p:column>
-						<p:column style="text-align: center;">
-						    <f:facet name="header"><h:outputText value="Ingresó"/></f:facet>
-						    <h:outputText value="#{dtHHSa.fechaIngreso}">
-							<f:convertDateTime pattern="dd/MM/yyyy" type="date" />
-						    </h:outputText>
-						</p:column>
-						<p:column style="text-align: center;">
-						    <f:facet name="header"><h:outputText value="Salida"/></f:facet>
-						    <h:outputText value="#{dtHHSa.fechaSalida}">
-							<f:convertDateTime pattern="dd/MM/yyyy" type="date" />
-						    </h:outputText>
-						</p:column>                           
-						<p:column>
-						    <h:outputLink target="_blank"  value="/ServiciosGenerales/AbrirArchivo?ZWZ2W=#{dtHosSal.siAdjunto.id}&amp;ZWZ3W=#{dtHosSal.siAdjunto.uuid}">
-							<center><h:graphicImage url="#{msgs['sgl.ruta.imagen']}icon_attach.gif" rendered="#{dtHosSal.siAdjunto != null }"  alt="Abrir archivo"/></center>
-						    </h:outputLink>
-						</p:column>     
-					    </p:dataTable>
-					</h:panelGrid>
-				    </ice:panelTab>
-				</p:tabView>
-			    </ice:panelTab>
-			    <p:tab title="Staff-house">
-				<h:panelGrid>
-				    <h:outputText value="Datos de los hospedados"/>
-				</h:panelGrid>
-				<p:tabView>
-				    <p:tab title="Hospedados">
-					<p:dataTable showGridlines="true" size="small"  value="#{reporteBean.traerHospedadosStaff}" var="dtHS" >
-					    <p:column>
-						<f:facet name="header"><h:outputText value="Nombre"/></f:facet>
-						<h:outputText value="#{dtHS.sgDetalleSolicitudEstancia.sgInvitado ne null ? dtHS.sgDetalleSolicitudEstancia.sgInvitado.nombre : dtHS.sgDetalleSolicitudEstancia.usuario.nombre}"/>
-					    </p:column>
-					    <p:column style="text-align: center;">
-						<f:facet name="header"><h:outputText value="Staff"/></f:facet>
-						<h:outputText value="#{dtHS.sgStaffHabitacion.sgStaff.numeroStaff}"/>
-					    </p:column>
-					    <p:column style="text-align: center;">
-						<f:facet name="header"><h:outputText value="Habitación"/></f:facet>
-						<h:outputText value="#{dtHS.sgStaffHabitacion.numeroHabitacion}"/>
-					    </p:column>
-					    <p:column style="text-align: center;">
-						<f:facet name="header"><h:outputText value="Ingresó"/></f:facet>
-						<h:outputText value="#{dtHS.fechaIngreso}">
-						    <f:convertDateTime pattern="dd/MM/yyyy" type="date" />
-						</h:outputText>
-					    </p:column>
-					    <p:column style="text-align: center;">
-						<f:facet name="header"><h:outputText value="Salida"/></f:facet>
-						<h:outputText value="#{dtHS.fechaSalida}">
-						    <f:convertDateTime pattern="dd/MM/yyyy" type="date" />
-						</h:outputText>
-					    </p:column>
-					</p:dataTable>
-				    </ice:panelTab>
-				    <p:tab title="Cancelados">
-					<p:dataTable showGridlines="true" size="small"  value="#{reporteBean.traerCanceldosHuespedStaff}" var="dtHCan" >
-					    <p:column>
-						<f:facet name="header"><h:outputText value="Nombre"/></f:facet>
-						<h:outputText value="#{dtHCan.sgDetalleSolicitudEstancia.sgInvitado ne null ? dtHCan.sgDetalleSolicitudEstancia.sgInvitado.nombre : dtHCan.sgDetalleSolicitudEstancia.usuario.nombre}"/>
-					    </p:column>
-					    <p:column style="text-align: center;">
-						<f:facet name="header"><h:outputText value="Staff"/></f:facet>
-						<h:outputText value="#{dtHCan.sgStaffHabitacion.sgStaff.numeroStaff}"/>
-					    </p:column>
-					    <p:column style="text-align: center;">
-						<f:facet name="header"><h:outputText value="Habitación"/></f:facet>
-						<h:outputText value="#{dtHCan.sgStaffHabitacion.numeroHabitacion}"/>
-					    </p:column>
-					    <p:column style="text-align: center;">
-						<f:facet name="header"><h:outputText value="Ingresó"/></f:facet>
-						<h:outputText value="#{dtHCan.fechaIngreso}">
-						    <f:convertDateTime pattern="dd/MM/yyyy" type="date" />
-						</h:outputText>
-					    </p:column>
-					    <p:column style="text-align: center;">
-						<f:facet name="header"><h:outputText value="Salida"/></f:facet>
-						<h:outputText value="#{dtHCan.fechaSalida}">
-						    <f:convertDateTime pattern="dd/MM/yyyy" type="date" />
-						</h:outputText>
-					    </p:column>                                            
-					</p:dataTable>
-				    </ice:panelTab>
-				    <p:tab title="Estancia terminada">
-					<p:dataTable showGridlines="true" size="small"  value="#{reporteBean.traerEstanciaTerminadaStaff}" var="dtHSal" >
-					    <p:column>
-						<f:facet name="header"><h:outputText value="Nombre"/></f:facet>
-						<h:outputText value="#{dtHSal.sgDetalleSolicitudEstancia.sgInvitado ne null ? dtHSal.sgDetalleSolicitudEstancia.sgInvitado.nombre : dtHSal.sgDetalleSolicitudEstancia.usuario.nombre}"/>
-					    </p:column>
-					    <p:column style="text-align: center;">
-						<f:facet name="header"><h:outputText value="Staff"/></f:facet>
-						<h:outputText value="#{dtHSal.sgStaffHabitacion.sgStaff.numeroStaff}"/>
-					    </p:column>
-					    <p:column style="text-align: center;">
-						<f:facet name="header"><h:outputText value="Habitación"/></f:facet>
-						<h:outputText value="#{dtHSal.sgStaffHabitacion.numeroHabitacion}"/>
-					    </p:column>
-					    <p:column style="text-align: center;">
-						<f:facet name="header"><h:outputText value="Ingresó"/></f:facet>
-						<h:outputText value="#{dtHSal.fechaIngreso}">
-						    <f:convertDateTime pattern="dd/MM/yyyy" type="date" />
-						</h:outputText>
-					    </p:column>
-					    <p:column style="text-align: center;">
-						<f:facet name="header"><h:outputText value="Salida"/></f:facet>
-						<h:outputText value="#{dtHSal.fechaSalida}">
-						    <f:convertDateTime pattern="dd/MM/yyyy" type="date" />
-						</h:outputText>
-					    </p:column>
-					    <p:column style="text-align: center;">
-						<f:facet name="header"><h:outputText value="Ingreso real"/></f:facet>
-						<h:outputText value="#{dtHSal.fechaRealIngreso}">
-						    <f:convertDateTime pattern="dd/MM/yyyy" type="date" />
-						</h:outputText>
-					    </p:column>
-					    <p:column style="text-align: center;">
-						<f:facet name="header"><h:outputText value="Salida real"/></f:facet>
-						<h:outputText value="#{dtHSal.fechaRealSalida}">
-						    <f:convertDateTime pattern="dd/MM/yyyy" type="date" />
-						</h:outputText>
-					    </p:column>
-					</p:dataTable>
-				    </ice:panelTab>
-				</p:tabView>
-			    </ice:panelTab>
-			</p:tabView>
-		    </h:panelGroup>
-		</h:form>
+                <h:form  id="frmConsultarSolEst">
+                    <div class="row input-group">
+                        <p:inputText id="inpCod" value="#{reporteBean.codigo}" size="30" placeholder="Código"/>                        
+                        <p:commandLink styleClass="btn btn-default"  action="#{reporteBean.buscarEstanciaPorcodigo}" 
+                                       title="Buscar" process="@this  frmConsultarSolEst:inpCod" update="@form">
+                            <i class="fa fa-search"/>
+                        </p:commandLink>
+                    </div>
+                    <h:panelGrid columns="8" bgcolor="#CCCCCC" >
+                        <h:outputText value="Solicitud"/>
+                        <p:inputText disabled="true" value="#{reporteBean.sgSolicitudEstancia.codigo}"/>
+                        <h:outputText value="Destino"/>
+                        <p:inputText disabled="true" value="#{reporteBean.sgSolicitudEstancia.sgOficina.sgDireccion.ciudad}"/>
+                        <h:outputText value="Estatus"/>
+                        <p:inputText disabled="true" value="#{reporteBean.sgSolicitudEstancia.estatus.nombre}"/>
+                        <h:outputText value="Fecha solicitada"/>
+                        <p:inputText disabled="true" value="#{reporteBean.sgSolicitudEstancia.fechaGenero}">
+                            <f:convertDateTime pattern="dd/MM/yyyy" type="date" />
+                        </p:inputText>
+                    </h:panelGrid>
+                    <p:tabView id="tbDatos" styleClass="mt-3">
+                        <p:tab title="Datos generales">
+                            <h:panelGrid columns="4"> 
+                                <h:outputText value="Gerencia"/>
+                                <p:inputText disabled="true" value="#{reporteBean.sgSolicitudEstancia.gerencia.nombre}"/>
+                                <h:outputText value="Solicita"/>
+                                <p:inputText disabled="true" value="#{reporteBean.sgSolicitudEstancia.genero.nombre}"/>
+                                <h:outputText value="Inicio de estancia"/>
+                                <p:inputText disabled="true" value="#{reporteBean.sgSolicitudEstancia.inicioEstancia}">
+                                    <f:convertDateTime pattern="dd/MM/yyyy" type="date" />
+                                </p:inputText>
+                                <h:outputText value="Fin estancia"/>
+                                <p:inputText disabled="true" value="#{reporteBean.sgSolicitudEstancia.finEstancia}">
+                                    <f:convertDateTime pattern="dd/MM/yyyy" type="date" />
+                                </p:inputText>
+                                <h:outputText value="Días"/>
+                                <p:inputText value="#{reporteBean.sgSolicitudEstancia.diasEstancia}" size="5" disabled="true"/>
+                                <h:outputText value="Motivo"/>
+                                <p:inputTextarea disabled="true" value="#{reporteBean.sgSolicitudEstancia.sgMotivo.nombre}"/>
+                            </h:panelGrid>
+                            <h:panelGrid>
+                                <hr size="1" style="color: maroon; width: 200px; "/>
+                                <h:outputText value="Integrantes de la solicitud" style="font-weight: bold;"/>
+                                <hr size="1" style="color: maroon; width: 200px;"/>
+                            </h:panelGrid>
+                            <p:dataTable showGridlines="true" size="small"  value="#{reporteBean.listaDetEst}" var="dtSol" >
+                                <p:column>
+                                    <f:facet name="header"><h:outputText value="Nombre"/></f:facet>                                            
+                                    <h:outputText value="#{dtSol.usuario eq 'null' ? dtSol.invitado : dtSol.usuario}"/>
+                                </p:column>
+                                <p:column>
+                                    <f:facet name="header"><h:outputText value="Huésped"/></f:facet>
+                                    <h:outputText value="#{dtSol.tipoDetalle}"/>
+                                </p:column>
+                                <p:column>
+                                    <f:facet name="header"><h:outputText value="Descripción"/></f:facet>
+                                    <h:outputText value="#{dtSol.descripcion}"/>
+                                </p:column>
+                                <p:column>
+                                    <f:facet name="header"><h:outputText value="Estado"/></f:facet>
+                                    <h:outputText value="#{dtSol.registrado eq 'True' ? 'Registrado' :'Sin registro'}"/>
+                                </p:column>
+                            </p:dataTable>
+                        </p:tab>
+                        <p:tab   title="Hotel">                                
+                            <h:panelGrid>
+                                <h:outputText value="Registro de huéspedes en hotel" /><br/>
+                            </h:panelGrid>
+                            <p:tabView>
+                                <p:tab title="Hospedados ">
+                                    <h:panelGrid >
+                                        <f:facet name="header" ><h:outputText value="Hospedados en hotel"/></f:facet>
+                                        <p:dataTable showGridlines="true" size="small"  id="dtHosHo" rows="5" 
+                                                     value="#{reporteBean.listaHuesHotel}" var="dtHH" >
+                                            <p:column>
+                                                <f:facet name="header"><h:outputText value="Nombre"/></f:facet>
+                                                <h:outputText value="#{dtHH.sgDetalleSolicitudEstancia.sgInvitado ne null ? dtHH.sgDetalleSolicitudEstancia.sgInvitado.nombre : dtHH.sgDetalleSolicitudEstancia.usuario.nombre}"/>
+                                            </p:column>
+                                            <p:column>
+                                                <f:facet name="header"><h:outputText value="Hotel"/></f:facet>
+                                                <h:outputText value="#{dtHH.sgHotelHabitacion.sgHotel.proveedor.nombre}"/>
+                                            </p:column>
+                                            <p:column style="text-align: center;">
+                                                <f:facet name="header"><h:outputText value="Habitación"/></f:facet>
+                                                <h:outputText value="#{dtHH.numeroHabitacion}"/>
+                                            </p:column>
+                                            <p:column style="text-align: center;">
+                                                <f:facet name="header"><h:outputText value="Ingresó"/></f:facet>
+                                                <h:outputText value="#{dtHH.fechaIngreso}">
+                                                    <f:convertDateTime pattern="dd/MM/yyyy" type="date" />
+                                                </h:outputText>
+                                            </p:column>
+                                            <p:column style="text-align: center;">
+                                                <f:facet name="header"><h:outputText value="Salida"/></f:facet>
+                                                <h:outputText value="#{dtHH.fechaSalida}">
+                                                    <f:convertDateTime pattern="dd/MM/yyyy" type="date" />
+                                                </h:outputText>
+                                            </p:column>                     
+                                            <p:column>
+                                                <h:outputLink target="_blank"  value="/ServiciosGenerales/AbrirArchivo?ZWZ2W=#{dtHH.siAdjunto.id}&amp;ZWZ3W=#{dtHH.siAdjunto.uuid}">
+                                                    <center><h:graphicImage url="#{msgs['sgl.ruta.imagen']}icon_attach.gif" rendered="#{dtHH.siAdjunto != null}" alt="Abrir archivo"/></center>
+                                                </h:outputLink>
+                                            </p:column>     
+                                        </p:dataTable>
+                                    </h:panelGrid>
+                                </p:tab>
+                                <p:tab title="Cancelados">
+                                    <h:panelGrid >
+                                        <f:facet name="header" ><h:outputText value="Hospedados en hotel"/></f:facet>
+                                        <p:dataTable showGridlines="true" size="small"  id="dtHosCan" rows="5" 
+                                                     value="#{reporteBean.listaCancHotel}" 
+                                                     var="dtHHCa" >
+                                            <p:column>
+                                                <f:facet name="header"><h:outputText value="Nombre"/></f:facet>
+                                                <h:outputText value="#{dtHHCa.sgDetalleSolicitudEstancia.sgInvitado ne null ? dtHHCa.sgDetalleSolicitudEstancia.sgInvitado.nombre : dtHHCa.sgDetalleSolicitudEstancia.usuario.nombre}"/>
+                                            </p:column>
+                                            <p:column>
+                                                <f:facet name="header"><h:outputText value="Hotel"/></f:facet>
+                                                <h:outputText value="#{dtHHCa.sgHotelHabitacion.sgHotel.proveedor.nombre}"/>
+                                            </p:column>
+                                            <p:column style="text-align: center;">
+                                                <f:facet name="header"><h:outputText value="Habitación"/></f:facet>
+                                                <h:outputText value="#{dtHHCa.numeroHabitacion}"/>
+                                            </p:column>
+                                            <p:column style="text-align: center;">
+                                                <f:facet name="header"><h:outputText value="Ingresó"/></f:facet>
+                                                <h:outputText value="#{dtHHCa.fechaIngreso}">
+                                                    <f:convertDateTime pattern="dd/MM/yyyy" type="date" />
+                                                </h:outputText>
+                                            </p:column>
+                                            <p:column style="text-align: center;">
+                                                <f:facet name="header"><h:outputText value="Salida"/></f:facet>
+                                                <h:outputText value="#{dtHHCa.fechaSalida}">
+                                                    <f:convertDateTime pattern="dd/MM/yyyy" type="date" />
+                                                </h:outputText>
+                                            </p:column>
+                                        </p:dataTable>
+                                    </h:panelGrid>
+                                </p:tab>
+                                <p:tab title="Estancia terminada">
+                                    <h:panelGrid >
+                                        <f:facet name="header" ><h:outputText value="Hospedados en hotel"/></f:facet>
+                                        <p:dataTable showGridlines="true" size="small"  id="dtHosSal" rows="5" 
+                                                     value="#{reporteBean.listaHospNoCancHotel}"
+                                                     var="dtHHSa" >
+                                            <p:column>
+                                                <f:facet name="header"><h:outputText value="Nombre"/></f:facet>
+                                                <h:outputText value="#{dtHHSa.sgDetalleSolicitudEstancia.sgInvitado ne null ? dtHHSa.sgDetalleSolicitudEstancia.sgInvitado.nombre : dtHHSa.sgDetalleSolicitudEstancia.usuario.nombre}"/>
+                                            </p:column>
+                                            <p:column>
+                                                <f:facet name="header"><h:outputText value="Hotel"/></f:facet>
+                                                <h:outputText value="#{dtHHSa.sgHotelHabitacion.sgHotel.proveedor.nombre}"/>
+                                            </p:column>
+                                            <p:column style="text-align: center;">
+                                                <f:facet name="header"><h:outputText value="Habitación"/></f:facet>
+                                                <h:outputText value="#{dtHHSa.numeroHabitacion}"/>
+                                            </p:column>
+                                            <p:column style="text-align: center;">
+                                                <f:facet name="header"><h:outputText value="Ingresó"/></f:facet>
+                                                <h:outputText value="#{dtHHSa.fechaIngreso}">
+                                                    <f:convertDateTime pattern="dd/MM/yyyy" type="date" />
+                                                </h:outputText>
+                                            </p:column>
+                                            <p:column style="text-align: center;">
+                                                <f:facet name="header"><h:outputText value="Salida"/></f:facet>
+                                                <h:outputText value="#{dtHHSa.fechaSalida}">
+                                                    <f:convertDateTime pattern="dd/MM/yyyy" type="date" />
+                                                </h:outputText>
+                                            </p:column>                           
+                                            <p:column>
+                                                <h:outputLink target="_blank"  value="/ServiciosGenerales/AbrirArchivo?ZWZ2W=#{dtHosSal.siAdjunto.id}&amp;ZWZ3W=#{dtHosSal.siAdjunto.uuid}">
+                                                    <center><h:graphicImage url="#{msgs['sgl.ruta.imagen']}icon_attach.gif" rendered="#{dtHosSal.siAdjunto != null }"  alt="Abrir archivo"/></center>
+                                                </h:outputLink>
+                                            </p:column>     
+                                        </p:dataTable>
+                                    </h:panelGrid>
+                                </p:tab>
+                                <p:tab title="Staff-house">
+                                    <h:panelGrid>
+                                        <h:outputText value="Datos de los hospedados"/>
+                                    </h:panelGrid>
+                                    <p:tabView>
+                                        <p:tab title="Hospedados">
+                                            <p:dataTable showGridlines="true" size="small"  value="#{reporteBean.listaHospStaff}" var="dtHS" >
+                                                <p:column>
+                                                    <f:facet name="header"><h:outputText value="Nombre"/></f:facet>
+                                                    <h:outputText value="#{dtHS.sgDetalleSolicitudEstancia.sgInvitado ne null ? dtHS.sgDetalleSolicitudEstancia.sgInvitado.nombre : dtHS.sgDetalleSolicitudEstancia.usuario.nombre}"/>
+                                                </p:column>
+                                                <p:column style="text-align: center;">
+                                                    <f:facet name="header"><h:outputText value="Staff"/></f:facet>
+                                                    <h:outputText value="#{dtHS.sgStaffHabitacion.sgStaff.numeroStaff}"/>
+                                                </p:column>
+                                                <p:column style="text-align: center;">
+                                                    <f:facet name="header"><h:outputText value="Habitación"/></f:facet>
+                                                    <h:outputText value="#{dtHS.sgStaffHabitacion.numeroHabitacion}"/>
+                                                </p:column>
+                                                <p:column style="text-align: center;">
+                                                    <f:facet name="header"><h:outputText value="Ingresó"/></f:facet>
+                                                    <h:outputText value="#{dtHS.fechaIngreso}">
+                                                        <f:convertDateTime pattern="dd/MM/yyyy" type="date" />
+                                                    </h:outputText>
+                                                </p:column>
+                                                <p:column style="text-align: center;">
+                                                    <f:facet name="header"><h:outputText value="Salida"/></f:facet>
+                                                    <h:outputText value="#{dtHS.fechaSalida}">
+                                                        <f:convertDateTime pattern="dd/MM/yyyy" type="date" />
+                                                    </h:outputText>
+                                                </p:column>
+                                            </p:dataTable>
+                                        </p:tab>
+                                        <p:tab title="Cancelados">
+                                            <p:dataTable showGridlines="true" size="small"  value="#{reporteBean.listaCancStaff}" var="dtHCan" >
+                                                <p:column>
+                                                    <f:facet name="header"><h:outputText value="Nombre"/></f:facet>
+                                                    <h:outputText value="#{dtHCan.sgDetalleSolicitudEstancia.sgInvitado ne null ? dtHCan.sgDetalleSolicitudEstancia.sgInvitado.nombre : dtHCan.sgDetalleSolicitudEstancia.usuario.nombre}"/>
+                                                </p:column>
+                                                <p:column style="text-align: center;">
+                                                    <f:facet name="header"><h:outputText value="Staff"/></f:facet>
+                                                    <h:outputText value="#{dtHCan.sgStaffHabitacion.sgStaff.numeroStaff}"/>
+                                                </p:column>
+                                                <p:column style="text-align: center;">
+                                                    <f:facet name="header"><h:outputText value="Habitación"/></f:facet>
+                                                    <h:outputText value="#{dtHCan.sgStaffHabitacion.numeroHabitacion}"/>
+                                                </p:column>
+                                                <p:column style="text-align: center;">
+                                                    <f:facet name="header"><h:outputText value="Ingresó"/></f:facet>
+                                                    <h:outputText value="#{dtHCan.fechaIngreso}">
+                                                        <f:convertDateTime pattern="dd/MM/yyyy" type="date" />
+                                                    </h:outputText>
+                                                </p:column>
+                                                <p:column style="text-align: center;">
+                                                    <f:facet name="header"><h:outputText value="Salida"/></f:facet>
+                                                    <h:outputText value="#{dtHCan.fechaSalida}">
+                                                        <f:convertDateTime pattern="dd/MM/yyyy" type="date" />
+                                                    </h:outputText>
+                                                </p:column>                                            
+                                            </p:dataTable>
+                                        </p:tab>
+                                        <p:tab title="Estancia terminada">
+                                            <p:dataTable showGridlines="true" size="small"  
+                                                         value="#{reporteBean.listaEstTerStaff}" var="dtHSal" >
+                                                <p:column>
+                                                    <f:facet name="header"><h:outputText value="Nombre"/></f:facet>
+                                                    <h:outputText value="#{dtHSal.sgDetalleSolicitudEstancia.sgInvitado ne null ? dtHSal.sgDetalleSolicitudEstancia.sgInvitado.nombre : dtHSal.sgDetalleSolicitudEstancia.usuario.nombre}"/>
+                                                </p:column>
+                                                <p:column style="text-align: center;">
+                                                    <f:facet name="header"><h:outputText value="Staff"/></f:facet>
+                                                    <h:outputText value="#{dtHSal.sgStaffHabitacion.sgStaff.numeroStaff}"/>
+                                                </p:column>
+                                                <p:column style="text-align: center;">
+                                                    <f:facet name="header"><h:outputText value="Habitación"/></f:facet>
+                                                    <h:outputText value="#{dtHSal.sgStaffHabitacion.numeroHabitacion}"/>
+                                                </p:column>
+                                                <p:column style="text-align: center;">
+                                                    <f:facet name="header"><h:outputText value="Ingresó"/></f:facet>
+                                                    <h:outputText value="#{dtHSal.fechaIngreso}">
+                                                        <f:convertDateTime pattern="dd/MM/yyyy" type="date" />
+                                                    </h:outputText>
+                                                </p:column>
+                                                <p:column style="text-align: center;">
+                                                    <f:facet name="header"><h:outputText value="Salida"/></f:facet>
+                                                    <h:outputText value="#{dtHSal.fechaSalida}">
+                                                        <f:convertDateTime pattern="dd/MM/yyyy" type="date" />
+                                                    </h:outputText>
+                                                </p:column>
+                                                <p:column style="text-align: center;">
+                                                    <f:facet name="header"><h:outputText value="Ingreso real"/></f:facet>
+                                                    <h:outputText value="#{dtHSal.fechaRealIngreso}">
+                                                        <f:convertDateTime pattern="dd/MM/yyyy" type="date" />
+                                                    </h:outputText>
+                                                </p:column>
+                                                <p:column style="text-align: center;">
+                                                    <f:facet name="header"><h:outputText value="Salida real"/></f:facet>
+                                                    <h:outputText value="#{dtHSal.fechaRealSalida}">
+                                                        <f:convertDateTime pattern="dd/MM/yyyy" type="date" />
+                                                    </h:outputText>
+                                                </p:column>
+                                            </p:dataTable>
+                                        </p:tab>
+                                    </p:tabView>
+                                </p:tab>
+                            </p:tabView>
+                        </p:tab>
+                    </p:tabView>
+                </h:form>
 
             </ui:define>
 

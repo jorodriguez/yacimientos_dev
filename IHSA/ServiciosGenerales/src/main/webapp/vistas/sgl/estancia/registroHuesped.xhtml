@@ -5,94 +5,94 @@
       xmlns:p="http://primefaces.org/ui"
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:f="http://java.sun.com/jsf/core"
-     >
+      >
     <body>
         <ui:composition template="./../../../WEB-INF/facelets/templates/templateServiciosGenerales.xhtml">
+            <ui:define name="titulo">
+                Registro de Huéspedes
+            </ui:define>
             <ui:define name="contenido">
-                <h:panelGroup  rendered="#{empty sesion.usuario}" styleClass="altura">
-                    <ui:include src="./../../../login.xhtml"/>
-                </h:panelGroup> 
-
-                <h:panelGroup  rendered="#{not empty sesion.usuario}" >
-                    <h:form >
-                        <p class="tituloEncabezado">Registro de Huéspedes</p>
-
-                        <p:dataTable id="dataGridSolicitudEstancia" rows="10"  
-                                     value="#{estanciaBean.solicitudEstanciaEnviadasDataModel}" var="data" 
-				    >
-                            <f:facet name="header"><h:outputText value="Solicitudes de Estancia"/></f:facet>
-                            <p:column>
-                                <f:facet name="header">
-                                    <h:outputText value="Código" />
-                                </f:facet>
-                                <h:outputText value="#{data.codigo}" />
-                            </p:column>   
-                            <p:column>
-                                <f:facet name="header">
-                                    <h:outputText value="Gerencia"  />
-                                </f:facet>
-                                <h:outputText value="#{data.nombreGerencia}">
-                                    <f:convertDateTime pattern="dd/MM/yyyy" type="date"/>
-                                </h:outputText>
-                            </p:column>
-                            <p:column>
-                                <f:facet name="header">
-                                    <h:outputText value="Incio Estancia"  />
-                                </f:facet>
-                                <h:outputText value="#{data.inicioEstancia}">
-                                    <f:convertDateTime pattern="dd/MM/yyyy" type="date"/>
-                                </h:outputText>
-                            </p:column>
-                            <p:column>
-                                <f:facet name="header">
-                                    <h:outputText value="Fin Estancia"  />
-                                </f:facet>
-                                <h:outputText value="#{data.finEstancia}">
-                                    <f:convertDateTime pattern="dd/MM/yyyy" type="date"/>
-                                </h:outputText>
-                            </p:column>
-                            <p:column>
-                                <f:facet name="header">
-                                    <h:outputText value="Solicitó" />
-                                </f:facet>
-                                <h:outputText value="#{data.nombre}" />
-                            </p:column>     
-                            <p:column>
-                                <f:facet name="header">
-                                    <h:outputText value="Motivo" />
-                                </f:facet>
-                                <h:outputText value="#{data.nombreSgMotivo}" />
-                            </p:column>                              
-                            <p:column>
-                                <h:commandLink value="#{msgs['sistema.asignar']} Habitaciones" action="#{estanciaBean.goToAsignarHabitacion()}" styleClass="link" />
-                            </p:column>                                
-                            <p:column>
-                                <p:commandLink value="#{msgs['sistema.cancelar']}" actionListener="#{estanciaBean.cancelarSolicitudEstancia(actionEvent)}" styleClass="link" />
-                                <p:confirm id="pnlCo" header="Confirmar" message="La operación va a cancelar la solicitud, ¿está seguro?"/>
-                            </p:column>
-                            <p:column>
-                                <h:commandLink value="#{msgs['sistema.detalle']}" actionListener="#{estanciaBean.mostrarPopupDetalleSolicitudEstancia(actionEvent)}" styleClass="link" />
-                            </p:column>  
-                            <p:column>
-                                <h:commandLink value="Eliminar" actionListener="#{estanciaBean.eliminarSE()}" styleClass="link" />
-                            </p:column>
-                        </p:dataTable>
-                    </h:form> 
-                </h:panelGroup>
+                <h:form id="frmRegHuesped">
+                    <p:dataTable id="dataGridSolicitudEstancia" rows="10"  
+                                 value="#{estanciaBean.listaSolicitud}" var="data" 
+                                 >
+                        <f:facet name="header"><h:outputText value="Solicitudes de Estancia"/></f:facet>
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="Código" />
+                            </f:facet>
+                            <h:outputText value="#{data.codigo}" />
+                        </p:column>   
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="Gerencia"  />
+                            </f:facet>
+                            <h:outputText value="#{data.nombreGerencia}">
+                                <f:convertDateTime pattern="dd/MM/yyyy" type="date"/>
+                            </h:outputText>
+                        </p:column>
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="Incio Estancia"  />
+                            </f:facet>
+                            <h:outputText value="#{data.inicioEstancia}">
+                                <f:convertDateTime pattern="dd/MM/yyyy" type="date"/>
+                            </h:outputText>
+                        </p:column>
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="Fin Estancia"  />
+                            </f:facet>
+                            <h:outputText value="#{data.finEstancia}">
+                                <f:convertDateTime pattern="dd/MM/yyyy" type="date"/>
+                            </h:outputText>
+                        </p:column>
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="Solicitó" />
+                            </f:facet>
+                            <h:outputText value="#{data.nombre}" />
+                        </p:column>     
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="Motivo" />
+                            </f:facet>
+                            <h:outputText value="#{data.nombreSgMotivo}" />
+                        </p:column>                              
+                        <p:column>
+                            <p:commandLink value="#{msgs['sistema.asignar']} Habitaciones" 
+                                           action="#{estanciaBean.goToAsignarHabitacion}" />
+                        </p:column>                                
+                        <p:column>
+                            <p:commandLink value="#{msgs['sistema.cancelar']}" 
+                                           action="#{estanciaBean.cancelarSolicitudEstancia(data)}" 
+                                           process="@this" update=""/>
+                        </p:column>
+                        <p:column>
+                            <p:commandLink value="#{msgs['sistema.detalle']}" 
+                                           action="#{estanciaBean.mostrarPopupDetalleSolicitudEstancia(data)}" 
+                                           process="@this" update="frmDatosSolEst"/>
+                        </p:column>  
+                        <p:column>
+                            <p:commandLink value="Eliminar" action="#{estanciaBean.eliminarSE(data)}" 
+                                           process="@this" update="frmRegHuesped:dataGridSolicitudEstancia" />
+                        </p:column>
+                    </p:dataTable>
+                </h:form> 
 
                 <!--Cancela solicitud de estancia-->
-                <h:form >
-                    <p:dialog   style="background: #FFFFFF;" rendered="#{estanciaBean.eliminarPop}"
-                                    draggable="false" modal="true">
+                <h:form id="frmCancelar">
+                    <p:dialog   widgetVar="dlgCanSol"
+                                draggable="false" modal="true">
                         <f:facet name="header">
                             <h:panelGroup> 
                                 <h:outputText  value="Cancelación de Solicitud de Estancia"
-                                                 style="float: left; padding: 4px;text-align: center; vertical-align: middle;font: 11px;color: #484848; font-weight: bold;"/>
+                                               style="float: left; padding: 4px;text-align: center; vertical-align: middle;font: 11px;color: #484848; font-weight: bold;"/>
                             </h:panelGroup>
                         </f:facet>
                         <f:facet name="body">
                             <h:panelGroup>  <h:messages infoClass="textoMensajeError"/>
-                                <h:panelGrid columns="1"  styleClass="bordePanelGrid" >
+                                <h:panelGrid columns="1"   >
                                     <f:facet name="header"><h:outputText value="Detalle General de la Solicitud de Estancia" /></f:facet>
 
                                     <h:panelGrid columns="2">
@@ -126,9 +126,6 @@
                                         </h:panelGrid>
                                     </h:panelGrid>
                                 </h:panelGrid>
-
-                                <br/>
-
                                 <p:dataTable showGridlines="true" size="small"  value="#{estanciaBean.listaDetalleSolicitud}" var="dtDet" >
                                     <f:facet name="header"><h:outputText value="Integrante a Cancelar" /></f:facet>
                                     <p:column>
@@ -142,37 +139,33 @@
                                     <p:column>
                                         <f:facet name="header"><h:outputText value="Registrado"/></f:facet>
                                         <center>
-                                            <h:graphicImage url="#{msgs['sgl.ruta.imagen']}icon_good.png" rendered="#{dtDet.registrado eq 'True'}"/>
-                                            <h:graphicImage url="#{msgs['sgl.ruta.imagen']}icon_bad.png" rendered="#{dtDet.registrado eq 'False'}"/>
+                                            <i class="#{dtDet.registrado eq true ? 'fa fa-check' : 'fa fa-error'}"></i>
                                         </center>
                                     </p:column>
                                 </p:dataTable>
-
-                                <br/>
-
                                 <h:panelGrid columns="2" >
                                     <h:outputLabel value="Motivo: " styleClass="fNegrita11"/>
-                                    <p:inputTextarea value="#{estanciaBean.mensaje}" cols="55" rows="3" />
+                                    <p:inputTextarea value="#{estanciaBean.mensaje}" cols="55" rows="3" required="true" requiredMessage="Agregue el motivo"/>
                                 </h:panelGrid>
-                                <center>
-                                    <h:panelGrid columns="2" cellpadding="8">
-                                        <p:commandLink value="Aceptar" styleClass="btn btn-info" actionListener="#{estanciaBean.completarCancelarSolicitudEstancia(event)}"/>
-                                        <p:commandLink value="Cancelar" styleClass="btn btn-default" actionListener="#{estanciaBean.cerrarPorCancelaSolicitud(event)}"/>                                    
-                                    </h:panelGrid>
-                                </center>
+                                <footer>
+                                    <p:commandLink value="Aceptar" styleClass="btn btn-info" 
+                                                   action="#{estanciaBean.completarCancelarSolicitudEstancia}"
+                                                   process="@form" update="frmRegHuesped:dataGridSolicitudEstancia"/>
+                                    <p:commandLink value="Cancelar" styleClass="btn btn-default" 
+                                                   immediate="true" onclick="PF('dlgCanSol').hide()"/>                                    
+                                </footer>
                             </h:panelGroup>
                         </f:facet>
-                    </<p:dialog >
+                    </p:dialog >
                 </h:form>
 
                 <!--Detalle Solicitud Estancia-->
-                <h:form styleClass="textoIzquierda" >
-                    <p:dialog  header="#{msgs['sistema.detalle']} Solicitud Estancia" 
-                               >
-                        <h:panelGrid columns="1"  styleClass="bordePanelGrid" >
-                            <h:panelGrid columns="1"  styleClass="bordePanelGrid" >
+                <h:form  id="frmDatosSolEst">
+                    <p:dialog widgetVar="dlgSolEst"  header="#{msgs['sistema.detalle']} Solicitud Estancia" 
+                              >
+                        <h:panelGrid columns="1"   >
+                            <h:panelGrid columns="1"   >
                                 <f:facet name="header"><h:outputText value="#{msgs['sgl.generales.datos']}" /></f:facet>
-
                                 <h:panelGrid columns="2">
                                     <h:panelGrid columns="1">
                                         <h:panelGrid columns="2" >
@@ -212,18 +205,12 @@
                                     </h:panelGrid>
                                 </h:panelGrid>
                             </h:panelGrid>
-
-                            <h:panelGrid  styleClass="bordePanelGrid" >
+                            <h:panelGrid   >
                                 <f:facet name="header"><h:outputText value="Integrantes" /></f:facet>
                                 <p:dataTable id="dataGridDetalleSolicitudEstancia" rows="4"  
                                              value="#{estanciaBean.listaDetalleSolicitud}" 
                                              var="data"  >
-                                    <!--<my:column columnName="id" headerValue="Id"
-                                               itemValue="#{data.id}" isColumSort="true"/>-->
-                                    <p:column>
-                                        <f:facet name="header">
-                                            <h:outputText value="Huésped" />
-                                        </f:facet>
+                                    <p:column headerText="Huésped">
                                         <h:outputText value="#{data.usuario}" rendered="#{data.idInvitado == 0}" />
                                         <h:outputText value="#{data.invitado}" rendered="#{data.idInvitado != 0}" />
                                     </p:column>
@@ -232,27 +219,219 @@
                                             <h:outputText value="Tipo Estancia" />
                                         </f:facet>
                                         <h:outputText value="#{data.tipoDetalle}" />
-                                    </p:column>      
+                                    </p:column> 
+                                    <p:column>
+                                        <f:facet name="header">
+                                            <h:outputText value="Incio Estancia"  />
+                                        </f:facet>
+                                        <h:outputText value="#{data.inicioEstancia}">
+                                            <f:convertDateTime pattern="dd/MM/yyyy" type="date" />
+                                        </h:outputText>
+                                    </p:column>
+                                    <p:column>
+                                        <f:facet name="header">
+                                            <h:outputText value="Fin Estancia"  />
+                                        </f:facet>
+                                        <h:outputText value="#{data.finEstancia}">
+                                            <f:convertDateTime pattern="dd/MM/yyyy" type="date" />
+                                        </h:outputText>
+                                    </p:column>       
                                     <p:column>
                                         <f:facet name="header">
                                             <h:outputText value="Descripción" />
                                         </f:facet>
                                         <h:outputText value="#{data.descripcion eq 'null' ? '' : data.descripcion}" />
-                                    </p:column>                                   
+                                    </p:column>                            
+                                    <p:column>
+                                        <p:commandLink value="#{msgs['sgl.registroHuespedes.registroStaff']}" 
+                                                       action="#{estanciaBean.goToRegistroStaff(data)}"  
+                                                       rendered="#{data.registrado eq 'False' and data.cancelado eq 'False'}"
+                                                       process="@this" update="frmRegHuespedStaff"/>
+                                    </p:column>                                  
+                                    <p:column>
+                                        <p:commandLink value="#{msgs['sistema.cancelar']}" action="#{estanciaBean.cancelarSolicitudRegistroHuesped(data.id)}" 
+                                                       rendered="#{data.registrado eq 'False' and data.cancelado eq 'False'}" 
+                                                       process="@this" update="frmDatosSolEst:dataGridDetalleSolicitudEstancia">
+                                        </p:commandLink>
+                                    </p:column>                                  
                                 </p:dataTable>
                             </h:panelGrid>
 
                         </h:panelGrid>
+                        <footer>
+                            <p:commandLink value="#{msgs['sistema.cerrar']}" 
+                                           styleClass="btn btn-default" immediate="true"
+                                           onclick="PF('dlgSolEst').hide();"/>            
+                        </footer>
+                    </p:dialog>                    
+                </h:form>   
+                <h:form id="frmRegHuespedStaff">
+                    <p:dialog widgetVar="dlgRegHuesped" modal="true" header="Registro de huésped">
+                        <h:panelGrid columns="1" >
+                            <h:panelGrid columns="1" >
+                                <h:panelGrid columns="2"   >
+                                    <f:facet name="header"><h:outputText value="#{msgs['sgl.solicitudEstancia.datos']}" /></f:facet>
+                                    <h:panelGrid columns="2" >
+                                        <h:outputLabel value="#{msgs['sgl.solicitudEstancia.solicito']}: " />
+                                        <h:outputText id="gerenteSolicitante" value="#{estanciaBean.sgSolicitudEstanciaVo.nombre}" />
+                                    </h:panelGrid>
+                                    <h:panelGrid columns="2" >
+                                        <h:outputLabel value="#{msgs['sgl.solicitudEstancia.gerenciaSolicitante']}: " />
+                                        <h:outputText id="gerenciaSolicitante" value="#{estanciaBean.sgSolicitudEstanciaVo.nombreGerencia}" />
+                                    </h:panelGrid>                                
+                                    <h:panelGrid columns="2">
+                                        <h:outputLabel value="#{msgs['sgl.solicitudViaje.oficina.destino']}: " />
+                                        <h:outputText id="nombreOficinaDestino" value="#{estanciaBean.sgSolicitudEstanciaVo.nombreSgOficina}" />
+                                    </h:panelGrid>
+                                    <h:panelGrid columns="2">
+                                        <h:outputLabel value="#{msgs['sgl.solicitudViaje.motivo']}: " />
+                                        <h:outputText id="motivoEstancia" value="#{estanciaBean.sgSolicitudEstanciaVo.nombreSgMotivo}" />
+                                    </h:panelGrid>
+                                    <h:panelGrid columns="2">
+                                        <h:outputLabel value="#{msgs['sgl.staff.contrato.fechaInicio']}: " />
+                                        <h:outputText id="fInicioEstancia" value="#{estanciaBean.sgSolicitudEstanciaVo.inicioEstancia}" >
+                                            <f:convertDateTime pattern="dd/MM/yyyy" type="date" />
+                                        </h:outputText>
+                                    </h:panelGrid>
+                                    <h:panelGrid columns="2">
+                                        <h:outputLabel value="#{msgs['sgl.generales.fechas.fechaFin']}: " />
+                                        <h:outputText id="fFinEstancia" value="#{estanciaBean.sgSolicitudEstanciaVo.finEstancia}" >
+                                            <f:convertDateTime pattern="dd/MM/yyyy" type="date" />
+                                        </h:outputText>
+                                    </h:panelGrid>
+                                </h:panelGrid>                            
 
-                        <br />
+                                <h:panelGrid   >
+                                    <h:panelGrid columns="2">
+                                        <h:outputLabel value="Huésped: " />
+                                        <h:outputText value="#{estanciaBean.sgDetalleSolicitudEstancia.usuario}" rendered="#{estanciaBean.sgDetalleSolicitudEstancia.idInvitado == 0}" styleClass="fNegrita12" />
+                                        <h:outputText value="#{estanciaBean.sgDetalleSolicitudEstancia.invitado}" rendered="#{estanciaBean.sgDetalleSolicitudEstancia.idInvitado gt 0}" styleClass="fNegrita12" />
+                                    </h:panelGrid>
 
-                        <center>
-                            <h:panelGrid columns="2">
-                                <p:commandButton value="#{msgs['sistema.cerrar']}" actionListener="#{estanciaBean.ocultarPopupDetalleSolicitudEstancia(actionEvent)}" styleClass="btn btn-default"/>        
-                            </h:panelGrid>                        
-                        </center>
-                    </my:panelPopup>                    
-                </h:form>                 
+                                    <h:panelGrid columns="2"  >
+                                        <h:panelGrid columns="2">
+                                            <h:outputLabel value="#{msgs['sgl.solicitudEstancia.tipoHuesped']}: " styleClass="fNegrita11"/>
+                                            <h:outputText value="*" styleClass="textoRojo" />
+                                        </h:panelGrid>
+                                        <h:panelGrid>
+                                            <p:selectOneMenu id="tipoHuesped" 
+                                                             value="#{estanciaBean.idTipoEspecifico}" >
+                                                <f:selectItem id="siTipoHuesped" itemLabel="#{msgs['sistema.seleccionar']} #{msgs['sgl.solicitudEstancia.tipoHuesped']}..." itemValue="-1"/>
+                                                <f:selectItems value="#{estanciaBean.tiposHuespedes}"/>
+                                                <p:ajax listener="#{estanciaBean.validateTipoHuesped}" />
+                                            </p:selectOneMenu>
+                                        </h:panelGrid>
+                                        <h:panelGrid columns="2">
+                                            <h:outputLabel value="#{msgs['sgl.generales.fechas.fechaIngreso']}: " styleClass="fNegrita11"/>
+                                            <h:outputText value="*" styleClass="textoRojo" />
+                                        </h:panelGrid>
+                                        <h:panelGrid>
+                                            <p:datePicker value="#{estanciaBean.fechaIngresoHuesped}" id="fechaIngresoStaff"
+                                                          disabled="#{estanciaBean.disabledAux}"   pattern="dd/MM/yyyy"
+                                                          />
+                                            <h:panelGrid columns="2"  >
+                                                <h:message for="fechaIngresoStaff" infoClass="infoMessage" errorClass="errorMessage" />
+                                            </h:panelGrid>
+                                        </h:panelGrid>
+
+                                        <h:panelGrid columns="2" rendered="#{!estanciaBean.flag}" >
+                                            <h:outputLabel value="#{msgs['sgl.generales.fechas.fechaSalida']}:" styleClass="fNegrita11"/>
+                                            <h:outputText value="*" styleClass="textoRojo" />
+                                        </h:panelGrid>
+                                        <h:panelGrid rendered="#{!estanciaBean.flag}" >
+                                            <p:datePicker value="#{estanciaBean.fechaSalidaHuesped}" id="fechaSalidaHuespedStaff"
+                                                          pattern="dd/MM/yyyy"
+                                                          />
+                                            <h:panelGrid columns="2"  >
+                                                <h:message for="fechaSalidaHuespedStaff" infoClass="infoMessage" errorClass="errorMessage" />
+                                            </h:panelGrid>
+                                        </h:panelGrid>
+                                    </h:panelGrid>                                
+                                    <h:outputText value="#{msgs['sgl.solicitudEstancia.msg.fechaPropuestaPeriodoPrueba']} " styleClass="textoAzul" style="font-size: 11px" rendered="#{estanciaBean.flag}" />
+                                    <h:panelGrid columns="4" rendered="#{estanciaBean.flag}" >
+                                        <h:outputLabel value="#{msgs['sgl.generales.fechas.salidaPropuesta']}:"/>
+                                        <h:outputText value="*" styleClass="textoRojo" />
+                                        <p:datePicker value="#{estanciaBean.fechaSalidaPropuesta}" id="fechaSalidaHuespedStaffPropuesta"
+                                                      disabled="#{estanciaBean.disabledAux}"  pattern="dd/MM/yyyyy"
+                                                      />
+                                        <h:panelGrid columns="2"  >
+                                            <h:message for="fechaSalidaHuespedStaffPropuesta" infoClass="infoMessage" errorClass="errorMessage" />
+                                        </h:panelGrid>
+                                    </h:panelGrid>
+                                    <h:panelGrid columns="2" >
+                                        <h:panelGrid>
+                                            <h:outputLabel value="#{msgs['sgl.solicitudEstancia.diasEstancia']}:" styleClass="fNegrita11"/>
+                                        </h:panelGrid>
+                                        <h:panelGrid>
+                                            <!--h:outputText value="#{estanciaBean.calculoDiasEstancia}" 
+                                                          rendered="#{estanciaBean.idTipoEspecifico ne 17}" /-->
+                                            <h:outputText value="#{msgs['sgl.solicitudEstancia.msg.diasIlimitados']}" 
+                                                          rendered="#{estanciaBean.idTipoEspecifico eq 17}" />
+                                        </h:panelGrid>
+                                    </h:panelGrid>
+                                </h:panelGrid>
+
+                                <h:panelGrid   >
+                                    <h:panelGrid columns="3">
+                                        <h:outputLabel value="Staff: " />
+                                        <h:outputText value="*" styleClass="textoRojo" />
+                                        <p:selectOneMenu id="tipo" value="#{estanciaBean.idStaff}"  
+                                                         >
+                                            <f:selectItem itemLabel="#{msgs['sistema.seleccionar']} #{msgs['sgl.staff']}..." itemValue="-1" />
+                                            <f:selectItems value="#{estanciaBean.staffListSelectItem}" />
+                                        </p:selectOneMenu>
+                                    </h:panelGrid>
+                                    <h:panelGrid columns="3" >
+                                        <h:outputLabel value="#{msgs['sgl.solicitudEstancia.habitacionSeleccionada']}: " />
+                                        <h:outputText value="*" styleClass="textoRojo" />
+                                        <h:outputText value="#{estanciaBean.habitacion.nombre} | #{estanciaBean.habitacion.numeroHabitacion}" style="font-size: 13px; font-weight: bold" />
+                                    </h:panelGrid>
+
+                                    <p:dataTable showGridlines="true" size="small"  id="dataGridHabitacionesStaff"
+                                                 value="#{estanciaBean.habitacionesStaffDataModel}"
+                                                 var="data"
+                                                 scrollable="true"
+                                                 scrollHeight="75px"
+                                                 >
+                                        <p:column>
+                                            <f:facet name="header">
+                                                <h:outputText value="#{msgs['sgl.staff.habitacion']}"/>
+                                            </f:facet>
+                                            <h:outputText value="#{data.nombre}" />
+                                        </p:column>                                 
+                                        <p:column style="text-align: center;">
+                                            <f:facet name="header">
+                                                <h:outputText value="#{msgs['sgl.staff.habitacion.numeroHabitacion']}" />
+                                            </f:facet>
+                                            <h:outputText value="#{data.numeroHabitacion}" />
+                                        </p:column>   
+                                        <p:column>
+                                            <f:facet name="header">
+                                                <h:outputText value="#{msgs['sgl.solicitudEstancia.habitacion.asignar']}" />
+                                            </f:facet>
+                                            <p:commandLink value="#{msgs['sistema.seleccionar']} #{msgs['sgl.staff.habitacion']}" 
+                                                           action="#{estanciaBean.seleccionarHabitacion(data)}"
+                                                           process="@this" update="frmRegHuespedStaff:dataGridHabitacionesStaff"/>
+                                        </p:column>
+                                        <p:column>
+                                            <f:facet name="header">
+                                                <h:outputText value="#{msgs['sgl.solicitudEstancia.habitacion.ocupada']}" />
+                                            </f:facet>
+                                            <h:outputText value="#{data.ocupada eq 'True' ? msgs['sistema.si'] : msgs['sistema.no']}" />
+                                        </p:column>                                     
+                                    </p:dataTable>                                
+                                </h:panelGrid>                            
+                            </h:panelGrid> 
+                            <footer>
+                                <p:commandButton value="#{msgs['sistema.guardar']}" action="#{estanciaBean.registrarHuespedStaff}" 
+                                                 process="@form" update="frmRegHuesped"/>
+                                <p:commandLink value="#{msgs['sistema.cancelar']}" 
+                                               immediate="true" styleClass="btn btn-default"
+                                               onclick="PF('dlgRegHuesped').hide();"/>
+                            </footer>
+                        </h:panelGrid>
+                    </p:dialog>
+                </h:form>
 
             </ui:define>
         </ui:composition>

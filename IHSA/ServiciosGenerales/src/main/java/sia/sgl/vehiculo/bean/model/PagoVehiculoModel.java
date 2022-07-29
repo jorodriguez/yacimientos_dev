@@ -6,8 +6,9 @@
 package sia.sgl.vehiculo.bean.model;
 
 import java.io.Serializable;
+import javax.faces.view.ViewScoped;
 import javax.inject.Named;
-import javax.faces.bean.ViewScoped;
+
 import javax.inject.Inject;
 import sia.sgl.sistema.bean.backing.Sesion;
 

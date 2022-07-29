@@ -22,6 +22,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import sia.constantes.Constantes;
 import sia.modelo.sgl.oficina.vo.OficinaVO;
 import sia.modelo.usuario.vo.UsuarioRolVo;
@@ -162,7 +163,8 @@ public class LSWUSGL extends HttpServlet {
 
                     sesion.setCtx(new Properties());
 
-                    sesion.subirValoresContexto();
+                    HttpSession session = request.getSession();
+                    sesion.subirValoresContexto(session);
                     response.sendRedirect(url + Constantes.URL_REL_SERVICIOS_GENERALES);
                 } else { // si no tiene roles lo regresa al sia
                     response.sendRedirect(url + Constantes.URL_REL_SIA_PRINCIPAL);

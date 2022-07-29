@@ -14,18 +14,19 @@ import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.faces.bean.ManagedProperty;
-import javax.faces.bean.ViewScoped;
-import javax.faces.event.ActionEvent;
 import javax.faces.model.SelectItem;
+import javax.faces.view.ViewScoped;
 import org.primefaces.PrimeFaces;
 import sia.constantes.Constantes;
 import sia.modelo.gerencia.vo.GerenciaVo;
 import sia.modelo.sgl.estancia.vo.DetalleEstanciaVO;
 import sia.modelo.sgl.oficina.vo.OficinaVO;
+import sia.modelo.sgl.viaje.vo.InvitadoVO;
 import sia.modelo.sgl.vo.MotivoVo;
+import sia.modelo.usuario.vo.UsuarioVO;
 import sia.servicios.campo.nuevo.impl.ApCampoUsuarioRhPuestoImpl;
 import sia.servicios.catalogos.impl.GerenciaImpl;
+import sia.servicios.catalogos.impl.UsuarioImpl;
 import sia.servicios.sgl.impl.SgInvitadoImpl;
 import sia.servicios.sgl.impl.SgMotivoImpl;
 import sia.servicios.sgl.impl.SgOficinaImpl;
@@ -56,6 +57,8 @@ public class SolicitarEstanciaBean implements Serializable {
     @Inject
     ApCampoUsuarioRhPuestoImpl apCampoUsuarioRhPuestoImpl;
     @Inject
+    UsuarioImpl usuarioImpl;
+    @Inject
     private SgInvitadoImpl sgInvitadoImpl;
     private int idGerencia;
     private Map<String, List<SelectItem>> mapaCombos;
@@ -75,11 +78,11 @@ public class SolicitarEstanciaBean implements Serializable {
 
     @PostConstruct
     public void iniciar() {
-        listaDetalleEstancia = new ArrayList<DetalleEstanciaVO>();
+        listaDetalleEstancia = new ArrayList<>();
         if (sesion.getUsuario().getGerencia() != null) {
             idGerencia = sesion.getUsuario().getGerencia().getId();
         }
-         DetalleEstanciaVO detalleSolVO = new DetalleEstanciaVO();
+        DetalleEstanciaVO detalleSolVO = new DetalleEstanciaVO();
         detalleSolVO.setUsuario(sesion.getUsuario().getNombre());
         detalleSolVO.setInvitado("");
         detalleSolVO.setIdTipoEspecifico(Constantes.EMPLEADO);
@@ -89,31 +92,19 @@ public class SolicitarEstanciaBean implements Serializable {
         //
         listaDetalleEstancia.add(detalleSolVO);
         fechaIngreso = new Date();
-//        System.out.println("! una vez ");
-        mapaCombos = new HashMap<String, List<SelectItem>>();
+        //
+        mapaCombos = new HashMap<>();
         getMapaCombos().put("gerencias", listaGerencia());
         getMapaCombos().put("oficinas", trearListaOficina());
         getMapaCombos().put("motivos", listaMotivo());
         //
-        //
-        usuariosJson();
-        PrimeFaces.current().executeScript(";jsonUsuario('frmSolEstancia', 'autocompleteUsuario', " + usuarioJson + " , 'hidenUsuario');");
-        invitadoJson();
-        PrimeFaces.current().executeScript(";jsonInvitado('frmSolEstancia', 'autocompleteInvitado', " + invitadoJson + " , 'hidenInvitado');");
-//      
+        invitado = "";
+        user = "";
     }
 
-    private void usuariosJson() {
-        usuarioJson = apCampoUsuarioRhPuestoImpl.traerUsuarioJsonPorCampo(Constantes.AP_CAMPO_NEJO);
-    }
-
-    private void invitadoJson() {
-        invitadoJson = sgInvitadoImpl.traerInvitadoJsonPorCampo();
-    }
-    
     //
     private List<SelectItem> listaGerencia() {
-        List<SelectItem> ls = new ArrayList<SelectItem>();
+        List<SelectItem> ls = new ArrayList<>();
         try {
             List<GerenciaVo> lo = gerenciaImpl.traerGerenciaActivaPorCampo(Constantes.AP_CAMPO_DEFAULT);
             for (GerenciaVo g : lo) {
@@ -127,7 +118,7 @@ public class SolicitarEstanciaBean implements Serializable {
     }
 
     private List<SelectItem> trearListaOficina() {
-        List<SelectItem> ls = new ArrayList<SelectItem>();
+        List<SelectItem> ls = new ArrayList<>();
         try {
             List<OficinaVO> lo = sgOficinaImpl.findByVistoBuenoList(Constantes.TRUE, Constantes.FALSE);
             for (OficinaVO oficinaVo : lo) {
@@ -141,7 +132,7 @@ public class SolicitarEstanciaBean implements Serializable {
     }
 
     private List<SelectItem> listaMotivo() {
-        List<SelectItem> ls = new ArrayList<SelectItem>();
+        List<SelectItem> ls = new ArrayList<>();
         try {
             List<MotivoVo> lo = sgMotivoImpl.traerTodosMotivo();
             for (MotivoVo sgM : lo) {
@@ -155,13 +146,15 @@ public class SolicitarEstanciaBean implements Serializable {
     }
 
     public void agregarUsuarioLista() {
+        //buscar el empleado        
         DetalleEstanciaVO detalleSolVO = new DetalleEstanciaVO();
-        detalleSolVO.setUsuario("".equals(getInvitado()) ? getUser() : "");
-        detalleSolVO.setInvitado("".equals(getUser()) ? getInvitado() : "");
-        detalleSolVO.setIdTipoEspecifico("".equals(getInvitado()) ? Constantes.EMPLEADO : Constantes.INVITADO);
-        detalleSolVO.setTipoDetalle("".equals(getInvitado()) ? "Empleado" : "Invitado");
-        detalleSolVO.setIdUsuario(getIdEmpleado());
-        detalleSolVO.setIdInvitado(idInvitado);
+        UsuarioVO userVo = usuarioImpl.findByName(user);
+        detalleSolVO.setIdUsuario(userVo.getId());
+        detalleSolVO.setUsuario(getUser() );
+        detalleSolVO.setInvitado("");
+        detalleSolVO.setIdTipoEspecifico(Constantes.EMPLEADO);
+        detalleSolVO.setTipoDetalle("Empleado");
+        detalleSolVO.setIdInvitado(Constantes.CERO);
         //
         listaDetalleEstancia.add(detalleSolVO);
         setInvitado("");
@@ -171,21 +164,58 @@ public class SolicitarEstanciaBean implements Serializable {
         //setListaUsuario(new ListDataModel(getLu()));
     }
 
-    public void agregarInvitado(ActionEvent event) {
+    public void agregarInvitadoLista() {
+
+        DetalleEstanciaVO detalleSolVO = new DetalleEstanciaVO();
+        String[] cad = invitado.split("//");
+        InvitadoVO invVo = sgInvitadoImpl.buscarInvitado(cad[0].trim());
+        detalleSolVO.setIdInvitado(invVo.getIdInvitado());
+        detalleSolVO.setUsuario("");
+        detalleSolVO.setInvitado(cad[0].trim());
+        detalleSolVO.setIdTipoEspecifico(Constantes.INVITADO);
+        detalleSolVO.setTipoDetalle("Invitado");
+        //
+        listaDetalleEstancia.add(detalleSolVO);
+        setInvitado("");
+        setUser("");
+        setIdEmpleado("");
+        setIdInvitado(0);
+    }
+
+    public void agregarInvitado() {
         setUser("");
         idInvitado = sgInvitadoImpl.guardarInvitado(sesion.getUsuario().getId(), getInvitado(), "", 2);
         PrimeFaces.current().executeScript(";$(dialogoCrearInvitado).modal('hide');");
         agregarUsuarioLista();
     }
 
-    public void cerrarAgregarInvitado(ActionEvent event) {
+    public void cerrarAgregarInvitado() {
         setInvitado("");
         PrimeFaces.current().executeScript(";$(dialogoCrearInvitado).modal('hide');");
-
     }
 
-    public void quitarUsuarioLista() {
-        listaDetalleEstancia.remove(detalleSolicitudVO);
+    public List<String> usuarioListener(String cadena) {
+        invitado = "";
+        List<String> nombres = new ArrayList<>();
+        List<UsuarioVO> usVos = apCampoUsuarioRhPuestoImpl.traerUsurioPorParteNombre(cadena, sesion.getUsuario().getApCampo().getId());
+        usVos.stream().forEach(us -> {
+            nombres.add(us.getNombre());
+        });
+        return nombres;
+    }
+
+    public List<String> invitadoListener(String cadena) {
+        user = "";
+        List<String> nombres = new ArrayList<>();
+        List<InvitadoVO> invs = sgInvitadoImpl.buscarInvitadoParteNombre(cadena);
+        invs.stream().forEach(us -> {
+            nombres.add(us.getNombre() + " // " + us.getEmpresa());
+        });
+        return nombres;
+    }
+
+    public void quitarUsuarioLista(DetalleEstanciaVO dtVo) {
+        listaDetalleEstancia.remove(dtVo);
     }
 
     public String completarEnvioSolicitud() {
@@ -196,7 +226,7 @@ public class SolicitarEstanciaBean implements Serializable {
                         if (listaDetalleEstancia != null && !listaDetalleEstancia.isEmpty()) {
                             sgSolicitudEstanciaImpl.guardarEnviarSolicitud(sesion.getUsuario().getId(), idOficina, idMotivo, idGerencia, fechaIngreso, fechaSalida, listaDetalleEstancia, observacion);
                             FacesUtils.addInfoMessage("Se envio la solicitud");
-                            return "/principal";
+                            return "/principal.xhtml?faces-redirect=true";
                         } else {
                             FacesUtils.addErrorMessage("Agregue huespedes a la solicitud");
                         }
@@ -216,7 +246,7 @@ public class SolicitarEstanciaBean implements Serializable {
     }
 
     public String cerrarEnvioSolicitud() {
-        return "/principal";
+        return "/principal.xhtml?faces-redirect=true";
     }
 
     /**
