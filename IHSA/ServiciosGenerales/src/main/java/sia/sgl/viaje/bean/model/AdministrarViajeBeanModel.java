@@ -6,9 +6,6 @@
 package sia.sgl.viaje.bean.model;
 
 import com.google.common.base.Joiner;
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 import java.io.Serializable;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -23,25 +20,27 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import javax.inject.Named;
-import javax.faces.bean.ManagedProperty;
 import javax.faces.model.SelectItem;
+import javax.faces.view.ViewScoped;
+import lombok.Getter;
+import lombok.Setter;
 import org.primefaces.PrimeFaces;
 import sia.constantes.Constantes;
 import sia.excepciones.SIAException;
 import sia.modelo.GrInterseccion;
-import sia.modelo.SgInvitado;
 import sia.modelo.SgRutaTerrestre;
 import sia.modelo.SgViaje;
 import sia.modelo.SgViajeSiMovimiento;
 import sia.modelo.SgViajero;
-import sia.modelo.Usuario;
 import sia.modelo.sgl.oficina.vo.OficinaVO;
+import sia.modelo.sgl.viaje.vo.InvitadoVO;
 import sia.modelo.sgl.viaje.vo.SolicitudViajeVO;
 import sia.modelo.sgl.viaje.vo.VehiculoVO;
 import sia.modelo.sgl.viaje.vo.ViajeVO;
 import sia.modelo.sgl.viaje.vo.ViajeroVO;
 import sia.modelo.usuario.vo.UsuarioVO;
 import sia.notificaciones.sgl.viaje.Impl.NotificacionViajeImpl;
+import sia.servicios.campo.nuevo.impl.ApCampoUsuarioRhPuestoImpl;
 import sia.servicios.catalogos.impl.GerenciaImpl;
 import sia.servicios.catalogos.impl.UsuarioImpl;
 import sia.servicios.gr.impl.GrInterseccionImpl;
@@ -65,8 +64,8 @@ import sia.util.UtilLog4j;
  *
  * @author ihsa
  */
-@Named(value = "administrarViajeBeanModel")
-
+@Named(value = "administrarViajeBean")
+@ViewScoped
 public class AdministrarViajeBeanModel implements Serializable {
 
     @Inject
@@ -104,20 +103,24 @@ public class AdministrarViajeBeanModel implements Serializable {
     private SgViajeSiMovimientoImpl sgViajeSiMovimientoImpl;
     @Inject
     private SiMovimientoImpl siMovimientoImpl;
+    @Inject
+    ApCampoUsuarioRhPuestoImpl apCampoUsuarioRhPuestoImpl;
 
-    private List<SolicitudViajeVO> solicitudesViajeros;
-    private List<ViajeVO> viajesCreados;
-    private List<ViajeVO> viajesProgramados;
-    private List<ViajeVO> viajesEnProceso;
-    private List<ViajeroVO> listaViajeros;
-    private List<ViajeroVO> listaViajerosBajar;
+    private List<SolicitudViajeVO> solicitudesViajeros = new ArrayList<>();
+    private List<ViajeVO> viajesCreados = new ArrayList<>();
+    private List<ViajeVO> viajesProgramados = new ArrayList<>();
+    private List<ViajeVO> viajesEnProceso = new ArrayList<>();
+    private List<ViajeroVO> listaViajeros = new ArrayList<>();
+    private List<ViajeroVO> listaViajerosBajar = new ArrayList<>();
     private ViajeVO viajeVO;
     private String horaSalida;
     private int idOficinaOrigen;
-    private List<SelectItem> listaOficina = new ArrayList<SelectItem>();
-    private List<SelectItem> listaVehiculos = new ArrayList<SelectItem>();
-    private String listaEmpleadosSGL = "";
-    private List<SelectItem> listaRuta = new ArrayList<SelectItem>();
+    private List<SelectItem> listaOficina = new ArrayList<>();
+    private List<SelectItem> listaVehiculos = new ArrayList<>();
+    private List<String> listaEmpleadosSGL;
+    private List<SelectItem> listaRuta = new ArrayList<>();
+    private List<SelectItem> destinos = new ArrayList<>();
+
     private int idVehiculo;
     private int idOficinaVehiculo;
     private int idOficinaRuta;
@@ -132,23 +135,36 @@ public class AdministrarViajeBeanModel implements Serializable {
     private int estatusViaje = Constantes.CERO;
     private boolean modificar = Constantes.FALSE;
     private String ultimaActualizacion;
+    @Getter
+    @Setter
+    private boolean vehiculoSgl;
+    @Getter
+    @Setter
+    private boolean empleadosSgl;
+    private List<ViajeroVO> listaViajerosSolicitud;
 
     public AdministrarViajeBeanModel() {
     }
 
     @PostConstruct
     public void iniciarConversasionCrearViaje() {
-        this.cargarSolicitudesYViajes();
-        this.setTextBusqueda("");
-        //return "/vistas/sgl/viaje/paginas/panelViajes";
+        setTextBusqueda("");
+        vehiculoSgl = true;
+        empleadosSgl = true;
+        listaViajerosSolicitud = new ArrayList<>();
+        fechaInt1 = new Date();
+        Calendar c = Calendar.getInstance();
+        c.add(Calendar.DAY_OF_MONTH, 4);
+        fechaInt2 = c.getTime();
+        cargarSolicitudesYViajes();
     }
 
     public void cargarSolicitudesYViajes() {
-        this.setSolicitudesViajeros(traerSolicitudesList());
-        this.setViajesCreados(traerLstViajesCreados());
-        this.setViajesProgramados(traerLstViajesProgramados());
-        this.setViajesEnProceso(traerLstViajesEnProceso());
-        this.setUltimaActualizacion(Constantes.FMT_ddMMyyyh_mm_a.format(new Date()));
+        setSolicitudesViajeros(traerSolicitudesList());
+        setViajesCreados(traerLstViajesCreados());
+        setViajesProgramados(traerLstViajesProgramados());
+        setViajesEnProceso(traerLstViajesEnProceso());
+        setUltimaActualizacion(Constantes.FMT_ddMMyyyh_mm_a.format(new Date()));
     }
 
     /**
@@ -194,13 +210,13 @@ public class AdministrarViajeBeanModel implements Serializable {
     }
 
     public List<SolicitudViajeVO> traerSolicitudesList() {
-        List<SolicitudViajeVO> l = new ArrayList<SolicitudViajeVO>();
+        List<SolicitudViajeVO> l = new ArrayList<>();
         try {
             l.addAll(sgSolicitudViajeImpl.traerSolicitudesTerrestre(sesion.getOficinaActual().getId(),
                     Constantes.ESTATUS_PARA_HACER_VIAJE,
                     sesion.getUsuario().getId(),
-                    this.getFechaInt1(), this.getFechaInt2(),
-                    this.getTextBusqueda(),
+                    getFechaInt1(), getFechaInt2(),
+                    getTextBusqueda(),
                     0));
         } catch (Exception e) {
             UtilLog4j.log.fatal(e);
@@ -209,13 +225,13 @@ public class AdministrarViajeBeanModel implements Serializable {
     }
 
     public List<ViajeVO> traerLstViajesCreados() {
-        List<ViajeVO> l = new ArrayList<ViajeVO>();
+        List<ViajeVO> l = new ArrayList<>();
         try {
-            l.addAll(sgViajeImpl.getRoadTripByExit(this.sesion.getOficinaActual().getId(),
+            l.addAll(sgViajeImpl.getRoadTripByExit(sesion.getOficinaActual().getId(),
                     Constantes.ESTATUS_VIAJE_CREADO,
                     Constantes.CERO,
                     true,
-                    this.getFechaInt1(), this.getFechaInt2(),
+                    getFechaInt1(), getFechaInt2(),
                     false,
                     0,
                     true,
@@ -227,13 +243,13 @@ public class AdministrarViajeBeanModel implements Serializable {
     }
 
     public List<ViajeVO> traerLstViajesProgramados() {
-        List<ViajeVO> l = new ArrayList<ViajeVO>();
+        List<ViajeVO> l = new ArrayList<>();
         try {
-            l.addAll(sgViajeImpl.getRoadTripByExit(this.sesion.getOficinaActual().getId(),
+            l.addAll(sgViajeImpl.getRoadTripByExit(sesion.getOficinaActual().getId(),
                     Constantes.ESTATUS_VIAJE_POR_SALIR,
                     Constantes.CERO,
                     true,
-                    this.getFechaInt1(), this.getFechaInt2(),
+                    getFechaInt1(), getFechaInt2(),
                     false,
                     0,
                     true,
@@ -256,13 +272,6 @@ public class AdministrarViajeBeanModel implements Serializable {
             UtilLog4j.log.fatal(e);
         }
         return l;
-    }
-
-    /**
-     * @param sesion the sesion to set
-     */
-    public void setSesion(Sesion sesion) {
-        this.sesion = sesion;
     }
 
     /**
@@ -296,6 +305,7 @@ public class AdministrarViajeBeanModel implements Serializable {
     public void inicializarCrearViaje() {
         try {
             setViajeVO(new ViajeVO());
+            getViajeVO().setId(Constantes.CERO);
             getViajeVO().setResponsable("");
             setTieneResponsable(false);
             getViajeVO().setIdResponsable("");
@@ -315,6 +325,9 @@ public class AdministrarViajeBeanModel implements Serializable {
             getViajeVO().setDestino("");
             getViajeVO().setSgViaje(Constantes.CERO);
             setModificar(Constantes.FALSE);
+            empleadoEmergente = "";
+            invitadoEmergente = "";
+            PrimeFaces.current().executeScript("$(dialogoPopUpCrearViaje).modal('show');");
         } catch (Exception e) {
             UtilLog4j.log.error(this, e.getMessage());
             UtilLog4j.log.error(e);
@@ -434,7 +447,7 @@ public class AdministrarViajeBeanModel implements Serializable {
     }
 
     public List<SelectItem> listaOficina() {
-        List<SelectItem> l = new ArrayList<SelectItem>();
+        List<SelectItem> l = new ArrayList<>();
         try {
             List<OficinaVO> lv = oficinaService.traerListaOficina();
             for (OficinaVO sgO : lv) {
@@ -447,7 +460,7 @@ public class AdministrarViajeBeanModel implements Serializable {
     }
 
     private List<SelectItem> listaVehiculos() {
-        List<SelectItem> l = new ArrayList<SelectItem>();
+        List<SelectItem> l = new ArrayList<>();
         try {
             List<VehiculoVO> lv = sgVehiculoImpl.traerVehiculoPorOficinaAndGerencia(getIdOficinaVehiculo(), Constantes.NO_ELIMINADO, Constantes.GERENCIA_ID_SERVICIOS_GENERALES);
             for (VehiculoVO sgV : lv) {
@@ -462,16 +475,12 @@ public class AdministrarViajeBeanModel implements Serializable {
 
     public void llenarListaEmpleadosSGL(boolean todos) {
         try {
-            String usuarios;
+            listaEmpleadosSGL = new ArrayList<>();
             if (todos) {
-                usuarios = usuarioImpl.traerUsuarioActivoJsonByGerencia(Constantes.CERO, sesion.getOficinaActual().getId());
+                listaEmpleadosSGL = usuarioImpl.traerUsuarioActivoByGerencia(Constantes.CERO, sesion.getOficinaActual().getId());
             } else {
-                usuarios = usuarioImpl.traerUsuarioActivoJsonByGerencia(Constantes.GERENCIA_ID_SERVICIOS_GENERALES, sesion.getOficinaActual().getId());
+                listaEmpleadosSGL = usuarioImpl.traerUsuarioActivoByGerencia(Constantes.GERENCIA_ID_SERVICIOS_GENERALES, sesion.getOficinaActual().getId());
             }
-            PrimeFaces.current().executeScript(";limpiarDataList('listaEmpleadosSGL','responsable');");
-            PrimeFaces.current().executeScript(";cargarDatos(" + usuarios + ",'listaEmpleadosSGL');");
-
-            setListaEmpleadosSGL(usuarios);
         } catch (Exception e) {
             e.getStackTrace();
 
@@ -481,54 +490,48 @@ public class AdministrarViajeBeanModel implements Serializable {
     /**
      * @return the listaEmpleadosSGL
      */
-    public String getListaEmpleadosSGL() {
+    public List<String> getListaEmpleadosSGL() {
         return listaEmpleadosSGL;
     }
 
     /**
      * @param listaEmpleadosSGL the listaEmpleadosSGL to set
      */
-    public void setListaEmpleadosSGL(String listaEmpleadosSGL) {
+    public void setListaEmpleadosSGL(List<String> listaEmpleadosSGL) {
         this.listaEmpleadosSGL = listaEmpleadosSGL;
     }
 
     public void llenarListaDestino() {
         try {
-            String destinos = "";
-            Gson gson = new Gson();
-            JsonArray des = new JsonArray();
-            List<Object[]> listaTerrestre = new ArrayList<Object[]>();
+            List<Object[]> listaTerrestre = new ArrayList<>();
             setListaDestino(sgRutaTerrestreImpl.traerDestinosJson(getViajeVO().getIdOficinaOrigen()));
             listaTerrestre = getListaDestino().get(0);
+            destinos.clear();
             for (Object[] o : listaTerrestre) {
                 if (listaTerrestre != null) {
-                    JsonObject ob = new JsonObject();
-                    ob.addProperty("value", o[0] != null ? (Integer) o[0] : 0);
-                    ob.addProperty("label", o[1] != null ? (String) o[1] : "-");
-                    ob.addProperty("type", o[2] != null ? (String) o[2] : "-");
-                    des.add(ob);
+                    destinos.add(new SelectItem((Integer) o[0], (String) o[1] + " // " + (String) o[2]));
                 }
             }
-            destinos = gson.toJson(des);
-            PrimeFaces.current().executeScript(";limpiarDataList('listaDestinos','des');");
-            PrimeFaces.current().executeScript(";cargarDatos(" + destinos + ",'listaDestinos');");
         } catch (Exception e) {
-            e.getStackTrace();
+            UtilLog4j.log.error(e);
         }
     }
 
     public void actualizarListaVehiculos() {
-        List<SelectItem> l = new ArrayList<SelectItem>();
-        try {
-            List<VehiculoVO> lv = sgVehiculoImpl.traerVehiculoPorOficinaAndGerencia(getIdOficinaVehiculo(), Constantes.NO_ELIMINADO, Constantes.GERENCIA_ID_SERVICIOS_GENERALES);
-            for (VehiculoVO sgV : lv) {
-                l.add(new SelectItem(sgV.getId(), sgV.getMarca() + " - " + sgV.getModelo() + " - " + sgV.getNumeroPlaca() + " - " + sgV.getColor()));
+        if (vehiculoSgl) {
+            try {
+                List<SelectItem> l = new ArrayList<>();
+                List<VehiculoVO> lv = sgVehiculoImpl.traerVehiculoPorOficinaAndGerencia(getIdOficinaVehiculo(), Constantes.NO_ELIMINADO, Constantes.GERENCIA_ID_SERVICIOS_GENERALES);
+                for (VehiculoVO sgV : lv) {
+                    l.add(new SelectItem(sgV.getId(), sgV.getMarca() + " - " + sgV.getModelo() + " - " + sgV.getNumeroPlaca() + " - " + sgV.getColor()));
+                }
+                setListaVehiculos(l);
+            } catch (Exception ex) {
+                Logger.getLogger(AdministrarViajeBeanModel.class.getName()).log(Level.SEVERE, null, ex);
             }
-        } catch (Exception ex) {
-            Logger.getLogger(AdministrarViajeBeanModel.class.getName()).log(Level.SEVERE, null, ex);
+        } else {
+            tdosLosVehiculosByOficina();
         }
-
-        setListaVehiculos(l);
 
     }
 
@@ -543,7 +546,7 @@ public class AdministrarViajeBeanModel implements Serializable {
      * @param redondoSencillo the redondoSencillo to set
      */
     public void setRedondoSencillo(boolean redondoSencillo) {
-        this.redondoSencillo = redondoSencillo;
+        redondoSencillo = redondoSencillo;
     }
 
     public void traerResponsableVehiculo() {
@@ -580,19 +583,31 @@ public class AdministrarViajeBeanModel implements Serializable {
 
     public void cambiarResponsable() {
         //cambiar por javaScript
-        getViajeVO().setResponsable("");
-        getViajeVO().setIdResponsable("");
-        setTieneResponsable(Constantes.FALSE);
-        llenarListaEmpleadosSGL(Constantes.FALSE);
-        llenarListaDestino();
+        UsuarioVO usuarioVO = usuarioImpl.findByName(viajeVO.getIdResponsable());
+        getViajeVO().setResponsable(usuarioVO.getNombre());
+        getViajeVO().setIdResponsable(usuarioVO.getId());
+        setTieneResponsable(Constantes.TRUE);
     }
 
+    public void cargarVehiculos() {
+        if (getIdOficinaVehiculo() != -1) {
+            actualizarListaVehiculos();
+        }
+
+    }
+ public void cargarConductoresSGL() {
+        if (isEmpleadosSgl()) {
+            llenarListaEmpleadosSGL(Constantes.FALSE);
+        } else {
+            llenarListaEmpleadosSGL(Constantes.TRUE);
+        }
+    }
     public boolean crearViaje() throws ParseException {
 
-        SimpleDateFormat tiempo = new SimpleDateFormat("h:mma");
-        Date horaSali = tiempo.parse(getHoraSalida());
+        // SimpleDateFormat tiempo = new SimpleDateFormat("h:mma");
+        // Date horaSali = tiempo.parse(getHoraSalida());
         Calendar fechaCompleta = Calendar.getInstance();
-        fechaCompleta.setTime(horaSali);
+        fechaCompleta.setTime(viajeVO.getHoraSalida());
         Calendar fs = Calendar.getInstance();
         fs.setTime(getViajeVO().getFechaProgramada());
         fechaCompleta.set(Calendar.YEAR, fs.get(Calendar.YEAR));
@@ -601,31 +616,15 @@ public class AdministrarViajeBeanModel implements Serializable {
         getViajeVO().setFechaProgramada(fechaCompleta.getTime());
         int tipoViaje = Constantes.CERO;
         boolean cerrar = false;
-        if (getViajeVO().getIdResponsable() == null || getViajeVO().getIdResponsable().equals("")) {
-            String h = FacesUtils.getRequestParameter("responsable");
-            if (h != null && !h.equals("")) {
-                getViajeVO().setIdResponsable(usuarioImpl.findByName(h).getId());
-                getViajeVO().setResponsable(h);
-            }
-        }
         if (getViajeVO().getIdRuta() < 1) {
-            String h = FacesUtils.getRequestParameter("destino");
-            if (h != null && !h.equals("")) {
-                List<Object[]> ofi = getListaDestino().get(0);
-                for (Object[] ob : ofi) {
-                    if (h.equals(ob[1].toString())) {
-                        getViajeVO().setIdRuta((Integer) ob[0]);
-                        getViajeVO().setDestino(ob[1].toString());
-                        if (ob[2].toString().equals("a Oficina")) {
-                            tipoViaje = Constantes.RUTA_TIPO_OFICINA;
-                        } else {
-                            tipoViaje = Constantes.RUTA_TIPO_CIUDAD;
-                        }
-                        break;
-                    }
-                }
-            }
+            SelectItem item = destinos.stream().filter(s -> Integer.parseInt(s.getValue().toString()) == viajeVO.getIdRuta()
+            ).findFirst().get();
 
+            if (item != null && item.getLabel().contains("a Oficina")) {
+                tipoViaje = Constantes.RUTA_TIPO_OFICINA;
+            } else {
+                tipoViaje = Constantes.RUTA_TIPO_CIUDAD;
+            }
         }
         boolean validar = true;
         if (siManejoFechaLocal.dayIsToday(getViajeVO().getFechaProgramada())) {
@@ -669,6 +668,46 @@ public class AdministrarViajeBeanModel implements Serializable {
         setHoraSalida(h);
     }
 
+    public List<String> usuarioListener(String cadena) {
+        setInvitadoEmergente("");
+        List<String> nombres = new ArrayList<>();
+        List<UsuarioVO> usVos = traerUsuarios(cadena);
+        usVos.stream().forEach(us -> {
+            nombres.add(us.getNombre());
+        });
+        return nombres;
+    }
+
+    public List<String> invitadoListener(String cadena) {
+        setInvitadoEmergente("");
+        List<String> nombres = new ArrayList<>();
+        List<InvitadoVO> invs = traerInvitados(cadena);
+        invs.stream().forEach(us -> {
+            nombres.add(us.getNombre() + " // " + us.getEmpresa());
+        });
+        return nombres;
+    }
+
+    public void agregarInvitado() {
+        agreagarEmpleadoOInvitadoEmergente(Constantes.FALSE);
+        setInvitadoEmergente("");
+    }
+
+    public void agregarEmpleado() {
+        agreagarEmpleadoOInvitadoEmergente(Constantes.TRUE);
+        setEmpleadoEmergente("");
+    }
+
+    public void selecionarSolicitud(int idSol) {
+        llenarlistaViajerosPorSolicitud(idSol);
+    }
+
+    public void addAndOrRemoveViajeros() throws SIAException {
+        addAndOrRemoveViajeros(Constantes.FALSE);
+//        String metodo = ";draggableInit();";
+//        PrimeFaces.current().executeScript(metodo);
+    }
+
     /**
      * @return the listaDestino
      */
@@ -687,9 +726,6 @@ public class AdministrarViajeBeanModel implements Serializable {
      * @return the fechaInt1
      */
     public Date getFechaInt1() {
-        if (fechaInt1 == null) {
-            fechaInt1 = new Date();
-        }
         return fechaInt1;
     }
 
@@ -704,11 +740,6 @@ public class AdministrarViajeBeanModel implements Serializable {
      * @return the fechaInt2
      */
     public Date getFechaInt2() {
-        if (fechaInt2 == null) {
-            Calendar c = Calendar.getInstance();
-            c.add(Calendar.DAY_OF_MONTH, 4);
-            fechaInt2 = c.getTime();
-        }
         return fechaInt2;
     }
 
@@ -748,9 +779,8 @@ public class AdministrarViajeBeanModel implements Serializable {
         return usr;
     }
 
-    public void llenarlistaViajeros() {
+    public void llenarlistaViajeros(int viajeEnUso) {
 
-        int viajeEnUso = Integer.parseInt(FacesUtils.getRequestParameter("idViaje"));
         setViajeVO(sgViajeImpl.buscarPorId(viajeEnUso, Constantes.FALSE));
         setListaViajeros(sgViajeroImpl.getTravellersByTravel(getViajeVO().getId(), null));
         setListaViajerosBajar(new ArrayList<ViajeroVO>());
@@ -771,11 +801,7 @@ public class AdministrarViajeBeanModel implements Serializable {
         this.listaViajeros = listaViajeros;
     }
 
-    public void removeViajeros() {
-        String viajero = FacesUtils.getRequestParameter("idViajero");
-        String usuario = FacesUtils.getRequestParameter("idUsuario");
-        String invitado = FacesUtils.getRequestParameter("idInvitado");
-
+    public void removeViajeros(String viajero, String usuario, String invitado) {
         if (viajero != null && !viajero.equals("") && !viajero.equals("null")) {
             int idViajero = Integer.parseInt(viajero);
             for (ViajeroVO vo : getListaViajeros()) {
@@ -823,7 +849,15 @@ public class AdministrarViajeBeanModel implements Serializable {
      * @param listaViajerosBajar the listaViajerosBajar to set
      */
     public void setListaViajerosBajar(List<ViajeroVO> listaViajerosBajar) {
-        this.listaViajerosBajar = listaViajerosBajar;
+        listaViajerosBajar = listaViajerosBajar;
+    }
+
+    public void goPopUpAddOrRemoveViajeros(int idViaje) {
+        llenarlistaViajeros(idViaje);
+        //usuariosActivos();
+        //listInvitados();
+        String metodo = ";abrirDialogModal(dialogoPopUpAddOrRemoveViajeros);";
+        PrimeFaces.current().executeScript(metodo);
     }
 
     public void usuariosActivos() {
@@ -870,7 +904,7 @@ public class AdministrarViajeBeanModel implements Serializable {
         boolean seRepite = false;
         boolean volverASubir = false;
         if (getListaViajeros().size() < getViajeVO().getVehiculoVO().getCapacidadPasajeros()) {
-
+            InvitadoVO invVo = new InvitadoVO();
             for (ViajeroVO viajero : getListaViajeros()) {
                 if (esEmpleado) {
                     if (viajero.getIdUsuario().equals(getEmpleadoEmergente())) {
@@ -878,7 +912,9 @@ public class AdministrarViajeBeanModel implements Serializable {
                         break;
                     }
                 } else {
-                    if (viajero.getIdInvitado() == Integer.parseInt(getInvitadoEmergente())) {
+                    String[] cad = invitadoEmergente.split("//");
+                    invVo = sgInvitadoImpl.buscarInvitado(cad[0].trim());
+                    if (viajero.getIdInvitado() == invVo.getIdInvitado()) {
                         seRepite = true;
                         break;
                     }
@@ -896,7 +932,7 @@ public class AdministrarViajeBeanModel implements Serializable {
                             break;
                         }
                     } else {
-                        if (nv.getIdInvitado() == Integer.parseInt(getInvitadoEmergente())) {
+                        if (nv.getIdInvitado() == invVo.getIdInvitado()) {
                             nv.setSelected(true);
                             getListaViajeros().add(nv);
                             getListaViajerosBajar().remove(nv);
@@ -908,18 +944,17 @@ public class AdministrarViajeBeanModel implements Serializable {
                 if (!volverASubir) {
                     ViajeroVO v = new ViajeroVO();
                     if (esEmpleado) {
-                        Usuario u = usuarioImpl.find(getEmpleadoEmergente());
+                        UsuarioVO u = usuarioImpl.findByName(getEmpleadoEmergente());
                         v.setUsuario(u.getNombre());
                         v.setIdUsuario(u.getId());
-                        v.setCorreo(u.getEmail());
+                        v.setCorreo(u.getMail());
                         v.setInvitado("null");
                         v.setIdInvitado(Constantes.CERO);
                         v.setTipoViajero(Constantes.SG_TIPO_ESPECIFICO_EMPLEADO);
                         v.setEsEmpleado(Constantes.TRUE);
                     } else {
-                        SgInvitado i = sgInvitadoImpl.find(Integer.parseInt(getInvitadoEmergente()));
-                        v.setIdInvitado(i.getId());
-                        v.setInvitado(i.getNombre());
+                        v.setIdInvitado(invVo.getIdInvitado());
+                        v.setInvitado(invVo.getNombre());
                         v.setUsuario("null");
                         v.setIdUsuario("null");
                         v.setTipoViajero(Constantes.SG_TIPO_ESPECIFICO_INVITADO);
@@ -940,6 +975,14 @@ public class AdministrarViajeBeanModel implements Serializable {
         } else {
             FacesUtils.addErrorMessage("El numero de pasajeros no puede ser mayor a la capacidad del Vehiculo");
         }
+    }
+
+    public List<UsuarioVO> traerUsuarios(String cadena) {
+        return apCampoUsuarioRhPuestoImpl.traerUsurioPorParteNombre(cadena, sesion.getUsuario().getApCampo().getId());
+    }
+
+    public List<InvitadoVO> traerInvitados(String cadena) {
+        return sgInvitadoImpl.buscarInvitadoParteNombre(cadena);
     }
 
     public void addAndOrRemoveViajeros(boolean regresoIntercet) throws SIAException {
@@ -963,12 +1006,12 @@ public class AdministrarViajeBeanModel implements Serializable {
                         SgViajero v = sgViajeroImpl.find(vo.getId());
                         SgViaje viaj = sgViajeImpl.find(getViajeVO().getId());
                         boolean escala = Constantes.FALSE;
-                        
-                        if (vo.getIdDestino() != getViajeVO().getIdOficinaDestino()){
+
+                        if (vo.getIdDestino() != getViajeVO().getIdOficinaDestino()) {
                             escala = Constantes.TRUE;
                         }
                         //validar destino
-                        
+
                         //sgViajeroImpl.agregarViaje(sesion.getUsuario().getId(),v, sgViajeImpl.find(getViajeVO().getId()),Constantes.FALSE);
                         sgViajeroImpl.agregarViaje(sesion.getUsuario().getId(), viaj.getId(),
                                 Constantes.CERO, vo.getId(), escala);
@@ -1033,7 +1076,7 @@ public class AdministrarViajeBeanModel implements Serializable {
                 FacesUtils.addInfoMessage("Se realizarón los cambios con exito");
             }
 
-        } catch (Exception e ){
+        } catch (Exception e) {
             Logger.getLogger(AdministrarViajeBeanModel.class.getName()).log(Level.SEVERE, null, e);
         }
     }
@@ -1052,8 +1095,7 @@ public class AdministrarViajeBeanModel implements Serializable {
         this.estatusViaje = estatusViaje;
     }
 
-    public void iniciarModificarViaje() {
-        int idViajeActual = Integer.parseInt(FacesUtils.getRequestParameter("idViajeMod"));
+    public void iniciarModifcarViaje(int idViajeActual) {
         setViajeVO(sgViajeImpl.buscarPorId(idViajeActual, Constantes.FALSE));
         setModificar(Constantes.TRUE);
         if (getViajeVO() != null) {
@@ -1067,16 +1109,24 @@ public class AdministrarViajeBeanModel implements Serializable {
             llenarListaEmpleadosSGL(Constantes.FALSE);
             setRedondoSencillo(getViajeVO().isRedondo());
             getViajeVO().setOrigen(getViajeVO().getOficina());
+            llenarListaDestino();
+            empleadoEmergente = "";
+            invitadoEmergente = "";
+            String metodo = ";abrirDialogModal(dialogoPopUpCrearViaje);";
+            PrimeFaces.current().executeScript(metodo);
         } else {
             FacesUtils.addErrorMessage("Ocurrio un error al cargar los datos favor de ");
         }
     }
 
-    public void moverViaje() {
-        int idviaje = Integer.parseInt(FacesUtils.getRequestParameter("idViajeMover"));
+    public void moverViaje(int idViaje) {
         String usuario = sesion.getUsuario().getId();
-        sgViajeImpl.moverViajeAProgramado(usuario, idviaje);
-        iniciarConversasionCrearViaje();
+        sgViajeImpl.moverViajeAProgramado(usuario, idViaje);
+        cargarSolicitudesYViajes();
+    }
+
+    public void llenarlistaViajerosPorSolicitud(int idSol) {
+        listaViajerosSolicitud = sgViajeroImpl.getAllViajerosList(idSol, true);
     }
 
     /**
@@ -1138,14 +1188,15 @@ public class AdministrarViajeBeanModel implements Serializable {
                             Constantes.VEHICULO_EMPRESA, getViajeVO().getIdRuta(), (isRedondoSencillo() ? Constantes.redondo : Constantes.sencillo), getViajeVO().isConInter());
                     iniciarConversasionCrearViaje();
                     FacesUtils.addInfoMessage("El viaje " + getViajeVO().getCodigo() + " se actualizo con exito");
+            String metodo = ";cerrarDialogoCrearViaje();";
+            PrimeFaces.current().executeScript(metodo);
                 }
             }
 
         }
     }
 
-    public void crearRegreso() throws SIAException {
-        int idViajeActual = Integer.parseInt(FacesUtils.getRequestParameter("idViajeRegresar"));
+    public void crearRegreso(int idViajeActual) throws SIAException {
         SgViaje viaje = sgViajeImpl.find(idViajeActual);
         if (viaje.getEstatus().getId() != Constantes.ESTATUS_VIAJE_FINALIZAR) {
             setViajeVO(sgViajeImpl.buscarPorId(idViajeActual, Constantes.FALSE));
@@ -1199,7 +1250,7 @@ public class AdministrarViajeBeanModel implements Serializable {
     }
 
     public void tdosLosVehiculosByOficina() {
-        List<SelectItem> l = new ArrayList<SelectItem>();
+        List<SelectItem> l = new ArrayList<>();
         try {
             List<VehiculoVO> lv = sgVehiculoImpl.traerVehiculoPorOficina(getIdOficinaVehiculo(), Constantes.NO_ELIMINADO);
             for (VehiculoVO sgV : lv) {
@@ -1251,58 +1302,54 @@ public class AdministrarViajeBeanModel implements Serializable {
                 if (!enViaje) {
                     SgViaje viaje = sgViajeImpl.find(getViajeVO().getId());
                     //viajeros con flujo normal
-                    if(getViajeVO().getIdOficinaOrigen() == vo.getIdOrigen() && getViajeVO().getIdOficinaDestino() == vo.getIdDestino()){
+                    if (getViajeVO().getIdOficinaOrigen() == vo.getIdOrigen() && getViajeVO().getIdOficinaDestino() == vo.getIdDestino()) {
                         vo.setFechaSalida(getViajeVO().getFechaProgramada());
-                    vo.setHoraSalida(getViajeVO().getHoraProgramada());
-                    vo.setIdViaje(getViajeVO().getId());
-                    vo.setCodigoViaje(getViajeVO().getCodigo());
-                    vo.setViajeroQuedado(Constantes.UNO); //el viajero viaja por primera vez
-                    vo.setIdRutaViaje(getViajeVO().getIdRuta());
-                    vo.setSelected(true);
-                    getListaViajeros().add(vo);
-                    
-                    //aqui entran los vaiajero que se divide su solicitud
-                    } else if (getViajeVO().getIdOficinaOrigen() == vo.getIdOrigen() 
+                        vo.setHoraSalida(getViajeVO().getHoraProgramada());
+                        vo.setIdViaje(getViajeVO().getId());
+                        vo.setCodigoViaje(getViajeVO().getCodigo());
+                        vo.setViajeroQuedado(Constantes.UNO); //el viajero viaja por primera vez
+                        vo.setIdRutaViaje(getViajeVO().getIdRuta());
+                        vo.setSelected(true);
+                        getListaViajeros().add(vo);
+
+                        //aqui entran los vaiajero que se divide su solicitud
+                    } else if (getViajeVO().getIdOficinaOrigen() == vo.getIdOrigen()
                             && (vo.getIdOrigen() == Constantes.ID_OFICINA_SAN_FERNANDO || vo.getIdOrigen() == Constantes.ID_OFICINA_TORRE_MARTEL)
-                            && getViajeVO().getIdOficinaDestino() != vo.getIdDestino() 
+                            && getViajeVO().getIdOficinaDestino() != vo.getIdDestino()
                             && getViajeVO().getIdOficinaDestino() == Constantes.ID_OFICINA_REY_PRINCIPAL
-                            &&(vo.getIdDestino() == Constantes.ID_OFICINA_SAN_FERNANDO || vo.getIdDestino() == Constantes.ID_OFICINA_TORRE_MARTEL)){
+                            && (vo.getIdDestino() == Constantes.ID_OFICINA_SAN_FERNANDO || vo.getIdDestino() == Constantes.ID_OFICINA_TORRE_MARTEL)) {
                         vo.setFechaSalida(getViajeVO().getFechaProgramada());
-                    vo.setHoraSalida(getViajeVO().getHoraProgramada());
-                    vo.setIdViaje(getViajeVO().getId());
-                    vo.setCodigoViaje(getViajeVO().getCodigo());
-                    vo.setViajeroQuedado(Constantes.UNO); //el viajero viaja por primera vez
-                    vo.setIdRutaViaje(getViajeVO().getIdRuta());
-                    vo.setSelected(true);
-                    getListaViajeros().add(vo);
-                        FacesUtils.addInfoMessage("El viajero "+ vo.getUsuario()+ " sera con escala ");
-                        
+                        vo.setHoraSalida(getViajeVO().getHoraProgramada());
+                        vo.setIdViaje(getViajeVO().getId());
+                        vo.setCodigoViaje(getViajeVO().getCodigo());
+                        vo.setViajeroQuedado(Constantes.UNO); //el viajero viaja por primera vez
+                        vo.setIdRutaViaje(getViajeVO().getIdRuta());
+                        vo.setSelected(true);
+                        getListaViajeros().add(vo);
+                        FacesUtils.addInfoMessage("El viajero " + vo.getUsuario() + " sera con escala ");
+
                         // el viajero sale de la escala
                     } else if (getViajeVO().getIdOficinaDestino() == vo.getIdDestino()
                             && getViajeVO().getIdOficinaOrigen() == Constantes.ID_OFICINA_REY_PRINCIPAL
                             && (vo.getIdOrigen() == Constantes.ID_OFICINA_SAN_FERNANDO || vo.getIdOrigen() == Constantes.ID_OFICINA_TORRE_MARTEL)
-                            &&(vo.getIdDestino() == Constantes.ID_OFICINA_SAN_FERNANDO || vo.getIdDestino() == Constantes.ID_OFICINA_TORRE_MARTEL)) {
-                        
+                            && (vo.getIdDestino() == Constantes.ID_OFICINA_SAN_FERNANDO || vo.getIdDestino() == Constantes.ID_OFICINA_TORRE_MARTEL)) {
+
                         /* estas 2 lineas de deben de quitar para poder realizar escalas en todas las oficinas
                         && (vo.getIdOrigen() == Constantes.ID_OFICINA_SAN_FERNANDO || vo.getIdOrigen() == Constantes.ID_OFICINA_TORRE_MARTEL)
                             &&(vo.getIdDestino() == Constantes.ID_OFICINA_SAN_FERNANDO || vo.getIdDestino() == Constantes.ID_OFICINA_TORRE_MARTEL)*/
-                        
                         vo.setFechaSalida(getViajeVO().getFechaProgramada());
-                    vo.setHoraSalida(getViajeVO().getHoraProgramada());
-                    vo.setIdViaje(getViajeVO().getId());
-                    vo.setCodigoViaje(getViajeVO().getCodigo());
-                    vo.setViajeroQuedado(Constantes.UNO); //el viajero viaja por primera vez
-                    vo.setIdRutaViaje(getViajeVO().getIdRuta());
-                    vo.setSelected(true);
-                    getListaViajeros().add(vo);
-                        
-                    }else {
+                        vo.setHoraSalida(getViajeVO().getHoraProgramada());
+                        vo.setIdViaje(getViajeVO().getId());
+                        vo.setCodigoViaje(getViajeVO().getCodigo());
+                        vo.setViajeroQuedado(Constantes.UNO); //el viajero viaja por primera vez
+                        vo.setIdRutaViaje(getViajeVO().getIdRuta());
+                        vo.setSelected(true);
+                        getListaViajeros().add(vo);
+
+                    } else {
                         FacesUtils.addErrorMessage("La ruta del viajero y del viaje no coinciden.");
                     }
-                    
-                    
-                    
-                    
+
                 }
             }
         } else {
@@ -1394,10 +1441,36 @@ public class AdministrarViajeBeanModel implements Serializable {
         this.ultimaActualizacion = ultimaActualizacion;
     }
 
-    public void eliminarViajeById() {
-
-        int idViaje = Integer.parseInt(FacesUtils.getRequestParameter("idViajeEliminar"));
+    public void eliminarViajeById(int idViaje) {
         sgViajeImpl.limpiarViajes(idViaje, sesion.getUsuario().getId());
         iniciarConversasionCrearViaje();
+    }
+
+    /**
+     * @return the listaViajerosSolicitud
+     */
+    public List<ViajeroVO> getListaViajerosSolicitud() {
+        return listaViajerosSolicitud;
+    }
+
+    /**
+     * @param listaViajerosSolicitud the listaViajerosSolicitud to set
+     */
+    public void setListaViajerosSolicitud(List<ViajeroVO> listaViajerosSolicitud) {
+        this.listaViajerosSolicitud = listaViajerosSolicitud;
+    }
+
+    /**
+     * @return the destinos
+     */
+    public List<SelectItem> getDestinos() {
+        return destinos;
+    }
+
+    /**
+     * @param destinos the destinos to set
+     */
+    public void setDestinos(List<SelectItem> destinos) {
+        this.destinos = destinos;
     }
 }

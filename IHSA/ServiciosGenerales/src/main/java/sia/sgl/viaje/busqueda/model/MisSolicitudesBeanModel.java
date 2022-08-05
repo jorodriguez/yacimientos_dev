@@ -6,12 +6,12 @@
 package sia.sgl.viaje.busqueda.model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.faces.bean.ManagedProperty;
 import javax.faces.view.ViewScoped;
 
 import org.primefaces.PrimeFaces;
@@ -62,6 +62,7 @@ public class MisSolicitudesBeanModel implements Serializable {
     private Date fechaFin;
     private String motivo;
     private SolicitudViajeVO svActual;
+    private String filtro;
 
     /**
      * @return the viajero
@@ -124,7 +125,9 @@ public class MisSolicitudesBeanModel implements Serializable {
      */
     @PostConstruct
     public void inicializar() {
-        listarMisSolicitudes(null, null, "act");
+        listaSolicitudes = new  ArrayList<>();
+        filtro = "act";
+        listarMisSolicitudes(null, null, filtro);
 
     }
 
@@ -148,8 +151,7 @@ public class MisSolicitudesBeanModel implements Serializable {
     }
 
     public void buscarByFiltros() {
-        String var = FacesUtils.getRequestParameter("selecFiltro");
-        listarMisSolicitudes(getFechaInicio(), getFechaFin(), var);
+        listarMisSolicitudes(getFechaInicio(), getFechaFin(), getFiltro());
     }
 
     /**
@@ -181,7 +183,6 @@ public class MisSolicitudesBeanModel implements Serializable {
     }
 
     public void cancelarSV() throws Exception {
-        setMotivo(FacesUtils.getRequestParameter("msjCancelacion"));
         boolean cancelada = false;
 
         if (getSvActual() != null) {
@@ -200,7 +201,6 @@ public class MisSolicitudesBeanModel implements Serializable {
                             }
                         }
 
-                        
                         FacesUtils.addInfoMessage("Se a bajado al viajero de la solicitud de viaje, debido ha que hay más viajeros en esta solicitud");
                     } else {
                         cancelada = aprobacionImpl.cancelarSolicitud(
@@ -239,24 +239,24 @@ public class MisSolicitudesBeanModel implements Serializable {
                             if (lviajeros.size() > 1) {
 
                                 for (ViajeroVO vo : lviajeros) {
-                            if (vo.getIdUsuario().equals(sesion.getUsuario().getId())) {
-                                SgViajero vro = viajeroImpl.find(vo.getId());
-                                viajeroImpl.cancelTraveller(sesion.getUsuario(), vro, getMotivo(), Constantes.CERO);
-                                cancelada = true;
-                            } else {
-                                cancelada = false;
-                            }
-                        }
-                                if (cancelada){
+                                    if (vo.getIdUsuario().equals(sesion.getUsuario().getId())) {
+                                        SgViajero vro = viajeroImpl.find(vo.getId());
+                                        viajeroImpl.cancelTraveller(sesion.getUsuario(), vro, getMotivo(), Constantes.CERO);
+                                        cancelada = true;
+                                    } else {
+                                        cancelada = false;
+                                    }
+                                }
+                                if (cancelada) {
                                     cancelada = aprobacionImpl.cancelarSolicitud(
-                                        aprobacionImpl.buscarEstatusAprobacionPorIdSolicitudIdEstatus(getSvActual().getIdSolicitud(), getSvActual().getIdEstatus()).getId(),
-                                        getMotivo(), sesion.getUsuario().getId(), Constantes.FALSE, Constantes.TRUE, Constantes.TRUE);
-                                FacesUtils.addInfoMessage("Se a bajado al viajero del viaje, debido ha que el viajero cancelo su solicitud");
+                                            aprobacionImpl.buscarEstatusAprobacionPorIdSolicitudIdEstatus(getSvActual().getIdSolicitud(), getSvActual().getIdEstatus()).getId(),
+                                            getMotivo(), sesion.getUsuario().getId(), Constantes.FALSE, Constantes.TRUE, Constantes.TRUE);
+                                    FacesUtils.addInfoMessage("Se a bajado al viajero del viaje, debido ha que el viajero cancelo su solicitud");
                                 } else {
                                     FacesUtils.addInfoMessage("Se a bajado al viajero de la solicitud de viaje, debido ha que la solicitud contaba con más viajeros");
                                     cancelada = true;
                                 }
-                                
+
                             } else {
                                 cancelada = aprobacionImpl.cancelarSolicitud(
                                         aprobacionImpl.buscarEstatusAprobacionPorIdSolicitudIdEstatus(getSvActual().getIdSolicitud(), getSvActual().getIdEstatus()).getId(),
@@ -276,12 +276,12 @@ public class MisSolicitudesBeanModel implements Serializable {
                         // se valida lo de la sv
                         if (lviajeros.size() > 1) {
                             for (ViajeroVO vo : lviajeros) {
-                            if (vo.getIdUsuario().equals(sesion.getUsuario().getId())) {
-                                SgViajero vro = viajeroImpl.find(vo.getId());
-                                viajeroImpl.cancelTraveller(sesion.getUsuario(), vro, getMotivo(), Constantes.CERO);
-                                cancelada = true;
-                            } 
-                        }
+                                if (vo.getIdUsuario().equals(sesion.getUsuario().getId())) {
+                                    SgViajero vro = viajeroImpl.find(vo.getId());
+                                    viajeroImpl.cancelTraveller(sesion.getUsuario(), vro, getMotivo(), Constantes.CERO);
+                                    cancelada = true;
+                                }
+                            }
                             FacesUtils.addInfoMessage("Se a bajado al viajero de la solicitud de viaje, debido ha que hay más viajeros en esta solicitud");
                         } else {
                             cancelada = aprobacionImpl.cancelarSolicitud(
@@ -294,7 +294,7 @@ public class MisSolicitudesBeanModel implements Serializable {
             }
         }
         if (cancelada) {
-            PrimeFaces.current().executeScript(";$('#modalCancelar').modal('hide');");
+            PrimeFaces.current().executeScript(";$(modalCancelar).modal('hide');");
             listarMisSolicitudes(null, null, "act");
             setMotivo("");
             setSvActual(null);
@@ -316,22 +316,8 @@ public class MisSolicitudesBeanModel implements Serializable {
         this.motivo = motivo;
     }
 
-    public void popCancelarSolicitud() {
-        String var = FacesUtils.getRequestParameter("idsv");
-        SgSolicitudViaje solicitud;
-        //List<ViajeroVO> lviajeros = viajeroImpl.getAllViajerosList(0);
-        if (var != null && !var.isEmpty()) {
-            int ids = Integer.parseInt(var);
-
-            solicitud = solicitudViajeImpl.find(ids);
-            for (SolicitudViajeVO sv : this.getListaSolicitudes()) {
-                if (sv.getIdSolicitud() == ids) {
-                    setSvActual(sv);
-                    PrimeFaces.current().executeScript(";$('#modalCancelar').modal('show');");
-                    break;
-                }
-            }
-        }
+    public void popCancelarSolicitud(int idSol) {
+        svActual = solicitudViajeImpl.buscarPorId(idSol, Boolean.FALSE, Constantes.CERO);
     }
 
     /**
@@ -346,6 +332,20 @@ public class MisSolicitudesBeanModel implements Serializable {
      */
     public void setSvActual(SolicitudViajeVO svActual) {
         this.svActual = svActual;
+    }
+
+    /**
+     * @return the filtro
+     */
+    public String getFiltro() {
+        return filtro;
+    }
+
+    /**
+     * @param filtro the filtro to set
+     */
+    public void setFiltro(String filtro) {
+        this.filtro = filtro;
     }
 
 }

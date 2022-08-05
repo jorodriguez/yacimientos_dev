@@ -683,8 +683,9 @@ public class SgViajeImpl extends AbstractFacade<SgViaje> {
             Boolean conChofer) throws SIAException {
         UtilLog4j.log.info(this, "SgViajeImpl.getRoadTripByExit()");
 
-        List<ViajeVO> list = new ArrayList<ViajeVO>();
+        List<ViajeVO> list = new ArrayList<>();
         clearQuery();
+        
         try {
             QuerysBaseViajes();
             appendQuery(queryBaseViajesSalida);

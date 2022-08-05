@@ -76,20 +76,18 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class UsuarioImpl extends AbstractFacade<Usuario> {
 
-    
-    private static final String CONSULTA = 
-            "SELECT u.id, u.nombre, u.clave, u.email,  u.destinatarios, u.telefono, u.extension, "
-                + "  u.sexo, u.celular, u.fechanacimiento, u.rfc, u.compania, u.foto, u.pregunta_secreta,"
-                + "  u.respuesta_pregunta_secreta, u.activo, u.genero,"
-                + "  (select c.nombre from ap_campo c where u.ap_campo = c.id), "
-                + "  (select g.nombre from gerencia g where u.gerencia is not null and u.gerencia = g.id),"
-                + "  u.gerencia, u.ap_campo,u.sg_oficina"
-                + " FROM usuario u ";
-    
-    
+    private static final String CONSULTA
+            = "SELECT u.id, u.nombre, u.clave, u.email,  u.destinatarios, u.telefono, u.extension, "
+            + "  u.sexo, u.celular, u.fechanacimiento, u.rfc, u.compania, u.foto, u.pregunta_secreta,"
+            + "  u.respuesta_pregunta_secreta, u.activo, u.genero,"
+            + "  (select c.nombre from ap_campo c where u.ap_campo = c.id), "
+            + "  (select g.nombre from gerencia g where u.gerencia is not null and u.gerencia = g.id),"
+            + "  u.gerencia, u.ap_campo,u.sg_oficina"
+            + " FROM usuario u ";
+
     @PersistenceContext(unitName = "Sia-ServiciosPU")
     private EntityManager em;
-    
+
     @Inject
     DSLContext dslCtx;
 
@@ -133,18 +131,15 @@ public class UsuarioImpl extends AbstractFacade<Usuario> {
     @Inject
     DSLContext dbCtx;
 
-    
     @Override
     protected EntityManager getEntityManager() {
         return em;
     }
-    
 
     public UsuarioImpl() {
         super(Usuario.class);
     }
 
-    
     public Usuario find(String id) {
         try {
             return (Usuario) em.createNamedQuery("Usuario.findById").setParameter(1, id).getSingleResult();
@@ -154,13 +149,12 @@ public class UsuarioImpl extends AbstractFacade<Usuario> {
         }
 
     }
-    
-    
+
     public Usuario findRH(String id) {
-        try { 
+        try {
             return (Usuario) em.createNamedQuery("Usuario.findByIdRH").setParameter(1, id).getSingleResult();
         } catch (Exception e) {
-            log.warn("No encontró el usuario {}", id , e);
+            log.warn("No encontró el usuario {}", id, e);
             return null;
         }
 
@@ -217,7 +211,6 @@ public class UsuarioImpl extends AbstractFacade<Usuario> {
         return retVal.toString();
     }
 
-    
     public UsuarioVO convertToUsuarioVo(Usuario u) {
         UsuarioVO vo = new UsuarioVO();
         vo.setId(u.getId());
@@ -268,7 +261,6 @@ public class UsuarioImpl extends AbstractFacade<Usuario> {
         return vo;
     }
 
-    
     public Usuario buscarPorNombre(Object nombre) {
         try {
             return (Usuario) em.createQuery(
@@ -285,7 +277,6 @@ public class UsuarioImpl extends AbstractFacade<Usuario> {
         }
     }
 
-    
     public List<Usuario> getAnalistas() {
         return em.createQuery(
                 "SELECT u FROM Usuario u WHERE u.compra = :compra")
@@ -293,7 +284,6 @@ public class UsuarioImpl extends AbstractFacade<Usuario> {
                 .getResultList();
     }
 
-    
     public List<UsuarioVO> getApruebanOrden(int campo) {
         List<UsuarioVO> lo = new ArrayList<>();
 
@@ -324,7 +314,6 @@ public class UsuarioImpl extends AbstractFacade<Usuario> {
      * Recupera los aprobadores de OC/S de acuerdo al capo en seleccionado
      * @campo
      */
-    
     public List<UsuarioVO> getApruebanOrden() {
         List<UsuarioVO> lo = new ArrayList<>();
         String sql = CONSULTA
@@ -346,7 +335,6 @@ public class UsuarioImpl extends AbstractFacade<Usuario> {
     }
 
     //
-    
     public boolean enviarClave(Usuario usuario) {
         return notificacionSistemaRemote.enviarClave(
                 usuario.getNombre(),
@@ -356,7 +344,6 @@ public class UsuarioImpl extends AbstractFacade<Usuario> {
         );
     }
 
-    
     public List<Usuario> getActivos() {
         return em.createQuery("SELECT u FROM Usuario u WHERE u.activo = :activo")
                 .setParameter("activo", Constantes.BOOLEAN_TRUE)
@@ -364,7 +351,6 @@ public class UsuarioImpl extends AbstractFacade<Usuario> {
     }
 
 //
-    
     public boolean guardarNuevoUsuario(String sesion, UsuarioVO usuarioVO, int idGerencia) {
         boolean v = false;
         try {
@@ -388,7 +374,7 @@ public class UsuarioImpl extends AbstractFacade<Usuario> {
             usuario.setFoto("/resources/imagenes/usuarios/usuario.png");
             usuario.setActivo(Constantes.BOOLEAN_TRUE);
             if (idGerencia > Constantes.CERO) {
-                usuario.setGerencia(new  Gerencia(idGerencia));
+                usuario.setGerencia(new Gerencia(idGerencia));
             }
             usuario.setGenero(find(sesion));
             usuario.setFechaGenero(new Date());
@@ -417,11 +403,9 @@ public class UsuarioImpl extends AbstractFacade<Usuario> {
         return v;
     }
 
-    
 //    public boolean modificarUsuario(String idUser, String nombre, String correo, String destinatarios, String telefono,
 //	    String extension, String sexo, String celular, boolean adminContrato, boolean adminSGL,
 //	    boolean responsableSGL, boolean seguridad, boolean asistenteDireccion, int idGerencia, boolean adminRH, int idCampo) {
-
     public boolean modificarUsuario(UsuarioVO usuarioVO, int idGerencia, int idCampo) {
         boolean v = false;
         try {
@@ -446,7 +430,6 @@ public class UsuarioImpl extends AbstractFacade<Usuario> {
         return v;
     }
 
-    
     public void eiminarUsuario(String sesion, String idUser) {
         try {
             Usuario usuario = find(idUser);
@@ -464,7 +447,6 @@ public class UsuarioImpl extends AbstractFacade<Usuario> {
         }
     }
 
-    
     public void activarUsuario(String sesion, UsuarioVO usuarioVo) {
         Usuario usuario = find(usuarioVo.getId());
         usuario.setActivo(Constantes.BOOLEAN_TRUE);
@@ -483,7 +465,6 @@ public class UsuarioImpl extends AbstractFacade<Usuario> {
      * @param confirmarPasswor
      * @return
      */
-    
     public List<RolVO> taerRoles(String usuario) {
         List<RolVO> lo = new ArrayList<RolVO>();
 
@@ -530,7 +511,6 @@ public class UsuarioImpl extends AbstractFacade<Usuario> {
         return v;
     }
 
-    
     public boolean cambioContrasenia(String usuario, String c, String confirmarPassword) {
         boolean v;
         Usuario u = find(usuario);
@@ -545,7 +525,6 @@ public class UsuarioImpl extends AbstractFacade<Usuario> {
         return v;
     }
 
-    
     public boolean modificaUsuarioDatosConClave(String idUser, String nombre, String correo, String destinatarios, String rfc, String telefono, String ext, String celular, String nuevaClave) {
         boolean v;
         Usuario usuario = find(idUser);
@@ -569,7 +548,6 @@ public class UsuarioImpl extends AbstractFacade<Usuario> {
         return v;
     }
 
-    
     public void cambioPassTodosUsuarios() throws NoSuchAlgorithmException {
         List<Usuario> listaUsers = this.findAll();
         //List<Usuario> listaUsers = em.createQuery("SELECT u FROM Usuario u WHERE u.id = :p OR u.id = :id ").setParameter("p", "PRUEBA").setParameter("id", "MLUIS").getResultList();
@@ -590,7 +568,6 @@ public class UsuarioImpl extends AbstractFacade<Usuario> {
 
     }
 
-    
     public String encriptar(String text) throws NoSuchAlgorithmException {
 //	LOGGER.info(this, ": " + text);
 
@@ -618,7 +595,6 @@ public class UsuarioImpl extends AbstractFacade<Usuario> {
         return retVal;
     }
 
-    
     public boolean reinicioClave(String sesion, String idUser) {
         boolean v;
         Usuario usuario = find(idUser);
@@ -649,13 +625,11 @@ public class UsuarioImpl extends AbstractFacade<Usuario> {
         return valorEntero;
     }
 
-    
     public void modificarUsuario(Usuario usuario, int idGerencia) {
         usuario.setGerencia(gerenciaRemote.find(idGerencia));
         edit(usuario);
     }
 
-    
     public boolean isAnalistaSGL(String idUsuario) throws Exception {
         List<SgOficinaAnalista> oficinaAnalistaList
                 = sgOficinaAnalistaRemote.getOficinasByAnalistaAndStatus(
@@ -666,13 +640,11 @@ public class UsuarioImpl extends AbstractFacade<Usuario> {
         return !oficinaAnalistaList.isEmpty();
     }
 
-    
     public boolean isGerente(int idApCampo, String idUsuario) {
         LOGGER.info(this, "UsuarioImpl.isGerente()");
         return this.gerenciaRemote.isUsuarioResponsableForAnyGerencia(idApCampo, idUsuario, false);
     }
 
-    
     public void modificaUsuarioDatosSinClave(String idUser, String nombre, String correo, String destinatarios, String rfc, String telefono, String ext, String celular) {
         Usuario usuario = find(idUser);
         usuario.setNombre(fixName(nombre));
@@ -688,7 +660,6 @@ public class UsuarioImpl extends AbstractFacade<Usuario> {
         edit(usuario);
     }
 
-    
     public UsuarioVO findById(Object idUsuario) {
         UsuarioVO retVal = null;
 
@@ -721,7 +692,6 @@ public class UsuarioImpl extends AbstractFacade<Usuario> {
      * @param usuarioIds
      * @return
      */
-    
     public List<UsuarioVO> findUsuariosById(List<String> usuarioIds) {
 
         List<UsuarioVO> resultado;
@@ -794,9 +764,9 @@ public class UsuarioImpl extends AbstractFacade<Usuario> {
             v.setActivo((Boolean) objects[15]);
             v.setGenero((String) objects[16]);
 
-            CampoUsuarioPuestoVo acmCampoUsuarioPuestoVo = 
-                    apCampoUsuarioRhPuestoRemote.traerPuestoPorUsuarioCampo(
-                            (String) objects[0], 
+            CampoUsuarioPuestoVo acmCampoUsuarioPuestoVo
+                    = apCampoUsuarioRhPuestoRemote.traerPuestoPorUsuarioCampo(
+                            (String) objects[0],
                             (Integer) objects[20]
                     );
             //
@@ -822,7 +792,6 @@ public class UsuarioImpl extends AbstractFacade<Usuario> {
         return v;
     }
 
-    
     public void aprobarOrdenCompra(String sesion, String idUser, int campo, String accion) {
         OcFlujo flujo = ocFlujoRemote.getByUsrActionCampo(accion, campo, idUser);
         if (flujo != null && flujo.getId() > 0) {
@@ -847,7 +816,6 @@ public class UsuarioImpl extends AbstractFacade<Usuario> {
         //Log
     }
 
-    
     public void quitarUsuarioApruebaOrdenCompra(String sesion, String idUser, int campo, String accion) {
         OcFlujo flujo = ocFlujoRemote.getByUsrActionCampo(accion, campo, idUser);
         if (flujo != null && flujo.getId() > 0) {
@@ -860,22 +828,20 @@ public class UsuarioImpl extends AbstractFacade<Usuario> {
         //Log
     }
 
-    
     public void cambiarCampoUsuario(String idUser, String idUserModifico, int idCampo) {
-        int idGerencia = apCampoUsuarioRhPuestoRemote.traerGerenciaUsuarioCampo(idUser, idCampo);        
+        int idGerencia = apCampoUsuarioRhPuestoRemote.traerGerenciaUsuarioCampo(idUser, idCampo);
         Usuario usuario = find(idUser);
-        usuario.setApCampo(new ApCampo(idCampo));                
+        usuario.setApCampo(new ApCampo(idCampo));
         usuario.setModifico(new Usuario(idUserModifico));
         usuario.setFechaModifico(new Date());
         usuario.setHoraModifico(new Date());
-        if(idGerencia > 0){
+        if (idGerencia > 0) {
             usuario.setGerencia(new Gerencia(idGerencia));
         }
         edit(usuario);
         //Log
     }
 
-    
     public List<Usuario> findAll(int idApCampo, String orderByField, boolean sortAscending, Boolean activo, boolean eliminado) {
         LOGGER.info(this, "UsuarioImpl.findAll()");
 
@@ -917,7 +883,6 @@ public class UsuarioImpl extends AbstractFacade<Usuario> {
         return list;
     }
 
-    
     public List<UsuarioVO> findAll(int idApCampo, int idGerencia, Boolean activo, String orderByField, boolean sortAscending, boolean eliminado) {
         clearQuery();
 
@@ -961,7 +926,6 @@ public class UsuarioImpl extends AbstractFacade<Usuario> {
         return (list.isEmpty() ? Collections.EMPTY_LIST : list);
     }
 
-    
     public List<Usuario> traerUsuarioAsisteneDireccion() {
 
         List<Usuario> retVal = null;
@@ -978,7 +942,6 @@ public class UsuarioImpl extends AbstractFacade<Usuario> {
         return retVal;
     }
 
-    
     public boolean guardarUsuarioNuevoIngreso(String sesion, UsuarioVO usuarioVO, int idGerencia) {
         LOGGER.info(this, "guardarUsuarioNuevoIngreso " + usuarioVO.getId());
         boolean v = false;
@@ -1004,9 +967,9 @@ public class UsuarioImpl extends AbstractFacade<Usuario> {
             usuario.setRequiereCorreo(Constantes.BOOLEAN_FALSE);
 
             usuario.setEmail(usuarioVO.getMail());
-            
+
             usuario.setUsuarioDirectorio(usuarioVO.getUsuarioDirectorio());
-            
+
             usuario.setDestinatarios(usuarioVO.getMail());
             usuario.setTelefono(usuarioVO.getTelefono());
             usuario.setExtension(usuarioVO.getExtension());
@@ -1046,7 +1009,6 @@ public class UsuarioImpl extends AbstractFacade<Usuario> {
         return v;
     }
 
-    
     public boolean guardarMotivoBaja(String idUsuarioBaja, String motivo, String idUsuarioRealizo) {
         boolean retVal = false;
 
@@ -1076,7 +1038,6 @@ public class UsuarioImpl extends AbstractFacade<Usuario> {
      * @param idUsuario
      * @return
      */
-    
     public boolean guardarDireccionMailNuevoIngreso(String idUsuarioNuevoIngreso, String nuevaDireccionCorreo, String idUsuario) {
         LOGGER.info(this, "Asigno correo :" + idUsuario);
         boolean v = false;
@@ -1115,7 +1076,6 @@ public class UsuarioImpl extends AbstractFacade<Usuario> {
         return v;
     }
 
-    
     public boolean enviarSolicitudMaterial(String sesion, UsuarioVO usuarioVOAlta, List<EmpleadoMaterialVO> listaFilasSeleccionadas, int nuevoIngreso) {
         boolean v = false;
         List<EmpleadoMaterialVO> lista = new ArrayList<EmpleadoMaterialVO>();
@@ -1236,7 +1196,6 @@ public class UsuarioImpl extends AbstractFacade<Usuario> {
         return correo;
     }
 
-    
     public Usuario findUsuarioResponsableCapacitacion() {
         LOGGER.info(this, "UsuarioImpl.findUsuarioResponsableCapacitacion()");
 
@@ -1259,7 +1218,6 @@ public class UsuarioImpl extends AbstractFacade<Usuario> {
         return u;
     }
 
-    
     public List<UsuarioVO> usuarioActio(int idGerencia) {
         LOGGER.info(this, "Aca dentro de activo");
         List<UsuarioVO> list = null;
@@ -1315,7 +1273,6 @@ public class UsuarioImpl extends AbstractFacade<Usuario> {
      * @param nombreOpcion
      * @return
      */
-    
     public List<UsuarioVO> obtenerUsuariosPorModuloOpcion(int moduloId, String nombreOpcion) {
 
         String sql
@@ -1365,7 +1322,6 @@ public class UsuarioImpl extends AbstractFacade<Usuario> {
      * @param nombrePermiso
      * @return
      */
-    
     public List<List<UsuarioVO>> obtenerUsuariosPorModuloPermiso(int moduloId, String nombrePermiso) {
 
         String sql = "select  "
@@ -1439,7 +1395,6 @@ public class UsuarioImpl extends AbstractFacade<Usuario> {
      * @param rol
      * @return List<UsuarioVO>
      */
-    
     public List<UsuarioVO> getUsuariosByRol(Integer rol) {
         List<UsuarioVO> list = null;
 
@@ -1478,7 +1433,6 @@ public class UsuarioImpl extends AbstractFacade<Usuario> {
      * @param rolId
      * @return
      */
-    
     public List<UsuarioVO> getUsuariosPorRol(Integer rolId) {
 
         List<UsuarioVO> list = new ArrayList();
@@ -1509,7 +1463,6 @@ public class UsuarioImpl extends AbstractFacade<Usuario> {
      * @param bloqueId
      * @return
      */
-    
     public List<UsuarioVO> getUsuariosPorRolBloque(int rolId, int bloqueId) {
 
         List<UsuarioVO> list = new ArrayList();
@@ -1548,7 +1501,6 @@ public class UsuarioImpl extends AbstractFacade<Usuario> {
      * @param bloqueId
      * @return
      */
-    
     public List<UsuarioVO> getUsuariosPorRolBloque(
             String rolCodigo, int bloqueId) {
 
@@ -1565,7 +1517,6 @@ public class UsuarioImpl extends AbstractFacade<Usuario> {
      * @param usuarioIdsExcluir
      * @return
      */
-    
     public List<UsuarioVO> getUsuariosPorRolBloque(
             String rolCodigo,
             int bloqueId,
@@ -1720,7 +1671,6 @@ public class UsuarioImpl extends AbstractFacade<Usuario> {
         return correo.toString();
     }
 
-    
     public boolean finalizarBaja(String idSesion, String idUsuario) {
         boolean retVal = false;
 
@@ -1773,7 +1723,6 @@ public class UsuarioImpl extends AbstractFacade<Usuario> {
         return retVal;
     }
 
-    
     public List<UsuarioVO> traerListaUsuariosSinCorreos() {
         List<UsuarioVO> lo;
 
@@ -1797,7 +1746,6 @@ public class UsuarioImpl extends AbstractFacade<Usuario> {
         return lo;
     }
 
-    
     public List<Usuario> traerUsuariosAdministraRH() {
         List<Usuario> retVal = null;
 
@@ -1813,7 +1761,6 @@ public class UsuarioImpl extends AbstractFacade<Usuario> {
         return retVal;
     }
 
-    
     public UsuarioVO findByName(String nombre) {
         UsuarioVO vo = null;
 
@@ -1840,7 +1787,7 @@ public class UsuarioImpl extends AbstractFacade<Usuario> {
     //TODO : revisar la lógica de esto, podría hacerse desde la base de datos?
     public String getMenosEstatusAprobacionByRol(Integer rol, Integer estatus) {
         List<UsuarioVO> usuarios = getUsuariosByRol(rol);
-        Map<String, Integer>  usuariosMap = new HashMap<>();
+        Map<String, Integer> usuariosMap = new HashMap<>();
 
         for (UsuarioVO usuarioVO : usuarios) {
 //            usuarioVO.geti
@@ -1864,7 +1811,6 @@ public class UsuarioImpl extends AbstractFacade<Usuario> {
         return misMapKeys.get(misMapValues.indexOf(arrayOrdenado[0]));
     }
 
-    
     public void agregaTelefonoUsuario(String idUsuario, String telefono, String idSesion) {
         Usuario usuario = find(idUsuario);
         usuario.setTelefono(telefono);
@@ -1874,10 +1820,8 @@ public class UsuarioImpl extends AbstractFacade<Usuario> {
         edit(usuario);
 
         //
-        
     }
 
-    
     public List<UsuarioVO> traerRolPrincipalUsuarioRolModulo(int rol, int idModulo, String empresa) {
 
         List<UsuarioVO> lu = null;
@@ -1917,7 +1861,6 @@ public class UsuarioImpl extends AbstractFacade<Usuario> {
         return lu;
     }
 
-    
     public List<UsuarioVO> traerListaRolPrincipalUsuarioRolModulo(int rol, int idModulo, int idCampo) {
         List<UsuarioVO> lu = null;
 
@@ -1964,7 +1907,6 @@ public class UsuarioImpl extends AbstractFacade<Usuario> {
         return vo;
     }
 
-    
     public UsuarioVO traerResponsableGerencia(int idCampo, int gerencia, String empresa) {
         UsuarioVO retVal = null;
 
@@ -1974,9 +1916,9 @@ public class UsuarioImpl extends AbstractFacade<Usuario> {
                     + " select cg.RESPONSABLE from AP_CAMPO_GERENCIA cg where cg.GERENCIA = ?"
                     + " and cg.AP_CAMPO = ? "
                     + " and cg.eliminado = ? )";
-            
+
             LOGGER.info(this, "Q: responsable gerencia: " + query.toString());
-            
+
             Object[] obj = (Object[]) em.createNativeQuery(sql)
                     .setParameter(1, gerencia)
                     .setParameter(2, idCampo)
@@ -2006,7 +1948,6 @@ public class UsuarioImpl extends AbstractFacade<Usuario> {
         return vo;
     }
 
-    
     public List<UsuarioVO> buscarResponsableGerencia(int idGerencia) {
         List<UsuarioVO> lu = null;
 
@@ -2035,7 +1976,7 @@ public class UsuarioImpl extends AbstractFacade<Usuario> {
             }
 
         } catch (Exception e) {
-            log.warn("Ocurrio un error al recuperar el responsable de la gerencia: {}",idGerencia, e);
+            log.warn("Ocurrio un error al recuperar el responsable de la gerencia: {}", idGerencia, e);
         }
 
         return lu;
@@ -2054,7 +1995,6 @@ public class UsuarioImpl extends AbstractFacade<Usuario> {
         return vo;
     }
 
-    
     public List<CompaniaVo> traerCompaniaPorUsuario(String idUsuario) {
 
         List<CompaniaVo> lc = null;
@@ -2087,7 +2027,6 @@ public class UsuarioImpl extends AbstractFacade<Usuario> {
 
     }
 
-    
     public List<UsuarioVO> traerUsuariosSolicitaRequision(int idCampo) {
 
         String sql = "SELECT distinct(u.id), " //0
@@ -2186,7 +2125,6 @@ public class UsuarioImpl extends AbstractFacade<Usuario> {
         return retVal;
     }
 
-    
     public List<Object[]> traerUsuarioActivosJson(int idGerencia) {
         List<Object[]> usuarios = null;
         String gerencia = "";
@@ -2215,7 +2153,6 @@ public class UsuarioImpl extends AbstractFacade<Usuario> {
         return usuarios;
     }
 
-    
     public void modificarDatosUsuario(String sesion, UsuarioVO usuarioVO, int idPuesto) {
         try {
             var usuario = find(usuarioVO.getId());
@@ -2247,7 +2184,6 @@ public class UsuarioImpl extends AbstractFacade<Usuario> {
         }
     }
 
-    
     public List<UsuarioVO> obtenerListaUsuarios() {
         CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
         CriteriaQuery qry = criteriaBuilder.createQuery();
@@ -2263,7 +2199,6 @@ public class UsuarioImpl extends AbstractFacade<Usuario> {
         return getEntityManager().createQuery(qry).getResultList();
     }
 
-    
     public List<UsuarioVO> obtenerListaUsuarios(Integer rol) {
 
         CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
@@ -2272,12 +2207,12 @@ public class UsuarioImpl extends AbstractFacade<Usuario> {
 
         if (rol != null) {
             Join<Usuario, SiUsuarioRol> usuarioRolRoot = usuario.join("siUsuarioRolCollection", JoinType.INNER);
-            Join<SiUsuarioRol, SiRol> rolRoot = usuarioRolRoot.join("siRol", JoinType.INNER);            
+            Join<SiUsuarioRol, SiRol> rolRoot = usuarioRolRoot.join("siRol", JoinType.INNER);
             Predicate predicateForROL = criteriaBuilder.equal(rolRoot.get("id"), rol);
-            Predicate predicateForElIMINADO = criteriaBuilder.equal(usuario.get("eliminado"), false);            
-            Predicate predicateForElIMINADORol = criteriaBuilder.equal(usuarioRolRoot.get("eliminado"), false);            
-            Predicate finalPredicate = criteriaBuilder.and(predicateForElIMINADO, predicateForROL, predicateForElIMINADORol);            
-            qry.where(finalPredicate);            
+            Predicate predicateForElIMINADO = criteriaBuilder.equal(usuario.get("eliminado"), false);
+            Predicate predicateForElIMINADORol = criteriaBuilder.equal(usuarioRolRoot.get("eliminado"), false);
+            Predicate finalPredicate = criteriaBuilder.and(predicateForElIMINADO, predicateForROL, predicateForElIMINADORol);
+            qry.where(finalPredicate);
         }
 
         qry.select(
@@ -2292,7 +2227,6 @@ public class UsuarioImpl extends AbstractFacade<Usuario> {
         return getEntityManager().createQuery(qry).getResultList();
     }
 
-    
     public Usuario login(String username, String passwordHash) {
         Usuario usuario = find(username);
         if (!usuario.getClave().equals(passwordHash)) {
@@ -2319,7 +2253,6 @@ public class UsuarioImpl extends AbstractFacade<Usuario> {
         return em.createNativeQuery(sql.toString()).getResultList();
     }
 
-    
     public String traerUsuarioActivoJsonByGerencia(int gerencia, int idOficina) {
         String retVal = null;
 
@@ -2380,13 +2313,12 @@ public class UsuarioImpl extends AbstractFacade<Usuario> {
         return retVal;
     }
 
-    
     public List<UsuarioVO> usuariosSinCurso(int idCampo) {
-        
+
         List<UsuarioVO> usuarios;
-        
-        String sql = 
-                "SELECT u.id, u.nombre, a.id AS id_campo, a.nombre AS campo, o.id AS id_oficina, o.nombre AS oficina\n"
+
+        String sql
+                = "SELECT u.id, u.nombre, a.id AS id_campo, a.nombre AS campo, o.id AS id_oficina, o.nombre AS oficina\n"
                 + "FROM USUARIO u\n"
                 + "\tINNER JOIN ap_campo_usuario_rh_puesto acu ON acu.usuario = u.id AND acu.eliminado = FALSE AND u.id = acu.usuario\n"
                 + "\tINNER JOIN ap_campo a ON a.id = acu.ap_campo AND a.eliminado= ?\n"
@@ -2394,16 +2326,15 @@ public class UsuarioImpl extends AbstractFacade<Usuario> {
                 + "WHERE u.eliminado = ? AND u.activo= ? AND u.interno=true AND a.id= ? \n"
                 + "\tAND u.id NOT IN (SELECT usuario FROM sg_curso_manejo WHERE eliminado = ? )"
                 + "ORDER BY o.id,u.gerencia,u.nombre";
-        
+
         try {
-            usuarios = 
-                    dslCtx.fetch(sql, false, false, false, true, idCampo, false).into(UsuarioVO.class);
+            usuarios
+                    = dslCtx.fetch(sql, false, false, false, true, idCampo, false).into(UsuarioVO.class);
         } catch (DataAccessException e) {
             log.warn("*** Al recuperar usuarios sin curso ...", e);
-            
+
             usuarios = Collections.emptyList();
         }
-        
 
 //        List<Object[]> lista = em.createNativeQuery(sql)
 //                .setParameter(1, Constantes.FALSE)
@@ -2413,7 +2344,6 @@ public class UsuarioImpl extends AbstractFacade<Usuario> {
 //                .setParameter(5, idCampo)
 //                .setParameter(6, Constantes.FALSE)
 //                .getResultList();
-
 //        if (lista != null && !lista.isEmpty()) {
 //            UsuarioVO user;
 //            for (Object[] o : lista) {
@@ -2428,54 +2358,89 @@ public class UsuarioImpl extends AbstractFacade<Usuario> {
 //                usuarios.add(user);
 //            }
 //        }
-
-
         return usuarios;
     }
 
-    
-    
     public Usuario getUsuarioForId(String usuarioId) {
         Usuario retVal = null;
-        
-        String sql = 
-                "SELECT * \n" +
-                "FROM usuario \n" +
-                "WHERE id = ? OR usuario_directorio = ? \n" +
-                "AND interno = true AND activo = true AND eliminado = false";
-        
+
+        String sql
+                = "SELECT * \n"
+                + "FROM usuario \n"
+                + "WHERE id = ? OR usuario_directorio = ? \n"
+                + "AND interno = true AND activo = true AND eliminado = false";
+
         try {
             Record recusuario = dslCtx.fetchOne(sql, usuarioId, usuarioId);
-            
-            if(recusuario != null) {
+
+            if (recusuario != null) {
                 retVal = recusuario.into(Usuario.class);
             }
         } catch (DataAccessException e) {
             LOGGER.error(this, "Usuario : {0}", new Object[]{usuarioId}, e);
         }
-        
+
         return retVal;
     }
-    
-    
+
     public Usuario buscarPorId(String usuarioId) {
         Usuario retVal = null;
-        
-        String sql = 
-                "SELECT *  FROM usuario \n" +
-                " WHERE id = ? \n" +
-                " AND eliminado = false";
-        
+
+        String sql
+                = "SELECT *  FROM usuario \n"
+                + " WHERE id = ? \n"
+                + " AND eliminado = false";
+
         try {
             Record recUsuario = dslCtx.fetchOne(sql, usuarioId, usuarioId);
-            
-            if(recUsuario != null) {
+
+            if (recUsuario != null) {
                 retVal = recUsuario.into(Usuario.class);
             }
         } catch (DataAccessException e) {
             LOGGER.error(this, "Usuario : {0}", new Object[]{usuarioId}, e);
         }
-        
+
         return retVal;
+    }
+
+    public List<String> traerUsuarioActivoByGerencia(int gerencia, int idOficina) {
+        List<String> nombres = new ArrayList<>();
+
+        try {
+            StringBuilder sql = new StringBuilder(
+                    "select u.id, u.nombre,r.NOMBRE from usuario u "
+                    + "     inner join AP_CAMPO_USUARIO_RH_PUESTO a on a.USUARIO = u.ID "
+                    + "     inner join RH_PUESTO r on r.ID = a.RH_PUESTO"
+                    + "     inner join SG_LICENCIA l on l.USUARIO=u.ID"
+                    + "     inner join sg_oficina f on f.ap_campo = a.ap_campo"
+                    + " where u.eliminado = false " //1
+                    + " and u.activo = true " //2
+                    + " and a.ELIMINADO = false " //3
+                    + " and f.id =  " + idOficina //4
+                    + " and l.ELIMINADO= false " //5
+                    + " and l.VIGENTE= true "
+                    + " and u.interno = true "); //6
+            if (gerencia > 0) {
+                sql.append(" and u.gerencia =  ").append(gerencia).append(" and a.GERENCIA =  ").append(gerencia);  //8
+            } else {
+                sql.append(" and u.gerencia NOT IN ( ").append(gerencia).append(" ) ")
+                        .append(" and a.GERENCIA NOT IN ( ").append(gerencia).append(" ) ");
+            }
+
+            sql.append(" order by u.nombre");
+
+            List<Object[]> lista = em.createNativeQuery(sql.toString())
+                    .getResultList();
+
+            for (Object[] o : lista) {
+                nombres.add((String) o[1]);
+            }
+
+        } catch (Exception e) {
+            LOGGER.fatal(this, "Excepcion los usuarios " + e.getMessage(), e);
+        }
+
+        return nombres;
     }
 }

@@ -8,9 +8,9 @@ package sia.sgl.viaje.busqueda;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
+import javax.enterprise.context.RequestScoped;
 import javax.inject.Named;
-import javax.faces.bean.ManagedProperty;
-import javax.faces.bean.RequestScoped;
+import javax.inject.Inject;
 import sia.modelo.sgl.viaje.vo.SolicitudViajeVO;
 import sia.sgl.viaje.busqueda.model.MisSolicitudesBeanModel;
 
@@ -20,14 +20,15 @@ import sia.sgl.viaje.busqueda.model.MisSolicitudesBeanModel;
  */
 @Named(value = "misSolicitudesBean")
 @RequestScoped
-public class MisSolicitudesBean implements Serializable{
-    
-    @ManagedProperty(value = "#{misSolicitudesBeanModel}")
+public class MisSolicitudesBean implements Serializable {
+
+    @Inject
     private MisSolicitudesBeanModel misSolicitudesBeanModel;
-    
-    public MisSolicitudesBean(){
-        
+
+    public MisSolicitudesBean() {
+
     }
+
     /**
      * @return the buscarSVOrVIBeanModel
      */
@@ -41,7 +42,7 @@ public class MisSolicitudesBean implements Serializable{
     public void setMisSolicitudesBeanModel(MisSolicitudesBeanModel misSolicitudesBeanModel) {
         this.misSolicitudesBeanModel = misSolicitudesBeanModel;
     }
-    
+
     /**
      * @return the listaSolicitudes
      */
@@ -55,11 +56,11 @@ public class MisSolicitudesBean implements Serializable{
     public void setListaSolicitudes(List<SolicitudViajeVO> listaSolicitudes) {
         this.misSolicitudesBeanModel.setListaSolicitudes(listaSolicitudes);
     }
-    
-    public void buscarByFiltros(){
+
+    public void buscarByFiltros() {
         misSolicitudesBeanModel.buscarByFiltros();
     }
-    
+
     /**
      * @return the fechaInicio
      */
@@ -87,14 +88,15 @@ public class MisSolicitudesBean implements Serializable{
     public void setFechaFin(Date fechaFin) {
         misSolicitudesBeanModel.setFechaFin(fechaFin);
     }
-    
-    public void cancelarSV() throws Exception{
+
+    public void cancelarSV() throws Exception {
         misSolicitudesBeanModel.cancelarSV();
     }
-    
-    public void popCancelarSolicitud (){
-        misSolicitudesBeanModel.popCancelarSolicitud();
+
+    public void popCancelarSolicitud(int idSol) {
+        misSolicitudesBeanModel.popCancelarSolicitud(idSol);
     }
+
     /**
      * @return the svActual
      */
@@ -108,7 +110,7 @@ public class MisSolicitudesBean implements Serializable{
     public void setSvActual(SolicitudViajeVO svActual) {
         misSolicitudesBeanModel.setSvActual(svActual);
     }
-    
+
     /**
      * @return the motivo
      */
@@ -121,5 +123,19 @@ public class MisSolicitudesBean implements Serializable{
      */
     public void setMotivo(String motivo) {
         misSolicitudesBeanModel.setMotivo(motivo);
+    }
+
+    /**
+     * @return the filtro
+     */
+    public String getFiltro() {
+        return misSolicitudesBeanModel.getFiltro();
+    }
+
+    /**
+     * @param filtro the filtro to set
+     */
+    public void setFiltro(String filtro) {
+        misSolicitudesBeanModel.setFiltro(filtro);
     }
 }

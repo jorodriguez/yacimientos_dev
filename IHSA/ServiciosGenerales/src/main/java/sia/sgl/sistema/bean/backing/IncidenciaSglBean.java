@@ -13,7 +13,6 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.faces.bean.ManagedProperty;
 
 import javax.faces.event.ActionEvent;
 import javax.faces.event.AjaxBehaviorEvent;
@@ -57,7 +56,6 @@ import sia.util.ValidadorNombreArchivo;
  */
 @Named(value = "incidenciaBean")
 @ViewScoped
-//@Named(value = "incidenciaBean")
 public class IncidenciaSglBean implements Serializable {
 
     /**
@@ -139,7 +137,7 @@ public class IncidenciaSglBean implements Serializable {
         getIncidencias().addAll(incidenciaImpl.traerPorUsuario(sesion.getUsuario().getId(), TicketEstadoEnum.ASIGNADO.getId()));
     }
 
-    public void mostrarTickets(ActionEvent event) {
+    public void mostrarTickets() {
         llenarIncidencias();
         //
         PrimeFaces.current().executeScript("$(dialogoTickts).modal('show');");
@@ -171,7 +169,7 @@ public class IncidenciaSglBean implements Serializable {
         }
     }
 
-    public void crearIncidecnia(ActionEvent event) {
+    public void crearIncidecnia() {
         setIncidenciaVo(new IncidenciaVo());
         incidenciasAdjunto = new ArrayList<>();
         PrimeFaces.current().executeScript("$(dialogoNuevoTickts).modal('show');");
@@ -186,7 +184,7 @@ public class IncidenciaSglBean implements Serializable {
         }
     }
 
-    public void eliminarAAdjunto(ActionEvent event) {
+    public void eliminarAAdjunto() {
         //
         int index = Integer.parseInt(FacesUtils.getRequestParameter("indexAdj"));
         //
@@ -247,7 +245,7 @@ public class IncidenciaSglBean implements Serializable {
         return new StringBuilder().append("Ticket/").append(sesion.getUsuario().getId()).toString();
     }
 
-    public void guardarEnviarIncidencia(ActionEvent actionEvent) {
+    public void guardarEnviarIncidencia() {
         if (idTieneCod == 0 || categoriaIncidenciaVo.getTabla() == null) {
             incidenciaVo.setCodigoCategoria("NA");
             ejecutarRegistro();
@@ -280,14 +278,14 @@ public class IncidenciaSglBean implements Serializable {
         PrimeFaces.current().executeScript("$(dialogoNuevoTickts).modal('hide');");
     }
 
-    public void inicioCerrarTicket(ActionEvent event) {
-        int idT = Integer.parseInt(FacesUtils.getRequestParameter("idTicket"));
+    public void inicioCerrarTicket(int idT) {
+        
         incidenciaVo = incidenciaImpl.buscarPorId(idT);
         //
         PrimeFaces.current().executeScript("$(dialogoCierreTickt).modal('show');");
     }
 
-    public void cerrarTicket(ActionEvent event) {
+    public void cerrarTicket() {
         incidenciaImpl.cerrarIncidencia(incidenciaVo, getComplemento(), sesion.getUsuario());
         complemento = "";
         //
@@ -295,22 +293,22 @@ public class IncidenciaSglBean implements Serializable {
         PrimeFaces.current().executeScript("$(dialogoCierreTickt).modal('hide');");
     }
 
-    public void inicioReenviarTicket(ActionEvent event) {
-        int idT = Integer.parseInt(FacesUtils.getRequestParameter("idTicket"));
+    public void inicioReenviarTicket(int idT) {
+        
         incidenciaVo = incidenciaImpl.buscarPorId(idT);
         //
         PrimeFaces.current().executeScript("$(dialogoComplementoTickt).modal('show');");
     }
 
-    public void agregarAdjunto(ActionEvent event) {
-        int idT = Integer.parseInt(FacesUtils.getRequestParameter("idTicket"));
+    public void agregarAdjunto(int idT) {
+        
         incidenciaVo = incidenciaImpl.buscarPorId(idT);
         incidenciasAdjunto = incidenciaAdjuntoImpl.traerArchivoPorIncidencia(idT);
         //
         PrimeFaces.current().executeScript("$(dialogoAdjuntaarTickt).modal('show');");
     }
 
-    public void reenviarTicket(ActionEvent event) {
+    public void reenviarTicket() {
         incidenciaImpl.reenviarIncidencia(incidenciaVo, getComplemento(), sesion.getUsuario());
         complemento = "";
         llenarIncidencias();
@@ -485,7 +483,7 @@ public class IncidenciaSglBean implements Serializable {
         this.idTieneCod = idTieneCod;
     }
 
-    public void refrescarTickets(ActionEvent event) {
+    public void refrescarTickets() {
         this.llenarIncidencias();
     }
 }
