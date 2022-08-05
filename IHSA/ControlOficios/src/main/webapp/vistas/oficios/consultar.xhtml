@@ -1,0 +1,408 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"      
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:my="http://www.mytags.com/schema/mytags"
+      xmlns:p="http://primefaces.org/ui"            
+      >
+    <body>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+            <ui:composition template="./../../WEB-INF/template/template.xhtml">
+                <ui:define name="content">
+                    <h:panelGroup rendered="#{empty sesion.usuario}">
+                        <ui:include src="../../salir.xhtml"/>
+                    </h:panelGroup>
+                    <h:form styleClass="textoIzquierda" rendered="#{not empty sesion.usuario}" id="formOficios" >
+
+                        <div class="page-header">
+                            <h3>
+                                #{msgs['sistema.oficios.consultar.titulo']}
+                            </h3>
+                        </div>
+                        <!-- Mensajes con estilos de Bootstrap  -->
+                        <h:message style="display: block;"
+                                   for=""
+                                   infoClass="alert alert-success"
+                                   warnClass="alert alert-warning"
+                                   errorClass="alert alert-danger"
+                                   fatalClass="alert alert-danger"
+                                   />                   
+                        <div class="jumbotron">
+
+                            <div class="row">
+                                <div class="col-sm-2">
+                                    #{msgs['sistema.oficios.comun.oficio.numero']}
+                                </div>
+                                <div class="col-sm-3">
+                                    <p:inputText id="numeroOficio" 
+                                                   size="25" 
+                                                   maxlength="25" 
+                                                   value="#{oficioConsultaBean.vo.oficioNumero}" 
+                                                   valueChangeListener="#{oficioConsultaBean.buscarOficios(actionEvent)}"
+                                                   />
+                                </div>
+                                <div class="col-sm-1">
+                                    #{msgs['sistema.oficios.comun.asunto']}
+                                </div>
+                                <div class="col-sm-6">
+                                    <p:inputText id="asunto" 
+                                                   maxlength="150" 
+                                                   style="width: 100%; resize: none;"
+                                                   value="#{oficioConsultaBean.vo.oficioAsunto}" 
+                                                   valueChangeListener="#{oficioConsultaBean.buscarOficios(actionEvent)}" />
+                                </div>
+                            </div>
+
+                            <hr/>
+
+                            <div class="row">
+                                <div class="col-sm-2">
+                                    #{msgs['sistema.comun.compania.nombre']}
+                                </div>
+                                <div class="col-sm-5">
+                                    <!-- onkeypress="return submitEnter('formOficios:botonBuscar', event);"-->
+                                    <p:selectOneMenu id="idCompania"
+                                                       value="#{oficioConsultaBean.vo.companiaId}"
+                                                       valueChangeListener="#{catalogosBean.actualizarBloques}"
+                                                       rendered="#{oficioConsultaBean.mostrarTodasGerencias}"                                                      
+                                                       onchange="document.getElementById('formOficios:botonBuscar').click();"
+                                                       onkeyup="return submitEnter('formOficios:botonBuscar', event);"
+                                                       >
+                                        <f:selectItem itemValue="0" itemLabel="Todos"/>
+                                        <f:selectItems value="#{catalogosBean.companias}"/>
+                                    </p:selectOneMenu>
+
+                                    <h:outputText value="#{oficioConsultaBean.vo.companiaNombre}" rendered="#{!oficioConsultaBean.mostrarTodasGerencias}" />
+
+                                    <!--div style="vertical-align: top; text-align: center;">
+                                        
+                                        <h:graphicImage value="./resources/imagenes/tipo_oficio/tipo_oficio_2.png" style="vertical-align: bottom;" /> 
+                                        <ice:outputLabel value="&nbsp;&nbsp;Oficio de Salida (IHSA&nbsp;&#10148;&nbsp;&nbsp;PEMEX)&nbsp;&nbsp;&nbsp;" style="color: gray; font-style: italic;" />
+                                        <br/><h:graphicImage value="./resources/imagenes/tipo_oficio/tipo_oficio_1.png"  style="vertical-align: bottom;" />
+                                        <ice:outputLabel value="&nbsp;&nbsp;Oficio de Entrada (PEMEX&nbsp;&#10148;&nbsp;&nbsp;IHSA)" style="color: gray; font-style: italic;" />
+                                                    
+                                    </div-->
+                                </div>
+                                <div class="col-sm-2">
+                                    #{msgs['sistema.oficios.comun.oficio.fecha']}
+                                </div>
+                                <div class="col-sm-3">
+                                    <p:datePicker id="idFechaOficioDesde"                                                   
+                                                  valueChangeListener="${oficioConsultaBean.buscarOficios(actionEvent)}"
+                                                   >
+                                        
+                                    </p:datePicker>
+                                    <!--<ice:selectInputDate  id="idFechaOficioDesde" 
+                                                          renderAsPopup="true"  
+                                                          value="{oficioConsultaBean.vo.oficioFechaDesde}"                                                      
+                                                          highlightUnit="DAY_OF_WEEK: MONTH"
+                                                          highlightValue="1,7: 8"
+                                                          partialSubmit="false" 
+                                                          actionListener="{oficioConsultaBean.buscarOficios(actionEvent)}">
+                                        <f:convertDateTime dateStyle="default" type="date" pattern="dd/MM/yyyy" timeZone="America/Monterrey"/>
+                                    </ice:selectInputDate>
+                                    -->
+                                </div>
+                            </div> <!-- row -->
+
+
+                            <div class="row">
+                                <div class="col-sm-2">
+                                    #{msgs['sistema.comun.bloque.nombre']}
+                                </div>
+                                <div class="col-sm-5">
+                                    <!-- Combo de Bloque de usuario con acceso a Todas las Gerencias -->
+                                    <p:selectOneMenu id="idBloque"
+                                                       value="#{oficioConsultaBean.vo.bloqueId}"
+                                                       valueChangeListener="#{catalogosBean.actualizarGerencias}"
+                                                       rendered="#{oficioConsultaBean.mostrarTodasGerencias}"                                      
+                                                       onchange="document.getElementById('formOficios:botonBuscar').click();"
+                                                       onkeyup="return submitEnter('formOficios:botonBuscar', event);">
+                                        <f:selectItem itemValue="0" itemLabel="Todos"/>
+                                        <f:selectItems value="#{catalogosBean.bloques}"/>
+                                    </p:selectOneMenu>
+
+                                    <!-- Combo de Bloque de usuario con acceso restringido a Compañía -->
+                                    <p:selectOneMenu valueChangeListener="#{oficioConsultaBean.actualizarCompaniaGerencia}"
+                                                       value="#{oficioConsultaBean.vo.bloqueId}"
+                                                       rendered="#{oficioConsultaBean.mostrarOpcionesBloques}"                                       
+                                                       onchange="document.getElementById('formOficios:botonBuscar').click();"
+                                                       onkeyup="return submitEnter('formOficios:botonBuscar', event);">
+                                        <f:selectItems value="#{oficioConsultaBean.opcionesBloques}"/>
+                                    </p:selectOneMenu>
+
+                                    <h:outputText value="#{oficioConsultaBean.vo.bloqueNombre}" rendered="#{oficioConsultaBean.mostrarOpcionUnicaBloque}" />
+                                </div>
+                                <div class="col-sm-2">
+                                    &nbsp;
+                                </div>
+                                <div class="col-sm-3">
+                                    <p:datePicker  id="idFechaOficioHasta" 
+                                                   value="#{oficioConsultaBean.vo.oficioFechaHasta}" 
+                                                   valueChangeListener="#{oficioConsultaBean.buscarOficios(actionEvent)}"                                                   
+                                                   dateTemplate="dd/MM/yyyy"
+                                                   >
+                                        <f:convertDateTime dateStyle="default" type="date" pattern="dd/MM/yyyy" timeZone="America/Monterrey"/>
+                                    </p:datePicker>
+                                    <!--
+                                    <p:selectInputDate  id="idFechaOficioHasta" 
+                                                          renderAsPopup="true"  
+                                                          value="{oficioConsultaBean.vo.oficioFechaHasta}" 
+                                                          highlightUnit="DAY_OF_WEEK: MONTH"
+                                                          highlightValue="1,7: 8"
+                                                          partialSubmit="false" 
+                                                          actionListener="{oficioConsultaBean.buscarOficios(actionEvent)}">
+                                        <f:convertDateTime dateStyle="default" type="date" pattern="dd/MM/yyyy" timeZone="America/Monterrey"/>
+                                    </p:selectInputDate>
+                                    -->
+                                </div>
+                            </div> <!-- row -->
+
+
+                            <div class="row">
+                                <div class="col-sm-2">
+                                    #{msgs['sistema.comun.gerencia.nombre']}
+                                </div>
+                                <div class="col-sm-5">
+                                    <!-- Usuario con acceso a todas las gerencias -->
+
+                                    <p:selectOneMenu id="idGerencia"
+                                                       value="#{oficioConsultaBean.vo.gerenciaId}"
+                                                       rendered="#{oficioConsultaBean.mostrarOpcionesBloques or oficioConsultaBean.mostrarTodasGerencias}"
+                                                       onchange="document.getElementById('formOficios:botonBuscar').click();"
+                                                       onkeyup="return submitEnter('formOficios:botonBuscar', event);" >
+                                        <f:selectItem itemValue="0" itemLabel="Todos"/>
+                                        <f:selectItems value="#{catalogosBean.gerencias}"/>
+                                    </p:selectOneMenu>
+
+                                    <!-- Usuario con acceso solo a su gerencia -->
+
+                                    <h:outputText value="#{oficioConsultaBean.vo.gerenciaNombre}" rendered="#{oficioConsultaBean.mostrarOpcionUnicaBloque}" />
+
+                                </div>
+                                <div class="col-sm-2">
+                                    #{msgs['sistema.oficios.comun.fecha.alta']}
+                                </div>
+                                <div class="col-sm-3">
+                                    <p:datePicker id="idFechaAltaDesde" 
+                                                  value="#{oficioConsultaBean.vo.fechaAltaDesde}"                         
+                                                  valueChangeListener="#{oficioConsultaBean.buscarOficios(actionEvent)}"
+                                                  >
+                                        <f:convertDateTime dateStyle="default" type="date" pattern="dd/MM/yyyy" timeZone="America/Monterrey"/>
+                                    </p:datePicker>
+                                    <!--<ice:selectInputDate  id="idFechaAltaDesde" 
+                                                          renderAsPopup="true"  
+                                                          value="{oficioConsultaBean.vo.fechaAltaDesde}"                                                      
+                                                          highlightUnit="DAY_OF_WEEK: MONTH"
+                                                          highlightValue="1,7: 8"
+                                                          partialSubmit="false" 
+                                                          actionListener="{oficioConsultaBean.buscarOficios(actionEvent)}">
+                                        <f:convertDateTime dateStyle="default" type="date" pattern="dd/MM/yyyy" timeZone="America/Monterrey"/>
+                                    </ice:selectInputDate>-->
+                                </div>
+                            </div> <!-- row -->
+
+
+                            <div class="row">
+                                <div class="col-sm-2" style="white-space: nowrap;">
+                                    Seguimiento
+                                </div>
+                                <div class="col-sm-5">
+                                    <h:selectOneRadio  
+                                        value="#{oficioConsultaBean.vo.seguimientoConsulta}"
+                                        onchange="document.getElementById('formOficios:botonBuscar').click();"
+                                        >
+                                        <f:selectItem itemLabel="&nbsp;Sí&nbsp;&nbsp;&nbsp;" itemValue="1" />
+                                        <f:selectItem itemLabel="&nbsp;No&nbsp;&nbsp;&nbsp;" itemValue="-1"/>
+                                        <f:selectItem itemLabel="&nbsp;Todos" itemValue="0"/>
+                                    </h:selectOneRadio>
+                                </div>
+                                <div class="col-sm-2">
+                                    &nbsp;
+                                </div>
+                                <div class="col-sm-3">
+                                    <p:datePicker id="idFechaAltaHasta" 
+                                                  value="#{oficioConsultaBean.vo.fechaAltaHasta}" 
+                                                  valueChangeListener="#{oficioConsultaBean.buscarOficios(actionEvent)}"
+                                                  dateTemplate="dd/MM/yyyy"
+                                                  >
+                                        <f:convertDateTime dateStyle="default" type="date" pattern="dd/MM/yyyy" timeZone="America/Monterrey"/>
+                                    </p:datePicker>
+                                    <!--<ice:selectInputDate  id="idFechaAltaHasta" 
+                                                          renderAsPopup="true"  
+                                                          value="{oficioConsultaBean.vo.fechaAltaHasta}" 
+                                                          highlightUnit="DAY_OF_WEEK: MONTH"
+                                                          highlightValue="1,7: 8"
+                                                          partialSubmit="false" 
+                                                          actionListener="{oficioConsultaBean.buscarOficios(actionEvent)}">
+                                        <f:convertDateTime dateStyle="default" type="date" pattern="dd/MM/yyyy" timeZone="America/Monterrey"/>
+                                    </ice:selectInputDate>-->
+                                </div>
+                            </div> <!-- row -->
+
+                            <div class="row">
+                                <div class="col-sm-2" style="white-space: nowrap;">
+                                    Mostrar Oficios Publicios ?
+                                </div>
+                                <div class="col-sm-5">
+                                    <h:selectOneRadio  
+                                        value="#{oficioConsultaBean.vo.mostrarPublicos}"
+                                        onchange="document.getElementById('formOficios:botonBuscar').click();"
+                                        >
+                                        <f:selectItem itemLabel="&nbsp;Sí&nbsp;&nbsp;&nbsp;" itemValue="1" />
+                                        <f:selectItem itemLabel="&nbsp;No&nbsp;&nbsp;&nbsp;" itemValue="0"/>
+                                    </h:selectOneRadio>
+                                </div>
+                                <div class="col-md-2" style="white-space: nowrap;">
+                                    Maximo No. de oficios:
+                                </div>
+                                <div class="col-md-3">
+                                    <p:inputText id="maxOficios" 
+                                                   size="5" 
+                                                   maxlength="5" 
+                                                   value="#{oficioConsultaBean.vo.maxOficios}" 
+                                                   valueChangeListener="#{oficioConsultaBean.buscarOficios(actionEvent)}"
+                                                   />
+                                </div>
+                            </div> <!-- row -->
+
+                            <div class="row">
+                                <div class="col-sm-2">
+                                    #{msgs['sistema.oficios.comun.observaciones']}
+                                </div>
+                                <div class="col-sm-10">
+                                    <p:inputText id="observaciones" 
+                                                   maxlength="198" 
+                                                   style="width: 100%; resize: none;"
+                                                   value="#{oficioConsultaBean.vo.observaciones}" 
+                                                   valueChangeListener="#{oficioConsultaBean.buscarOficios(actionEvent)}" />
+                                </div>
+                            </div> <!-- row -->
+
+                            <hr/>
+
+                            <div class="row">
+                                <div class="col-sm-9">
+                                    <my:barraIconos />
+                                </div>
+                                <div class="col-sm-3" style="text-align: right">
+                                    <h:commandLink id="botonBuscar"
+                                                   value="#{msgs['sistema.comun.buscar']}" 
+                                                   styleClass="btn btn-info btn-xs"
+                                                   actionListener="#{oficioConsultaBean.buscarOficios(actionEvent)}"
+                                                   rendered="true"
+                                                   title="Buscar oficios" />
+                                    &nbsp;
+                                    <h:commandLink id="botonLimpiar"
+                                                   value="#{msgs['sistema.comun.limpiar']}" 
+                                                   styleClass="btn btn-default btn-xs"
+                                                   actionListener="#{oficioConsultaBean.limpiarConsultaVo(actionEvent)}"
+                                                   rendered="true"
+                                                   title="Limpiar forma" />
+                                </div>
+                            </div> <!-- row -->
+                            <br/>
+                            <div >
+                                <!--
+                                    ace:dataTable id="consultaResultados" rows="10" value="{oficioConsultaBean.resultados}" var="currentRow"
+                                               style="width: 99.9%" paginator="true" paginatorPosition="bottom" >
+                                    -->
+                                <p:dataTable id="dataTable1"  
+                                         showGridlines="true" 
+                                         size="small" 
+                                         rows="10"  
+                                         value="#{oficioConsultaBean.resultados}" 
+                                         var="currentRow">
+                                    <p:column headerText="#{msgs['sistema.oficios.comun.oficio.numero']}">
+                                        <h:outputText value="#{currentRow['oficioNumero']}" title="#{currentRow['oficioAsunto']}" style="font-weight: bold;"/>
+                                    </p:column>
+                                    <p:column  headerText="Asunto" style=" display: none">
+                                        <h:outputText value="#{currentRow['oficioAsunto']}" style="font-weight: bold;" />
+                                    </p:column>
+                                    <p:column style="text-align: center;" headerText="#{msgs['sistema.oficios.comun.fecha.alta']}">
+                                        <h:outputText value="#{currentRow['fechaGeneroFormato']}"/>
+                                    </p:column>
+                                    <p:column style="text-align: center;" headerText="#{msgs['sistema.oficios.comun.oficio.fecha']}">
+                                        <h:outputText value="#{currentRow['oficioFechaFormato']}"/>
+                                    </p:column>
+                                    <p:column headerText="#{msgs['sistema.comun.compania.nombre']}">
+                                        <h:outputText value="#{currentRow['companiaSiglas']}"/>
+                                    </p:column>
+                                    <p:column headerText="#{msgs['sistema.comun.bloque.nombre']}">
+                                        <h:outputText value="#{currentRow['bloqueNombre']}"/>
+                                    </p:column>
+                                    <p:column headerText="#{msgs['sistema.comun.gerencia.nombre']}">
+                                        <h:outputText value="#{currentRow['gerenciaNombre']}"/>
+                                    </p:column>
+
+                                    <p:column style="width: 60px; white-space: nowrap;" headerText="#{msgs['sistema.oficios.comun.asunto']}">
+                                        <my:iconoSeguimiento 
+                                            rendered="#{currentRow['requiereSeguimiento'] eq true}" 
+                                            title="Requiere Seguimiento" />
+                                        <my:iconoOficioUrgente 
+                                            rendered="#{currentRow['urgente'] eq true}" 
+                                            title="Oficio Urgente" />
+                                        <my:iconoRestringido
+                                            rendered="#{currentRow['restringido'] eq true}" 
+                                            title="Oficio Restringido" />
+                                        <my:iconoPublico
+                                            rendered="#{currentRow['publico'] eq true}" 
+                                            title="Oficio Público" />
+
+                                        <!-- NOTA: Columna para el archivo de exportacion -->
+                                        
+                                    </p:column>
+
+                                    <p:column style="width: 80px; white-space: nowrap;" headerText="#{msgs['sistema.oficios.comun.estatus']}">
+                                        <a href="#" data-toggle="modal" data-target="#modalTipoOficio_#{currentRow['tipoOficioId']}">
+                                            <h:graphicImage value="./resources/imagenes/estatus_oficio/estatus_oficio_#{currentRow['tipoOficioId']}_#{currentRow['estatusId']}.png" 
+                                                            alt="#{currentRow['tipoOficioNombre']} - #{currentRow['estatusNombre']}" 
+                                                            title="#{currentRow['tipoOficioNombre']} - #{currentRow['estatusNombre']}" />
+                                        </a>
+                                    </p:column>
+                                    <p:column style="width: 30px; border-left: none;" rendered="#{oficioConsultaBean.permisos.verDetalleOficio}">
+                                        <p:commandLink styleClass="link"
+                                                         action="detalle"
+                                                         title="Ver detalle del oficio" >
+                                            <center>
+                                                <i class="fa fa-eye icono-contenido" style="font-size: 18px;"></i>                                                
+                                            </center>
+
+                                            <f:param name="oficioId" value="#{currentRow['oficioId']}" />   
+                                        </p:commandLink>
+                                    </p:column>
+                                </p:dataTable>
+
+                            </div>
+                            <!--Cambio agregar asunto a excel 16/02/15 jevazquez-->    
+                            <br/>
+                            <div class="row" style="text-align: right">
+                                   <p:commandButton value="XLSX" styleClass="mr-2 mb-2">
+                                           <i class="fa fa-file-excel-o" aria-hidden="true" title="Exportar a Excel" style="color: green; white-space: nowrap"></i>
+                                           <p:dataExporter id="exportTabla"  
+                                                           type="xlsxstream" 
+                                                           target="consultaResultados" 
+                                                           fileName="Oficios"                                                            
+                                                            />
+                                     </p:commandButton>
+                            <!--<ace:dataExporter id="exportTabla" label="Descargar excel" type="xls"
+                                              fileName="Oficios" target="consultaResultados" excludeColumns="7,8,9" >
+                            </ace:dataExporter>-->
+                            </div>
+
+
+                        </div> <!-- jumbotron -->
+
+
+                        <ui:include src="popupOficioSalida.xhtml" />
+
+                        <ui:include src="popupOficioEntrada.xhtml" />
+
+                    </h:form>
+                </ui:define>
+            </ui:composition>
+        </meta>
+    </body>
+</html>

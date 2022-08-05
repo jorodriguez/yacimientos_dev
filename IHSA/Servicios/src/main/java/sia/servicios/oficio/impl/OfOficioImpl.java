@@ -606,8 +606,7 @@ public class OfOficioImpl extends AbstractFacade<OfOficio> {
      * @param motivo
      * @param idUsuario
      */
-    @Interceptors(ValidacionSeguimientoInterceptor.class)
-    
+    @Interceptors(ValidacionSeguimientoInterceptor.class)    
     public void activarSeguimiento(OficioVo vo, String motivo, String idUsuario) {
 
         OfOficio entidad = this.find(vo.getOficioId());

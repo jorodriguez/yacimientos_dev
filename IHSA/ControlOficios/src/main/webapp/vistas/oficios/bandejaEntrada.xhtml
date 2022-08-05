@@ -1,0 +1,197 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"      
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:my="http://www.mytags.com/schema/mytags"
+      >
+    <body>
+        <ui:composition template="./../../WEB-INF/template/template.xhtml">
+            <ui:define name="content">
+                <h:panelGroup rendered="#{empty sesion.usuario}">
+                    <ui:include src="../../salir.xhtml"/>
+                </h:panelGroup>
+            
+              <h:form styleClass="textoIzquierda" rendered="#{not empty sesion.usuario}" id="formOficios" >
+
+                    <!-- Puede usarse tag 'header' en lugar de 'div' -->
+                    <div class="page-header">
+                        <h3>
+                            #{msgs['sistema.oficios.bandeja.titulo']}
+                        </h3>
+                    </div>
+                    
+                    <!-- Mensajes con estilos de Bootstrap  -->
+                    <h:message style="display: block;"
+                               for=""
+                               infoClass="alert alert-success"
+                               warnClass="alert alert-warning"
+                               errorClass="alert alert-danger"
+                               fatalClass="alert alert-danger"
+                               />
+                    
+                    <div class="jumbotron">
+                        
+                        <div class="row">
+                            <div class="col-sm-1" style="white-space: nowrap;">
+                                #{msgs['sistema.oficios.comun.oficio.numero']}
+                            </div>
+                            <div class="col-sm-3">
+                                <p:inputText id="numeroOficio" 
+                                               size="25" 
+                                               maxlength="25" 
+                                               value="#{oficioBandejaEntradaBean.vo.oficioNumero}"                                                
+                                               valueChangeListener="#{oficioBandejaEntradaBean.buscarOficiosBandejaEntrada(actionEvent)}" />
+                            </div>
+                            <div class="col-sm-1">
+                                #{msgs['sistema.oficios.comun.asunto']}
+                            </div>
+                            <div class="col-sm-5">
+                                <p:inputText id="asunto" 
+                                               style="width: 100%; resize: none;"
+                                               maxlength="150"
+                                               value="#{oficioBandejaEntradaBean.vo.oficioAsunto}" 
+                                               valueChangeListener="#{oficioBandejaEntradaBean.buscarOficiosBandejaEntrada(actionEvent)}" />
+                                &nbsp;
+                            </div>
+                            <div class="col-sm-2">
+                                <p:commandLink id="botonBuscar"
+                                                 value="#{msgs['sistema.comun.buscar']}" 
+                                                 styleClass="btn btn-default btn-xs"
+                                                 actionListener="#{oficioBandejaEntradaBean.buscarOficiosBandejaEntrada(actionEvent)}"
+                                                 rendered="true"
+                                                 update="@all"
+                                                 process="@this"
+                                                 title="Buscar oficios" />                               
+                            </div>
+                            <!--div class="col-sm-2">
+                                <ice:commandLink id="botonPruebas"
+                                                 value="#{msgs['sistema.comun.buscar']}" 
+                                                 styleClass="btn btn-default btn-xs"
+                                                 actionListener="{oficioBandejaEntradaBean.botonTemporalEnvioOficios(actionEvent)}"
+                                                 rendered="true"
+                                                 title="Buscar oficios" />                               
+                            </div-->
+                            
+                        </div> <!-- row -->
+                        
+                        <hr />
+                        
+                        <div class="row">
+                            
+                            <div class="col-sm-9">
+                                
+                                <my:barraIconos />
+                                
+                            </div>
+                            
+                            <div class="col-sm-3" style="text-align: right;">
+                            
+                                <!-- Solo los emisores pueden dar de alta oficios -->
+                                
+                                <h:commandLink value="#{msgs['sistema.comun.nuevo']}" 
+                                                 styleClass="btn btn-success btn-xs"
+                                                 action="editar"
+                                                 rendered="#{oficioBandejaEntradaBean.botonNuevo.visible}"
+                                                 title="Dar de alta un oficio" />
+                            </div>
+                        </div> <!-- row -->
+                            <br/>
+                        <div class="row">
+                            
+                            <p:dataTable id="dataTable1"  
+                                         showGridlines="true" 
+                                         size="small" 
+                                         rows="10"  
+                                         value="#{oficioBandejaEntradaBean.resultados}" 
+                                         var="var">
+                                <p:column  id="columnFechaAlta" style="text-align: center;" headerText="#{msgs['sistema.oficios.comun.fecha.alta']}">
+                                    <h:outputText id="fechaGenero" value="#{var.fechaGeneroFormato}"/>
+                                </p:column>         
+                                <p:column id="columnNumOf" style="min-width: 200px; text-align: left;" headerText="#{msgs['sistema.oficios.comun.oficio.numero']}">
+                                    <h:outputText value="#{var.oficioNumero}" style="font-weight: bold;" id="oficioNumero"/>
+                                </p:column>
+                                <p:column id="columnAsunto" headerText="#{msgs['sistema.oficios.comun.asunto']}" style="text-align: left;">
+                                    <h:outputText id="newAsunto" value="#{var.oficioAsunto}"/>
+                                </p:column>
+                                <p:column id="columnGerencia" style="width: 145px" headerText="#{msgs['sistema.comun.gerencia.nombre']}">
+                                    <h:outputText id="gerencia" value="#{var.gerenciaNombre}"/>
+                                </p:column>
+                                <p:column style="max-width: 60px; white-space: nowrap;">
+                                    <my:iconoSeguimiento 
+                                        rendered="#{var.requiereSeguimiento eq true}" 
+                                        title="Requiere Seguimiento" />
+                                    <my:iconoOficioUrgente 
+                                        rendered="#{var.urgente eq true}" 
+                                        title="Oficio Urgente" />
+                                    <my:iconoRestringido
+                                        rendered="#{var.restringido eq true}" 
+                                        title="Oficio Restringido" />
+                                    <my:iconoPublico
+                                        rendered="#{var.publico eq true}" 
+                                        title="Oficio Público" />
+                                </p:column>
+                                
+                                <p:column id="columnEstatus" style="width: 80px; white-space: nowrap;" headerText="#{msgs['sistema.oficios.comun.estatus']}">
+                                    
+                                    <a href="#" data-toggle="modal" data-target="#modalTipoOficio_#{var.tipoOficioId}">
+                                        <h:graphicImage value="./resources/imagenes/estatus_oficio/estatus_oficio_#{var.tipoOficioId}_#{var.estatusId}.png" 
+                                                        alt="#{var.tipoOficioNombre} - #{var.estatusNombre}" 
+                                                        title="#{var.tipoOficioNombre} - #{var.estatusNombre}" />
+                                    </a>
+
+                                </p:column>
+                                
+                                <p:column style="width: 30px" rendered="#{oficioBandejaEntradaBean.permisos.verDetalleOficio}">
+                                    <p:commandLink styleClass="link"
+                                                   action="detalle"
+                                                   title="Gestionar oficio"
+                                                   update="@all"
+                                                   process="@this"
+                                                   >
+                                        <center>
+                                            <i class="fa fa-cog icono-contenido" style="font-size: 18px;"></i>
+                                        </center>
+                                        <f:param name="oficioId" value="#{var.oficioId}" />   
+                                    </p:commandLink>
+                                </p:column>
+                                
+                            </p:dataTable>
+                            
+                            
+                            <br/>
+                        </div>
+                            <div class="row">
+                                <div class="col-lg-10"></div>
+                                <div class="col-lg-2" style="text-align: right" title="Exportar a Excel">
+                                     <p:commandButton value="XLSX" styleClass="mr-2 mb-2">
+                                           <i class="fa fa-file-excel-o" aria-hidden="true" title="Exportar a Excel" style="color: green; white-space: nowrap"></i>
+                                            <p:dataExporter type="xlsxstream" target="dataTable1" fileName="Oficios"
+                                                            
+                                                            />
+                                     </p:commandButton>
+                                    <!--<ace:dataExporter target="dataTable1" type="xls"  fileName="Oficios"  excludeColumns="4,5,6" style="height: 40px;width: 60px;">
+                                        <i class="fa fa-file-excel-o" aria-hidden="true" title="Exportar a Excel" style="color: green; white-space: nowrap"></i>
+                                    </ace:dataExporter>
+                                    -->
+                                </div>
+                            </div>
+
+
+                    </div> <!-- jumbotron -->
+                    
+                   
+                    
+               
+                 
+                 <ui:include src="popupOficioSalida.xhtml" />
+                    
+                    <ui:include src="popupOficioEntrada.xhtml" />
+                    </h:form>
+           </ui:define>
+        </ui:composition>
+    </body>
+</html>
+    

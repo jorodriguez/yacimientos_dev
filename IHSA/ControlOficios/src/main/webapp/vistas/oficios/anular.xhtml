@@ -1,0 +1,137 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html" 
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core">
+    
+    <body>
+        <ui:composition template="./../../WEB-INF/template/template.xhtml">
+            <ui:define name="content">
+                <h:panelGroup rendered="#{empty sesion.usuario}">
+                    <ui:include src="../../salir.xhtml"/>
+                </h:panelGroup>
+                <h:form styleClass="textoIzquierda" rendered="#{not empty sesion.usuario}" id="formOficios">
+                    
+                    
+                    <div class="page-header">
+                        <h3>
+                            Anular Oficio de #{oficioAnularBean.vo.tipoOficioNombre}
+                        </h3>
+                    </div>
+                    
+
+                    <!-- Mensajes con estilos de Bootstrap  -->
+                    <h:message style="display: block;"
+                               for=""
+                               infoClass="alert alert-success"
+                               warnClass="alert alert-warning"
+                               errorClass="alert alert-danger"
+                               fatalClass="alert alert-danger"
+                               />
+
+                    <div class="jumbotron">
+                        
+                        <div class="row">
+                            <div class="col-sm-12">
+                                El siguiente oficio será anulado. 
+                                <b>Esta operación no se puede deshacer.</b> 
+                                ¿Desea continuar?
+                            </div>
+                        </div>
+                        
+                        <hr />
+                        
+                        
+                        <div class="row">
+                            <div class="col-sm-2">
+                                Nº Oficio
+                            </div>
+                            <div class="col-sm-10">
+                                #{oficioAnularBean.vo.oficioNumero}
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-2">
+                                Asunto
+                            </div>
+                            <div class="col-sm-10">
+                                #{oficioAnularBean.vo.oficioAsunto}
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-12">
+                                &nbsp;
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-2">
+                                Estatus
+                            </div>
+                            <div class="col-sm-10">
+                                <h:graphicImage 
+                                    value="./resources/imagenes/estatus_oficio/estatus_oficio_#{oficioAnularBean.vo.tipoOficioId}_#{oficioAnularBean.vo.estatusId}.png"
+                                    title="#{oficioAnularBean.vo.tipoOficioNombre} - #{oficioAnularBean.vo.estatusNombre}"/>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-12">
+                                &nbsp;
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-2">
+                                Motivo
+                            </div>
+                            <div class="col-sm-10">
+                                <!-- Se permite una longitud máxima menor a la capacidad del campo 'MOTIVO' en 
+                                base de datos para permitir agregar un texto descriptivo previo por defecto 
+                                en el proceso de guardado. -->
+                                <p:inputTextarea 
+                                    id="motivo" 
+                                    value="#{oficioAnularBean.motivo}" 
+                                    tabindex="" rows="4" 
+                                    maxlength="450" 
+                                    style="width: 100%; resize: none;" />
+                            </div>
+                        </div>
+                        
+                        <br /><br /><br />
+                        <hr />
+                        
+                        <div class="row">
+                            <div class="col-sm-12" style="text-align: right">
+
+                                <p:commandLink value="Aceptar" 
+                                                 styleClass="btn btn-success btn-xs"
+                                                 action="#{oficioAnularBean.anularOficio(actionEvent)}" 
+                                                 onclick="bloquearPantalla('true');"
+                                                 rendered="#{not empty oficioAnularBean.vo.oficioId}"
+                                                 title="Confirmar anulación" 
+                                                 update="formOficios"
+                                                 process="@this"
+                                                 >
+                                    <f:param name="oficioId" value="#{oficioAnularBean.vo.oficioId}" />
+                                </ice:commandLink>
+
+                                &nbsp;
+
+                                <p:commandLink value="Cancelar" 
+                                                 styleClass="btn btn-default btn-xs"
+                                                 action="detalle"
+                                                 rendered="#{not empty oficioAnularBean.vo.oficioId}"
+                                                 title="Cancelar anulación" >
+                                    <f:param name="oficioId" value="#{oficioAnularBean.vo.oficioId}" />
+                                </p:commandLink>
+                            </div>
+                        </div>
+                        
+                    </div> <!-- jumbotron -->
+
+                </ice:form>
+                
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

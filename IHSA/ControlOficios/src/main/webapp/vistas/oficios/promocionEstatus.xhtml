@@ -1,0 +1,220 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"      
+      xmlns:f="http://java.sun.com/jsf/core"      
+      xmlns:my="http://www.mytags.com/schema/mytags">
+    
+    <body>
+        <ui:composition template="./../../WEB-INF/template/template.xhtml">
+            <ui:define name="content">
+                
+                <h:panelGroup rendered="#{empty sesion.usuario}">
+                    <ui:include src="../../salir.xhtml"/>
+                </h:panelGroup>
+                
+                <h:form styleClass="textoIzquierda" rendered="#{not empty sesion.usuario}" id="formOficios">
+                    
+                    <div class="page-header">
+                        <h3>
+                            Promoción de Oficio de #{oficioPromocionBean.vo.tipoOficioNombre}
+                        </h3>
+                    </div>
+                    
+                    <!-- Mensajes con estilos de Bootstrap  -->
+                    <h:message style="display: block;"
+                               for=""
+                               infoClass="alert alert-success"
+                               warnClass="alert alert-warning"
+                               errorClass="alert alert-danger"
+                               fatalClass="alert alert-danger"
+                               />
+                    
+                    <div class="jumbotron">
+                        
+                        <div class="row">
+                            <div class="col-sm-12">
+                                
+                                El siguiente oficio será promovido a 
+                                <b>#{oficioPromocionBean.vo.siguienteEstatusNombre}</b>. 
+                                <b>Esta operación no se puede deshacer.</b> 
+                                ¿Desea continuar?
+                            </div>
+                        </div>
+                        
+                        <hr />
+                        
+                        <div class="row">
+                            <div class="col-sm-2">
+                                Nº Oficio
+                            </div>
+                            <div class="col-sm-10">
+                                #{oficioPromocionBean.vo.oficioNumero}
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-2">
+                                Asunto
+                            </div>
+                            <div class="col-sm-10">
+                                #{oficioPromocionBean.vo.oficioAsunto}
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-2">
+                                Urgente
+                            </div>
+                            <div class="col-sm-10">
+                                <h:outputText value="#{oficioDetalleBean.vo.urgente ? 'Sí' : 'No'}" />
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-12">
+                                &nbsp;
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-2">
+                                Estatus
+                            </div>
+                            <div class="col-sm-10">
+                                <h:graphicImage 
+                                    value="./resources/imagenes/estatus_oficio/estatus_oficio_#{oficioPromocionBean.vo.tipoOficioId}_#{oficioPromocionBean.vo.estatusId}.png"
+                                    title="#{oficioPromocionBean.vo.tipoOficioNombre} - #{oficioPromocionBean.vo.estatusNombre}"/>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-12">
+                                &nbsp;
+                            </div>
+                        </div>
+                        
+                        <div class="row" style="#{oficioPromocionBean.requiereArchivoPromocion() ? '' : 'display: none;'}">
+                            <div class="col-sm-2">
+                                Archivo Adjunto
+                            </div>
+                            <div class="col-sm-10">
+                                
+                                <h:commandButton title="Buscar Archivo" 
+                                                 alt="Buscar Archivo" 
+                                                 image="./resources/imagenes/search.png"
+                                                 style="vertical-align: middle;margin: 4px;display: inline;"
+                                                 onclick="$(modalPromocion).modal('show');" />
+                                                     
+                                <h:commandButton title="Remover Archivo Seleccionado" 
+                                                   type="button" 
+                                                   alt="Remover Archivo Seleccionado" 
+                                                   rendered="#{oficioPromocionBean.archivoPromocionSeleccionado}"
+                                                   immediate="false" 
+                                                   actionListener="#{oficioPromocionBean.removerArchivoPromocion(event)}"
+                                                   image="./resources/imagenes/icon_bad.png"
+                                                   style="vertical-align: middle;margin: 4px;display: inline;"/>
+                                                       
+                                <h:outputText id="nombreArchivoPromocion" value="#{!oficioPromocionBean.archivoPromocionSeleccionado ? 'Ninguno seleccionado' : oficioPromocionBean.vo.archivoPromocion.nombreUUID}"/>
+                                    
+                            </div>
+                        </div>
+                        
+                        <br /><br />
+                        <hr />
+                            
+                        <div class="row">
+                            <div class="col-sm-12" style="text-align: right">
+                                <h:commandLink 
+                                    id="btnAceptar"
+                                    value="Aceptar" 
+                                    styleClass="btn btn-success btn-xs"
+                                    action="#{oficioPromocionBean.promoverEstatusOficio(actionEvent)}" 
+                                    rendered="true"
+                                    onclick="bloquearPantalla('true');"
+                                    title="Confirmar promoción" >
+                                    <f:param name="oficioId" value="#{oficioPromocionBean.vo.oficioId}" />
+                                </h:commandLink>
+                                &nbsp;
+                                <h:commandLink value="Cancelar" 
+                                               styleClass="btn btn-default btn-xs"
+                                               action="detalle"
+                                               rendered="true"
+                                               title="Cancelar promoción" >
+                                    <f:param name="oficioId" value="#{oficioPromocionBean.vo.oficioId}" /> 
+                                </h:commandLink>
+                            </div>
+                        </div>
+                        
+                    </div> <!-- jumbotron -->
+                </h:form>
+                
+                
+                <!-- Modal - Seleccionar archivo adjunto -->
+
+                <div class="modal fade" id="modalPromocion">
+                    <div class="modal-dialog" style="width: 650px;">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                                    &times;
+                                </button>
+                                <h4 class="modal-title">Adjuntar Archivo de Oficio</h4>
+                            </div>
+                            <div class="modal-body">
+                                <h:form id="formAdjunto">
+                                    <div class="jumbotron">
+                                        <div class="row">
+                                            <center>
+                                                <div class="col-sm-12">
+                                                    <table width="100%">
+                                                        <tr>
+                                                            <td>
+                                                                <h:outputLabel id="labelArchivo" 
+                                                                   for="fileEntryPromocion" 
+                                                                   value="Archivo"/>
+                                                            </td>
+                                                            <td>
+                                                                <!--<ace:fileEntry id="fileEntryPromocion"
+                                                                   useSessionSubdir="false" 
+                                                                   absolutePath="/tmp"
+                                                                   fileEntryListener="{oficioPromocionBean.prepararArchivoPromocionVo}"
+                                                                   useOriginalFilename="true"
+                                                                   />-->
+                                                                 <h:form enctype="multipart/form-data">
+                                                                    <!-- Probar -->
+                                                                    <p:fileUpload id="fileEntryPromocion" 
+                                                                                   value="#{fileUploadView.file}"                                                                                    
+                                                                                   mode="simple"                                                                                    
+                                                                                   skinSimple="true"/>
+
+                                                                    <p:commandButton value="Submit" 
+                                                                                     ajax="false"
+                                                                                     action="#{oficioPromocionBean.prepararArchivoPromocionVo}"
+                                                                                     styleClass="mt-3 ui-button-outlined block"/>
+                                                                </h:form>
+                                                            </td>
+                                                            <td>
+                                                                <h:commandButton value="Subir" 
+                                                                                 styleClass="btn btn-success btn-xs"
+                                                                                 onclick="$(modalPromocion).modal('hide')" />
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+                                                </div>
+                                            </center>
+                                        </div>
+                                    </div>
+                                </h:form>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default btn-xs" data-dismiss="modal">
+                                    Cerrar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Termina modal - Seleccionar archivo adjunto -->
+                
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>
