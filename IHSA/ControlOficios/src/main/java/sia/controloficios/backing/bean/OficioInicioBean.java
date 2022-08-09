@@ -33,6 +33,7 @@ public class OficioInicioBean extends OficioBaseBean {
         
         
         if (isEditor && acceso) {
+            //paginaPrincipal = "/vistas/oficios/bandejaEntrada";
             paginaPrincipal = "/vistas/oficios/bandejaEntrada";
         } else if(!isEditor && acceso){
             paginaPrincipal = "/vistas/oficios/consultar";
