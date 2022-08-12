@@ -76,6 +76,7 @@ import sia.util.UtilSia;
  *
  * @author esapien
  */
+
 @Stateless 
 public class OfOficioImpl extends AbstractFacade<OfOficio> {
 

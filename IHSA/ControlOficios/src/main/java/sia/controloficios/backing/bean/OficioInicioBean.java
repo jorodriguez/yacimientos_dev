@@ -2,6 +2,7 @@
 
 package sia.controloficios.backing.bean;
 
+import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
 import sia.excepciones.SIAException;
 
@@ -18,11 +19,16 @@ public class OficioInicioBean extends OficioBaseBean {
     /**
      * 
      * @throws SIAException 
-     */
+     */     
+    //@PostConstruct
     @Override
     protected void postConstruct() throws SIAException {
+       
         
         getLogger().info(this, "OficioInicioBean@postConstruct");
+        
+        System.out.println("||||postConstruct en oficioInicioBean");
+                
         boolean isEditor = false;
         boolean acceso = true;
         if(getPermisos() != null){
@@ -32,15 +38,15 @@ public class OficioInicioBean extends OficioBaseBean {
         }
         
         
-        if (isEditor && acceso) {
-            //paginaPrincipal = "/vistas/oficios/bandejaEntrada";
-            paginaPrincipal = "/vistas/oficios/bandejaEntrada";
+        if (isEditor && acceso) {          
+            paginaPrincipal = "/vistas/oficios/bandejaEntrada.xhtml?faces-redirect=true";
         } else if(!isEditor && acceso){
-            paginaPrincipal = "/vistas/oficios/consultar";
+            paginaPrincipal = "/vistas/oficios/consultar.xhtml?faces-redirect=true";
         } else {
-            paginaPrincipal =  "/vistas/oficios/noTieneAcceso";
+            paginaPrincipal =  "/vistas/oficios/noTieneAcceso.xhtml?faces-redirect=true";
         }
-        
+        System.out.println("=================Pagina principal "+paginaPrincipal);
+       
     }
 
     /**
@@ -60,9 +66,12 @@ public class OficioInicioBean extends OficioBaseBean {
     public String paginaPrincipal() {
         
         getLogger().info(this, "Pagina Principal = " + paginaPrincipal);
-        
+        System.out.println("paginaPrincipal() = "+paginaPrincipal);
+               
         return paginaPrincipal;
     }
-    
+
+
+
     
 }

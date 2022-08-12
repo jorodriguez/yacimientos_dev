@@ -3,6 +3,7 @@ package sia.controloficios.sistema.bean.backing;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.List;
+import java.util.Properties;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.enterprise.context.SessionScoped;
@@ -10,12 +11,16 @@ import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
 import javax.inject.Named;
+import javax.servlet.http.HttpSession;
+import lombok.Getter;
+import lombok.Setter;
 import sia.constantes.Constantes;
 import sia.excepciones.InsufficientPermissionsException;
 import sia.modelo.Usuario;
 import sia.modelo.campo.usuario.puesto.vo.CompaniaBloqueGerenciaVo;
 import sia.modelo.oficio.vo.OficioConsultaVo;
 import sia.modelo.oficio.vo.PermisosVo;
+import sia.util.Env;
 import sia.util.UtilLog4j;
 
 /**
@@ -30,6 +35,10 @@ public class Sesion implements Serializable {
     private Usuario usuario;
     private String puesto;
     private PermisosVo permisos;
+     
+    @Getter
+    @Setter
+    private Properties ctx;
 
     // opciones de bloques del usuario
     private List<CompaniaBloqueGerenciaVo> bloquesUsuario;
@@ -69,6 +78,21 @@ public class Sesion implements Serializable {
     public void terminar() {
 
 	log("ControlOficios - Sesion@PreDestroy");
+    }
+    
+    public void subirValoresContexto(HttpSession sesion) {
+        Env.setContext(ctx, Env.SESSION_ID, sesion.getId());
+        Env.setContext(ctx, Env.CLIENT_INFO, sesion.getServletContext().getContextPath());
+        Env.setContext(ctx, Env.PUNTO_ENTRADA, "Sia");
+        Env.setContext(ctx, Env.PROYECTO_ID, usuario.getApCampo().getId());
+        Env.setContext(ctx, Env.CODIGO_COMPANIA, usuario.getApCampo().getCompania().getRfc());
+    }
+    
+      public String goTo(String page) {
+        if (!page.endsWith(".xhtml")) {
+            page += ".xhtml";
+        }
+        return page + "?faces-redirect=true";
     }
 
     /**
@@ -116,6 +140,7 @@ public class Sesion implements Serializable {
 	redireccionar(Constantes.URL_REL_SIA_PRINCIPAL);
 
     }
+   
 
     /**
      * Invalida la información relacionada con la sesión actual.
@@ -143,6 +168,7 @@ public class Sesion implements Serializable {
 	    log("Error de IO al redireccionar: " + ex.getMessage());
 	}
     }
+    
 
     private void log(String mensaje) {
 	UtilLog4j.log.info(this, mensaje);
@@ -159,6 +185,19 @@ public class Sesion implements Serializable {
 	redireccionar(Constantes.URL_REL_SIA_SIGN_OUT);
 
     }
+    
+    public String goToBandejaEntrada(){
+        return "/vistas/oficios/bandejaEntrada.xhtml?faces-redirect=true";
+    }
+   
+    public String goToConsultar(){
+        return "/vistas/oficios/consultar.xhtml?faces-redirect=true";
+    }
+    
+    public String goToOficios(){
+        return "/vistas/oficios/tickectOf.xhtml?faces-redirect=true";
+    }   
+    
 
     /**
      * @return the usuario

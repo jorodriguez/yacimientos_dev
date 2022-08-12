@@ -151,10 +151,11 @@ public abstract class OficioBaseBean implements Serializable {
      */
     
     @PostConstruct
-    //private void iniciar() throws InsufficientPermissionsException, SIAException {
-    private void iniciar(){
+    //protected void iniciar() throws InsufficientPermissionsException, SIAException {
+    protected void iniciar(){
         try{
-    
+        
+        System.out.println("@PostConstruct en oficio base bean aaaa");
         getLogger().info(this, getClass().getName() + "@PostConstruct");
         if (sesion.getPermisos() == null) {
             List<RolVO> newpermisos = siPermisoServicio.fetchPermisosPorUsuarioModulo(sesion.getUsuario().getId(), Constantes.OFICIOS_MODULO_ID, sesion.getBloqueActivo().getBloqueId());
@@ -172,7 +173,9 @@ public abstract class OficioBaseBean implements Serializable {
                 throw new InsufficientPermissionsException();
             }
         }
-
+        
+        System.out.println("@ejecuanto postconstructo abstracto");
+        
         this.postConstruct();
         
         }catch(Exception e){
@@ -188,6 +191,7 @@ public abstract class OficioBaseBean implements Serializable {
      * @throws sia.excepciones.SIAException
      */
     protected abstract void postConstruct() throws SIAException;
+    //protected abstract void postConstruct() ;
 
     /**
      * Define los permisos requeridos para ingresar a esta pantalla o proceso.
@@ -248,7 +252,7 @@ public abstract class OficioBaseBean implements Serializable {
      *
      * @return
      */
-    protected UtilLog4j getLogger() {
+    protected UtilLog4j getLogger() {        
         return UtilLog4j.log;
     }
 

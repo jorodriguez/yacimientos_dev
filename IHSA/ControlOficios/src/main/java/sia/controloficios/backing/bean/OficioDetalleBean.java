@@ -62,7 +62,7 @@ public class OficioDetalleBean extends OficioBaseBean {
      */
     @Override
     protected void postConstruct() throws InsufficientPermissionsException {
-        
+            
         // valor inicial para la vista
         
         // obtener registro de oficio

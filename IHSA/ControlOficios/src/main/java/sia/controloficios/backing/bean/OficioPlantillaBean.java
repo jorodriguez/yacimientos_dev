@@ -41,7 +41,8 @@ public class OficioPlantillaBean extends OficioBaseBean {
      * @throws SIAException 
      */
     @Override
-    protected void postConstruct() throws SIAException {
+    //protected void postConstruct() throws SIAException {
+    protected void postConstruct() {
         
         // llenar combo de bloques del usuario
         
