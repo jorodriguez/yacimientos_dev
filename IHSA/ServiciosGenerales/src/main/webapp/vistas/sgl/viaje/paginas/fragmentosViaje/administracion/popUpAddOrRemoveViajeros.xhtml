@@ -1,0 +1,252 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                
+               >
+    <style >
+        .iceSelInpTxtList{
+            background-color: whitesmoke;
+            z-index: 99999;
+        }
+    </style>
+
+    <div class="modal fade" id="dialogoPopUpAddOrRemoveViajeros" data-backdrop="static" data-keyboard="false" style="color: black;">
+        <div class="modal-dialog" style="width: 80%;">
+            <div class="modal-content">
+                <div class="modal-header" >
+                    <h4 class="modal-title" style="display: #{administrarViajeBean.estatusViaje == 510 ? 'none' : 'block'}">Aministrar Viajeros</h4>
+                    <h4 class="modal-title" style="display: #{administrarViajeBean.estatusViaje == 510 ? 'block' : 'none'}">Viajeros</h4>
+                    <div style="margin-top: 10px;" class="col-lg-12 col-xs-12">
+                        <h:message  for="" style="display: block;" infoClass="alert alert-success" warnClass="alert alert-warning"
+                                    errorClass="alert alert-danger" fatalClass="alert alert-danger"  />
+                    </div>
+                </div>
+                <h:form id="frmPnlAddorRemoveViajeros" styleClass="textoIzquierda">
+                    <div class="modal-body">
+                        <div class="row" style="display: #{administrarViajeBean.estatusViaje == 510 ? 'block' : 'none'}">
+                            <label>Viajeros</label>
+                            <hr/>
+                        </div>
+                        <div class="row" style="display: #{administrarViajeBean.estatusViaje == 505 ? 'block' : 'none'}">
+                            <label>Agregar Viajeros Emergentes</label>
+                            <hr/>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-12 col-xs-12">
+                                <p:dataTable id="viajerosTerrestre" value="#{administrarViajeBean.listaViajeros}" var="via"  style="border: none;">
+                                    <p:column headerText="Viajero" id="viajero" style="border: none; text-align: left; font-size: medium">
+                                        <label style="display: #{via.esEmpleado ? 'block' : 'none'}" id="nameViajero">
+                                            <span class="glyphicon glyphicon-user" style="color: #0895d6"></span> #{via.usuario}</label>
+                                        <label id="nameViajeroinvitado" style="display: #{via.esEmpleado ? 'none' : 'block'}">
+                                            <span class="glyphicon glyphicon-user" style="color: #0895d6"></span> #{via.invitado}</label>
+                                    </p:column>
+                                    <!--p:column id="gerencia" headerText="Gerencia/Empresa" style="border: none; text-align: center; font-size: medium">
+                                        <label id="gerenciaViajero">
+                                    #{via.gerencia}
+                                </label>
+                            </p:column-->
+                                    <p:column id="tipo" headerText="Tipo" style="border: none; font-size: medium">
+                                        <h:outputText id="tipocell" value="#{via.esEmpleado ? 'Empleado' :'Invitado'}"/>
+                                    </p:column>
+                                    <p:column style="border: none; font-size: medium" headerText="Solicitud">
+                                        <h:outputText id="tipoViajero" value="#{via.codigoSolicitudViaje}"/>
+                                    </p:column>
+                                    <p:column style="border: none; font-size: medium; display: #{administrarViajeBean.estatusViaje >= 510 ? 'none' : 'block'}" headerText="Fecha de regreso" >
+                                        <h:outputText id="fregreso" value="#{via.fechaRegreso}">
+                                            <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                        </h:outputText>
+                                    </p:column>
+                                    <p:column id="eliminarViajero"  style="border: none; text-align: right; font-size: medium;">
+                                        <p:commandLink actionListener="#{administrarViajeBean.removerViajero()}"
+                                                         style="display: #{administrarViajeBean.estatusViaje >= 510 ? 'none' : 'block'}"
+                                                           title="Quitar viajero">
+                                            <f:param name="idViajero" value="#{via.id}"/>
+                                            <f:param name="idUsuario" value="#{via.idUsuario}"/>
+                                            <f:param name="idInvitado" value="#{via.idInvitado}"/>
+                                            <span class="glyphicon glyphicon-remove" style="color: #777"/>
+                                        </p:commandLink>
+                                    </p:column>
+                                </p:dataTable>
+                            </div>
+                        </div> <br/>
+                        <div class="row" style="display: #{administrarViajeBean.estatusViaje >= 510 ? 'none' : 'block'}">
+                            <div class="col-lg-6 col-xs-6">
+                                <div class="row">
+                                    <button type="button" class="btn  btn-primary" data-toggle="collapse" data-target="#colapsableEmergente">Viajeros emergentes</button>
+                                </div>
+                                <br/>
+                                <div class="card  collapse" id="colapsableEmergente">
+                                    <div class="row " >
+                                        <div class="col-lg-4 col-xs-12">
+
+                                            <script>
+                                                $("[name='tipoEI']").bootstrapSwitch();
+                                                function empleadoInvitado() {
+                                                    $("#divEmp").slideToggle();
+                                                    $("#divInv").slideToggle();
+                                                    var d = document.getElementById("tipoEI").checked;
+                                                    if (d == true) {
+                                                        $('#tipoEI').bootstrapSwitch('labelText', 'Invitado');
+                                                    } else {
+                                                        $('#tipoEI').bootstrapSwitch('labelText', 'Empleado');
+                                                    }
+
+                                                }
+                                                ;
+                                            </script>
+                                            <div class="col-xs-12 col-xs-12" style="text-align: left;">
+                                                <input type="checkbox" name="tipoEI" checked="true" data-on-text="Empleado" data-off-text="Invitado" id="tipoEI"
+                                                       data-on-color="primary" data-off-color="primary" onchange="empleadoInvitado()" data-label-text="Invitado" class="form-control" data-size="small"/>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-5 col-xs-12">
+                                            <div style="display: block" id="divEmp">
+                                                <h:inputText  id="completarEmpleado" class="form-control" onclick="if (this.value != '') {
+                                                        this.value = ''
+                                                    }"/>                                                            
+                                                <h:inputHidden id="hidenEmpleado" value="#{administrarViajeBean.empleadoEmergente}"/> 
+                                                <p:commandLink   id="selectEmpleado" action="#{administrarViajeBean.agregarEmpleado()}"/>
+                                            </div> 
+                                            <div style="display: none" id="divInv">
+                                                <h:inputText  id="completarInvitado" class="form-control" onclick="if (this.value != '') {
+                                                        this.value = ''
+                                                    }"/>  
+                                                <h:inputHidden id="hidenInvitado" value="#{administrarViajeBean.invitadoEmergente}"/> 
+                                                <p:commandLink  id="selectInvitado" action="#{administrarViajeBean.agregarInvitado()}"/>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-1"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-6 col-xs-6">
+                                        <div class="row">
+                                            <button type="button" class="btn  btn-primary" data-toggle="collapse" data-target="#colapsableConSV">Viajeros con solicitud</button>
+                                        </div>
+                                    <br/>
+                                    <div class="row collapse" id="colapsableConSV">
+                                            <input id="seleccionado" name="seleccionado"  value="0" style="display: none;"/>
+                                            <script>
+
+                                                function seleccionViajero(id) {
+                                                    if (!id) {
+                                                        id = 0;
+                                                    } else {
+                                                        if (id > 0) {
+                                                            //alert(id);
+                                                            $('#seleccionado').val(id);
+                                                            ejecutarBoton('frmPnlAddorRemoveViajeros', 'oneToOne');
+                                                        }
+
+                                                    }
+                                                }
+                                                $('a[id=newVi]').on('click', function () {
+                                                    seleccionViajero($(this).data("id"));
+                                                    $(this).attr("style", "display: none;");
+
+                                                });
+
+                                                $('a[id=todosLosViajeros]').on('click', function () {
+                                                    seleccionSolicitud($(this).data("id"));
+                                                    var p = $('a[id=newVi]');
+                                                    p.attr("style", "display: none;");
+                                                });
+
+                                                function seleccionSolicitud(id) {
+                                                    if (!id) {
+                                                        id = 0;
+                                                    } else {
+                                                        if (id > 0) {
+                                                            $('#seleccionado').val(id);
+                                                            ejecutarBoton('frmPnlAddorRemoveViajeros', 'todos');
+                                                        }
+                                                    }
+                                                }
+                                                $('#exit').click(function () {
+                                                    var p = $('a[id=newVi]');
+                                                    p.attr("style", "display: block;");
+                                                });
+                                            </script>
+                                            <c:forEach items="#{administrarViajeBean.solicitudesViajeros}" var="pen">
+                                                <div class="btn-group" style="display: #{pen.idOficinaDestino == administrarViajeBean.viajeVO.idOficinaDestino ? 'block':'none'}">
+                                                    <div class="col-xs-6 col-xs-12">
+                                                        <button type="button" data-toggle="dropdown" class="btn btn-default dropdown-toggle form-control" 
+                                                                id="Solicitud#{pen.idSolicitud}"> #{pen.codigo} #{pen.destino}<span class="caret"></span></button>
+                                                        <ul class="dropdown-menu" id="listaViajerosCSV">
+                                                            <c:forEach items="#{pen.viajeros}" var="vj" id="viajerosFor">
+                                                                <li><a href="#" data-id="#{vj.id}" id="newVi">#{vj.usuarioTxt}</a></li>
+                                                                <param id="#{vj.id}" value="#{vj.id}"/>
+                                                            </c:forEach>
+                                                            <!--li class="divider"></li>
+                                                            <li><a href="#"  id="todosLosViajeros" data-id="#{pen.idSolicitud}">Agregar Todos</a></li-->
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                                <div class="btn-group" style="display: #{pen.solicitudViajeDeRetorno == 6 ? 'block':'none'}">
+                                                    <div class="col-xs-6 col-xs-12">
+                                                        <button type="button" data-toggle="dropdown" class="btn btn-info dropdown-toggle form-control" 
+                                                                id="Solicitud#{pen.idSolicitud}"> #{pen.codigo} #{pen.destino}<span class="caret"></span></button>
+                                                        <ul class="dropdown-menu" id="listaViajerosCSV">
+                                                            <c:forEach items="#{pen.viajeros}" var="vj" id="viajerosFor">
+                                                                <li><a href="#" data-id="#{vj.id}" id="newVi">#{vj.usuarioTxt}</a></li>
+                                                                <param id="#{vj.id}" value="#{vj.id}"/>
+                                                            </c:forEach>
+                                                            <!--li class="divider"></li>
+                                                            <li><a href="#"  id="todosLosViajeros" data-id="#{pen.idSolicitud}">Agregar Todos</a></li-->
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                                <div class="btn-group" style="display: #{pen.idOficinaDestino != administrarViajeBean.viajeVO.idOficinaDestino and pen.solicitudViajeDeRetorno != 6 ? 'block':'none'}">
+                                                    <div class="col-xs-6 col-xs-12">
+                                                        <button type="button" data-toggle="dropdown" class="btn btn-danger dropdown-toggle form-control" 
+                                                                id="Solicitud#{pen.idSolicitud}"> #{pen.codigo} #{pen.destino}<span class="caret"></span></button>
+                                                        <ul class="dropdown-menu" id="listaViajerosCSV1">
+                                                            <c:forEach items="#{pen.viajeros}" var="vj" id="viajerosFor">
+                                                                <li><a href="#" data-id="#{vj.id}" id="newVi">#{vj.usuarioTxt}</a></li>
+                                                                <param id="#{vj.id}" value="#{vj.id}"/>
+                                                            </c:forEach>
+                                                            <!--li class="divider"></li>
+                                                            <li><a href="#"  id="todosLosViajeros" data-id="#{pen.idSolicitud}">Agregar Todos</a></li-->
+                                                        </ul>
+                                                    </div>
+                                                    
+                                                </div>
+                                                
+                                            </c:forEach>
+
+                                            <p:commandLink action="#{administrarViajeBean.agregarDeSV()}" id="oneToOne" />
+                                            <!--p:commandLink action="#{administrarViajeBean.agregarDeSVTodos()}" id="todos" /-->
+                                    </div>
+                            </div>
+
+                        </div>
+
+                    </div>
+                    <div class="modal-footer" style="border-top: white; text-align: right;">
+
+                        <div class="row" style="display: #{administrarViajeBean.estatusViaje >= 510 ? 'none' : 'block'}">
+                            <div class="col-lg-8 col-xs-12"/>
+                            <div class="col-lg-4 col-xs-12">
+                                <button type="button" class="btn btn-primary" onclick="ejecutarBoton('frmPnlAddorRemoveViajeros', 'btnGuardar');">Aceptar</button>
+                                <p:commandLink  action="#{administrarViajeBean.addAndOrRemoveViajeros()}" id="btnGuardar"/>
+                                <button type="button" class="btn btn-default" onclick="$(dialogoPopUpAddOrRemoveViajeros).modal('hide');" id="exit">Cancelar</button>
+                            </div>
+                        </div>
+                        <div class="row" style="display: #{administrarViajeBean.estatusViaje >= 510 ? 'block' : 'none'}">
+                            <div class="col-lg-8 col-xs-12"/>
+                            <div class="col-lg-4 col-xs-12">
+                                <button type="button" class="btn btn-default" onclick="$(dialogoPopUpAddOrRemoveViajeros).modal('hide');">
+                                    <span class="glyphicon glyphicon-remove" style="color: gray"/>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </h:form>
+            </div>
+        </div>
+    </div>
+</ui:composition>

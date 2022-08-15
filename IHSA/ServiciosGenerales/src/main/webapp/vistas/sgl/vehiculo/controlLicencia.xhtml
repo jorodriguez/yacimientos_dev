@@ -1,0 +1,158 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      >
+
+    <body>
+
+        <ui:composition template="./../../../WEB-INF/facelets/templates/templateServiciosGenerales.xhtml">
+            <ui:define name="titulo">
+                Control de Licencias
+            </ui:define>
+            <ui:define name="contenido">
+                <div class="card card-primary">
+                    <h:form  id="formControlLicencias">
+                        <div class="row" >
+                            <div class="col-1 col-xs-2">
+                                <div class="btn-group">
+                                    <p:commandLink  action="#{controlLicenciaBean.agregarLicencia}" styleClass="btn btn-primary"
+                                                    process="@this formControlLicencias:licencias" update="editLicencia">
+                                        <i class="fa fa-plus text-white"/>
+                                    </p:commandLink>
+                                    <p:commandLink  action="#{controlLicenciaBean.eliminarLicencia()}"  styleClass="btn btn-default"
+                                                    process="@this" update="formControlLicencias:licencias">
+                                        <i class="fa fa-trash text-danger"/>
+                                    </p:commandLink>
+                                    <p:commandLink  action="#{controlLicenciaBean.enviarNotificacionLicencia}" 
+                                                    styleClass="btn btn-primary" title="Notificar a los usuarios la caducuidad de su curso"
+                                                    process="@this" update="formControlLicencias:licencias">
+                                        <i class="fas fa-envelope text-white"/>
+                                    </p:commandLink>
+                                </div>
+                            </div>
+                            <div class="col-11 col-xs-10 input-group">
+                                <p:selectOneRadio value="#{controlLicenciaBean.filtro}">
+                                    <f:selectItems value="#{controlLicenciaBean.listaFiltro}"/>
+                                    <p:ajax listener="#{controlLicenciaBean.cambiarFiltro}" update="formControlLicencias:licencias"/>
+                                </p:selectOneRadio>                                    
+                                <p:datePicker id="fechaIntV" value="#{controlLicenciaBean.fechaVencimientoInicio}" 
+                                              yearNavigator="true" monthNavigator="true" placeholder="Fecha inicio">
+                                    <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                </p:datePicker>
+                                <p:datePicker  id="fechaIntV2" value="#{controlLicenciaBean.fechaVencimientoFin}" 
+                                               yearNavigator="true" monthNavigator="true" placeholder="Fecha fin">
+                                    <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                </p:datePicker>
+                                <p:commandLink  action="#{controlLicenciaBean.buscarLicenciasByFiltros}" id="buscarByFiltros"
+                                                styleClass="btn btn-primary" process="@this" update="formControlLicencias:licencias">
+                                    <i class="fa fa-search text-white"/>
+                                </p:commandLink>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <p:dataTable showGridlines="true" size="small" 
+                                         id="licencias" value="#{controlLicenciaBean.lista}" var="via"
+                                         rows="20" paginator="true" paginatorPosition="bottom">
+                                <p:columnGroup type="header">
+                                    <p:row>
+                                        <p:column id="idSelecTodo" width="35">
+                                            <f:facet name="header">
+                                                <p:selectBooleanCheckbox  id="selectTodo" value="#{controlLicenciaBean.selectTodos}">
+                                                    <p:ajax listener="#{controlLicenciaBean.seleccionarTodo}" update="formControlLicencias:licencias"/>
+                                                </p:selectBooleanCheckbox>
+                                            </f:facet>
+                                        </p:column>
+                                        <p:column id="hUsuario" headerText="Usuario"  />
+                                        <p:column id="hNulmero" headerText="numero"   width="10%"/>
+                                        <p:column id="hPais" headerText="País"   width="10%"/>
+                                        <p:column id="hTipo" headerText="Tipo"    width="10%"/>
+                                        <p:column id="hFechaExpedida" headerText="Expedición" width="10%"/>
+                                        <p:column id="hFechaVence" headerText="Vencimiento"  width="10%"/>
+                                        <p:column id="hAdjunto" width="3%"/>
+                                        <p:column id="hAdjuntoAddOrRemov" width="3%"/>
+                                        <p:column id="hmod" headerText="" width="3%"/>
+                                    </p:row>
+                                </p:columnGroup>
+                                <p:column id="selectLic"  style="background-color: #{via.vigente ? '': '#f1dddd'}">
+                                    <h:selectBooleanCheckbox value="#{via.select}" style="font-size: 12px;" class="seleccion">
+                                        <f:ajax event="valueChange" execute="@this"/>
+                                    </h:selectBooleanCheckbox>
+                                </p:column>
+                                <p:column  style="background-color: #{via.vigente ? '': '#f1dddd'}">
+                                    <h:outputText value="#{via.usuario}"/>
+                                </p:column>
+                                <p:column  style="background-color: #{via.vigente ? '': '#f1dddd'}">
+                                    <h:outputText value="#{via.numero}"/>
+                                </p:column>
+                                <p:column  style="background-color: #{via.vigente ? '': '#f1dddd'}">
+                                    <h:outputText value="#{via.pais}"/>
+                                </p:column>
+                                <p:column  style="background-color: #{via.vigente ? '': '#f1dddd'}" >
+                                    <h:outputText value="#{via.tipo}"/>
+                                </p:column>
+                                <p:column  style="background-color: #{via.vigente ? '': '#f1dddd'}">
+                                    <h:outputText id="fexpedicion" value="#{via.expedida}" title="Expedición">
+                                        <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                    </h:outputText>
+                                </p:column>
+                                <p:column  style=" background-color: #{via.vigente ? '': '#f1dddd'}">
+                                    <h:outputText id="fVencimiento" value="#{via.vencimiento}" title="Vencimiento">
+                                        <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                    </h:outputText>
+                                </p:column>
+                                <p:column  style=" background-color: #{via.vigente ? '': '#f1dddd'}">                                    
+                                    <h:outputLink target="_blank"  value="/ServiciosGenerales/AbrirArchivo?ZWZ2W=#{via.adjunto}&amp;ZWZ3W=#{via.uuid}"
+                                                  style="display: #{via.adjunto != 0 ?  'block':'none'}; font-size: 20px" title="Descargar Licencia"
+                                                  rendered="#{via.adjunto gt 0}">
+                                        <i class="fa fa-download text-primary"/>
+                                    </h:outputLink>
+                                </p:column>
+                                <p:column  style="background-color: #{via.vigente ? '': '#f1dddd'}">
+                                    <p:commandLink action="#{controlLicenciaBean.addlicencia(via)}" 
+                                                   style="display: #{via.adjunto == 0 ?  'block':'none'}; font-size: 20px"
+                                                   title="Agregar licencia" process="@this"
+                                                   update="addArchivo">
+                                        <i class="fa fa-file-pdf text-success"/>
+                                    </p:commandLink>
+                                    <p:commandLink action="#{controlLicenciaBean.quitarArchivo(via.id)}" 
+                                                   style="display: #{via.adjunto != 0 ?  'block':'none'}; font-size: 20px"
+                                                   title="Quitar licencia" 
+                                                   process="@this" update="formControlLicencias:licencias">
+                                        <i class="fa fa-trash text-danger"></i>
+                                    </p:commandLink>
+                                </p:column>
+                                <p:column style="  background-color: #{via.vigente ? '': '#f1dddd'}; font-size: 20px;">
+                                    <p:commandLink action="#{controlLicenciaBean.modLicencia(via)}"
+                                                   title="modificar" process="@this" update="editLicencia">
+                                        <i class="fa fa-edit" style="color: #3276b1"></i>
+                                    </p:commandLink>
+                                </p:column>
+                            </p:dataTable>
+                            <div class="row">
+                                <div class="col-10">
+
+                                </div>
+                                <div class="col-2" style="text-align: right;">
+                                    <p:commandButton value="Exportar">
+                                        <p:dataExporter id="exportTabla" type="xls"
+                                                        fileName="Licencias" target="Licencias" />
+                                    </p:commandButton>
+                                </div>
+                            </div>
+
+
+                        </div>
+
+                    </h:form>
+                    <ui:include src="../vehiculo/popsControlLicencia.xhtml"/>
+                </div>
+
+
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

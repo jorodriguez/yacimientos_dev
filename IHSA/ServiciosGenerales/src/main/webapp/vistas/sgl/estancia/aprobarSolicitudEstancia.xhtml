@@ -1,0 +1,142 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      
+      
+     >
+    <body>
+        <ui:composition template="./../../../WEB-INF/facelets/templates/templateServiciosGenerales.xhtml">
+            <ui:define name="contenido">
+                <h:panelGroup  rendered="#{empty sesion.usuario}" styleClass="altura">
+                    <ui:include src="./../../../login.xhtml"/>
+                </h:panelGroup> 
+		<p class="tituloEncabezado">Aprobar solicitudes de estancia</p>
+		<h:form>
+		    <p:dataTable value="#{aprobarEstanciaBean.listaSolicitud}" var="data"
+				   style="font-size: 1.0em;">
+			<p:column headerText="Código">
+			    <h:outputText value="#{data.codigo}"/>
+			</p:column>
+			<p:column headerText="Inicio">
+			    <h:outputText value="#{data.inicioEstancia}">
+				<f:convertDateTime pattern="dd/MM/yyyy"/>
+			    </h:outputText>
+			</p:column>
+			<p:column headerText="Fin">
+			    <h:outputText value="#{data.finEstancia}">
+				<f:convertDateTime pattern="dd/MM/yyyy"/>
+			    </h:outputText>
+			</p:column>
+			<p:column headerText="Estancia en">
+			    <h:outputText value="#{data.nombreSgOficina}"/>
+			</p:column>
+			<p:column headerText="Días">
+			    <h:outputText value="#{data.diasEstancia}"/>
+			</p:column>
+			<p:column headerText="Motivo">
+			    <h:outputText value="#{data.nombreSgMotivo}"/>
+			</p:column>
+			<p:column >
+			    <!-- onclick="return confirm('Se enviará la solicitud de estancia a Servicios Generales, ¿está seguro?')" -->
+			    <p:commandLink value="Aprobar" actionListener="#{aprobarEstanciaBean.aprobarEstancia(event)}" 
+					     styleClass="text text-primary" >
+				<f:param name="idSolEstancia" value="#{data.id}"/>
+			    </p:commandLink>
+			    <p:confirm id="pnlConfirmar"  header="Confirmar" 
+						   message="Se enviará la solicitud de estancia a Servicios Generales, ¿está seguro?'">
+			    </p:confirm>
+			</p:column>
+			<p:column >
+			    <p:commandLink value="Cancelar" actionListener="#{aprobarEstanciaBean.cancelarEstancia(event)}" 
+					     styleClass="text text-primary" >
+				<f:param name="idSolEstancia" value="#{data.id}"/>
+			    </p:commandLink>
+			    <p:confirm id="pnlCancelar" header="pnlCancelar"
+						   message="Se cancelará la solicitud de estancia, ¿está seguro?'">
+			    </p:confirm>
+			</p:column>
+			<p:column >
+			    <p:commandLink value="Ver datalle" actionListener="#{aprobarEstanciaBean.verDetalle(event)}" 
+					     styleClass="text text-primary">
+				<f:param name="idSolEstancia" value="#{data.id}"/>
+			    </p:commandLink>
+			</p:column>
+		    </p:dataTable>
+		</h:form>
+		<h:form id="frmPopDetalleEstancia">
+		    <div class="modal fade" id="dialogoSolEstancia" data-backdrop="static" data-keyboard="false" style="color: black;">
+			<div class="modal-dialog">
+			    <div class="modal-content">
+				<div class="modal-header">                    
+				    <h4 class="modal-title">Solicitud de estancia</h4>
+				</div>   
+				<div class="modal-body panel-body">  
+				    <div class="col-lg-12 col-xs-12">
+					<h:outputText value="Gerencia:" class="col-lg-2 col-xs-12 control-label"/>
+					<div class="col-lg-6 col-xs-12">
+					    <h:outputText value="#{aprobarEstanciaBean.solicitudEstanciaVo.nombreGerencia}" class="control-label"/>
+					</div>
+				    </div>
+				    <div class="col-lg-12 col-xs-12">
+					<h:outputText value="Motivo:" class="col-lg-2 col-xs-12 control-label"/>
+					<div class="col-lg-6 col-xs-12">
+					    <h:outputText value="#{aprobarEstanciaBean.solicitudEstanciaVo.nombreSgMotivo}" class="control-label"/>
+					</div>
+				    </div>
+				    <div class="col-lg-12 col-xs-12"> 
+					<h:outputText value="Oficina:" class="col-lg-2 col-xs-12 control-label"/>
+					<div class="col-lg-6 col-xs-12">
+					    <h:outputText value="#{aprobarEstanciaBean.solicitudEstanciaVo.nombreSgOficina}" class="control-label"/>
+					</div>
+				    </div>
+				    <div class="col-lg-12 col-xs-12">
+					<h:outputText value="Inicio:" class="col-lg-2 col-xs-12 control-label"/>
+					<div class="col-lg-6 col-xs-12">
+					    <h:outputText value="#{aprobarEstanciaBean.solicitudEstanciaVo.inicioEstancia}" class="control-label">
+						<f:convertDateTime pattern="dd/MM/yyyy"/>
+					    </h:outputText>
+					</div>
+				    </div>
+				    <div class="col-lg-12 col-xs-12">
+					<h:outputText value="Fin:" class="col-lg-2 col-xs-12 control-label"/>
+					<div class="col-lg-6 col-xs-12">
+					    <h:outputText value="#{aprobarEstanciaBean.solicitudEstanciaVo.finEstancia}" class="control-label">
+						<f:convertDateTime pattern="dd/MM/yyyy"/>
+					    </h:outputText>
+					</div>
+				    </div>
+				    <div class="col-lg-12 col-xs-12">
+					<h:outputText value="Días:" class="col-lg-2 col-xs-12 control-label"/>
+					<div class="col-lg-6 col-xs-12">
+					    <h:outputText value="#{aprobarEstanciaBean.solicitudEstanciaVo.diasEstancia}" class="control-label">
+					    </h:outputText>
+					</div>
+				    </div>
+				    <div class="col-lg-12 col-xs-12">
+					<p:dataTable value="#{aprobarEstanciaBean.solicitudEstanciaVo.detalle}" var="data"
+						       style="font-size: 1.0em; text-align: left;">
+					    <p:column headerText="Nombre">
+						<h:outputText value="#{data.usuario }" rendered="#{data.idInvitado eq 0}"/>
+						<h:outputText value="#{data.invitado}" rendered="#{data.idInvitado gt 0}"/>
+					    </p:column>
+					    <p:column headerText="Tipo">
+						<h:outputText value="#{data.tipoDetalle}" />
+					    </p:column>
+					</p:dataTable>
+				    </div>
+				</div>   
+				<div class="modal-footer">
+				    <p:commandLink value="Cerrar" styleClass="btn btn-default" onclick="$(dialogoSolEstancia).modal('hide');"/>
+				</div>
+			    </div>
+			</div>
+		    </div>
+		</h:form>
+	    </ui:define>
+	</ui:composition>
+    </body>
+</html>

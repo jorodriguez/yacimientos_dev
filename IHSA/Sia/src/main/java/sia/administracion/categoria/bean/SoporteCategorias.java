@@ -95,7 +95,7 @@ public class SoporteCategorias {
     }
     
     public List<SelectItem> obtenerArticulosSat(String cadenaDigitada) {
-	List<SelectItem> list = new ArrayList<SelectItem>();	
+	List<SelectItem> list = new ArrayList<>();	
 	for (SatArticuloVO p : this.getArticulosActivoSat(cadenaDigitada)) {
 	    if (cadenaDigitada != null && !cadenaDigitada.isEmpty() && (p.getCodigo() != null && p.getDescripcion() != null)) {		
 		SelectItem item = new SelectItem(p, p.getCodigo());

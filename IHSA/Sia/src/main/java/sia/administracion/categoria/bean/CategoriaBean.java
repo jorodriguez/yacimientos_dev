@@ -31,7 +31,7 @@ import sia.util.UtilLog4j;
  *
  * @author ihsa
  */
-@Named(value = "categoriaBean")
+@Named(value = "categoriaBean_old")
 @javax.enterprise.context.RequestScoped
 public class CategoriaBean implements Serializable {
 
@@ -46,7 +46,7 @@ public class CategoriaBean implements Serializable {
     public List<CategoriaVo> getListaCatPrin() {
         try {
             return categoriaModel.getCategoriaVo().getListaCategoria();
-        } catch (RuntimeException ex) {
+        } catch (Exception ex) {
             Logger.getLogger(CategoriaBean.class.getName()).log(Level.SEVERE, null, ex);
             return null;
         }
@@ -70,29 +70,29 @@ public class CategoriaBean implements Serializable {
         CategoriaVo con = (CategoriaVo) event.getObject();
         categoriaModel.agregarCategoriaATemporal(con);
     }
-
-    public void seleccionarCategoria(SelectEvent event) {
-        CategoriaVo con = (CategoriaVo) event.getObject();
-        //categoriaModel.getCategoriaVo().setId(con.getId());
-        categoriaModel.llenarCategoria(con.getId());
-        //
-        categoriaModel.setListaCategoriaTemporal(new ArrayList<CategoriaVo>());
-        //categoriaModel.setListaCategoría(new ArrayList<CategoriaVo>());
-        categoriaModel.traerListaCategoria();
-        if (categoriaModel.getCategoriaVo().getListaCategoria() == null || categoriaModel.getCategoriaVo().getListaCategoria().isEmpty()) {
-            categoriaModel.verArticulos();
-            categoriaModel.setMostrarArticulos(true);
-        }
-        categoriaModel.traerArticulosItemsLstCat();
-    }
-
-    public void seleccionarCategoriaCabecera() {
-        //int id = Integer.parseInt(FacesUtils.getRequestParameter("idCatSelecionada"));
-        int id = Integer.parseInt(FacesUtils.getRequestParameter("indiceCatSel"));
-        //
-        categoriaModel.traerSubcategoria(id);
-        categoriaModel.traerArticulosItemsLstCat();
-    }
+//
+//    public void seleccionarCategoria(SelectEvent event) {
+//        CategoriaVo con = (CategoriaVo) event.getObject();
+//        //categoriaModel.getCategoriaVo().setId(con.getId());
+//        categoriaModel.llenarCategoria(con.getId());
+//        //
+//        categoriaModel.setListaCategoriaTemporal(new ArrayList<CategoriaVo>());
+//        //categoriaModel.setListaCategoría(new ArrayList<CategoriaVo>());
+//        categoriaModel.traerListaCategoria();
+//        if (categoriaModel.getCategoriaVo().getListaCategoria() == null || categoriaModel.getCategoriaVo().getListaCategoria().isEmpty()) {
+//            categoriaModel.verArticulos();
+//            categoriaModel.setMostrarArticulos(true);
+//        }
+//        categoriaModel.traerArticulosItemsLstCat();
+//    }
+//
+//    public void seleccionarCategoriaCabecera() {
+//        //int id = Integer.parseInt(FacesUtils.getRequestParameter("idCatSelecionada"));
+//        int id = Integer.parseInt(FacesUtils.getRequestParameter("indiceCatSel"));
+//        //
+//        categoriaModel.traerSubcategoria(id);
+//        categoriaModel.traerArticulosItemsLstCat();
+//    }
 
    /* public void seleccionarCategoriaCabecera() {
         categoriaModel.traerSubcategoria(0);
@@ -145,16 +145,7 @@ public class CategoriaBean implements Serializable {
         }
     }
 
-    public void abrirPopUpArticulo() {
-        try {
-            this.setNumParte("");
-            this.setArticulo("");
-            PrimeFaces.current().executeScript(";$(registrarArticulo).modal('show');mostrarDiv('registrarArticulo');");
-        } catch (Exception e) {
-            Logger.getLogger(CategoriaBean.class.getName()).log(Level.SEVERE, null, e);
-            FacesUtils.addErrorMessage("Ocurrió una excepción, favor de comunicar a sia@ihsa.mx");
-        }
-    }
+    
 
     //
     public void verArticulos() {
@@ -516,18 +507,17 @@ public class CategoriaBean implements Serializable {
         try {
             categoriaModel.enviarNotificacionAltaArticulo();
             PrimeFaces.current().executeScript(";cerrarDialogoBootstrap(dialogoNotificarNuevoItem);");
-        } catch (RuntimeException ex) {
+        } catch (Exception ex) {
             UtilLog4j.log.fatal(this, ex.getMessage());
         }
     }
 
-    public void traerArticulosItemsListener(String cadena) {
-        if ((cadena != null && !cadena.isEmpty() && cadena.length() > 2)
-                || (cadena == null || cadena.isEmpty())) {
-            categoriaModel.traerArticulosItemsLst(cadena);
-        }
-        PrimeFaces.current().executeScript(";marcarBusqueda();");
-    }
+//    public void traerArticulosItemsListener(String cadena) {
+//        if ((cadena != null && !cadena.isEmpty() && cadena.length() > 2)
+//                || (cadena == null || cadena.isEmpty())) {
+//            categoriaModel.traerArticulosItemsLst(cadena);
+//        }
+//    }
 
     /**
      * @return the articuloTx
@@ -546,16 +536,10 @@ public class CategoriaBean implements Serializable {
     /**
      * @return the articulosResultadoBqda
      */
-    public List<SelectItem> getArticulosResultadoBqda() {
-        return categoriaModel.getArticulosResultadoBqda();
-    }
 
     /**
      * @param articulosResultadoBqda the articulosResultadoBqda to set
      */
-    public void setArticulosResultadoBqda(List<SelectItem> articulosResultadoBqda) {
-        categoriaModel.setArticulosResultadoBqda(articulosResultadoBqda);
-    }
 
     public void seleccionarResultadoBA(SelectEvent event) {
         try {

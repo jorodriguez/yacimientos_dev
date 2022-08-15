@@ -1,0 +1,365 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                
+               >
+    <style >
+        .iceSelInpTxtList{
+            background-color: whitesmoke;                        
+            z-index: 99999;
+        }                   
+    </style>
+
+    <div class="modal fade" id="dialogoPopUpCrearViaje" data-backdrop="static" data-keyboard="false" style="color: black;">
+        <div class="modal-dialog" style="width: 85%;">
+            <div class="modal-content">
+                <div class="modal-header">                    
+                    <h4 class="modal-title">Crear Viaje</h4>
+                </div>
+                <div style="margin-top: 10px;" class="col-lg-12 col-xs-12">
+                    <h:message  for="" style="display: block;" infoClass="alert alert-success" warnClass="alert alert-warning"
+                                errorClass="alert alert-danger" fatalClass="alert alert-danger"  />
+                </div>   
+
+                <h:form id="frmPnlCrearViajes" styleClass="textoIzquierda">
+                    <div class="modal-body">                                                                                                        
+                        <div class="col-lg-12 col-xs-12">            
+                            <div class="row">
+                                <strong><h:outputText class="col-lg-12 col-xs-12 control-label" value="1. Datos Viaje"/></strong>
+                                <hr/>
+                                <div class="col-lg-12 col-xs-12">                                                                                                                    
+                                    <h:outputText class="col-md-2 col-xs-4 control-label" value="#{msgs['sgl.solicitudViaje.fechaSalida']}: "/>
+                                    <div class="col-md-2 col-xs-8">                                            
+                                        <script>
+                                            $(function () {
+                                                $("#frmPnlCrearViajes\\:fechaSalida").datepicker({
+                                                    showButtonPanel: true,
+                                                    buttonImage: "#{msgs['sgl.ruta.imagen']}cal_button.gif",
+                                                    buttonImageOnly: true,
+                                                    dateFormat: "dd/mm/yy",
+                                                    minDate: new Date(),
+                                                    onSelect: function (date) {
+                                                        fechaSeleccinadaSalida = date;
+                                                    }
+                                                });
+                                            });
+                                        </script>
+                                        <style>
+                                            .ui-datepicker-calendar .ui-state-active {                                
+                                                background: #6eafbf;
+                                                -webkit-box-shadow: inset 0px 0px 10px 0px rgba(0, 0, 0, .1);
+                                                -moz-box-shadow: inset 0px 0px 10px 0px rgba(0, 0, 0, .1);
+                                                box-shadow: inset 0px 0px 10px 0px rgba(0, 0, 0, .1);
+                                                color: #e0e0e0;
+                                                text-shadow: 0px 1px 0px #4d7a85;
+                                                filter: dropshadow(color=#4d7a85, offx=0, offy=1);
+                                                border: 1px solid #55838f;
+                                                position: relative;
+                                                margin: -1px;
+                                            }
+                                            .ui-datepicker-unselectable .ui-state-default {
+                                                background-image:  url(#{msgs['sgl.ruta.imagen']}flight-status-icon.png);
+                                            }
+                                        </style>
+                                        <h:inputText id="fechaSalida" value="#{administrarViajeBean.viajeVO.fechaProgramada}"  styleClass="form-control"> 
+                                            <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                        </h:inputText>
+                                    </div>
+                                    <h:outputText class="col-md-2 col-xs-4 control-label" value="#{msgs['sgl.solicitudViaje.horaSalida']}: "/>
+
+                                    <div class="col-md-2 col-xs-8">    
+                                        <div class="input-group clockpicker">
+                                            <input id="inputHoraSalida"  data-default="07:00" class="form-control" value="#{administrarViajeBean.horaSalida}"
+                                                   data-donetext="ok"  name="inputHoraSalida"/> 
+                                            <span class="input-group-addon">
+                                                <span class="glyphicon glyphicon-time"></span>
+                                            </span>
+                                        </div>
+                                        <p:commandLink id="horaSalida"  action="#{administrarViajeBean.actualizaHoraSalida()}"/>
+                                        <script type="text/javascript">
+                                            $('.clockpicker').clockpicker({
+                                                autoclose: false,
+                                                twelvehour: true,
+                                                donetext: 'continuar',
+                                                default: '7:00',
+                                                format: 'h:mm a',
+                                                afterDone: function () {
+                                                    console.log("after done");
+                                                    ejecutarBoton('frmPnlCrearViajes', 'horaSalida');
+                                                }
+                                            })
+                                                    .find('input').change(function () {
+                                                // TODO: time changed
+                                                console.log(this.value);
+                                            });
+                                            $('#inputHoraSalida').clockpicker({
+                                                autoclose: false,
+                                                twelvehour: true,
+                                                donetext: 'continuar',
+                                                default: '7:00',
+                                                format: 'h:mm a',
+                                                afterDone: function () {
+                                                    console.log("after done");
+                                                    ejecutarBoton('frmPnlCrearViajes', 'horaSalida');
+                                                }
+                                            });
+
+                                            if (something) {
+                                                $('#inputHoraSalida').clockpicker('show')
+                                                        .clockpicker('toggleView', 'minutes');
+
+                                            }
+                                        </script>
+                                    </div>
+                                    <div class="col-lg-2 col-xs-4" style="display: #{administrarViajeBean.viajeVO.sgViaje != 0  ? 'block' :'none'};">
+                                        <label>Sencillo</label>
+                                    </div>
+                                    <div class="col-lg-2 col-xs-4" style="display: #{administrarViajeBean.viajeVO.sgViaje == 0 ? 'block' :'none'};">
+                                        <script>
+                                            $("[name='tipoRS']").bootstrapSwitch();
+                                            function redondoSencillo() {
+                                                var d = document.getElementById("tipoRS").checked;
+                                                var tipo = document.getElementById('tipoRS');
+                                                if (d == true) {
+                                                    $('#tipoRS').bootstrapSwitch('labelText', 'Sencillo');
+                                                    $(tipo).attr("value", "redondo");
+                                                    ejecutarBoton('frmPnlCrearViajes', 'tipoDeviajeR');
+                                                    // v.value = "redondo";
+                                                } else {
+                                                    $('#tipoRS').bootstrapSwitch('labelText', 'Redondo');
+                                                    $(tipo).attr("value", "sencillo");
+                                                    ejecutarBoton('frmPnlCrearViajes', 'tipoDeviajeS');
+                                                }
+
+                                            }
+                                            ;
+                                        </script>
+                                        <p:commandLink id="tipoDeviajeR"  action="#{administrarViajeBean.tipoRedondo()}"/>
+                                        <p:commandLink id="tipoDeviajeS"  action="#{administrarViajeBean.tipoSencillo()}"/>
+                                        <input type="checkbox" name="tipoRS" checked="true" data-on-text="Redondo" data-off-text="Sencillo" id="tipoRS" value="redondo"
+                                               onchange="redondoSencillo()" class="form-control" data-label-text="Sencillo" data-on-color="primary" data-off-color="primary"/>
+                                    </div>
+                                    <div class="col-lg-2 col-xs-6">
+                                        <script>
+                                            $("[name='conIntercepcion']").bootstrapSwitch();
+                                            function inter() {
+                                                var d = document.getElementById("conIntercepcion").checked;
+                                                // var tipo = document.getElementById('cargarVehiculos');
+                                                if (d == true) {
+                                                    ejecutarBoton('frmPnlCrearViajes', 'sinInter');
+                                                } else {
+                                                    ejecutarBoton('frmPnlCrearViajes', 'conInter');
+                                                }
+
+                                            }
+                                            ;
+                                        </script>
+                                        <p:commandLink id="conInter"  action="#{administrarViajeBean.conInterception()}"/>
+                                        <p:commandLink id="sinInter"  action="#{administrarViajeBean.sinInterception()}"/>
+                                        <input type="checkbox" name="conIntercepcion" checked="false" data-on-text="No interceptar" data-off-text="Se intercepta                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          " id="conIntercepcion" 
+                                               onchange="inter()" class="form-control" data-label-text="" data-on-color="primary" data-off-color="primary" data-label-width="0"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <br/>
+                            <div class="row">
+                                <strong><h:outputText class="col-lg-12 col-xs-12 control-label" value="#{msgs['sgl.viaje.vehiculo']}"/></strong>
+                                <hr/>
+                                <div class="col-lg-12 col-xs-12">
+                                    <h:outputText value="#{msgs['sgl.oficina.nombre']}:" class="col-lg-1 col-xs-1 control-label"/>
+                                    <div class="col-lg-3 col-xs-4">                                            
+                                        <p:selectOneMenu  id="selectOneMenuOficinaVehiculos" value="#{administrarViajeBean.idOficinaVehiculo}"   styleClass="form-control"
+                                                            valueChangeListener="#{administrarViajeBean.cargarListaVehiculos}"
+                                                            >
+                                            <f:selectItems value="#{administrarViajeBean.listaOficina}"/>
+                                        </p:selectOneMenu>
+                                    </div>
+                                    <h:outputText value="#{msgs['sgl.vehiculo']}:" class="col-lg-2 col-xs-1 control-label"/>
+                                    <div class="col-lg-5 col-xs-4">
+                                        <p:selectOneMenu value="#{administrarViajeBean.idVehiculo}"   styleClass="form-control"
+                                                           valueChangeListener="#{administrarViajeBean.cargarResponsableVehiculo}"
+                                                           id="selectOneMenuVehiculo" >
+                                            <f:selectItem itemLabel="#{msgs['sistema.seleccionar']} #{msgs['sgl.vehiculo']}" 
+                                                          itemValue="-1"/>
+                                            <f:selectItems value="#{administrarViajeBean.listaVehiculos}"/>
+                                        </p:selectOneMenu>
+                                    </div>
+                                    <div class="col-lg-1 col-xs-2">
+                                        <script>
+                                            $("[name='cargarVehiculos']").bootstrapSwitch();
+                                            function cargarVehi() {
+                                                var d = document.getElementById("cargarVehiculos").checked;
+                                                var tipo = document.getElementById('cargarVehiculos');
+                                                if (d == true) {
+                                                    ejecutarBoton('frmPnlCrearViajes', 'vehiculosSGL');
+                                                } else {
+                                                    ejecutarBoton('frmPnlCrearViajes', 'todoslosVehiculos');
+                                                }
+
+                                            }
+                                            ;
+                                        </script>
+                                        <p:commandLink id="todoslosVehiculos"  action="#{administrarViajeBean.cargarListaConTodosLosVehiculosOficina()}"/>                                   
+                                        <p:commandLink id="vehiculosSGL"  action="#{administrarViajeBean.cargarVehiculos()}"/>
+                                        <input type="checkbox" name="cargarVehiculos" checked="true" data-on-text="SGL" data-off-text="Todos" id="cargarVehiculos" 
+                                               onchange="cargarVehi()" class="form-control" data-label-text="" data-on-color="primary" data-off-color="primary" data-label-width="0"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <br/>
+                            <div class="row">
+                                <strong><h:outputText class="col-lg-12 col-xs-12 control-label" value="#{msgs['sgl.viaje.chofer']}"/></strong>
+                                <hr/>
+                                <div class="col-lg-12 col-xs-12"> 
+                                    <div class="col-lg-4 col-xs-9" >
+                                        <label style="display: #{administrarViajeBean.tieneResponsable  ? 'block': 'none'}">#{administrarViajeBean.viajeVO.responsable}</label>
+                                    </div>
+                                    <button type="button" class="btn btn-primary" onclick="ejecutarBoton('frmPnlCrearViajes', 'cambioResponsable');" style="display: #{administrarViajeBean.tieneResponsable  ? 'block': 'none'}">
+                                        Cambiar Responsable
+                                    </button> 
+                                    <p:commandLink id="cambioResponsable"  action="#{administrarViajeBean.cambiarResponsable()}"/>
+                                    <h:outputText value="Empleado: " class="col-lg-2 col-xs-4 control-label" rendered="#{!administrarViajeBean.tieneResponsable}" />
+                                    <div class="col-lg-5 col-xs-5" style="display: #{administrarViajeBean.tieneResponsable  ? 'none': 'block'}">
+                                        <!-- <ice:selectInputText id="userSelect" styleClass="form-control"
+                                                              rows="10" >
+                                         </ice:selectInputText>-->
+                                        <div id="empSGL">
+                                            <input type="text" list="listaEmpleadosSGL" autocomplete="on" class="form-control" 
+                                                   onclick="if (this.value != '') {
+                                                               this.value = ''
+                                                           }" placeholder="Responsable..." id="responsable" name="responsable"/>                   
+                                            <datalist id="listaEmpleadosSGL">
+                                            </datalist> 
+                                        </div>
+
+
+                                        <script>
+                                            function cargarDatos(json, idElement) {
+                                                var tablaElementos = document.getElementById('tabla-elementos');
+                                                var index = 0;
+                                                var newlist = document.getElementById(idElement);
+                                                var nav = navigator.userAgent.toLowerCase();
+
+                                                $(json).each(function () {
+                                                    var op = document.createElement('option');
+                                                    op.value = this.label;
+                                                    op.setAttribute("id", this.value);
+                                                    if (nav.indexOf("chrome") != -1) {
+                                                        op.setAttribute("label", this.type);
+                                                    }
+                                                    newlist.appendChild(op);
+                                                    index++;
+                                                });
+
+                                            }
+                                            function limpiarDataList(list, idElement) {
+                                                var listOptions = document.getElementById(list).children;
+                                                var des = document.getElementById(idElement);
+                                                des.value = '';
+                                                if (listOptions.length > 0) {
+                                                    document.getElementById(list).removeChild(listOptions[0]);
+                                                    limpiarDataList(list, idElement);
+                                                }
+
+                                            }
+                                        </script>
+                                    </div>
+                                    <div class="col-lg-1 col-xs-3" style="display: #{administrarViajeBean.tieneResponsable  ? 'none': 'block'}">
+                                        <script>
+                                            $("[name='cargarConductores']").bootstrapSwitch();
+                                            function cargarTodosLosEmpleadosConLicencia() {
+                                                var d = document.getElementById("cargarConductores").checked;
+                                                var tipo = document.getElementById('cargarConductores');
+                                                if (d == true) {
+                                                    ejecutarBoton('frmPnlCrearViajes', 'EmpleadosSGL');
+                                                } else {
+                                                    ejecutarBoton('frmPnlCrearViajes', 'todoslosEmpleados');
+                                                }
+
+                                            }
+                                            ;
+                                        </script>
+                                        <p:commandLink id="todoslosEmpleados"  action="#{administrarViajeBean.cargarConductoresTodos()}"/>                                   
+                                        <p:commandLink id="EmpleadosSGL"  action="#{administrarViajeBean.cargarConductoresSGL()}"/>
+                                        <input type="checkbox" name="cargarConductores" checked="true" data-on-text="SGL" data-off-text="Todos" id="cargarConductores" 
+                                               onchange="cargarTodosLosEmpleadosConLicencia();" class="form-control" data-label-text="" data-on-color="primary" data-off-color="primary" data-label-width="0"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <br/>
+                            <div class="row">
+                                <strong><h:outputText class="col-lg-12 col-xs-12 control-label" value="4. #{msgs['sgl.viaje.ruta']}"/></strong>
+                                <hr/>
+                                <div class="col-lg-12 col-xs-12" style="display: #{administrarViajeBean.modificar ? 'none' :'block'}">
+                                    <div class="col-lg-4 col-xs-6">
+                                        Saliendo de <strong>#{administrarViajeBean.viajeVO.origen}</strong> 
+                                    </div>
+                                    <h:outputText value="Destino: " class="col-lg-2 col-xs-2 control-label"/>
+                                    <div class="col-lg-4 col-xs-4">
+                                        <input type="text" list="listaDestinos" autocomplete="on" class="form-control" 
+                                               onclick="if (this.value != '') {
+                                                           this.value = ''
+                                                       }" placeholder="Destino..." id="des" name="destino"/>                   
+                                        <datalist id="listaDestinos">
+                                        </datalist> 
+                                    </div> 
+
+                                </div>
+                                <div class="col-lg-12 col-xs-12" style="display: #{administrarViajeBean.modificar ? 'block' :'none'}">
+                                    Saliendo de <strong>#{administrarViajeBean.viajeVO.origen}</strong> con destino a <strong>#{administrarViajeBean.viajeVO.destino}</strong>
+                                </div>
+                            </div>
+                            <br/>
+                        </div>
+
+                    </div>
+                    <div class="modal-footer" style="border-top: white; text-align: right;">
+
+                        <div class="row">
+                            <div class="col-lg-8 col-xs-12"/>
+                            <div class="col-lg-4 col-xs-12" style="display: #{administrarViajeBean.modificar ? 'none' :'block'}">
+                                <button type="button" class="btn btn-primary" onclick="ejecutarBoton('frmPnlCrearViajes', 'btnCrearViaje');">Aceptar</button>
+                                <p:commandLink  action="#{administrarViajeBean.crearViaje()}" id="btnCrearViaje"/>
+                                <button type="button" class="btn btn-default" onclick="$(dialogoPopUpCrearViaje).modal('hide');">Cancelar</button>
+                            </div>
+                            <div class="col-lg-4 col-xs-12" style="display: #{administrarViajeBean.modificar ? 'block' :'none'}">
+                                <button type="button" class="btn btn-primary" onclick="ejecutarBoton('frmPnlCrearViajes', 'btnEditViaje');">Modificar</button>
+                                <p:commandLink  action="#{administrarViajeBean.editarViaje()}" id="btnEditViaje"/>
+                                <button type="button" class="btn btn-default" onclick="$(dialogoPopUpCrearViaje).modal('hide');">Cancelar</button>
+                            </div>
+                        </div>
+                    </div>                            
+                </h:form>
+            </div>
+        </div>
+    </div>
+
+    <!-- <div class="modal fade" id="dialogoPopUpCrearViajeExito" data-backdrop="static" data-keyboard="false" style="color: black;">
+         <div class="modal-dialog" style="width: 70%;">
+             <div class="modal-content">
+                 <div class="modal-header">                    
+                     <h4 class="modal-title">Crear Viaje Emergente</h4>
+                 </div>
+ 
+                 <div class="modal-body">                                                                                                        
+                     <div class="col-lg-12 col-xs-12 alert alert-success">                                                        
+                         <strong><h:outputText class="col-lg-12 col-xs-12 control-label " value="#{grViaje.msgExitoCrearViaje}"/></strong>                            
+                     </div>
+                 </div>
+                 <div class="modal-footer" style="border-top: white;">
+                     <p:commandButton
+                         value="Cerrar"
+                         styleClass="btn btn-cancelar"
+                         onclick="$(dialogoPopUpCrearViajeExito).modal('hide');"
+                         title="Cerrar ventana..." 
+                         />
+                 </div>                                           
+             </div>
+         </div>
+     </div>-->
+
+
+</ui:composition>

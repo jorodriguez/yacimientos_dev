@@ -188,9 +188,9 @@ public class SgLicenciaImpl extends AbstractFacade<SgLicencia> {
             SgLicencia sgLicencia = new SgLicencia();
             sgLicencia.setNumero(licenciaVo.getNumero());
             sgLicencia.setSgTipo(sgTipo);
-            sgLicencia.setSgTipoEspecifico(sgTipoEspecificoRemote.find(idTipoEspecifico));
+            sgLicencia.setSgTipoEspecifico(new SgTipoEspecifico(idTipoEspecifico));
             sgLicencia.setUsuario(usuarioRemote.buscarPorNombre(user));
-            sgLicencia.setSiPais(siPaisRemote.find(idPais));
+            sgLicencia.setSiPais(new SiPais(idPais));
             sgLicencia.setSiAdjunto(null);
             sgLicencia.setFechaExpedida(licenciaVo.getExpedida());
             sgLicencia.setFechaVencimiento(licenciaVo.getVencimiento());

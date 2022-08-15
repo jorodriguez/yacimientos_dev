@@ -1,0 +1,337 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html" 
+     
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core"
+      
+      xmlns:ui="http://java.sun.com/jsf/facelets">
+
+    <body>
+
+        <ui:composition template="./../../../../WEB-INF/facelets/templates/templateServiciosGenerales.xhtml">
+
+            <ui:define name="contenido">
+
+                <h:panelGroup rendered="#{empty sesion.usuario}" styleClass="altura"  >
+                    <ui:include src="./../../../../login.xhtml"/>
+                </h:panelGroup>
+
+                <h:panelGroup  >
+                    <center><h:messages globalOnly="true" errorClass="errorMessage" infoClass="infoMessage"/></center>
+		    <p class="tituloEncabezado">#{msgs['sistema.crear']} #{msgs['sgl.checklist.titulo']} del #{msgs['sgl.vehiculo']} #{vehiculoBean.vehiculo.marca} #{vehiculoBean.vehiculo.modelo}</p>
+
+                </h:panelGroup>
+
+                <h:panelGroup  >
+                    <h:form  >
+                        <h:panelGrid columns="2" >
+                            <p:commandLink title="#{msgs['sistema.regresar']} a Administrar Vehiculo" actionListener="#{checkListVehiculoBean.clearVariables(event)}" 
+                                             action="/vistas/sgl/vehiculo/administrarVehiculo" styleClass="btn btn-default">
+                                <h:graphicImage url="#{msgs['sgl.ruta.imagen']}button_back.png" alt="#{msgs['sistema.regresar']} a Administrar Vehículo" title="#{msgs['sistema.regresar']} a Administrar Vehículo" styleClass="imagenSinBorde"/>
+                            </p:commandLink>
+                            <p:commandLink value="#{msgs['sistema.regresar']} a Administrar Vehículo" actionListener="#{checkListVehiculoBean.clearVariables(event)}" action="/vistas/sgl/vehiculo/administrarVehiculo" styleClass="linkPequenio"/>
+                        </h:panelGrid>
+                    </h:form>
+                </h:panelGroup>
+
+                <br/><br/>
+
+                <h:panelGroup rendered="#{not empty sesion.usuario}"  >
+
+                    <h:form id="formChecklistVehículo" styleClass="textoIzquierda" >
+
+                        <p:tabView id="card Set"  activeIndex="#{checkListVehiculoBean.selectedIndex}" >
+
+                            <h:panelGrid columns="2" width="650px" style="margin-left: 25px" styleClass="bordePanelGrid">
+                                <f:facet name="header">
+                                    <h:outputText value="Datos Generales del Vehículo"/>
+                                </f:facet>  
+                                <h:panelGrid columns="2" width="50%" >
+                                    <h:panelGrid columns="2" >
+                                        <h:outputLabel value="Vehículo: " styleClass="f12" />
+                                        <h:outputText id="vehiculo" value="#{vehiculoBean.vehiculo.serie}" styleClass="f11" />
+                                        <h:outputLabel value="Marca: " styleClass="f12" />
+                                        <h:outputText id="marca" value="#{vehiculoBean.vehiculo.marca}" styleClass="f11" />
+                                        <h:outputLabel value="Modelo: " styleClass="f12" />
+                                        <h:outputText id="modelo" value="#{vehiculoBean.vehiculo.modelo}" styleClass="f11" />
+                                    </h:panelGrid>
+                                    <h:panelGrid columns="2" >
+                                        <h:outputLabel value="Oficina " styleClass="f12" />
+                                        <h:outputText id="oficina" value="#{sesion.oficinaActual.nombre}" styleClass="f11" />                            
+                                        <h:outputLabel value="Placa: " styleClass="f12" />
+                                        <h:outputText id="placa" value="#{vehiculoBean.vehiculo.numeroPlaca}" styleClass="f11" />
+                                    </h:panelGrid>
+                                </h:panelGrid>
+                            </h:panelGrid>                            
+
+                            <br/>
+
+                            <p:tab id="card TabChecklistInterno"  disabled="#{checkListVehiculoBean.disabledChecklistInterior}" >
+                                <h:panelGrid width="650px" style="margin-left: 25px" styleClass="bordePanelGrid" >
+                                    <f:facet name="header">
+                                        <h:outputText value="Checklist de Interior"/>
+                                    </f:facet>
+                                    <br/>
+                                    <h:panelGrid columns="6">
+                                        <h:outputLabel value="Kilometraje: " />
+                                        <h:outputText value="*" styleClass="textoRojo" />
+                                        <p:inputText id="kilometraje" value="#{checkListVehiculoBean.kilometraje.kilometraje}" size="7" />
+                                        <h:outputLabel value="Km. " />
+                                        <h:outputText value="(último: #{checkListVehiculoBean.kilometrajeActual != null ? checkListVehiculoBean.kilometrajeActual.kilometraje : 0} Km.)" />
+                                        <h:outputText id="helpKilometraje" value="?" styleClass="textoAyuda" />                 
+                                        <p:tooltip id="pnlToolTipHelpKilometraje"
+                                                     for="helpKilometraje"
+                                                     showEvent="mouseover"
+                                                     showEffect="slide"
+                                                     hideEffect="slide"
+                                                     hideDelay="2300">
+                                            <h:panelGrid width="190px;" styleClass="textoAyuda">
+                                                <h:outputText value="Debe ser un número entero, sin letras. Ejemplo: 300" />
+                                            </h:panelGrid>
+                                        </p:tooltip>
+                                    </h:panelGrid>
+                                    <br/>
+                                    <p:dataTable showGridlines="true" size="small"  value="#{checkListVehiculoBean.checklistVehiculoVODataModel}"
+                                                   var="data"
+                                                   scrollable="true"
+                                                   scrollHeight="350px"
+                                                    >
+                                        <p:column>
+                                            <f:facet name="header">
+                                                <h:outputText value="Nombre"/>
+                                            </f:facet>
+                                            <h:outputText value="#{data.caracteristicaVo.nombre}" 
+							    styleClass="#{data.caracteristicaVo.principal ? 'text-primary' : ''}" />
+                                        </p:column>                                 
+                                        <p:column style="text-align: center;" >
+                                            <f:facet name="header">
+                                                <h:outputText value="Estado"/>
+                                            </f:facet>
+                                            <p:selectBooleanCheckbox value="#{data.estado}" />
+                                        </p:column> 
+                                        <p:column>
+                                            <f:facet name="header">
+                                                <h:outputText value="Observación" />
+                                            </f:facet>
+                                            <p:inputTextarea value="#{data.observacion}" maxlength="1024" style="width: 350px" />
+                                        </p:column>                            
+                                    </p:dataTable>
+
+                                    <br />
+
+                                    <center>
+                                        <p:commandButton value="Continuar" actionListener="#{checkListVehiculoBean.createChecklisInteriorVehiculo(actionEvent)}" styleClass="btn btn-info"/>
+                                    </center> 
+                                </h:panelGrid>
+
+                            </ice:panelTab>
+
+                            <p:tab title="Paso 2 - Checklist Externo" disabled="#{checkListVehiculoBean.disabledChecklistExterior}" >
+                                <h:panelGrid width="650px" style="margin-left: 25px" styleClass="bordePanelGrid" >
+                                    <f:facet name="header">
+                                        <h:outputText value="Checklist Externo"/>
+                                    </f:facet>
+
+                                    <br />
+
+                                    <p:commandLink rendered="#{checkListVehiculoBean.flag eq false}" value="Subir archivo" actionListener="#{checkListVehiculoBean.openPopupUploadChecklistExterior(actionEvent)}" styleClass="link"/>
+
+                                    <h:panelGrid rendered="#{checkListVehiculoBean.flag eq true}" >
+
+                                        <p:dataTable id="dataGridAdjuntoChecklistExterior" rows="2" 
+                                                     value="#{checkListVehiculoBean.checklistExtVehiculo.siAdjunto}"  >
+                                            <p:column>
+                                                <f:facet name="header">
+                                                    <h:outputText value="Peso"/>
+                                                </f:facet>
+                                                <h:outputText value="#{data.peso}" />
+                                            </p:column>
+                                            <p:column>
+                                                <f:facet name="header">
+                                                    <h:outputText value="Observación"/>
+                                                </f:facet>
+                                                <h:outputText value="#{data.descripcion}" />
+                                            </p:column>                                            
+                                            <p:column>
+                                                <h:outputLink target="_blank"  value="/ServiciosGenerales/AbrirArchivo?ZWZ2W=#{data.id}&amp;ZWZ3W=#{data.uuid}">
+                                                    <center><h:graphicImage url="#{msgs['sgl.ruta.imagen']}icon_attach.gif"  alt="Abrir archivo" /></center>
+                                                </h:outputLink>
+                                            </p:column>
+                                            <p:column>
+                                                <p:commandLink value="Agregar Observación"  actionListener="#{checkListVehiculoBean.openPopupAddObservacionToChecklistExterior(actionEvent)}" rendered="#{checkListVehiculoBean.checklistExtVehiculo.siAdjunto != null and empty checkListVehiculoBean.checklistExtVehiculo.siAdjunto.descripcion}" styleClass="link" />
+                                            </p:column>
+                                            <p:column>
+                                                <p:commandLink value="Modificar Observación"  actionListener="#{checkListVehiculoBean.openPopupUpdateObservacionToChecklistExterior(actionEvent)}" rendered="#{checkListVehiculoBean.checklistExtVehiculo.siAdjunto != null and not empty checkListVehiculoBean.checklistExtVehiculo.siAdjunto.descripcion}" styleClass="link" />
+                                            </p:column>                                            
+                                            <p:column>
+                                                <p:commandLink value="#{msgs['sistema.eliminar']}" actionListener="#{checkListVehiculoBean.deleteAdjuntoChecklistExterior(actionEvent)}" 
+                                                                 title="#{msgs['sistema.eliminar']}" onclick="if (!confirm('Está seguro que desea eliminar este archivo?'))
+									     return false;" styleClass="link" /> 
+                                            </p:column>
+                                        </p:dataTable>                                        
+
+                                    </h:panelGrid>
+                                    <center>
+                                        <p:commandButton value="Continuar" actionListener="#{checkListVehiculoBean.continueToSteap3(actionEvent)}" styleClass="btn btn-info"/>
+                                    </center>
+
+                                </h:panelGrid>
+                            </ice:panelTab>
+
+                            <p:tab title="Paso 3 - Checklist Llantas" disabled="#{checkListVehiculoBean.disabledChecklistLlantas}" >
+                                <h:panelGrid width="650px" style="margin-left: 25px" styleClass="bordePanelGrid" >
+                                    <f:facet name="header">
+                                        <h:outputText value="Checklist de Llantas"/>
+                                    </f:facet>
+
+                                    <h:outputLabel value="Condiciones de llantas (%)" />
+
+                                    <h:panelGrid columns="2">
+                                        <h:panelGrid columns="2">
+                                            <h:outputLabel value="Delantera Izquierda: " />
+                                            <h:outputText value="*" styleClass="textoRojo" />
+                                        </h:panelGrid>
+                                        <h:panelGrid columns="3">
+                                            <p:inputText id="delanteraIzquierda" value="#{checkListVehiculoBean.checklistLlantas.delanteraIzquierda}" required="true" requiredMessage="requerido" >
+                                                <f:validateLongRange minimum="1" maximum="100"></f:validateLongRange>
+                                            </p:inputText>
+                                            <h:outputText value="%" />
+                                            <h:message for="delanteraIzquierda" errorClass="errorMessage" infoClass="infoMessage"/>
+                                        </h:panelGrid>
+                                        <h:panelGrid columns="2">
+                                            <h:outputLabel value="Delantera Derecha: " />
+                                            <h:outputText value="*" styleClass="textoRojo" />
+                                        </h:panelGrid>
+                                        <h:panelGrid columns="3">
+                                            <p:inputText id="delanteraDerecha" value="#{checkListVehiculoBean.checklistLlantas.delanteraDerecha}" required="true" requiredMessage="requerido" >
+                                                <f:validateLongRange minimum="1" maximum="100"></f:validateLongRange>
+                                            </p:inputText>
+                                            <h:outputText value="%" />
+                                            <h:message for="delanteraDerecha" errorClass="errorMessage" infoClass="infoMessage"/>
+                                        </h:panelGrid>
+                                        <h:panelGrid columns="2">
+                                            <h:outputLabel value="Trasera Izquierda: " />
+                                            <h:outputText value="*" styleClass="textoRojo" />
+                                        </h:panelGrid>
+                                        <h:panelGrid columns="3">
+                                            <p:inputText id="traseraIzquierda" value="#{checkListVehiculoBean.checklistLlantas.traseraIzquierda}" required="true" requiredMessage="requerido" >
+                                                <f:validateLongRange minimum="1" maximum="100"></f:validateLongRange>
+                                            </p:inputText>
+                                            <h:outputText value="%" />
+                                            <h:message for="traseraIzquierda" errorClass="errorMessage" infoClass="infoMessage"/>
+                                        </h:panelGrid>
+                                        <h:panelGrid columns="2">
+                                            <h:outputLabel value="Trasera Derecha :" />
+                                            <h:outputText value="*" styleClass="textoRojo" />
+                                        </h:panelGrid>
+                                        <h:panelGrid columns="3">
+                                            <p:inputText id="traseraDerecha" value="#{checkListVehiculoBean.checklistLlantas.traseraDerecha}" required="true" requiredMessage="requerido" >
+                                                <f:validateLongRange minimum="1" maximum="100"></f:validateLongRange>
+                                            </p:inputText>
+                                            <h:outputText value="%" />
+                                            <h:message for="traseraDerecha" errorClass="errorMessage" infoClass="infoMessage"/>
+                                        </h:panelGrid>
+                                        <h:outputLabel value="Refacción: " />
+                                        <h:panelGrid columns="3">
+                                            <p:inputText id="refaccion" value="#{checkListVehiculoBean.checklistLlantas.refaccion}" >
+                                                <f:validateLongRange minimum="0" maximum="100"></f:validateLongRange>
+                                            </p:inputText>
+                                            <h:outputText value="%" />
+                                            <h:message for="refaccion" errorClass="errorMessage" infoClass="infoMessage"/>
+                                        </h:panelGrid>
+                                        <h:outputLabel value="Estado general de llantas: " />
+                                        <p:selectBooleanCheckbox value="#{checkListVehiculoBean.flag}"/>
+                                    </h:panelGrid>
+                                    <h:panelGrid columns="2">
+                                        <h:panelGrid columns="2">
+                                            <h:outputLabel value="Comentarios: " />
+                                            <p:inputTextarea value="#{checkListVehiculoBean.cadena}" rows="5" cols="50" />
+                                        </h:panelGrid>
+                                    </h:panelGrid>
+
+                                    <center>
+                                        <p:commandButton value="#{msgs['sistema.terminar']}" action="#{checkListVehiculoBean.createChecklistLlantas()}" styleClass="btn btn-info"/>
+                                    </center> 
+                                </h:panelGrid>
+                            </ice:panelTab>
+                        </p:tabView>                        
+
+                    </h:form>
+                </h:panelGroup>
+
+                <center><h:messages globalOnly="true" errorClass="errorMessage" infoClass="infoMessage"/></center>
+
+                <!-- Agregar Observación a Checklist de Exterior -->
+                <h:form id="popupAgregarObservacion" styleClass="textoIzquierda">
+                    <p:dialog  header="Agregar Observación"
+                               >
+                        <h:panelGrid columns="2" styleClass="bordePanelGrid"  >
+                            <h:panelGrid columns="2">
+                                <h:outputLabel value="Observación: " />
+                                <p:inputText id="observ" value="#{checkListVehiculoBean.checklistExtVehiculo.siAdjunto.descripcion}" 
+                                             style="width: 200px" styleClass="f11" maxlength="250" />
+                            </h:panelGrid>                            
+                        </h:panelGrid>
+                        <center>
+                            <h:panelGrid columns="2">
+                                <p:commandButton value="#{msgs['sistema.guardar']}" actionListener="#{checkListVehiculoBean.updateAdjunto(actionEvent)}" styleClass="btn btn-info"/>
+                                <p:commandButton value="#{msgs['sistema.cancelar']}" actionListener="#{checkListVehiculoBean.closePopupAddObservacionToChecklistExterior(actionEvent)}" immediate="true" styleClass="btn btn-default"/>        
+                            </h:panelGrid>                        
+                        </center>
+                    </my:panelPopup>
+                </h:form> 
+
+                <!-- Modificar Observación a Checklist de Exterior -->
+                <h:form id="popupModificarObservacion" styleClass="textoIzquierda">
+                    <p:dialog  header="Modificar Observación" 
+                               >
+                        <h:panelGrid columns="2" styleClass="bordePanelGrid"  >
+                            <h:panelGrid columns="2">
+                                <h:outputLabel value="Observación: " />
+                                <p:inputText id="observacion" value="#{checkListVehiculoBean.checklistExtVehiculo.siAdjunto.descripcion}" 
+                                             style="width: 200px" styleClass="f11" maxlength="250" />
+                            </h:panelGrid>                            
+                        </h:panelGrid>
+                        <center>
+                            <h:panelGrid columns="2">
+                                <p:commandButton value="#{msgs['sistema.guardar']}" actionListener="#{checkListVehiculoBean.updateAdjunto(actionEvent)}" styleClass="btn btn-info"/>
+                                <p:commandButton value="#{msgs['sistema.cancelar']}" actionListener="#{checkListVehiculoBean.closePopupUpdateObservacionToChecklistExterior(actionEvent)}" immediate="true" styleClass="btn btn-default"/>        
+                            </h:panelGrid>                        
+                        </center>
+                    </my:panelPopup>
+                </h:form>   
+
+                <!-- Subir archivo ChecklistExterior -->
+                <h:form id="popupSubirArchivoChecklistExterior" styleClass="textoIzquierda">
+                    <p:dialog   id="popup1" style="background: #FFFFFF;" visible="#{sesion.controladorPopups['popupUploadChecklistExterior']}" draggable="false" modal="true">
+                        <f:facet name="header">
+                            <h:panelGroup>
+                                <h:outputText value="Subir archivo de Checklist Externo" style="float: left; padding: 4px;text-align: center; vertical-align: middle;font: 11px;color: #484848; font-weight: bold;"/>
+                            </h:panelGroup>
+                        </f:facet>
+                        <f:facet name="body">
+                            <h:panelGroup id="card Group1" >
+
+                                <h:panelGrid id="card GridSubirArchivoChecklistExterior" columns="2" rendered="#{checkListVehiculoBean.flag eq false}" >
+                                    <p:fileUpload  id="fileEntryChecklistExteriorVehiculo"
+                                                   listener="#{checkListVehiculoBean.uploadFileChecklistExteriorVehiculo}"
+                                                   label="Subir archivo"/>
+                                </h:panelGrid>  
+                                <center>
+                                    <p:commandButton value="#{msgs['sistema.cancelar']}" actionListener="#{checkListVehiculoBean.closePopupUploadChecklistExterior(actionEvent)}" immediate="true" styleClass="btn btn-default"/>
+                                </center> 
+                            </h:panelGroup>
+                        </f:facet>
+                    </<p:dialog >
+                </h:form>
+
+
+
+            </ui:define>
+
+        </ui:composition>
+
+    </body>
+</html>

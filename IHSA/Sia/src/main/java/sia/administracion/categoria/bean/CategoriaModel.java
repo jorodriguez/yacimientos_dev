@@ -10,15 +10,19 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJBException;
-
-
 
 import javax.faces.model.SelectItem;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+import lombok.Getter;
+import lombok.Setter;
+import org.primefaces.PrimeFaces;
+import org.primefaces.event.SelectEvent;
 import sia.constantes.Constantes;
 import sia.excepciones.SIAException;
 import sia.inventarios.service.ArticuloRemote;
@@ -47,13 +51,12 @@ import sia.util.UtilLog4j;
  *
  * @author ihsa
  */
-@Named(value = "categoriaModel")
+@Named(value = "categoriaBean")
 @ViewScoped
 public class CategoriaModel implements Serializable {
 
     private static final UtilLog4j LOGGER = UtilLog4j.log;
-    
-    
+
     /**
      * Creates a new instance of CategoriaModel
      */
@@ -79,15 +82,17 @@ public class CategoriaModel implements Serializable {
     private NotificacionRequisicionImpl notificacionRequisicionImpl;
     @Inject
     private SatArticuloImpl satArticuloImpl;
+    @Inject
+    SiRelCategoriaImpl siRelCategoriaImpl;
 
     private SoporteListas soporteListas = (SoporteListas) FacesUtils.getManagedBean("soporteListas");
 
     @Inject
     private Sesion sesion;
-    private List<CategoriaVo> categoriasSeleccionadas = new ArrayList<CategoriaVo>();
+    private List<CategoriaVo> categoriasSeleccionadas = new ArrayList<>();
     private CategoriaVo categoriaVo;
-    private List<CategoriaVo> listaCategoriaTemporal = new ArrayList<CategoriaVo>();
-    private List<CategoriaVo> listaCategoría = new ArrayList<CategoriaVo>();
+    private List<CategoriaVo> listaCategoriaTemporal = new ArrayList<>();
+    private List<CategoriaVo> listaCategoría = new ArrayList<>();
     //
     private List<SelectItem> unidad;
     private boolean adminCategoria = false;
@@ -103,6 +108,9 @@ public class CategoriaModel implements Serializable {
     private List<ArticuloVO> listaCambiarArticulos;
     private List<CategoriaVo> listaCategoriaCambiar;
     private List<CategoriaVo> listaCambiarSeleccionada;
+    @Getter
+    @Setter
+    private CategoriaVo categoriaTempVo;
     //
     private boolean mostrarArticulos;
     //
@@ -112,31 +120,31 @@ public class CategoriaModel implements Serializable {
     private List<CampoVo> listaCampoPorArticulo;
     private List<CampoVo> listaNoCampoPorArticulo;
     private String usuarioNotificar;
-    private List<SelectItem> listaUsuario = new ArrayList<SelectItem>();
+    private List<SelectItem> listaUsuario = new ArrayList<>();
     private int newArticuloID;
     private String articuloTx;
-    private List<SelectItem> articulosResultadoBqda = new ArrayList<SelectItem>();
+    private List<ArticuloVO> articulosResultadoBqda = new ArrayList<>();
     private SoporteCategorias soporteCategorias = (SoporteCategorias) FacesUtils.getManagedBean("soporteCategorias");
-    private List<SelectItem> satArticulosResultadoBqda = new ArrayList<SelectItem>();
+    private List<SelectItem> satArticulosResultadoBqda = new ArrayList<>();
     private String articuloSatTx = "";
     private int idBloque;
 
     @PostConstruct
     public void iniciar() {
+        categoriaTempVo = new CategoriaVo();
         categoriaVo = new CategoriaVo();
+        listaArticulos = new ArrayList<>();
+        setIdBloque(sesion.getUsuario().getApCampo().getId());
+        articulosResultadoBqda = new ArrayList<>();
+        listaCategoría = new ArrayList<>();
         categoriaVo.setListaCategoria(siCategoriaLocal.traerCategoriaPrincipales());
         //
         iniciarCatSel();
         //
         llenarUnidad(siUnidadImpl.traerUnidad());
-        listaArticulos = new ArrayList<ArticuloVO>();
         listaCampoUsuario();
-        //////////////////***
-        setIdBloque(sesion.getUsuario().getApCampo().getId());
-        setArticulosResultadoBqda(soporteCategorias.obtenerArticulos(this.getArticuloTx(), this.getIdBloque(),
-                0,
-                null));
-        setSatArticulosResultadoBqda(soporteCategorias.obtenerArticulosSat(null));
+        listaCategoría = invArticuloCampoImpl.traerCategoriaArticulo();
+        //////////////////        
     }
 
     public void imprimirArticulosCategoria() {
@@ -144,7 +152,7 @@ public class CategoriaModel implements Serializable {
     }
 
     public void llenarUnidad(List<GeneralVo> listaUnidad) {
-        unidad = new ArrayList<SelectItem>();
+        unidad = new ArrayList<>();
         for (GeneralVo listaUnidad1 : listaUnidad) {
             getUnidad().add(new SelectItem(listaUnidad1.getValor(), listaUnidad1.getNombre()));
         }
@@ -172,15 +180,14 @@ public class CategoriaModel implements Serializable {
     public void traerSubcategoria(int indice) {
         CategoriaVo c = categoriasSeleccionadas.get(indice);
         if (indice == 0) {
+            listaCategoría = invArticuloCampoImpl.traerCategoriaArticulo();
             categoriaVo = new CategoriaVo();
-            categoriaVo.setListaCategoria(siCategoriaLocal.traerCategoriaPrincipales());
-            categoriasSeleccionadas = new ArrayList<CategoriaVo>();
+            // categoriaVo.setListaCategoria(siCategoriaLocal.traerCategoriaPrincipales());
+            categoriasSeleccionadas = new ArrayList<>();
             iniciarCatSel();
-            listaCategoriaTemporal = new ArrayList<CategoriaVo>();
-            listaCategoría = new ArrayList<CategoriaVo>();
             setAdminCategoria(false);
         } else {
-            categoriaVo = siRelCategoriaLocal.traerCategoriaPorCategoria(c.getId(), null, this.getIdBloque());
+            setCategoriaVo(siRelCategoriaImpl.traerCategoriaPorCategoria(c.getId(), getSoloCodigos(getCategoriasSeleccionadas().subList(0, indice)), sesion.getUsuarioVo().getIdCampo()));
             if (c.getId() != categoriaVo.getId()) {
                 categoriasSeleccionadas.add(categoriaVo);// limpiar lista seleccionadas
             }
@@ -194,10 +201,32 @@ public class CategoriaModel implements Serializable {
         if (categoriasSeleccionadas.size() < 3) {
             setMostrarArticulos(false);
             listaArticulos.clear();
+            articulosResultadoBqda = articuloImpl.obtenerArticulos(null, sesion.getUsuarioVo().getIdCampo(), 0,
+                    getCodigos(
+                            getCategoriasSeleccionadas().size() > 1
+                            ? getCategoriasSeleccionadas().subList(1, getCategoriasSeleccionadas().size())
+                            : new ArrayList<>()));
         } else {
             verArticulos();
         }
 
+    }
+
+    public void abrirPopUpArticulo() {
+        try {
+            this.setNumParte("");
+            this.setArticulo("");
+            PrimeFaces.current().executeScript(";$(registrarArticulo).modal('show');mostrarDiv('registrarArticulo');");
+        } catch (Exception e) {
+            Logger.getLogger(CategoriaBean.class.getName()).log(Level.SEVERE, null, e);
+            FacesUtils.addErrorMessage("Ocurrió una excepción, favor de comunicar a sia@ihsa.mx");
+        }
+    }
+
+    public void agregarCategoria() {
+        traerListaCategoria();
+        setAdminCategoria(true);
+        setMostrarArticulos(false);
     }
 
     public void traerListaCategoria() {
@@ -226,8 +255,8 @@ public class CategoriaModel implements Serializable {
         //for (CategoriaVo categoriaTemp : listaCategoriaTemporal) {
         //    listaCategoría.add(listaCategoría.size(), categoriaTemp);
         //}
-        listaCategoría = new ArrayList<CategoriaVo>();
-        listaCategoriaTemporal = new ArrayList<CategoriaVo>();
+        listaCategoría = new ArrayList<>();
+        listaCategoriaTemporal = new ArrayList<>();
     }
 
     public void terminarGuardarCategoria() {
@@ -235,14 +264,57 @@ public class CategoriaModel implements Serializable {
         for (CategoriaVo listaCategoriaTemporal1 : listaCategoriaTemporal) {
             categoriaVo.getListaCategoria().add(categoriaVo.getListaCategoria().size(), listaCategoriaTemporal1);
         }
-        listaCategoriaTemporal = new ArrayList<CategoriaVo>();
-        listaCategoría = new ArrayList<CategoriaVo>();
+        listaCategoriaTemporal = new ArrayList<>();
+        listaCategoría = new ArrayList<>();
     }
 
     public void eliminarCategoria(int indiceCategoria) {
         //invArticuloCampoImpl.traerCategoriaArticulo();
         siRelCategoriaLocal.eliminarRelacion(sesion.getUsuario().getId(), categoriaVo.getListaCategoria().get(indiceCategoria).getIdPadre());
         categoriaVo.getListaCategoria().remove(indiceCategoria);
+    }
+
+    public void seleccionarCategoria(SelectEvent<CategoriaVo> event) {
+        try {
+            CategoriaVo con = (CategoriaVo) event.getObject();
+            //out.println("Categoría selec:" + con.getNombre());
+            //setCategoriaVo(con);
+            //
+            categoriaVo = siRelCategoriaImpl.traerCategoriaPorCategoria(con.getId(), getSoloCodigos(categoriasSeleccionadas), sesion.getUsuarioVo().getIdCampo());
+            //.out.println("Categoría rec: " + categoriaVo.getNombre() + " cats: " + categoriaVo.getListaCategoria());
+            listaCategoría = categoriaVo.getListaCategoria();
+            //
+            //.out.println("Seleccionadas : " + categoriasSeleccionadas.size());
+            //llenarCategoria(getSoloCodigos(getCategoriasSeleccionadas()));
+            categoriasSeleccionadas.add(categoriaVo);
+            if (getCategoriasSeleccionadas() != null && getCategoriasSeleccionadas().size() > 1) {
+                setArticuloTx("");
+                articulosResultadoBqda = articuloImpl.obtenerArticulos(
+                        null, sesion.getUsuarioVo().getIdCampo(),
+                        0, getCodigos(getCategoriasSeleccionadas().size() > 1
+                                ? getCategoriasSeleccionadas().subList(1, getCategoriasSeleccionadas().size())
+                                : new ArrayList<>()));
+            }
+        } catch (Exception e) {
+            UtilLog4j.log.error(e);
+        }
+    }
+
+    public void cerrarCambiarArticulos() {
+        setArticuloVO(null);
+    }
+    public void seleccionarResultadoBA(SelectEvent event) {
+        try {
+            articuloVO = (ArticuloVO) event.getObject();
+            llenarDatosCambiarArticulo();
+            PrimeFaces.current().executeScript(";$(dialogoAgregarArticuloCampo).modal('show');;");
+        } catch (Exception e) {
+            UtilLog4j.log.fatal(this, e);
+            FacesUtils.addErrorMessage("Ocurrió una excepción, favor de comunicar a sia@ihsa.mx");
+        }
+    }
+
+    public void seleccionarArticulo(ArticuloVO vvo) {
     }
 
     public void guardarArticulo() throws SIAException {
@@ -284,7 +356,7 @@ public class CategoriaModel implements Serializable {
         listaArticulos = articuloImpl.obtenerArticulos(null, this.getIdBloque(), this.getCategoriaVo().getId(),
                 catCodigo(this.getCategoriasSeleccionadas().size() > 2
                         ? this.getCategoriasSeleccionadas().subList(2, this.getCategoriasSeleccionadas().size())
-                        : new ArrayList<CategoriaVo>()
+                        : new ArrayList<>()
                 ));
         //
     }
@@ -347,7 +419,7 @@ public class CategoriaModel implements Serializable {
 
     public void llenarCategoriaCambiar() {
         listaCategoriaCambiar = siCategoriaLocal.traerCategoriaPrincipales();
-        listaCambiarSeleccionada = new ArrayList<CategoriaVo>();
+        listaCambiarSeleccionada = new ArrayList<>();
         CategoriaVo c = new CategoriaVo();
         c.setNombre("Pricipales");
         c.setId(Constantes.CERO);
@@ -376,8 +448,8 @@ public class CategoriaModel implements Serializable {
 
     public void cambiarArticulo() {
         articuloImpl.cambiarArticulo(sesion.getUsuario().getId(), listaCambiarArticulos, listaCambiarSeleccionada.subList(1, listaCambiarSeleccionada.size()));
-        listaCategoriaCambiar = new ArrayList<CategoriaVo>();
-        listaCambiarSeleccionada = new ArrayList<CategoriaVo>();
+        listaCategoriaCambiar = new ArrayList<>();
+        listaCambiarSeleccionada = new ArrayList<>();
         verArticulos();
     }
 
@@ -395,6 +467,8 @@ public class CategoriaModel implements Serializable {
         }
         invArticuloCampoImpl.guardarArticuloCampo(sesion.getUsuario().getId(), articuloVO.getId(), ltemp);
         llenarDatosCambiarArticulo();
+        //
+        PrimeFaces.current().executeScript("$(dialogoAgregarArticuloCampo).modal('hide');");
     }
 
     public void quitarArticuloCampo(int idRel) {
@@ -718,27 +792,15 @@ public class CategoriaModel implements Serializable {
     /**
      * @return the articulosResultadoBqda
      */
-    public List<SelectItem> getArticulosResultadoBqda() {
+    public List<ArticuloVO> getArticulosResultadoBqda() {
         return articulosResultadoBqda;
     }
 
     /**
      * @param articulosResultadoBqda the articulosResultadoBqda to set
      */
-    public void setArticulosResultadoBqda(List<SelectItem> articulosResultadoBqda) {
+    public void setArticulosResultadoBqda(List<ArticuloVO> articulosResultadoBqda) {
         this.articulosResultadoBqda = articulosResultadoBqda;
-    }
-
-    public void traerArticulosItemsLst(String cadena) {
-        if ((cadena != null && !cadena.isEmpty() && cadena.length() > 2)
-                || (cadena == null || cadena.isEmpty())) {
-            setArticulosResultadoBqda(traerArticulosItems(cadena));
-        }
-    }
-
-    public void traerArticulosItemsLstCat() {
-        setArticulosResultadoBqda(traerArticulosItems(""));
-        this.setArticuloTx("");
     }
 
     private List<SelectItem> traerArticulosItems(String cadena) {
@@ -749,7 +811,7 @@ public class CategoriaModel implements Serializable {
                     Constantes.CERO,
                     getCodigos(this.getCategoriasSeleccionadas().size() > 1
                             ? this.getCategoriasSeleccionadas().subList(1, this.getCategoriasSeleccionadas().size())
-                            : new ArrayList<CategoriaVo>()));
+                            : new ArrayList<>()));
         } catch (Exception e) {
             list = new ArrayList<SelectItem>();
         }
@@ -789,18 +851,18 @@ public class CategoriaModel implements Serializable {
                     if (articulos.get(0).getCategorias() != null && !articulos.get(0).getCategorias().isEmpty()) {
                         String[] output = articulos.get(0).getCategorias().split(",");
                         if (output != null && output.length > 0) {
-                            categoriasSeleccionadas = new ArrayList<CategoriaVo>();
+                            categoriasSeleccionadas = new ArrayList<>();
                             iniciarCatSel();
                             for (String s : output) {
                                 llenarCategoria(Integer.parseInt(s));
                             }
-                            setListaCategoriaTemporal(new ArrayList<CategoriaVo>());
+                            setListaCategoriaTemporal(new ArrayList<>());
                             traerListaCategoria();
                             if (getCategoriaVo().getListaCategoria() == null || getCategoriaVo().getListaCategoria().size() == 0) {
                                 verArticulos();
                                 setMostrarArticulos(true);
                             }
-                            traerArticulosItemsLstCat();
+                            //   traerArticulosItemsLstCat();
                         }
                     }
                 }

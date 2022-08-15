@@ -1,0 +1,287 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+     >
+    <body>
+        <ui:composition template="./../../../WEB-INF/facelets/templates/templateServiciosGenerales.xhtml">
+            <ui:define name="contenido">
+                <h:panelGroup  rendered="#{empty sesion.usuario}" styleClass="altura">
+                    <ui:include src="./../../../login.xhtml"/>
+                </h:panelGroup> 
+                <h:form >
+                    <center><h:messages errorClass="errorMessage" infoClass="infoMessage"/></center>
+                    <p class="tituloEncabezado">Detalle de asignaciones</p>
+                    <h:panelGrid columns="2" rendered="true">
+                        <p:commandLink title="Administracion de vehículo"  action="#{vehiculoBean.regresarAdministrarVehiculo()}" 
+                                         styleClass="btn btn-default">
+                            <h:graphicImage url="#{msgs['sgl.ruta.imagen']}button_back.png" 
+                                              styleClass="imagenSinBorde"/>
+                        </p:commandLink>
+                        <p:commandLink value="Administracion de vehículo" action="#{vehiculoBean.regresarAdministrarVehiculo()}" styleClass="linkPequenio"/>
+                    </h:panelGrid>                     
+                    <br/>
+                    <h:outputText value="Datos generales" styleClass="tituloAdministra"/>
+                    <h:panelGrid columns="4" width="70%">
+                        <h:panelGrid>
+                            <h:outputText value="Modelo"/>
+                            <h:outputLabel value="#{vehiculoBean.sgAsignarVehiculo.sgVehiculo.sgModelo.nombre}"/>
+                        </h:panelGrid>
+                        <h:panelGrid>
+                            <h:outputText value="Marca"/>
+                            <h:outputLabel value="#{vehiculoBean.sgAsignarVehiculo.sgVehiculo.sgMarca.nombre}"/>
+                        </h:panelGrid>
+                        <h:panelGrid>
+                            <h:outputText value="Nombre"/>
+                            <h:outputLabel value="#{vehiculoBean.sgAsignarVehiculo.sgVehiculo.nombre}"/>
+                        </h:panelGrid>
+                        <h:panelGrid>
+                            <h:outputText value="Placa"/>
+                            <h:outputLabel value="#{vehiculoBean.sgAsignarVehiculo.sgVehiculo.numeroPlaca}"/>
+                        </h:panelGrid>
+                    </h:panelGrid>  
+                    <br/>
+                    <h:panelGrid  border="0">
+                        <h:panelGrid  border="0">
+                            <h:outputText value="Datos de la asignación" styleClass="tituloAdministra" rendered="#{vehiculoBean.sgAsignarVehiculo.siOperacion.id eq 1}"/>
+                            <h:panelGrid columns="5"  border="0">
+                                <h:panelGrid >
+                                    <h:outputText value="Usuario"/>
+                                    <h:outputLabel value="#{vehiculoBean.sgAsignarVehiculo.usuario.nombre}"/>                        
+                                </h:panelGrid>
+                                <h:panelGrid >
+                                    <h:outputText value="Asignó"/>
+                                    <h:outputLabel value="#{vehiculoBean.sgAsignarVehiculo.genero.nombre}"/>
+                                </h:panelGrid>
+                                <h:panelGrid >
+                                    <h:outputText value="Fecha"/>
+                                    <h:outputLabel value="#{vehiculoBean.sgAsignarVehiculo.fechaOperacion}">
+                                        <f:convertDateTime pattern="dd/MM/yyyy"/> 
+                                    </h:outputLabel>
+                                </h:panelGrid>
+                                <h:panelGrid >
+                                    <h:outputText value="Observación"/>
+                                    <h:outputLabel value="#{vehiculoBean.sgAsignarVehiculo.observacion}"/>
+                                </h:panelGrid>
+                                <h:panelGrid rendered="#{vehiculoBean.sgAsignarVehiculo.siAdjunto != null}">
+                                    <h:outputText value="Carta"/>
+                                    <h:outputLink target="_blank"  value="/ServiciosGenerales/AbrirArchivo?ZWZ2W=#{vehiculoBean.sgAsignarVehiculo.siAdjunto.id}&amp;ZWZ3W=#{vehiculoBean.sgAsignarVehiculo.siAdjunto.uuid}">
+                                        <h:graphicImage url="#{msgs['sgl.ruta.imagen']}icon_attach.gif"  alt="Abrir archivo"/>
+                                    </h:outputLink>
+                                </h:panelGrid>
+                            </h:panelGrid>
+                            <br/>
+                            <h:outputText value="Datos del checklist" styleClass="tituloAdministra"/>
+                            <h:panelGrid columns="2" cellspacing="8">
+                                <h:outputText value="Realizó"/>
+                                <h:outputLabel value="#{vehiculoBean.sgAsignarVehiculo.sgChecklist.genero.nombre}"/>
+                                <h:outputText value="Fecha"/>
+                                <h:outputLabel value="#{vehiculoBean.sgAsignarVehiculo.sgChecklist.fechaGenero}">
+                                    <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                </h:outputLabel>
+                            </h:panelGrid>
+                            <br/>
+                            <h:outputText value="Checklist general" styleClass="tituloAdministra"/>
+                            <h:panelGrid columns="2"  cellspacing="8">
+                                <!-- Detalle ChecklistStaff -->
+                                <p:dataTable showGridlines="true" size="small"  value="#{vehiculoBean.mapaDatos.get('checkListVehiAsig')}"
+                                               var="dtV">
+                                    <p:column>
+                                        <f:facet name="header">
+                                            <h:outputText value="Nombre"/>
+                                        </f:facet>
+                                        <h:outputText value="#{dtV.sgCaracteristica.nombre}" styleClass="#{data.style}" />
+                                    </p:column>                                 
+                                    <p:column style="text-align: center;">
+                                        <f:facet name="header">
+                                            <h:outputText value="Correcto" />
+                                        </f:facet>
+                                        <h:graphicImage url="#{msgs['sgl.ruta.imagen']}icon_good.png" rendered="#{dtV.estado eq 'True' and dtV.sgCaracteristica.principal eq 'False'}" />
+                                        <h:graphicImage url="#{msgs['sgl.ruta.imagen']}icon_bad.png" rendered="#{dtV.estado eq 'False' and dtV.sgCaracteristica.principal eq 'False'}" />
+                                    </p:column>   
+                                    <p:column>
+                                        <f:facet name="header">
+                                            <h:outputText value="Observación" />
+                                        </f:facet>
+                                        <h:outputText value="#{dtV.observacion}" />
+                                    </p:column>                            
+                                </p:dataTable>
+                            </h:panelGrid>
+                            <br/>
+                            <h:outputText value="Checklist de llantas" styleClass="tituloAdministra"/>
+                            <h:panelGrid columns="6" cellspacing="8" width="80%">
+                                <h:panelGrid>
+                                    <h:outputText value="Delantera izquierda"/>
+                                    <h:outputLabel value="#{vehiculoBean.sgChecklistLlantas.delanteraIzquierda}"/>
+                                </h:panelGrid>
+                                <h:panelGrid>
+                                    <h:outputText value="Delantera derecha"/>
+                                    <h:outputLabel value="#{vehiculoBean.sgChecklistLlantas.delanteraDerecha}"/>
+                                </h:panelGrid>
+                                <h:panelGrid>
+                                    <h:outputText value="Tracera Izquierda"/>
+                                    <h:outputLabel value="#{vehiculoBean.sgChecklistLlantas.traseraIzquierda}"/>
+                                </h:panelGrid>
+                                <h:panelGrid>
+                                    <h:outputText value="Tracera derecha"/>
+                                    <h:outputLabel value="#{vehiculoBean.sgChecklistLlantas.traseraDerecha}"/>                        
+                                </h:panelGrid>
+                                <h:panelGrid>
+                                    <h:outputText value="Refacción"/>
+                                    <h:outputLabel value="#{vehiculoBean.sgChecklistLlantas.refaccion}"/>                        
+                                </h:panelGrid>
+                                <h:panelGrid>
+                                    <h:outputText value="Buen estado"/>
+                                    <h:outputLabel value="#{vehiculoBean.sgChecklistLlantas.buenEstado eq 'True' ? 'Si' :'No'}"/>
+                                </h:panelGrid>
+                            </h:panelGrid>
+                            <br/>
+                            <h:outputText value="Checklist exterior" styleClass="tituloAdministra"/>
+                            <h:panelGrid columns="4" cellspacing="8" width="80%">
+                                <h:panelGrid>
+                                    <h:outputText value="Realizó"/>
+                                    <h:outputLabel value="#{vehiculoBean.sgChecklistExtVehiculo.genero.nombre}"/>
+                                </h:panelGrid>
+                                <h:panelGrid>
+                                    <h:outputText value="Fecha "/>
+                                    <h:outputLabel value="#{vehiculoBean.sgChecklistExtVehiculo.fechaGenero}">
+                                        <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                    </h:outputLabel>
+                                </h:panelGrid>
+                                <h:panelGrid>
+                                    <h:outputText value="Observación"/>
+                                    <h:outputLabel value="#{vehiculoBean.sgChecklistExtVehiculo.observacion}"/>
+                                </h:panelGrid>
+                                <h:panelGrid>
+                                    <h:outputText value="Archivo"/>
+                                    <h:outputLink target="_blank"  value="/ServiciosGenerales/AbrirArchivo?ZWZ2W=#{vehiculoBean.sgChecklistExtVehiculo.siAdjunto.id}&amp;ZWZ3W=#{vehiculoBean.sgChecklistExtVehiculo.siAdjunto.uuid}">
+                                        <h:graphicImage url="#{msgs['sgl.ruta.imagen']}icon_attach.gif"  alt="Abrir archivo"/>
+                                    </h:outputLink>
+                                </h:panelGrid>
+                            </h:panelGrid>                            
+                        </h:panelGrid>
+                        <h:panelGrid  border="1" rendered="#{vehiculoBean.sgAsignarVehiculoRecibido != null}">
+                            <h:outputText value="Datos de la recepcion" styleClass="tituloAdministra" rendered="#{vehiculoBean.sgAsignarVehiculo.siOperacion.id eq 1}"/>
+                            <h:panelGrid columns="5"  border="0">
+                                <h:panelGrid >
+                                    <h:outputText value="Usuario"/>
+                                    <h:outputLabel value="#{vehiculoBean.sgAsignarVehiculoRecibido.usuario.nombre}"/>                        
+                                </h:panelGrid>
+                                <h:panelGrid >
+                                    <h:outputText value="Asignó"/>
+                                    <h:outputLabel value="#{vehiculoBean.sgAsignarVehiculoRecibido.genero.nombre}"/>
+                                </h:panelGrid>
+                                <h:panelGrid >
+                                    <h:outputText value="Fecha"/>
+                                    <h:outputLabel value="#{vehiculoBean.sgAsignarVehiculoRecibido.fechaOperacion}">
+                                        <f:convertDateTime pattern="dd/MM/yyyy"/> 
+                                    </h:outputLabel>
+                                </h:panelGrid>
+                                <h:panelGrid >
+                                    <h:outputText value="Observación"/>
+                                    <h:outputLabel value="#{vehiculoBean.sgAsignarVehiculoRecibido.observacion}"/>
+                                </h:panelGrid>
+                            </h:panelGrid>
+                            <br/>
+                            <h:outputText value="Datos del checklist" styleClass="tituloAdministra"/>
+                            <h:panelGrid columns="2" cellspacing="8">
+                                <h:outputText value="Realizó"/>
+                                <h:outputLabel value="#{vehiculoBean.sgAsignarVehiculoRecibido.sgChecklist.genero.nombre}"/>
+                                <h:outputText value="Fecha"/>
+                                <h:outputLabel value="#{vehiculoBean.sgAsignarVehiculoRecibido.sgChecklist.fechaGenero}">
+                                    <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                </h:outputLabel>
+                            </h:panelGrid>
+                            <br/>
+                            <h:outputText value="Checklist general" styleClass="tituloAdministra"/>
+                            <h:panelGrid columns="2"  cellspacing="8">
+                                <!-- Detalle ChecklistStaff -->
+                                <p:dataTable showGridlines="true" size="small"  value="#{vehiculoBean.traerChecklistVehiculoRecepcion}"
+                                               var="dtV"
+                                                >
+                                    <p:column>
+                                        <f:facet name="header">
+                                            <h:outputText value="Nombre"/>
+                                        </f:facet>
+                                        <h:outputText value="#{dtV.sgCaracteristica.nombre}" styleClass="#{data.style}" />
+                                    </p:column>                                 
+                                    <p:column style="text-align: center;">
+                                        <f:facet name="header">
+                                            <h:outputText value="Correcto" />
+                                        </f:facet>
+                                        <h:graphicImage url="#{msgs['sgl.ruta.imagen']}icon_good.png" rendered="#{dtV.estado eq 'true' and dtV.principal eq 'false'}" />
+                                        <h:graphicImage url="#{msgs['sgl.ruta.imagen']}icon_bad.png" rendered="#{dtV.estado eq 'false' and dtV.principal eq 'false'}" />
+                                    </p:column>   
+                                    <p:column>
+                                        <f:facet name="header">
+                                            <h:outputText value="Observación" />
+                                        </f:facet>
+                                        <h:outputText value="#{dtV.observacion}" />
+                                    </p:column>                            
+                                </p:dataTable>
+                            </h:panelGrid>
+                            <br/>
+                            <h:outputText value="Checklist de llantas" styleClass="tituloAdministra"/>
+                            <h:panelGrid columns="6" cellspacing="8" width="80%">
+                                <h:panelGrid>
+                                    <h:outputText value="Delantera izquierda"/>
+                                    <h:outputLabel value="#{vehiculoBean.sgChecklistLlantas.delanteraIzquierda}"/>
+                                </h:panelGrid>
+                                <h:panelGrid>
+                                    <h:outputText value="Delantera derecha"/>
+                                    <h:outputLabel value="#{vehiculoBean.sgChecklistLlantas.delanteraDerecha}"/>
+                                </h:panelGrid>
+                                <h:panelGrid>
+                                    <h:outputText value="Tracera Izquierda"/>
+                                    <h:outputLabel value="#{vehiculoBean.sgChecklistLlantas.traseraIzquierda}"/>
+                                </h:panelGrid>
+                                <h:panelGrid>
+                                    <h:outputText value="Tracera derecha"/>
+                                    <h:outputLabel value="#{vehiculoBean.sgChecklistLlantas.traseraDerecha}"/>                        
+                                </h:panelGrid>
+                                <h:panelGrid>
+                                    <h:outputText value="Refacción"/>
+                                    <h:outputLabel value="#{vehiculoBean.sgChecklistLlantas.refaccion}"/>                        
+                                </h:panelGrid>
+                                <h:panelGrid>
+                                    <h:outputText value="Buen estado"/>
+                                    <h:outputLabel value="#{vehiculoBean.sgChecklistLlantas.buenEstado eq 'True' ? 'Si' :'No'}"/>
+                                </h:panelGrid>
+                            </h:panelGrid>
+                            <br/>
+                            <h:outputText value="Checklist exterior" styleClass="tituloAdministra"/>
+                            <h:panelGrid columns="4" cellspacing="8" width="80%">
+                                <h:panelGrid>
+                                    <h:outputText value="Realizó"/>
+                                    <h:outputLabel value="#{vehiculoBean.sgChecklistExtVehiculo.genero.nombre}"/>
+                                </h:panelGrid>
+                                <h:panelGrid>
+                                    <h:outputText value="Fecha "/>
+                                    <h:outputLabel value="#{vehiculoBean.sgChecklistExtVehiculo.fechaGenero}">
+                                        <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                    </h:outputLabel>
+                                </h:panelGrid>
+                                <h:panelGrid>
+                                    <h:outputText value="Observación"/>
+                                    <h:outputLabel value="#{vehiculoBean.sgChecklistExtVehiculo.observacion}"/>
+                                </h:panelGrid>
+                                <h:panelGrid>
+                                    <h:outputText value="Archivo"/>
+                                    <h:outputLink target="_blank"  value="/ServiciosGenerales/AbrirArchivo?ZWZ2W=#{vehiculoBean.sgChecklistExtVehiculo.siAdjunto.id}&amp;ZWZ3W=#{vehiculoBean.sgChecklistExtVehiculo.siAdjunto.uuid}">
+                                        <h:graphicImage url="#{msgs['sgl.ruta.imagen']}icon_attach.gif"  alt="Abrir archivo"/>
+                                    </h:outputLink>
+                                </h:panelGrid>
+                            </h:panelGrid>
+                        </h:panelGrid>
+                    </h:panelGrid>
+
+                </h:form>
+            </ui:define>
+
+        </ui:composition>
+
+    </body>
+</html>

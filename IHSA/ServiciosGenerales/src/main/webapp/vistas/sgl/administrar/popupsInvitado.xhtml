@@ -1,0 +1,136 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:h="http://java.sun.com/jsf/html"
+      
+     >
+
+    <body>
+        <ui:composition >
+            <!--Crear Invitado-->
+            <h:form id="formGuardarInvitado" rendered="#{not empty sesion.usuario}" >
+                <p:dialog  header="#{msgs['sistema.crear']} #{msgs['sgl.invitado.invitado']} " 
+			       >      
+                    <h:panelGroup>
+                        <!--<center><h:messages id="generalGuardar"  errorClass="errorMessage" infoClass="infoMessage"/></center>-->
+                        <h:outputText id="msgsPopupCreateSgInvitado" value="" />
+                        <center><h:message for="msgsPopupCreateSgInvitado" errorClass="errorMessage" infoClass="infoMessage"/></center>                    
+                        <h:panelGrid columns="2">
+
+                            <h:outputLabel value="#{msgs['sgl.generales.nombre']}:"/>
+                            <h:panelGrid columns="3">
+                                <h:outputText value="*" styleClass="textoRojo"/>
+                                <p:inputText id="invNombre" value="#{catalogoBean.invitadoVo.nombre}" size="50"/>                                
+                                <h:message for="invNombre" errorClass="errorMessage" infoClass="infoMessage"/>                                
+                            </h:panelGrid>
+                            <h:outputLabel value="#{msgs['sgl.invitado.email']}:"/>
+                            <h:panelGrid columns="2">
+                                <p:inputText id="invEmail" value="#{catalogoBean.invitadoVo.email}" size="50"  />                                
+                                <h:message for="invEmail" errorClass="errorMessage" infoClass="infoMessage"/>                                
+                            </h:panelGrid>
+                            <h:outputLabel value="#{msgs['sgl.invitado.empresa']}:"/>                                
+
+                            <h:panelGrid columns="4">
+                                <h:outputText value="*" styleClass="textoRojo"/>
+                                <p:selectOneMenu id="invEmpresa"
+                                                   value="#{catalogoBean.idEmpresa}"                                                   
+                                                   styleClass="form-control" >
+                                    <f:selectItem itemLabel="#{msgs['sistema.seleccionar']} #{msgs['sgl.empresa.empresa']}..." itemValue="-1" />
+                                    <f:selectItems value="#{catalogoBean.listItem}" />
+                                </p:selectOneMenu>
+                                <p:commandLink title="#{msgs['sistema.crear']} #{msgs['sgl.empresa.empresa']}" actionListener="#{catalogoBean.abrirPanelAgregarEmpresa(event)}" 
+                                                 styleClass="btn btn-default">
+                                    <h:outputText value="+" styleClass="f12"/>
+                                </p:commandLink>                                   
+                                <h:message for="invEmpresa" errorClass="errorMessage" infoClass="infoMessage"/>                                
+                            </h:panelGrid>                            
+                        </h:panelGrid>
+
+                        <p:panel rendered="#{catalogoBean.mostrarPanel eq true}" >
+                            <h:panelGrid columns="4" styleClass="borderPanelGrid">
+                                <h:outputLabel value="#{msgs['sgl.generales.nombre']}:"/>
+                                <h:outputText value="*" styleClass="textoRojo"/>
+                                <p:inputText value="#{catalogoBean.esgEmpresa.nombre}" size="40"/>                                        
+                                <h:panelGrid columns="2">
+                                    <p:commandButton value="#{msgs['sistema.guardar']}" actionListener="#{catalogoBean.guardarEmpresa(event)}" styleClass="btn btn-info"/>
+                                    <p:commandButton value="#{msgs['sistema.cancelar']}" actionListener="#{catalogoBean.cerrarPanelAgregarEmpresa(event)}" styleClass="btn btn-default"/>
+                                </h:panelGrid>
+                            </h:panelGrid>
+                        </p:panel>
+
+                        <br/>
+                        <center>
+                            <h:panelGrid columns="2">
+                                <p:commandLink value="#{msgs['sistema.guardar']}" rendered="#{catalogoBean.mostrarPanel eq false}"  styleClass="btn btn-info" actionListener="#{catalogoBean.guardarInvitado(event)}"/>
+                                <p:commandLink value="#{msgs['sistema.cancelar']}" rendered="#{catalogoBean.mostrarPanel eq false}" styleClass="btn btn-default" actionListener="#{catalogoBean.cerrarPoppupAgregarInvitado(event)}"/>
+                            </h:panelGrid>
+                        </center>                                  
+                    </h:panelGroup>
+                </my:panelPopup>
+            </h:form>
+
+            <!--Modificar Invitado-->
+            <h:form id="formModificarInvitado" rendered="#{not empty sesion.usuario}" >
+                <p:dialog  header="#{msgs['sistema.modificar']}  #{msgs['sgl.invitado.invitado']} "
+			      >      
+                    <h:panelGroup>
+                        <center><h:messages id="generalModificar" errorClass="errorMessage" infoClass="infoMessage"/></center>
+                        <h:panelGrid columns="2">
+
+                            <h:outputLabel value="#{msgs['sgl.generales.nombre']}:"/>                                                            
+                            <h:panelGrid columns="3">                               
+                                <h:outputText value="*" styleClass="textoRojo"/>
+                                <p:inputText id="invNombreUp" value="#{catalogoBean.invitadoVo.nombre}" size="50"/>
+                                <h:message for="InvNombreUp" errorClass="errorMessage" infoClass="infoMessage"/>
+                            </h:panelGrid>
+                            <h:outputLabel value="#{msgs['sgl.invitado.email']}:"/>
+                            <h:panelGrid columns="2">
+                                <p:inputText id="invEmailUp" value="#{catalogoBean.invitadoVo.email}" size="50"  />                                
+                                <h:message for="invEmailUp" errorClass="errorMessage" infoClass="infoMessage"/>                                
+                            </h:panelGrid>
+
+                            <h:outputLabel value="#{msgs['sgl.invitado.empresa']}:"/>                                                                
+                            <h:panelGrid columns="5">                                
+                                <h:outputText value="*" styleClass="textoRojo"/>
+                                <p:selectOneMenu id="invEmpresaUp"
+                                                   value="#{catalogoBean.idEmpresa}"                                                   
+                                                    styleClass="form-control" >
+                                    <f:selectItem itemLabel="Seleccione..." itemValue="-1" />
+                                    <f:selectItems value="#{catalogoBean.listItem}" />
+                                </p:selectOneMenu>
+                                <p:commandLink title="#{msgs['sistema.crear']} #{msgs['sgl.empresa.empresa']}" actionListener="#{catalogoBean.abrirPanelAgregarEmpresa(event)}" 
+                                                 styleClass="btn btn-default">
+                                    <h:outputText value="+" styleClass="f12"/>
+                                </p:commandLink>   
+                                <h:message for="invEmpresaUp" errorClass="errorMessage" infoClass="infoMessage"/>
+                            </h:panelGrid> 
+                        </h:panelGrid>
+                        <p:panel rendered="#{catalogoBean.mostrarPanel eq true}" >
+                            <h:panelGrid columns="4" styleClass="borderPanelGrid">
+                                <h:outputLabel value="#{msgs['sgl.generales.nombre']}:"/>
+                                <h:outputText value="*" styleClass="textoRojo"/>
+                                <p:inputText value="#{catalogoBean.sgEmpresa.nombre}" size="50"/>                                        
+                                <h:panelGrid columns="2">
+                                    <p:commandButton value="#{msgs['sistema.guardar']}" actionListener="#{catalogoBean.guardarEmpresa(event)}" styleClass="btn btn-info"/>
+                                    <p:commandButton value="#{msgs['sistema.cancelar']}" actionListener="#{catalogoBean.cerrarPanelAgregarEmpresa(event)}" styleClass="btn btn-default"/>
+                                </h:panelGrid>
+                            </h:panelGrid>
+                        </p:panel>
+                        <br/>
+                        <center>
+                            <h:panelGrid columns="2">
+                                <p:commandButton value="#{msgs['sistema.guardar']}" actionListener="#{catalogoBean.completarModificacionInvitado(event)}" rendered="#{catalogoBean.mostrarPanel eq false}" styleClass="btn btn-info"/>
+                                <p:commandButton value="#{msgs['sistema.cancelar']}" actionListener="#{catalogoBean.cerrarPoppupModificarInvitado(event)}" rendered="#{catalogoBean.mostrarPanel eq false}" styleClass="btn btn-default" />
+                            </h:panelGrid>
+                        </center>                                 
+                    </h:panelGroup>
+                </my:panelPopup>
+            </h:form>
+
+        </ui:composition>
+
+    </body>
+</html>

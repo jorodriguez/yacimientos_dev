@@ -1,0 +1,242 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      
+      xmlns:c="http://java.sun.com/jsp/jstl/core"
+     >
+    <body>
+        <ui:composition template="./../../../../WEB-INF/facelets/templates/templateServiciosGenerales.xhtml">
+            <ui:define name="contenido">  
+                <h:form id="formCancelar" style="width: 100%;">
+                    <div class="card  card-primary">
+                        <div class="card -heading">
+                            <center><h3>Mis Solicitudes</h3></center>
+                            <script>
+                                $(function () { //buscar forma de eliminar duplicidad
+                                $(".fechaIntV1").datepicker({
+                                    showButtonPanel: true,
+                                    buttonImage: "#{msgs['sgl.ruta.imagen']}cal_button.gif",
+                                    buttonImageOnly: true,
+                                    numberOfMonths: 2,
+                                    dateFormat: "dd/mm/yy",
+                                    onSelect: function (date) {
+                                        fechaSeleccinadaSalida = date;
+                                    },
+                                    onClose: function (selectedDate) {
+                                        $(".fechaIntV2").datepicker("option", "minDate", selectedDate);
+                                        $(".fechaIntV2").datepicker('show');
+                                    }
+                                });
+                            });
+                            $(function () {
+                                $(".fechaIntV2").datepicker({
+                                    showButtonPanel: true,
+                                    buttonImage: "#{msgs['sgl.ruta.imagen']}cal_button.gif",
+                                    buttonImageOnly: true,
+                                    dateFormat: "dd/mm/yy",
+                                    numberOfMonths: 2,
+                                    onSelect: function (date) {
+                                        fechaSeleccinadaSalida = date;
+                                    }
+                                });
+                            });
+                            </script>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class=" col-md-6">
+                                    <div class="col-md-2 col-xs-4">
+                                        <label class="radio-inline" style="font-size: 13px">
+                                            <input type="radio" class="radio-inline"  name="selecFiltro"  value="todo">
+                                                <strong>Todos</strong>
+                                            </input>
+                                        </label>
+                                    </div>
+                                    <div class="col-md-2 col-xs-4">
+                                        <label class="radio-inline" style="font-size: 13px">
+                                            <input type="radio" class="radio-inline"  name="selecFiltro" value="act" checked="true">
+                                                <strong>Activas</strong>
+                                            </input>
+                                        </label>
+                                    </div>
+                                    <div class="col-md-4 col-xs-4">
+                                        <label class="radio-inline" style="font-size: 13px">
+                                            <input type="radio" class="radio-inline"  name="selecFiltro" value="fs" >
+                                                <strong>Por fecha de Salida</strong>
+                                            </input>
+                                        </label>
+                                    </div>
+                                    <div class="col-md-4 col-xs-4">
+                                        <label class="radio-inline" style="font-size: 13px">
+                                            <input type="radio" class="radio-inline"  name="selecFiltro" value="fr" >
+                                                <strong>Por fecha de Regreso</strong>
+                                            </input>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="col-md-2 co-xs-3" style="text-align:  right; font-size: 13px">Fechas:</label>
+                                    <div class="col-md-5 col-xs-4">
+                                        <h:inputText id="fechaIntV" value="#{misSolicitudesBean.fechaInicio}" styleClass="form-control fechaIntV1">
+                                            <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                        </h:inputText>
+                                    </div>
+                                    <div class="col-md-5 col-xs-4">
+                                        <h:inputText id="fechaIntV2" value="#{misSolicitudesBean.fechaFin}" styleClass="form-control fechaIntV2" >
+                                            <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                        </h:inputText>
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <button type="button" class="btn btn-primary"
+                                            onclick="ejecutarBoton('formCancelar', 'buscarByFiltros')"
+                                            title="Buscar curso por fecha y/o vigencia">
+                                        <span class="glyphicon glyphicon-search"></span>
+                                    </button>
+                                    <p:commandLink action="#{misSolicitudesBean.buscarByFiltros()}"  id="buscarByFiltros"/>
+                                </div>
+                            </div>
+                            <br/>
+
+                            <div class="table-responsive">
+                                <p:dataTable id="tsvCancelar" value="#{misSolicitudesBean.listaSolicitudes}" var="via"
+                                               styleClass="table table-striped" style="width: 99.9%" rows="10" paginator="true" paginatorPosition="bottom">
+                                    <p:columnGroup type="header">
+                                        <p:row>
+                                            <!--p:column id="hselect" style="border-color: whitesmoke;">
+                                                <f:facet name="header">
+                                                    <h:selectBooleanCheckbox  class="todos" onchange="seleccionarTodo('todos', 'seleccion')"
+                                                                              id="selectTodo" value="#{solicitudViajeBean.selectTodo}"
+                                                                              valueChangeListener="#{solicitudViajeBean.selecionarTodoTer}" immediate="true">
+                                                        <f:ajax event="click" />
+                                                    </h:selectBooleanCheckbox>
+                                                </f:facet>
+                                            </p:column-->
+                                            <p:column id="hCodigoSolicitud" headerText="Solicitud" style="border-color: whitesmoke;"/>
+                                            <p:column id="hRuta" headerText="Ruta" style="font-size: small; border-color:  whitesmoke;"/>
+                                            <p:column  headerText="Ruta" style="display: none;"/>
+                                            <p:column id="hSalida" headerText="Salida" style="font-size: small; border-color:  whitesmoke;"/>
+                                            <p:column id="hregreso" headerText="Regreso" style="font-size: small; border-color:  whitesmoke;"/>
+                                            <p:column id="hEstatus" headerText="Estatus" style="font-size: small; border-color:  whitesmoke;"/>
+                                            <p:column id="hCodigoViaje" headerText="Viajes" style="border-color: whitesmoke;"/>
+                                            <p:column  headerText="Viajes" style="display: none"/>
+                                            <p:column id="hCodigoEstancia" headerText="Estancia" style="border-color: whitesmoke;"/>
+                                            <!--p:column id="hviajeros" headerText="Viajeros" style="font-size: small; border-color:  whitesmoke;"/-->
+                                            <p:column id="btns" style="border-color:  whitesmoke;"/>
+                                        </p:row>
+                                    </p:columnGroup>
+                                    <!--p:column style="font-size: medium; text-align: center; padding: 3px 0px 3px 0px; background-color: #{via.codigo>0 ? '#f1dddd': ''}; border-color:  whitesmoke;">
+                                        <h:selectBooleanCheckbox value="#{via.select}" style="font-size: 12px;" class="seleccion"/>
+                                    </p:column-->
+                                    <p:column  style="font-size: small; text-align: center; padding: 3px 0px 3px 0px; background-color: #{via.idSolImcumplimiento>0 ? '#f1dddd': ''}; border-color:  whitesmoke;">
+                                        <h:outputText value="#{via.codigo}" />
+                                    </p:column>
+                                    <p:column headerText="Ruta" id="rutaSolicitud"  style="text-align: left;  padding: 3px 0px 3px 0px;  background-color: #{via.idSolImcumplimiento>0 ? '#f1dddd': ''}; border-color:  whitesmoke;">
+                                        <div class=" col-md-12" title="#{via.idSgTipoEspecifico !=  3 ? 'Terrestre': 'Aéreo'}">
+                                            <div class="col-md-2">
+                                                <i class="fa fa-car" style="font-size: 16px; color: #0895d6; display: #{via.idSgTipoEspecifico !=  3 ? 'block': 'none'}"></i>
+                                                <i class="fa fa-plane" style="font-size: 18px; color: #0895d6; display: #{via.idSgTipoEspecifico ==  3 ? 'block': 'none'}"></i>
+                                            </div>
+                                            <div class="col-md-10">
+                                                <label style="font-size: 14px">#{via.nombreRuta}</label>
+                                            </div>
+                                        </div>
+                                    </p:column>
+                                    <p:column headerText="Ruta"   style="display: none">
+                                        
+                                        <h:outputText value="#{via.nombreRuta}"/>
+                                           
+                                    </p:column>
+
+                                    <p:column headerText="Salida" id="salida"  style="text-align: center; font-size: small; padding: 3px 0px 3px 0px; background-color: #{via.idSolImcumplimiento>0 ? '#f1dddd': ''}; border-color:  whitesmoke;">
+                                        <h:outputText id="fsalida" value="#{via.fechaSalida}" title="Fecha Salida">
+                                            <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                        </h:outputText>
+                                        <h:outputText value=" "/>
+                                        <h:outputText id="horaSalida" value="#{via.horaSalida}" title="Fecha Salida">
+                                            <f:convertDateTime pattern="HH:mm "/>
+                                        </h:outputText>
+                                    </p:column>
+                                    <p:column headerText="Regreso" id="regreso" style="text-align: center; font-size: small; padding: 3px 0px 3px 0px; background-color: #{via.idSolImcumplimiento>0 ? '#f1dddd': ''}; border-color:  whitesmoke;">
+                                        <h:outputText id="fregreso" value="#{via.fechaRegreso}" rendered="#{via.redondo}" title="Fecha Regreso">
+                                            <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                        </h:outputText>
+                                        <h:outputText value=" "/>
+                                        <h:outputText id="horaRegreso" value="#{via.horaRegreso}"  rendered="#{via.redondo}" title="Fecha Regreso">
+                                            <f:convertDateTime pattern="HH:mm "/>
+                                        </h:outputText>
+                                    </p:column>
+                                    <p:column  style="font-size: small; text-align: center; padding: 3px 0px 3px 0px; background-color: #{via.idSolImcumplimiento>0 ? '#f1dddd': ''}; border-color:  whitesmoke;">
+                                        <h:outputText value="#{via.estatus}" />
+                                    </p:column>
+                                    <p:column headerText="Viajeros"  style="text-align: center; font-size: small; padding: 3px 0px  3px 0px; background-color: #{via.idSolImcumplimiento>0 ? '#f1dddd': ''}; border-color:  whitesmoke;">
+
+                                        <h:panelGroup>
+                                            <ui:repeat value="#{via.viajeros}" var="data">
+                                                <h:outputText value="#{data.viajeVO.codigo}"  title="Viaje"/><br/>
+                                            </ui:repeat>
+                                        </h:panelGroup>
+                                    </p:column>
+                                    <p:column headerText="Viajeros"  style="display: none">
+
+                                        <h:outputText value="#{via.listViajes}"/>
+                                    </p:column>
+                                    <p:column  style="font-size: small; text-align: center; padding: 3px 0px 3px 0px; background-color: #{via.idSolImcumplimiento>0 ? '#f1dddd': ''}; border-color:  whitesmoke;">
+                                        <h:outputText value="#{via.codEstancia}" title="Solicitud de Estancia"/>
+                                    </p:column>
+                                    <p:column style="font-size: small; text-align: center; padding: 3px 0px 3px 0px; background-color: #{via.idSolImcumplimiento>0 ? '#f1dddd': ''}; border-color:  whitesmoke;">
+                                        <p:commandLink rendered="#{via.select}"
+                                              title="Cancelar Solcitud" action="#{misSolicitudesBean.popCancelarSolicitud()}" onclick="$('#modalCancelar').modal('show');">
+                              <f:param name="idsv" value="#{via.idSolicitud}"/>
+                                            <span class="glyphicon glyphicon-remove" style="color: red"/>
+                                        </p:commandLink>
+                                    </p:column>
+                                    
+                                </p:dataTable>
+                                <div class="row">
+                                        <div class="col-md-10">
+
+                                        </div>
+                                        <div class="col-md-2" style="text-align: right;">
+                                            <p:commandButton value="Exportar">
+                                            <p:dataExporter id="exportTabla" type="xls"
+                                                              fileName="Mis Solicitudes" target="tsvCancelar"/>
+                                            </p:commandButton>
+                                        </div>
+                                    </div>
+                            </div>
+                        </div>
+                    </div>
+                </h:form>
+                <h:form id="frmCancelarSolicitudes">
+        <div class="modal fade" id="modalCancelar" role="dialog">
+            <div class="modal-dialog">
+
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title">Cancelar Solicitud: #{misSolicitudesBean.svActual.codigo}</h4>
+                    </div>
+                    <div class="modal-body">
+                        <textArea class="col-lg-12 col-xs-12" placeholder="Motivo de cancelacion" id="msjCancelacion" name="msjCancelacion">#{misSolicitudesBean.motivo}</textArea>
+                                <br/>
+                            </div>
+                            <div class="modal-footer" style="border-top: white; text-align: right;">
+                                <div class="row" >
+                                    <button type="button" class="btn btn-primary" onclick="ejecutarBoton('frmCancelarSolicitudes', 'cancel');">Aceptar</button>
+                                   <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                   <p:commandLink  action="#{misSolicitudesBean.cancelarSV()}" id="cancel"/>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </h:form>
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

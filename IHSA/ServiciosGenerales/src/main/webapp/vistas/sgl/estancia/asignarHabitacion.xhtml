@@ -1,0 +1,116 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+
+
+      >
+
+    <body>
+
+        <ui:composition template="./../../../WEB-INF/facelets/templates/templateServiciosGenerales.xhtml">
+
+            <ui:define name="contenido">
+
+                <h:panelGroup  rendered="#{empty sesion.usuario}" styleClass="altura">
+                    <ui:include src="./../../../login.xhtml"/>
+                </h:panelGroup> 
+
+                <h:panelGroup  rendered="#{not empty sesion.usuario}" >
+                    <p class="tituloEncabezado">#{msgs['sgl.registroHuespedes.asginarHabitacion.titulo']}</p>
+                    <h:form styleClass="textoIzquierda" >
+                        <h:panelGrid >
+                            <p:commandLink action="#{estanciaBean.goToRegistroHuesped()}" title="#{msgs['sistema.regresar']} #{msgs['sistema.proposicion.a']} #{msgs['sgl.registroHuespedes.titulo']}" styleClass="btn btn-default">
+                                <h:graphicImage url="#{msgs['sgl.ruta.imagen']}button_back.png" title="#{msgs['sistema.regresar']} #{msgs['sistema.proposicion.a']} #{msgs['sgl.registroHuespedes.titulo']}" alt="#{msgs['sistema.registrar']} #{msgs['sistema.proposicion.a']} #{msgs['sgl.registroHuespedes.titulo']}" styleClass="imagenSinBorde" />
+                            </p:commandLink>
+                            <p:commandLink action="#{estanciaBean.goToRegistroHuesped()}" value="#{msgs['sistema.regresar']} #{msgs['sistema.proposicion.a']} #{msgs['sgl.registroHuespedes.titulo']}" title="#{msgs['sistema.registrar']} #{msgs['sistema.proposicion.a']} #{msgs['sgl.registroHuespedes.titulo']}" styleClass="linkPequenio" />
+                        </h:panelGrid>  
+                    </h:form>
+
+                    <h:form>
+                        <p:dataTable id="dataGridIntegrantesSolicitudEstancia" rows="10"  
+                                     value="#{estanciaBean.integrantesBySolicitudEstancia}"
+                                     var="data">
+                            <f:facet name="header"><h:outputText value="#{msgs['sgl.solicitudEstancia.integrante']}s #{msgs['sistema.proposicion.de']} #{msgs['sistema.articulo.la.minuscula']} #{msgs['sistema.titulo.solicitud']} #{estanciaBean.sgSolicitudEstanciaVo.codigo}"/></f:facet>
+
+                            <p:column>
+                                <f:facet name="header">
+                                    <h:outputText value="Gerencia" />
+                                </f:facet>
+                                <h:outputText value="#{data.gerencia}" />
+                            </p:column>
+                            <p:column>
+                                <f:facet name="header">
+                                    <h:outputText value="#{msgs['sgl.solicitudEstancia.huesped']}" />
+                                </f:facet>
+                                <h:outputText value="#{data.usuario}" rendered="#{data.idInvitado == 0}" />
+                                <h:outputText value="#{data.invitado}" rendered="#{data.idInvitado gt 0}" />
+                            </p:column>
+                            <p:column>
+                                <f:facet name="header">
+                                    <h:outputText value="Tipo Estancia" />
+                                </f:facet>
+                                <h:outputText value="#{data.tipoDetalle}" />
+                            </p:column>      
+                            <p:column>
+                                <f:facet name="header">
+                                    <h:outputText value="#{msgs['sgl.generales.descripcion']}" />
+                                </f:facet>
+                                <h:outputText value="#{data.descripcion eq 'null' ? '' : data.descripcion}" />
+                            </p:column>
+                            <p:column>
+                                <f:facet name="header">
+                                    <h:outputText value="Incio Estancia"  />
+                                </f:facet>
+                                <h:outputText value="#{data.inicioEstancia}">
+                                    <f:convertDateTime pattern="dd/MM/yyyy" type="date" />
+                                </h:outputText>
+                            </p:column>
+                            <p:column>
+                                <f:facet name="header">
+                                    <h:outputText value="Fin Estancia"  />
+                                </f:facet>
+                                <h:outputText value="#{data.finEstancia}">
+                                    <f:convertDateTime pattern="dd/MM/yyyy" type="date" />
+                                </h:outputText>
+                            </p:column>                    
+                            <p:column>
+                                <f:facet name="header">
+                                    <h:outputText value="#{msgs['sgl.solicitudEstancia.integrante.registrado']}" />
+                                </f:facet>
+                                <h:outputText value="#{data.registrado eq 'True'?'Si':'No'}" />
+                            </p:column>
+                            <p:column>
+                                <f:facet name="header">
+                                    <h:outputText value="#{msgs['sgl.solicitudEstancia.integrante.cancelado']}" />
+                                </f:facet>
+                                <h:outputText value="#{data.cancelado eq 'True'?'Si':'No'}" />
+                            </p:column>                            
+                            <p:column>
+                                <h:commandLink value="#{msgs['sgl.registroHuespedes.registroStaff']}" action="#{estanciaBean.goToRegistroStaff()}" styleClass="link" 
+                                               rendered="#{data.registrado eq 'False' and data.cancelado eq 'False'}"/>
+                            </p:column>                                
+                            <p:column>
+                                <h:commandLink value="#{msgs['sgl.registroHuespedes.registroHotel']}" action="#{estanciaBean.goToRegistroRegistroHotel()}" styleClass="link" 
+                                               rendered="#{data.registrado eq 'False' and data.cancelado eq 'False'}" />
+                            </p:column>                                
+                            <p:column>
+                                <p:commandLink value="#{msgs['sistema.cancelar']}" action="#{estanciaBean.cancelarSolicitudRegistroHuesped()}" styleClass="link"
+                                               rendered="#{data.registrado eq 'False' and data.cancelado eq 'False'}" 
+                                               />
+                                <p:confirm id="pnlCan" header="Confirmar" message="La operación va a cancelar el registro del huésped, ¿está seguro?" />
+                            </p:column>
+                        </p:dataTable>
+                    </h:form>                    
+
+                </h:panelGroup>
+
+            </ui:define>
+
+        </ui:composition>
+
+    </body>
+</html>

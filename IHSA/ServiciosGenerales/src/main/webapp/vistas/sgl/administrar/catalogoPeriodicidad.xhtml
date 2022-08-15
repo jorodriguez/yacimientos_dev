@@ -1,0 +1,155 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html  xmlns="http://www.w3.org/1999/xhtml"
+       xmlns:ui="http://java.sun.com/jsf/facelets"
+       xmlns:p="http://primefaces.org/ui"
+       xmlns:h="http://java.sun.com/jsf/html"
+       xmlns:f="http://java.sun.com/jsf/core"
+               
+      
+       >
+    <body>
+        <ui:composition template="./../../../WEB-INF/facelets/templates/templateServiciosGenerales.xhtml">
+            <ui:define name="contenido">
+                <h:panelGroup    rendered="#{not empty sesion.usuario}"  styleClass="altura">  
+
+                    <p class="tituloEncabezado">Catálogo de Periodicidad</p>
+                    <h:form styleClass="textoIzquierda">
+                        <h:panelGrid> 
+                            <h:panelGrid columns="2" style="text-align: end;">
+                                <p:commandLink title="Crear Periodicidad" actionListener="#{periodicidadBean.agregarPeriodicidad(event)}" styleClass="btn btn-default">
+                                    <h:graphicImage url="#{msgs['sgl.ruta.imagen']}button_create.png" 
+                                                      styleClass="imagenSinBorde"/>                            
+                                </p:commandLink>                        
+                            </h:panelGrid>           
+                            <p:commandLink value="Crear Periodicidad" actionListener="#{periodicidadBean.agregarPeriodicidad(event)}" title="Crear Periodicidad"
+                                             styleClass="linkPequenio" />   
+                        </h:panelGrid>
+                        <center>
+			    <p:dataTable id="dataGridPeriodicidades" value="#{periodicidadBean.listaPeriodicidad}" var="data">                       
+                                <p:column>
+                                    <f:facet name="header"><h:outputText value="Nombre "/></f:facet>
+                                    <h:outputText value="#{data['nombre']}"/>
+                                </p:column>
+                                <p:column>
+                                    <f:facet name="header"><h:outputText value="Meses "/></f:facet>
+                                    <h:outputText value="#{data['mes']}"/>
+                                </p:column>                              
+                                <p:column>                            
+                                    <p:commandLink value="Modificar"  actionListener="#{periodicidadBean.mostrarPopupModificarPeriodicidad(event)}" style="color: blue;" />                            
+                                </p:column>
+                                <p:column>                            
+                                    <p:commandLink value="Eliminar" actionListener="#{periodicidadBean.deletePeriodicidad(event)}"
+                                                     onclick="if (!confirm('Está seguro de eliminar la periodicidad #{data['nombre']}  ...? '))
+								 return false;"
+                                                     style="color: blue;"/>                                                              
+                                </p:column>
+                            </p:dataTable>
+                        </center>
+                    </h:form>
+
+                    <h:form styleClass="textoIzquierda">
+			<p:dialog   style="background: #FFFFFF;" visible="#{periodicidadBean.popupAgregarPeriodicidad eq true}"
+					draggable="false" modal="true">
+			    <f:facet name="header">
+				Crear Periodicidad 
+			    </f:facet>
+			    <f:facet name="body">
+				<h:panelGroup>
+				    <h:panelGrid>
+					<center>
+					    <h:messages errorClass="mensaje" infoClass="mensaje"/>                                    
+					</center>  
+				    </h:panelGrid>
+				    <h:panelGrid columns="2" >
+					<h:outputText value="Nombre :"/>
+					<p:inputText value="#{periodicidadBean.periodicidad.nombre}"/>
+					<h:outputText value="Meses :"/>
+					<p:selectOneMenu  value="#{periodicidadBean.periodicidad.mes}" >
+					    <f:selectItem itemLabel="1" itemValue="1"/><f:selectItem itemLabel="2" itemValue="2"/>
+					    <f:selectItem itemLabel="3" itemValue="3"/><f:selectItem itemLabel="4" itemValue="4"/>                                
+					    <f:selectItem itemLabel="5" itemValue="5"/><f:selectItem itemLabel="6" itemValue="6"/>
+					    <f:selectItem itemLabel="7" itemValue="7"/><f:selectItem itemLabel="8" itemValue="8"/>
+					    <f:selectItem itemLabel="9" itemValue="9"/><f:selectItem itemLabel="10" itemValue="10"/>
+					    <f:selectItem itemLabel="11" itemValue="11"/><f:selectItem itemLabel="12" itemValue="12"/>
+					</p:selectOneMenu>                                    
+				    </h:panelGrid> 
+				    <center>
+					<h:panelGrid columns="2">
+					    <p:commandLink value="Aceptar" actionListener="#{periodicidadBean.createPerdiodicidad(event)}"  styleClass="btn btn-info" />                                               
+					    <p:commandLink value="Cancelar" actionListener="#{periodicidadBean.ocultarPopupAgregarPeriodicidad(event)}" styleClass="btn btn-default"/>                                        
+					</h:panelGrid>
+				    </center>
+				</h:panelGroup>
+			    </f:facet>	
+			</<p:dialog >
+                    </h:form>     
+
+                    <h:form styleClass="textoIzquierda">
+			<p:dialog   style="background: #FFFFFF;" visible="#{periodicidadBean.popupModificarPeriodicidad}"
+					draggable="false" modal="true">
+			    <f:facet name="header">
+				Modificar Periodicidad - #{periodicidadBean.periodicidad.nombre}"
+			    </f:facet>
+			    <f:facet name="body">
+				<h:panelGroup>				    
+				    <h:panelGrid>
+					<center><h:messages errorClass="mensaje" infoClass="mensaje"/></center>  
+				    </h:panelGrid>
+				    <h:panelGrid>
+				    </h:panelGrid>
+				    <h:panelGrid columns="2" >
+					<h:outputText value="Nombre :"/>
+					<p:inputText value="#{periodicidadBean.periodicidad.nombre}" />
+					<h:outputText value="Meses :"/>
+					<p:selectOneMenu  value="#{periodicidadBean.periodicidad.mes}" >
+					    <f:selectItem itemLabel="1" itemValue="1"/><f:selectItem itemLabel="2" itemValue="2"/>
+					    <f:selectItem itemLabel="3" itemValue="3"/><f:selectItem itemLabel="4" itemValue="4"/>                                
+					    <f:selectItem itemLabel="5" itemValue="5"/><f:selectItem itemLabel="6" itemValue="6"/>
+					    <f:selectItem itemLabel="7" itemValue="7"/><f:selectItem itemLabel="8" itemValue="8"/>
+					    <f:selectItem itemLabel="9" itemValue="9"/><f:selectItem itemLabel="10" itemValue="10"/>
+					    <f:selectItem itemLabel="11" itemValue="11"/><f:selectItem itemLabel="12" itemValue="12"/>
+					</p:selectOneMenu>                                    
+				    </h:panelGrid> 
+				    <center>
+					<h:panelGrid columns="2">
+					    <p:commandLink value="Aceptar" actionListener="#{periodicidadBean.editPerdiodicidad(event)}"  styleClass="btn btn-info" />                                               
+					    <p:commandLink value="Cancelar" actionListener="#{periodicidadBean.ocultarPopupModificarPeriodicidad(event)}" styleClass="btn btn-default"/>                                        
+					</h:panelGrid>
+				    </center>
+				</h:panelGroup>
+			    </f:facet>
+			</<p:dialog >
+                    </h:form> 
+
+                    <!-- Panel de Aviso -->
+                    <h:form>
+			<p:dialog   style="background: #FFFFFF;" visible="#{periodicidadBean.popupAviso}"
+					draggable="false" modal="true">
+			    <f:facet name="header">
+				<center><h:messages errorClass="mensaje" infoClass="mensaje"/></center>  
+			    </f:facet>
+			    <f:facet name="body">
+				<h:panelGroup>
+				    <h:panelGrid columns="3">                            
+					<h:outputText value="No se puede eliminar el registro, esta siendo usado por otro proceso" style="font-weight: bold;" />                            
+				    </h:panelGrid>
+				    <center>
+					<h:panelGrid>                                
+					    <p:commandLink actionListener="#{periodicidadBean.ocultarPopupAviso(event)}" value="Cerrar" styleClass="btn btn-default"/>        
+					</h:panelGrid>                        
+				    </center>
+				</h:panelGroup>
+			    </f:facet>
+			</<p:dialog >
+                    </h:form>
+                    <!-- fincard de aviso -->
+                </h:panelGroup>
+                <h:panelGrid  rendered="#{empty sesion.usuario}"  styleClass="altura">
+                    <ui:include src="./../../../login.xhtml"/>
+                </h:panelGrid>
+            </ui:define>
+        </ui:composition>
+
+    </body>
+</html>

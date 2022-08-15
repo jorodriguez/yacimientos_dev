@@ -9,6 +9,7 @@ import javax.faces.view.ViewScoped;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import javax.annotation.PostConstruct;
 import javax.faces.event.ValueChangeEvent;
 import javax.faces.model.DataModel;
 import javax.faces.model.ListDataModel;
@@ -21,6 +22,7 @@ import sia.modelo.campo.usuario.puesto.vo.CampoUsuarioPuestoVo;
 import sia.modelo.campo.vo.CampoVo;
 import sia.modelo.gerencia.vo.GerenciaVo;
 import sia.modelo.puesto.vo.RhPuestoVo;
+import sia.modelo.usuario.vo.UsuarioVO;
 import sia.servicios.campo.nuevo.impl.ApCampoImpl;
 import sia.servicios.campo.nuevo.impl.ApCampoUsuarioRhPuestoImpl;
 import sia.servicios.campo.nuevo.impl.RhPuestoImpl;
@@ -70,16 +72,32 @@ public class AsignarUsuarioCampoBean implements Serializable {
     private List<CampoUsuarioPuestoVo> lista;
     @Getter
     @Setter
+    private List<UsuarioVO> usuarios;
+    @Getter
+    @Setter
+    private List<String> usuariosFiltrados;
+    @Getter
+    @Setter
+    private List<RhPuestoVo> puestos;
+    @Getter
+    @Setter
+    private List<String> puestosFiltrados;
+    @Getter
+    @Setter
     private int accion;
     @Getter
     @Setter
     private int idGerencia;
     @Getter
     @Setter
+    private int idGerenciaRes;
+    @Getter
+    @Setter
     private String responsableGerencia;
     @Getter
     @Setter
     private String u;
+    private String userId;
     @Getter
     @Setter
     private String c;
@@ -90,19 +108,38 @@ public class AsignarUsuarioCampoBean implements Serializable {
     @Setter
     private List<SelectItem> listaCamposItems;
 
-    public void agregarCampoUsuario() {
+    @PostConstruct
+    public void iniciar() {
+        idCampo = sesion.getIdCampo();
         accion = 1;
-
+        usuarios = new ArrayList<>();
+        usuariosFiltrados = new ArrayList<>();
+        puestos = new ArrayList<>();
+        puestosFiltrados = new ArrayList<>();
+        listaCamposItems = new ArrayList<>();
+        lstGerencia = new ArrayList<>();
         setCampoUsuarioPuestoVo(new CampoUsuarioPuestoVo());
         getCampoUsuarioPuestoVo().setIdCampo(-1);
         setRhPuestoVo(new RhPuestoVo());
         getRhPuestoVo().setNombre("");
-        //setUsuarioCampoPop(true);
+        llenarListaApCamposItems();
+        //
+        usuarios = apCampoUsuarioRhPuestoImpl.traerUsuarioCampo(idCampo);
+        puestos = rhPuestoImpl.findAllRhPuesto("nombre", true, true);
+        traerCampoUsuario();
     }
 
-    public void cambiarSeleccionCampo(ValueChangeEvent valueChangeEvent) {
-        setIdCampo((Integer) valueChangeEvent.getNewValue());
-        UtilLog4j.log.info(this, "campo: " + getIdCampo());
+    public void agregarCampoUsuario() {
+        setCampoUsuarioPuestoVo(new CampoUsuarioPuestoVo());
+        getCampoUsuarioPuestoVo().setIdCampo(-1);
+        setRhPuestoVo(new RhPuestoVo());
+        getRhPuestoVo().setNombre("");
+        setC("no");
+        setAccion(0);
+    }
+
+    public void cambiarSeleccionCampo() {
+        traerCampoUsuario();
     }
 
     public void traerCampoUsuario() {
@@ -112,8 +149,16 @@ public class AsignarUsuarioCampoBean implements Serializable {
     public void eliminarRelacion(int idCampoUser) {
 
         apCampoUsuarioRhPuestoImpl.delete(sesion.getUsuarioVo().getId(), idCampoUser);
-
         setCampoUsuarioPuestoVo(null);
+        traerCampoUsuario();
+    }
+
+    public void cambiarFiltroHistorial() {
+        //setTipoFiltro((String) event.getNewValue());
+        if (responsableGerencia.equals("si")) {
+            PrimeFaces.current().ajax().update("PF('pnlFiltro').show();");
+        }
+
     }
 
     public void llenarGerencia() {
@@ -133,6 +178,27 @@ public class AsignarUsuarioCampoBean implements Serializable {
         }
     }
 
+    public List<String> usuarioListener(String texto) {
+        usuariosFiltrados.clear();
+        usuarios.stream().filter(u -> u.getNombre().toUpperCase().startsWith(texto.toUpperCase())).forEach(us -> {
+            usuariosFiltrados.add(us.getNombre());
+        });
+        return usuariosFiltrados;
+    }
+
+    public void buscarusuarioPorNombre() {
+        UsuarioVO us = usuarioImpl.findByName(getU());
+        userId = us.getId();
+    }
+
+    public List<String> puestoListener(String texto) {
+        puestosFiltrados.clear();
+        puestos.stream().filter(p -> p.getNombre().toUpperCase().startsWith(texto.toUpperCase())).forEach(us -> {
+            puestosFiltrados.add(us.getNombre());
+        });
+        return puestosFiltrados;
+    }
+
     public void cambiaValorPuesto() {
         setIdGerencia(-1);
         getRhPuestoVo().setNombre("");
@@ -143,14 +209,11 @@ public class AsignarUsuarioCampoBean implements Serializable {
     public void guardarUsuarioCampo() {
         if (getAccion() == 0) {
             if (verificaUsuarioCampoGuardar()) {
-                setRhPuestoVo(buscarPuestoPorId());
                 if (getRhPuestoVo() != null) {
                     guardarUsuarioCampo(getIdCampo(), getRhPuestoVo().getId());
                     UtilLog4j.log.info(this, "Guardó");
                     limpiarVariables();
-                    PrimeFaces.current().executeScript(";dialogoOK('dialogoBloqueUsuario');");
-                    //Limpiar las cajas
-                    PrimeFaces.current().executeScript(";limpiarComponenteCaja();");
+                    PrimeFaces.current().executeScript(";$(dialogoBloqueUsuario).modal('hide');");
                 } else {
                     PrimeFaces.current().executeScript(";alertaGeneral('Seleccione el puesto.');");
                 }
@@ -159,7 +222,7 @@ public class AsignarUsuarioCampoBean implements Serializable {
             }
 //
         } else if (getAccion() == 1) { //Modificar
-            setRhPuestoVo(buscarPuestoPorNombre());
+            buscarPuestoPorNombre();
 //                    if (getRhPuestoVo(   ) != null) {
 
             apCampoUsuarioRhPuestoImpl.edit(sesion.getUsuarioVo().getId(), getIdCampo(), getCampoUsuarioPuestoVo().getIdUsuario(), getRhPuestoVo().getId(), getCampoUsuarioPuestoVo().getIdCampoUsuarioPuesto());
@@ -174,7 +237,7 @@ public class AsignarUsuarioCampoBean implements Serializable {
 
     public boolean verificaUsuarioCampoGuardar() {
         List<CampoUsuarioPuestoVo> lcup
-                = apCampoUsuarioRhPuestoImpl.getCampoPorUsurio(getU(), getCampoUsuarioPuestoVo().getIdCampo());
+                = apCampoUsuarioRhPuestoImpl.getCampoPorUsurio(userId, getIdCampo());
 
         boolean retVal = true;
 
@@ -188,12 +251,11 @@ public class AsignarUsuarioCampoBean implements Serializable {
     }
 
     public void guardarUsuarioCampo(int campo, int puesto) {
-        int gerencia = usuarioImpl.findByName(getU()).getIdGerencia();
-        apCampoUsuarioRhPuestoImpl.save(sesion.getUsuarioVo().getId(), campo, getU(), puesto, gerencia);
+        apCampoUsuarioRhPuestoImpl.save(sesion.getUsuarioVo().getId(), campo, userId, puesto, idGerencia);
     }
 
-    public RhPuestoVo buscarPuestoPorNombre() {
-        return rhPuestoImpl.findByName(getRhPuestoVo().getNombre(), false);
+    public void buscarPuestoPorNombre() {
+        rhPuestoVo = rhPuestoImpl.findByName(getRhPuestoVo().getNombre(), false);
     }
 
     private void limpiarVariables() {
@@ -203,6 +265,7 @@ public class AsignarUsuarioCampoBean implements Serializable {
         setC("");
         setU("");
         setIdGerencia(-1);
+        userId = "";
     }
 
     public void cancelarUsuarioCampo() {
@@ -210,6 +273,7 @@ public class AsignarUsuarioCampoBean implements Serializable {
         setRhPuestoVo(null);
         setU("");
         limpiarVariables();
+        PrimeFaces.current().executeScript(";$(dialogoBloqueUsuario).modal('hide');");
     }
 
 }

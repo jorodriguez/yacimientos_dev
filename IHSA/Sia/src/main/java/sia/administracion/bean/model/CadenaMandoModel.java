@@ -15,7 +15,6 @@ import javax.faces.model.SelectItem;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
-import sia.catalogos.bean.backing.UsuarioBean;
 import sia.constantes.Constantes;
 import sia.modelo.Usuario;
 import sia.modelo.cadena.aprobacion.vo.CadenaAprobacionVo;
@@ -25,7 +24,6 @@ import sia.servicios.campo.nuevo.impl.ApCampoUsuarioRhPuestoImpl;
 import sia.servicios.catalogos.impl.UsuarioImpl;
 import sia.servicios.requisicion.impl.CadenasMandoImpl;
 import sia.sistema.bean.backing.Sesion;
-import sia.sistema.bean.support.SoporteProveedor;
 import sia.util.UtilLog4j;
 
 /**

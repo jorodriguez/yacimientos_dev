@@ -289,8 +289,7 @@ public class ApCampoGerenciaImpl extends AbstractFacade<ApCampoGerencia>{
     
     public void completarcambiarVisible(String idSesion, int idApCampoGerencia) {
 	ApCampoGerencia apCampoGerencia = find(idApCampoGerencia);
-	String ae = apCampoGerencia.toString();
-	apCampoGerencia.setVisible(apCampoGerencia.isVisible());
+	apCampoGerencia.setVisible(apCampoGerencia.isVisible() ? Boolean.FALSE :Boolean.TRUE);
 	apCampoGerencia.setModifico(new Usuario(idSesion));
 	apCampoGerencia.setFechaModifico(new Date());
 	apCampoGerencia.setHoraModifico(new Date());

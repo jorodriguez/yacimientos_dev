@@ -1,0 +1,339 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      
+      xmlns:ui="http://java.sun.com/jsf/facelets">
+    <body>
+        <ui:composition template="./../../../../WEB-INF/facelets/templates/templateServiciosGenerales.xhtml">
+            <ui:define name="contenido">
+                <h:panelGroup  rendered="#{empty sesion.usuario}" styleClass="altura">
+                    <ui:include src="./../../../../login.xhtml"/>
+                </h:panelGroup>                 
+                <h:form >
+                    <p class="tituloEncabezado">Datos de la Incidencia</p>
+                    <h:commandLink value="Regresar" action="/vistas/sgl/vehiculo/incidencia/registroIncidencia" 
+                                   style="text-align: left;">
+                        <f:ajax execute="@this"/>
+                    </h:commandLink>
+                </h:form>
+                <h:form >
+                    <div class="row" >
+                        <div class="col-lg-4" >
+                            <div class="card  panel-default">
+				<div class="card -heading">
+				    Incidencia
+				</div>
+                                <div class="card-body">
+                                    <small>
+                                        <h:outputLabel value="Título:"/>
+                                        <h:outputText value="#{incidenciaVehiculoBean.incidenciaVo.titulo}"/><br/>
+                                        <h:outputLabel id="descripcion" value="Descripción:"/>
+                                        <h:outputText value="#{incidenciaVehiculoBean.incidenciaVo.descripcion}"/><br/>
+                                        <h:outputLabel value="Prioridad:"/>
+                                        <h:outputText value="#{incidenciaVehiculoBean.incidenciaVo.prioridad}"/><br/>
+                                        <h:outputLabel value="Gerencia:"/>
+                                        <h:outputText value="#{incidenciaVehiculoBean.incidenciaVo.gerencia}"/>
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="card  panel-default">
+				<div class="card -heading">
+                                    Vehículo
+				</div>
+                                <div class="card-body">
+                                    <small>
+                                        <h:outputLabel value="Marca:"/>
+                                        <h:outputText value="#{incidenciaVehiculoBean.vehiculoVO.marca}"/><br/>
+                                        <h:outputLabel value="Modelo:"/>
+                                        <h:outputText value="#{incidenciaVehiculoBean.vehiculoVO.modelo}"/><br/>
+                                        <h:outputLabel value="Placa:"/>
+                                        <h:outputText value="#{incidenciaVehiculoBean.vehiculoVO.numeroPlaca}"/><br/>
+                                        <h:outputLabel value="Serie:"/>
+                                        <h:outputText value="#{incidenciaVehiculoBean.vehiculoVO.serie}"/>
+                                        <br/>
+                                        <br/>
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="card  panel-default">
+				<div class="card -heading">
+                                    Asignado
+				</div>
+                                <div class="card-body">                                    
+                                    <ui:fragment rendered="#{incidenciaVehiculoBean.usuarioVO ne null}">
+                                        <small>
+                                            <h:outputLabel value="Nombre:"/>
+                                            <h:outputText value="#{incidenciaVehiculoBean.usuarioVO.nombre}"/><br/>
+                                            <h:outputLabel value="Gerencia:"/>
+                                            <h:outputText value="#{incidenciaVehiculoBean.usuarioVO.gerencia}"/><br/>
+                                            <h:outputLabel value="Correo:"/>
+                                            <h:outputText value="#{incidenciaVehiculoBean.usuarioVO.mail}"/><br/>
+                                            <h:outputLabel value="Fecha:"/>
+                                            <h:outputText value="#{incidenciaVehiculoBean.usuarioVO.fechaIngreso}"/>
+                                        </small>
+                                    </ui:fragment>
+                                    <ui:fragment rendered="#{incidenciaVehiculoBean.usuarioVO eq null}">
+                                        <br/>
+                                        <small>
+                                            <h:outputLabel value="No hay responsable del vehículo seleccionado."/>
+                                        </small>
+                                        <br/>
+                                        <br/>
+                                    </ui:fragment>
+                                    <br/>
+                                    <br/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-4">
+                            <div class="card  panel-default">
+				<div class="card -heading">
+				    Evidencias
+				</div>
+
+                                <div class="card-body">
+				    <h:commandLink value="Evidencia" class="btn btn-default"
+						   actionListener="#{incidenciaVehiculoBean.agregarEvidencia(e)}">
+
+				    </h:commandLink>
+
+                                    <!-- Datos fotos -->
+                                    <p:dataTable value="#{incidenciaVehiculoBean.listaAdjuntoVO}" var="dataAdj">
+                                        <p:column headerText="Archivo" style="font-size: 11px;">
+                                            <h:outputLink target="_blank"  value="/ServiciosGenerales/AbrirArchivo?ZWZ2W=#{dataAdj.id}&amp;ZWZ3W=#{dataAdj.uuid}">
+                                                <center>
+                                                    <h:outputText value="#{dataAdj.nombreUUID}"/>
+                                                </center>
+                                            </h:outputLink>
+                                        </p:column>
+                                        <p:column style="font-size: 11px;">
+                                            <h:commandLink value="Eliminar" actionListener="#{incidenciaVehiculoBean.eliminarArchivo(event)}">
+                                                <f:param name="adjunto" value="#{dataAdj.id}"/>
+                                                <f:param name="adjunto_incidencia" value="#{dataAdj.idTabla}"/>
+                                                <f:ajax render="@all" execute="@form"/>
+                                            </h:commandLink>
+                                        </p:column>
+                                    </p:dataTable>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-7">
+                            <div class="card  panel-default">
+				<div class="card -heading">
+				    Costo
+				</div>
+                                <div class="card-body">
+
+                                    <p:commandLink value="Agregar factura" actionListener="#{incidenciaVehiculoBean.agregarFactura(event)}" styleClass="btn btn-default"/>
+
+                                    <p:dataTable value="#{incidenciaVehiculoBean.listaFactura}" var="dataFact">
+                                        <p:column headerText="Proveedor">
+                                            <h:outputText value="#{dataFact.proveedor}"/>
+                                        </p:column>
+                                        <p:column headerText="Folio">
+                                            <h:outputText value="#{dataFact.folio}"/>                                
+                                        </p:column>
+                                        <p:column headerText="Monto">
+                                            <h:outputText value="#{dataFact.monto}"/>                                
+                                        </p:column>
+                                        <p:column headerText="Moneda">
+                                            <h:outputText value="#{dataFact.moneda}"/>                                
+                                        </p:column>
+                                        <p:column headerText="Moneda">
+                                            <h:outputText value="#{dataFact.idFactura}"/>                                
+                                        </p:column>
+                                        <p:column rendered="#{dataFact.idAdjunto gt 0}">
+                                            <h:outputLink target="_blank"  value="/ServiciosGenerales/AbrirArchivo?ZWZ2W=#{dataFact.idAdjunto}&amp;ZWZ3W=#{dataFact.uuId}"
+                                                            title="Abrir el archivo  #{dataFact.adjunto}">
+						<h:graphicImage url="#{msgs['sgl.ruta.imagen']}icon_attach.gif"  styleClass="imagenSinBorde"  alt="Abrir archivo"/>
+                                            </h:outputLink>
+                                            <p:commandLink value="Quitar" title="Quitar adjunto" actionListener="#{incidenciaVehiculoBean.quitarArchivo(event)}">                                                
+                                                <f:param name="idAdjunto"  value="#{dataFact.idAdjunto}"/>
+                                                <f:param name="idFactura"  value="#{dataFact.idFactura}"/>
+                                            </p:commandLink>
+                                        </p:column>
+                                        <p:column rendered="#{dataFact.idAdjunto eq 0}" headerText="">
+                                            <p:commandLink value="comprobante" 
+							     actionListener="#{incidenciaVehiculoBean.agregarComprobanteFactura(event)}">
+                                                <f:param name="factura" value="#{dataFact.idFactura}"/>
+                                            </p:commandLink>
+                                        </p:column>
+                                        <p:column headerText="">
+                                            <p:commandLink title="Modificar Factura" actionListener="#{incidenciaVehiculoBean.iniciarModificarFactura(event)}" value="Modificar">                                                
+                                                <f:param name="idFactura"  value="#{dataFact.idFactura}"/>
+                                            </p:commandLink>
+                                        </p:column>
+                                        <p:column headerText="">
+                                            <h:commandLink title="Eliminar facura" actionListener="#{incidenciaVehiculoBean.eliminarFactura(event)}"
+                                                           onclick="return  confirm('La operacion va a eliminar la factura. ¿Esta seguro?')">
+                                                <i class="glyphicon glyphicon-remove text-danger"></i>    
+                                                <f:param name="idInciFac" value="#{dataFact.idRelacion}"/>
+                                                <f:ajax execute="@form" render="@all"/>
+                                            </h:commandLink>
+                                        </p:column>
+                                    </p:dataTable>
+                                    <br/>
+                                    <br/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </h:form>
+                <!--Agregar factura -->
+                <h:form id="frmFactura">
+                    <div class="modal fade" data-backdrop="static" id="gastoViaje" >
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h4 class="modal-title">Registro de Gasto</h4>
+                                </div>
+                                <div class="modal-body">
+                                    <br/>
+                                    <h:panelGrid columns="2" cellpadding="20" cellspacing="20">
+                                        <h:outputLabel value="Proveedor: "/>
+                                        <h:panelGrid columns="1">
+                                            <h:panelGrid columns="3">
+                                                <h:inputText id="autocomplete" class="form-control" required="true" requiredMessage="Agregar el proveedor"/>
+                                                <h:inputHidden id="hidenDes" value="#{incidenciaVehiculoBean.facturaVo.idProveedor}" />
+                                                <h:message for="autocomplete" id="msgProv"  class="text-danger"/>
+                                            </h:panelGrid>
+                                            <h:outputLabel id="nombreProveedor"/>
+
+                                        </h:panelGrid>
+                                        <h:outputLabel value="Folio: "/>
+                                        <h:panelGrid columns="2">
+                                            <h:inputText id="folioGuardar" class="form-control" value="#{incidenciaVehiculoBean.facturaVo.folio}" required="true" requiredMessage="Agregar el folio"/>
+                                            <h:message for="folioGuardar" id="msgFolioGuardar"  class="text-danger"/>
+                                        </h:panelGrid>
+                                        <h:outputLabel value="Monto: "/>
+                                        <h:panelGrid columns="2">
+                                            <h:inputText id="montoGuardar" class="form-control" value="#{incidenciaVehiculoBean.facturaVo.monto}" 
+                                                         required="true" requiredMessage="Agregar el monto">
+                                            </h:inputText>
+                                            <h:message for="montoGuardar" id="msgMontoGuardar"  class="text-danger"/>
+                                        </h:panelGrid>
+                                        <h:outputLabel value="Moneda: "/>
+                                        <h:panelGrid columns="2">
+                                            <h:selectOneMenu value="#{incidenciaVehiculoBean.facturaVo.idMoneda}" class="form-control">
+                                                <f:selectItems value="#{incidenciaVehiculoBean.listaItem}"/>
+                                            </h:selectOneMenu>
+                                        </h:panelGrid>
+                                        <h:outputLabel value="Concepto: "/>
+                                        <h:panelGrid columns="2">
+                                            <h:inputTextarea id="conceptoGuardar" cols="45" class="form-control" value="#{incidenciaVehiculoBean.facturaVo.concepto}" required="true" requiredMessage="Agregar concepto"/>
+                                            <h:message for="conceptoGuardar" id="msgConceptoGuardar"  class="text-danger"/>
+                                        </h:panelGrid>
+                                        <h:outputLabel value="Observación:"/>
+                                        <h:panelGrid columns="2">
+                                            <h:inputTextarea cols="45" value="#{incidenciaVehiculoBean.facturaVo.observacion}" class="form-control"/>
+                                        </h:panelGrid>
+                                        <h:outputLabel value="Emision:"/>
+                                        <h:panelGrid columns="2">
+                                            <p:datePicker id="fechaGuardar" value="#{incidenciaVehiculoBean.facturaVo.fechaEmision}" pattern="dd/MM/yyyy"
+                                                                required="true" requiredMessage="Agregar la fecha">
+                                            </ace:dateTimeEntry>
+                                            <h:message for="fechaGuardar" id="msgFechaGuardar"  class="text-danger"/>
+                                        </h:panelGrid>
+                                    </h:panelGrid>
+                                    <h:message for="btnGuardar" class="text-danger"/>
+                                </div>
+                                <div class="modal-footer">
+                                    <h:commandLink id="btnGuardar" value="Guardar" class="btn btn-info" 
+                                                   actionListener="#{incidenciaVehiculoBean.terminarRegistro(event)}"/>
+                                    <h:commandLink value="Cerrar" immediate="true" 
+                                                   class="btn btn-default" 
+                                                   actionListener="#{incidenciaVehiculoBean.cerrarRegistro(event)}"/>
+                                </div>
+                            </div><!-- /.modal-content -->
+                        </div><!-- /.modal-dialog -->
+                    </div><!-- /.modal -->
+                </h:form>
+                <!--Agregar archivo factura -->
+                <h:form id="frmArchivo">
+                    <div class="modal fade" data-backdrop="static" id="dialogoSubirFactura" >
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h4 class="modal-title">Comprobante</h4>
+                                </div>
+                                <div class="modal-body">
+                                    <p:fileUpload  id="fileEntryInci"
+                                                   listener="#{incidenciaVehiculoBean.subirArchivo}" 
+                                                   />
+                                    <h:commandButton value="Cerrar" class="btn btn-default" 
+                                                     actionListener="#{incidenciaVehiculoBean.cerrarDialogoArchivo(event)}"></h:commandButton>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </h:form>
+                <h:form id="frmModFactura">
+                    <div class="modal fade" data-backdrop="static" id="modificarFacInci" >
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h4 class="modal-title">Modificar Factura</h4>
+                                </div>
+                                <div class="modal-body">
+                                    <h:panelGrid columns="2" cellpadding="20" cellspacing="20">
+                                        <h:outputLabel value="Folio: "/>
+                                        <h:panelGrid columns="2">
+                                            <h:inputText id="folio" class="form-control" value="#{incidenciaVehiculoBean.facturaVo.folio}" required="true" requiredMessage="Agregar el folio"/>
+                                            <h:message for="folio" id="msgFolio"  class="text-danger"/>
+                                        </h:panelGrid>
+                                        <h:outputLabel value="Monto: "/>
+                                        <h:panelGrid columns="2">
+                                            <h:inputText id="monto" class="form-control" value="#{incidenciaVehiculoBean.facturaVo.monto}" 
+                                                         required="true" requiredMessage="Agregar el monto">
+                                            </h:inputText>
+                                            <h:message for="monto" id="msgMonto"  class="text-danger"/>
+                                        </h:panelGrid>
+                                        <h:outputLabel value="Moneda: "/>
+                                        <h:panelGrid columns="2">
+                                            <h:selectOneMenu value="#{incidenciaVehiculoBean.facturaVo.idMoneda}" class="form-control">
+                                                <f:selectItems value="#{incidenciaVehiculoBean.listaItem}"/>
+                                            </h:selectOneMenu>
+                                        </h:panelGrid>
+                                        <h:outputLabel value="Concepto: "/>
+                                        <h:panelGrid columns="2">
+                                            <h:inputTextarea id="concepto" cols="45" class="form-control" value="#{incidenciaVehiculoBean.facturaVo.concepto}" required="true" requiredMessage="Agregar concepto"/>
+                                            <h:message for="concepto" id="msgConcepto"  class="text-danger"/>
+                                        </h:panelGrid>
+                                        <h:outputLabel value="Observación:"/>
+                                        <h:panelGrid columns="2">
+                                            <h:inputTextarea cols="45" value="#{incidenciaVehiculoBean.facturaVo.observacion}" class="form-control"/>
+                                        </h:panelGrid>
+                                        <h:outputLabel value="Emision:"/>
+                                        <h:panelGrid columns="2">
+                                            <p:datePicker id="fechaemision" value="#{incidenciaVehiculoBean.facturaVo.fechaEmision}" pattern="dd/MM/yyyy"
+                                                                required="true" requiredMessage="Agregar la fecha">
+                                            </ace:dateTimeEntry>
+                                            <h:message for="fechaemision" id="msgFecha"  class="text-danger"/>
+                                        </h:panelGrid>
+                                    </h:panelGrid>
+                                    <h:message for="btnGuardarr" class="text-danger"/>
+                                </div>
+                                <div class="modal-footer">
+                                    <h:commandLink id="btnGuardarr" value="Guardar" class="btn btn-info" 
+                                                   actionListener="#{incidenciaVehiculoBean.completarModificarFactura(event)}"/>
+                                    <h:commandLink value="Cerrar" immediate="true" class="btn btn-default" 
+                                                   actionListener="#{incidenciaVehiculoBean.cerrarModificarFactura(event)}"/>
+                                </div>
+                            </div><!-- /.modal-content -->
+                        </div><!-- /.modal-dialog -->
+                    </div><!-- /.modal -->
+                </h:form>
+
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

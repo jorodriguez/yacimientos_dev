@@ -295,15 +295,40 @@ public class UsuarioBean implements Serializable {
     @Getter
     @Setter
     private int accion;
+    @Getter
+    @Setter
+    private List<UsuarioVO> usuarios;
+    @Getter
+    @Setter
+    private List<String> usuariosFiltrados;
+    @Getter
+    @Setter
+    private List<SelectItem> gerencias;
 
     @PostConstruct
     public void iniciar() {
+        gerencias = new ArrayList<>();
+        usuarios = new ArrayList<>();
+        usuariosFiltrados = new ArrayList<>();
         listaMenu = new ArrayList<>();
         llenarMenu();
         List<UsuarioRolVo> rolUsuario = siUsuarioRol.traerRolPorUsuarioModulo(sesion.getUsuarioVo().getId(), Constantes.MODULO_RH_ADMIN, sesion.getUsuarioVo().getIdCampo());
         for (UsuarioRolVo usuarioRolVo : rolUsuario) {
             mapaRoles.put(usuarioRolVo.getNombreRol(), Boolean.TRUE);
         }
+        traerUsuarios();
+    }
+
+    public void traerUsuarios() {
+        usuarios = apCampoUsuarioRhPuestoImpl.traerUsuarioCampo(sesion.getUsuarioVo().getIdCampo());
+    }
+
+    public List<String> completarUsuario(String cadena) {
+        usuariosFiltrados.clear();
+        usuarios.stream().filter(us -> us.getNombre().toUpperCase().contains(cadena.toUpperCase())).forEach(u -> {
+            usuariosFiltrados.add(u.getNombre());
+        });
+        return usuariosFiltrados;
     }
 
     public void llenarMenu() {
@@ -989,7 +1014,7 @@ public class UsuarioBean implements Serializable {
             FacesUtils.addInfoMessage("Por favor escribar el nombre del usuario que desea buscar  ");
             return "";
         } else {
-            llenarUsuarioVOAlta(buscarPorId(getU()));
+            llenarUsuarioVOAlta(buscarPorNombre(getU()));
             if (getUsuarioVOAlta() != null) {
                 setIdGerencia(getUsuarioVOAlta().getIdGerencia());
                 setIdCampo(getUsuarioVOAlta().getIdCampo());
@@ -1002,8 +1027,7 @@ public class UsuarioBean implements Serializable {
         }
     }
 
-    public void llenarUsuarioVOAlta(Usuario u) {
-
+    public void llenarUsuarioVOAlta(UsuarioVO u) {
         if (u == null) {
             setUsuarioVOAlta(null);
         } else {
@@ -1012,7 +1036,7 @@ public class UsuarioBean implements Serializable {
             getUsuarioVOAlta().setId(u.getId());
             getUsuarioVOAlta().setNombre(u.getNombre());
             getUsuarioVOAlta().setClave(u.getClave());
-            CampoUsuarioPuestoVo campoPuesto = traerPuesto(u.getId(), u.getApCampo().getId());
+            CampoUsuarioPuestoVo campoPuesto = traerPuesto(u.getId(), u.getIdCampo());
 
             if (campoPuesto != null) {
                 setIdPuesto(campoPuesto.getIdPuesto());
@@ -1021,7 +1045,7 @@ public class UsuarioBean implements Serializable {
                 setIdPuesto(campoPuesto.getIdPuesto());
             }
             //getUsuarioVOAlta().setPuesto(traerPuestoUsusaio(u.getId(), u.getApCampo().getId()));
-            getUsuarioVOAlta().setMail(u.getEmail());
+            getUsuarioVOAlta().setMail(u.getMail());
 
             getUsuarioVOAlta().setUsuarioDirectorio(u.getUsuarioDirectorio());
 
@@ -1032,39 +1056,34 @@ public class UsuarioBean implements Serializable {
             getUsuarioVOAlta().setCelular(u.getCelular());
             getUsuarioVOAlta().setSexo(u.getSexo());
             //
-            getUsuarioVOAlta().setIdCampo(u.getApCampo().getId());
-            getUsuarioVOAlta().setCampo(u.getApCampo().getNombre());
+            getUsuarioVOAlta().setIdCampo(u.getIdCampo());
+            getUsuarioVOAlta().setCampo(u.getCampo());
             getUsuarioVOAlta().setActivo(u.isActivo());
-            getUsuarioVOAlta().setPregunta(u.getPreguntaSecreta());
-            getUsuarioVOAlta().setRespuesta(u.getRespuestaPreguntaSecreta());
+            getUsuarioVOAlta().setPregunta(u.getPregunta());
+            getUsuarioVOAlta().setRespuesta(u.getRespuesta());
             //Otros 5
             getUsuarioVOAlta().setFechaIngreso(u.getFechaIngreso());
-            if (u.getSgOficina() != null) {
-                getUsuarioVOAlta().setOficina(u.getSgOficina().getNombre());
-                getUsuarioVOAlta().setIdOficina(u.getSgOficina().getId());
+            if (u.getIdOficina() > 0) {
+                getUsuarioVOAlta().setOficina(u.getOficina());
+                getUsuarioVOAlta().setIdOficina(u.getIdOficina());
             }
 
             if (u.getGerencia() == null) {
                 setIdGerencia(-1);
             } else {
-                getUsuarioVOAlta().setIdGerencia(u.getGerencia().getId());
-                getUsuarioVOAlta().setGerencia(u.getGerencia().getNombre());
+                getUsuarioVOAlta().setIdGerencia(u.getIdGerencia());
+                getUsuarioVOAlta().setGerencia(u.getGerencia());
             }
 
-            if (u.getSgEmpresa() != null) {
-                getUsuarioVOAlta().setIdNomina(u.getSgEmpresa().getId());
-            }
-
-            if (u.getJefeDirecto() != null) {
-                getUsuarioVOAlta().setIdJefe(u.getJefeDirecto().getId());
-                getUsuarioVOAlta().setNombreJefe(u.getJefeDirecto().getNombre());
+            if (u.getRfcEmpresa() != null) {
+                getUsuarioVOAlta().setIdNomina(u.getIdCampo());
             }
 
             if (sesion.getUsuarioVo() != null) {
                 getUsuarioVOAlta().setUsuarioInSessionGerente(usuarioResponsableForAnyGerencia());
             }
 
-            UsuarioRolVo uvo = traerRolPrincipal(u.getId(), u.getApCampo().getId());
+            UsuarioRolVo uvo = traerRolPrincipal(u.getId(), u.getIdCampo());
 
             if (uvo != null) {
                 getUsuarioVOAlta().setRolPrincipal(uvo.getNombreRol());
@@ -1149,21 +1168,21 @@ public class UsuarioBean implements Serializable {
         setU("");
     }
 
-    public String modificarUsuario() {
+    public void cambiarCampoUsuario() {
+        lleanrGerencias();
+    }
 
-        String retVal = "";
+    public void modificarUsuario() {
 
         if (getIdGerencia() > 0) {
-
             if (this.validaMail(getUsuarioVOAlta().getMail())
                     && this.validaMail(getUsuarioVOAlta().getDestinatarios())) {
 
                 if (servicioUsuario.modificarUsuario(getUsuarioVOAlta(), getIdGerencia(), getIdCampo())) {
                     setIdGerencia(-1);
-                    setIdCampo(sesion.getUsuarioVo().getIdCampo());
-                    //   this.usuario = buscarPorId(getUsuarioVOAlta().getId());
+                    setIdCampo(sesion.getUsuarioVo().getIdCampo());                    
                     setU("");
-                    retVal = "consultaUsuario";
+                    FacesUtils.addInfoMessage("Se modificaro los datos del usuario");
                 } else {
                     FacesUtils.addInfoMessage("Ocurrio un error . . .  +  +  +");
                 }
@@ -1176,7 +1195,6 @@ public class UsuarioBean implements Serializable {
             FacesUtils.addInfoMessage("Es necesario seleccionar una gerencia");
         }
 
-        return retVal;
     }
 
     public void cancelarModificacionUuario() {
@@ -1189,32 +1207,19 @@ public class UsuarioBean implements Serializable {
         setIdCampo((Integer) valueChangeEvent.getNewValue());
     }
 
-    public List<SelectItem> getListaGerencia() {
-        try {
-            return listaGerencia();
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
-    public List<SelectItem> listaGerencia() {
-        List<SelectItem> lstItem = null;
+    public void lleanrGerencias() {
         List<GerenciaVo> lstGerencia;
         try {
+            gerencias.clear();
             lstGerencia = gerenciaImpl.getAllGerenciaByApCampo(getIdCampo(), "nombre", true, null, false);
-
-            lstItem = new ArrayList<>();
-
             for (GerenciaVo ger : lstGerencia) {
                 SelectItem item = new SelectItem(ger.getId(), ger.getNombre());
-                lstItem.add(item);
+                gerencias.add(item);
             }
 
         } catch (Exception e) {
             LOGGER.error(this, e);
         }
-
-        return lstItem;
     }
 
     public void traerCadenaMando() {
@@ -1313,26 +1318,18 @@ public class UsuarioBean implements Serializable {
         return ls;
     }
 
-    public String buscarUsuarioConsulta() {
-        Usuario usuaroiSel = buscarPorId(getU());
-
-        String p = "";
-
+    public void buscarUsuarioConsulta() {
+        UsuarioVO usuaroiSel = buscarPorNombre(getU());
         if (usuaroiSel != null) {
             llenarUsuarioVOAlta(usuaroiSel);
             setIdCampo(getUsuarioVOAlta().getIdCampo());
+            lleanrGerencias();
             setIdGerencia(getUsuarioVOAlta().getIdGerencia());
 
             UtilLog4j.log.info(this, "Usr:{0}", new Object[]{getUsuarioVOAlta().getNombre()});
-
-            p = "modificarUsuario";
-
         } else {
             UtilLog4j.log.info(this, "No se encontro el usuario");
         }
-
-        return p;
-
     }
 
     public void limpiarVar() {
@@ -1547,6 +1544,10 @@ public class UsuarioBean implements Serializable {
         return servicioUsuario.find(idUsuario);
     }
 
+    public UsuarioVO buscarPorNombre(String userName) {
+        return servicioUsuario.findByName(userName);
+    }
+
     //Validaciones
     public boolean validaMail(String correo) {
         String[] mails = correo.split(",");
@@ -1603,8 +1604,6 @@ public class UsuarioBean implements Serializable {
         //return "agregarUsuarioCampo";
     }
 
-   
-
     public void cambiarSeleccionCampo(ValueChangeEvent valueChangeEvent) {
         setIdCampo((Integer) valueChangeEvent.getNewValue());
         UtilLog4j.log.info(this, "campo: " + getIdCampo());
@@ -1656,8 +1655,6 @@ public class UsuarioBean implements Serializable {
         return l;
     }
 
- 
-
     public void seleccionarCampoUsuario() {
         setCampoUsuarioPuestoVo((CampoUsuarioPuestoVo) getLista().getRowData());
         getCampoUsuarioPuestoVo().setIdCampo(getCampoUsuarioPuestoVo().getIdCampo());
@@ -1688,15 +1685,10 @@ public class UsuarioBean implements Serializable {
         return 0;
     }
 
- 
-
 //listener usuario capmpo
-
-
     public RhPuestoVo buscarPuestoPorNombre() {
         return rhPuestoImpl.findByName(getRhPuestoVo().getNombre(), false);
     }
-
 
     public void limpiarListaUser() {
         setListaUsuario(null);
@@ -1737,6 +1729,7 @@ public class UsuarioBean implements Serializable {
             setApruebaOCPop(false);
             setUsuarioVOAlta(null);
             setU("");
+            PrimeFaces.current().executeScript("$(dialogoAprobarOcs).modal('hide');");
         } else {
             FacesUtils.addErrorMessage("frmPopApruebaOC", FacesUtils.getKeyResourceBundle("sia.usuario.necesario"));
         }
@@ -1812,7 +1805,7 @@ public class UsuarioBean implements Serializable {
     }
 
     public void abrirPopup(String idUser) {
-        Usuario u = buscarPorId(idUser);
+        UsuarioVO u = buscarPorNombre(idUser);
         if (u != null) {
             UtilLog4j.log.info(this, "8888888888888888888888usuario " + u.getNombre());
             llenarUsuarioVOAlta(u);
@@ -1866,7 +1859,7 @@ public class UsuarioBean implements Serializable {
 //            FacesUtils.addInfoMessage("Por favor escribar el nombre del usuario que desea buscar  ");
             return "";
         } else {
-            llenarUsuarioVOAlta(buscarPorId(getU()));
+            llenarUsuarioVOAlta(buscarPorNombre(getU()));
             if (getUsuarioVOAlta() != null) {
                 if (!rhUsuarioGerenciaImpl.verficiarProcesoBaja(usuarioVOAlta.getId())) {
                     setIdGerencia(getUsuarioVOAlta().getIdGerencia());

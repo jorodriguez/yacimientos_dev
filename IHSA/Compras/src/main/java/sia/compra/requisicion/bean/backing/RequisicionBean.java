@@ -3651,66 +3651,14 @@ public class RequisicionBean implements Serializable {
     private String filtrosCadena(String cadena) {
         String[] output = cadena.split("\\%");
         StringBuilder cadenaNombre = new StringBuilder("and ((");
-//        StringBuilder cadenaCodigo = new StringBuilder(") or (");
         String and = "";
         for (String s : output) {
             cadenaNombre.append(and).append("upper(a.NOMBRE||a.CODIGO_INT) like upper('%").append(s).append("%') ");
-//            cadenaCodigo.append(and).append("upper(a.CODIGO_INT) like upper('%").append(s).append("%') ");                        
             and = " and ";
         }
-//        return cadenaNombre.toString()+cadenaCodigo.toString()+"))";
         return cadenaNombre.toString() + "))";
     }
 
-//    private List<SelectItem> traerArticulos(String cadena) {
-//        List<SelectItem> list;
-//        try {
-//            if (cadena != null && !cadena.isEmpty() && cadena.length() > 2) {
-//                list = soporteArticulos.obtenerArticulos(cadena, usuarioBean.getUsuarioConectado().getApCampo().getId(),
-//                        Constantes.CERO,
-//                        getCodigos(getCategoriasSeleccionadas().size() > 2
-//                                ? getCategoriasSeleccionadas().subList(2, getCategoriasSeleccionadas().size())
-//                                : new ArrayList<CategoriaVo>()));
-//            } else {
-//                list = new ArrayList<>();
-//            }
-//        } catch (Exception e) {
-//            LOGGER.error(this, "", e);
-//            list = new ArrayList<>();
-//        }
-//        return list;
-//    }
-//    private List<SelectItem> traerCategorias(String cadena) {
-//        List<SelectItem> list;
-//        try {
-//            if (cadena != null && !cadena.isEmpty() && cadena.length() > 2) {
-//                list = soporteArticulos.obtenerCategorias(cadena, usuarioBean.getUsuarioConectado().getApCampo().getId());
-//            } else {
-//                list = new ArrayList<>();
-//            }
-//        } catch (Exception e) {
-//            LOGGER.error(this, "", e);
-//            list = new ArrayList<>();
-//        }
-//        return list;
-//    }
-//
-//    private List<SelectItem> traerGEArticulos(String cadena) {
-//        List<SelectItem> list;
-//        try {
-//            if (cadena != null && !cadena.isEmpty() && cadena.length() > 2) {
-//                list = soporteArticulos.obtenerArticulos(cadena, usuarioBean.getUsuarioConectado().getApCampo().getId(),
-//                        Constantes.CERO,
-//                        null);
-//            } else {
-//                list = new ArrayList<>();
-//            }
-//        } catch (Exception e) {
-//            LOGGER.error(this, "", e);
-//            list = new ArrayList<>();
-//        }
-//        return list;
-//    }
     private String getCodigos(List<CategoriaVo> categorias) {
         String codigosTxt = "";
         for (CategoriaVo cat : categorias) {
@@ -3764,9 +3712,6 @@ public class RequisicionBean implements Serializable {
                     setCategoriaVo(getCategoriaVoInicial());
                     categoriasSeleccionadas = new ArrayList<>();
                     iniciarCatSel();
-//                    PrimeFaces.current().executeScript(
-//                            ";minimizarPanel('artFrecImg', 'collapsePanelArtFre');minimizarPanel('busAvaImg', 'collapsePanelBusquedaAvanzada');"
-//                    );
                 }
             }
         } catch (Exception e) {
