@@ -12,7 +12,8 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.faces.bean.ManagedProperty;
-import javax.faces.bean.ViewScoped;
+import javax.faces.view.ViewScoped;
+
 import sia.constantes.Constantes;
 import sia.modelo.sgl.viaje.vo.EstatusAprobacionSolicitudVO;
 import sia.modelo.sgl.viaje.vo.SolicitudViajeVO;
@@ -53,22 +54,8 @@ public class BuscarSVOrVIBeanModel implements Serializable {
     private String codigoVI;
     private String estatusActual;
 
-    /**
-     * @return the sesion
-     */
-    public Sesion getSesion() {
-        return sesion;
-    }
 
     /**
-     * @param sesion the sesion to set
-     */
-    public void setSesion(Sesion sesion) {
-        this.sesion = sesion;
-    }
-
-    /**
-     * @return the example
      */
     @PostConstruct
     public void inicializar() {
@@ -164,11 +151,9 @@ public class BuscarSVOrVIBeanModel implements Serializable {
     }
 
     public void buscarSV() {
-        String cod = FacesUtils.getRequestParameter("textSerchSV").toUpperCase();
-
         List<SolicitudViajeVO> lsv = new ArrayList<>();
-        if (cod != null && !cod.isEmpty()) {
-            lsv = solicitudViajeImpl.buscarPorCodigo(cod, Constantes.FALSE);
+        if (codigoSV != null && !codigoSV.isEmpty()) {
+            lsv = solicitudViajeImpl.buscarPorCodigo(codigoSV, Constantes.FALSE);
             if (lsv != null && !lsv.isEmpty()) {
                 setSv(lsv.get(0));
                 if (getSv() != null) {
@@ -200,10 +185,8 @@ public class BuscarSVOrVIBeanModel implements Serializable {
     }
 
     public void buscarVI() {
-        String cod = FacesUtils.getRequestParameter("textSerchVI").toUpperCase();
-
-        if (cod != null && !cod.isEmpty()) {
-            setViajeBuscar(viajeImpl.buscarPorCodigo(cod));
+        if (codigoVI != null && !codigoVI.isEmpty()) {
+            setViajeBuscar(viajeImpl.buscarPorCodigo(codigoVI));
             if (getViajeBuscar() != null) {
                 setCodigoVI(getViajeBuscar().getCodigo());
                 setEstatusActual(getViajeBuscar().getEstatus());

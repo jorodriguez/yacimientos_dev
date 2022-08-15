@@ -4,16 +4,12 @@
                  xmlns:f="http://java.sun.com/jsf/core"
                  xmlns:c="http://java.sun.com/jsp/jstl/core"
                  xmlns:h="http://java.sun.com/jsf/html"
-                 
-                >
-
-
+                 >
     <h:form id="formCrearInv" style="text-align: left; ">
         <div class="modal fade" id="modalCrearInvitado" data-backdrop="static">
-            <div class="modal-dialog" style="z-index: 1380">
+            <div class="modal-dialog" style="z-index: 100380">
                 <div class="modal-content">
                     <div class="modal-header">                                    
-
                         <h5><b>Crear Invitado</b></h5> 
                     </div>
                     <div class="modal-body">
@@ -83,7 +79,7 @@
                     <div class="modal-footer" style="border-top: white; text-align: right;">
                         <button class="btn btn-primary" onclick="ejecutarBoton('formCrearInv', 'crearInvitado')">Aceptar</button>                       
                         <button class="btn btn-default" data-dismiss="modal">Cancelar</button>
-                        <p:commandLink  action="#{solicitudViajeBean.crearInvitado()}" id="crearInvitado"/> 
+                        <p:commandLink  action="#{solicitudViajeBean.crearInvitado()}" id="crearInvitado" process="@form" update="formTerrestre"/> 
                     </div>
 
                 </div>
@@ -126,18 +122,17 @@
                             </div>
                         </div>
                     </div>                                       
-                    <div class="modal-footer" style="border-top: white; text-align: right;">
-                        <div class="row" style="text-align: right">
-                            <div class="col-xs-7"/>
-                            <button class="btn btn-primary col-xs-2" onclick="ejecutarBoton('formEditTel', 'addPhon')" 
-                                    style="display: #{solicitudViajeBean.temporal.editarTel ? 'none' : 'block'}">Aceptar</button>  
-                            <button class="btn btn-primary col-xs-2" onclick="ejecutarBoton('formEditTel', 'addPhon2')" 
-                                    style="display: #{solicitudViajeBean.temporal.editarTel ? 'block' : 'none'}">Aceptar</button>  
-                            <button class="btn btn-default col-xs-2" data-dismiss="modal">Cancelar</button>
-                        </div>
-
-                        <p:commandLink  action="#{solicitudViajeBean.addViajero()}" id="addPhon"/> 
-                        <p:commandLink  action="#{solicitudViajeBean.confirmarTelefon()}" id="addPhon2"/> 
+                    <div class="modal-footer">
+                        <p:commandLink  action="#{solicitudViajeBean.addViajero()}" id="addPhon" process="@form" 
+                                        update="formTerrestre:viajerosTerrestre" 
+                                        rendered="#{solicitudViajeBean.temporal.editarTel eq false}" 
+                                        value="Aceptar"/> 
+                        <p:commandLink  action="#{solicitudViajeBean.confirmarTelefon()}" id="addPhon2" 
+                                        process="@form" update="formTerrestre:viajerosTerrestre"
+                                        rendered="#{solicitudViajeBean.temporal.editarTel eq true}"
+                                        value="Confirmar"/>
+                        <p:commandLink value="Cancelar" immediate="true"
+                                       onclick="$(modalAddTel).modal('hide');" class="col-xs-2"/> 
                     </div>
                 </h:form>
 

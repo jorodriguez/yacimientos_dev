@@ -11,8 +11,9 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.faces.bean.ManagedProperty;
-import javax.faces.bean.ViewScoped;
+
 import javax.faces.model.SelectItem;
+import javax.faces.view.ViewScoped;
 import sia.modelo.combustible.vo.Consumo;
 import sia.modelo.sgl.vo.TarjetaOperacionVO;
 import sia.servicios.sgl.combustible.impl.SgTarjetaOperacionImpl;

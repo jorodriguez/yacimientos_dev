@@ -8,11 +8,11 @@ package sia.sgl.viaje.bean.backing;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
+import javax.enterprise.context.RequestScoped;
 import javax.inject.Named;
-import javax.faces.bean.ManagedProperty;
-import javax.faces.bean.RequestScoped;
 import javax.faces.event.ActionEvent;
 import javax.faces.model.SelectItem;
+import javax.inject.Inject;
 import org.primefaces.PrimeFaces;
 import sia.modelo.gr.vo.GrIntercepcionVO;
 import sia.modelo.sgl.viaje.vo.ItinerarioTerrestreVO;
@@ -30,8 +30,8 @@ import sia.util.UtilLog4j;
 public class AdministrarViajeTableroBean implements Serializable {
 
 
-    @ManagedProperty(value = "#{administrarViajeTableroBeanModel}")
-    private AdministrarViajeTableroBeanModel administrarViajeTableroBeanModel;
+    @Inject
+    AdministrarViajeTableroBeanModel administrarViajeTableroBeanModel;
 
     public AdministrarViajeTableroBean() {
     }

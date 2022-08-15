@@ -10,11 +10,11 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.faces.bean.ManagedProperty;
-import javax.faces.bean.ViewScoped;
+
 import javax.faces.model.DataModel;
 import javax.faces.model.ListDataModel;
 import javax.faces.model.SelectItem;
+import javax.faces.view.ViewScoped;
 import sia.modelo.Proveedor;
 import sia.modelo.SgAseguradora;
 import sia.servicios.proveedor.impl.ProveedorServicioImpl;

@@ -15,10 +15,11 @@ import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.faces.bean.ViewScoped;
+
 import javax.faces.event.ActionEvent;
 import javax.faces.event.ValueChangeEvent;
 import javax.faces.model.SelectItem;
+import javax.faces.view.ViewScoped;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;

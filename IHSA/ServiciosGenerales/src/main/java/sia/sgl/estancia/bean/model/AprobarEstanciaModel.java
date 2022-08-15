@@ -12,7 +12,8 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.faces.bean.ManagedProperty;
-import javax.faces.bean.ViewScoped;
+import javax.faces.view.ViewScoped;
+
 import sia.constantes.Constantes;
 import sia.modelo.sgl.estancia.vo.SgSolicitudEstanciaVo;
 import sia.servicios.sgl.impl.SgSolicitudEstanciaImpl;
@@ -29,7 +30,7 @@ public class AprobarEstanciaModel implements Serializable {
     @Inject
     private Sesion sesion;
     //
-    private List<SgSolicitudEstanciaVo> listaSolicitud = new ArrayList<SgSolicitudEstanciaVo>();
+    private List<SgSolicitudEstanciaVo> listaSolicitud = new ArrayList<>();
 
     public AprobarEstanciaModel() {
     }
