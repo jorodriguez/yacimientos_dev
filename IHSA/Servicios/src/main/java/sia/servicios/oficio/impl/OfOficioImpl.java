@@ -111,6 +111,7 @@ public class OfOficioImpl extends AbstractFacade<OfOficio> {
 
     @PersistenceContext(unitName = "Sia-ServiciosPU")
     private EntityManager em;
+    
 
     private final String queryBase;
 
@@ -2399,9 +2400,11 @@ public class OfOficioImpl extends AbstractFacade<OfOficio> {
     private List<OficioPromovibleVo> buscarOficios(OficioVo vo) {
 
         getLogger().info(this, "@buscarOficios - params = {0}", new Object[]{vo});
+        
+        System.out.println("@buscar oficios "+vo.toString());
 
         // preparar query en función de los parámetros recibidos
-        final StringBuilder sql = new StringBuilder(500);
+        final StringBuilder sql = new StringBuilder();
 
         sql.append(queryBase);
 
@@ -2528,6 +2531,9 @@ public class OfOficioImpl extends AbstractFacade<OfOficio> {
 
         getLogger().info(this, "query = {0}", new Object[]{sql});
 
+        System.out.println(" ====== em "+ (em == null));
+        System.out.println("  "+ sql != null ? sql.toString():" ES NULLL");
+        
         final Query qryProm = em.createNativeQuery(sql.toString());
 
         // establecer condiciones de consulta

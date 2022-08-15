@@ -5,6 +5,7 @@ package sia.controloficios.backing.bean;
 import java.util.List;
 import javax.faces.bean.ManagedBean;
 import javax.faces.event.ActionEvent;
+import javax.faces.view.ViewScoped;
 import sia.constantes.Constantes;
 import sia.excepciones.SIAException;
 import sia.modelo.estatus.vo.EstatusVo;
@@ -19,6 +20,7 @@ import sia.modelo.oficio.vo.OficioSalidaVo;
  * @author esapien
  */
 @ManagedBean
+@ViewScoped
 public class OficioConsultaBean extends OficioOpcionesBloquesUIBean {
     
     
