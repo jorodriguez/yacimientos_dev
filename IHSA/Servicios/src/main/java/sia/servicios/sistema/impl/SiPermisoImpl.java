@@ -99,6 +99,8 @@ public class SiPermisoImpl extends AbstractFacade<SiPermiso> {
         
         logger.log(Level.INFO, "query = {0}", sb.toString());
         
+        System.out.println("@ EMMM ===== "+em==null);
+        
         Query q = em.createNativeQuery(sb.toString());
         
         

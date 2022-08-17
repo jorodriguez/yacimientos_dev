@@ -6,6 +6,8 @@ import java.util.List;
 import javax.faces.bean.ManagedBean;
 import javax.faces.event.ActionEvent;
 import javax.faces.view.ViewScoped;
+import javax.inject.Named;
+
 import sia.constantes.Constantes;
 import sia.excepciones.SIAException;
 import sia.modelo.estatus.vo.EstatusVo;
@@ -20,6 +22,7 @@ import sia.modelo.oficio.vo.OficioSalidaVo;
  * @author esapien
  */
 @ManagedBean
+//@Named
 @ViewScoped
 public class OficioConsultaBean extends OficioOpcionesBloquesUIBean {
     
@@ -37,7 +40,7 @@ public class OficioConsultaBean extends OficioOpcionesBloquesUIBean {
     protected void postConstruct() throws SIAException {
         //setear valor nuevo para mostrar publicos
         // valores iniciales para pantalla de consulta
-        
+        System.out.println("@@@@@EJECUTANDO postconstruct de consulta bean");
         // validar si no hay una consulta iniciada en la sesión
         if (getSesion().getOficioConsultaVo() == null) {
             
@@ -48,6 +51,7 @@ public class OficioConsultaBean extends OficioOpcionesBloquesUIBean {
         getVo().setMaxOficios(Constantes.OFICIOS_MAXIMO_RETORNO_CONSULTA_INICIAL);
         // establecer filtros de bloques para consulta 
         configurarCombosCompaniaBloqueGerencia();
+        
         
         // mostrar resultados con filtros actuales al ingresar
         this.buscarOficios(null);

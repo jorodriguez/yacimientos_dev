@@ -43,6 +43,7 @@ import sia.modelo.oficio.vo.*;
 import sia.modelo.rol.vo.RolVO;
 import sia.servicios.campo.nuevo.impl.ApCampoUsuarioRhPuestoImpl;
 import sia.servicios.oficio.impl.OfOficioImpl;
+import sia.servicios.oficio.impl.OfOficioImpl2;
 import sia.servicios.sistema.impl.SiParametroImpl;
 import sia.servicios.sistema.impl.SiPermisoImpl;
 import sia.util.UtilLog4j;
@@ -87,7 +88,7 @@ import sia.util.ValidadorNombreArchivo;
  *
  * @author esapien
  */
-@ViewScoped
+//@ViewScoped
 public abstract class OficioBaseBean implements Serializable {
 
     /**
@@ -132,12 +133,17 @@ public abstract class OficioBaseBean implements Serializable {
     private SiParametroImpl siParametroRemote;
     @Inject
     private OfOficioImpl oficioServicioRemoto;
+    
+    @Inject
+    private OfOficioImpl2 oficioServicioRemoto2;
+    
     @Inject
     private ApCampoUsuarioRhPuestoImpl campoUsuarioRemote;
     @Inject
     private SiPermisoImpl siPermisoServicio;
 
     @ManagedProperty(value = "#{catalogosBean}")
+    //@Inject
     private CatalogosBean catalogosBean;
 
     @Inject
@@ -155,9 +161,10 @@ public abstract class OficioBaseBean implements Serializable {
     protected void iniciar(){
         try{
         
-        System.out.println("@PostConstruct en oficio base bean aaaa");
+        System.out.println("@PostConstruct en OficioBaseBean");
         getLogger().info(this, getClass().getName() + "@PostConstruct");
         if (sesion.getPermisos() == null) {
+            System.out.println("@PostConstruct entro a buscar permisos");
             List<RolVO> newpermisos = siPermisoServicio.fetchPermisosPorUsuarioModulo(sesion.getUsuario().getId(), Constantes.OFICIOS_MODULO_ID, sesion.getBloqueActivo().getBloqueId());
             if (!newpermisos.isEmpty()) {
                 sesion.setPermisos(new PermisosVo(newpermisos));
@@ -166,15 +173,16 @@ public abstract class OficioBaseBean implements Serializable {
 
         // TODO: Pasar este proceso a un interceptor de permisos.
         if (getPermisos() != null) {
+            System.out.println("@PostConstruct entro a mermisso != null");
             if (!this.permisosRequeridos()) {
-
+                System.out.println("@ InsufficientPermissionsException");
                 getLogger().fatal(this, getClass().getName() + " - Error de permisos requeridos");
 
                 throw new InsufficientPermissionsException();
             }
         }
         
-        System.out.println("@ejecuanto postconstructo abstracto");
+        System.out.println("@ejecuanto postconstructo abstract");
         
         this.postConstruct();
         
@@ -261,8 +269,11 @@ public abstract class OficioBaseBean implements Serializable {
      *
      * @return
      */
-    protected Sesion getSesion() {
+    public Sesion getSesion() {
         return this.sesion;
+    }
+    public void setSesion(Sesion sesion) {
+        this.sesion = sesion;
     }
 
     /**
@@ -537,9 +548,12 @@ public abstract class OficioBaseBean implements Serializable {
      *
      * @param actionEvent
      */
-    public final void buscarOficios(ActionEvent actionEvent) {
+    public void buscarOficios(ActionEvent actionEvent) {
 
         getLogger().info(this, "@Bean.buscarOficios - compania ID = " + vo.getCompaniaId() + ", compania RFC = " + vo.getCompaniaRfc());
+        
+        System.out.println( "@Bean.buscarOficios - compania ID = " + vo.getCompaniaId() + ", compania RFC = " + vo.getCompaniaRfc());
+                
 
         // convertir Compañía ID
         if (this.vo.getCompaniaId() > 0) {
@@ -548,7 +562,8 @@ public abstract class OficioBaseBean implements Serializable {
             this.vo.setCompaniaRfc(null);
         }
 
-        ResultadosConsultaVo resultadosVo = oficioServicioRemoto.buscarOficios(
+                
+        ResultadosConsultaVo resultadosVo = oficioServicioRemoto2.buscarOficios(
                 this.vo,
                 !getSesion().puedeVerOficioRestringido(),
                 getUsuarioId());

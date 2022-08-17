@@ -4,6 +4,7 @@ package sia.controloficios.sistema.soporte;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Properties;
 import javax.ejb.EJB;
 import javax.faces.FactoryFinder;
 import javax.faces.application.Application;
@@ -18,6 +19,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import sia.constantes.Constantes;
 import sia.controloficios.sistema.bean.backing.Sesion;
 import sia.excepciones.InsufficientPermissionsException;
@@ -124,7 +126,13 @@ public class LSWU extends HttpServlet {
                 }
 
                 sesion.setBloqueActivo(bloqueActivo);
+                
+                sesion.setCtx(new Properties());
+                
+                HttpSession session = request.getSession();
 
+                sesion.subirValoresContexto(session);
+                
                 response.sendRedirect(Constantes.URL_REL_CONTROL_OFICIOS);
 
             } else {

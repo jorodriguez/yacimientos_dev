@@ -8,7 +8,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-import javax.annotation.PostConstruct;
+import javax.ejb.Stateful;
 import javax.ejb.Stateless;
 import javax.faces.model.SelectItem;
 import javax.inject.Inject;
@@ -69,6 +69,7 @@ import sia.servicios.sistema.impl.SiAdjuntoImpl;
 import sia.servicios.sistema.impl.SiMovimientoImpl;
 import sia.servicios.sistema.impl.SiUsuarioRolImpl;
 import sia.util.UtilLog4j;
+//import sia.util.UtilLog4j;
 import sia.util.UtilSia;
 
 /**
@@ -107,18 +108,81 @@ public class OfOficioImpl extends AbstractFacade<OfOficio> {
     
     @Inject
     private OfOficioUsuarioImpl oficioUsuarioRemote;
-    
+   
 
-    @PersistenceContext(unitName = "Sia-ServiciosPU")
-    private EntityManager em;
-    
+    private final String queryBase   = "select "
+                // tipo de oficio
+                + " tof.id as ID_TIPO_OFICIO, \n"
+                + " tof.nombre as TIPO_OFICIO, \n"
+                // oficio
+                + " of1.ID as ID_OFICIO, \n"
+                + " of1.numero_oficio, \n"
+                + " of1.fecha_oficio, \n"
+                + " of1.fecha_genero, \n"
+                + " of1.asunto as asunto_oficio, \n"
+                + " of1.observaciones as observaciones_oficio, \n"
+                // compañía
+                + " c.rfc, \n"
+                + " c.NOMBRE as COMPANIA,\n"
+                + " c.SIGLAS as COMPANIA_SIGLAS,\n"
+                // bloque
+                + " ap_c.id as ID_BLOQUE, \n"
+                + " ap_c.NOMBRE as BLOQUE, \n"
+                // gerencia
+                + " g.id as ID_GERENCIA, \n"
+                + " g.nombre as GERENCIA, \n"
+                // estatus
+                + " est.id as ID_ESTATUS, \n"
+                + " est.nombre as ESTATUS, \n"
+                // usuario
+                + " us1.id as USUARIO_GENERO_ID, \n"
+                + " us1.nombre as USUARIO_GENERO, \n"
+                + " of1.eliminado, \n"
+                + " of1.urgente, \n"
+                + " of1.seguimiento, \n"
+                + " of1.co_privacidad, \n"
+                + " (SELECT array_agg(usuario) FROM OF_OFICIO_USUARIO WHERE of_oficio = of1.id) \n"
+                + "from OF_OFICIO of1 \n"
+                + " inner join AP_CAMPO_GERENCIA ap_cg on (of1.AP_CAMPO_GERENCIA = ap_cg.ID) \n"
+                + " inner join AP_CAMPO ap_c on (ap_cg.AP_CAMPO = ap_c.ID) \n"
+                + " inner join GERENCIA g on (ap_cg.GERENCIA = g.ID) \n"
+                + " inner join COMPANIA c on (ap_c.COMPANIA = c.RFC) \n"
+                + " inner join OF_TIPO_OFICIO tof on (of1.OF_TIPO_OFICIO = tof.ID) \n"
+                + " inner join ESTATUS est on (of1.ESTATUS = est.ID) \n"
+                + " inner join USUARIO us1 on (of1.GENERO = us1.ID) \n"
+                + "where 1=1 \n";;
 
-    private final String queryBase;
-
-    private final String queryBaseGroupBy;
+    private final String queryBaseGroupBy = getQueryBaseGroupBy();;
 
     //private final String queryOficiosAsociados;
-    private final String queryMovimientos;
+    private final String queryMovimientos = "SELECT \n"
+                + "  ofic_mov.ID as ID_OFICIO_MOVIMIENTO,  \n"
+                + "  ofic.ID as ID_OFICIO,  \n"
+                + "  ofic.NUMERO_OFICIO,  \n"
+                + "  oper.ID as ID_OPERACION, \n"
+                + "  oper.NOMBRE as OPERACION, \n"
+                + "  mov.ID as MOVIMIENTO_ID,  \n"
+                + "  mov.MOTIVO as MOTIVO,  \n"
+                + "  adj.ID as ADJUNTO_ID, \n"
+                + "  adj.NOMBRE as ADJUNTO_NOMBRE, \n"
+                + "  adj.URL as ADJUNTO_URL, \n"
+                + "  adj.TIPO_ARCHIVO as ADJUNTO_TIPO_ARCHIVO, \n"
+                + "  adj.PESO as ADJUNTO_PESO, \n"
+                + "  adj.UUID as ADJUNTO_UUID, \n"
+                + "  adj.ELIMINADO as ADJUNTO_ELIMINADO, \n"
+                + "  mov.GENERO as USUARIO_MOVIMIENTO,  \n"
+                + "  usu.NOMBRE as USUARIO_NOMBRE,  \n"
+                + "  mov.FECHA_GENERO as FECHA_MOVIMIENTO,  \n"
+                + "  mov.HORA_GENERO as HORA_MOVIMIENTO \n"
+                + "FROM SI_MOVIMIENTO mov \n"
+                + "  inner join USUARIO usu on (mov.GENERO = usu.ID) \n"
+                + "  inner join OF_OFICIO_SI_MOVIMIENTO ofic_mov on (ofic_mov.SI_MOVIMIENTO = mov.ID) \n"
+                + "  inner join OF_OFICIO ofic on (ofic_mov.OF_OFICIO = ofic.ID) \n"
+                + "  inner join ESTATUS est on (ofic.ESTATUS = est.ID) \n"
+                + "  inner join SI_OPERACION oper on (mov.SI_OPERACION = oper.ID) \n"
+                + "  left outer join OF_OFICIO_SI_MOV_SI_ADJUNTO ofic_mov_adj on (ofic_mov_adj.OF_OFICIO_SI_MOVIMIENTO = ofic_mov.ID) \n"
+                + "  left outer join SI_ADJUNTO adj on (ofic_mov_adj.SI_ADJUNTO = adj.ID) \n"
+                + "WHERE 1=1 \n";;
 
     // </editor-fold>
     // <editor-fold defaultstate="collapsed" desc="Métodos del ciclo de vida del bean">
@@ -131,7 +195,7 @@ public class OfOficioImpl extends AbstractFacade<OfOficio> {
         super(OfOficio.class);
 
         // construir query base para consultas
-        queryBase = "select "
+       /* queryBase = "select "
                 // tipo de oficio
                 + " tof.id as ID_TIPO_OFICIO, \n"
                 + " tof.nombre as TIPO_OFICIO, \n"
@@ -172,10 +236,10 @@ public class OfOficioImpl extends AbstractFacade<OfOficio> {
                 + " inner join ESTATUS est on (of1.ESTATUS = est.ID) \n"
                 + " inner join USUARIO us1 on (of1.GENERO = us1.ID) \n"
                 + "where 1=1 \n";
-
+*/
         //queryBase = sb.toString();
 
-        queryBaseGroupBy = getQueryBaseGroupBy();
+        //queryBaseGroupBy = getQueryBaseGroupBy();
 
         /*
 	 sb = new StringBuilder();
@@ -212,7 +276,7 @@ public class OfOficioImpl extends AbstractFacade<OfOficio> {
 	 .append("WHERE 1=1 ");
 
 	 queryOficiosAsociados = sb.toString();*/
-        queryMovimientos = "SELECT \n"
+      /*  queryMovimientos = "SELECT \n"
                 + "  ofic_mov.ID as ID_OFICIO_MOVIMIENTO,  \n"
                 + "  ofic.ID as ID_OFICIO,  \n"
                 + "  ofic.NUMERO_OFICIO,  \n"
@@ -239,7 +303,7 @@ public class OfOficioImpl extends AbstractFacade<OfOficio> {
                 + "  inner join SI_OPERACION oper on (mov.SI_OPERACION = oper.ID) \n"
                 + "  left outer join OF_OFICIO_SI_MOV_SI_ADJUNTO ofic_mov_adj on (ofic_mov_adj.OF_OFICIO_SI_MOVIMIENTO = ofic_mov.ID) \n"
                 + "  left outer join SI_ADJUNTO adj on (ofic_mov_adj.SI_ADJUNTO = adj.ID) \n"
-                + "WHERE 1=1 \n";
+                + "WHERE 1=1 \n";*/
 
         //queryMovimientos = sb.toString();
 
@@ -249,12 +313,12 @@ public class OfOficioImpl extends AbstractFacade<OfOficio> {
      * Proceso de inicialización del bean.
      *
      */
-    @PostConstruct
-    private void inicio() {
+    //@PostConstruct
+    //private void inicio() {
 
 //        this.rutaRaizAdjuntos = siParametroRemote.find(1).getUploadDirectory();
 
-    }
+    //}
 
     /**
      * Genera claúsula GROUP BY para el query base de SQL de oficios. Los campos
@@ -300,6 +364,15 @@ public class OfOficioImpl extends AbstractFacade<OfOficio> {
 
     // </editor-fold>
     // <editor-fold defaultstate="collapsed" desc="Métodos de negocio">
+    
+    @PersistenceContext(unitName = "Sia-ServiciosPU")
+    private EntityManager em;
+    
+    @Override
+    protected EntityManager getEntityManager() {
+        return em;
+    }
+    
     /**
      * Envía correo de notificación de los nuevos oficios registrados.
      *
@@ -1102,23 +1175,7 @@ public class OfOficioImpl extends AbstractFacade<OfOficio> {
         }
     }
 
-    /**
-     * Valida si el oficio proporcionado ya se encuentra asociado a otro oficio.
-     *
-     * @param oficioId
-     */
-    /*private void validarOficioAsociadoOcupado(Integer oficioId) throws UnavailableItemException {
-
-     // validar si este oficio ya se encuentra asociado por otro oficio
-     OficioVo vo = this.obtenerOficioHijo(oficioId);
-
-     getLogger().info(this, "@validarOficioAsociado - Oficio asociado = " + vo);
-
-     if (vo != null) {
-     throw new UnavailableItemException();
-     }
-
-     }*/
+  
     /**
      * Registra un movimiento de oficio.
      *
@@ -1343,46 +1400,8 @@ public class OfOficioImpl extends AbstractFacade<OfOficio> {
         this.edit(entidad);
     }
 
-    /**
-     * Obtiene el registro de archivo adjunto correspondiente al movimiento con
-     * el estatus actual del oficio.
-     *
-     * @param vo
-     * @return
-     */
-    /*
-     /* No aplica por cambio de edicion de archivos adjuntos al 22/jul/14
-     *
-     * private SiAdjunto obtenerAdjuntoActual(OficioVo vo) {
-
-     SiAdjunto adjuntoActual = null;
-
-     // obtener historial de movimientos
-
-     List<MovimientoVo> movimientos = obtenerMovimientos(vo.getOficioId());
-
-     // el archivo adjunto de este oficio será el registrado
-     // en el movimiento con el estatus actual
-
-     for (MovimientoVo movimiento : movimientos) {
-
-     int operacionId = movimiento.getOperacionId();
-
-     int movimientoEstatusId = ((Promovible)vo).getEstatusId(operacionId);
-
-     if (vo.getEstatusId() == movimientoEstatusId
-     && movimiento.getAdjunto() != null) {
-
-     adjuntoActual = siAdjuntoRemote.find(movimiento.getAdjunto().getId());
-
-     break;
-     }
-
-     }
-
-     return adjuntoActual;
-
-     }*/
+    
+    
     /**
      * Regresa el vo de archivo adjunto correspondiente al ID proporcionado.
      *
@@ -1934,159 +1953,7 @@ public class OfOficioImpl extends AbstractFacade<OfOficio> {
         return resultadoVo;
     }
 
-    /**
-     * Regresa la lista de los oficios asociados en la que se encuentra el
-     * oficio proporcionado, en orden secuencial.
-     *
-     * @param id
-     * @return
-     */
-    /*private List<OficioVo> obtenerOficiosAsociados(OficioVo oficioVo) {
-
-     getLogger().info(this, "@obtenerOficiosAsociados");
-
-     int id = oficioVo.getOficioId();
-
-     getLogger().info(this, "vo id inicial = " + id);
-
-     // obtener los oficios anteriores (padres)
-
-     List<OficioVo> oficiosAnteriores = new ArrayList();
-
-     OficioVo vo;
-
-     while ((vo = obtenerOficioPadre(id)) != null) {
-     oficiosAnteriores.add(vo);
-     id = vo.getOficioId();
-
-     getLogger().info(this, "vo id padre = " + id);
-     }
-
-     // obtener los oficios posteriores (hijos)
-
-     List<OficioVo> oficiosPosteriores = new ArrayList();
-
-     id = oficioVo.getOficioId();
-
-     while ((vo = obtenerOficioHijo(id)) != null) {
-     oficiosPosteriores.add(vo);
-     id = vo.getOficioId();
-
-     getLogger().info(this, "vo id hijo = " + id);
-     }
-
-
-     getLogger().info(this, "Construir lista completa");
-
-     // construir la lista completa
-
-     List<OficioVo> oficiosAsociados = new ArrayList();
-
-     // agregar oficios anteriores
-
-     ListIterator<OficioVo> listItAnteriores = oficiosAnteriores.listIterator(oficiosAnteriores.size());
-
-     while (listItAnteriores.hasPrevious()) {
-     oficiosAsociados.add((OficioVo)listItAnteriores.previous());
-     }
-
-     // agregar oficio actual
-
-     oficiosAsociados.add(oficioVo);
-
-     // agregar oficios posteriores
-
-     Iterator<OficioVo> it = oficiosPosteriores.iterator();
-
-     while (it.hasNext()) {
-     oficiosAsociados.add(it.next());
-     }
-
-     return oficiosAsociados;
-
-     }*/
-    /**
-     * Regresa el oficio padre asociado en caso de haber, o nulo en caso
-     * contrario.
-     *
-     * @param id
-     * @return
-     */
-    /*private OficioVo obtenerOficioPadre(Integer id) {
-
-     StringBuilder sql = new StringBuilder();
-     sql.append(queryOficiosAsociados).append(" and of1.id = ? ");
-
-     Query q = em.createNativeQuery(sql.toString());
-
-     q.setParameter(1, id);
-
-     List resultado = q.getResultList();
-
-     OficioVo vo = null;
-
-     Iterator it = resultado.iterator();
-
-     if (it.hasNext()) {
-
-     Object[] obj = (Object[]) it.next();
-
-     vo = instanciarOficioVo((Integer) obj[6]);
-
-     vo.setOficioId((Integer) obj[0]);
-     vo.setOficioNumero(String.valueOf(obj[1]));
-     vo.setEliminado(String.valueOf(obj[2]));
-     vo.setCompaniaRfc(String.valueOf(obj[3]));
-     vo.setBloqueId((Integer) obj[4]);
-     vo.setGerenciaId((Integer) obj[5]);
-     vo.setEstatusId((Integer) obj[7]);
-
-     }
-
-     return vo;
-     }*/
-    /**
-     * Regresa el oficio hijo asociado en caso de haber, o nulo en caso
-     * contrario.
-     *
-     * @param id
-     * @return
-     */
-    /*private OficioVo obtenerOficioHijo(Integer id) {
-
-     StringBuilder sql = new StringBuilder();
-     sql
-     .append(queryOficiosAsociados)
-     .append(" and of1.OF_OFICIO = ? ");
-
-     Query q = em.createNativeQuery(sql.toString());
-
-     q.setParameter(1, id);
-
-     List resultado = q.getResultList();
-
-     OficioVo vo = null;
-
-     Iterator it = resultado.iterator();
-
-     if (it.hasNext()) {
-
-     Object[] obj = (Object[]) it.next();
-
-     vo = instanciarOficioVo((Integer) obj[14]);
-
-     vo.setOficioId((Integer) obj[8]);
-     vo.setOficioNumero(String.valueOf(obj[9]));
-     vo.setEliminado(String.valueOf(obj[10]));
-     vo.setCompaniaRfc(String.valueOf(obj[11]));
-     vo.setBloqueId((Integer) obj[12]);
-     vo.setGerenciaId((Integer) obj[13]);
-     vo.setEstatusId((Integer) obj[15]);
-
-     }
-
-     return vo;
-     }*/
+    
     /**
      * Consulta los registros de oficio que no han sido notificados por email.
      *
@@ -2530,16 +2397,16 @@ public class OfOficioImpl extends AbstractFacade<OfOficio> {
         ).append(vo.getMaxOficios());
 
         getLogger().info(this, "query = {0}", new Object[]{sql});
-
-        System.out.println(" ====== em "+ (em == null));
-        System.out.println("  "+ sql != null ? sql.toString():" ES NULLL");
         
+        System.out.println(" ====== em "+ (em == null));
+                        
         final Query qryProm = em.createNativeQuery(sql.toString());
 
         // establecer condiciones de consulta
         int i = 0;
 
-        for (final Object param : params) {
+        for (final Object param : params) {            
+            System.out.println("PARAM "+param);
             qryProm.setParameter(++i, param);
         }
 
@@ -2689,22 +2556,11 @@ public class OfOficioImpl extends AbstractFacade<OfOficio> {
      *
      * @return
      */
-    /*
-     public List<OficioPromovibleVo> findAllOficios() {
-
-     StringBuilder sb = new StringBuilder();
-     sb.append(queryBase).append(" ORDER BY of1.FECHA_OFICIO DESC ");
-
-     return executeQuery(sb.toString());
-
-     }*/
+  
     // </editor-fold>
     // <editor-fold defaultstate="collapsed" desc="Métodos de utilería">
     
-    @Override
-    protected EntityManager getEntityManager() {
-        return em;
-    }
+   
 
     /**
      *
