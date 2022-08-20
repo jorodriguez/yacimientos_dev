@@ -8,29 +8,26 @@
       xmlns:f="http://xmlns.jcp.org/jsf/core">
     <body>
         <ui:composition template="./../../WEB-INF/facelets/templates/templateGrupos.xhtml">
+            <ui:define name="tituloPagina">
+                #{msgs['sia.rh.titulo']}
+            </ui:define>
             <ui:define name="contenido">
-                <div id="Page">
                     <div class="row">
                         <ui:include src="./menuRecursos.xhtml" />
                     </div>
                     <div class="row"> 
                         <h:form  id="frmUser">
-                            <div class="col-lg-12">
-                                <div class="col-lg-4"></div>
-                                <div class="col-lg-6">
-                                    <h2 class="page-header">#{msgs['sia.rh.titulo']}</h2>
-                                </div>
-                            </div>    
-                            <div class="col-lg-12 col-xs-12">
+                            <div class="col-12 col-xs-12">
                                 <h:outputText value="#{msgs['sistema.usuario']}"/>                                    
                                 <!-- immediate="true" -->
                                 <p:autoComplete value="#{solicitarMaterialBean.usuarioVo.nombre}"
                                                 forceSelection="true" completeMethod="#{solicitarMaterialBean.completarUsuario}">
-                                    <p:ajax listener="#{solicitarMaterialBean.buscarUsuarioSolicitudNuevoIngreso}" update=""/>
+                                    <p:ajax listener="#{solicitarMaterialBean.buscarUsuarioSolicitudNuevoIngreso}"
+                                            update="frmUser"/>
                                 </p:autoComplete>
                             </div>
                             <h:messages id="error" infoClass="textoMensajeError"/>
-                            <div class="col-lg-12 col-xs-12">
+                            <div class="col-12 col-xs-12">
                                 <p:panelGrid columns="8">
                                     <h:outputText value="#{msgs['generales.nombre']}"/>
                                     <p:inputText value="#{solicitarMaterialBean.usuarioVo.nombre}" disabled="true" />
@@ -43,25 +40,22 @@
                                 </p:panelGrid>
                             </div>
 
-                            <div class="col-lg-12">
+                            <div class="col-12">
                                 <p:selectOneRadio value="#{solicitarMaterialBean.seleccionNuevoIngreso}">
                                     <f:selectItem itemLabel="Nuevo Ingreso" itemValue="1"/>
                                     <f:selectItem itemLabel="Candidato en Proceso de Contratación" itemValue="2"/>
                                 </p:selectOneRadio>
                             </div>
-                            <div class="col-lg-12 col-xs-12">
+                            <div class="col-12 col-xs-12">
                                 <p:dataTable size="small" stripedRows="true" showGridlines="true" 
-                                             value="#{solicitarMaterialBean.listaMaterial}" var="d" 
-                                             >
+                                             value="#{solicitarMaterialBean.listaMaterial}" var="d" >
                                     <f:facet name="header"><h:outputText value="#{msgs['sia.rh.materia.entregar']} "/></f:facet>                           
                                     <p:column style="width: 10%">
                                         <f:facet name="header"><h:outputText value="#{msgs['sia.rh.gerencia']}"/></f:facet>
                                         <h:outputText value="#{d.gerencia}"/>
                                     </p:column>
                                     <p:column style="width: 5%">                                
-                                        <p:selectBooleanCheckbox                                                                            
-                                            value="#{solicitarMaterialBean.filaSeleccionada[d.id]}"                                       
-                                            />                                                                    
+                                        <p:selectBooleanCheckbox value="#{solicitarMaterialBean.filaSeleccionada[d.id]}"/>                                                                    
                                     </p:column >
                                     <p:column style="width: 20%">
                                         <f:facet name="header"><h:outputText value="#{msgs['generales.nombre']}"/></f:facet>
@@ -69,10 +63,7 @@
                                     </p:column>
                                     <p:column style="width: 65%">
                                         <f:facet name="header"><h:outputText value="#{msgs['presupuesto.nuevos.campoDescripcion']}"/></f:facet>
-                                        <p:inputTextarea cols="65" rows="1" value="#{d.descripcion}"  >                                    
-
-                                        </p:inputTextarea>
-
+                                        <p:inputTextarea cols="65" rows="1" value="#{d.descripcion}"  />
                                     </p:column>
                                 </p:dataTable>
                             </div>
@@ -124,7 +115,7 @@
                                                 <f:convertDateTime pattern="dd/MM/yyyy"/>                                    
                                             </p:datePicker>                                                                      
                                         </p:panelGrid>
-                                        <p:panelGrid columns="2">
+                                        <p:panelGrid  columns="2">
                                             <p:commandButton value="#{msgs['sia.rh.solicitar']}" styleClass="btn btn-info" 
                                                              action="#{solicitarMaterialBean.solicitarEstancia()}"
                                                              process="@form" update="frmUser"/>
@@ -138,7 +129,6 @@
                             <h:messages for="error" infoClass="textoMensajeError"/>
                         </h:form>
                     </div>
-                </div>
             </ui:define>
         </ui:composition>
     </body>

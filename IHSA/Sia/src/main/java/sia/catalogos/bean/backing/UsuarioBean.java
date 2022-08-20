@@ -304,6 +304,9 @@ public class UsuarioBean implements Serializable {
     @Getter
     @Setter
     private List<SelectItem> gerencias;
+    @Getter
+    @Setter
+    private List<SelectItem> listaCampo;
 
     @PostConstruct
     public void iniciar() {
@@ -311,6 +314,9 @@ public class UsuarioBean implements Serializable {
         usuarios = new ArrayList<>();
         usuariosFiltrados = new ArrayList<>();
         listaMenu = new ArrayList<>();
+        listaCampo = new ArrayList<>();
+        usuarioVOAlta = new UsuarioVO();
+        rhPuestoVo = new RhPuestoVo();
         llenarMenu();
         List<UsuarioRolVo> rolUsuario = siUsuarioRol.traerRolPorUsuarioModulo(sesion.getUsuarioVo().getId(), Constantes.MODULO_RH_ADMIN, sesion.getUsuarioVo().getIdCampo());
         for (UsuarioRolVo usuarioRolVo : rolUsuario) {
@@ -471,7 +477,7 @@ public class UsuarioBean implements Serializable {
     public String goToModificarCorreoTi() {
         traerUsuariosSinCorreo();
         //setUsuarioVOAlta(null);
-        return "altaCorreoTi";
+        return "altaCorreoTi.xhtml?faces-redirect=true";
     }
 
     public String goToIniciarBajaEmpleado() {
@@ -488,7 +494,7 @@ public class UsuarioBean implements Serializable {
         setIdCampo(1);
         llenarComboGerenciasPorCampo();
         agregarGerenciasDefaultParaInicioBaja();
-        return "/vistas/recursos/inicioBajaEmpleado";
+        return "/vistas/recursos/inicioBajaEmpleado.xhtml?faces-redirect=true";
     }
 
     public void agregarGerenciasDefaultParaInicioBaja() {
@@ -544,7 +550,7 @@ public class UsuarioBean implements Serializable {
 
     public String gotoFinalizaBaja() {
         setUsuarioVOAlta(null);
-        return "finalizaBaja";
+        return "finalizaBaja.xhtml?faces-redirect=true";
     }
 
     public String cambiarCampo() {
@@ -553,9 +559,10 @@ public class UsuarioBean implements Serializable {
         cambiarUsuarioPuesto(sesion.getUsuarioVo().getId(), sesion.getUsuarioVo().getId(), campoUsuarioPuesto.getIdCampo());
         //traerCampoUsuario();
         llenarDatosUsuario();
-
         return "";
     }
+    
+    
 ///Fin de campo
 
     public void cambiarUsuarioPuesto(String idUsuario, String idUserModifico, int campo) {
@@ -591,7 +598,7 @@ public class UsuarioBean implements Serializable {
                                                     if (param != null && !param.isEmpty() && "AD".equals(param)) {
                                                         FacesUtils.addInfoMessage("El usuario se guardo exitosamente. ");
                                                         cancelarNuevoIngreso();
-                                                        return "/vistas/recursos/altaNuevoIngresoAdmin.xhtml";
+                                                        return "/vistas/recursos/altaNuevoIngresoAdmin.xhtml?faces-redirect=true";
                                                     } else {
                                                         Env.setContext(sesion.getCtx(), "USER_NAME", usuarioVOAlta.getNombre());
                                                         return "/vistas/recursos/solicitudMaterialEmpleado.xhtml?faces-redirect=true";
@@ -977,9 +984,8 @@ public class UsuarioBean implements Serializable {
         return traerUsuarioProcesoBaja();
     }
 
-    public void finalizarBaja() {
-        setU(FacesUtils.getRequestParameter("usSelec"));
-        setRespuesta(getU());
+    public void finalizarBaja(String idUs) {
+        setRespuesta(idUs);
         if (servicioUsuario.finalizarBaja(sesion.getUsuarioVo().getId(), getRespuesta())) {
             FacesUtils.addInfoMessage("Se termino con el proceso de baja de usuario");
         } else {
@@ -1124,7 +1130,7 @@ public class UsuarioBean implements Serializable {
         }
     }
 
-    public void solicitudMaterial() {
+    public String solicitudMaterial() {
 
         setLista(null);
         //setUsuarioVOAlta(new UsuarioVO());
@@ -1135,9 +1141,10 @@ public class UsuarioBean implements Serializable {
         setSolicitaEstancia(false);
         setU("");
         setRhPuestoVo(new RhPuestoVo());
+        return "/vistas/recursos/solicitudMaterialEmpleado.xhtml?faces-redirect=true";
     }
 
-    public void agregarUsuario() {
+    public String agregarUsuario() {
 //        this.usuario = null;
         setUsuarioVOAlta(new UsuarioVO());
         getUsuarioVOAlta().setGafete("si");
@@ -1147,6 +1154,7 @@ public class UsuarioBean implements Serializable {
         setRhPuestoVo(new RhPuestoVo());
 //        setListaUsuarios(listaPuestos());
 //        cancelarUsuario(event);
+        return "/vistas/recursos/altaNuevoIngresoRH.xhtml?faces-redirect=true";
     }
 
     public void cambiarTipoUsuario(ValueChangeEvent event) {
@@ -1180,7 +1188,7 @@ public class UsuarioBean implements Serializable {
 
                 if (servicioUsuario.modificarUsuario(getUsuarioVOAlta(), getIdGerencia(), getIdCampo())) {
                     setIdGerencia(-1);
-                    setIdCampo(sesion.getUsuarioVo().getIdCampo());                    
+                    setIdCampo(sesion.getUsuarioVo().getIdCampo());
                     setU("");
                     FacesUtils.addInfoMessage("Se modificaro los datos del usuario");
                 } else {
@@ -1969,13 +1977,28 @@ public class UsuarioBean implements Serializable {
         return retVal;
     }
 
-    public void cambiarValorCampoNuevoIngreso(ValueChangeEvent valueChangeEvent) {
+    public List<String> puestoTextChanged(String cad) {
+        List<String> puestos = new ArrayList<>();
+        List<RhPuestoVo> pusVo = rhPuestoImpl.getRhPuestoLike(cad);
+        pusVo.stream().forEach(p -> {
+            puestos.add(p.getNombre());
+        });
+        return puestos;
+    }
+    
+    public void seleccionarPuesto(){
+        rhPuestoVo = rhPuestoImpl.findByName(rhPuestoVo.getNombre(), Boolean.FALSE);
+        
+    }
+
+    public void cambiarValorCampoNuevoIngreso() {
         try {
-            if (valueChangeEvent.getNewValue() != null) {
-                getUsuarioVOAlta().setIdCampo((Integer) valueChangeEvent.getNewValue());
-                UtilLog4j.log.info(this, "campo seleccionado : " + getIdCampo());
-                //llenar nueva lista de gerencias con el campo seleccioando
-            }
+            //llenar nueva lista de gerencias con el campo seleccioando
+            gerencias = new ArrayList<>();
+            List<ApCampoGerenciaVo> campGer = apCampoGerenciaImpl.findAllCampoGerenciaPorCampo(usuarioVOAlta.getIdCampo());
+            campGer.stream().forEach(cg -> {
+                gerencias.add(new SelectItem(cg.getIdGerencia(), cg.getNombreGerencia()));
+            });
         } catch (Exception e) {
             UtilLog4j.log.info(this, "Excepcion al cambiar de valor al campo " + e.getMessage());
         }

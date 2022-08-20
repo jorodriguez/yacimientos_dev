@@ -1,73 +1,42 @@
-<?xml version='1.0' encoding='UTF-8' ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-      xmlns:h="http://xmlns.jcp.org/jsf/html"
-      xmlns:p="http://primefaces.org/ui"       
-      xmlns:f="http://xmlns.jcp.org/jsf/core"
-      >
-    <body>
-        <ui:composition>
-            <h:form id="frmRecursos">
-                <nav class="navbar navbar-default row" role="navigation">
-                    <!-- El logotipo y el icono que despliega el menú se agrupan
-                         para mostrarlos mejor en los dispositivos móviles -->
-                    <div class="navbar-header">
-                        <button type="button" class="navbar-toggle" data-toggle="collapse"
-                                data-target=".navbar-ex1-collapse">
-                            <span class="sr-only">Opciones</span>
-                            <span class="icon-bar"></span>
-                            <span class="icon-bar"></span>
-                        </button>
-                        <a class="navbar-brand" href="#"></a>
-                    </div>
-                    <div class="navbar-collapse navbar-ex1-collapse" style="width: 15%;">
-                        <ul class="nav navbar-nav">
-                            <li class="dropdown" >
-                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Empleado<b class="caret"></b></a>
-                                <ul class="dropdown-menu">
-                                    <li><p:commandLink action="/vistas/recursos/altaNuevoIngresoRH"   
-                                                         action="#{usuarioBean.agregarUsuario}"
-                                                         rendered="#{usuarioBean.mapaRoles.get('Administra usuarios')}"
-                                                         immediate="true"><span>Alta de empleado</span></p:commandLink></li>
-                                    <li><p:commandLink action="/vistas/recursos/solicitudMaterialEmpleado"  
-                                                         action="#{usuarioBean.solicitudMaterial}"
-                                                         rendered="#{usuarioBean.mapaRoles.get('Administra usuarios')}"
-                                                         immediate="true"><span>Solicitud de material</span></p:commandLink></li>
-                                    <li><p:commandLink action="#{puestosBean.goToRhPuesto()}"
-                                                         rendered="#{usuarioBean.mapaRoles.get('Administra usuarios')}"
-                                                         immediate="true"><span>Catálogo de Puestos</span></p:commandLink></li>                                                          
-                                    <li><p:commandLink action="#{usuarioBean.goToModificarCorreoTi()}"                                        
-                                                         rendered="#{usuarioBean.usuarioVO.administraTI eq true}"
-                                                         immediate="true"><span>Asignar dirección de correo a usuario</span></p:commandLink></li>
-                                    <li><p:commandLink action="#{usuarioBean.goToIniciarBajaEmpleado()}"
-                                                         rendered="#{usuarioBean.mapaRoles.get('Administra usuarios')}"
-                                                         immediate="true"><span>Iniciar baja de empleado</span></p:commandLink></li>
-                                    <li><p:commandLink action="#{usuarioBean.goToLiberarEmpleadoBaja()}"
-                                                         rendered="#{usuarioBean.usuarioVO.usuarioInSessionGerente 
-                                                                     or usuarioBean.usuarioVO.liberaUsuarios}"
-                                                         immediate="true"><span>#{msgs['sia.menu.recursos.liberarEmpleado']} 
-                                                </span></p:commandLink></li>                
-                                    <li><p:commandLink action="#{usuarioBean.gotoFinalizaBaja()}" 
-                                                         rendered="#{usuarioBean.mapaRoles.get('Administra usuarios')}"
-                                                         immediate="true"><span>Finalizar baja</span></p:commandLink></li>
-                                    <li><p:commandLink  action="#{reporteBean.irReporteViajero()}"
-                                                          rendered="#{usuarioBean.mapaRoles.get('Administra usuarios')}"
-                                                          immediate="true"><span>Reporte de viajes</span></p:commandLink></li>
-                                    <!--Modificar usuario-->
-                                    <li><p:commandLink action="/vistas/recursos/modificaUsuarioRH" 
-                                                         rendered="#{usuarioBean.mapaRoles.get('Administra usuarios')}"
-                                                         action="#{usuarioBean.llenarUsuario}">
-                                            <span> Modificar datos</span></p:commandLink></li>
-                                    <!---->
-                                </ul>
-                            </li>
-                            <li><p:commandLink action="/vistas/recursos/documentacionProveedores"   
-                                               immediate="true"><span>Documentos</span></p:commandLink></li>
-                        </ul>
-                    </div>
-                </nav>
-            </h:form>
-        </ui:composition>
-    </body>
-</html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:p="http://primefaces.org/ui"       
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <h:form id="frmRecursos">
+        <p:menubar >               
+            <p:submenu label="Empleados" icon="pi pi-users">
+                <p:menuitem value="Agregar usuario" icon="pi pi-user"
+                            action="#{usuarioBean.agregarUsuario}"
+                            rendered="#{usuarioBean.mapaRoles.get('Administra usuarios')}"/>
+                <p:menuitem value="Solicitar Material" icon="pi pi-fw"
+                            action="#{usuarioBean.solicitudMaterial}"
+                            rendered="#{usuarioBean.mapaRoles.get('Administra usuarios')}"/>
+                <p:menuitem value="Catálogo de puestos" icon="pi pi-fw"
+                            action="#{puestosBean.goToRhPuesto()}"
+                            rendered="#{usuarioBean.mapaRoles.get('Administra usuarios')}"/>
+                <p:menuitem value="Asignar Dirección de correo" icon="pi pi-fw"
+                            action="#{usuarioBean.goToModificarCorreoTi()}"                                        
+                            rendered="#{usuarioBean.usuarioVO.administraTI eq true}"/>
+                <p:menuitem value="Baja de empleado" icon="pi pi-fw"
+                            action="#{usuarioBean.goToIniciarBajaEmpleado()}"
+                            rendered="#{usuarioBean.mapaRoles.get('Administra usuarios')}"/>
+                <p:menuitem value="Liberar usuarios" icon="pi pi-fw"
+                            action="#{usuarioBean.goToLiberarEmpleadoBaja()}"
+                            rendered="#{usuarioBean.usuarioVO.usuarioInSessionGerente 
+                                        or usuarioBean.usuarioVO.liberaUsuarios}"/>
+                <p:menuitem value="Finalizar baja" icon="pi pi-fw"
+                            action="#{usuarioBean.gotoFinalizaBaja()}" 
+                            rendered="#{usuarioBean.mapaRoles.get('Administra usuarios')}"/>
+                <p:menuitem value="Modificar datos" icon="pi pi-fw" action="/vistas/recursos/modificaUsuarioRH.xhtml?faces-redirect=true" 
+                            rendered="#{usuarioBean.mapaRoles.get('Administra usuarios')}"
+                            />
+            </p:submenu>
+            <p:submenu label="Documentos" icon="pi pi-file">                
+                <p:menuitem value="Documentos" icon="pi pi-fw"
+                            action="/vistas/recursos/documentacionProveedores"/>   
+            </p:submenu>
+
+        </p:menubar>
+    </h:form>
+</ui:composition>
