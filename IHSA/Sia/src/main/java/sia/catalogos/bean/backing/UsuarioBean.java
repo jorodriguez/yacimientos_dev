@@ -561,10 +561,8 @@ public class UsuarioBean implements Serializable {
         llenarDatosUsuario();
         return "";
     }
-    
-    
-///Fin de campo
 
+///Fin de campo
     public void cambiarUsuarioPuesto(String idUsuario, String idUserModifico, int campo) {
         servicioUsuario.cambiarCampoUsuario(idUsuario, idUserModifico, campo);
         //
@@ -1050,7 +1048,6 @@ public class UsuarioBean implements Serializable {
                 getUsuarioVOAlta().setPuesto(campoPuesto.getPuesto());
                 setIdPuesto(campoPuesto.getIdPuesto());
             }
-            //getUsuarioVOAlta().setPuesto(traerPuestoUsusaio(u.getId(), u.getApCampo().getId()));
             getUsuarioVOAlta().setMail(u.getMail());
 
             getUsuarioVOAlta().setUsuarioDirectorio(u.getUsuarioDirectorio());
@@ -1878,7 +1875,7 @@ public class UsuarioBean implements Serializable {
                     setIdCampo(1);
                     llenarComboGerenciasPorCampo();
 
-                    //llenarComboGerenciasPorCampo();
+                    llenarComboGerenciasPorCampo();
                     agregarGerenciasDefaultParaInicioBaja();
                     setIdGerencia(-1);
                 } else {
@@ -1985,10 +1982,10 @@ public class UsuarioBean implements Serializable {
         });
         return puestos;
     }
-    
-    public void seleccionarPuesto(){
+
+    public void seleccionarPuesto() {
         rhPuestoVo = rhPuestoImpl.findByName(rhPuestoVo.getNombre(), Boolean.FALSE);
-        
+
     }
 
     public void cambiarValorCampoNuevoIngreso() {
@@ -2004,14 +2001,9 @@ public class UsuarioBean implements Serializable {
         }
     }
 
-    public void cambiarValorCampo(ValueChangeEvent valueChangeEvent) {
+    public void cambiarValorCampo() {
         try {
-            if (valueChangeEvent.getNewValue() != null) {
-                setIdCampo((Integer) valueChangeEvent.getNewValue());
-                UtilLog4j.log.info(this, "campo seleccionado : " + getIdCampo());
-                //llenar nueva lista de gerencias con el campo seleccioando
-                llenarComboGerenciasPorCampo();
-            }
+            llenarComboGerenciasPorCampo();
         } catch (Exception e) {
             UtilLog4j.log.info(this, "Excepcion al cambiar de valor al campo " + e.getMessage());
         }
@@ -2092,9 +2084,9 @@ public class UsuarioBean implements Serializable {
         return retVal;
     }
 
-    public void quitarGerenciaDeListaGerenciasSelccionadas() {
+    public void quitarGerenciaDeListaGerenciasSelccionadas(Object obj) {
         try {
-            GerenciaVo vo = (GerenciaVo) getListaGerenciasSeleccionadas().getRowData();
+            GerenciaVo vo = (GerenciaVo) obj;
             if (vo != null) {
                 if (quitarGerenciaAListaSeleccionadas(vo)) {
                     FacesUtils.addErrorMessage("Se ha quitado la gerencia ");
@@ -2217,7 +2209,7 @@ public class UsuarioBean implements Serializable {
 
     public void llenarDatosUsuario() {
         setUsuarioVOAlta(servicioUsuario.findById(getU()));
-        //llenarUsuarioVOAlta(u);
+        llenarUsuarioVOAlta(usuarioVOAlta);
         setIdPuesto(getUsuarioVOAlta().getIdPuesto());
         setU("");
     }
