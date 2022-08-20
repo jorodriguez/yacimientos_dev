@@ -14,7 +14,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import javax.faces.event.ActionEvent;
-import javax.faces.event.ValueChangeEvent;
 import javax.faces.model.SelectItem;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
@@ -108,17 +107,17 @@ public class PopUpGRBean implements Serializable {
     private int puntoID;
     private boolean allItems = false;
     private boolean visible = true;
-    private SgEstadoSemaforoVO estadoSemaforoVO;
-    private List<SelectItem> listaZonasRuta = new ArrayList<SelectItem>();
+    private SgEstadoSemaforoVO estadoSemaforoVO = new SgEstadoSemaforoVO();
+    private List<String> listaZonasRuta = new ArrayList<>();
     private RutaTerrestreVo editHorario;
     private int horaMin;
     private int horaMax;
     private int minutoMin;
     private int minutoMax;
-    private List<SelectItem> listaHorasMin = new ArrayList<SelectItem>();
-    private List<SelectItem> listaMinutosMin = new ArrayList<SelectItem>();
-    private List<SelectItem> listaHorasMax = new ArrayList<SelectItem>();
-    private List<SelectItem> listaMinutosMax = new ArrayList<SelectItem>();
+    private List<SelectItem> listaHorasMin = new ArrayList<>();
+    private List<SelectItem> listaMinutosMin = new ArrayList<>();
+    private List<SelectItem> listaHorasMax = new ArrayList<>();
+    private List<SelectItem> listaMinutosMax = new ArrayList<>();
     private boolean disableText = true;
 
     public PopUpGRBean() {
@@ -164,7 +163,7 @@ public class PopUpGRBean implements Serializable {
         return new StringBuilder().append(uploadDirectory).append(getDirectorioArchivos()).toString();
     }
 
-    public void guardarSitio(ActionEvent actionEvent) {
+    public void guardarSitio() {
         try {
             if (this.getSitio() != null
                     && this.getSitio().getNombre() != null && !this.getSitio().getNombre().isEmpty()
@@ -199,7 +198,7 @@ public class PopUpGRBean implements Serializable {
         }
     }
 
-    public void guardarSemaforo(ActionEvent actionEvent) {
+    public void guardarSemaforo() {
         try {
             if (this.getEstadoSemaforoVO() != null
                     && this.getEstadoSemaforoVO().getGrMapaID() > 0 && this.getEstadoSemaforoVO().getSemaforoID() > 0) {
@@ -218,7 +217,7 @@ public class PopUpGRBean implements Serializable {
         }
     }
 
-    public void guardarPunto(ActionEvent actionEvent) {
+    public void guardarPunto() {
         try {
             if (this.getPunto() != null
                     && this.getPunto().getNombre() != null && !this.getPunto().getNombre().isEmpty()
@@ -254,7 +253,7 @@ public class PopUpGRBean implements Serializable {
         }
     }
 
-    public void guardarZonaRuta(ActionEvent actionEvent) {
+    public void guardarZonaRuta() {
         try {
             if (this.getRutaZonaID() > 0) {
                 grRutasZonasImpl.crearRutaZona(getRuta().getId(), getRutaZonaID(), true, true, this.sesionBean.getUsuarioVO().getId(), this.getPuntoID(), "0");
@@ -270,7 +269,7 @@ public class PopUpGRBean implements Serializable {
         }
     }
 
-    public void guardarZonaRutaDet(ActionEvent actionEvent) {
+    public void guardarZonaRutaDet() {
         try {
             grRutasZonasImpl.guardarRutaZona(getRutaZonaVO(), this.sesionBean.getUsuarioVO().getId());
             String jsFuncion = ";editZonaGuardar();";
@@ -284,7 +283,7 @@ public class PopUpGRBean implements Serializable {
         }
     }
 
-    public void guardarZonaHorarioDet(ActionEvent actionEvent) {
+    public void guardarZonaHorarioDet() {
         try {
             Calendar c = Calendar.getInstance();
             c.setTime(getEditHorario().getHoraMinimaRuta());
@@ -340,7 +339,8 @@ public class PopUpGRBean implements Serializable {
                 if (addArdchivo && extensionValida) {
 
                     DocumentoAnexo documentoAnexo = almacenarAnexo(fileInfo);
-                    //documentoAnexo.setNombreBase(fileInfo.getFileName());
+                    documentoAnexo.setNombreBase(fileInfo.getFileName());
+                    documentoAnexo.setTipoMime(fileInfo.getContentType());
                     documentoAnexo.setRuta(getDirectorioArchivos());
 
                     SiAdjunto adj
@@ -426,7 +426,7 @@ public class PopUpGRBean implements Serializable {
         }
     }
 
-    public void editFile(ActionEvent actionEvent) {
+    public void editFile() {
         try {
             grArchivoImpl.editarArchivo(this.getArchivo());
 
@@ -519,12 +519,14 @@ public class PopUpGRBean implements Serializable {
 
         DocumentoAnexo documentoAnexo = new DocumentoAnexo(fileInfo.getContent());
         documentoAnexo.setRuta(getDirectorioArchivos());
+        documentoAnexo.setTipoMime(fileInfo.getContentType());
+        documentoAnexo.setNombreBase(fileInfo.getFileName());
         almacenDocumentos.guardarDocumento(documentoAnexo);
 
         return documentoAnexo;
     }
 
-    public void enviarMsgCentops(ActionEvent actionEvent) {
+    public void enviarMsgCentops() {
         try {
             if (this.getMsgCentops() != null && !this.getMsgCentops().isEmpty()) {
                 StringBuilder msg = new StringBuilder();
@@ -610,9 +612,8 @@ public class PopUpGRBean implements Serializable {
         }
     }
 
-    public void goEditMapa(ActionEvent actionEvent) {
+    public void goEditMapa(int idArchivo) {
         try {
-            int idArchivo = Integer.parseInt(FacesUtilsBean.getRequestParameter("idArchivo"));
             setArchivo(grArchivoImpl.getArchivoById(idArchivo));
             getArchivo().setTitulo(null);
             setDirectorioArchivos("GR/Mapas");
@@ -648,7 +649,7 @@ public class PopUpGRBean implements Serializable {
         }
     }
 
-    public void goPopupRecomendaciones(ActionEvent actionEvent) {
+    public void goPopupRecomendaciones() {
         try {
             GrArchivoVO newRec = new GrArchivoVO();
             newRec.setGrTipoArchivo(Constantes.GR_TIPO_ARCHIVO_Recomendaciones);
@@ -666,9 +667,8 @@ public class PopUpGRBean implements Serializable {
         }
     }
 
-    public void goEditRecomendaciones(ActionEvent actionEvent) {
+    public void goEditRecomendaciones(int idArchivo) {
         try {
-            int idArchivo = Integer.parseInt(FacesUtilsBean.getRequestParameter("idArchivo"));
             setArchivo(grArchivoImpl.getArchivoById(idArchivo));
             setDirectorioArchivos("GR/Recomendacion");
             setTituloPopUp("Editar recomendación");
@@ -679,7 +679,7 @@ public class PopUpGRBean implements Serializable {
         }
     }
 
-    public void goPopupSitiosRecomendados(ActionEvent actionEvent) {
+    public void goPopupSitiosRecomendados() {
         try {
             GrArchivoVO newArc = new GrArchivoVO();
             newArc.setGrTipoArchivo(Constantes.GR_TIPO_ARCHIVO_Sitios);
@@ -698,9 +698,8 @@ public class PopUpGRBean implements Serializable {
         }
     }
 
-    public void goEditSitiosRecomendados(ActionEvent actionEvent) {
+    public void goEditSitiosRecomendados(int idArchivo) {
         try {
-            int idArchivo = Integer.parseInt(FacesUtilsBean.getRequestParameter("idArchivo"));
             setSitio(grSitioImpl.getSitio(idArchivo));
             setArchivo(new GrArchivoVO());
             getArchivo().setGrTipoArchivo(Constantes.GR_TIPO_ARCHIVO_Sitios);
@@ -716,7 +715,7 @@ public class PopUpGRBean implements Serializable {
         }
     }
 
-    public void goPopupSituacionRiesgo(ActionEvent actionEvent) {
+    public void goPopupSituacionRiesgo() {
         try {
             GrArchivoVO newArc = new GrArchivoVO();
             setArchivo(newArc);
@@ -733,9 +732,8 @@ public class PopUpGRBean implements Serializable {
         }
     }
 
-    public void goEditSituacionRiesgo(ActionEvent actionEvent) {
+    public void goEditSituacionRiesgo(int idArchivo) {
         try {
-            int idArchivo = Integer.parseInt(FacesUtilsBean.getRequestParameter("idArchivo"));
             setArchivo(grArchivoImpl.getArchivoById(idArchivo));
             setDirectorioArchivos("GR/Situacion");
             setTituloPopUp("Editar Situaciones de Riesgo");
@@ -746,7 +744,7 @@ public class PopUpGRBean implements Serializable {
         }
     }
 
-    public void goPopupPunto(ActionEvent actionEvent) {
+    public void goPopupPunto() {
         try {
             GrPuntoVO newPunto = new GrPuntoVO();
             setPunto(newPunto);
@@ -759,7 +757,7 @@ public class PopUpGRBean implements Serializable {
         }
     }
 
-    public void goPopupZonas(ActionEvent actionEvent) {
+    public void goPopupZonas() {
         try {
             MapaVO newZona = new MapaVO();
             setZona(newZona);
@@ -777,7 +775,7 @@ public class PopUpGRBean implements Serializable {
         }
     }
 
-    public void goPopupSemaforo(ActionEvent actionEvent) {
+    public void goPopupSemaforo() {
         try {
             setZona(new MapaVO());
             setEstadoSemaforoVO(new SgEstadoSemaforoVO());
@@ -791,9 +789,8 @@ public class PopUpGRBean implements Serializable {
         }
     }
 
-    public void goEditZona(ActionEvent actionEvent) {
+    public void goEditZona(int idArchivo) {
         try {
-            int idArchivo = Integer.parseInt(FacesUtilsBean.getRequestParameter("idArchivo"));
             setZona(grMapaImpl.getMapa(idArchivo));
             setDirectorioArchivos("GR/Zonas");
             setTituloPopUp("Editar zona/sector");
@@ -804,9 +801,8 @@ public class PopUpGRBean implements Serializable {
         }
     }
 
-    public void goEditPunto(ActionEvent actionEvent) {
+    public void goEditPunto(int idArchivo) {
         try {
-            int idArchivo = Integer.parseInt(FacesUtilsBean.getRequestParameter("idArchivo"));
             setPunto(grPuntoImpl.getPunto(idArchivo));
             setDirectorioArchivos("GR/Puntos");
             setTituloPopUp("Editar punto de seguridad");
@@ -817,9 +813,8 @@ public class PopUpGRBean implements Serializable {
         }
     }
 
-    public void goEditZonaRuta(ActionEvent actionEvent) {
+    public void goEditZonaRuta(int idArchivo) {
         try {
-            int idArchivo = Integer.parseInt(FacesUtilsBean.getRequestParameter("idArchivo"));
             setRutaZonaVO(grRutasZonasImpl.zonaRutaPorID(idArchivo, false));
             getRutaZonaVO().setRuta(getRuta());
             setDirectorioArchivos("GR/Zonas");
@@ -831,9 +826,8 @@ public class PopUpGRBean implements Serializable {
         }
     }
 
-    public void goEditHorasRuta(ActionEvent actionEvent) {
+    public void goEditHorasRuta(int idRuta) {
         try {
-            int idRuta = Integer.parseInt(FacesUtilsBean.getRequestParameter("idArchivo"));
             setEditHorario(sgRutaTerrestreImpl.traerRutaTerrestrePorID(idRuta));
             setListaHorasMin(itemsHoras());
             setListaMinutosMin(itemsMinutos());
@@ -879,9 +873,8 @@ public class PopUpGRBean implements Serializable {
         }
     }
 
-    public void goEditRuta(ActionEvent actionEvent) {
+    public void goEditRuta(int idArchivo) {
         try {
-            int idArchivo = Integer.parseInt(FacesUtilsBean.getRequestParameter("idArchivo"));
             setRuta(sgRutaTerrestreImpl.traerRutaTerrestrePorID(idArchivo));
             setRutaZonas(grRutasZonasImpl.zonasPorRuta(getRuta(), false));
             setRutaZonaVO(null);
@@ -1125,10 +1118,9 @@ public class PopUpGRBean implements Serializable {
         this.puntoID = puntoID;
     }
 
-    public void cambiarMapa(ValueChangeEvent event) {
+    public void cambiarMapa() {
         try {
-            int idMapa = (Integer) event.getNewValue();;
-            getArchivo().setSgSemaforoVO(sgEstadoSemaforoImpl.getSemaforoZona(idMapa));
+            getArchivo().setSgSemaforoVO(sgEstadoSemaforoImpl.getSemaforoZona(archivo.getGrMapa()));
             getArchivo().setSgSemaforo(getArchivo().getSgSemaforoVO().getIdSemaforo());
         } catch (Exception e) {
             UtilLog4j.log.fatal(this, e);
@@ -1195,26 +1187,26 @@ public class PopUpGRBean implements Serializable {
     /**
      * @return the listaZonasRuta
      */
-    public List<SelectItem> getListaZonasRuta() {
+    public List<String> getListaZonasRuta() {
         return listaZonasRuta;
     }
 
     /**
      * @param listaZonasRuta the listaZonasRuta to set
      */
-    public void setListaZonasRuta(List<SelectItem> listaZonasRuta) {
+    public void setListaZonasRuta(List<String> listaZonasRuta) {
         this.listaZonasRuta = listaZonasRuta;
     }
 
-    public void zonasRutaListener(ValueChangeEvent event) {
-        setListaZonasRuta(traerZonasRuta(event.getNewValue().toString()));
+    public List<String> zonasRutaListener(String cadena) {
+      return traerZonasRuta(cadena);
     }
 
-    public void cambiarZonaRuta(ActionEvent event) {
+    public void cambiarZonaRuta() {
         try {
             int aux = 2;
             String codigo = getEstadoSemaforoVO().getGrMapaIDtxt().substring(
-                    (getEstadoSemaforoVO().getGrMapaIDtxt().lastIndexOf("-") + aux));
+                    (getEstadoSemaforoVO().getGrMapaIDtxt().lastIndexOf("//") + aux));
             List<MapaVO> rutaZs = soporteListas.getZonasbyCodigo(codigo);
             if (rutaZs != null && rutaZs.size() > 0) {
                 getEstadoSemaforoVO().setGrMapaID(rutaZs.get(0).getId());
@@ -1226,7 +1218,7 @@ public class PopUpGRBean implements Serializable {
                 );
             }
 
-            PrimeFaces.current().executeScript(";$('#dialogoSemaforos').modal('hide');");
+         //   PrimeFaces.current().executeScript(";$(dialogoSemaforos).modal('hide');");
 
         } catch (Exception e) {
             UtilLog4j.log.fatal(this, e);
@@ -1234,17 +1226,17 @@ public class PopUpGRBean implements Serializable {
         }
     }
 
-    private List<SelectItem> traerZonasRuta(String cadena) {
-        List<SelectItem> list;
+    private List<String> traerZonasRuta(String cadena) {
+        List<String> list;
         try {
             if (cadena != null && !cadena.isEmpty() && cadena.length() > 2) {
                 list = soporteListas.regresaZonas(cadena);
             } else {
-                list = new ArrayList<SelectItem>();
+                list = new ArrayList<>();
             }
         } catch (Exception e) {
             UtilLog4j.log.warn(this, e);
-            list = new ArrayList<SelectItem>();
+            list = new ArrayList<>();
         }
         return list;
     }
@@ -1376,7 +1368,7 @@ public class PopUpGRBean implements Serializable {
     }
 
     public List<SelectItem> itemsHoras() {
-        List<SelectItem> listSelectItem = new ArrayList<SelectItem>();
+        List<SelectItem> listSelectItem = new ArrayList<>();
 
         for (int i = 0; i <= 23; i++) {
             SelectItem item = new SelectItem();
@@ -1398,7 +1390,7 @@ public class PopUpGRBean implements Serializable {
     }
 
     public List<SelectItem> itemsMinutos() {
-        List<SelectItem> listSelectItem = new ArrayList<SelectItem>();
+        List<SelectItem> listSelectItem = new ArrayList<>();
 
         for (int i = 0; i < 60; i++) {
             String minuto = String.format("%02d", i);
@@ -1408,9 +1400,9 @@ public class PopUpGRBean implements Serializable {
         return listSelectItem;
     }
 
-    public void cambiarSemaforo(ValueChangeEvent event) {
+    public void cambiarSemaforo() {
         try {
-            int idSemafro = (Integer) event.getNewValue();
+            int idSemafro =estadoSemaforoVO.getSemaforoID();
             getEstadoSemaforoVO().setGrMapaIDtxt("");
             setListaZonasRuta(traerZonasRuta(getEstadoSemaforoVO().getGrMapaIDtxt()));
             setLstRutasPorZonas(new ArrayList<RutaTerrestreVo>());

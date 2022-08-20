@@ -5,26 +5,19 @@
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:p="http://primefaces.org/ui"
                 >
-    <style >
-        .iceSelInpTxtList{
-            background-color: whitesmoke;
-            z-index: 99999;
-        }
-    </style>
-
     <div class="modal fade" id="dialogoPopUpCrearViaje" data-backdrop="static" data-keyboard="false" style="color: black;">
-        <div class="modal-dialog" style="max-width: 80%;">
+        <div class="modal-dialog modal-xl">
             <div class="modal-content">
                 <div class="modal-header">                    
                     <h4 class="modal-title">Crear Viaje Emergente</h4>
                 </div>
-                <div style="margin-top: 10px;" class="col-12">
-                    <h:message  for="" style="display: block;" infoClass="alert alert-success" warnClass="alert alert-warning"
-                                errorClass="alert alert-danger" fatalClass="alert alert-danger"  />
-                </div>   
 
                 <h:form id="frmPnlViajeEmer" styleClass="textoIzquierda">
-                    <div class="modal-body">                                                                                                        
+                    <div class="modal-body">             
+                        <div style="margin-top: 10px;" class="col-12">
+                            <h:message  for="" style="display: block;" infoClass="alert alert-success" warnClass="alert alert-warning"
+                                        errorClass="alert alert-danger" fatalClass="alert alert-danger"  />
+                        </div>                                                                                              
                         <div class="col-12">                                                        
                             <strong><h:outputText class="col-12 control-label" value="1. Fecha de salida"/></strong>
                             <div class="row" style="margin-top: 5px;">                                                                                                                    
@@ -36,20 +29,20 @@
                                 </div>
                                 <h:outputText class="col-2 control-label" value="Hora Salida: "/>
                                 <div class="col-2">                                            
-                                    <h:selectOneMenu id="horaSalida" 
+                                    <p:selectOneMenu id="horaSalida" 
                                                      value="#{grViaje.horaSalida}"
                                                      styleClass="form-control"
                                                      >
                                         <f:selectItems value="#{grViaje.listaHoras}" />
-                                    </h:selectOneMenu>
+                                    </p:selectOneMenu>
                                 </div>
                                 <div class="col-2">
-                                    <h:selectOneMenu id="minutoSalida" 
+                                    <p:selectOneMenu id="minutoSalida" 
                                                      styleClass="form-control"
                                                      value="#{grViaje.minutoSalida}"
                                                      >
                                         <f:selectItems value="#{grViaje.listaMinutos}" />
-                                    </h:selectOneMenu>                                    
+                                    </p:selectOneMenu>                                    
                                 </div>
                                 <h:outputText class="col-1 control-label" value="mins."/>
                             </div>
@@ -58,11 +51,12 @@
                                 <div class="col-1"></div>
                                 <h:outputText value="Oficina:" class="col-2 control-label" style="text-align: right;"/>
                                 <div class="col-6">                                            
-                                    <h:selectOneMenu  id="selectOneMenuOficinaVehiculos" value="#{grViaje.idOficinaVehiculo}"   styleClass="form-control"
-                                                      valueChangeListener="#{grViaje.traerListaVehiculo}">
+                                    <p:selectOneMenu  id="selectOneMenuOficinaVehiculos" value="#{grViaje.idOficinaVehiculo}"   
+                                                      >
                                         <f:selectItem itemLabel="Seleccionar..." itemValue="-1"/>
                                         <f:selectItems value="#{grViaje.listaOficinaVehiculo}"/>
-                                    </h:selectOneMenu>
+                                        <p:ajax listener="#{grViaje.traerListaVehiculo}" update="frmPnlViajeEmer:selectOneMenuVehiculo"/>
+                                    </p:selectOneMenu>
                                 </div>
                                 <div class="col-3"></div>
                             </div>
@@ -70,12 +64,12 @@
                                 <div class="col-1"></div>
                                 <h:outputText value="Vehículo:" class="col-2 control-label" style="text-align: right;"/>
                                 <div class="col-6">
-                                    <h:selectOneMenu value="#{grViaje.idVehiculo}"   styleClass="form-control"
+                                    <p:selectOneMenu value="#{grViaje.idVehiculo}"
                                                      id="selectOneMenuVehiculo">
                                         <f:selectItem itemLabel="Seleccionar Vehículo" 
                                                       itemValue="-1"/>
                                         <f:selectItems value="#{grViaje.listaVehiculos}"/>
-                                    </h:selectOneMenu>
+                                    </p:selectOneMenu>
                                 </div>
                                 <div class="col-3"></div>
                             </div>
@@ -85,13 +79,6 @@
                                 <div class="col-1"></div>
                                 <h:outputText value="Empleado: " class="col-2 control-label" style="text-align: right;"/>
                                 <div class="col-6">
-                                    <!-- h:selectOneMenu id="userSelect"
-                                                     value="#{grViaje.responsable}"
-                                                     textChangeListener="#{grViaje.usuarioListener}"
-                                                     rows="10" width="100%">
-                                        <f:selectItems value="#{grViaje.listaUsuario}" />
-                                    </h:selectOneMenu -->
-
                                     <p:autoComplete id="userSelect"                                                                 
                                                     value="#{grViaje.responsable}"
                                                     multiple="false" selectLimit="1"
@@ -109,34 +96,34 @@
                                 <div class="col-1"></div>
                                 <h:outputText value="Oficina:" class="col-2 control-label" style="text-align: right;"/>
                                 <div class="col-6">                                            
-                                    <h:selectOneMenu  id="selectOneMenuOficinaRuta" value="#{grViaje.idOficinaRuta}"   styleClass="form-control"
-                                                      valueChangeListener="#{grViaje.traerListaRutas}">
+                                    <p:selectOneMenu  id="selectOneMenuOficinaRuta" value="#{grViaje.idOficinaRuta}">
                                         <f:selectItem itemLabel="Seleccione..." itemValue="-1"/>
                                         <f:selectItems value="#{grViaje.listaOficinaRuta}"/>
-                                    </h:selectOneMenu>
+                                        <p:ajax listener="#{grViaje.traerListaRutas}"  update="frmPnlViajeEmer:rutaViaje"/>
+                                    </p:selectOneMenu>
                                 </div>
                                 <div class="col-3"></div>
                             </div>
                             <div class="row"  style="margin-top: 5px;">
                                 <div class="col-3"></div>
                                 <div class="col-6">                                                        
-                                    <h:selectOneRadio value="#{grViaje.idSiOperacion}"
-                                                      valueChangeListener="#{grViaje.cabiarDestino}">
+                                    <p:selectOneRadio value="#{grViaje.idSiOperacion}">
                                         <f:selectItem itemLabel="Oficina" itemValue="21"/>
                                         <f:selectItem itemLabel="Ciudad" itemValue="22"/>
-                                    </h:selectOneRadio>
+                                        <p:ajax listener="#{grViaje.cabiarDestino}"  update="frmPnlViajeEmer:rutaViaje"/>
+                                    </p:selectOneRadio>
                                 </div>
                                 <div class="col-3"></div>
                             </div>
                             <div class="row" style="margin-top: 5px;">
                                 <div class="col-3"></div>
                                 <div class="col-6">                                                        
-                                    <h:selectOneMenu value="#{grViaje.idRuta}" id="rutaViaje"  
+                                    <p:selectOneMenu value="#{grViaje.idRuta}" id="rutaViaje"  
                                                      styleClass="form-control">
                                         <f:selectItem itemLabel="Seleccionar Ruta" 
                                                       itemValue="-1"/>
                                         <f:selectItems value="#{grViaje.listaRuta}"/>
-                                    </h:selectOneMenu>
+                                    </p:selectOneMenu>
                                 </div>
                                 <div class="col-3"></div>
                             </div>
@@ -145,17 +132,11 @@
                                 <div class="col-1"></div>
                                 <h:outputText value="Autorizo: " class="col-2 control-label" style="text-align: right;"/>
                                 <div class="col-6">
-                                    <!-- ice:selectInputText id="userSelectAutorizo"
-                                                         value="#{grViaje.autorizo}"
-                                                         textChangeListener="#{grViaje.autorizoListener}"
-                                                         rows="10" width="100%">
-                                        <f:selectItems value="#{grViaje.listaAutorizo}" />
-                                    </ice:selectInputText -->
-
                                     <p:autoComplete id="userSelectAutorizo"                                                                 
-                                                    value="#{grViaje.autorizo}"                                                                                              
-                                                    styleClass="campoFiltro"                                                                                         
-                                                    style="margin: 0px 0 0 0px; width: 100%; height: 25px; background-color: #d9edf7; border: 1px solid #ccc; border-radius: 4px; box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset;">                                                                                                                                                                        
+                                                    value="#{grViaje.autorizo}"      
+                                                    multiple="false" selectLimit="1"
+                                                    scrollHeight="250" size="35" forceSelection="true"
+                                                    completeMethod="#{grViaje.usuarioListener}">
                                     </p:autoComplete>
 
 
@@ -164,108 +145,59 @@
                             </div>
                             <strong><h:outputText class="col-12 control-label" value="6. Viajeros"/></strong>
                             <div  class="row" style="margin-top: 5px;">
-                                <div class="col-3"></div>
-                                <div class="col-6">                                                        
-                                    <h:selectOneRadio id="selectViajero" value="#{grViaje.idSiOperacionViajero}"
-                                                      onchange="validaSelectViajero();">
-                                        <f:selectItem itemLabel="Empleados" itemValue="1"/>
-                                        <f:selectItem itemLabel="Invitados" itemValue="2"/>
-                                    </h:selectOneRadio>
-                                </div>
-                                <div class="col-3"></div>
+                                <p:tabView>
+                                    <p:tab title="Empleados">
+                                        <p:autoComplete id="userSelectEmpleado"                                                                 
+                                                        value="#{grViaje.empleado}"                                                                                              
+                                                        multiple="false" selectLimit="1"
+                                                        scrollHeight="250" size="35" forceSelection="true"
+                                                        completeMethod="#{grViaje.usuarioListener}">
+                                            <p:ajax listener="#{grViaje.agregarEmpleado()}" update="@this frmPnlViajeEmer:viajerosLST"/>
+                                        </p:autoComplete>
+                                    </p:tab>
+                                    <p:tab title="Invitados">
+                                        <p:autoComplete id="userSelectInvitado"                                                                 
+                                                        value="#{grViaje.invitado}"                                                                                 
+                                                        multiple="false" selectLimit="1"
+                                                        scrollHeight="250" size="35" forceSelection="true"
+                                                        completeMethod="#{grViaje.invitadoListener}"                                                                                            
+                                                        >
+                                            <p:ajax listener="#{grViaje.agregarInvitado()}" update="@this frmPnlViajeEmer:viajerosLST"/>                                                        
+                                        </p:autoComplete>
+                                    </p:tab>
+                                </p:tabView>
                             </div>
-                            <div class="row" style="#{grViaje.displayEmpleado}" id="busquedaEmpleado">                                                        
-                                <div class="col-1"></div>
-                                <h:outputText value="Empleado: " class="col-2 control-label"/>
-                                <div class="col-6">
-                                    <!-- ice:selectInputText id="userSelectEmpleado"
-                                                         value="#{grViaje.empleado}"
-                                                         textChangeListener="#{grViaje.empleadoListener}"
-                                                         rows="10" width="100%">
-                                        <f:selectItems value="#{grViaje.listaEmpleados}" />
-                                    </ice:selectInputText -->
-
-                                    <p:autoComplete id="userSelectEmpleado"                                                                 
-                                                    value="#{grViaje.empleado}"                                                                                              
-                                                    styleClass="campoFiltro"                                                                                         
-                                                    style="margin: 0px 0 0 0px; width: 100%; height: 25px; background-color: #d9edf7; border: 1px solid #ccc; border-radius: 4px; box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset;">                                                                                                                                                                        
-                                    </p:autoComplete>
-
-                                </div>
-                                <div class="col-3">
-                                    <h:commandButton
-                                        value="Agregar"
-                                        styleClass="btn btn-info" 
-                                        action="#{grViaje.agregarViajero(event)}"                                                                                  
-                                        />                                
-                                </div>
-                            </div>
-                            <div class="row" style="#{grViaje.displayInvitado}" id="busquedaInvitado">                                                        
-                                <div class="col-1"></div>
-                                <h:outputText value="Invitado: " class="col-2 control-label"/>
-                                <div class="col-6">
-                                    <!-- ice:selectInputText id="userSelectInvitado"
-                                                         value="#{grViaje.invitado}"
-                                                         textChangeListener="#{grViaje.invitadoListener}"
-                                                         rows="10" width="100%">
-                                        <f:selectItems value="#{grViaje.listaInvitados}" />
-                                    </ice:selectInputText -->
-
-                                    <p:autoComplete id="userSelectInvitado"                                                                 
-                                                    value="#{grViaje.invitado}"                                                                                              
-                                                    styleClass="campoFiltro"                                                                                         
-                                                    style="margin: 0px 0 0 0px; width: 100%; height: 25px; background-color: #d9edf7; border: 1px solid #ccc; border-radius: 4px; box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset;">                                                                                                                                                                        
-                                    </p:autoComplete>
-
-                                </div>
-                                <div class="col-3">
-                                    <h:commandButton
-                                        value="Agregar"
-                                        styleClass="btn btn-info" 
-                                        action="#{grViaje.agregarViajero(event)}"                                         
-                                        />
-                                </div>
-
-                            </div>                            
                             <div class="col-12">
-                                <center>                                            
-                                    <div class="table table-responsive" style="margin-bottom: 0px;">
-                                        <p:dataTable id="viajerosLST" rows="10" 
-                                                     value="#{grViaje.listaViajeros}" var="currentRow" styleClass="table table-striped"
-                                                     style="font-size:12px; color: black;">                                                                                  
-                                            <p:column>
-                                                <h:outputText value="#{currentRow.esEmpleado ?currentRow.usuario : currentRow.invitado}"/>
-                                                <f:facet name="header">
-                                                    <h:outputText value="Nombre"/>
-                                                </f:facet>
-                                            </p:column>                                            
-                                            <p:column>
-                                                <p:commandLink 
-                                                    styleClass="btn btn-info btn-sm"                                                     
-                                                    actionListener="#{grViaje.eliminarViajero(actionEvent)}"
-                                                    title="Click aquí para eliminar el viajero..." >
-                                                    <i class="glyphicon glyphicon-trash"></i>
-                                                    <f:param name="indice" value="#{currentRow.id}"/>
-                                                </p:commandLink>                                                        
-                                            </p:column>
-                                        </p:dataTable>
-                                        <!-- aqui va el paginador -->                                            
-                                    </div>
-
-
-                                </center>
+                                <p:dataTable id="viajerosLST" rows="10" 
+                                             value="#{grViaje.listaViajeros}" var="currentRow" 
+                                             size="small" showGridlines="true" paginator="true"> 
+                                    <p:column>
+                                        <h:outputText value="#{currentRow.esEmpleado ? currentRow.usuario : currentRow.invitado}"/>
+                                        <f:facet name="header">
+                                            <h:outputText value="Nombre"/>
+                                        </f:facet>
+                                    </p:column>                                            
+                                    <p:column width="50">
+                                        <p:commandLink 
+                                            action="#{grViaje.eliminarViajero(currentRow)}"
+                                            title="Click aquí para eliminar el viajero..." 
+                                            process="@this" update="frmPnlViajeEmer:viajerosLST">
+                                            <i class="fa fa-trash text-danger"></i>
+                                        </p:commandLink>                                                        
+                                    </p:column>
+                                </p:dataTable>
                             </div>
                         </div>
                     </div>
                     <div class="modal-footer" style="border-top: white;">
-                        <h:commandButton id="saveSemaforo"
+                        <p:commandButton id="saveSemaforo"
                                          value="Aceptar"
-                                         styleClass="btn btn-info  col-2" 
+                                         styleClass="btn btn-info" 
                                          action="#{grViaje.completarCrearViajeEmergencia(event)}"                                         
-                                         />
-                        <p:commandButton
-                            value="Cancelar"
-                            styleClass="btn btn-cancelar col-2"
+                                         process="@form" update="frmViajesPen"/>
+                        <p:commandLink 
+                            value="Cancelar" immediate="true"
+                            styleClass="btn btn-default"
                             onclick="$(dialogoPopUpCrearViaje).modal('hide');"
                             title="Cerrar ventana..." 
                             />
@@ -290,7 +222,7 @@
                 <div class="modal-footer" style="border-top: white;">
                     <p:commandButton
                         value="Cerrar"
-                        styleClass="btn btn-cancelar"
+                        styleClass="btn btn-default"
                         onclick="$(dialogoPopUpCrearViajeExito).modal('hide');"
                         title="Cerrar ventana..." 
                         />
@@ -300,7 +232,7 @@
     </div>
 
     <div class="modal fade" id="dialogoPopUpRutasSectores" data-backdrop="static" data-keyboard="false" style="color: black;">
-        <div class="modal-dialog" style="max-width: 80%;">
+        <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">                    
                     <h4 class="modal-title">Detalle de la ruta</h4>
@@ -308,26 +240,23 @@
 
                 <div class="modal-body">
                     <h:form id="frmRutaDet">
-                        <c:forEach items="#{grViaje.zonas}" var="zona">                                                                                    
-
-
-                            <div class="col-12" style="border: white; border-bottom: #eee; border-top: white;  border-style: solid; border-width: 2px;">
-                                <div class="row" style="margin-top: 5px;">
-                                    <strong><h:outputText styleClass="col-6 control-label" value="#{zona.zona.nombre}" title="#{zona.zona.descripcion}" /></strong> 
-                                    <div class="col-1" style="max-height: 20px; max-width: 20px; border-radius: 50%; background-color: #{zona.zona.colorSemaforo};"></div>                                                                                                                
+                        <c:forEach items="#{grViaje.zonas}" var="zona">
+                            <div class="input-group" style="border: white; border-bottom: #eee; border-top: white;  border-style: solid; border-width: 2px;">
+                                <div class="col-11" style="margin-top: 5px;">
+                                    <strong><h:outputText styleClass="col-11 control-label" value="#{zona.zona.nombre}" title="#{zona.zona.descripcion}" /></strong>                                     
                                 </div>    
-
+                                <div class="col-1" style="max-height: 20px; max-width: 20px; border-radius: 50%; background-color: #{zona.zona.colorSemaforo};"></div>
                             </div>
                         </c:forEach>
                     </h:form>
                 </div>
                 <div class="modal-footer" style="border-top: white;">
-                    <p:commandButton
-                        value="Cerrar"
-                        styleClass="btn btn-cancelar"
-                        onclick="$(dialogoPopUpRutasSectores).modal('hide');"
-                        title="Cerrar ventana..." 
-                        />
+                    <p:commandButton immediate="true"
+                                     value="Cerrar"
+                                     styleClass="btn btn-default"
+                                     onclick="$(dialogoPopUpRutasSectores).modal('hide');"
+                                     title="Cerrar ventana..." 
+                                     />
                 </div>                                           
             </div>
         </div>

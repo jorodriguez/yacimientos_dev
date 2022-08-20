@@ -40,6 +40,6 @@ public class MenuBean implements Serializable {
     }
 
     public String goConfiguracion() {
-        return "/vistas/gr/configuracion";
+        return "/vistas/gr/configuracion.xhtml?faces-redirect=true";
     }
 }
