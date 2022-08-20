@@ -32,7 +32,7 @@ import sia.util.UtilLog4j;
  *
  * @author ihsa
  */
-@Stateless 
+@Stateless
 public class GrRutasZonasImpl extends AbstractFacade<GrRutasZonas> {
 
     @Inject
@@ -49,7 +49,6 @@ public class GrRutasZonasImpl extends AbstractFacade<GrRutasZonas> {
     @PersistenceContext(unitName = "Sia-ServiciosPU")
     private EntityManager em;
 
-    
     @Override
     protected EntityManager getEntityManager() {
         return em;
@@ -59,9 +58,8 @@ public class GrRutasZonasImpl extends AbstractFacade<GrRutasZonas> {
         super(GrRutasZonas.class);
     }
 
-    
     public List<GrRutaZonasVO> zonasPorRuta(RutaTerrestreVo ruta, boolean conSemaforo) {
-        List<GrRutaZonasVO> lst = new ArrayList<GrRutaZonasVO>();
+        List<GrRutaZonasVO> lst = new ArrayList<>();
         try {
             StringBuilder sb = new StringBuilder(500);
             sb.append(
@@ -77,14 +75,14 @@ public class GrRutasZonasImpl extends AbstractFacade<GrRutasZonas> {
 
             UtilLog4j.log.info(this, "Q: : : : : : : : : : " + sb.toString());
 
-            List<Object[]> lo = 
-                    em.createNativeQuery(sb.toString())
+            List<Object[]> lo
+                    = em.createNativeQuery(sb.toString())
                             .setParameter(1, ruta.getId())
                             .getResultList();
-            
+
             if (lo != null) {
                 GrRutaZonasVO rutaZona = null;
-                lst = new ArrayList<GrRutaZonasVO>();
+                lst = new ArrayList<>();
                 for (Object[] objects : lo) {
                     rutaZona = new GrRutaZonasVO();
                     rutaZona.setRuta(ruta);
@@ -95,7 +93,9 @@ public class GrRutasZonasImpl extends AbstractFacade<GrRutasZonas> {
                     rutaZona.setActiva(!(Boolean) objects[4]);
                     rutaZona.setZona(castMapa(objects, conSemaforo));
                     rutaZona.setIdPunto((Integer) objects[14] == null ? 0 : (Integer) objects[14]);
-                    rutaZona.setPunto(grPuntoRemote.getPunto(rutaZona.getIdPunto()));
+                    if (rutaZona.getIdPunto() > 0) {
+                        rutaZona.setPunto(grPuntoRemote.getPunto(rutaZona.getIdPunto()));
+                    }
                     rutaZona.setSecuencia((String) objects[15]);
                     rutaZona.setCancelasn(((Boolean) objects[16]));
                     rutaZona.setCodigo(objects[17] == null ? Constantes.VACIO : (String) objects[17]);
@@ -108,7 +108,6 @@ public class GrRutasZonasImpl extends AbstractFacade<GrRutasZonas> {
         return lst;
     }
 
-    
     public GrRutasZonas getByRutaIDZonaID(int rutaID, int zonaID) {
         GrRutasZonas r = null;
         try {
@@ -120,10 +119,10 @@ public class GrRutasZonasImpl extends AbstractFacade<GrRutasZonas> {
                     + " and GR_MAPA = ?"
                     + " order by id desc "
             );
-            
+
             UtilLog4j.log.info(this, "Q: : : : : : : : : : " + sb.toString());
-            List<GrRutasZonas> lo = 
-                    em.createNativeQuery(sb.toString(), "GrRutasZonas_map")
+            List<GrRutasZonas> lo
+                    = em.createNativeQuery(sb.toString(), "GrRutasZonas_map")
                             .setParameter(1, rutaID)
                             .setParameter(2, zonaID)
                             .getResultList();
@@ -136,7 +135,6 @@ public class GrRutasZonasImpl extends AbstractFacade<GrRutasZonas> {
         return r;
     }
 
-    
     public GrRutaZonasVO zonaRutaPorID(int rutaZonaID, boolean conSemaforo) {
         GrRutaZonasVO rutaZona = null;
         try {
@@ -151,8 +149,8 @@ public class GrRutasZonasImpl extends AbstractFacade<GrRutasZonas> {
 
             UtilLog4j.log.info(this, "Q: : : : : : : : : : " + sb.toString());
 
-            Object[] obj = 
-                    (Object[]) em.createNativeQuery(sb.toString())
+            Object[] obj
+                    = (Object[]) em.createNativeQuery(sb.toString())
                             .setParameter(1, rutaZonaID)
                             .getSingleResult();
 
@@ -188,7 +186,6 @@ public class GrRutasZonasImpl extends AbstractFacade<GrRutasZonas> {
         return o;
     }
 
-    
     public GrRutasZonas crearRutaZona(int rutaID, int idZona, boolean cancelasr, boolean cancelasn, String usrID, int idPunto, String seq) {
         GrRutasZonas nuevo = null;
         try {
@@ -250,7 +247,6 @@ public class GrRutasZonasImpl extends AbstractFacade<GrRutasZonas> {
         return nuevo;
     }
 
-    
     public GrRutasZonas guardarRutaZona(GrRutaZonasVO vo, String usrID) {
         //TODO : podria implementarse algo de esta lógica a manera de trigger?
         GrRutasZonas nuevo = null;
@@ -314,7 +310,6 @@ public class GrRutasZonasImpl extends AbstractFacade<GrRutasZonas> {
      * @param ruta
      * @return
      */
-    
     public List<GrRutaZonasVO> traerPuntoPorRuta(int ruta) {
         clearQuery();
         query.append("select rz.id, m.id, m.nombre, p.id,  p.NOMBRE, rz.codigo, m.codigo  from GR_RUTAS_ZONAS rz");
@@ -333,7 +328,7 @@ public class GrRutasZonasImpl extends AbstractFacade<GrRutasZonas> {
                 grRutaZonasVO.setZona(new MapaVO());
                 grRutaZonasVO.getZona().setId((Integer) obj1[1]);
                 grRutaZonasVO.getZona().setNombre((String) obj1[2]);
-                grRutaZonasVO.getZona().setCodigo((String) obj1[6] == null ? Constantes.VACIO: (String) obj1[6]);
+                grRutaZonasVO.getZona().setCodigo((String) obj1[6] == null ? Constantes.VACIO : (String) obj1[6]);
                 grRutaZonasVO.setPunto(new GrPuntoVO());
                 grRutaZonasVO.getPunto().setId((Integer) obj1[3]);
                 grRutaZonasVO.getPunto().setNombre((String) obj1[4]);
@@ -380,13 +375,11 @@ public class GrRutasZonasImpl extends AbstractFacade<GrRutasZonas> {
 //        }
 //        return lp;
 //    }
-
     /**
      *
      * @param ruta
      * @param codigo
      */
-    
     public void modificarCodigos(int ruta, String codigo) {
         try {
             RutaTerrestreVo voRuta = new RutaTerrestreVo();

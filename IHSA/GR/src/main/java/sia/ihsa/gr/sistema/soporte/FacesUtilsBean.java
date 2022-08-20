@@ -1,6 +1,7 @@
 
 package sia.ihsa.gr.sistema.soporte;
 
+import java.io.Serializable;
 import java.util.ResourceBundle;
 import javax.faces.FactoryFinder;
 import javax.faces.application.Application;
@@ -16,7 +17,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 
-public class FacesUtilsBean {
+public class FacesUtilsBean implements Serializable{
     /**
      * optiene el valor del elemento especificado en el archivo de recursos del sistema
      *

@@ -4,69 +4,46 @@
                 xmlns:c="http://java.sun.com/jsp/jstl/core"
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:p="http://primefaces.org/ui">
-    <div class="panel panel-primary">
-        <div class="panel-heading">
-            <h3 class="panel-title">Viajes por autorizar</h3>            
+    <div class="card card-primary">
+        <div class="card-heading">
+            <h3 class="card-title">Viajes por autorizar</h3>            
         </div>
-        <div class="panel-body" id="viajesPauID">
-            <c:forEach items="#{sesion.rutasPausa}" var="ruta">
-                <div class="col-lg-12 col-xs-12">
-                    <div class="panel panel-primary kanban-col" style="width: 100%;">
-                        <div class="panel-heading" style="background-color: #{ruta.cssColorSemaforo}; color: #{ruta.cssColorSemaforoTxt};">
-                            <div style="width: 100%;">
-                                Ruta: #{ruta.nombre}  (Tiempo:#{ruta.tiempoViaje} hrs.)  (Viajes:#{ruta.viajes.size()})
-                                <p:commandLink                                                         
-                                    styleClass="btn btn-link btn-lg"                                                        
-                                    style="margin-top: 4px; margin-bottom: 4px;align-content: center;"
-                                    actionListener="#{grViaje.goPopupRutaDet(actionEvent)}"
-                                    title="Click aquí para consultar el detalle de la ruta..." >        
-                                    <f:param name="idRuta" value="#{ruta.id}"/>
-                                    <span class="fa fa-road"></span>
-                                </p:commandLink>                                                                                                        
+        <div class="card-body" id="viajesPauID">
+            <p:accordionPanel id="pnlViaPausa" widgetVar="basicPau" >
+                <c:forEach items="#{sesion.rutasPausa}" var="ruta">
+                    <p:tab title="Ruta: #{ruta.nombre}  (Tiempo:#{ruta.tiempoViaje} hrs.)  (Viajes:#{ruta.viajes.size()})"
+                           titleStyle="background-color: #{ruta.cssColorSemaforo}; ">
+                        <p:commandLink                                                         
+                            styleClass="btn btn-link btn-lg"                                                        
+                            style="margin-top: 4px; margin-bottom: 4px;align-content: center;"
+                            action="#{grViaje.goPopupRutaDet(ruta.id)}"
+                            title="Click aquí para consultar el detalle de la ruta..." 
+                            update="frmRutaDet">        
+                            <span class="fa fa-road"></span>
+                        </p:commandLink>
+                        <c:forEach items="#{ruta.viajes}" var="viaje">
+                            <div style="#{viaje.sgViaje > 0 ? 'background-color: #d9edf7; border-color: #bce8f1;' : ''}" title="#{viaje.codigo}" data-toggle="collapse" data-target="#viajeColap#{viaje.id}">
+                                <div style="width: 100%;">
+                                    #{viaje.codigo}                                                         
+                                    <strong>#{viaje.responsable} </strong>
+                                    #{viaje.fechaProgramadaTxt} #{viaje.horaProgramadaTxt}
+                                    <span class="fa fa-users fa-1g"></span>                                                            
+                                    (#{viaje.numViajeros}/#{viaje.vehiculoVO.capacidadPasajeros})                                                        
+
+                                    <p:commandLink                                                         
+                                        styleClass="btn btn-link btn-lg"                                                        
+                                        style="margin-top: 4px; margin-bottom: 4px;align-content: center;"
+                                        actionListener="#{sesion.goGRViajeDet(viaje.id, 0)}"
+                                        title="Click aquí para ver detalle del viaje..." 
+                                        process="@this" update="frmPnlViajeDet">               
+                                        <span class="fa fa-car"></span>
+                                    </p:commandLink>                                                                                                        
+                                </div>
                             </div>
-                            <span class="pull-right clickable"><i class="glyphicon glyphicon-chevron-down"  id="ivpaRZ#{ruta.id}"></i></span>
-                            <input type="hidden" class="hiddenID" value="vpaRZ#{ruta.id}"></input>
-
-                            <!-- i class="fa fa-2x fa-plus-circle pull-right"></i -->
-                        </div>
-                    </div>
-                    <div class="panel-body" id="pbvpaRZ#{ruta.id}">
-                        <div class="kanban-centered">
-                            <c:forEach items="#{ruta.viajes}" var="viaje">
-                                <article class="kanban-entry grab bodyViajeItem" id="viaje#{viaje.id}" draggable="true">
-                                    <div class="kanban-entry-inner" style="#{viaje.sgViaje > 0 ? 'background-color: #d9edf7; border-color: #bce8f1;' : ''}">
-                                        <div class="kanban-label" style="#{viaje.sgViaje > 0 ? 'background-color: #d9edf7; border-color: #bce8f1;' : ''}">
-                                            <h2 style="width: 100%;">
-                                                <div style="width: 100%;" title="#{viaje.codigo}" data-toggle="collapse" data-target="#viajeColap#{viaje.id}">
-                                                    <div style="width: 100%;">
-                                                        #{viaje.codigo}                                                         
-                                                        <strong>#{viaje.responsable} </strong>
-                                                        #{viaje.fechaProgramadaTxt} #{viaje.horaProgramadaTxt}
-                                                        <span class="fa fa-users fa-1g"></span>                                                            
-                                                        (#{viaje.numViajeros}/#{viaje.vehiculoVO.capacidadPasajeros})                                                        
-
-                                                        <p:commandLink                                                         
-                                                            styleClass="btn btn-link btn-lg"                                                        
-                                                            style="margin-top: 4px; margin-bottom: 4px;align-content: center;"
-                                                            actionListener="#{sesion.goGRViajeDet(actionEvent)}"
-                                                            title="Click aquí para ver detalle del viaje..." >               
-                                                            <f:param name="idViaje" value="#{viaje.id}"/>
-                                                            <f:param name="idInter" value="0"/>
-                                                            <span class="fa fa-car"></span>
-                                                        </p:commandLink>                                                                                                        
-                                                    </div>
-                                                </div>
-                                            </h2>                                                    
-                                            <div id="viajeColap#{viaje.id}" class="collapse" ></div>
-                                        </div>
-                                    </div>
-                                </article>
-                            </c:forEach>
-                        </div>
-                    </div>
-                </div>
-
-            </c:forEach>      
+                        </c:forEach>
+                    </p:tab>
+                </c:forEach>
+            </p:accordionPanel>
         </div>
     </div>
     <script>
@@ -74,14 +51,14 @@
             //$("#tipoViaje").tabs({active: 0});
             //startDate();            
 
-//            var kanbanCol = $('.panel-body');
+//            var kanbanCol = $('.card-body');
 //            kanbanCol.css('max-height', (window.innerHeight - 150) + 'px');
 //            var kanbanColCount = parseInt(kanbanCol.length);
 //            $('.container-fluid').css('width', '100%');
 //            draggableInit();
-//            $('.panel-heading').click(function () {
-//                var $panelBody = $(this).parent().children('.panel-body');
-//                $panelBody.slideToggle();
+//            $('.card-heading').click(function () {
+//                var $cardBody = $(this).parent().children('.card-body');
+//                $cardBody.slideToggle();
 //            });
         });
     </script>
