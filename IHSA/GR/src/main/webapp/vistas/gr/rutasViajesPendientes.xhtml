@@ -4,88 +4,91 @@
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:c="http://java.sun.com/jsp/jstl/core"                
                 xmlns:h="http://java.sun.com/jsf/html">    
-    <div clas="row">
-    <div class="card">
-        <div class="card-header" >
-            <h3 class="card-title">Viajes Pendientes</h3>            
-        </div>
-        <div class="card-body" id="viajesPenID">
-            <ui:fragment rendered="#{grBean.admin}">
-                <div class="visible-lg col-lg-3">
-                    <h:selectOneMenu styleClass="form-control" 
-                                     valueChangeListener="#{sesion.actRutasPendientesCambio}"
-                                     value="#{sesion.numDias}">
-                        <f:selectItem itemValue="0" itemLabel="Hoy"/>
-                        <f:selectItem itemValue="5" itemLabel="Próximos 5 días"/>
-                    </h:selectOneMenu>
-
-                </div>                                                                                    
-                <div class="visible-lg col-lg-6"></div>                                                                                    
-                <h:commandLink 
-                    style="margin-bottom: 15px;"
-                    value="Crear viaje"
-                    styleClass="col-lg-3 col-xs-12 btn btn-info btn-sm"                                                                     
-                    actionListener="#{grViaje.goPopupCrearViaje(actionEvent)}"
-                    title="Click aquí para crear un viaje..." >                                                                                                        
-                </h:commandLink>
-            </ui:fragment>
-
-            <div class="card col-lg-12">                
-                <p:accordionPanel widgetVar="basic">
-
-
-                    <c:forEach items="#{sesion.rutasPendienes}" var="ruta">
-
-                        <p:tab 
-                            title="Ruta: #{ruta.nombre}  (Tiempo:#{ruta.tiempoViaje} hrs.)  (Viajes:#{ruta.viajes.size()})" 
-                            >
-
-                            <p:commandLink                                                         
-                                styleClass="btn btn-link btn-lg"                                                        
-                                style="margin-top: 4px; margin-bottom: 4px;align-content: center;"
-                                actionListener="#{grViaje.goPopupRutaDet(actionEvent)}"
-                                title="Click aquí para consultar el detalle de la ruta..." >        
-                                <f:param name="idRuta" value="#{ruta.id}"/>
-                                <span class="fa fa-road"></span>
-                            </p:commandLink>                                                                                                        
-
-
-                            <c:forEach items="#{ruta.viajes}" var="viaje">
-
-                                <div style="width: 100%;">
-                                    #{viaje.codigo}                                                         
-                                    <strong>#{viaje.responsable}/ #{viaje.vehiculoPlaca}</strong>
-                                    #{viaje.fechaProgramadaTxt} #{viaje.horaProgramadaTxt}
-                                    <span class="fa fa-users fa-1g"></span>                                                            
-                                    (#{viaje.numViajeros}/#{viaje.vehiculoVO.capacidadPasajeros})                                                        
-
-                                    <p:commandLink                                                                                                                     
-                                        style="margin-top: 4px; margin-bottom: 4px;align-content: center;"
-                                        actionListener="#{sesion.goGRViajeDet(viaje.id, 0)}"
-                                        styleClass="btn btn-default" 
-                                        process="@this" update="frmPnlViajeDet"
-                                        title="Click aquí para ver detalle del viaje..." >               
-                                        <span class="fa fa-car"></span>
-                                    </p:commandLink>                                                                                                        
-                                </div>
-
-                            </c:forEach>
-
-                        </p:tab>
-
-
-
-
-
-                    </c:forEach>   
-
-                </p:accordionPanel>
+    <div clas="row" style="min-width: 100%;">
+        <div class="card">
+            <div class="card-header" >
+                <h3 class="card-title">Viajes Pendientes</h3>            
             </div>
+            <div class="card-body" id="viajesPenID">
+                <ui:fragment rendered="#{grBean.admin}">
+                    <div class="row">
+                        <div class="visible-lg col-3">
+                            <h:selectOneMenu styleClass="form-control" 
+                                             valueChangeListener="#{sesion.actRutasPendientesCambio}"
+                                             value="#{sesion.numDias}">
+                                <f:selectItem itemValue="0" itemLabel="Hoy"/>
+                                <f:selectItem itemValue="5" itemLabel="Próximos 5 días"/>
+                            </h:selectOneMenu>
 
+                        </div>                                                                                    
+                        <div class="visible-lg col-6">                                                                                   
+                            <h:commandLink 
+                                style="margin-bottom: 15px;"
+                                value="Crear viaje"
+                                styleClass="lg:col-3 xs:col-2 btn btn-info btn-sm"                                                                     
+                                actionListener="#{grViaje.goPopupCrearViaje(actionEvent)}"
+                                title="Click aquí para crear un viaje..." >                                                                                                        
+                            </h:commandLink>
+                        </div> 
+                    </div>
+                </ui:fragment>
+
+                <div class="card col-lg-12">                
+                    <p:accordionPanel widgetVar="basic">
+
+
+                        <c:forEach items="#{sesion.rutasPendienes}" var="ruta">
+
+                            <p:tab title="Ruta: #{ruta.nombre}  (Tiempo:#{ruta.tiempoViaje} hrs.)  (Viajes:#{ruta.viajes.size()})" >
+
+                                <p:commandLink                                                         
+                                    styleClass="btn btn-link btn-lg"                                                        
+                                    style="margin-left: 95%;"
+                                    actionListener="#{grViaje.goPopupRutaDet(actionEvent)}"
+                                    title="Click aquí para consultar el detalle de la ruta..."
+                                    process="@this" update="frmRutaDet"
+                                    >        
+                                    <f:param name="idRuta" value="#{ruta.id}"/>
+                                    <span class="fa fa-road"></span>
+                                </p:commandLink>                                                                                                        
+
+
+                                <c:forEach items="#{ruta.viajes}" var="viaje">
+
+                                    <div style="width: 100%;">
+                                        #{viaje.codigo}                                                         
+                                        <strong>#{viaje.responsable}/ #{viaje.vehiculoPlaca}</strong>
+                                        #{viaje.fechaProgramadaTxt} #{viaje.horaProgramadaTxt}
+                                        <span class="fa fa-users fa-1g"></span>                                                            
+                                        (#{viaje.numViajeros}/#{viaje.vehiculoVO.capacidadPasajeros})                                                        
+
+                                        <p:commandLink                                                                                                                     
+                                            style="margin-top: 4px; margin-bottom: 4px;align-content: center;"
+                                            actionListener="#{sesion.goGRViajeDet(viaje.id, 0)}"
+                                            styleClass="btn btn-default" 
+                                            process="@this" update="frmPnlViajeDet"
+                                            title="Click aquí para ver detalle del viaje..." >               
+                                            <span class="fa fa-car"></span>
+                                        </p:commandLink>                                                                                                        
+                                    </div>
+
+                                </c:forEach>
+
+                            </p:tab>
+
+
+
+
+
+                        </c:forEach>   
+
+                    </p:accordionPanel>
+                </div>
+
+            </div>
         </div>
+
     </div>
-
-        </div>
     <script>
         $(document).ready(function () {
 //            $("#frmViajesPen\\:tipoViaje").tabs({active: 0});
