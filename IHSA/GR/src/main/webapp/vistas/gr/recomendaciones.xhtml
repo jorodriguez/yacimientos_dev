@@ -11,13 +11,32 @@
         <ui:composition template="/vistas/template/template.xhtml">
             <ui:define name="content"> 
                 <style>
-                    .hero-widget { text-align: center; padding-top: 20px; padding-bottom: 20px; }
-                    .hero-widget .icon { display: block; font-size: 96px; line-height: 96px; margin-bottom: 10px; text-align: center; }
-                    .hero-widget var { display: block; height: 64px; font-size: 64px; line-height: 64px; font-style: normal; }
-                    .hero-widget label { font-size: 13px; }
-                    .hero-widget .options { margin-top: 10px; }
+                    .hero-widget {
+                        text-align: center;
+                        padding-top: 20px;
+                        padding-bottom: 20px;
+                    }
+                    .hero-widget .icon {
+                        display: block;
+                        font-size: 96px;
+                        line-height: 96px;
+                        margin-bottom: 10px;
+                        text-align: center;
+                    }
+                    .hero-widget var {
+                        display: block;
+                        height: 64px;
+                        font-size: 64px;
+                        line-height: 64px;
+                        font-style: normal;
+                    }
+                    .hero-widget label {
+                        font-size: 13px;
+                    }
+                    .hero-widget .options {
+                        margin-top: 10px;
+                    }
                 </style>
-                <ui:include src="/vistas/gr/popUpGR.xhtml"/>
                 <div class="container">
                     <div class="row">
                         <div class="panel panel-primary">
@@ -28,19 +47,19 @@
                                         <div class="col-lg-2 col-sm-3 col-xs-12" title="">
                                             <div class="hero-widget well well-sm">
                                                 <div class="icon">
-                                                    <!-- span class="glyphicon glyphicon-link" style="color: #303030; "></span -->
+                                                    <!-- span class="fa fa-link" style="color: #303030; "></span -->
                                                 </div>
                                                 <div class="text" style="height: 70px;">                                            
                                                     <label class="text-muted">#{recom.titulo}</label>
                                                 </div>
                                                 <div class="options">
-                                                    <h:commandLink
+                                                    <p:commandLink
                                                         styleClass="btn btn-primary btn-lg"
                                                         title="Abrir imagen" 
-                                                        action="#{popupGrBean.goPopupImagen(event)}">                                                
-                                                        <i class="glyphicon glyphicon-link"></i> Abrir
-                                                        <f:param name="idArchivo" value="#{recom.id}"/>
-                                                    </h:commandLink>                                              
+                                                        action="#{popupGrBean.goPopupImagen(recom.id)}"
+                                                        process="@this" update="frmViewImg">                                                
+                                                        <i class="fa fa-link"></i> Abrir
+                                                    </p:commandLink>                                              
                                                 </div>
                                             </div>
                                         </div>                                
@@ -51,10 +70,41 @@
                     </div>
                 </div>                
                 <script>
-                    $(document).ready(function () {                        
+                    $(document).ready(function () {
                         startDate();
                     });
                 </script>
+                <div class="modal fade" id="dialogoVerImagen" data-backdrop="static" data-keyboard="false">    
+                    <div class="modal-dialog modal-xl">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <a class="close" href="#" onclick="$(dialogoVerImagen).modal('hide');">x</a>
+                                <h4 class="modal-title" style="text-align: left;">#{popupGrBean.imagen.titulo}</h4>
+                            </div>
+                            <h:form id="frmViewImg">
+                                <div class="modal-body">
+                                    <div class="row">
+                                        <center>
+                                            <div class="table table-responsive">
+                                                <img 
+                                                    src="#{popupGrBean.urlImagen}"
+                                                    alt=""/>
+                                            </div>
+                                        </center>
+                                    </div>                        
+                                </div>
+                                <div class="modal-footer">                        
+                                    <p:commandButton id="buttonCancelarV"
+                                                     value="Cerrar"
+                                                     styleClass="btn btn-info"
+                                                     onclick="$(dialogoVerImagen).modal('hide');"
+                                                     title="Cerrar ventana..." 
+                                                     immediate="true"/>
+                                </div>
+                            </h:form>
+                        </div>
+                    </div>        
+                </div>
             </ui:define>            
         </ui:composition>
     </h:body>

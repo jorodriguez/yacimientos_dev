@@ -21,15 +21,14 @@ import sia.servicios.gr.impl.GrMapaImpl;
 import sia.servicios.sgl.impl.SgInvitadoImpl;
 import sia.util.UtilLog4j;
 
-
 /**
  *
  * @author ihsa
  */
 @Named(value = "soporteListas")
 @ViewScoped
-public class SoporteListas implements Serializable{
-        
+public class SoporteListas implements Serializable {
+
     @Inject
     private ApCampoUsuarioRhPuestoImpl apCampoUsuarioRhPuestoImpl;
     @Inject
@@ -37,29 +36,28 @@ public class SoporteListas implements Serializable{
     @Inject
     private GrMapaImpl grMapaImpl;
 
-    private List<CampoUsuarioPuestoVo> listaUsuario = null;    
-    private List<InvitadoVO> listaInvitado = null; 
+    private List<CampoUsuarioPuestoVo> listaUsuario = null;
+    private List<InvitadoVO> listaInvitado = null;
     private List<MapaVO> zonas = null;
 
-    public List<SelectItem> regresaUsuarioActivo(String cadenaDigitada, int idApCampo) {
-        List<SelectItem> list = new ArrayList<SelectItem>();
+    public List<String> regresaUsuarioActivo(String cadenaDigitada, int idApCampo) {
+        List<String> list = new ArrayList<>();
         for (CampoUsuarioPuestoVo p : this.getUsuarioActivo(idApCampo)) {
             if (p.getUsuario() != null) {
                 String cadenaPersona = p.getUsuario().toLowerCase();
                 cadenaDigitada = cadenaDigitada.toLowerCase();
                 if (cadenaPersona.contains(cadenaDigitada)) {
-                    SelectItem item = new SelectItem(p, p.getUsuario());
-                    list.add(item);
+                    list.add(p.getUsuario());
                 }
             }
         }
         return list;
     }
-    
+
     public List<SelectItem> regresaInvitadosActivo(String cadenaDigitada) {
         List<SelectItem> list = new ArrayList<SelectItem>();
         for (InvitadoVO p : this.getInvitadosActivo()) {
-            if (p.getNombre()!= null) {
+            if (p.getNombre() != null) {
                 String cadenaPersona = p.getNombre().toLowerCase();
                 cadenaDigitada = cadenaDigitada.toLowerCase();
                 if (cadenaPersona.contains(cadenaDigitada)) {
@@ -70,16 +68,15 @@ public class SoporteListas implements Serializable{
         }
         return list;
     }
-    
-    public List<SelectItem> regresaZonas(String cadenaDigitada) {
-        List<SelectItem> list = new ArrayList<SelectItem>();
+
+    public List<String> regresaZonas(String cadenaDigitada) {
+        List<String> list = new ArrayList<>();
         for (MapaVO p : this.getZonasbyCodigo(null)) {
-            if (p.getNombre()!= null && p.getCodigo()!= null) {
+            if (p.getNombre() != null && p.getCodigo() != null) {
                 String cadenaZona = new StringBuilder().append(p.getNombre()).append(" - ").append(p.getCodigo()).toString().toUpperCase();
                 cadenaDigitada = cadenaDigitada.toUpperCase();
                 if (cadenaZona.contains(cadenaDigitada)) {
-                    SelectItem item = new SelectItem(p.getCodigo(), cadenaZona);
-                    list.add(item);
+                    list.add(p.getNombre()+ " // " + p.getCodigo() );
                 }
             }
         }
@@ -88,24 +85,23 @@ public class SoporteListas implements Serializable{
 
     public List<CampoUsuarioPuestoVo> getUsuarioActivo(int idApCampo) {
         UsuarioVO vo = new UsuarioVO();
-        setListaUsuario(apCampoUsuarioRhPuestoImpl.traerUsurioPorCampo(idApCampo,vo));
+        setListaUsuario(apCampoUsuarioRhPuestoImpl.traerUsurioPorCampo(idApCampo, vo));
         UtilLog4j.log.info(this, "Usuario: " + getListaUsuario().size() + " completa");
         return getListaUsuario();
     }
-    
-    public List<InvitadoVO> getInvitadosActivo() {        
+
+    public List<InvitadoVO> getInvitadosActivo() {
         setListaInvitado(sgInvitadoImpl.buscarInvitado());
         UtilLog4j.log.info(this, "Invitados: " + getListaInvitado().size() + " completa");
         return getListaInvitado();
     }
-    
-    public List<MapaVO> getZonasbyCodigo(String codigo) {        
+
+    public List<MapaVO> getZonasbyCodigo(String codigo) {
         setZonas(grMapaImpl.getMapas(codigo));
         UtilLog4j.log.info(this, "zonasRuta: " + getZonas().size() + " completa");
         return getZonas();
     }
 
-    
     /**
      * @return the listaUsuario
      */
@@ -148,4 +144,3 @@ public class SoporteListas implements Serializable{
         this.zonas = zonas;
     }
 }
-

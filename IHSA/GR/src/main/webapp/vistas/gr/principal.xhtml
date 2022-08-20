@@ -20,11 +20,11 @@
                         cursor: pointer;
                     }
 
-                    .panel-heading span {
+                    .card-header span {
                         margin-top: -20px;
                         font-size: 15px;
                     }
-                    .panel-body {
+                    .card-body {
                         padding: 5px;
                     }
 
@@ -34,17 +34,16 @@
                         jQuery('#frmViajesPen\\:' + btn).click();
                     }
                 </script>
-                <div class="row" style="margin-top: 5px;">
-                    <ui:fragment rendered="#{not empty sesion.usuarioVO and not grBean.admin and not grBean.grvia}">
-                        <div class="col-lg-11">                                                
+                <div class="container">
+                    <ui:fragment rendered="#{not grBean.admin and not grBean.grvia}">
+                        <div class="col-12">                                                
                             <div class="jumbotron" style="background-color: #e7e7e7; margin-top: 5px;">
                                 <div class="container">                
                                     <div class="col-lg-12 col-xs-12" style="text-align: center;">                              
                                         <h1 style="color: #222;">GESTIÓN DE RIESGOS</h1>
-
                                     </div>
                                     <h:form id="frmPrincGR">
-                                        <ui:fragment rendered="#{not empty sesion.usuarioVO}">
+                                        <ui:fragment >
                                             <div class="visible-lg visible-md col-lg-12 col-md-3-9" style="text-align: center;">
                                                 <h4 style="color: #222;">Centro de operaciones (24 Hrs/7Días)</h4>
                                                 <h4 style="color: #222;">Contacto: (81) 1946-9999</h4>
@@ -60,14 +59,13 @@
                                                     <ui:fragment rendered="#{alerta.sgSemaforo eq 3}">                                                    
                                                         <ui:fragment rendered="#{alerta.visible}">
                                                             <div class="visible-lg visible-md col-lg-12 col-md-3-9" style="text-align: center; margin-top: 15px;">
-                                                                <h:commandLink styleClass="col-lg-12 col-md-3-9" action="#{grBean.goMapa()}"><h3><span class="label label-danger">Semáforo rojo - #{alerta.grMapaVO.nombre}</span></h3>
-                                                                    <f:param name="tipoArchivo" value="#{alerta.grMapaVO.id}"/>
-                                                                </h:commandLink>
+                                                                <p:commandLink styleClass="col-lg-12 col-md-3-9" 
+                                                                               action="#{grBean.goMapa(alerta.grMapaVO.id)}"><h3><span class="label label-danger">Semáforo rojo - #{alerta.grMapaVO.nombre}</span></h3>
+                                                                </p:commandLink>
                                                             </div>
                                                             <div class="visible-xs row" style="text-align: center; margin-top: 15px;">
-                                                                <h:commandLink styleClass="row" action="#{popupGrBean.goPopupImagenMapa(event)}"><span class="label label-danger" style="font-size: 15px;">Semáforo rojo - #{alerta.grMapaVO.nombre}</span>
-                                                                    <f:param name="tipoArchivo" value="#{alerta.grMapaVO.id}"/>
-                                                                </h:commandLink>
+                                                                <p:commandLink styleClass="row" action="#{popupGrBean.goPopupImagenMapa(alerta.grMapaVO.id)}"><span class="label label-danger" style="font-size: 15px;">Semáforo rojo - #{alerta.grMapaVO.nombre}</span>
+                                                                </p:commandLink>
                                                             </div>                                    
                                                         </ui:fragment>
                                                         <ui:fragment rendered="#{not alerta.visible}">
@@ -82,14 +80,12 @@
                                                     <ui:fragment rendered="#{alerta.sgSemaforo eq 4}">  
                                                         <ui:fragment rendered="#{alerta.visible}">
                                                             <div class="visible-lg visible-md col-lg-12 col-md-3-9" style="text-align: center; margin-top: 15px;">
-                                                                <h:commandLink styleClass="col-lg-12 col-md-3-9" action="#{grBean.goMapa()}"><h3><span class="label label-danger">Semáforo negro - #{alerta.grMapaVO.nombre}</span></h3>
-                                                                    <f:param name="tipoArchivo" value="#{alerta.grMapaVO.id}"/>
-                                                                </h:commandLink>
+                                                                <p:commandLink styleClass="col-lg-12 col-md-3-9" action="#{grBean.goMapa(alerta.grMapaVO.id)}"><h3><span class="label label-danger">Semáforo negro - #{alerta.grMapaVO.nombre}</span></h3>
+                                                                </p:commandLink>
                                                             </div>
                                                             <div class="visible-xs  row" style="text-align: center; margin-top: 15px;">
-                                                                <h:commandLink styleClass="row" action="#{popupGrBean.goPopupImagenMapa(event)}"><span class="label label-danger" style="font-size: 15px;">Semáforo negro -  #{alerta.grMapaVO.nombre}</span>
-                                                                    <f:param name="tipoArchivo" value="#{alerta.grMapaVO.id}"/>
-                                                                </h:commandLink>
+                                                                <p:commandLink styleClass="row" action="#{popupGrBean.goPopupImagenMapa(alerta.grMapaVO.id)}"><span class="label label-danger" style="font-size: 15px;">Semáforo negro -  #{alerta.grMapaVO.nombre}</span>
+                                                                </p:commandLink>
                                                             </div>                                    
                                                         </ui:fragment>
                                                         <ui:fragment rendered="#{not alerta.visible}">
@@ -110,115 +106,50 @@
                             </div>
                         </div>                 
                     </ui:fragment>
-                    <ui:fragment rendered="#{not empty sesion.usuarioVO and grBean.admin or grBean.grvia}">
-                        <h:form id="frmViajesPen" styleClass="col-12">
-                            <div class="container col-12" >                                       
-                                <div class="row">   
-                                    <div class="col-12">   
-                                        <p:tabView>
-                                            <p:tab title="Viajes Pendientes">
-                                                <p class="p-m-0" onclick="ejecutarFiltrosViajes('btnViajesPen');">
-                                                    <div id="viajesPen" class="textoIzquierda">
-                                                        <p:commandLink id="btnViajesPen" value="" 
-                                                                       actionListener="#{sesion.setRutasViajesPen(actionEvent)}" style="display: none;">
-                                                            <f:ajax event="click" render="viajesPenID"/>
-                                                        </p:commandLink>
-                                                        <div class="row">
-                                                            <div class="col-12">
-                                                                <ui:include src="/vistas/gr/rutasViajesPendientes.xhtml"/> 
-                                                            </div>
-                                                        </div>                                        
-                                                    </div>
-                                                </p>
-                                            </p:tab>                   
-                                            <p:tab title="Viajes en Proceso">
-                                                <p class="p-m-0" onclick="ejecutarFiltrosViajes('btnViajesPro');">
-                                                    <div id="viajesPro" class="textoIzquierda">
-                                                        <p:commandLink id="btnViajesPro" value="" 
-                                                                       actionListener="#{sesion.setRutasViajesPro(actionEvent)}"                                                             
-                                                                       style="display: none;">
-                                                            <f:ajax event="click" render="viajesProID"/>
-                                                        </p:commandLink>
-                                                        <div class="row">
-                                                            <div class="col-12">
-                                                                <ui:include src="/vistas/gr/rutasViajesEnProceso.xhtml"/>
-                                                            </div>
-                                                        </div>                                 
-                                                    </div>
-                                                </p>
-                                            </p:tab>                   
-                                            <p:tab title="Viajes por autorizar">
-                                                <p class="p-m-0" onclick="ejecutarFiltrosViajes('btnViajesPau');">
-                                                    <div id="viajesPau" class="textoIzquierda">
-                                                        <p:commandLink id="btnViajesPau" value="" actionListener="#{sesion.setRutasViajesPau(actionEvent)}" 
-                                                                       style="display: none;">
-                                                            <f:ajax event="click" render="viajesPauID"/>
-                                                        </p:commandLink>
-                                                        <div class="row">
-                                                            <div class="col-12">
-                                                                <ui:include src="/vistas/gr/rutasViajesEnPausa.xhtml"/>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </p>
-                                            </p:tab>                   
-                                            <p:tab title="Viajes por interceptar">
-                                                <p class="p-m-0" onclick="ejecutarFiltrosViajes('btnViajesInt');">
-                                                    <div id="viajesInt" class="textoIzquierda">
-                                                        <p:commandLink id="btnViajesInt" value="" 
-                                                                       actionListener="#{sesion.setRutasViajesInt(actionEvent)}" style="display: none;">
-                                                            <f:ajax event="click" render="viajesIntID"/>
-                                                        </p:commandLink>
-                                                        <div class="row">
-                                                            <div class="col-12">
-                                                                <ui:include src="/vistas/gr/rutasViajesInterceptados.xhtml"/>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </p>
-                                            </p:tab>                   
-                                        </p:tabView>               
-                                    </div>
-                                </div>                                
+                    <ui:fragment rendered="#{grBean.admin or grBean.grvia}">
+                        <h:form id="frmViajesPen">
+                            <div class="container" >                                       
+                                <p:tabView id="tbViajes" dynamic="true">
+                                    <p:ajax event="tabChange" listener="#{sesion.onTabChange}" process="@this" />
+                                    <p:tab title="Viajes Pendientes">
+                                        <div id="viajesPen" >
+                                            <div class="container">
+                                                <ui:include src="../gr/rutasViajesPendientes.xhtml"/> 
+                                            </div>                          
+                                        </div>
+                                    </p:tab>                   
+                                    <p:tab title="Viajes en Proceso">
+                                        <div id="viajesPro" >
+                                            <div class="container">
+                                                <ui:include src="../gr/rutasViajesEnProceso.xhtml"/>
+                                            </div>                                 
+                                        </div>
+                                    </p:tab>                   
+                                    <p:tab title="Viajes por autorizar">
+                                        <div id="viajesPau" >
+                                            <div class="container">
+                                                <ui:include src="../gr/rutasViajesEnPausa.xhtml"/>
+                                            </div>
+                                        </div>
+                                    </p:tab>                   
+                                    <p:tab title="Viajes por interceptar">
+                                        <div id="viajesInt" >
+                                            <div class="container">
+                                                <p:panel id="pnlViajesInter">
+                                                    <ui:include src="../gr/rutasViajesInterceptados.xhtml"/>
+                                                </p:panel>
+                                            </div>
+                                        </div>
+                                    </p:tab>                   
+                                </p:tabView>               
                             </div>
                         </h:form>
-
-
-                        <ui:include src="/vistas/gr/grPopUpCrearViaje.xhtml"/>                                
-                    </ui:fragment>
-                    <ui:fragment rendered="#{empty sesion.usuarioVO}">
-                        <div class="row">      
-                            <div class="col-12">                    
-                                <h:form id="logouGR">
-                                    <h:panelGrid style="text-align: center; width: 100%; margin-top: 12%; ">
-                                        <h:messages errorClass="mensaje" infoClass="mensaje"/>
-                                        <h:outputText value="Su sesión ha caducado, para utilizar el sistema tiene que iniciar sesión de nuevo…"/>
-                                        <p:commandLink value="Clic aquí para iniciar sesión." actionListener="#{sesion.salir(actionEvent)}" 
-                                                       styleClass="link"/>                                
-                                    </h:panelGrid>
-                                </h:form>
-
-                            </div>
-                            <div style="margin-top: 50px;" class="col-12">
-                                <h:message  for="" style="display: block;" infoClass="alert alert-success" warnClass="alert alert-warning"
-                                            errorClass="alert alert-danger" fatalClass="alert alert-danger"  />
-                            </div>                        
-                        </div>               
+                        <ui:include src="./grPopUpCrearViaje.xhtml"/>     
+                        <ui:include src="../gr/popupComentario.xhtml"/>                               
                     </ui:fragment>
 
                 </div>    
-                <script>
-                    $(document).ready(function () {
-                        //$("#tipoViaje").tabs({active: 0});                        
-                        //startDate();
-                    });
-                </script>
             </ui:define> 
-            <ui:fragment rendered="#{empty sesion.usuarioVO}">
-                <ui:define name="bottom">
-                    <div class="row"></div>
-                </ui:define>
-            </ui:fragment>
         </ui:composition>        
     </h:body>
 </html>

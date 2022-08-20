@@ -20,7 +20,7 @@
                         cursor: pointer;   
                     }
 
-                    .panel-heading span {
+                    .card-header span {
                         margin-top: -20px;
                         font-size: 15px;
                     }                    
@@ -28,32 +28,32 @@
                 <div class="container">
                     <div class="row">
                         <h:form id="frmAutVia">
-                            <div class="panel panel-primary">
-                                <div class="panel-heading">
-                                    <h3 class="panel-title">Viajes en espera de autorización</h3>
-                                    <span class="pull-right clickable"><i class="glyphicon glyphicon-chevron-up"  id="ivpaAV"></i></span>
+                            <div class="card card-primary">
+                                <div class="card-header">
+                                    <h3 class="card-title">Viajes en espera de autorización</h3>
+                                    <span class="pull-right clickable"><i class="fa fa-chevron-up"  id="ivpaAV"></i></span>
                                     <input type="hidden" class="hiddenID" value="vpaAV"></input>
                                 </div>
-                                <div class="panel-body"  id="pbvpaAV">
+                                <div class="card-body"  id="pbvpaAV">
                                     <c:forEach items="#{sesion.rutasPausaGerente}" var="ruta">
                                         <div class="col-lg-12">
-                                            <div class="panel panel-primary">
-                                                <div class="panel-heading">
-                                                    <h3 class="panel-title">Ruta: #{ruta.nombre}  (Tiempo:#{ruta.tiempoViaje} hrs.)  (Viajes:#{ruta.viajes.size()})</h3>
-                                                    <span class="pull-right clickable"><i class="glyphicon glyphicon-chevron-up"  id="ivpaRAV#{ruta.id}"></i></span>
+                                            <div class="card card-primary">
+                                                <div class="card-header">
+                                                    <h3 class="card-title">Ruta: #{ruta.nombre}  (Tiempo:#{ruta.tiempoViaje} hrs.)  (Viajes:#{ruta.viajes.size()})</h3>
+                                                    <span class="pull-right clickable"><i class="fa fa-chevron-up"  id="ivpaRAV#{ruta.id}"></i></span>
                                                     <input type="hidden" class="hiddenID" value="vpaR#{ruta.id}"></input>
                                                 </div>
-                                                <div class="panel-body" id="pbvpaRAV#{ruta.id}">                                                                    
+                                                <div class="card-body" id="pbvpaRAV#{ruta.id}">                                                                    
                                                     <c:forEach items="#{ruta.viajes}" var="viaje">
-                                                        <div class="panel panel-default">
-                                                            <div class="panel-heading">
-                                                                <h3 class="panel-title">                                                                                                                                                                        
+                                                        <div class="card card-default">
+                                                            <div class="card-header">
+                                                                <h3 class="card-title">                                                                                                                                                                        
                                                                     <strong>#{viaje.codigo} (#{viaje.responsable} / #{viaje.responsableTel}) (#{viaje.vehiculo}/#{viaje.vehiculoPlaca}) (Salida: #{viaje.horaSalidaTxt})</strong>
                                                                 </h3>
-                                                                <span class="pull-right clickable"><i class="glyphicon glyphicon-chevron-up"  id="ivpaRVAV#{viaje.id}"></i></span>
+                                                                <span class="pull-right clickable"><i class="fa fa-chevron-up"  id="ivpaRVAV#{viaje.id}"></i></span>
                                                                 <input type="hidden" class="hiddenID" value="vpaRV#{viaje.id}"></input>
                                                             </div>
-                                                            <div class="panel-body" id="pbvpaRVAV#{viaje.id}">                                                                 
+                                                            <div class="card-body" id="pbvpaRVAV#{viaje.id}">                                                                 
                                                                 <div class="col-lg-12" style="margin-bottom: 15px;">
                                                                     <p:dataTable rows="10" 
                                                                                    value="#{viaje.listaViajeros}" var="viajero" styleClass="table table-striped"
@@ -85,27 +85,27 @@
                                                                     </p:dataTable>                                                                                                                                  
                                                                 </div>
 
-                                                                <div class="col-lg-12 panel panel-info panel-heading" style="margin-bottom: 15px;">
-                                                                    <div class="panel-heading">
-                                                                        <h3 class="panel-title">                                                                                                                                                                        
+                                                                <div class="col-lg-12 card card-info card-header" style="margin-bottom: 15px;">
+                                                                    <div class="card-header">
+                                                                        <h3 class="card-title">                                                                                                                                                                        
                                                                             <strong>Comentarios</strong>
                                                                         </h3>
-                                                                        <span class="pull-right clickable"><i class="glyphicon glyphicon-chevron-up"  id="ivpaRVC#{viaje.id}"></i></span>
+                                                                        <span class="pull-right clickable"><i class="fa fa-chevron-up"  id="ivpaRVC#{viaje.id}"></i></span>
                                                                         <input type="hidden" class="hiddenID" value="vpaRVC#{viaje.id}"></input>
                                                                     </div>
-                                                                    <div class="panel-body" id="pbvpaRVCAV#{viaje.id}"> 
+                                                                    <div class="card-body" id="pbvpaRVCAV#{viaje.id}"> 
                                                                         <div class="col-lg-12" style="margin-bottom: 15px;">                                                                                                        
                                                                             <div class="col-lg-9"></div>                                                                                    
-                                                                            <h:commandLink 
+                                                                            <p:commandLink 
                                                                                 value="Agregar Comentario"
                                                                                 styleClass="col-lg-3 btn btn-info btn-sm"                                                                                                             
-                                                                                actionListener="#{sesion.goAddComentario(actionEvent)}"
-                                                                                title="Click aquí para agregar un comentario..." >                                                                                        
-                                                                                <f:param name="idNoticia" value="#{viaje.idNoticia}"/>
-                                                                            </h:commandLink>
+                                                                                action="#{sesion.goAddComentario(viaje.id)}"
+                                                                                title="Click aquí para agregar un comentario..." 
+                                                                                process="@this" update="frmPnlAddCom">
+                                                                            </p:commandLink>
                                                                         </div>
                                                                         <c:forEach items="#{viaje.noticia.listaComentario}" var="comentario">
-                                                                            <div class="col-lg-12 input-group panel panel-default" style="border: white; border-style: none; border-width: 1px; margin-bottom: 0px;">
+                                                                            <div class="col-lg-12 input-group card card-default" style="border: white; border-style: none; border-width: 1px; margin-bottom: 0px;">
                                                                                 <div class="form-group col-lg-12 col-xs-12" style="border: white; border-bottom: #eee; border-top: white;  border-style: solid; border-width: 2px;">                                                            
                                                                                     <div class="row" style="margin-top: 5px;">
                                                                                         <h:outputLabel styleClass="control-label" value="#{comentario.usuarioNombre}"/>
