@@ -1,0 +1,113 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      
+      xmlns:c="http://java.sun.com/jsp/jstl/core">
+    <body>
+        <ui:composition template="./../../../WEB-INF/facelets/templates/templateServiciosGenerales.xhtml">
+            <ui:define name="contenido">
+                <h:panelGroup  rendered="#{empty sesion.usuario}" styleClass="altura">
+                    <ui:include src="./../../../login.xhtml"/>
+                </h:panelGroup> 
+                <h:form >
+
+                    <p class="tituloEncabezado">Catálogo de Operaciones</p>
+                    <h:panelGrid>
+                        <p:commandLink title="Crear Operación" actionListener="#{catalogoBean.agregarOperacion(event)}"
+                                         styleClass="btn btn-default">
+                            <h:graphicImage url="#{msgs['sgl.ruta.imagen']}button_create.png" 
+                                              styleClass="imagenSinBorde"/>
+                        </p:commandLink>
+                        <p:commandLink value="Crear Operación" styleClass="linkPequenio" actionListener="#{catalogoBean.agregarOperacion(event)}" title="Crear Operación"/>
+                    </h:panelGrid>
+                    <p:dataTable showGridlines="true" size="small"  id="dtTipo" value="#{catalogoBean.traerOperacion}" var="op" >
+                        <!--<f:facet name="header"><h:outputText value="Tipos Generales"/></f:facet>-->
+                        <p:column>
+                            <f:facet name="header"><h:outputText value="Nombre"/></f:facet>
+                            <h:outputText value="#{op.nombre}"/>
+                        </p:column>
+                        <p:column>
+                            <p:commandLink value="Modificar" styleClass="link" actionListener="#{catalogoBean.seleccionarOperacion(event)}"/>
+                        </p:column>
+                        <p:column>
+                            <p:commandLink value="Eliminar" styleClass="link" actionListener="#{catalogoBean.eliminarOperacion(event)}" 
+                                           />
+                            <p:confirm id="pnlConTipo" header="Confirmar" message="La operación va a eliminar la operación ¿está seguro?" />
+                        </p:column>
+                    </p:dataTable>
+                    <br/>
+                </h:form>
+
+                <!--Crear Operación-->
+                <h:form >
+                    <p:dialog   style="background: #FFFFFF;" visible="#{catalogoBean.popUp and catalogoBean.siOperacion != null}"
+                                    draggable="false" modal="true">
+                        <f:facet name="header">
+                            <h:panelGroup > 
+                                <h:outputText  value="Crear Operación"
+                                                 style="float: left; padding: 4px;text-align: center; vertical-align: middle;font: 11px;color: #484848; font-weight: bold;"/>
+                                <p:commandButton title="Cerrar ventana" type="button" alt="Cerrar" immediate="false" actionListener="#{catalogoBean.cerrarPopAgregarOperacion(event)}"
+                                                   
+                                                   style="vertical-align: middle;margin: 4px;display: inline; float: right;"/>
+                            </h:panelGroup>
+                        </f:facet>
+                        <f:facet name="body">
+                            <h:panelGroup>
+                                <h:messages infoClass="textoMensajeError"/>
+                                <h:panelGrid columns="2">
+                                    <h:outputText value="Operación: "/>
+                                    <p:inputTextarea cols="45" value="#{catalogoBean.siOperacion.nombre}"/>
+
+                                </h:panelGrid>
+                                <center>
+                                    <h:panelGrid columns="2">
+                                        <p:commandLink value="Guardar" styleClass="btn btn-info" actionListener="#{catalogoBean.guardarOperacion(event)}"/>
+                                        <p:commandLink value="Cancelar" styleClass="btn btn-default" actionListener="#{catalogoBean.cerrarPopAgregarOperacion(event)}"/>
+                                    </h:panelGrid>
+                                </center>                                
+                            </h:panelGroup>
+                        </f:facet>
+                    </<p:dialog >
+                </h:form>
+
+                <!--Modificar Operación-->
+                <h:form >
+                    <p:dialog   style="background: #FFFFFF;" visible="#{catalogoBean.modificarPopUp and catalogoBean.siOperacion != null}"
+                                    draggable="false" modal="true">
+                        <f:facet name="header">
+                            <h:panelGroup > 
+                                <h:outputText  value="Modificar Operación"
+                                                 style="float: left; padding: 4px;text-align: center; vertical-align: middle;font: 11px;color: #484848; font-weight: bold;"/>
+                                <p:commandButton title="Cerrar ventana" type="button" alt="Cerrar" immediate="false" actionListener="#{catalogoBean.cerrarPopModificarOperacion(event)}"
+                                                   
+                                                   style="vertical-align: middle;margin: 4px;display: inline; float: right;"/>
+                            </h:panelGroup>
+                        </f:facet>
+                        <f:facet name="body">
+                            <h:panelGroup>
+                                <h:messages infoClass="textoMensajeError"/>
+                                <h:panelGrid columns="2">
+                                    <h:outputText value="Motivo"/>
+                                    <p:inputTextarea cols="45" value="#{catalogoBean.siOperacion.nombre}"/>
+
+                                </h:panelGrid>
+                                <center>
+                                    <h:panelGrid columns="2">
+                                        <p:commandLink value="Guardar" styleClass="btn btn-info" actionListener="#{catalogoBean.completarModificacionOperacion(event)}"/>
+                                        <p:commandLink value="Cancelar" styleClass="btn btn-default" actionListener="#{catalogoBean.cerrarPopModificarOperacion(event)}"/>
+                                    </h:panelGrid>
+                                </center>                                  
+                            </h:panelGroup>
+                        </f:facet>
+                    </<p:dialog >
+                </h:form>
+            </ui:define>
+
+        </ui:composition>
+
+    </body>
+</html>

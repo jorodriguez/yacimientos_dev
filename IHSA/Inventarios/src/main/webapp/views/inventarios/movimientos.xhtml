@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/templates/crud.xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:define name="tituloPagina">
+        #{msg['sia.inventarios.movimientos.modulo']}
+    </ui:define>
+    <ui:define name="titulo">
+        #{msg['sia.inventarios.movimientos.titulo']}
+        <a href="#{request.contextPath}/resources/videos/ayuda/historial-movimientos.mp4" class="link-ayuda" target="_blank">Ayuda</a>
+    </ui:define>
+
+    <ui:define name="contenido">
+        <h:form>
+            <h:link outcome="movimiento" styleClass="hbutton-cr" value="#{msg['sia.inventarios.movimientos.registrar']}" />            
+            <h:panelGrid id="panelFiltro" styleClass="border">
+                <h:panelGrid columns="6" >
+                    <h:outputText value="#{msg['sia.inventarios.movimientos.fechaMovimiento']}:"/>
+                    <h:outputText value="#{msg['sia.inventarios.movimientos.almacenOrigen']}:"/>
+                    <h:outputText value="#{msg['sia.inventarios.movimientos.tipoMovimiento']}:"/>
+                    <h:outputText value="#{msg['sia.inventarios.movimientos.estatus']}:"/>
+                    <h:outputText value="#{msg['sia.inventarios.movimientos.numeroArticulos']}:"/>
+                    <h:outputText value="#{msg['sia.inventarios.movimientos.observaciones']}:"/>
+                    <p:datePicker id="dtFiltroFechaUltimaRevision" value="#{movimientos.filtro.fecha}" pattern="dd/MM/yyyy"
+                                  />                
+                    <h:selectOneMenu id="smFiltroAlmacen" value="#{movimientos.filtro.almacenId}" styleClass="custom-select">
+                        <f:selectItem itemLabel="#{msg['sia.inventarios.comun.seleccione']}" itemValue="#{null}" noSelectionOption="true" />
+                        <f:selectItems value="#{movimientos.almacenes}" var="a" itemLabel="#{a.nombre}" itemValue="#{a.id}"/>
+                    </h:selectOneMenu>                
+                    <h:selectOneMenu id="smFiltroTipoMoviento" value="#{movimientos.filtro.tipoMovimiento}" styleClass="custom-select">
+                        <f:selectItem itemLabel="#{msg['sia.inventarios.comun.seleccione']}" itemValue="#{null}" noSelectionOption="true" />
+                        <f:selectItems value="#{movimiento.tipos}" />
+                    </h:selectOneMenu>
+                    <h:selectOneMenu id="smFiltroEstatus" value="#{movimientos.filtro.status}" styleClass="custom-select">
+                        <f:selectItem itemLabel="#{msg['sia.inventarios.comun.seleccione']}" itemValue="#{null}" noSelectionOption="true" />
+                        <f:selectItems value="#{estatusMovimiento.estatus}"/>
+                    </h:selectOneMenu>
+                    <h:inputText id="txtFiltroNumeroUnidades" value="#{movimientos.filtro.numeroArticulos}" styleClass="ui-inputfield ui-textentry ui-widget ui-state-optional ui-corner-all"/>
+                    <h:inputText id="txtObservaciones" value="#{movimientos.filtro.notas}"  styleClass="ui-inputfield ui-textentry ui-widget ui-state-optional ui-corner-all"/>
+                </h:panelGrid>     
+                <p:commandLink  value="#{msg['sia.inventarios.inventarios.buscar']}" action="#{movimientos.buscar}" styleClass="hbutton-bu">
+                    <p:ajax process="@form" update="frmMovimientos"/>
+                </p:commandLink>    
+            </h:panelGrid>
+
+        </h:form>
+        <h:form id="frmMovimientos">
+            <h:outputText id="mensajeVacio" value="#{msg['sia.inventarios.movimientos.noMovimientos']}" 
+                          styleClass="mensaje" rendered="#{movimientos.filasTotales == 0}"/>
+            <p:dataTable id="tablaDatos" showGridlines="true" size="small"
+                         value="#{movimientos.lista}"
+                         lazy="true" var="m"
+                         paginator="true" 
+                         paginatorPosition="bottom"
+                         rows="#{movimientos.tamanioPagina}">
+                <p:column id="id" headerText="#{msg['sia.inventarios.movimientos.fechaMovimiento']}" sortBy="#{m.fecha}" style="width: 100px">
+                    <h:outputText value="#{m.fecha}">
+                        <f:convertDateTime pattern="dd/MM/yyyy HH:mm"/>
+                    </h:outputText>
+                </p:column>
+                <p:column id="usuario" headerText="#{msg['sia.inventarios.movimientos.usuario']}" sortBy="#{m.generoNombre}" style="width: 150px">
+                    <h:outputText value="#{m.generoNombre}"/>
+                </p:column>
+                <p:column id="codigo" headerText="#{msg['sia.inventarios.movimientos.almacenOrigen']}" sortBy="#{m.almacenNombre}" style="width: 150px">
+                    <h:outputText value="#{m.almacenNombre}"/>
+                </p:column>
+                <p:column id="nombre" headerText="#{msg['sia.inventarios.movimientos.tipoMovimiento']}" sortBy="#{m.tipoMovimiento}" style="width: 100px">
+                    <h:outputText value="#{tipoMovimiento.getNombre(m.tipoMovimiento)}"/>
+                </p:column>
+                <p:column id="descripcion" headerText="#{msg['sia.inventarios.movimientos.observaciones']}" sortBy="#{m.notas}" style="width: 300px">
+                    <h:outputText value="#{m.notas}"/>
+                </p:column>
+                <p:column id="unidad" headerText="#{msg['sia.inventarios.movimientos.numeroArticulos']}" sortBy="#{m.numeroArticulos}" style="width: 70px">
+                    <h:outputText value="#{m.numeroArticulos}"/>
+                </p:column>
+                <p:column id="status" headerText="#{msg['sia.inventarios.movimientos.estatus']}" sortBy="#{m.status}" style="width: 70px">
+                    <h:outputText value="#{estatusMovimiento.getNombreEstatus(m.status)}" style="color: #{estatusMovimiento.getEstilo(m.status)}"/>
+                </p:column>
+                <p:column styleClass="icon-column" style="width: 200px">
+                    <h:link styleClass="link" value="#{msg['sia.inventarios.comun.editar']}"
+                            rendered="#{movimientos.puedeEditar(m)}"  outcome="movimiento" includeViewParams="true">
+                        <f:param name="transaccionId" value="#{m.id}"/>
+                    </h:link>
+                    <p:commandLink styleClass="link" value="#{msg['sia.inventarios.comun.eliminar']}"
+                                   rendered="#{movimientos.puedeEliminar(m)}"  action="#{movimientos.eliminarElemento(m.id)}" 
+                                   style="display: none"  process="@this" update="@form"/>
+                    <h:link styleClass="link" value="#{msg['sia.inventarios.movimientos.listArticulos']}"
+                            outcome="movimiento" rendered="#{movimientos.puedeListarArticulos(m)}">
+                        <f:param name="transaccionId" value="#{m.id}"/>
+                        <f:param name="lista" value="true"/>
+                    </h:link>
+
+                    <p:commandLink styleClass="link" value="#{msg['sia.inventarios.movimientos.procesar']}"                                    
+                                   rendered="#{movimientos.puedeProcesar(m)}" 
+                                   action="#{movimientos.procesar(m.id)}" process="@this" update="@form">
+                    </p:commandLink>
+                    <p:commandLink styleClass="link" value="#{msg['sia.inventarios.movimientos.confirmar']}" 
+                                   rendered="#{movimientos.puedeConfirmar(m)}" 
+                                   action="#{movimientos.confirmar(m.id)}" process="@this" update="@form">
+                    </p:commandLink>
+                    <p:commandLink styleClass="link" value="#{msg['sia.inventarios.movimientos.rechazar']}"
+                                   rendered="#{movimientos.puedeRechazar(m)}" 
+                                   onclick="mostrarConfirmar(this, rechazarDialogo);" process="@this" update="rechazarDialogo">
+                    </p:commandLink>
+                    <p:commandButton action="#{movimientos.rechazar(m.id)}" style="display: none">
+                        <f:ajax render="@all"/>
+                    </p:commandButton>
+                </p:column>
+                <p:ajax event="page"/>
+            </p:dataTable>
+
+            <p:confirmDialog id="rechazarDialogo"
+                             message=""
+                             header="#{msg['sia.inventarios.movimientos.rechazar']}"
+                             width="300"
+                             height="160"
+                             closable="false"
+                             widgetVar="rechazarDialogo">
+                <div>
+                    #{msg['sia.inventarios.movimientos.motivoRechazo']}:
+                </div>
+                <h:inputText value="#{movimientos.motivoRechazo}" />
+                <h:panelGrid columns="2" styleClass="div-center" style="margin-top: 10px">
+                    <button type="button"  onclick="c
+                            onfirmar();">#{msg['sia.inventarios.movimientos.rechazar']}</button>
+                    <button type="button" value="No" onclick="rechazarDialogo.hide();">#{msg['sia.inventarios.comun.cancelar']}</button>
+                </h:panelGrid>
+            </p:confirmDialog>
+        </h:form>
+    </ui:define>
+    <ui:param name="confirmarEliminar" value="#{msg['sia.inventarios.movimientos.confirmarEliminar']}"/>
+    <ui:param name="mensajePaginacion" value="#{movimientos.filasTotales == 0 ? '' : movimientos.mensajePaginacion}" />
+</ui:composition>

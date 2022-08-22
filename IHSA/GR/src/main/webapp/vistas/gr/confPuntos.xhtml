@@ -1,0 +1,151 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+    <h:body>
+        <ui:composition template="/vistas/template/template.xhtml">
+            <ui:define name="content">
+                <h:form id="form1">    
+                    <div class="container">
+                        <div class="row" style="margin-bottom: 10px;">
+                            <p:commandLink value="Registrar Punto Seguro"                                                                     
+                                           action="#{popupGrBean.goPopupPunto}"
+                                           title="Click aquí para generar un nuevo punto de seguridad..."                                               
+                                           styleClass="btn btn-primary text-white"
+                                           process="@this" update="frmPuntos"/>                    
+                        </div>
+                        <div class="table table-responsive">
+                            <p:dataTable id="puntoOP" rows="10" 
+                                         value="#{configuracionBean.puntos}" var="currentRow" 
+                                         size="small" showGridlines="true" paginator="true" paginatorPosition="bottom">                              
+                                <p:column>
+                                    <h:outputText value="#{currentRow.nombre}"/>
+                                    <f:facet name="header">
+                                        <h:outputText value="Nombre"/>
+                                    </f:facet>
+                                </p:column>                                                        
+                                <p:column>
+                                    <h:outputText value="#{currentRow.descripcion.length() gt 40 ? currentRow.descripcion.substring(0, 40):currentRow.descripcion}" title="#{currentRow.descripcion}"/>
+                                    <f:facet name="header">
+                                        <h:outputText value="Descripción"/>
+                                    </f:facet>
+                                </p:column>                                                    
+                                <p:column width="8%">
+                                    <h:outputText value="#{currentRow.fechaGenero}">
+                                        <f:convertDateTime dateStyle="default" type="date"/>
+                                    </h:outputText>
+                                    <f:facet name="header">
+                                        <h:outputText value="Fecha"/>
+                                    </f:facet>
+                                </p:column>
+                                <p:column width="8%"> 
+                                    <h:outputText value="#{currentRow.horaGenero}">
+                                        <f:convertDateTime dateStyle="default" type="time"/>
+                                    </h:outputText>
+                                    <f:facet name="header">
+                                        <h:outputText value="Hora"/>
+                                    </f:facet>
+                                </p:column>
+                                <p:column width="4%">                                                        
+                                    <f:facet name="header">
+                                        <h:outputText value="Activa"/>
+                                    </f:facet>
+                                    <h:selectBooleanCheckbox value="#{currentRow.activa}" disabled="true" />
+                                </p:column>
+                                <p:column width="3%">
+                                    <p:commandLink 
+                                        actionListener="#{popupGrBean.goEditPunto(currentRow.id)}"
+                                        title="Click aquí para editar la punto..." 
+                                        process="@this" update="frmPuntos">
+                                        <i class="fa fa-edit"></i>
+                                    </p:commandLink>
+                                </p:column>
+                            </p:dataTable>
+                            <!-- aqui va el paginador -->
+                        </div>                                            
+                    </div>
+
+                </h:form>  
+                <script>
+                    $(document).ready(function () {
+                        startDate();
+                    });
+                </script>
+                <div class="modal fade" id="dialogoPuntos" data-backdrop="static" data-keyboard="false" style="color: black;">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">                    
+                                <h4 class="modal-title">Registrar puntos de seguridad</h4>
+                            </div>   
+
+                            <h:form id="frmPuntos">
+                                <div class="modal-body">
+                                    <div style="margin-top: 10px;" class="col-lg-12 col-xs-12">
+                                        <h:message  for="" style="display: block;" infoClass="alert alert-success" warnClass="alert alert-warning"
+                                                    errorClass="alert alert-danger" fatalClass="alert alert-danger"  />
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-lg-12 col-xs-12">
+
+                                            <div class="form-group col-lg-12 col-xs-12" >
+                                                <strong><h:outputText class="col-lg-2 col-xs-12 control-label" value="Nombre:"/></strong>
+                                                <div class="col-lg-10 col-xs-12">                                            
+                                                    <p:inputText 
+                                                        id="nombrePuntoID"
+                                                        styleClass="form-control"    
+                                                        maxlength="40"
+                                                        value="#{popupGrBean.punto.nombre}"
+                                                        required="true" requiredMessage="Agregue el nombre"
+                                                        />  
+                                                </div>
+                                            </div>
+                                            <div class="form-group col-lg-12 col-xs-12" >
+                                                <strong><h:outputText class="col-lg-2 col-xs-12 control-label" value="Descripción:"/></strong>
+                                                <div class="col-lg-10 col-xs-12">                                            
+                                                    <p:inputText 
+                                                        id="descPuntoID"
+                                                        styleClass="form-control"
+                                                        maxlength="124"
+                                                        value="#{popupGrBean.punto.descripcion}"
+                                                        required="true" requiredMessage="Agregue la descripción"/>  
+                                                </div>
+                                            </div>        
+                                            <ui:fragment rendered="#{popupGrBean.punto.id gt 0}">
+                                                <div class="form-group col-lg-12 col-xs-12" >
+                                                    <strong><h:outputText class="col-lg-2 col-xs-12 control-label" value="Activo:"/></strong>
+                                                    <div class="col-lg-10 col-xs-12">                                            
+                                                        <p:selectBooleanCheckbox                                             
+                                                            value="#{popupGrBean.punto.activa}"
+                                                            />                                           
+                                                    </div>
+                                                </div>                               
+                                            </ui:fragment>
+                                        </div>
+                                    </div>                        
+                                </div>
+                                <div class="modal-footer">
+                                    <p:commandButton id="savePunto"
+                                                     value="Aceptar"
+                                                     styleClass="btn btn-info" 
+                                                     action="#{popupGrBean.guardarPunto}"
+                                                     process="@form" update="form1"/>
+                                    <p:commandLink
+                                        value="Cancelar" immediate="true"
+                                        styleClass="btn btn-default"
+                                        onclick="$(dialogoPuntos).modal('hide');"
+                                        title="Cerrar ventana..." 
+                                        />
+                                </div>
+                            </h:form>
+                        </div>
+                    </div>
+                </div>
+            </ui:define>
+        </ui:composition>
+    </h:body>
+</html>

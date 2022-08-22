@@ -1,0 +1,254 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+
+                xmlns:c="http://java.sun.com/jsp/jstl/core"
+                >
+    <script>
+        $(document).ready(function () {
+            $("#addViajero").click(function (event) {
+                $("#addViajeross").slideDown();
+            });
+            $("#addViajero").click(function (event) {
+                $("#addViajeross").slideUp();
+            });
+        });
+
+        $('#selectorAdd button').click(function () {
+            $('#selectorAdd button').addClass('btn-primary').not(this).removeClass('btn-primary');
+        });
+        $('#selectorAdd button').click(function () {
+            $(this).addClass('btn-primary').siblings().removeClass('btn-primary');
+        });
+
+        $(document).ready(function () {
+            $("#addEmpleado").click(function (event) {
+                $("#tabEmpleado").slideDown('slow');
+                $("#tabInvitados").slideUp('slow');
+            });
+            $("#addInvitado").click(function (event) {
+                $("#tabEmpleado").slideUp('slow');
+                $("#tabInvitados").slideDown('slow');
+            });
+        });
+        $("[name='tipoEI']").bootstrapSwitch();
+        function empleadoInvitado() {
+            $("#divEmp").slideToggle();
+            $("#divInv").slideToggle();
+            var d = document.getElementById("tipoEI").checked;
+            if (d == true) {
+                $('#tipoEI').bootstrapSwitch('labelText', 'Invitado');
+            } else {
+                $('#tipoEI').bootstrapSwitch('labelText', 'Empleado');
+            }
+
+        }
+        ;
+
+        function cargarDatosInvOrEmp(json, idElement) {
+            var tablaElementos = document.getElementById('tabla-elementos');
+            var index = 0;
+            var newlist = document.getElementById(idElement);
+            var nav = navigator.userAgent.toLowerCase();
+            // var gt = document.getElementById(idGroupT);
+            //  var ga = document.getElementById(idGroupA);
+
+
+            $(json).each(function () {
+                var op = document.createElement('option');
+                op.value = this.label;
+
+
+                op.setAttribute("id", this.value);
+                if (nav.indexOf("chrome") != -1) {
+                    if (nav.indexOf("edge") != -1) {
+                        op.setAttribute("label", this.label);
+                    } else {
+                        op.setAttribute("label", this.type);
+                    }
+
+                }
+
+                //  op.setAttribute("text", this.value);
+
+                newlist.appendChild(op);
+                index++;
+            });
+        }
+        function limpiarDataListEmp() {
+            //var  listOptions= document.getElementById('empleadosList').children; 
+            var des = document.getElementById('completarEmpleado');
+            $('#empleadosList').empty();
+            des.value = '';
+
+        }
+        function limpiarDataListInv() {
+            //   var  listOptions= document.getElementById('invitadosList').children; 
+            var des = document.getElementById('completarInvitado');
+            des.value = '';
+            $('#invitadosList').empty();
+        }
+
+    </script>
+    <div  class="row">
+        <div class="col-md-12" id="addViajeross">
+            <div class="col-12">
+                <div class="col-4" style="text-align: left;">
+                    <p:tabView>
+                        <p:tab title="Empleados">
+                            <p:autoComplete completeMethod="#{solicitudViajeBean.usuarioListener}" value="#{solicitudViajeBean.empleado}"
+                                            minQueryLength="4" forceSelection="true" size="40" placeholder="Empleados">
+                                <p:ajax listener="#{solicitudViajeBean.addEmpleado()}" update="@this formTerrestre:viajerosTerrestre formEditTel"/>
+                            </p:autoComplete>
+                        </p:tab>
+                        <p:tab title="Invitados">
+                            <p:autoComplete completeMethod="#{solicitudViajeBean.invitadoListener}" value="#{solicitudViajeBean.invitado}"
+                                            minQueryLength="4" forceSelection="true" size="40" placeholder="Invitado">
+                                <p:ajax listener="#{solicitudViajeBean.addInvitado()}" update="@this formTerrestre:viajerosTerrestre formEditTel"/>
+                            </p:autoComplete>                            
+                        </p:tab>
+                    </p:tabView>
+                <!--p:selectBooleanButton value="#{solicitudViajeBean.cadena}" onLabel="Invitados" offLabel="Empleados"
+                                       onchange="empleadoInvitado()">
+                    <p:ajax listener="#{solicitudViajeBean.tipoDeViaje()}" />
+                </p:selectBooleanButton>
+                    <input type="checkbox" name="tipoEI" checked="true" data-on-text="Empleado" data-off-text="Invitado" id="tipoEI" 
+                           data-on-color="primary" data-off-color="primary" onchange="empleadoInvitado()" data-label-text="Invitado" 
+                           class="form-control"/-->
+                    <!--/div>
+                    <br/>
+                    <div style="display: #{solicitudViajeBean.tabEmpOInv ? 'block': 'none'}" id="divEmp">
+                        <div class="col-md-10 col-10">
+                            <input type="text" list="empleadosList" autocomplete="on" class="form-control" 
+                                   onclick="if (this.value != '') {
+                                               this.value = ''
+                                           }"
+                                   onkeypress="if (event.keyCode == 13) {
+                                               ejecutarBoton('formTerrestre', 'selectEmpleado');
+                                           }" 
+                                   id="completarEmpleado" name="completarEmpleado"/>                   
+                            <datalist id="empleadosList"></datalist> 
+                        </div> 
+                        <button class="col-md-2 col-2 btn btn-primary" onclick="ejecutarBoton('formTerrestre', 'selectEmpleado');">
+                            <i class="fa fa-plus" aria-hidden="true" style="color: whitesmoke"></i>
+                        </button>
+                        <p:commandLink  action="#{solicitudViajeBean.addEmpleado()}" id="selectEmpleado" process="@form" update="formTerrestre:viajerosTerrestre"/>
+                    </div>
+                    <div style="display: #{solicitudViajeBean.tabEmpOInv ? 'none': 'block'}" id="divInv">
+                        <div  class="col-md-10 col-10">
+                            <input type="text" list="invitadosList" autocomplete="on" class="form-control" 
+                                   onclick="if (this.value != '') {
+                                               this.value = ''
+                                           }"
+                                   onkeypress="if (event.keyCode == 13) {
+                                               ejecutarBoton('formTerrestre', 'selectInvitado');
+                                           }" 
+                                   id="completarInvitado" name="completarInvitado"/>                   
+                            <datalist id="invitadosList"></datalist> 
+                        </div>        
+                        <button class="col-md-2 col-2 btn btn-primary" onclick="ejecutarBoton('formTerrestre', 'selectInvitado');">
+                            <i class="fa fa-plus" aria-hidden="true" style="color: whitesmoke"></i>
+                        </button>
+                        <p:commandLink  action="#{solicitudViajeBean.addInvitado()}" id="selectInvitado" process="@form" update="formTerrestre:viajerosTerrestre"/> 
+                    </div-->
+
+                </div>
+                <div class="col-8 alert alert-warning"  >
+                    Favor de verificar que el número de teléfono sea el correcto, en caso de ser necesario favor de editarlo dando click a el boton.
+                    <span class="fa fa-edit" style="color: #0895d6"/>
+                </div>
+            </div>
+            <div class="col-md-12 col-12"  style="text-align: right">
+                <div class="card-header" >
+                    <h2 class="card-title " style="font-weight: bold;text-align: center;">Quien Viaja ?</h2>
+                </div>
+                <div>
+                    <script>
+                        function newTelefono() {
+                            $("#btnEditTel").slideToggle();
+                            $("#btnConTel").slideToggle();
+                            $("#btnModTel").slideToggle();
+                            $("#modTelefono").slideToggle();
+                            $("#telefono").slideToggle();
+                        }
+                        function confirmarTelefono() {
+                            //$("#btnEditTel").slideToggle();
+                            ejecutarBoton('formTerrestre', 'confirmaTelefonoActual');
+                        }
+
+                        function reloadTable() {
+                            var container = document.getElementById("viajerosTerrestre");
+                            var content = container.innerHTML;
+                            container.innerHTML = content;
+                        }
+                    </script>
+
+                    <p:dataTable id="viajerosTerrestre" value="#{solicitudViajeBean.listViajeroVO}" var="via"
+                                 size="small" showGridlines="true">
+                        <p:column id="tipo" headerText="Tipo"  width="7%">
+                            <h:outputText id="tipocell" value="#{via.esEmpleado ? 'Empleado' :'Invitado'}"/>
+                        </p:column>
+                        <p:column headerText="Viajero" id="viajero" >
+                            <label style="display: #{via.esEmpleado ? 'block' : 'none'}" id="nameViajero">
+                                <span class="fa fa-user" style="color: #0895d6"></span> #{via.usuario}</label>
+                            <label id="nameViajeroinvitado" style="display: #{via.esEmpleado ? 'none' : 'block'}">
+                                <span class="fa fa-user" style="color: #0895d6"></span> #{via.invitado}</label>
+                        </p:column>
+                        <p:column id="gerencia" headerText="Gerencia/Empresa" style="border: none; text-align: center; font-size: medium">
+                            <label id="gerenciaViajero" style="display: #{via.esEmpleado ? 'block' : 'none'}">
+                                #{via.gerencia}
+                            </label>
+                            <label id="empresaViajeroInv" style="display: #{via.esEmpleado ? 'none' : 'block'}">
+                                #{via.empresa}
+                            </label>
+                        </p:column>
+                        <p:column headerText="Teléfono" id="telefono" >
+                            <label id="telefono"  class="col-8" >#{via.telefono}</label>
+                            <p:commandLink   title="Editar telefono" styleClass="col-2" 
+                                             action="#{solicitudViajeBean.editarTelefono()}"
+                                             process="@this" update="formEditTel">
+                                <span class="fa fa-edit" style="color: #0895d6"/>
+                                <f:param name="usuarioTel" value="#{via.idUsuario}"/>
+                                <f:param name="invitadoTel" value="#{via.idInvitado}"/>
+                                <f:param name="telphon"  value="#{via.telefono}"/>
+                            </p:commandLink>
+                            <p:commandLink  actionListener="#{solicitudViajeBean.confirmarTelefon()}" 
+                                            title="confirmar telefono" styleClass="col-2" process="@this" update="formEditTel">
+                                <span class="fa fa-check" style="color: #{via.confirTel ? 'green': '#777'}"/>
+                                <f:param name="usuarioTel" value="#{via.idUsuario}"/>
+                                <f:param name="invitadoTel" value="#{via.idInvitado}"/>
+                                <!--f:param name="telphon" value="modTelefono"/-->
+                                <f:param name="telActual"  value="#{via.telefono}"/>
+                            </p:commandLink>
+                        </p:column>
+                        <p:column id="estancia" headerText="Estancia" >
+                            <h:selectBooleanCheckbox value="#{via.estanciaB}" style="width: 20px; height: 20px;" />Si
+                            <h:selectBooleanCheckbox value="#{via.sinEstancia}" style="width: 20px; height: 20px;"/>No
+                        </p:column>
+                        <p:column id="eliminarViajero" style="border: none; text-align: right; font-size: medium">
+                            <p:commandLink actionListener="#{solicitudViajeBean.changeViajeroAddOrRemove(actionEvent)}" 
+                                           title="Quitar viajero" process="@this" update="formTerrestre:viajerosTerrestre">
+                                <f:param name="idUsuario" value="#{via.idUsuario}"/>
+                                <f:param name="idInvitado" value="#{via.idInvitado}"/>
+                                <f:param name="addorremove" value="remove"/>
+                                <span class="fa fa-trash" style="color: red"/>
+                            </p:commandLink>
+                        </p:column>
+                    </p:dataTable>
+                    <br/>
+                </div>
+            </div>
+            <div class="row" style="text-align: right">
+                <div class="col-8"></div>
+                <div class="col-4 input-group">
+                    <p:commandButton action="#{solicitudViajeBean.modificarSolicitud()}" id="cofirmarSV" process="@form" 
+                                     update="finalizarSolicitud" value="Solicitar" oncomplete="$(modalFinalizar).modal('show');"/> 
+                    <p:commandLink action="#{solicitudViajeBean.reiniciarComponentes()}" id="cancelSV2" immediate="true"
+                                   value="Cancelar" styleClass="btn btn-defult"/> 
+                </div>
+            </div>
+        </div>
+    </div>
+</ui:composition>

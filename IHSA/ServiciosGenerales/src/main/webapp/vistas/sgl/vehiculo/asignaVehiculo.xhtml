@@ -1,0 +1,122 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+
+
+      >
+    <body>
+        <ui:composition template="./../../../WEB-INF/facelets/templates/templateServiciosGenerales.xhtml">
+            <ui:define name="contenido">
+                <h:panelGroup  rendered="#{empty sesion.usuario}" styleClass="altura">
+                    <ui:include src="./../../../login.xhtml"/>
+                </h:panelGroup> 
+                <h:form >
+                    <center><h:messages errorClass="errorMessage" infoClass="infoMessage"/></center>
+                    <p class="tituloEncabezado"> Asignar el vehículo #{vehiculoBean.vehiculo.nombre} </p>
+                    <br/>
+                    <h:panelGrid columns="2" rendered="true">
+                        <p:commandLink title="Regresar a administra vehiculo" actionListener="#{vehiculoBean.limpiarAsigna(event)}" 
+                                       action="administrarVehiculo" 
+                                       styleClass="btn btn-default">
+                            <h:graphicImage url="#{msgs['sgl.ruta.imagen']}button_back.png" 
+                                            styleClass="imagenSinBorde"/>
+                        </p:commandLink>
+                        <p:commandLink value="Regresar a administra vehiculo" actionListener="#{vehiculoBean.limpiarAsigna(event)}" action="administrarVehiculo" styleClass="linkPequenio"/>
+                    </h:panelGrid> 
+                    <h:panelGrid columns="2"  border="0">
+                        <h:panelGrid columns="2" width="30%">
+                            <h:outputText value="Usuario"/>
+                            <p:selectOneMenu id="userSelect" immediate="true" 
+                                             value="#{vehiculoBean.user}" 
+                                             valueChangeListener="#{vehiculoBean.usuarioListener}">
+                                <f:selectItems value="vehiculoBean.listaUsuario"/>
+                                <f:facet name="selectInputText">
+                                    <h:panelGrid columns="2" style="margin-bottom: 2px;">
+                                        <h:outputText id="autoCompleteUsurOp" value="#{analista.nombre}" />
+                                    </h:panelGrid>
+                                </f:facet>
+                            </p:selectOneMenu>                             
+                        </h:panelGrid>
+                        <h:panelGrid rendered="#{vehiculoBean.vehiculo.disponible eq 'False'}" width="70%" style="float: right;">
+                            <h:outputText value="El vehículo NO se puede asignar." style="color: red;" />
+                        </h:panelGrid>
+                    </h:panelGrid>
+                    <h:panelGrid columns="2" rendered="#{vehiculoBean.usuario != null and vehiculoBean.sgLicencia != null and vehiculoBean.vehiculo.disponible eq 'True'}">
+                        <p:commandLink title="Asignar vehículo" actionListener="#{vehiculoBean.asignarVehiculo(event)}" 
+                                       styleClass="btn btn-default">
+                            <h:graphicImage url="#{msgs['sgl.ruta.imagen']}button_create.png" 
+                                            styleClass="imagenSinBorde"/>
+                        </p:commandLink>
+                        <p:commandLink value="Asignar vehículo" actionListener="#{vehiculoBean.asignarVehiculo(event)}" styleClass="linkPequenio"/>
+                    </h:panelGrid>                   
+                    <h:panelGrid columns="2" rendered="#{vehiculoBean.usuario != null and vehiculoBean.sgLicencia == null}">
+                        <h:outputText value="El usuario no tiene licencia, para asignar un vehiculo es necesario contar con licencia vigente" style="color: maroon;"/>
+                    </h:panelGrid>                        
+                    <p:dataTable showGridlines="true" size="small"   var="va" value="#{vehiculoBean.traerVehiculoAsignado}">
+                        <f:facet name="header"><h:outputText value="Vehículos asignados"/></f:facet>
+                        <p:column>
+                            <f:facet name="header"><h:outputText value="Modelo"/></f:facet>
+                            <h:outputText value="#{va.sgVehiculo.sgModelo.nombre}"/>
+                        </p:column>
+                        <p:column>
+                            <f:facet name="header"><h:outputText value="Marca"/></f:facet>
+                            <h:outputText value="#{va.sgVehiculo.sgMarca.nombre}"/>
+                        </p:column>
+                        <p:column>
+                            <f:facet name="header"><h:outputText value="Placa"/></f:facet>
+                            <h:outputText value="#{va.sgVehiculo.numeroPlaca}"/>
+                        </p:column>                        
+                        <p:column>
+                            <f:facet name="header"><h:outputText value="Operación"/></f:facet>
+                            <h:outputText value="#{va.siOperacion.nombre}"/>
+                        </p:column>
+                        <p:column>
+                            <f:facet name="header"><h:outputText value="Fecha"/></f:facet>
+                            <h:outputText value="#{va.fechaOperacion}">
+                                <f:convertDateTime pattern="dd/MM/yyyy"/>
+                            </h:outputText>
+                        </p:column>
+                        <p:column>
+                            <f:facet name="header"><h:outputText value="Observación"/></f:facet>
+                            <h:outputText value="#{va.observacion}" />
+                        </p:column>
+                        <p:column>
+                            <h:outputLink target="_blank"  value="/ServiciosGenerales/AbrirArchivo?ZWZ2W=#{va.siAdjunto.id}&amp;ZWZ3W=#{va.siAdjunto.uuid}">
+                                <center><h:graphicImage url="#{msgs['sgl.ruta.imagen']}icon_attach.gif"  alt="Abrir archivo" rendered="#{va.siAdjunto != null}"/></center>
+                            </h:outputLink>
+                        </p:column>  
+                        <p:column>
+                            <p:commandLink value="Modificar" styleClass="link" rendered="#{va.terminada eq 'False'}" 
+                                           actionListener="#{vehiculoBean.seleccionarAsignacion(event)}"/>
+                        </p:column>
+                        <p:column>
+                            <p:commandLink value="Eliminar" styleClass="link" rendered="#{va.terminada eq 'False'}" actionListener="#{vehiculoBean.eliminarAsignacion(event)}" />
+                            <p:confirm id="pnlCon" header="Confirmar"  
+                                       message="La operación va a eliminar la asignación, ¿está seguro?"></p:confirm>
+                        </p:column>
+                        <p:column>                            
+                            <h:outputLink target="_blank"  value="/ServiciosGenerales/GeneraCarta?a=#{va.id}" rendered="#{va.terminada eq 'False'}" styleClass="link">
+                                <h:outputText value="Genera carta" styleClass="link"/>
+                            </h:outputLink>
+                        <!--p:commandLink value="Generar carta" styleClass="link" actionListener="#{vehiculoBean.generaCartaAsignacion(event)}"/-->
+                        </p:column>                                          
+                        <p:column>
+                            <p:commandLink value="Adjuntar carta" rendered="#{va.siAdjunto == null}" styleClass="link" 
+                                           actionListener="#{vehiculoBean.subirCarta(event)}"/>
+                            <p:commandLink value="Quitar carta" rendered="#{va.siAdjunto != null}" styleClass="link" 
+                                           actionListener="#{vehiculoBean.quitarCartaAsigna(event)}"/>
+                        </p:column>
+                    </p:dataTable>
+                    <br/>
+                </h:form>
+
+            </ui:define>
+
+        </ui:composition>
+
+    </body>
+</html>

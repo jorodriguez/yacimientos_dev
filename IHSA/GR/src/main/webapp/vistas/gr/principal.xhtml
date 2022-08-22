@@ -1,0 +1,155 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"      
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:c="http://java.sun.com/jsp/jstl/core"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      >    
+    <h:body>
+        <ui:composition template="/vistas/template/template.xhtml">
+            <ui:define name="content">    
+                <style >
+                    .row{
+                        margin-top:40px;
+                        padding: 0 10px;
+                    }
+
+                    .clickable{
+                        cursor: pointer;
+                    }
+
+                    .card-header span {
+                        margin-top: -20px;
+                        font-size: 15px;
+                    }
+                    .card-body {
+                        padding: 5px;
+                    }
+
+                </style>
+                <script>
+                    function ejecutarFiltrosViajes(btn) {
+                        jQuery('#frmViajesPen\\:' + btn).click();
+                    }
+                </script>
+                <div class="container">
+                    <ui:fragment rendered="#{not grBean.admin and not grBean.grvia}">
+                        <div class="col-12">                                                
+                            <div class="jumbotron" style="background-color: #e7e7e7; margin-top: 5px;">
+                                <div class="container">                
+                                    <div class="col-lg-12 col-xs-12" style="text-align: center;">                              
+                                        <h1 style="color: #222;">GESTIÓN DE RIESGOS</h1>
+                                    </div>
+                                    <h:form id="frmPrincGR">
+                                        <ui:fragment >
+                                            <div class="visible-lg visible-md col-lg-12 col-md-3-9" style="text-align: center;">
+                                                <h4 style="color: #222;">Centro de operaciones (24 Hrs/7Días)</h4>
+                                                <h4 style="color: #222;">Contacto: (81) 1946-9999</h4>
+                                                <h4 style="color: #222;">Emergencias: (81) 1946-1111</h4>                                                                        
+                                            </div>                                    
+                                            <div class="visible-xs col-xs-12" style="text-align: center;">
+                                                <h4 style="color: #222;">Centro de operaciones (24 Hrs/7Días)</h4>
+                                                <h4 style="color: #222;">Contacto:</h4><h4> (81) 1946-9999</h4>
+                                                <h4 style="color: #222;">Emergencias:</h4><h4> (81) 1946-1111</h4>                                                                        
+                                            </div>    
+                                            <ui:fragment rendered="#{not empty sesion.alertas}">
+                                                <c:forEach items="#{sesion.alertas}" var="alerta">
+                                                    <ui:fragment rendered="#{alerta.sgSemaforo eq 3}">                                                    
+                                                        <ui:fragment rendered="#{alerta.visible}">
+                                                            <div class="visible-lg visible-md col-lg-12 col-md-3-9" style="text-align: center; margin-top: 15px;">
+                                                                <p:commandLink styleClass="col-lg-12 col-md-3-9" 
+                                                                               action="#{grBean.goMapa(alerta.grMapaVO.id)}"><h3><span class="label label-danger">Semáforo rojo - #{alerta.grMapaVO.nombre}</span></h3>
+                                                                </p:commandLink>
+                                                            </div>
+                                                            <div class="visible-xs row" style="text-align: center; margin-top: 15px;">
+                                                                <p:commandLink styleClass="row" action="#{popupGrBean.goPopupImagenMapa(alerta.grMapaVO.id)}"><span class="label label-danger" style="font-size: 15px;">Semáforo rojo - #{alerta.grMapaVO.nombre}</span>
+                                                                </p:commandLink>
+                                                            </div>                                    
+                                                        </ui:fragment>
+                                                        <ui:fragment rendered="#{not alerta.visible}">
+                                                            <div class="visible-lg visible-md col-lg-12 col-md-3-9" style="text-align: center; margin-top: 15px;">
+                                                                <h3><span class="label label-danger">Semáforo rojo - #{alerta.grMapaVO.nombre}</span></h3>                                                        
+                                                            </div>
+                                                            <div class="visible-xs row" style="text-align: center; margin-top: 15px;">
+                                                                <span class="label label-danger" style="font-size: 15px;">Semáforo rojo - #{alerta.grMapaVO.nombre}</span>                                                        
+                                                            </div>                                    
+                                                        </ui:fragment>
+                                                    </ui:fragment>
+                                                    <ui:fragment rendered="#{alerta.sgSemaforo eq 4}">  
+                                                        <ui:fragment rendered="#{alerta.visible}">
+                                                            <div class="visible-lg visible-md col-lg-12 col-md-3-9" style="text-align: center; margin-top: 15px;">
+                                                                <p:commandLink styleClass="col-lg-12 col-md-3-9" action="#{grBean.goMapa(alerta.grMapaVO.id)}"><h3><span class="label label-danger">Semáforo negro - #{alerta.grMapaVO.nombre}</span></h3>
+                                                                </p:commandLink>
+                                                            </div>
+                                                            <div class="visible-xs  row" style="text-align: center; margin-top: 15px;">
+                                                                <p:commandLink styleClass="row" action="#{popupGrBean.goPopupImagenMapa(alerta.grMapaVO.id)}"><span class="label label-danger" style="font-size: 15px;">Semáforo negro -  #{alerta.grMapaVO.nombre}</span>
+                                                                </p:commandLink>
+                                                            </div>                                    
+                                                        </ui:fragment>
+                                                        <ui:fragment rendered="#{not alerta.visible}">
+                                                            <div class="visible-lg visible-md col-lg-12 col-md-3-9" style="text-align: center; margin-top: 15px;">
+                                                                <h3><span class="label label-danger">Semáforo negro - #{alerta.grMapaVO.nombre}</span></h3>                                                        
+                                                            </div>
+                                                            <div class="visible-xs  row" style="text-align: center; margin-top: 15px;">
+                                                                <span class="label label-danger" style="font-size: 15px;">Semáforo negro -  #{alerta.grMapaVO.nombre}</span>                                                        
+                                                            </div>                                    
+                                                        </ui:fragment>
+                                                    </ui:fragment>
+
+                                                </c:forEach>                              
+                                            </ui:fragment>
+                                        </ui:fragment>                                                                        
+                                    </h:form>
+                                </div>
+                            </div>
+                        </div>                 
+                    </ui:fragment>
+                    <ui:fragment rendered="#{grBean.admin or grBean.grvia}">
+                        <h:form id="frmViajesPen">
+                            <div class="container" >                                       
+                                <p:tabView id="tbViajes" dynamic="true">
+                                    <p:ajax event="tabChange" listener="#{sesion.onTabChange}" process="@this" />
+                                    <p:tab title="Viajes Pendientes">
+                                        <div id="viajesPen" >
+                                            <div class="container">
+                                                <ui:include src="../gr/rutasViajesPendientes.xhtml"/> 
+                                            </div>                          
+                                        </div>
+                                    </p:tab>                   
+                                    <p:tab title="Viajes en Proceso">
+                                        <div id="viajesPro" >
+                                            <div class="container">
+                                                <ui:include src="../gr/rutasViajesEnProceso.xhtml"/>
+                                            </div>                                 
+                                        </div>
+                                    </p:tab>                   
+                                    <p:tab title="Viajes por autorizar">
+                                        <div id="viajesPau" >
+                                            <div class="container">
+                                                <ui:include src="../gr/rutasViajesEnPausa.xhtml"/>
+                                            </div>
+                                        </div>
+                                    </p:tab>                   
+                                    <p:tab title="Viajes por interceptar">
+                                        <div id="viajesInt" >
+                                            <div class="container">
+                                                <p:panel id="pnlViajesInter">
+                                                    <ui:include src="../gr/rutasViajesInterceptados.xhtml"/>
+                                                </p:panel>
+                                            </div>
+                                        </div>
+                                    </p:tab>                   
+                                </p:tabView>               
+                            </div>
+                        </h:form>
+                        <ui:include src="./grPopUpCrearViaje.xhtml"/>     
+                        <ui:include src="../gr/popupComentario.xhtml"/>                               
+                    </ui:fragment>
+
+                </div>    
+            </ui:define> 
+        </ui:composition>        
+    </h:body>
+</html>

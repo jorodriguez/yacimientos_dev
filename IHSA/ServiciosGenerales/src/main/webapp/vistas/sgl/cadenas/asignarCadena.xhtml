@@ -1,0 +1,188 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+              
+     
+      >
+    <body>
+        <ui:composition template="./../../../WEB-INF/facelets/templates/templateServiciosGenerales.xhtml">
+            <ui:define name="contenido">
+                <h:form   rendered="#{not empty sesion.usuario}"   >
+                    <center>
+                        <h:panelGrid>
+                            <h:messages errorClass="mensaje" infoClass="mensaje"/> 
+                        </h:panelGrid> 
+                    </center> 
+                        <p class="tituloEncabezado">Tipo solicitud  #{cadenasBean.tipoSolicitudViajeActiva.nombre} </p>
+                    <br/>
+                    <h:outputText rendered="#{cadenasBean.idTipoSolicitud == 2}" value="#{msg['sgl.cadena.mensaje.tipo2']}"/>
+                    <h:outputText rendered="#{cadenasBean.idTipoSolicitud == 4}" value="#{msg['sgl.cadena.mensaje.tipo4']}"/>
+                    <h:outputText rendered="#{cadenasBean.idTipoSolicitud == 7}" value="#{msg['sgl.cadena.mensaje.tipo7']}"/>
+                    <h:panelGrid columns="2" >                               
+                        <h:panelGrid columns="2">
+                            <p:commandLink title="#{msgs['sistema.regresar']} #{msgs['sistema.proposicion.a']} administrar cadenas de aprobación" 
+                                             onclick="if(!confirm('Si cancela esta operación se perderán los datos ya capturados \n Confirma que desea cancelar esta operación...? ')) return false;" 
+                                             action="administrarCadenasAprobacion"
+                                             styleClass="btn btn-default">                               
+                                <h:graphicImage url="#{msgs['sgl.ruta.imagen']}button_back.png" 
+                                                  onclick="if(!confirm('Si cancela esta operación se perderán los datos ya capturados \n Confirma que desea cancelar esta operación...? ')) return false;" 
+                                                  alt="#{msgs['sgl.cadena.mensaje.regresar']}"
+                                                  styleClass="imagenSinBorde"/>
+                            </p:commandLink>
+                            <p:commandLink value="#{msgs['sgl.cadena.mensaje.regresar']}" styleClass="linkPequenio" action="administrarCadenasAprobacion"/>
+                        </h:panelGrid>
+                    </h:panelGrid>
+                </h:form>
+                <br/>
+                <h:form   rendered="#{not empty sesion.usuario}"   >
+                    <table> 
+                        <tbody>
+                            <tr>
+                                <!-- #{data['sgTipoSolicitudViaje'].nombre}-->
+                                <tr>
+                                    <ui:repeat value="#{cadenasBean.cadenaAsignarDatamodelTMP}"  var="data">
+                                        <p:column rendered="false">
+                                            <h:outputLabel value="#{data['nombreEstatus']}"/>                                                
+                                        </p:column>
+                                        <p:column>
+                                            <td>
+                                                <table style="width: 200px;height: 80px; border: 1px solid #b5b5b5; box-shadow: 0px 0px 5px rgba(0,0,0,0.10);border-radius: 6px;padding: 0px 0px 0px 0px; word-spacing: 2px;margin: 0px auto 0px auto;">
+                                                    <th style="margin: 0px auto 0px auto;">
+                                                        <table style="background-color: #B6C9DE; width: 200px;height: 30px; border: 1px solid #b5b5b5; border-radius: 6px; word-spacing: 0px;margin: 0px auto 0px auto;">
+                                                            <tr>
+                                                                <td valign="middle" align="center" > 
+                                                                    <div style="font-size: 12px">
+                                                                        <h:outputLabel rendered="#{data['nombreEstatus'] eq 'APROBADA'}" value="APRUEBA"/>
+                                                                        <h:outputLabel rendered="#{data['nombreEstatus'] eq 'SEGURIDAD'}" value="RECOMIENDA"/>
+                                                                        <h:outputLabel rendered="#{data['nombreEstatus'] eq 'FINALIZADA'}" value="FINALIZA"/>                                                                                                                                                
+                                                                    </div>
+                                                                </td>
+                                                            </tr>
+                                                        </table>
+                                                    </th>
+                                                    <tr>
+                                                        <td style="width: 200px;height: 60px">
+                                                            <div style="font-size: 11px">
+                                                                <center>
+                                                                    <h:outputLabel value="#{data['nombrePuestoResponsableGerencia']}" styleClass="f12"/>
+                                                                    <br/>
+                                                                    <strong> #{data['nombreGerencia']}</strong> <br/> <br/>                                                               
+                                                                    <h:outputText value="#{data['nombreResponsableGerencia']}" styleClass="f12" /> <br/>
+                                                                </center>
+                                                            </div>
+                                                        </td>  
+                                                    </tr>
+                                                    <tr style="background-color: #dddddd;" valign="middle" align="center">
+                                                        <td>
+                                                            <center>
+                                                                <p:commandLink value="#{msgs['sgl.cadena.asignar.responsable']}"
+                                                                                 title="#{msgs['sgl.cadena.mensaje.asignar']}"
+                                                                                 actionListener="#{cadenasBean.mostrarPopupAsignarGerencia(event)}" styleClass="link" >                                                
+                                                                    <f:param name="estatusId" value="#{data['idEstatus']}" />
+                                                                </p:commandLink>
+                                                            </center>
+                                                        </td>
+                                                    </tr>
+                                                </table>                                          
+                                            </td>
+                                        </p:column>
+                                    </ui:repeat>
+                                </tr>
+                            </tr>
+                        </tbody>
+                    </table><br/>
+                    <h:panelGrid columns="2">
+                        <!-- #{msgs['sgl.cadena.mensaje.asignacion.confirmacion']}' -->
+                        <p:commandLink value=" #{msgs['sgl.cadena.asignar.cadena']} " 
+                                         title="#{msgs['sgl.cadena.mensaje.asignar.cadena']}"
+                                         onclick="if(!confirm('Esta seguro de realizar esta asignación...? ')) return false;"                                             
+                                         action="#{cadenasBean.guardarListaFragmentosCadena()}"
+                                         styleClass="btn btn-info" />
+                        <!-- #{msgs['sgl.cadena.mensaje.cancelacion1']}+ '\n\ ' + #{msgs['sgl.cadena.mensaje.cancelar2']} +  -->
+                        <!-- onclick="if(!confirm('Si cancela esta operación se perderan los datos ya capturados \n Confirme que desea cancelar esta operación ...? ')) return false;"  -->
+                        <p:commandLink value=" Cancelar "                                                                                   
+                                         action="administrarCadenasAprobacion" styleClass="btn btn-default"/>
+                    </h:panelGrid>
+                    <!-- <h:panelGrid styleClass="borderPanelGrid">
+                         <p:dataTable id="dataGridStatus" with="100%"     
+                                      value="#{cadenasBean.cadenaAsignarDatamodelTMP}"                                                                                
+                                             
+                                      >                       
+                             <p:column rendered="false">
+                                 <h:outputLabel value="#{data['estatus'].id}"/>                                                
+                             </p:column>
+                             <p:column  colspan="#{cadenasBean.cadenaAsignarDatamodelTMP.rowCount}">
+                                 <h:panelGrid>
+                                     <h:panelGrid style="width: 200px;height: 80px; border: 1px solid #b5b5b5; box-shadow: 0px 0px 5px rgba(0,0,0,0.10);border-radius: 6px;padding: 0px 10px 25px 0px; word-spacing: 2px;margin: 0px auto 0px auto;">
+                                         <h:panelGrid width="100px" style="background-color: gainsboro;">
+                                             <h:outputLabel value="#{data['estatus'].nombre}"/>                                                
+                                         </h:panelGrid>                                                
+                                         <h:panelGrid  >
+                                             <h:panelGrid columns="2">
+                                                 Gerencia:
+                                                 <h:outputLabel value="#{data['gerencia'].nombre}"/>                                                
+                                                 Nombramiento:
+                                                 <h:outputLabel value="#{data['gerencia'].tipoNombramiento.nombre}"/>                                                
+                                                 Responsable:
+                                                 <h:outputLabel value="#{data['gerencia'].responsable.nombre}"/>                                                
+                                             </h:panelGrid>
+                                             <p:commandLink value="Asignar responsable" actionListener="#{cadenasBean.mostrarPopupAsignarGerencia(event)}" styleClass="link" >                                                
+                                                 <f:param name="estatusId" value="#{data['estatus'].id}" />
+                                             </p:commandLink>
+                                         </h:panelGrid>
+                                     </h:panelGrid>
+                                 </h:panelGrid>
+                             </p:column>
+                         </p:dataTable>
+                         <br/>
+                         <h:panelGrid columns="2">
+                             <p:commandLink value=" Asignar esta cadena " 
+                                              onclick="if(!confirm('Está seguro de asignar esta cadena...? ')) return false;"                                             
+                                              action="#{cadenasBean.guardarListaFragmentosCadena()}"
+                                              styleClass="btn btn-info" />
+                             <p:commandLink value=" Cancelar " action="administrarCadenasAprobacion" styleClass="btn btn-default"/>
+                         </h:panelGrid>
+                     </h:panelGrid>-->
+                    <br/>
+                </h:form>
+
+                <h:form >
+                    <p:dialog  header="Asignar responable " >
+                        <h:panelGrid>
+                            <center>
+                                <h:messages errorClass="mensaje" infoClass="mensaje"/>                                    
+                            </center>                              
+                        </h:panelGrid>
+                        <h:panelGrid columns="2">
+                            Estatus :
+                            <h:outputLabel rendered="#{cadenasBean.estatusActivo.nombre eq 'APROBADA'}" value="APRUEBA"/>
+                            <h:outputLabel rendered="#{cadenasBean.estatusActivo.nombre eq 'SEGURIDAD'}" value="RECOMIENDA"/>
+                            <h:outputLabel rendered="#{cadenasBean.estatusActivo.nombre eq 'FINALIZADA'}" value="FINALIZA"/>                                                                                                                                                
+                        </h:panelGrid>
+                        <br/>
+                        <h:panelGrid columns="2" >
+                            <h:outputLabel value="#{msgs['sistema.gerencia']}"/>
+                            <p:selectOneMenu value="#{cadenasBean.idGerencia}"  
+                                               valueChangeListener="#{cadenasBean.seleccionarGerencia}">
+                                <f:selectItem itemLabel="#{msgs['sistema.seleccione']}.." itemValue="-1"/>
+                                <f:selectItems value="#{cadenasBean.gerenciaItems}"/>
+                            </p:selectOneMenu>
+                        </h:panelGrid>         
+                        <br/>
+                        <h:panelGrid  columns="2" style="margin:0px auto 0px auto;">
+                            <p:commandLink value="#{msgs['sistema.asignar']}" actionListener="#{cadenasBean.addCadenaLista(event)}"                                             
+                                             title="#{msgs['sgl.cadena.mensaje.asignar.gerencia']}.."
+                                             styleClass="btn btn-info" />
+                            <p:commandLink value="Cancelar" actionListener="#{cadenasBean.ocultarPopup(event)}" styleClass="btn btn-default"/>
+                        </h:panelGrid>
+                    </my:panelPopup>
+                </h:form>
+
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

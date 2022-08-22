@@ -1,0 +1,101 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      >
+
+    <body>
+        <ui:composition template="./../templates/template.xhtml">
+            <ui:define name="tituloPagina">
+                Historial de OC/S
+            </ui:define>
+            <ui:define name="contenido">
+
+                <h:form id="form1">              
+                    <p:panel id="pnlSel" styleClass="col-8">
+                        <p:selectOneRadio value="#{ordenBean.tipoFiltro}" styleClass="col-8">
+                            <f:selectItem itemLabel="Filtros" itemValue="filtro"/>
+                            <f:selectItem itemLabel="Por palabra" itemValue="palabra"/>
+                            <p:ajax event="change" update="form1:pnlOpcs"/>
+                        </p:selectOneRadio>
+                    </p:panel>   
+                    <p:panelGrid id="pnlOpcs" columns="2" styleClass="col-8">
+                        <p:panel id="filtro" rendered="#{ordenBean.tipoFiltro eq 'filtro'}">
+                            <ui:include src="../Orden/fragmento/filtroOrdenCompra.xhtml"/>   
+                        </p:panel>
+                        <p:panel id="palabra" rendered="#{ordenBean.tipoFiltro eq 'palabra'}">                                                
+                            <ui:include src="../Orden/fragmento/filtroOrdenPorCadena.xhtml"/>     
+                            <h:outputText value="*La consulta por palabra se realiza en las partidas de las OC/S." 
+                                          styleClass="input-group-sm"/>
+                        </p:panel>
+                        <p:commandLink id="btnBuscar" value="#{msgs['cabecera.buscar']}"
+                                       action="#{ordenBean.filtrarOrden}" 
+                                       styleClass="btn btn-primary text-white"
+                                       process="@this form1:pnlSel form1:pnlOpcs" update="form1:dataTableOrdenesSolicitadas"/>
+                    </p:panelGrid>
+                    <div class="col-12">
+                        <p:dataTable size="small" stripedRows="true" showGridlines="true" id="dataTableOrdenesSolicitadas" rows="10" 
+                                     value="#{ordenBean.ordenesHistorial}" var="currentRow"                                    
+                                     paginator="true"   paginatorPosition="bottom" >
+                            <f:facet name="header">
+                                <h:outputText value="#{msgs['titulo.tabla.historial.orden']}  "/>
+                            </f:facet>
+                            <p:column headerText="#{msgs['presupuesto.nuevos.campoConsecutivo']}"
+                                      filterBy="#{currentRow.consecutivo}" filterMatchMode="contains" width="100">
+                                <h:outputText  value="#{currentRow['consecutivo']}"/>
+                            </p:column>
+                            <p:column headerText="#{msgs['requisicion.referencia']}"
+                                      filterBy="#{currentRow.referencia}" filterMatchMode="contains">
+                                <h:outputText  value="#{currentRow['referencia']}"/>
+                            </p:column>
+                            <p:column headerText="#{msgs['requisicion.solicitada']}"
+                                      filterBy="#{currentRow.fecha}" filterMatchMode="contains" width="120">
+                                <h:outputText value="#{currentRow['fecha']}">
+                                    <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                </h:outputText>
+                            </p:column>                                            
+                            <p:column  headerText="Proyecto OT" 
+                                       filterBy="#{currentRow.nombreProyectoOT}" filterMatchMode="contains">
+                                <h:outputText value="#{currentRow['nombreProyectoOT']}"/>
+                            </p:column>                                                            
+                            <p:column  headerText="#{msgs['orden.proveedor']}" 
+                                       filterBy="#{currentRow.proveedor}" 
+                                       filterMatchMode="contains">
+                                <h:outputText value="#{currentRow['proveedor']}"/>
+                            </p:column>                                                            
+                            <p:column  headerText="#{msgs['estatus.actual']}" filterBy="#{currentRow.estatus}" 
+                                       filterMatchMode="contains" width="150">
+                                <h:outputText value="#{currentRow['estatus']}"/>
+                            </p:column>                                                            
+                            <p:column  width="40">   
+                                <h:outputLink value="/Compras/generarExcel?ZWZ2W=#{currentRow['id']}" 
+                                              rendered="#{(currentRow.idStatus eq 155 and currentRow.navCode ne null) || currentRow.idStatus eq 160}"
+                                              title="Clic aqui para generar el excel de la OC/S ...">
+                                    <i class="fa fa-file-excel text-success"/>
+                                </h:outputLink>
+                            </p:column>
+                            <p:column width="40">
+                                <p:commandLink action="#{ordenBean.verDetalleOrden(currentRow.id)}"
+                                               title="Clic aqui para ver mas información..."
+                                               process="@this" update="@form"> 
+                                    <i class="fa fa-eye text-primary" />
+                                </p:commandLink>
+                            </p:column>                                                            
+                        </p:dataTable>     
+                    </div>
+                    <div class="col-12">
+                        <p:commandButton value="Exportar">                                         
+                            <p:dataExporter  target="dataTableOrdenesSolicitadas" type="xls" fileName="Ordenes" 
+                                             />
+                        </p:commandButton>
+                    </div>
+                </h:form>
+            </ui:define>
+
+        </ui:composition>
+
+    </body>
+</html>

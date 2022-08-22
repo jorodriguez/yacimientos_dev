@@ -1,0 +1,359 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                template="/WEB-INF/templates/master.xhtml">
+
+
+    <ui:define name="tituloPagina">
+        #{msg['sia.inventarios.movimiento.modulo']}
+    </ui:define>
+
+    <ui:define name="titulo">
+        #{movimiento.title}
+        <a href="#{request.contextPath}/resources/videos/ayuda/registrar-movimiento.mp4" class="link-ayuda"
+           target="_blank">Ayuda</a>
+    </ui:define>
+
+    <ui:define name="contenido">        
+        <h:form id="frmMovimiento">
+            <h:messages id="mensajesPagina" showDetail="false" globalOnly="true" styleClass="mensajes-ul"
+                        infoClass="ui-widget ui-corner-all ui-state-highlight input-msg"
+                        errorClass=" ui-widget ui-corner-all ui-state-error input-msg"/>
+            <h:panelGroup id="panelInformacion">
+                <table class="input" style="width: 1100px">
+                    <tr>
+                        <td style="width: 175px">
+                            #{msg['sia.inventarios.movimiento.fecha']}:
+                        </td>
+                        <td>
+                            #{movimiento.elemento.fechaConFormato}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <h:outputText id="otAlmacen" value="#{movimiento.elemento.tipoMovimiento == 4 ? msg['sia.inventarios.movimiento.almacenOrigen'] : msg['sia.inventarios.movimiento.almacen']}"/>:
+                            <span class="required" style="display: #{param['lista'] == null ? 'inline' : 'none'}">*</span>
+                        </td>
+                        <td>
+                            <h:selectOneMenu id="smFiltroAlmacen" value="#{movimiento.elemento.almacenId}"
+                                             styleClass="almacen-origen custom-select"
+                                             required="true" requiredMessage="#{msg['sia.validaciones.required']}"
+                                             disabled="#{param['lista'] != null}">
+                                <f:selectItem itemLabel="#{msg['sia.inventarios.comun.seleccione']}" itemValue="#{null}"
+                                              noSelectionOption="true"/>
+                                <f:selectItems value="#{movimiento.almacenes}" var="u" itemLabel="#{u.nombre}"
+                                               itemValue="#{u.id}"/>
+                                <f:ajax event="blur" render="smFiltroAlmacen" onevent="desabilitarAlmacenDestino"/>
+                            </h:selectOneMenu>
+                            <h:message for="smFiltroAlmacen" id="msjAlmacen"
+                                       styleClass="ui-widget ui-corner-all ui-state-error input-msg"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            #{msg['sia.inventarios.movimiento.tipoMovimiento']}:
+                            <span class="required" style="display: #{param['lista'] == null ? 'inline' : 'none'}">*</span>
+                        </td>
+                        <td>
+                            <p:selectOneMenu id="smFiltroTipo" value="#{movimiento.elemento.tipoMovimiento}"
+                                             styleClass="custom-select"
+                                             required="true" requiredMessage="#{msg['sia.validaciones.required']}"
+                                             disabled="#{param['lista'] != null}"
+                                             immediate="true">
+                                <f:selectItem itemLabel="#{msg['sia.inventarios.comun.seleccione']}" itemValue="#{null}"
+                                              noSelectionOption="true"/>
+                                <f:selectItems value="#{movimiento.tipos}"/>
+                                <p:ajax event="change" process="@this" update="panelInformacion tablaArticulos pnlF"
+                                        />
+                            </p:selectOneMenu>
+                            <h:message for="smFiltroTipo" id="msjTipo"
+                                       styleClass="ui-widget ui-corner-all ui-state-error input-msg"/>
+                        </td>
+                    </tr>
+                    <tr style="display: #{movimiento.elemento.tipoMovimiento == null || movimiento.elemento.tipoMovimiento != 4 ? 'none' : 'table-row'}">
+                        <td>
+                            #{msg['sia.inventarios.movimiento.almacenDestino']}:
+                        </td>
+                        <td>
+                            <p:selectOneMenu id="smFiltroAlmacenDestino"
+                                             value="#{movimiento.elemento.traspasoAlmacenDestinoId}"
+                                             styleClass="custom-select"
+                                             disabled="#{param['lista'] != null}">
+                                <f:selectItem itemLabel="#{msg['sia.inventarios.comun.seleccione']}" itemValue="#{null}"
+                                              noSelectionOption="true"/>
+                                <f:selectItems value="#{movimiento.almacenes}" var="u" itemLabel="#{u.nombre}"
+                                               itemValue="#{u.id}"/>
+                            </p:selectOneMenu>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            #{msg['sia.inventarios.movimiento.observaciones']}:
+                        </td>
+                        <td>
+                            <h:inputTextarea id="txtAreaObservaciones" value="#{movimiento.elemento.notas}" rows="5"
+                                             readonly="#{param['lista'] != null}"/>
+                        </td>
+                    </tr>
+                    <tr style="display: #{movimiento.elemento.tipoMovimiento != null and movimiento.elemento.tipoMovimiento == 1 ? 'table-row' : 'none'}">
+                        <td>
+                            #{msg['sia.inventarios.movimiento.folio']}:
+                        </td>
+                        <td>
+                            <div>
+                                <p:inputText id="txtFolio"
+                                             styleClass="ui-inputfield ui-textentry ui-widget ui-state-optional ui-corner-all"
+                                             readonly="#{param['lista'] != null}" 
+                                             validator="#{movimiento.validarFolio}"
+                                             valueChangeListener="#{movimiento.cambioFolioOrdenDeCompra}"
+                                             value="#{movimiento.elemento.folioOrdenCompra}" style="width: 175px">
+                                    <p:ajax event="blur" update="pnImagenes tablaArticulos pnlF tablaFormtoEnt"/>
+                                </p:inputText>
+                                <h:panelGroup id="pnImagenes">
+                                    <h:graphicImage id="imgFolioT" library="images" name="valid.gif" width="24px"
+                                                    height="24px"
+                                                    rendered="#{movimiento.folioValido != null and movimiento.folioValido}"/>
+                                    <h:graphicImage id="imgFolioF" library="images" name="invalid.png" width="24px"
+                                                    height="24px"
+                                                    rendered="#{movimiento.folioValido != null and !movimiento.folioValido}"/>
+                                    <h:outputText value="#{msg['sia.inventarios.movimiento.folioOrdenCompraInvalido']}"
+                                                  styleClass="almacen-user-info"
+                                                  rendered="#{movimiento.folioValido != null and !movimiento.folioValido}"/>
+                                </h:panelGroup>
+                                <h:panelGroup id="pnlF">
+                                    <table>
+                                        <tr>
+                                            <td style="width: 30%;">
+                                                <h:outputText value="Formato de entrega:" rendered="#{movimiento.folioValido != null and movimiento.folioValido}"/>
+                                            </td>
+                                            <td>
+                                                <p:fileUpload label="Formato de entrada" 
+                                                              immediate="true"  
+                                                              update="frmMovimiento:tablaFormtoEnt"
+                                                              listener="#{movimiento.subirFormato}"
+                                                              rendered="#{movimiento.folioValido != null and movimiento.folioValido}"/>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </h:panelGroup>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr style="display: #{movimiento.elemento.tipoMovimiento != null and movimiento.elemento.tipoMovimiento == 2 ? 'table-row' : 'none'}">
+                        <td>
+                            #{msg['sia.inventarios.movimiento.folioRemision']}:
+                            <span class="required" style="display: #{param['lista'] == null ? 'inline' : 'none'}">*</span>
+                        </td>
+                        <td>
+                            <h:inputText id="txtFolioRemision"
+                                         styleClass="ui-inputfield ui-textentry ui-widget ui-state-optional ui-corner-all"
+                                         readonly="#{param['lista'] != null}"
+                                         maxlength="100"
+                                         value="#{movimiento.elemento.folioRemision}" style="width: 175px"
+                                         required="#{movimiento.elemento.tipoMovimiento == 2}"
+                                         requiredMessage="#{msg['sia.validaciones.required']}">
+                            </h:inputText>
+                            <h:message for="txtFolioRemision" id="txtFolioRemisionMensaje"
+                                       styleClass="ui-widget ui-corner-all ui-state-error input-msg"/>
+                        </td>
+                    </tr>
+                    <tr style="display: #{param['lista'] != null ? 'table-row' : 'none'}">
+                        <td>#{msg['sia.inventarios.comun.creadoPor']}</td>
+                        <td>
+                            <h:inputText readonly="true" value="#{movimiento.elemento.generoNombre}"
+                                         styleClass="ui-inputfield ui-textentry ui-widget ui-state-optional ui-corner-all"></h:inputText>
+                        </td>
+                    </tr>
+                    <tr style="display: #{param['lista'] != null ? 'table-row' : 'none'}">
+                        <td>#{msg['sia.inventarios.comun.fechaRegistro']}</td>
+                        <td>
+                            <h:inputText readonly="true"
+                                         value="#{movimiento.formatearFechaGenero(movimiento.elemento.fechaGenero)}"
+                                         styleClass="ui-inputfield ui-textentry ui-widget ui-state-optional ui-corner-all"></h:inputText>
+                        </td>
+                    </tr>
+                    <tr style="display: #{param['lista'] != null ? 'table-row' : 'none'}">
+                        <td>#{msg['sia.inventarios.movimientos.estatus']}</td>
+                        <td>
+                            <h:inputText readonly="true"
+                                         value="#{estatusMovimiento.getNombreEstatus(movimiento.elemento.status)}"
+                                         styleClass="ui-inputfield ui-textentry ui-widget ui-state-optional ui-corner-all"></h:inputText>
+                        </td>
+                    </tr>
+                    <tr style="display: #{param['lista'] != null and estatusMovimiento.estatusRechazada == movimiento.elemento.status ? 'table-row' : 'none'}">
+                        <td>#{msg['sia.inventarios.movimientos.motivoRechazo']}</td>
+                        <td>
+                            <h:inputText readonly="true" value="#{movimiento.elemento.motivoRechazo}"
+                                         styleClass="ui-inputfield ui-textentry ui-widget ui-state-optional ui-corner-all"></h:inputText>
+                        </td>
+                    </tr>
+                </table>
+            </h:panelGroup>
+            <div style="width: 1100px">
+                <h:dataTable id="tablaFormtoEnt" value="#{movimiento.formatos}" var="for" styleClass="input articulos">
+                    <h:column>
+                        <f:facet name="header">
+                            Archivo
+                        </f:facet>
+                        <h:outputLink target="_blank"  value="/Sia/AbrirArchivo?ZWZ2W=#{for.idAdjunto}&amp;ZWZ3W=#{for.uuId}">
+                            #{for.archivo}
+                        </h:outputLink>
+                    </h:column>
+                    <h:column>
+                        <f:facet name="header">
+                            Fecha
+                        </f:facet>
+                        <h:outputText value="#{for.fechaGenero}">
+                            <f:convertDateTime pattern="dd/MM/yyyy"/>
+                        </h:outputText>
+                    </h:column>
+                    <h:column>
+                        <h:commandLink value="Eliminar" actionListener="#{movimiento.quitarFormato}" style="color: red;"/>
+                    </h:column>
+                </h:dataTable>
+            </div>
+            <div style="width: 1100px">
+                <h:dataTable id="tablaArticulos" value="#{movimiento.elementos}" var="ta" styleClass="input articulos">
+                    <h:column>
+                        <f:facet name="header">
+                            <h:selectBooleanCheckbox value="true" class="todos" onchange="seleccionarGeneral('todos', 'seleccion')"/>
+                        </f:facet>
+                        <h:selectBooleanCheckbox disabled="#{ta.transaccionId gt 0}" value="#{ta.selected}" class="seleccion"/>
+                    </h:column>
+                    <h:column>
+                        <f:facet name="header">
+                            #{msg['sia.inventarios.movimiento.articulo']}
+                        </f:facet>
+                        <h:inputText value="#{ta.articuloNombre}" id="txtArticulo"
+                                     readonly="#{param['transaccionId'] != null}"
+                                     styleClass="articuloAutoComplete ui-inputfield ui-textentry ui-widget ui-state-optional ui-corner-all ui-autocomplete-input">
+                        </h:inputText>
+                        <h:inputHidden value="#{ta.articuloId}" id="hdArticuloId" required="true"
+                                       requiredMessage="#{msg['sia.validaciones.required']}"/>
+                        <h:message for="hdArticuloId" id="msjArticulo"
+                                   styleClass="ui-widget ui-corner-all ui-state-error input-msg"/>
+                    </h:column>
+                    <h:column>
+                        <f:facet name="header">
+                            #{msg['sia.inventarios.movimiento.cantidad']}
+                        </f:facet>
+                        <h:inputText id="txtArticuloCantidad" value="#{ta.numeroUnidades}"
+                                     readonly="#{not movimiento.puedeEditarLista()}"
+                                     styleClass="ui-inputfield ui-textentry ui-widget ui-state-optional ui-corner-all"
+                                     required="true" requiredMessage="#{msg['sia.validaciones.required']}"
+                                     label="#{msg['sia.inventarios.movimiento.cantidad']}">
+                        </h:inputText>
+                        <h:message for="txtArticuloCantidad" id="msjArticuloCantidad"
+                                   styleClass="ui-widget ui-corner-all ui-state-error input-msg"/>
+                    </h:column>
+                    <h:column rendered="#{movimiento.elemento.tipoMovimiento eq 1}">
+                        <f:facet name="header"><h:outputText value="Precio" styleClass="identificador-header"/></f:facet>
+                        <h:inputText id="txtArticuloPrecio" value="#{ta.precioUnitario}"
+                                     readonly="#{not movimiento.puedeEditarLista()}"
+                                     styleClass="ui-inputfield ui-textentry ui-widget ui-state-optional ui-corner-all"
+                                     required="true" requiredMessage="#{msg['sia.validaciones.required']}"
+                                     label="Precio unitario">
+                        </h:inputText>
+                        <h:message for="txtArticuloPrecio" id="msjArticuloPrecio"
+                                   styleClass="ui-widget ui-corner-all ui-state-error input-msg"/>
+                    </h:column>
+                    <h:column rendered="#{movimiento.elemento.tipoMovimiento eq 1}">
+                        <f:facet name="header"><h:outputText value="Moneda"/></f:facet>
+                        <h:selectOneMenu id="txtArticuloMoneda" value="#{ta.idMoneda}" styleClass="custom-select"
+                                         readonly="#{not movimiento.puedeEditarLista()}"
+                                         label="Precio unitario">
+                            <f:selectItems value="#{movimiento.monedas}"/>
+                        </h:selectOneMenu>
+                        <h:message for="txtArticuloMoneda" id="msjArticuloMeneda"
+                                   styleClass="ui-widget ui-corner-all ui-state-error input-msg"/>
+                    </h:column>
+                    <h:column>
+                        <f:facet name="header">
+                            <h:outputText value="#{msg['sia.inventarios.movimiento.identificador']}"
+                                          styleClass="identificador-header"/>
+                        </f:facet>
+                        <h:inputText id="txtIdentificador" value="#{ta.identificador}"
+                                     readonly="#{not movimiento.puedeEditarLista()}"
+                                     maxlength="200"
+                                     styleClass="ui-inputfield ui-textentry ui-widget ui-state-optional ui-corner-all">
+                        </h:inputText>
+                    </h:column>
+                </h:dataTable>
+                <div class="agregar">
+                    <p:commandLink styleClass="hbutton-cr" value="#{msg['sia.inventarios.comun.agregar']}"
+                                   action="#{movimiento.agregarFila()}"
+                                   rendered="#{param['lista'] == null}"
+                                   process="@this tablaArticulos" update="tablaArticulos">
+                    </p:commandLink>
+                </div>
+            </div>
+            <div class="botones-seccion clearfix">
+                <h:panelGroup id="pnBotones">
+                    <div style="display:#{param['lista'] != null and estatusMovimiento.esPendienteRevision(movimiento.elemento.status) ? 'inline-block' : 'none'}">
+                        <h:commandLink styleClass="hbutton" value="#{msg['sia.inventarios.movimientos.confirmar']}"
+                                       rendered="#{not roles.esEmpleadoDeAlmacen()}"
+                                       action="#{movimiento.confirmar}" immediate="true">
+                            <f:ajax execute="@this" render="@all"/>
+                            <f:param name="lista" value="#{param.lista}"/>
+                        </h:commandLink>
+                        <h:commandLink styleClass="hbutton" value="#{msg['sia.inventarios.movimientos.rechazar']}"
+                                       rendered="#{not roles.esEmpleadoDeAlmacen()}"
+                                       onclick="mostrarConfirmar(this, rechazarDialogo);
+                                               return false"></h:commandLink>
+                        <h:commandButton action="#{movimiento.rechazar()}" immediate="true" style="display: none">
+                            <f:ajax execute="@this" render="@all"/>
+                            <f:param name="lista" value="#{param.lista}"/>
+                        </h:commandButton>
+                    </div>
+
+                    <h:panelGroup rendered="#{param['lista'] == null}">
+                        <h:commandLink id="btnGuardar" styleClass="hbutton-guardar"
+                                       value="#{msg['sia.inventarios.comun.guardar']}" action="#{movimiento.guardar()}">
+                            <f:ajax execute="@form" render="@all"/>
+                        </h:commandLink>
+                        <h:commandLink id="btnProcesar" styleClass="hbutton-pro"
+                                       value="#{msg['sia.inventarios.comun.procesar']}" action="#{movimiento.procesar()}"
+                                       onclick='return confirm("#{msg["sia.inventarios.movimientos.confirmarProcesar"]}");'
+                                       style="display:#{param['transaccionId'] == null? 'none' : 'inline-block'}">
+                        </h:commandLink>
+                    </h:panelGroup>
+                </h:panelGroup>
+                <h:link outcome="movimientos" styleClass="hbutton-reg"
+                        value="#{msg['sia.inventarios.movimiento.volverHistorial']}"
+                        onclick='return confirm("#{msg["sia.inventarios.comun.confirmarSalir"]}");'>
+                </h:link>
+            </div>
+
+            <p:confirmDialog id="rechazarDialogo"
+                             message=""
+                             header="#{msg['sia.inventarios.movimientos.rechazar']}"
+                             width="300"
+                             height="160"
+                             closable="false"
+                             widgetVar="rechazarDialogo">
+                <div>
+                    #{msg['sia.inventarios.movimientos.motivoRechazo']}:
+                </div>
+                <h:inputText value="#{movimiento.motivoRechazo}"/>
+                <h:panelGrid columns="2" styleClass="div-center" style="margin-top: 10px">
+                    <button type="button" onclick="confirmar();">#{msg['sia.inventarios.movimientos.rechazar']}</button>
+                    <button type="button" value="No"
+                            onclick="rechazarDialogo.hide();">#{msg['sia.inventarios.comun.cancelar']}</button>
+                </h:panelGrid>
+            </p:confirmDialog>
+            <script type="text/javascript">
+                function funcionEnter(txtFolio) {
+                    if (event.key === "Enter") {
+                        event.preventDefault();
+                        // Trigger the blur event.
+                        txtFolio.blur();
+                    }
+
+                }
+            </script>
+        </h:form>
+    </ui:define>
+</ui:composition>

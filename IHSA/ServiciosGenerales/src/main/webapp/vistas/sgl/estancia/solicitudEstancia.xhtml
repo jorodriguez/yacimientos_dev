@@ -1,0 +1,178 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+
+      xmlns:f="http://java.sun.com/jsf/core">
+    <body>
+        <ui:composition template="./../../../WEB-INF/facelets/templates/templateServiciosGenerales.xhtml">
+            <ui:define name="titulo"> 
+                <b>Solicitud de estancia</b>
+            </ui:define>
+            <ui:define name="contenido"> 
+                <h:form id="frmSolEstancia" >
+                    <div class="col-10">
+                        <div class="card  card-primary">
+                            <div class="card-body input-group">
+                                <div class="col-6" >        
+                                    <div class="input-group col-12" >
+                                        <div class="form-group col-12 col-xs-12" >
+                                            <div class="col-2 col-xs-12">
+                                                <h:outputLabel styleClass="control-label"   value="#{msgs['sistema.gerencia']}:"/>                                            </div>
+                                            <div class="col-10 col-xs-12">
+                                                <p:selectOneMenu id="idGerencia" value="#{solicitarEstanciaBean.idGerencia}">
+                                                    <f:selectItem itemLabel="#{msgs['sistema.seleccionar']} #{msgs['sistema.gerencia']}..." itemValue="-1" />                                        
+                                                    <f:selectItems value="#{solicitarEstanciaBean.mapaCombos.get('gerencias')}" />                                        
+                                                </p:selectOneMenu>
+                                            </div>
+                                        </div>
+                                        <div class="form-group col-12 col-xs-12" >
+                                            <div class="col-2 col-xs-12" >
+                                                <h:outputLabel value="#{msgs['sgl.oficina.nombre']}:"/>
+                                            </div>
+                                            <div class="col-10 col-xs-12">
+                                                <p:selectOneMenu id="idOficina" value="#{solicitarEstanciaBean.idOficina}" styleClass="form-control" >
+                                                    <f:selectItem itemLabel="#{msgs['sistema.seleccionar']} #{msgs['sgl.solicitudViaje.oficina.destino']} ..." itemValue="-1" />                                        
+                                                    <f:selectItems value="#{solicitarEstanciaBean.mapaCombos.get('oficinas')}" />                                        
+                                                </p:selectOneMenu>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-12" >
+                                        <p:tabView id="tbSolEst" styleClass="col-12"  >
+                                            <p:tab  title="Empleado" >
+                                                <p:autoComplete value="#{solicitarEstanciaBean.user}" 
+                                                                completeMethod="#{solicitarEstanciaBean.usuarioListener}"
+                                                                size="40" minQueryLength="4" placeholder="Usuario" forceSelection="true">
+                                                    <p:ajax listener="#{solicitarEstanciaBean.agregarUsuarioLista}"
+                                                            update="@this frmSolEstancia:tblIntegrantes" />
+                                                </p:autoComplete>
+                                            </p:tab >
+                                            <p:tab  title="Invitado"  >
+                                                <div class="input-group">
+                                                    <p:autoComplete value="#{solicitarEstanciaBean.invitado}"
+                                                                    completeMethod="#{solicitarEstanciaBean.invitadoListener}"
+                                                                    size="40" minQueryLength="4" placeholder="Invitado" forceSelection="true">
+                                                        <p:ajax listener="#{solicitarEstanciaBean.agregarInvitadoLista}" 
+                                                                update="@this frmSolEstancia:tblIntegrantes"/>
+                                                    </p:autoComplete>
+                                                    <p:commandLink value="+" title="Presione, solo si no encuentra al invitado" 
+                                                                   onclick="$(dialogoCrearInvitado).modal('show');"
+                                                                   styleClass="btn btn-success btn-small text-white"
+                                                                   process="@this" update="frmAgregarInvitado">
+                                                    </p:commandLink>
+                                                </div>
+                                            </p:tab  >
+                                        </p:tabView>
+                                    </div>
+                                </div>
+                                <div class="col-6" >
+                                    <div class="input-group col-12" >
+                                        <div class="form-group col-12 col-xs-12" >
+                                            <div class="col-2 col-xs-12" >
+                                                <h:outputLabel styleClass="control-label"   value="#{msgs['sgl.solicitudViaje.motivo']}:"/>
+                                            </div>
+                                            <div class="col-10 col-xs-12">
+                                                <p:selectOneMenu id="idMotivo" value="#{solicitarEstanciaBean.idMotivo}" styleClass="form-control">
+                                                    <f:selectItem itemLabel="#{msgs['sistema.seleccionar']} #{msgs['sgl.solicitudViaje.motivo']}..." itemValue="-1"/>
+                                                    <f:selectItems value="#{solicitarEstanciaBean.mapaCombos.get('motivos')}"/>
+                                                </p:selectOneMenu> 
+                                            </div>
+                                        </div>
+                                        <div class="input-group col-12 col-xs-12"  >
+                                            <div class="col-1">                                            
+                                                <h:outputLabel styleClass="control-label" value="Del:"/>
+                                            </div>
+                                            <div class="col-5 col-xs-12">
+                                                <p:datePicker id="dteIngreso" value="#{solicitarEstanciaBean.fechaIngreso}"  
+                                                              pattern="dd/MM/yyyy"  mindate="#{solicitarEstanciaBean.fechaIngreso}">
+                                                    <p:ajax event="dateSelect" 
+                                                            update="@this frmSolEstancia:dteIngreso frmSolEstancia:dteSalida"/>                                                
+                                                </p:datePicker>
+                                            </div>
+                                            <div class="col-1 col-xs-12">
+                                                <h:outputLabel styleClass="control-label" value="al"></h:outputLabel>
+                                            </div>
+                                            <div class="col-4 col-xs-12">
+                                                <p:datePicker id="dteSalida" value="#{solicitarEstanciaBean.fechaSalida}"                                                                     
+                                                              pattern="dd/MM/yyyy" 
+                                                              mindate="#{solicitarEstanciaBean.fechaIngreso}">
+                                                </p:datePicker>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <p:dataTable id="tblIntegrantes" value="#{solicitarEstanciaBean.listaDetalleEstancia}" var="estaDe" 
+                                                     styleClass="col-12"
+                                                     style="font-size: 1.0em">
+                                            <f:facet name="header"><h:outputText value="Integrantes" styleClass="fnegrita"/></f:facet>
+                                            <p:column>
+                                                <f:facet name="header"><h:outputText value="#{msgs['sgl.generales.nombre']}"/></f:facet>
+                                                <h:outputText value="#{estaDe.usuario}" rendered="#{estaDe.idInvitado  eq 0}"/>
+                                                <h:outputText value="#{estaDe.invitado}" rendered="#{estaDe.idInvitado  gt 0}"/>
+                                            </p:column>
+                                            <p:column headerText="Tipo" width="120">
+                                                <h:outputText value="#{estaDe.idTipoEspecifico eq 19 ? 'E' : 'I'}"/>
+                                            </p:column>
+                                            <p:column width="50">
+                                                <p:commandLink value="#{msgs['sistema.quitar']}" 
+                                                               action="#{solicitarEstanciaBean.quitarUsuarioLista(estaDe)}" 
+                                                               process="@this" update="frmSolEstancia:tblIntegrantes"/>
+                                            </p:column>
+                                        </p:dataTable>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="form-group col-12 col-xs-12" >
+                                        <h:outputLabel styleClass="control-label col-12"   value="Observación:"/>
+                                        <div class="col-112 col-xs-12">
+                                            <h:inputTextarea value="#{solicitarEstanciaBean.observacion}" styleClass="form-control"/> 
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-footer">
+                                <p:commandButton value="#{msgs['sistema.aceptar']}" 
+                                                 action="#{solicitarEstanciaBean.completarEnvioSolicitud}" 
+                                                 styleClass="btn btn-info text-white" process="@form" update="@form"/>
+                                <p:commandLink value="#{msgs['sistema.cancelar']}" 
+                                               action="#{solicitarEstanciaBean.cerrarEnvioSolicitud}" styleClass="btn btn-default" 
+                                               immediate="true" />
+                            </div>
+                        </div>      
+                    </div>
+                </h:form>   
+
+                <div class="modal fade" id="dialogoCrearInvitado" data-backdrop="static" data-keyboard="false">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">                    
+                                <h4 class="modal-title">Crear Invitados</h4>
+                            </div>
+                            <h:form id="frmAgregarInvitado" >
+                                <div class="modal-body">  
+                                    <h:messages  style="display: block;" infoClass="alert alert-success" warnClass="alert alert-warning"
+                                                 errorClass="alert alert-danger" fatalClass="alert alert-danger"  />
+                                    Nombre: <h:inputText value="#{solicitarEstanciaBean.invitado}" styleClass="form-control" 
+                                                         required="true" requiredMessage="Agregue un nombre"/>
+                                </div>
+                                <div class="modal-footer">
+                                    <p:commandButton value="#{msgs['sistema.aceptar']}" 
+                                                     actionListener="#{solicitarEstanciaBean.agregarInvitado}" 
+                                                     styleClass="btn btn-info text-white" 
+                                                     process="@form" update="frmSolEstancia:tbSolEst"/>
+                                    <p:commandLink value="#{msgs['sistema.cancelar']}" 
+                                                   actionListener="#{solicitarEstanciaBean.cerrarAgregarInvitado}" styleClass="btn btn-default" 
+                                                   immediate="true"/>
+                                </div>  
+                            </h:form>
+                        </div>
+                    </div>
+                </div>
+            </ui:define>
+        </ui:composition>
+
+    </body>
+</html>

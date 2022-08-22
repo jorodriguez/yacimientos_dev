@@ -1,0 +1,329 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:ice="http://www.icesoft.com/icefaces/component"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:p="http://primefaces.org/ui">
+    <h:form id="frmMensaje">
+        <div class="modal fade" data-backdrop="static" id="dialogoMensaje" data-keyboard="false" style="overflow-y: scroll;">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title">Bienvenido </h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="panel panel-default">
+                            <div class="row-fluid">
+                                <b>Seleccione la compañia</b>
+                            </div>
+                            <div class="row-fluid">
+                                <h:selectOneMenu value="#{sesion.rfcCompania}" class="form-control">
+                                    <f:selectItems value="#{sesion.empresas}"/> 
+                                    <p:ajax listener="#{sesion.seleccionarEmpresa}" update="frmMensaje:lblReq"/>
+                                </h:selectOneMenu>
+                            </div>
+                        </div>
+                        <div >
+                            <div class="panel panel-primary">
+                                <div class="panel-heading">                                    
+                                    Recepción de facturas
+                                </div>
+                                <div class="panel-body">
+                                    <h:outputLabel id="lblReq" value="#{sesion.companiaVoSesion.requisitoFactura}"
+                                                   escape="false"/>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="input-group col-lg-12">
+                                    <div class="col-lg-1">
+                                        <p:selectBooleanCheckbox id="checkAcepto" 
+                                                                 value="#{proveedorBean.mensajeLeido}">
+                                            <p:ajax update="frmMensaje:btnEntendido"/>
+                                        </p:selectBooleanCheckbox>
+                                    </div>
+                                    <div class="col-lg-10">
+                                        <label for="checkAcepto">He leido y acepto las condiciones de recepción de facturas mostradas en está ventana y en la Orden de Compra.</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <div id="divEntendido" style="display: block;">
+                            <p:commandLink id="btnEntendido" class="btn btn-primary text-white" value="Entendido" 
+                                           disabled="#{proveedorBean.mensajeLeido eq false}"
+                                           action="#{sesion.irPrincipalFactura()}"></p:commandLink>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>        
+    </h:form>
+    <h:form id="frmMensajePrincipal">
+        <div class="modal fade" data-backdrop="static" id="dialogoMensajePrincipal" data-keyboard="false">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title">Cambio de empresa </h4>
+                    </div>
+                    <div class="modal-body">                        
+                        <div >
+                            <div class="panel panel-primary">
+                                <div class="panel-heading">                                    
+                                    <b>#{sesion.companiaVoSesion.nombre}</b>
+                                </div>
+                                <div class="panel-body">
+                                    <h:outputLabel id="lblReqPrin" value="#{sesion.companiaVoSesion.requisitoFactura}"
+                                                   escape="false"/>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="input-group col-lg-12">
+                                    <div class="col-lg-1">
+                                        <p:selectBooleanCheckbox value="#{proveedorBean.mensajeLeido}" >
+                                            <p:ajax update="frmMensajePrincipal:btnEntendidoPrin"/>
+                                        </p:selectBooleanCheckbox>
+                                    </div>
+                                    <div class="col-lg-10">
+                                        <label for="checkAcepto">He leido y acepto las condiciones de recepción de facturas mostradas en está ventana y en la Orden de Compra.</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <div id="divEntendidoPrin" >
+                            <p:commandLink id="btnEntendidoPrin" class="btn btn-primary text-white" value="Entendido" 
+                                           disabled="#{proveedorBean.mensajeLeido eq false}"
+                                           action="#{proveedorBean.refrescarPrincipalFactura()}">
+                            </p:commandLink>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>        
+    </h:form>
+
+    <div class="modal fade" data-backdrop="static" id="dialogoMensajeArchivo" data-keyboard="false">
+        <h:form id="frmMensajeArchivos">        
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title">Carga de archivos requeridos </h4>
+                    </div>
+                    <div class="modal-body">                        
+                        <div >
+                            <div class="panel panel-primary">
+                                <div class="panel-heading">                                    
+                                    <b>Proveedor #{sesion.proveedorVo.nombre}</b>
+                                </div>
+                                <div class="panel-body">
+
+                                    <div class="col-lg-12 col-xs-12">
+                                        <div class="input-group col-lg-12 col-xs-12">                                
+
+                                            <p align="right" style="margin-left: -0.5cm; margin-bottom: 0cm">
+                                                <span lang="es-ES">21 de Junio de 2021</span></p>
+                                            <p align="center" style="margin-left: -0.5cm; margin-bottom: 0cm"><font size="4" style="font-size: 14pt"><span lang="es-ES"><b>CIRCULAR
+                                                            GRUPO COBRA</b></span></font></p>
+                                            <p lang="es-ES" style="margin-left: -0.5cm; margin-bottom: 0cm"><br/>
+
+                                            </p>
+                                            <p align="right" style="margin-left: -0.5cm; margin-bottom: 0cm"><span lang="es-ES">Referencia:
+                                                    Decreto en materia de Subcontratación (DOF de 23/04/2021)</span></p>
+                                            <p style="margin-left: -0.5cm; margin-bottom: 0cm"><span lang="es-ES">Estimado
+                                                    colaborador: </span>
+                                            </p>
+                                            <p align="justify" style="margin-left: -0.5cm; margin-bottom: 0cm"><span lang="es-ES">En
+                                                    relación con el contrato o contratos que tengan celebrado con
+                                                    nosotros y/o cualquier sociedad del [Grupo Cobra], por medio del
+                                                    presente me permito informarle que, derivado de la publicación el
+                                                    pasado 23 de abril en el Diario Oficial de la Federación del Decreto
+                                                    en materia de Subcontratación Laboral<a class="sdfootnoteanc" name="sdfootnote1anc" href="#sdfootnote1sym"><sup>1</sup></a>,
+                                                    será necesario efectuar diversas modificaciones contractuales con el
+                                                    objetivo de adaptarse a esta normativa. </span>
+                                            </p>
+                                            <p align="justify" style="margin-left: -0.5cm; margin-bottom: 0cm"><span lang="es-ES">En
+                                                    este sentido, les rogamos que en el </span><span lang="es-ES"><b>plazo
+                                                        improrrogable de los próximos 5 días</b></span><span lang="es-ES">
+                                                    nos haga llegar </span>
+                                            </p>
+                                            <ul>
+                                                <li><p align="justify" style="margin-bottom: 0.28cm"><span lang="es-ES">Los
+                                                        </span><span lang="es-ES"><u>estatutos sociales vigentes</u></span><span lang="es-ES">
+                                                            en los que conste su objeto social actual. </span>
+                                                    </p>
+                                                </li>
+                                                <li><p align="justify" style="margin-bottom: 0.28cm"><span lang="es-ES">Su
+                                                        </span><span lang="es-ES"><u>actividad preponderante.</u></span></p>
+                                                </li>
+                                                <li><p align="justify" style="margin-bottom: 0.28cm"><span lang="es-ES">Documentación
+                                                            justificativa en caso de contar con la</span><span lang="es-ES"><u>
+                                                                acreditación de Servicio Especializado</u></span></p>
+                                                </li>
+                                            </ul>
+                                            <p align="justify" style="margin-left: -0.5cm; margin-bottom: 0cm"><span lang="es-ES">El
+                                                    envío de dicha documentación se efectuará del modo siguiente en el
+                                                    PORTAL DEL PROVEEDOR que está habilitado. Los archivos deberán ser
+                                                    nombrados de la siguiente manera: </span>
+                                            </p>
+                                            <p align="center" style="margin-left: -0.5cm; margin-bottom: 0cm"><span lang="es-ES">RFCProveedor-Código
+                                                    documento (dependiendo del documento que se esté incluyendo como se
+                                                    describe a continuación): </span>
+                                            </p>
+                                            <ul>
+                                                <ul>
+                                                    <li><p align="justify" style="margin-bottom: 0.28cm"><span lang="es-ES">ESV-->
+                                                            </span><span lang="es-ES"><u>Los estatutos sociales vigentes</u></span></p>
+                                                    </li>
+                                                    <li><p align="justify" style="margin-bottom: 0.28cm"><span lang="es-ES">AP -->
+                                                            </span><span lang="es-ES"><u>Actividad preponderante (documento
+                                                                    libre)</u></span></p>
+                                                    </li>
+                                                    <li><p align="justify" style="margin-bottom: 0.28cm"><span lang="es-ES">SE -->
+                                                            </span><span lang="es-ES">
+                                                                Servicio Especializado (en caso de registro)</span></p>
+                                                    </li>
+                                                </ul>
+                                            </ul>
+                                            <p align="justify" style="margin-left: -0.5cm; margin-bottom: 0cm"><span lang="es-ES">La
+                                                    aportación de dicha documentación en el plazo indicado se enmarca
+                                                    en los análisis que Grupo Cobra y sus subsidiarias efectúa para
+                                                    la adaptación de la Ley de Subcontratación y las adaptaciones a la
+                                                    documentación contractual que tengan con cualquiera de las
+                                                    sociedades de nuestro Grupo.</span></p>
+                                            <p align="justify" style="margin-left: -0.5cm; margin-bottom: 0cm"><span lang="es-ES">La
+                                                    falta de aportación de la documentación solicitada determinará la
+                                                </span><span lang="es-ES"><b>suspensión de cualquier pago</b></span><span lang="es-ES">.
+                                                    Idéntica consecuencia procederá en los casos en los que, antes del
+                                                    01 de agosto de 2021, no se nos haya notificado debidamente el </span><span lang="es-ES"><b>Número
+                                                        de registro como prestador de servicios especializados u obras
+                                                        especializadas (REPSE)</b></span><span lang="es-ES">, cuando fuera de
+                                                    aplicación.</span></p>
+                                            <p lang="es-ES" align="justify" style="margin-left: -0.5cm; margin-bottom: 0cm">
+                                                <br/>
+
+                                            </p>
+                                            <p style="margin-bottom: 0cm"><span lang="es-ES">Atentamente,</span></p>
+                                            <p style="margin-bottom: 0cm; margin-left: 50px;"><span lang="es-ES"><b>          Grupo Cobra</b></span></p>
+                                            <p lang="es-ES" style="margin-bottom: 0cm"><br/>
+                                            </p>                                            
+                                            <div id="sdfootnote1"><p class="sdfootnote"><a class="sdfootnotesym" name="sdfootnote1sym" href="#sdfootnote1anc">1</a>
+                                                    <font color="#2f2f2f"><font face="Arial, serif"><font size="1" style="font-size: 8pt"><b><span style="background: #ffffff">Artículo
+                                                                        13 de la Ley Federal del Trabajo: </span></b></font></font></font><font size="1" style="font-size: 8pt"><span lang="es-ES">“</span></font><font size="1" style="font-size: 8pt"><span lang="es-ES"><i>Se
+                                                                permite la subcontratación de servicios especializados o de
+                                                                ejecución de obras especializadas que no formen parte del
+                                                                objeto social ni de la actividad económica preponderante de
+                                                                la beneficiaria de estos, siempre que el contratista esté
+                                                                registrado en el padrón público a que se refiere el artículo
+                                                                15 de esta Ley</i></span></font><font size="1" style="font-size: 8pt"><span lang="es-ES">.”</span></font></p>
+                                            </div> 
+
+
+                                        </div>
+                                    </div>
+
+                                    <div class="col-lg-12 col-xs-12">
+                                        <div class="input-group col-lg-12 col-xs-12">                                
+                                            <div class="table table-responsive" style="margin-bottom: 0px;">
+                                                <p:dataTable rows="10" 
+                                                             value="#{sesion.proveedorVo.lstDocsPortal}" var="currentRow"
+                                                             size="small" showGridlines="true">
+                                                    <p:column style="width: 5%">
+                                                        <button type="button" class="btn btn-info"
+                                                                title="#{currentRow.ayuda}">
+                                                            <i class="fa fa-question"></i>
+                                                        </button>                                                        
+                                                    </p:column>
+                                                    <p:column style="width: 45%">                                                        
+                                                        <h:outputText value="#{currentRow.documento}"/>
+                                                        <f:facet name="header">
+                                                            <h:outputText value="Archivo"/>
+                                                        </f:facet>
+                                                    </p:column>
+                                                    <p:column style="width: 30%">
+                                                        <h:outputText rendered="#{currentRow.id gt 0}" value="Ya fue cargado el archivo"/>
+                                                        <h:outputText rendered="#{currentRow.id lt 1 and currentRow.obligatoria}" value="*El archivo es requerido"/>                                            
+                                                        <h:outputText rendered="#{currentRow.id lt 1 and !currentRow.obligatoria}" value="Favor de cargar el archivo"/>                                            
+                                                    </p:column> 
+                                                    <p:column style="width: 10%">
+                                                        <p:commandLink 
+                                                            rendered="#{currentRow.id gt 0}"
+                                                            styleClass="btn btn-danger btn-sm"  
+                                                            action="#{proveedorBean.borrarArchivoPortal(currentRow.id, currentRow.adjuntoVO.uuid)}"
+                                                            title="Click aquí para eliminar archivo..." >
+                                                            <i class="fa fa-trash text-white"></i>                                                
+                                                        </p:commandLink>                                                        
+                                                        <p:commandLink 
+                                                            rendered="#{currentRow.id lt 1}"
+                                                            styleClass="btn btn-info btn-sm"  
+                                                            action="#{proveedorBean.agregarArchivoPortal(currentRow.idDocumento, currentRow.adjuntoVO.tipoArchivo)}"
+                                                            title="Click aquí para cargar archivo..." >
+                                                            <i class="fa fa-file-pdf text-white"></i>                                                
+                                                        </p:commandLink>                                                        
+                                                    </p:column>					
+                                                </p:dataTable>
+
+                                            </div>
+
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <div id="divLogOutArchivos">
+                            <p:commandLink title="Salir del portal de proveedores" 
+                                           id="linkLogout"
+                                           value="Salir del portal de proveedores"
+                                           action="#{sesion.cerrarSesion}">                                            
+                            </p:commandLink>
+                        </div>
+                    </div>
+                </div>
+            </div>                
+        </h:form>
+    </div>
+
+    <!-- Modal Panel Popup agergar archivos -->
+    <div class="modal fade" id="adjuntarArchivoPortal" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Agregar archivo</h4>
+                </div>
+                <h:form id="frmArchivo">
+                    <div class="modal-body ">
+                        <div class="input-group">
+                            <p:fileUpload  
+                                id="fileEntryDoc22"                                                
+                                label="Archivo "
+                                listener="#{proveedorBean.subirArchivoPortal}"
+                                process="@this" update="frmMensajeArchivos"/> 
+                            <h:message for="fileEntryDoc22" infoStyle="display:none" />
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <p:commandButton id="btnCerrar" value="Cancelar" class="btn btn-default"
+                                         onclick="$(adjuntarArchivoPortal).modal('hide');"/>                        
+                    </div>
+                </h:form>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        function entendido(chkAcepto, divEntendido) {
+            if ($(chkAcepto).is(':checked')) {
+                //
+                $("#" + divEntendido).css({"display": "block"});
+            } else {
+                $("#" + divEntendido).css({"display": "none"});
+            }
+        }
+    </script>
+</ui:composition>

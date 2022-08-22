@@ -1,0 +1,43 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                >
+    <p:panel  id="pnlGers">
+        <h:outputText value="#{msgs['sistema.fecha.inicio']}"/>
+        <p:datePicker value="#{reporteBean.inicio}" pattern="dd/MM/yyyy"/>
+        <h:outputText value="#{msgs['sistema.fecha.fin']}" />
+        <p:datePicker value="#{reporteBean.fin}" pattern="dd/MM/yyyy"/>
+        <p:selectOneRadio value="#{reporteBean.panelSeleccion}" >
+            <f:selectItem itemValue="TODO" itemLabel="Todas" />
+            <f:selectItem itemValue="GERENCIA" itemLabel="Gerencia"/>
+            <p:ajax event="change" process="@this frmRep:tbReportes:pnlGers" update="frmRep:tbReportes:pnlOpciones"/> 
+        </p:selectOneRadio>
+        <p:commandLink value="#{msgs['sistema.buscar']}" 
+                       rendered="#{reporteBean.panelSeleccion eq 'TODO'}"
+                       action="#{reporteBean.traerOCSGerencia}"
+                       styleClass="btn btn-sm btn-primary text-white"
+                       update="frmRep:tbReportes:pnlOpciones" process="@this frmRep:tbReportes:pnlGers"/>
+
+    </p:panel>     
+    <p:panel id="pnlOpciones">
+        <p:outputPanel  id="TODO" rendered="#{reporteBean.panelSeleccion eq 'TODO'}">
+            <div id="graficaOrdenPorGerencia" style="min-width: 900px; height: 400px; margin: 0 auto;" ></div>
+            <ui:include src="reporteGerencias.xhtml"/>
+        </p:outputPanel>
+        <p:outputPanel  id="GERENCIA" rendered="#{reporteBean.panelSeleccion eq 'GERENCIA'}">
+            #{msgs['orden.gerencia.nombre']}
+            <p:selectOneMenu id="cmbGer" value="#{reporteBean.idGerencia}" styleClass="custom-select col-3" >                    
+                <f:selectItems value="#{reporteBean.listaGerencias}"/>
+            </p:selectOneMenu>
+            <p:commandLink value="Buscar" action="#{reporteBean.traerOCSGerencia}" 
+                           styleClass="btn btn-sm btn-primary text-white"                               
+                           process="@this frmRep:tbReportes:pnlOpciones frmRep:tbReportes:pnlGers" update="frmRep:tbReportes"/>
+            <ui:include src="reportePorGerencia.xhtml"/>
+        </p:outputPanel>
+    </p:panel>   
+
+
+</ui:composition>

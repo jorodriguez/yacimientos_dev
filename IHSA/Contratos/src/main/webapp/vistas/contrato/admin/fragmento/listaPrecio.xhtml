@@ -1,0 +1,53 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:p="http://primefaces.org/ui">    
+    <div class="row">
+        <div class="input-group">
+            <p:commandButton value="Procesar Artículos"
+                             action="#{contratoBean.iniciaCargaArticulos}" process="@this" update="frmCargaArt"
+                             class="btn btn-primary text-white"/>
+            <p:commandButton value="Cargar desde plantilla de Excel" class="btn btn-primary text-white ml-2"
+                             action="#{contratoBean.cargarListaPrecio}"
+                             process="@this" update="frmArchivo"/>
+        </div>
+    </div>
+    <div class="row mt-2">
+        <div class="card card-info">
+            <div class="card-header">
+                Lista de Productos / Servicios
+            </div>                
+            <div class="card-body">
+                <div class="row">
+                    <p:dataTable id="dtlConvenioArticulo" value="#{contratoBean.contratoVo.listaArticulo}" var="data"
+                                 style="text-align: left;" size="small" showGridlines="true" rowKey="#{data.id}">
+                        <p:column headerText="Ítem" style="text-align: left;"> 
+                            <h:outputText value="#{empty data.item ? data.codigo : data.item}" style="font-weight: #{data.cantidad eq 0 ? 'bold': 'none'}; color: #{data.registrado ? '' : '#B34500'}"/>
+                        </p:column>
+                        <p:column headerText="Artículo" style="text-align: left;">
+                            <h:outputText value="#{data.nombre}" style="font-weight: #{data.cantidad eq 0 ? 'bold': 'none'}; color: #{data.registrado ? '' : '#B34500'}"/>
+                        </p:column>
+                        <p:column id="exp" width="50">
+                            <p:rowToggler rendered="#{not empty data.alcance}"/>
+                        </p:column>
+                        <p:column headerText="Unidad" style="width: 5%">
+                            <h:outputText  value="#{data.unidadNombre}" />
+                        </p:column>
+                        <p:column headerText="Cantidad" width="5%">
+                            <h:outputText  value="#{data.cantidad}"  rendered="#{data.guardado}"/>
+                        </p:column>
+                        <p:column headerText="Precio Unitario" width="120">
+                            <h:outputText value="#{data.precioUnitario}" rendered="#{data.guardado}"/>
+                        </p:column>                        
+                        <p:rowExpansion>
+                            <h:outputText  value="#{data.alcance}" styleClass="text text-justify text-info"/>
+                        </p:rowExpansion>
+                    </p:dataTable>
+                </div>
+            </div>
+        </div>            
+    </div>
+</ui:composition>

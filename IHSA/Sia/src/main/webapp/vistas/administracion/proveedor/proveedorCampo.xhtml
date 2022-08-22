@@ -1,0 +1,58 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"       
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      >
+    <body>
+        <ui:composition template="./../../../WEB-INF/facelets/templates/templateGrupos.xhtml">
+            <ui:define name="tituloPagina">
+                Proveedores a excentar de autorización
+            </ui:define>
+            <ui:define name="contenido">
+                <h:form id="frmRelCampoPro"  >
+                    <h:messages errorClass="text text-danger" infoClass="text text-danger"/>
+                    <div class="col-12 col-xs-12">
+                        <p:panel id="pnlDatos">
+                            <h:outputLabel value="Bloque"/>
+                            <p:selectOneMenu value="#{proveedorCampoBean.idCampo}">                                    
+                                <f:selectItems value="#{proveedorCampoBean.campos}"/>
+                                <p:ajax listener="#{proveedorCampoBean.cambiarCampoSeleccionado}" update="frmRelCampoPro:dtPC"/>
+                            </p:selectOneMenu>
+                            <h:outputLabel value="#{msgs['orden.proveedor']}"/>
+                            <p:autoComplete id="autoProv" value="#{proveedorCampoBean.proveedorSeleccionado}" size="80" 
+                                            completeMethod="#{proveedorCampoBean.completaProveedor}"
+                                            multiple="false" selectLimit="1" minQueryLength="3" 
+                                            placeholder="Nombre del proveedor">
+                                <p:ajax event="itemSelect" listener="#{proveedorCampoBean.llenarDatosProveedor}" 
+                                        process="@this" ignoreAutoUpdate="true"/>
+                            </p:autoComplete>
+                            <p:commandButton title="Agregar relación proveedor" value="#{msgs['sistema.guardar']}"  
+                                             action="#{proveedorCampoBean.agregarProveedor}"
+                                             styleClass="btn btn-info text-white" 
+                                             process="@this frmRelCampoPro:pnlDatos" update="frmRelCampoPro:dtPC">
+                            </p:commandButton>
+                        </p:panel>
+                    </div>
+                    <div class="col-12 col-xs-12">
+                        <p:dataTable id="dtPC" size="small" stripedRows="true" showGridlines="true" 
+                                     value="#{proveedorCampoBean.lista}" var="data"
+                                     styleClass="table table-striped table-bordered"> 
+                            <p:column headerText="Proveedor">
+                                <h:outputText value="#{data.nombre}"/>
+                            </p:column>
+                            <p:column width="110">
+                                <p:commandLink value="#{msgs['sistema.eliminar']}" style="color: blue;"
+                                               action="#{proveedorCampoBean.eliminarProveedorCampo(data.idRelacion)}"
+                                               process="@this" update="frmRelCampoPro:dtPC">
+                                </p:commandLink>
+                            </p:column>
+                        </p:dataTable>
+                    </div>
+                </h:form>
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

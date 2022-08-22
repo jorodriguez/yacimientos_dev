@@ -1,0 +1,311 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <body>
+        <ui:composition template="../../../WEB-INF/template/template.xhtml">
+            <ui:define name="tituloPagina">      
+                <h2 class="page-header">Catálogos de contratos</h2>
+            </ui:define>
+            <ui:define name="contenido">
+                <script type="text/javascript">
+                    function mostrarDialogo(dialogo) {
+                        $(dialogo).modal('show');
+                    }
+                    function mostrarDiv(divM) {
+                        $("#" + divM).css({
+                            "display": "block"
+                        });
+                    }
+
+                    function ocultarDiv(divOcultar) {
+                        $("#" + divOcultar).css({
+                            "display": "none"
+                        });
+                    }
+                </script>
+
+                <div class="row">
+                    <h:form id="frmClasifica">
+                        <p:tabView id="tabViewCat">
+                            <p:tab title="Documentación">
+                                <div class="row">
+                                    <p:commandLink  styleClass="btn btn-md" 
+                                                    onclick="$(dialogoDocumento).modal('show');"
+                                                    process="@this" update="frmDocto">
+                                        <i class="fa fa-plus text-primary"/>
+                                    </p:commandLink>
+                                </div>
+                                <div class="row">
+                                    <p:dataTable id="dtDoctos" value="#{catalogoBean.documentos}" 
+                                                 var="data" styleClass="table table-bordered table-striped" 
+                                                 rows="10" paginator="true"  
+                                                 paginatorPosition="bottom" >
+                                        <p:column headerText="Tipo" width="120">
+                                            <h:outputText value="#{data.tipoDocTxt}"/>
+                                        </p:column>
+                                        <p:column headerText="Nombre" style="text-align: left;">
+                                            <h:outputText value="#{data.nombre}"/>
+                                        </p:column>
+                                        <p:column headerText="Descripción">
+                                            <h:outputText value="#{data.descripcion}"/>
+                                        </p:column>
+                                        <p:column width="80">
+                                            <p:commandLink value="Modificar" 
+                                                           action="#{catalogoBean.modificarDocto(data.id, data.tipoDoc, data.nombre, data.descripcion)}"
+                                                           process="@this" update="frmDoctoMod"
+                                                           oncomplete="$(dialogoDocumentoMod).modal('show');">
+                                            </p:commandLink>
+                                        </p:column>
+                                        <p:column width="80">
+                                            <p:commandLink value="Eliminar"
+                                                           action="#{catalogoBean.eliminarDocto(data.id)}"
+                                                           process="@this" update="frmClasifica:tabViewCat">
+                                            </p:commandLink>
+                                        </p:column>
+                                    </p:dataTable>
+                                </div>
+                            </p:tab>
+                            <p:tab title="Tipos de contratos">
+                                <div class="row">
+                                    <p:commandLink  styleClass="btn btn-md" 
+                                                    onclick="$(dialogoTipo).modal('show');"
+                                                    process="@this" update="frmTipo">
+                                        <i class="fa fa-plus text-primary"/>
+                                    </p:commandLink>
+                                </div>
+                                <div class="row">
+                                    <p:dataTable id="dtTipos" value="#{catalogoBean.tipos}" 
+                                                 var="data" styleClass="table table-bordered table-striped" 
+                                                 rows="10" paginator="true"  
+                                                 paginatorPosition="bottom" 
+                                                 style="font-size: 1em; width: 100%">
+                                        <p:column headerText="Nombre" style="text-align: left;">
+                                            <h:outputText value="#{data.nombre}"/>   
+                                        </p:column>   
+                                        <p:column headerText="Descripción">
+                                            <h:outputText value="#{data.descripcion}"/> 
+                                        </p:column>
+                                        <p:column >
+                                            <p:commandLink value="Modificar" action="#{catalogoBean.modificarTipo(data.id, data.nombre, data.descripcion)}"
+                                                           process="@this" update="frmTipoMod">
+                                            </p:commandLink>
+                                        </p:column>
+                                        <p:column >
+                                            <p:commandLink value="Eliminar"  action="#{catalogoBean.eliminarTipo(data.id)}"
+                                                           process="@this" update="frmClasifica:tabViewCat">
+                                            </p:commandLink>
+                                        </p:column>
+                                    </p:dataTable>
+                                </div>
+                            </p:tab>
+                            <p:tab title="Clasificación">
+                                <p:dataTable value="#{catalogoBean.listaClasificaion}" var="data" 
+                                             showGridlines="true" size="small">
+                                    <f:facet name="header">Nombre</f:facet>
+                                    <p:column  style="text-align: left;">
+                                        <h:outputLabel value="#{data.nombre}"/>
+                                    </p:column>
+                                    <p:column>
+                                        <p:commandLink action="#{catalogoBean.agregarHijoClasificacion(data.descripcion)}"
+                                                       process="@this" update="frmClasi">
+                                            <i class="fa fa-plus text-primary"></i> 
+                                        </p:commandLink>
+                                    </p:column>
+                                </p:dataTable>
+                            </p:tab>
+                            <p:tab title="Hitos de pago">
+                                <div class="row">
+                                    <p:commandLink  styleClass="btn btn-md" 
+                                                    onclick="$(dialogoHito).modal('show');"
+                                                    process="@this" update="frmHito">
+                                        <i class="fa fa-plus text-primary"/>
+                                    </p:commandLink>
+                                </div>
+                                <div class="row">
+                                    <p:dataTable id="dtHitos" value="#{catalogoBean.hitos}" 
+                                                 var="data" styleClass="table table-bordered table-striped" 
+                                                 rows="10" paginator="true"  
+                                                 paginatorPosition="bottom" 
+                                                 style="font-size: 1em; width: 100%">
+                                        <p:column headerText="Nombre" style="text-align: left;">
+                                            <h:outputText value="#{data.nombre}"/> 
+                                        </p:column> 
+                                        <p:column headerText="Descripción">
+                                            <h:outputText value="#{data.descripcion}"/>   
+                                        </p:column>
+                                        <p:column >
+                                            <p:commandLink value="Modificar" action="#{catalogoBean.modificarHito(data.id, data.nombre, data.descripcion)}"
+                                                           process="@this" update="frmHitoMod"/>
+                                        </p:column>
+                                        <p:column >
+                                            <p:commandLink value="Eliminar" 
+                                                           action="#{catalogoBean.eliminarHito(data.id)}"
+                                                           process="@this" update="frmClasifica:tabViewCat">
+                                            </p:commandLink>
+                                        </p:column>
+                                    </p:dataTable>
+                                </div>
+                            </p:tab>
+                            <p:tab title="Condiciones de pago">
+                                <p:dataTable id="dtCondicion" value="#{catalogoBean.condiciones}" 
+                                             var="data" styleClass="table table-bordered table-striped" 
+                                             rows="10" paginator="true"  
+                                             paginatorPosition="bottom" 
+                                             style="font-size: 1em; width: 100%">
+                                    <p:column headerText="Nombre" style="text-align: left;">
+                                        <h:outputText value="#{data.nombre}"/>   
+                                    </p:column>   
+                                    <p:column headerText="Descripción">
+                                        <h:outputText value="#{data.descripcion}"/>   
+                                    </p:column>
+                                </p:dataTable>
+                            </p:tab>
+                            <p:tab title="Formatos de evaluación">
+                                <div class="row">                                                
+                                    <p:commandLink  styleClass="btn btn-md" 
+                                                    onclick="$(dialogoFormato).modal('show');"
+                                                    process="@this" update="frmFormato">
+                                        <i class="fa fa-plus text-primary"/>
+                                    </p:commandLink>
+                                </div>
+                                <div class="row">
+                                    <p:dataTable value="#{catalogoBean.formatos}" 
+                                                 var="data" rowIndexVar="indice" styleClass="table table-bordered table-striped" 
+                                                 rows="10" paginator="true"  
+                                                 paginatorPosition="bottom" 
+                                                 style="font-size: 1em; width: 100%">
+                                        <p:column headerText="Tipo">
+                                            <h:outputText value="#{data.clasificacion}"/>   
+                                        </p:column>
+                                        <p:column headerText="Nombre" style="text-align: left;">
+                                            <h:outputText value="#{data.nombre}"/> 
+                                        </p:column> 
+                                        <p:column headerText="Titulo">
+                                            <h:outputText value="#{data.titulo}"/>   
+                                        </p:column>                                                    
+                                        <p:column >
+                                            <p:commandLink action="#{catalogoBean.seleccionarFormato(data.id, indice)}">
+                                                <i class="fa fa-circle-arrow-down"></i>
+                                            </p:commandLink>
+                                        </p:column>
+                                        <p:column >
+                                            <p:commandLink  action="#{catalogoBean.modificarFormato(data.id, indice)}"
+                                                            process="@this" update="frmFormato">
+                                                <i class="fa fa-pencil"></i>
+                                            </p:commandLink>
+                                        </p:column>
+                                        <p:column >
+                                            <p:commandLink
+                                                action="#{catalogoBean.eliminarFormato(data.id)}"
+                                                process="@this" update="frmClasifica:tabViewCat">
+                                                <i class="fa fa-trash"></i>
+                                            </p:commandLink>
+                                        </p:column>
+                                    </p:dataTable>
+                                </div>
+                                <div id="panelSecciones" style="display: none;">
+                                    <div class="row">
+                                        <h3><h:outputText class="col-12 control-label " value="Formato: #{catalogoBean.tituloFormato}"/></h3>
+                                    </div>
+                                    <div class="row">
+                                        <p:commandLink  styleClass="btn btn-md"
+                                                        action="#{catalogoBean.regresarSeccion}"
+                                                        process="@this" update="frmClasifica:tabViewCat">
+                                            <i class="fa fa-arrow-left text-primary"/>
+                                        </p:commandLink>
+                                        <p:commandLink  styleClass="btn btn-md" action="#{catalogoBean.agregarSeccion}"
+                                                        onclick="$(dialogoSeccion).modal('show');"
+                                                        process="@this" update="frmClasifica:tabViewCat">
+                                            <i class="fa fa-plus text-primary"/>
+                                        </p:commandLink>
+                                    </div>                                                
+                                    <div class="row">
+                                        <p:dataTable id="dtEvaTempsSec" value="#{catalogoBean.secciones}" 
+                                                     var="data" rowIndexVar="indice" styleClass="table table-bordered table-striped" 
+                                                     rows="10" paginator="true"  
+                                                     paginatorPosition="bottom" 
+                                                     style="font-size: 1em; width: 100%">                                                    
+                                            <p:column headerText="Secciones" style="text-align: left;">
+                                                <h:outputText value="#{data.seccionNombre}"/> 
+                                            </p:column> 
+                                            <p:column headerText="Maximo">
+                                                <h:outputText value="#{data.seccionMaximo}"/>   
+                                            </p:column>                                                    
+                                            <p:column >
+                                                <p:commandLink action="#{catalogoBean.seleccionarSeccion(data.seccionId, indice)}"
+                                                               process="@this" update="frmClasifica:tabViewCat">
+                                                    <i class="fa fa-circle-arrow-down"></i>
+                                                </p:commandLink>
+                                            </p:column>
+                                            <p:column >
+                                                <p:commandLink  action="#{catalogoBean.modificarSeccion(data.seccionId, indice)}"
+                                                                process="@this" update="frmSeccion">
+                                                    <i class="fa fa-pencil"></i>
+                                                </p:commandLink>
+                                            </p:column>
+                                            <p:column >
+                                                <p:commandLink
+                                                    action="#{catalogoBean.eliminarSeccion(data.seccionId)}"
+                                                    process="@this" update="frmClasifica:tabViewCat">
+                                                    <i class="fa fa-trash text-danger"></i>
+                                                </p:commandLink>
+                                            </p:column>
+                                        </p:dataTable>
+                                    </div>
+                                </div>
+                                <div id="panelPregunta" style="display: none;">
+                                    <div class="row">
+                                        <h3><h:outputText class="col-12 control-label page-header" value="Formato: #{catalogoBean.tituloFormato}"/></h3>
+                                        <h2><h:outputText class="col-12 control-label page-header" value="Sección: #{catalogoBean.tituloSeccion}"/></h2>
+                                    </div>
+                                    <div class="row">
+                                        <p:commandLink  styleClass="btn btn-md"
+                                                        action="#{catalogoBean.regresarPregunta}"
+                                                        process="@this" update="frmClasifica:tabViewCat">
+                                            <i class="fa fa-arrow-left text-primary"/>
+                                        </p:commandLink>
+                                        <p:commandLink  styleClass="btn btn-md" action="#{catalogoBean.agregarPregunta}"
+                                                        onclick="$(dialogoPregunta).modal('show');"
+                                                        process="@this" update="frmPregunta">
+                                            <i class="fa fa-plus text-primary"/>
+                                        </p:commandLink>
+                                    </div>
+
+                                    <div class="row">
+                                        <p:dataTable id="dtEvaTempsSecPreg" value="#{catalogoBean.preguntas}" 
+                                                     var="data" rowIndexVar="indice" styleClass="table table-bordered table-striped" 
+                                                     rows="10" paginator="true"  
+                                                     paginatorPosition="bottom" 
+                                                     style="font-size: 1em; width: 100%">                                                    
+                                            <p:column headerText="Preguntas" style="text-align: left;">
+                                                <h:outputText value="#{data.pregunta}"/> 
+                                            </p:column> 						                                                        
+                                            <p:column >
+                                                <p:commandLink  action="#{catalogoBean.modificarPregunta(data.preguntaId, indice)}">
+                                                    <i class="fa fa-pencil"></i>
+                                                </p:commandLink>
+                                            </p:column>
+                                            <p:column >
+                                                <p:commandLink
+                                                    action="#{catalogoBean.eliminarPregunta(data.preguntaId)}"
+                                                    process="@this" update="frmClasifica:tabViewCat">
+                                                    <i class="fa fa-trash"></i>
+                                                </p:commandLink>
+                                            </p:column>
+                                        </p:dataTable>
+                                    </div>
+                                </div>
+                            </p:tab>
+                        </p:tabView>
+                    </h:form>
+                </div>
+                <ui:include src="../admin/fragmento/popAdminCtg.xhtml" />
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

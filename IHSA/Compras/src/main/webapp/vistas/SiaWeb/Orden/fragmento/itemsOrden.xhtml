@@ -1,0 +1,221 @@
+<ui:composition 
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    >
+    <div class="card panel-default">
+        <div class="card-heading">
+            Ítems
+        </div>
+        <div class="card-body">
+            <ui:repeat value="#{ordenBean.listaItems}" var="currentRow">
+                <div class="col-12" style="border: 1px solid #CCCCCC; border-radius: 25px 25px 25px 25px;" >
+                    <ui:fragment rendered="#{currentRow['idpresupuesto'] gt 0}">
+                        <div class="row" style="background-color: #39b3d7; border-radius: 25px 25px 0px 0px;">
+                            <div class="col-3">
+                                <div class="col-12">
+                                    <strong><h:outputText styleClass="control-label" value="Presupuesto"/></strong>
+                                </div>                            
+                            </div>
+                            <div class="col-3">
+                                <div class="col-12">
+                                    <strong><h:outputText styleClass="control-label" value="Presup Año y Mes"/></strong>
+                                </div>                            
+                            </div>                        
+                            <div class="col-6">
+                                <div class="col-12">
+                                    <strong><h:outputText styleClass="control-label" value="Proyecto OT"/></strong>
+                                </div>                                
+                            </div>  
+                        </div>
+                        <div class="row" style="background-color: #f5f5f5;">
+                            <div class="col-3">                            
+                                <div class="col-12">                                
+                                    <h:outputText styleClass="control-label" title="#{currentRow['presupuestoCodigo']}" value="#{currentRow['presupuestoNombre']}"/>
+                                </div>
+                            </div>
+                            <div class="col-3">
+                                <div class="col-12">                                    
+                                    <h:outputText styleClass="control-label" value="Año #{currentRow['anioPresupuesto']} y" title="#{currentRow['anioPresupuesto']}"/>
+                                    <h:outputText styleClass="control-label" value="  Mes #{currentRow['mesPresupuesto']}" title="#{currentRow['mesPresupuesto']}"/>                                
+                                </div>
+                            </div>                                                
+                            <div class="col-6">
+                                <div class="col-12">
+                                    <ui:fragment rendered="#{ordenBean.ordenActual.multiproyecto  eq 'False'}">
+                                        <h:outputText styleClass="control-label" value="#{currentRow['proyectoOt']}"/>                                
+                                    </ui:fragment>
+                                    <ui:fragment rendered="#{ordenBean.ordenActual.multiproyecto  eq 'True'}">
+                                        <h:outputText styleClass="control-label" title="#{currentRow['multiProyectos']}" value="#{currentRow['multiProyectos'].length() gt 90 ? currentRow['multiProyectos'].substring(0, 85).concat('.....') : currentRow['multiProyectos']}"/>                                    
+                                    </ui:fragment>
+                                </div>
+                            </div>                       
+                        </div>                    
+                    </ui:fragment>
+                    <div class="row" style="#{currentRow['idpresupuesto'] eq 0 ? 'background-color: #39b3d7; border-radius: 25px 25px 0px 0px;' : 'background-color: #c3ebef;'}">
+                        <ui:fragment rendered="#{currentRow['idpresupuesto'] eq 0}">
+                            <div class="col-3">
+                                <div class="col-12">
+                                    <strong><h:outputText styleClass="control-label" value="Proyecto OT"/></strong>
+                                </div>                            
+                            </div>
+                        </ui:fragment>
+                        
+
+                        <ui:fragment rendered="#{ordenBean.ordenActual.tipo  eq 'PS' or ordenBean.ordenActual.apCampo.tipo  eq 'C'}">
+                            <div class="col-3">
+                                <div class="col-12">
+                                    <strong><h:outputText styleClass="control-label" value="Tipo de Tarea"/></strong>
+                                </div>                            
+                            </div>
+                            <div class="col-3">
+                                <div class="col-12">
+                                    <strong><h:outputText styleClass="control-label" value="Tarea"/></strong>
+                                </div>                                              
+                            </div>  
+                            <ui:fragment rendered="#{ordenBean.ordenActual.apCampo.tipo  eq 'C'}">
+                                <div class="#{currentRow['idpresupuesto'] eq 0 ? 'col-3' : 'col-6'}">
+                                    <div class="col-12">
+                                        <strong><h:outputText styleClass="control-label" value="Subtarea"/></strong>
+                                    </div>                                
+                                </div>  
+                            </ui:fragment>
+                        </ui:fragment>            
+
+                    </div>
+                    <div class="row" style="background-color: #f5f5f5;">
+                        <ui:fragment rendered="#{currentRow['idpresupuesto'] eq 0}">
+                            <div class="col-3">                            
+                                <div class="col-12">
+                                    <ui:fragment rendered="#{ordenBean.ordenActual.multiproyecto  eq 'False'}">
+                                        <h:outputText styleClass="control-label" value="#{currentRow['proyectoOt']}"/>                                
+                                    </ui:fragment>
+                                    <ui:fragment rendered="#{ordenBean.ordenActual.multiproyecto  eq 'True'}">
+                                        <h:outputText styleClass="control-label" title="#{currentRow['multiProyectos']}" value="#{currentRow['multiProyectos'].length() gt 90 ? currentRow['multiProyectos'].substring(0, 85).concat('.....') : currentRow['multiProyectos']}"/>                                    
+                                    </ui:fragment>
+                                </div>
+                            </div>
+                        </ui:fragment>
+                        <div class="col-3">
+                            <div class="col-12">
+                                <h:outputText styleClass="control-label" value="#{currentRow['tipoTarea']}"/>
+                            </div>
+                        </div>                        
+                        <ui:fragment rendered="#{ordenBean.ordenActual.tipo  eq 'PS' or ordenBean.ordenActual.apCampo.tipo  eq 'C'}">
+                            <div class="col-3">
+                                <div class="col-12">
+                                    <h:outputText styleClass="control-label" value="#{currentRow['nombreTarea']}"/>                        
+                                </div>
+                            </div>
+                            <ui:fragment rendered="#{ordenBean.ordenActual.apCampo.tipo  eq 'C'}">
+                                <div class="#{currentRow['idpresupuesto'] eq 0 ? 'col-3' : 'col-6'}">
+                                    <div class="col-12">
+                                        <h:outputText styleClass="control-label" value="#{currentRow['subTarea']}"/>                        
+                                    </div>
+                                </div>   
+                            </ui:fragment>
+                        </ui:fragment>                                    
+                    </div>                    
+                    <div class="row" style="background-color: #c3ebef;">
+                        <div class="col-3">
+                            <div class="col-12">
+                                <strong><h:outputText styleClass="control-label" value="Número parte"/></strong>
+                            </div>
+                        </div>                                                                            
+                        <div class="col-9">
+                            <div class="col-4">
+                                <strong><h:outputText styleClass="control-label" value="Descripción"/></strong>
+                            </div>
+                            <ui:fragment rendered="#{ordenBean.ordenActual.conConvenio}">
+                                <div class="col-8" style="text-align: right;">
+                                <strong><h:outputText styleClass="control-label" value="Contrato: "/></strong>
+                                <p:commandLink value="#{currentRow['convenio']}" action="#{ordenBean.llenarListaConvenio(currentRow.convenio)}"
+                                               onclick="$(dialogoContratos).modal('show');"
+                                               process="@this" update="">
+                                </p:commandLink>
+                            </div>
+                            </ui:fragment>
+                        </div>                    
+                    </div>
+                    <div class="row" style="background-color: #f5f5f5;">
+                        <div class="col-3">
+                            <div class="col-12">
+                                <h:outputText styleClass="control-label" value="#{currentRow['artNumeroParte'] eq 'null' ? '' : currentRow['artNumeroParte']}"/>
+                            </div>
+                        </div>                                                                            
+                        <div class="col-9">
+                            <div class="col-12">
+                                <h:outputText styleClass="control-label"  value="#{currentRow['artDescripcion']}"/>
+                            </div>
+                        </div>                    
+                    </div>
+                    <div class="row" style="background-color: #c3ebef;">
+                        <div class="col-3">
+                            <div class="col-12">
+                                <strong><h:outputText styleClass="control-label" value="Unidad" /></strong>
+                            </div>
+                        </div>
+                        <div class="col-2">
+                            <div class="col-12">
+                                <strong><h:outputText styleClass="control-label" value="Cantidad"/></strong>
+                            </div>
+                        </div>              
+                        <div class="col-2">
+                            <div class="col-12">
+                                <strong><h:outputText styleClass="control-label" value="Precio"/></strong>
+                            </div>
+                        </div>              
+                        <div class="col-2" style="text-align: center;">
+                            <div class="col-12" style="background-color: #c3ebef;">
+                                <strong><h:outputText styleClass="control-label" value="Descuento"/></strong>
+                            </div>
+                        </div>                             
+                        <div class="col-3" style="text-align: center;">
+                            <div class="col-12" style="background-color: #c3ebef;">
+                                <strong><h:outputText styleClass="control-label" value="Importe"/></strong>
+                            </div>
+                        </div>                             
+                    </div>
+                    <div class="row" style="background-color: #f5f5f5; border-radius: 0px 0px 25px 25px;">
+                        <div class="col-3">
+                            <div class="col-12">
+                                <h:outputText styleClass="control-label" value="#{currentRow['artUnidad']}"/>
+                            </div>
+                        </div>
+                        <div class="col-2">
+                            <div class="col-12" style="text-align: left;">
+                                <h:outputText styleClass="control-label" value="#{currentRow['cantidad']}">
+                                    <f:convertNumber maxFractionDigits="3"/>
+                                </h:outputText>
+                            </div>
+                        </div>              
+                        <div class="col-2">
+                            <div class="col-12">
+                                <h:outputText styleClass="control-label" value="#{currentRow['precioUnitario']}">
+                                    <f:convertNumber maxFractionDigits="2" type="currency"/>
+                                </h:outputText>
+                            </div>
+                        </div>              
+                        <div class="col-2">
+                            <div class="col-12" style="text-align: center;">
+                                <h:outputText styleClass="control-label" value="#{currentRow['descuento']}">
+                                    <f:convertNumber maxFractionDigits="2" type="currency"/>
+                                </h:outputText>
+                            </div>
+                        </div>                             
+                        <div class="col-3">
+                            <div class="col-12" style="text-align: right;">
+                                <h:outputText styleClass="control-label" value="#{currentRow['importe']}">
+                                    <f:convertNumber maxFractionDigits="2" type="currency"/>
+                                </h:outputText>
+                            </div>
+                        </div>                             
+                    </div>
+                </div>
+            </ui:repeat>     
+        </div>
+    </div>        
+</ui:composition>

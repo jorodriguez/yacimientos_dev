@@ -1,0 +1,161 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+    <h:body>
+        <ui:composition template="/vistas/template/template.xhtml">
+            <ui:define name="content">
+                <h:form id="form1">                    
+                    <div class="container">
+                        <div class="row" >
+                            <p:commandButton value="Registrar Semáforo"                                                                     
+                                             action="#{popupGrBean.goPopupSemaforo()}"
+                                             title="Click aquí para generar una nueva zona..."
+                                             process="@this" update="frmSemaforos"/>
+                            <div class="form-group col-lg-8 col-xs-12" >
+                                <strong><h:outputText class="col-lg-3 control-label" value="Filtro Zona:"/></strong>
+                                <div class="col-lg-9">                                            
+                                    <p:selectOneMenu id="idZonaSem" styleClass="form-control"
+                                                     value="#{configuracionBean.semZonaID}">                    
+                                        <f:selectItem itemValue="0" itemLabel="Seleccione . . . "/>
+                                        <f:selectItems value="#{configuracionBean.zonasSem}"/>
+                                        <p:ajax listener="#{configuracionBean.cambiarValorZonaSem}" update="form1:SemOP"/>
+                                    </p:selectOneMenu>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="table table-responsive">
+                            <p:dataTable id="SemOP" rows="10" 
+                                         value="#{configuracionBean.semaforos}" var="currentRow"
+                                         size="small" showGridlines="true" paginator="true" paginatorPosition="bottom">                                                                                  
+                                <p:column>
+                                    <h:outputText value="#{currentRow.mapa.nombre}"/>
+                                    <f:facet name="header">
+                                        <h:outputText value="Zona"/>
+                                    </f:facet>
+                                </p:column>                                                    
+                                <p:column width="8%">
+                                    <h:outputText value="#{currentRow.semaforoVO.color}"/>
+                                    <f:facet name="header">
+                                        <h:outputText value="Semáforo"/>
+                                    </f:facet>
+                                </p:column>                                                    
+                                <p:column width="9%">
+                                    <h:outputText value="#{currentRow.fechaInicio}">
+                                        <f:convertDateTime dateStyle="default" type="date"/>
+                                    </h:outputText>
+                                    <f:facet name="header">
+                                        <h:outputText value="Fec. Ini"/>
+                                    </f:facet>
+                                </p:column>
+                                <p:column width="9%">
+                                    <h:outputText value="#{currentRow.horaInicio}">
+                                        <f:convertDateTime dateStyle="default" type="time"/>
+                                    </h:outputText>
+                                    <f:facet name="header">
+                                        <h:outputText value="Hr. Ini"/>
+                                    </f:facet>
+                                </p:column>
+                                <p:column width="9%">
+                                    <h:outputText value="#{currentRow.fechaFin}">
+                                        <f:convertDateTime dateStyle="default" type="date"/>
+                                    </h:outputText>
+                                    <f:facet name="header">
+                                        <h:outputText value="Fec. Fin"/>
+                                    </f:facet>
+                                </p:column>
+                                <p:column width="9%">
+                                    <h:outputText value="#{currentRow.horaFin}">
+                                        <f:convertDateTime dateStyle="default" type="time"/>
+                                    </h:outputText>
+                                    <f:facet name="header">
+                                        <h:outputText value="Hr. Fin"/>
+                                    </f:facet>
+                                </p:column>
+                            </p:dataTable>
+                            <!-- aqui va el paginador -->
+                        </div>                                            
+                    </div>
+                </h:form>  
+                <div class="modal fade" id="dialogoSemaforos" data-backdrop="static" data-keyboard="false" style="color: black;">
+                    <div class="modal-dialog" style="width: 60%;">
+                        <div class="modal-content">
+                            <div class="modal-header">                    
+                                <h4 class="modal-title">#{popupGrBean.tituloPopUp}</h4>
+                            </div> 
+
+                            <h:form id="frmSemaforos">
+                                <div class="modal-body">  
+                                    <div style="margin-top: 10px;" class="col-lg-12 col-xs-12">
+                                        <h:message  for="" style="display: block;" infoClass="alert alert-success" warnClass="alert alert-warning"
+                                                    errorClass="alert alert-danger" fatalClass="alert alert-danger"  />
+                                    </div>                        
+                                    <div id="editRutaHorasLstID" class="col-lg-12 col-xs-12">
+                                        <div class="form-group col-lg-12 col-xs-12" >
+                                            <strong><h:outputText class="col-lg-3 col-xs-12 control-label" value="Semáforo:"/></strong>
+                                            <div class="col-lg-9 col-xs-12">                                            
+                                                <p:selectOneMenu id="idSemaforo" 
+                                                                 value="#{popupGrBean.estadoSemaforoVO.semaforoID}">
+                                                    <f:selectItem itemValue="0" itemLabel="Seleccione . . . "/>
+                                                    <f:selectItems value="#{popupGrBean.lstSemaforo}"/>
+                                                    <p:ajax listener="#{popupGrBean.cambiarSemaforo}" />
+                                                </p:selectOneMenu>
+                                            </div>
+                                        </div>      
+                                        <div class="form-group col-lg-12 col-xs-12" >
+                                            <strong><h:outputText class="col-lg-3 col-xs-12 control-label" value="Justificación:"/></strong>
+                                            <div class="col-lg-9 col-xs-12">   
+                                                <h:inputTextarea styleClass="form-control" rows="3" id="semJustID"  value="#{popupGrBean.estadoSemaforoVO.justificacion}" />                                                                    
+                                            </div>
+                                        </div>                               
+                                        <div class="form-group col-lg-12 col-xs-12" style="margin-top: 15px;" >
+                                            <strong><h:outputText class="col-lg-3 col-xs-12 control-label" value="Zona/Sector:"/></strong>
+                                            <div class="col-lg-9 col-xs-12">                                    
+                                                <p:autoComplete value="#{popupGrBean.estadoSemaforoVO.grMapaIDtxt}"
+                                                                completeMethod="#{popupGrBean.zonasRutaListener}" size="40" minQueryLength="3"
+                                                                placeholder="Ruta" forceSelection="true">
+                                                    <p:ajax listener="#{popupGrBean.cambiarZonaRuta()}" update="frmSemaforos:zonaROP"/>
+                                                </p:autoComplete>
+                                            </div>
+                                        </div>                            
+                                        <div class="form-group col-lg-12 col-xs-12" style="margin-top: 15px;" >
+                                            <strong><h:outputText class="col-lg-12 col-xs-12 control-label" value="Rutas relacionadas a esta zona:"/></strong>
+                                                <p:dataTable id="zonaROP" rows="10" 
+                                                             value="#{popupGrBean.lstRutasPorZonas}"  var="currentRow" 
+                                                             size="small" showGridlines="true" paginator="true" paginatorPosition="bottom">
+                                                    <p:column>
+                                                        <h:outputText value="#{currentRow.nombre}"/>
+                                                        <f:facet name="header">
+                                                            <h:outputText value="Nombre"/>
+                                                        </f:facet>
+                                                    </p:column>                                        
+                                                </p:dataTable>
+                                        </div>  
+                                    </div>      
+                                </div>
+                                <div class="modal-footer">
+                                    <p:commandButton id="saveSemaforo"
+                                                     value="Aceptar"
+                                                     styleClass="btn btn-info" 
+                                                     action="#{popupGrBean.guardarSemaforo}"
+                                                     process="@form" update="form1"/>
+                                    <p:commandButton
+                                        value="Cancelar"
+                                        styleClass="btn btn-default"
+                                        onclick="$(dialogoSemaforos).modal('hide');"
+                                        title="Cerrar ventana..." 
+                                        />                        
+                                </div>
+                            </h:form>
+                        </div>
+                    </div>
+                </div>
+            </ui:define>
+        </ui:composition>
+    </h:body>
+</html>

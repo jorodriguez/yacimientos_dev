@@ -1,0 +1,315 @@
+<ui:composition template="./../../../WEB-INF/facelets/templates/templateServiciosGenerales.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+
+                xmlns:f="http://java.sun.com/jsf/core"
+
+                xmlns:h="http://java.sun.com/jsf/html">
+
+    <p:dialog  header="#{msgs['sistema.crear']} #{msgs['sgl.vehiculo']}" 
+               widgetVar="dlgCrearVehiculo">
+        <h:form id="formCreateVehiculo" >
+            <div class="col-lg-8">
+                <div class="card  panel-default ">
+                    <div class="card-body">
+                        <div class="col-lg-6">
+                            <h:panelGrid columns="2" >
+                                <h:panelGrid columns="2"  >
+                                    <h:outputLabel value="#{msgs['sgl.vehiculo.tipo']}: " />
+                                    <h:outputText value="*" styleClass="textoRojo" />
+                                </h:panelGrid>
+                                <h:panelGrid columns="3">
+                                    <p:selectOneMenu id="tipoVehiculo"
+                                                     value="#{vehiculoBean.vehiculo.idTipoEspecifico}"
+                                                     valueChangeListener="#{vehiculoBean.loadModelosInComboModelos}"
+
+                                                     styleClass="form-control" >
+                                        <f:selectItem itemLabel="#{msgs['sistema.seleccionar']} #{msgs['sgl.vehiculo.tipo']}..." itemValue="-1" />
+                                        <f:selectItems value="#{vehiculoBean.sgTipoEspecificoBySgTipoSelectItem}" />
+                                    </p:selectOneMenu>
+                                    <p:commandLink type="submit" value="+" title="#{msgs['sistema.crear']} #{msgs['sgl.vehiculo.tipo']}" actionListener="#{vehiculoBean.openPopupSaveTipoEspecificoVehiculo(actionEvent)}" styleClass="btn btn-default" />                        
+                                    <h:message for="tipoVehiculo" errorClass="errorMessage" infoClass="infoMessage"/>
+                                </h:panelGrid>    
+
+                                <h:panelGrid columns="2"  >
+                                    <h:outputLabel value="#{msgs['sgl.vehiculo.marca']}: " />
+                                    <h:outputText value="*" styleClass="textoRojo" />
+                                </h:panelGrid>
+                                <h:panelGrid columns="3">
+                                    <p:selectOneMenu id="marca" 
+                                                     value="#{vehiculoBean.vehiculo.idMarca}"
+                                                     valueChangeListener="#{vehiculoBean.loadModelosInComboModelosFromComboMarcas}"
+
+                                                     styleClass="form-control">
+                                        <f:selectItem itemLabel="#{msgs['sistema.seleccionar']} #{msgs['sgl.vehiculo.marca']}..." itemValue="-1" />
+                                        <f:selectItems value="#{vehiculoBean.marcasByTipoSelectItem}" />
+                                    </p:selectOneMenu>
+                                    <p:commandLink type="submit" value="+" title="#{msgs['sistema.crear']} #{msgs['sgl.vehiculo.marca']}" actionListener="#{vehiculoBean.openPopupCrearMarca(actionEvent)}" styleClass="btn btn-default" />
+                                    <h:message for="marca" errorClass="errorMessage" infoClass="infoMessage"/>
+                                </h:panelGrid>
+
+                                <h:panelGrid columns="2"  >
+                                    <h:outputLabel value="#{msgs['sgl.vehiculo.modelo']}: " />
+                                    <h:outputText value="*" styleClass="textoRojo" />
+                                </h:panelGrid>
+                                <h:panelGrid columns="3">
+                                    <p:selectOneMenu id="modelo"
+                                                     value="#{vehiculoBean.vehiculo.idModelo}"
+                                                     styleClass="form-control" >
+                                        <f:selectItem itemLabel="#{msgs['sistema.seleccionar']} #{msgs['sgl.vehiculo.modelo']}..."
+                                                      itemValue="-1" />
+                                        <f:selectItems value="#{vehiculoBean.modelosSelectItem}" />
+                                    </p:selectOneMenu>
+                                    <p:commandLink type="submit" value="+" title="#{msgs['sistema.crear']} #{msgs['sgl.vehiculo.modelo']}" action="#{vehiculoBean.openPopupSaveModelo(actionEvent)}" styleClass="btn btn-default" />                        
+                                    <h:message for="modelo" errorClass="errorMessage" infoClass="infoMessage"/>
+                                </h:panelGrid>
+
+                                <h:panelGrid columns="2" >
+                                    <h:outputLabel value="#{msgs['sgl.vehiculo.numeroSerie']}: " />
+                                    <h:outputText value="*" styleClass="textoRojo" />
+                                </h:panelGrid> 
+                                <h:panelGrid columns="2" >
+                                    <p:inputText id="numeroSerie" value="#{vehiculoBean.vehiculo.serie}" maxlength="50" styleClass="form-control" />
+                                    <h:message for="numeroSerie" errorClass="errorMessage" infoClass="infoMessage"/>
+                                </h:panelGrid>                                
+                                <h:panelGrid columns="2" >
+                                    <h:outputLabel value="#{msgs['sgl.vehiculo.numeroPlaca']}: " />
+                                    <h:outputText value="*" styleClass="textoRojo" />
+                                </h:panelGrid>                                
+                                <h:panelGrid columns="2" >
+                                    <p:inputText id="numeroPlaca" value="#{vehiculoBean.vehiculo.numeroPlaca}" maxlength="20" styleClass="form-control" />
+                                    <h:message for="numeroPlaca" errorClass="errorMessage" infoClass="infoMessage"/>
+                                </h:panelGrid>
+                                <h:panelGrid columns="2" >
+                                    <h:outputLabel value="#{msgs['sgl.vehiculo.color']}: " />
+                                    <h:outputText value="*" styleClass="textoRojo" />
+                                </h:panelGrid>
+                                <h:panelGrid columns="3" >
+                                    <p:selectOneMenu id="sgColor"
+                                                     value="#{vehiculoBean.vehiculo.idColor}"
+                                                     styleClass="form-control" >
+                                        <f:selectItem itemLabel="#{msgs['sistema.seleccionar']} #{msgs['sgl.vehiculo.color']}..." itemValue="-1" />
+                                        <f:selectItems value="#{vehiculoBean.colorSelectItem}" />
+                                    </p:selectOneMenu>                                    
+                                    <p:commandLink type="submit" value="+" title="#{msgs['sgl.sistema.crear']} #{msgs['sgl.vehiculo.color']}" actionListener="#{vehiculoBean.abrirPopupAgregarColor(event)}" styleClass="btn btn-default" />
+                                    <h:message for="sgColor" errorClass="errorMessage" infoClass="infoMessage"/>
+                                </h:panelGrid>
+
+                                <h:panelGrid columns="2" >
+                                    <h:outputLabel value="#{msgs['sgl.vehiculo.capacidadPasajeros']}:  " />
+                                    <h:outputText value="*" styleClass="textoRojo" />
+                                </h:panelGrid>  
+                                <h:panelGrid columns="2" >
+                                    <p:inputText id="capacidadPasajeros" value="#{vehiculoBean.vehiculo.capacidadPasajeros}" maxlength="5" styleClass="form-control" />                                 
+                                    <h:message for="capacidadPasajeros" errorClass="errorMessage" infoClass="infoMessage"/>
+                                </h:panelGrid>
+                                <h:panelGrid columns="2"  >
+                                    <h:outputLabel value="#{msgs['sgl.vehiculo.kilometrajeInicial']}: " />
+                                    <h:outputText value="*" styleClass="textoRojo" />
+                                </h:panelGrid>  
+                                <h:panelGrid columns="2" >
+                                    <p:inputText id="kilometrajeInicial" value="#{vehiculoBean.kilometrajeInicial}" required="true" requiredMessage="Kilometraje inicial es requerido" styleClass="form-control" />
+                                    <h:message for="kilometrajeInicial" errorClass="errorMessage" infoClass="infoMessage"/>
+                                </h:panelGrid>                                
+                                <h:panelGrid columns="2">
+                                    <h:outputLabel value="#{msgs['sgl.vehiculo.periodicidadMantenimiento']}: " />
+                                    <h:outputText value="*" styleClass="textoRojo" />
+                                </h:panelGrid>  
+                                <h:panelGrid columns="3" >
+                                    <p:inputText id="periodicidadMntto" value="#{vehiculoBean.periodicidadAvisoMantenimiento}" styleClass="form-control" />                                 
+                                    <h:outputText id="helpPeriodicidadMntto" value="?" title="" styleClass="textoAyuda" />
+                                    <h:message for="periodicidadMntto" errorClass="errorMessage" infoClass="infoMessage"/>
+                                    <p:tooltip id="pnlToolTipHelpPeriodicidadMntto"
+                                               for="helpPeriodicidadMntto"
+                                               showEvent="mouseover"
+                                               showEffect="slide"
+                                               hideEffect="slide"
+                                               hideDelay="2300"
+                                               >
+                                        <h:panelGrid width="190px;" styleClass="textoAyuda">
+                                            <h:outputText value="Cada cuantos kilómetros se realiza el mantenimineto" />
+                                        </h:panelGrid>
+                                    </p:tooltip>                                    
+                                </h:panelGrid>                                 
+
+                            </h:panelGrid>
+                        </div>
+                        <div class="col-lg-6">
+                            <h:panelGrid columns="2">
+                                <h:panelGrid  >
+                                    <h:outputLabel value="#{msgs['sgl.vehiculo.cajonEstacionamiento']}:  " />
+                                </h:panelGrid>
+                                <p:inputText id="cajonEstacionamiento" value="#{vehiculoBean.vehiculo.cajonEstacionamiento}" maxlength="8" styleClass="form-control" />                                
+                                <h:panelGrid  >
+                                    <h:outputLabel value="#{msgs['sgl.generales.observacion']}: " />
+                                </h:panelGrid>
+                                <p:inputTextarea id="observacion" value="#{vehiculoBean.vehiculo.observacion}" maxlength="100" rows="5" styleClass="form-control" />
+                                <h:outputLabel value="Núm Económico: "  />
+                                <p:inputText  value="#{vehiculoBean.vehiculo.numeroEconomico}" styleClass="form-control" maxlength="5"/>
+
+                                <h:outputLabel value="Activo Fijo: "  />
+                                <p:inputText  value="#{vehiculoBean.vehiculo.numeroActivo}" styleClass="form-control"/>
+
+                                <h:outputLabel value="Seguro: "  />
+                                <p:inputText  value="#{vehiculoBean.vehiculo.seguro}" styleClass="form-control"/>
+
+                                <h:outputLabel value="GPS: "  />
+                                <p:selectBooleanCheckbox  value="#{vehiculoBean.vehiculo.gps}" styleClass="form-control"/>
+                                <h:outputLabel value="Caja Herramienta: "  />
+                                <p:selectBooleanCheckbox  value="#{vehiculoBean.vehiculo.cajaHerramienta}" styleClass="form-control"/>
+                            </h:panelGrid>
+                        </div>
+                    </div>
+                    <div class="card  panel-footer">
+                        <p:commandButton value="#{msgs['sistema.guardar']}" action="#{vehiculoBean.saveVehiculo()}" styleClass="btn btn-info"/>
+                        <p:commandButton value="#{msgs['sistema.cancelar']}" action="#{vehiculoBean.goToCatalogoVehiculo()}" immediate="true" styleClass="btn btn-default"/>
+                    </div>
+                </div>
+            </div>
+        </h:form>
+    </p:dialog>
+
+    <!-- Crear Tipo de Vehićulo -->
+    <h:form id="popupCreateTipoEspecificoVehiculo"  >
+        <p:dialog  header="#{msgs['sistema.crear']} #{msgs['sgl.vehiculo.tipo']}" 
+                   >
+            <h:panelGrid columns="1" styleClass="bordePanelGrid"  >
+                <h:panelGrid columns="2">
+                    <h:panelGrid columns="2">
+                        <h:outputLabel value="#{msgs['sgl.generales.nombre']}: " />
+                        <h:outputText value="*" styleClass="textoRojo" />
+                    </h:panelGrid>
+                    <h:panelGrid columns="2">
+                        <p:inputText id="nombreTipoEspecifico" value="#{vehiculoBean.sgTipoEspecifico.nombre}" 
+                                     styleClass="form-control" maxlength="50" required="true" requiredMessage="#{msgs['sgl.generales.nombre']} #{msgs['sistema.mensaje.error.esRequerido']}" />             
+                        <h:message for="nombreTipoEspecifico" errorClass="errorMessage" infoClass="infoMessage"/>
+                    </h:panelGrid> 
+                    <h:outputLabel value="#{msgs['sgl.generales.descripcion']}: " />
+                    <p:inputTextarea id="descripcionTipoEspecifico" value="#{vehiculoBean.sgTipoEspecifico.descripcion}" rows="5" maxlength="1024" styleClass="form-control" />
+                </h:panelGrid>
+            </h:panelGrid>
+
+            <br />
+
+            <center>
+                <h:panelGrid columns="2">
+                    <p:commandButton value="#{msgs['sistema.crear']}" actionListener="#{vehiculoBean.saveTipoEspecificoVehiculo(actionEvent)}" styleClass="btn btn-info"/>
+                    <p:commandButton value="#{msgs['sistema.cancelar']}" actionListener="#{vehiculoBean.closePopupSaveTipoEspecificoVehiculo(actionEvent)}" immediate="true" styleClass="btn btn-default"/>
+                </h:panelGrid>            
+            </center>
+        </p:dialog>                    
+    </h:form>
+
+    <!-- Crear Marca -->
+    <h:form id="popupCreateMarca"  >
+        <p:dialog  header="#{msgs['sistema.crear']} #{msgs['sgl.vehiculo.marca']}" 
+                   >
+
+            <h:panelGrid columns="2" styleClass="bordePanelGrid"  >
+                <h:panelGrid columns="2">
+                    <h:outputLabel value="#{msgs['sgl.generales.nombre']}: " />
+                    <h:outputText value="*" styleClass="textoRojo" />
+                </h:panelGrid>
+                <h:panelGrid columns="2">
+                    <p:inputText id="nombreMarca" value="#{vehiculoBean.marca.nombre}" 
+                                 styleClass="form-control" maxlength="50" required="true" requiredMessage="#{msgs['sgl.generales.nombre']} #{msgs['sistema.mensaje.error.esRequerido']}" />
+                    <h:message for="nombreMarca" errorClass="errorMessage" infoClass="infoMessage"/>
+                </h:panelGrid>
+            </h:panelGrid>
+
+            <br />
+
+            <center>
+                <h:panelGrid columns="2">
+                    <p:commandButton value="#{msgs['sistema.crear']}" actionListener="#{vehiculoBean.saveMarca(actionEvent)}" styleClass="btn btn-info"/>
+                    <p:commandButton value="#{msgs['sistema.cancelar']}" actionListener="#{vehiculoBean.closePopupCrearMarca(actionEvent)}" immediate="true" styleClass="btn btn-default"/>
+                </h:panelGrid>            
+            </center>
+        </p:dialog>                    
+    </h:form>                    
+
+    <!--Crear Modelo -->
+    <h:form id="popupCreateModelo"  >
+        <p:dialog  header="#{msgs['sistema.crear']} #{msgs['sgl.vehiculo.modelo']}" 
+                   >
+            <h:panelGrid columns="2" styleClass="bordePanelGrid"  >
+
+                <h:outputLabel value="#{msgs['sgl.vehiculo.tipo']}: " />
+                <h:outputText value="#{vehiculoBean.tipoEspecificoById.nombre}" />
+
+                <h:outputLabel value="#{msgs['sgl.vehiculo.marca']}: " />
+                <h:outputText value="#{vehiculoBean.marcaById.nombre}" />
+
+                <h:panelGrid columns="2">
+                    <h:outputLabel value="#{msgs['sgl.generales.nombre']}: " />
+                    <h:outputText value="*" styleClass="textoRojo" />
+                </h:panelGrid>
+                <h:panelGrid columns="2">
+                    <p:inputText id="nombreModelo" value="#{vehiculoBean.modelo.nombre}" 
+                                 styleClass="form-control" maxlength="50" required="true" requiredMessage="#{msgs['sgl.generales.nombre']} #{msgs['sistema.mensaje.error.esRequerido']}" />             
+                    <h:message for="nombreModelo" errorClass="errorMessage" infoClass="infoMessage"/>
+                </h:panelGrid> 
+            </h:panelGrid>
+
+            <br />
+
+            <center>
+                <h:panelGrid columns="2">
+                    <p:commandButton value="#{msgs['sistema.crear']}" actionListener="#{vehiculoBean.saveModelo(actionEvent)}" styleClass="btn btn-info"/>
+                    <p:commandButton value="#{msgs['sistema.cancelar']}" actionListener="#{vehiculoBean.closePopupSaveModelo(actionEvent)}" immediate="true" styleClass="btn btn-default"/>
+                </h:panelGrid>            
+            </center>
+        </p:dialog>                    
+    </h:form>
+
+    <!--Crear Color-->
+    <h:form id="popupCrearColor" rendered="#{not empty sesion.usuario}" >
+        <p:dialog  header="#{msgs['sistema.crear']} #{msgs['sgl.vehiculo.color']}" 
+                   >      
+            <h:panelGrid columns="1" styleClass="bordePanelGrid"  >
+                <h:panelGrid columns="2">
+                    <h:panelGrid columns="2">
+                        <h:outputLabel value="#{msgs['sgl.generales.nombre']}: " />
+                        <h:outputText value="*" styleClass="textoRojo" />
+                    </h:panelGrid>
+                    <h:panelGrid columns="2">
+                        <p:inputText id="color" value="#{vehiculoBean.sgColor.nombre}"
+                                     styleClass="form-control" maxlength="50" required="true" requiredMessage="#{msgs['sgl.generales.nombre']} #{msgs['sistema.mensaje.error.esRequerido']}"/>
+                        <h:message for="color" errorClass="errorMessage" infoClass="infoMessage"/>
+                    </h:panelGrid>
+                </h:panelGrid>
+            </h:panelGrid>
+
+            <br />
+
+            <center>
+                <h:panelGrid columns="2">
+                    <p:commandLink value="#{msgs['sistema.guardar']}" actionListener="#{vehiculoBean.guardarColor(event)}" styleClass="btn btn-info" />
+                    <p:commandLink value="#{msgs['sistema.cancelar']}" actionListener="#{vehiculoBean.cerrarPopupAgregarColor(event)}" immediate="true" styleClass="btn btn-default" />
+                </h:panelGrid>
+            </center>                                  
+        </p:dialog>
+    </h:form>
+
+    <!--Activar Vehículo -->
+    <!--<h:form id="popupActivarVehiculo"  >
+        <p:dialog  header="Reactivar Vehículo" mostrarPanel="#{sesion.controladorPopups['popupActivarVehiculo']}" conBoton="false">
+
+            <h:panelGrid columns="1" styleClass="bordePanelGrid"  >
+                <h:outputText value="Ya existe un Vehículo que está dado de baja con el número de serie: #{vehiculoBean.vehiculo.serie}" />
+                
+                <h:outputText value="Si eliges Reactivar el Vehículo existente, se actualizará con los nuevos datos: " />
+                <h:outputText value="número de Placa, color, número de pasajeros y número de estacionamiento" />
+                <h:outputText value="¿Desesas reactivarlo?" />
+            </h:panelGrid>
+
+            <center>
+                <h:panelGrid columns="2">
+                    <p:commandButton value="Reactivar" action="#{vehiculoBean.reactivateVehiculo()}" styleClass="btn btn-info"/>
+                    <p:commandButton value="#{msgs['sistema.cancelar']}" actionListener="#{vehiculoBean.closePopupReactivateVehiculo(actionEvent)}" styleClass="btn btn-info"/>
+                </h:panelGrid>            
+            </center>
+        </my:panelPopup>                    
+    </h:form>  -->              
+</ui:composition>

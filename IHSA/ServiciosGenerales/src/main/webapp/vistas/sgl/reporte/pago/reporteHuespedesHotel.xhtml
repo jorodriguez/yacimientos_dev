@@ -1,0 +1,106 @@
+<ui:composition xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                >
+    <h:messages style="color: maroon; font-size: 12px;"/>
+    <h:panelGrid columns="4">
+        <h:outputLabel value="Oficina: "/>
+        <p:selectOneMenu id="idComboOficina" value="#{consultaBean.idOficina}" >
+            <f:selectItems value="#{consultaBean.listaOficina}"/>
+        </p:selectOneMenu>
+        <h:panelGrid columns="9" styleClass="bordePanelGrid">
+            <h:outputText value="Inicio: "/>
+            <h:panelGrid  columns="2">
+                <script>
+		    $(function () {
+			$("#frmHuespedHotel\\:inicio").datepicker({
+			    showOn: "button",
+			    buttonImage: "../resources/img/cal_button.gif",
+			    buttonImageOnly: true,
+			    dateFormat: "dd/mm/yy",
+			    onSelect: function (date) {
+				inicio = date;
+			    }
+			});
+		    });
+                </script>
+                <h:inputText  value="#{consultaBean.inicio}" id="inicio" size="10" required="true" requiredMessage="Seleccione el inicio"/>
+            </h:panelGrid> 
+            <h:outputText value="Fin:" />
+            <h:panelGrid columns="2" >
+                <script>
+		    $(function () {
+			$("#frmHuespedHotel\\:fin").datepicker({
+			    showOn: "button",
+			    buttonImage: "../resources/img/cal_button.gif",
+			    buttonImageOnly: true,
+			    dateFormat: "dd/mm/yy",
+			    maxDate: new Date(new Date()),
+			    onSelect: function (date) {
+				fin = date;
+			    },
+			    onClose: function (selectedDate) {
+				$("#frmHuespedHotel\\:inicio").datepicker("option", "maxDate", selectedDate);
+			    }
+			});
+		    });
+                </script>
+                <h:inputText  value="#{consultaBean.fin}" id="fin" size="10" required="true" requiredMessage="Seleccione el final"/>            
+            </h:panelGrid>
+        </h:panelGrid>
+        <p:commandLink value="#{msgs['sistema.buscar']}" 
+                         actionListener="#{consultaBean.buscarHuespedadosHotel(event)}"  styleClass="btn btn-sm btn-success"/>
+    </h:panelGrid>
+
+    <h:commandLink id="btnLimpiar" style="display: none" actionListener="#{consultaBean.limiarLista(event)}" 
+                   styleClass="btn btn-sm btn-success"/>
+    <div id="graficaHuespedHotel" style="min-width: 700px; height: 400px; margin: 0 auto;" ></div>
+    <br/>
+    <h:inputHidden id="hidenServicio" value="#{consultaBean.servicioHotel}"/>
+    <p:commandLink id="btnBuscarPorServicio" value="Buscar" actionListener="#{consultaBean.traerHospedadosHotel(event)}"
+                     style="display: none;"/>
+    <p:dataTable id="dtHuespedHotel" value="#{consultaBean.listaHuesped}" var="data"
+                   rows="10" styleClass="dataPaginatorDataTable" 
+                   paginator="true"  showGridlines="true" size="small"
+                   paginatorPosition="bottom" 
+                   style="font-size: 1em; width: 100%" >
+        <f:facet name="header"><h:outputLabel value="#{consultaBean.servicioHotel}"/></f:facet>
+        <!--p:column headerText="Servicio" style="text-align: left;">
+            <h:outputText value="#{data.tipoEspecifico}"/>
+        </p:column-->
+        <p:column headerText="Gerencia" style="text-align: left;">
+            <h:outputText value="#{data.nombreGerencia}"/>
+        </p:column>
+        <p:column headerText="Huesped" style="text-align: center;">
+            <h:outputText value="#{data.nombreHuesped}"/>
+        </p:column>
+        <p:column headerText="Ingreso" style="text-align: center;">
+            <h:outputText value="#{data.fechaIngreso}">
+                <f:convertDateTime pattern="dd/MM/yyyy"/>
+            </h:outputText>
+        </p:column>
+        <p:column headerText="Salida" style="text-align: right;">
+            <h:outputText value="#{data.fechaSalida}">
+                <f:convertDateTime pattern="dd/MM/yyyy"/>
+            </h:outputText>
+        </p:column>
+        <p:column headerText="Reservación" style="text-align: center;">
+            <h:outputText value="#{data.numeroHabitacionHotel}"/>
+        </p:column>
+        <p:column headerText="Carta" style="text-align: left;">
+            <h:outputLink     target="_blank" rendered="#{data.idAdjunto ne null}"
+                                value="/ServiciosGenerales/AbrirArchivo?ZWZ2W=#{data.idAdjunto}&amp;ZWZ3W=#{data.adjuntoUUID}"
+                                title="#{msgs['sistema.abrir.archivo']}">
+                <center><h:graphicImage url="#{msgs['sgl.ruta.imagen']}icon_attach.gif" 
+                                          alt="#{msgs['sistema.abrir.archivo']}" /></center>
+            </h:outputLink>
+        </p:column>
+    </p:dataTable>
+    <h:panelGrid columns="2">
+        <p:commandButton value="Exportar">
+        <p:dataExporter fileName="HospedadosHotel" type="xls" target="dtHuespedHotel" />
+        </p:commandButton>
+    </h:panelGrid>
+    <br/>
+</ui:composition>

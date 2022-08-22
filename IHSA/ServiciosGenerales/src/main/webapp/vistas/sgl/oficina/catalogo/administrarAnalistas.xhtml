@@ -1,0 +1,111 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core"
+      >
+
+    <body>
+
+        <ui:composition template="./../../../../WEB-INF/facelets/templates/templateServiciosGenerales.xhtml">
+
+            <ui:define name="contenido">
+                <center><h:messages globalOnly="true" errorClass="errorMessage" infoClass="infoMessage"/></center>
+
+                <h:panelGroup  rendered="#{empty sesion.usuario}" styleClass="altura">
+                    <ui:include src="./../../../../login.xhtml"/>
+                </h:panelGroup>                
+
+                <br/>
+
+                <h:outputText value="#{msgs['sgl.oficina.titulo.administrarAnalistas']}" styleClass="tituloEncabezado"/>
+
+                <br/>
+
+                <h:form >
+                    <p:dataTable showGridlines="true" size="small"  id="dtOficina" value="#{oficinaBean.dataModelAnlistas}"  var="data">
+                        <f:facet name="header"><h:outputText value="#{msgs['sgl.sgOficina.plural']}"/></f:facet>
+                        <p:column>
+                            <f:facet name="header"><h:outputText value="#{msgs['sgl.generales.nombre']}"/></f:facet>
+                            <h:outputText value="#{data.nombre}"/>
+                        </p:column>
+                        <p:column>
+                            <f:facet name="header"><h:outputText value="#{msgs['sia.siPais']}"/></f:facet>
+                            <h:outputText value="#{data.nombreSiPais}"/>
+                        </p:column>
+                        <p:column>
+                            <f:facet name="header"><h:outputText value="#{msgs['sia.siEstado']}"/></f:facet>
+                            <h:outputText value="#{data.nombreSiEstado}"/>
+                        </p:column>
+                        <p:column>
+                            <f:facet name="header"><h:outputText value="#{msgs['sia.siCiudad']}"/></f:facet>
+                            <h:outputText value="#{data.nombreSiCiudad}"/>
+                        </p:column>
+                        <p:column>
+                            <p:commandLink value="#{msgs['sgl.oficina.analista.plural']}" actionListener="#{oficinaBean.openPoupAsignarAnalistaOficina(actionEvent)}" styleClass="link" />
+                        </p:column>
+                    </p:dataTable>
+                </h:form> 
+
+                <!-- Popup Asignar Analista Oficina -->
+                <h:form id="formPopupAsignarAnalistaOficina" >
+                    <p:dialog id="popupAsignarAnalistaOficina" header="#{msgs['sgl.oficina.asignarAnalista']}" 
+                              >
+                        <h:outputText id="msgsPopupAsignarAnalistaOficina" value="" />
+                        <center><h:message for="msgsPopupAsignarAnalistaOficina" infoClass="infoMessage" warnClass="warnClass" errorClass="errorMessage" /></center>
+
+                        <h:panelGrid styleClass="bordePanelGrid">
+                            <!-- Autocomplete Usuario -->
+                            <h:panelGrid columns="3"  styleClass="bordePanelGrid">
+                                <p:selectOneMenu id="analista"
+                                                 value="#{oficinaBean.user}"
+                                                 valueChangeListener="#{oficinaBean.usuarioListener}"
+                                                 immediate="true">
+                                    <f:selectItems value="#{oficinaBean.listaUsuario}"/>
+                                    <f:facet name="selectInputText">
+                                        <h:panelGrid columns="2" style="margin-bottom: 2px;">
+                                            <h:outputText id="autoCompleteUsurOp" value="#{analista.nombre}" />
+                                        </h:panelGrid>
+                                    </f:facet>
+                                </p:selectOneMenu> 
+                                <p:commandLink value="#{msgs['sistema.agregar']}" action="#{oficinaBean.saveSgOficinaAnalista(actionEvent)}" styleClass="link"/>
+                            </h:panelGrid>
+                            <h:panelGrid  styleClass="bordePanelGrid">
+                                <p:dataTable showGridlines="true" size="small"  id="dtAnalistasOficina" value="#{oficinaBean.dataModelAux}"  var="data">
+                                    <f:facet name="header"><h:outputText value="#{msgs['sgl.oficina.analista.plural']}"/></f:facet>
+                                    <p:column>
+                                        <f:facet name="header"><h:outputText value="#{msgs['sgl.generales.nombre']}"/></f:facet>
+                                        <h:outputText value="#{data.nombreAnalista}"/>
+                                    </p:column>
+                                    <p:column style="text-align: center;">
+                                        <f:facet name="header"><h:outputText value="Principal"/></f:facet>
+                                        <h:commandLink value="#{data.principal  ? 'Si' : 'No'}" 
+                                                       actionListener="#{oficinaBean.marcarPrincipal(even)}"
+                                                       onclick="return confirmar('La operación va a cambiar al analista principal de la oficina. ¿esta seguro? \n \n Principal: Oficina, Staff, Vehículo, Estancia, Viajes \n No Principal: Oficina, Staff, Vehículo');"
+                                                       rendered="#{data.principal  eq false}"/>
+                                    </p:column>
+                                    <p:column>
+                                        <h:commandLink value="#{msgs['sistema.quitar']}" 
+                                                       onclick="return confirmar('La operación va quitar al analista. ¿Esta seguro?');"
+                                                       actionListener="#{oficinaBean.deleteSgOficinaAnalista(actionEvent)}" 
+                                                       styleClass="link" />
+                                    </p:column>
+                                </p:dataTable>
+                            </h:panelGrid>
+                        </h:panelGrid>
+
+                        <center>
+                            <p:commandButton value="#{msgs['sistema.cerrar']}" actionListener="#{oficinaBean.closePopupAsignarAnalistaOficina(actionEvent)}" immediate="true" styleClass="btn btn-default" />        
+                        </center>                        
+
+                        </my:panelPopup>
+                </h:form>                
+
+            </ui:define>
+
+        </ui:composition>
+
+    </body>
+</html>

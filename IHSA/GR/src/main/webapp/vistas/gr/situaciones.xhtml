@@ -1,0 +1,77 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:c="http://java.sun.com/jsp/jstl/core"
+      xmlns:f="http://java.sun.com/jsf/core"
+      >    
+    <h:body>
+        <ui:composition template="/vistas/template/template.xhtml">
+            <ui:define name="content"> 
+                <h:form id="frmSitua">
+                    <div class="table table-responsive">
+                        <p:dataTable size="small" stripedRows="true" showGridlines="true"  id="dataTable1" rows="10"   
+                                     value="#{grBean.situaciones}"
+                                     var="currentRow">
+                            <f:facet name="header"><h:outputText style="font-size: large;" value="Situaciones de Riesgo"/></f:facet>
+                            <p:column style="text-align: center;">
+                                <h:outputText value="#{currentRow['titulo']}"/>
+                                <f:facet name="header">
+                                    <h:outputText value="Titulo"/>
+                                </f:facet>
+                            </p:column>
+                            <p:column style="text-align: center;">                                
+                                <p:commandLink value="Abrir"                                                   
+                                               action="#{popupGrBean.goPopupImagen(currentRow.id)}"
+                                               title="Click aqui para ver imagen..." 
+                                               process="@this" update="frmViewImg">
+                                </p:commandLink>
+                                <f:facet name="header">
+                                    <h:outputText value="Liga"/>
+                                </f:facet>
+                            </p:column>
+                        </p:dataTable>                            
+                    </div>
+                </h:form>
+                <script>
+                    $(document).ready(function () {
+                        //                        startDate();
+                    });
+                </script>
+                <div class="modal fade" id="dialogoVerImagen" data-backdrop="static" data-keyboard="false">    
+                    <div class="modal-dialog modal-xl">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <a class="close" href="#" onclick="$(dialogoVerImagen).modal('hide');">x</a>
+                                <h4 class="modal-title" style="text-align: left;">#{popupGrBean.imagen.titulo}</h4>
+                            </div>
+                            <h:form id="frmViewImg">
+                                <div class="modal-body">
+                                    <div class="row">
+                                        <center>
+                                            <div class="table table-responsive">
+                                                <img 
+                                                    src="#{popupGrBean.urlImagen}"
+                                                    alt=""/>
+                                            </div>
+                                        </center>
+                                    </div>                        
+                                </div>
+                                <div class="modal-footer">                        
+                                    <p:commandButton id="buttonCancelarV"
+                                                     value="Cerrar"
+                                                     styleClass="btn btn-info"
+                                                     onclick="$(dialogoVerImagen).modal('hide');"
+                                                     title="Cerrar ventana..." 
+                                                     immediate="true"/>
+                                </div>
+                            </h:form>
+                        </div>
+                    </div>        
+                </div>
+            </ui:define>            
+        </ui:composition>
+    </h:body>
+</html>

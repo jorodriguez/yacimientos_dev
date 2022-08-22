@@ -1,0 +1,82 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <body>
+        <ui:composition template="../../../../WEB-INF/template/template.xhtml">
+            <ui:define name="tituloPagina">
+                <h2 class="page-header"> Formas para el proceso de finiquitos</h2>
+            </ui:define>
+            <ui:define name="contenido">
+                <h:form id="frmFormas">
+                    <p:dataTable id="dtFormas" 
+                                 value="#{formasBean.formas}" var="data"
+                                 rows="15" paginator="true" paginatorPosition="bottom" paginatorAlwaysVisible="true"
+                                 style="font-size: 0.9em;">
+                        <p:column headerText="Plantilla" style="text-align: left;" >
+                            <h:outputText value="#{data.codigo}" />
+                        </p:column>
+                        <p:column headerText="Plantilla" style="text-align: left;" >
+                            <h:outputText value="#{data.nombre}" />
+                        </p:column>
+                        <p:column headerText="Porcentaje" style="text-align: center;" >
+                            <h:outputText value="#{data.porcentaje} %" />
+                        </p:column>
+                        <p:column headerText="Archivo" style="text-align: left;" >
+                            <div class="grid">
+                                <h:outputLink target="_blank"  
+                                              value="/Sia/AbrirArchivo?ZWZ2W=#{data.siAdjunto.id}&amp;ZWZ3W=#{data.siAdjunto.uuid}"
+                                              rendered="#{data.siAdjunto.id gt 0}">
+                                    <span class="text-info" style="font-weight: bold;"> Descargar</span>
+                                </h:outputLink>
+                                <p:commandLink action="#{formasBean.eliminarArchivo(data.id)}"
+                                               styleClass="text text-primary" title="Elimina el archivo de la plantilla"
+                                               rendered="#{data.siAdjunto.id gt 0}"
+                                               process="@this" update="frmFormas:dtFormas">
+                                    <i class="fa fa-trash text-danger"/>
+                                </p:commandLink>
+                            </div>
+                        </p:column>
+                        <p:column headerText="Usuario" style="text-align: left;" >
+                            <h:outputText value="#{data.gerencia.nombre}" 
+                                          rendered="#{data.gerencia ne null}"/>
+                            <h:outputText value="Gerencia usuaria" rendered="#{data.gerencia eq null and data.proveedor eq false}"/>                            
+                            <h:outputText value="Proveedor " rendered="#{data.gerencia eq null and  data.proveedor eq true}" />
+                        </p:column>                        
+                        <p:column >
+                            <p:commandLink action="#{formasBean.agregarArchivo(data.id)}"
+                                           title="Adjuntar archivo para la plantilla"
+                                           process="@this" update="frmArchivo">
+                                <i class="fa fa-arrow-up text-primary"/>
+                            </p:commandLink>
+                        </p:column>
+                    </p:dataTable>
+                </h:form>
+                <div class="modal fade" id="adjuntarArchivoForma" data-backdrop="static" data-keyboard="false">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h4 class="modal-title">Agregar archivo</h4>
+                            </div>
+                            <h:form id="frmArchivo">
+                                <div class="modal-body ">
+                                    <p:fileUpload   label="Archivo "
+                                                    listener="#{formasBean.subirArchivo}"
+                                                    update="frmFormas"/> 
+                                </div>
+                                <div class="modal-footer">
+                                    <h:commandLink id="btnCerrar" value="Cancelar" class="btn btn-default"
+                                                   onclick="$(adjuntarArchivoForma).modal('hide');"
+                                                   immediate="true"/>
+                                </div>
+                            </h:form>
+                        </div>
+                    </div>
+                </div>
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

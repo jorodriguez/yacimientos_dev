@@ -1,0 +1,117 @@
+<ui:composition  xmlns="http://www.w3.org/1999/xhtml"
+                 xmlns:ui="http://java.sun.com/jsf/facelets"
+                 xmlns:p="http://primefaces.org/ui"
+                 xmlns:f="http://java.sun.com/jsf/core"
+                 xmlns:c="http://java.sun.com/jsp/jstl/core"
+                 xmlns:h="http://java.sun.com/jsf/html"
+
+                 >
+
+
+    <!--Modal para editar licencia-->
+    <h:form id="editLicencia" >
+        <div class="modal fade" id="editLicenciaModal" data-backdrop="static" data-keyboard="false">
+            <div class="modal-dialog">                
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4>Actualizar datos Licencia</h4>
+                    </div>
+                    <div class="modal-body">
+                        <h:messages infoClass="alert alert-info" errorClass="alert alert-danger" />
+                        <div class="row">
+                            <h:outputLabel value="#{controlLicenciaBean.licenciaVo.usuario}"/>
+                        </div>
+                        <div class="row">
+                            <label class="col-md-5 col-xs-6">País: </label>
+                            <div class="col-md-7 col-xs-6">
+                                <p:selectOneMenu value="#{controlLicenciaBean.idPais}" styleClass="form-control">
+                                    <f:selectItem itemLabel="#{msgs['sistema.seleccionar.combo']}" itemValue="-1"/>
+                                    <f:selectItems value="#{controlLicenciaBean.listaPaises}"/>
+                                </p:selectOneMenu>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <p:autoComplete value="#{controlLicenciaBean.user}"
+                                            completeMethod="#{controlLicenciaBean.autocompletar}"
+                                            placeholder="Usuario" forceSelection="true" size="40" minQueryLength="4"
+                                            rendered="#{controlLicenciaBean.licenciaVo.id eq 0}">
+                                
+                                
+                            </p:autoComplete>
+                        </div>
+                        <div class="row">
+                            <label class="col-md-5 col-xs-6">Numero de Licencia: </label>
+                            <div class="col-md-7 col-xs-6">
+                                <p:inputText  class="form-control input-number" placeholder="Numero..." id="numLicenciaPop" 
+                                              value="#{controlLicenciaBean.licenciaVo.numero}"/>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <label class="col-md-5 col-xs-6">Tipo: </label>
+                            <div class="col-md-7 col-xs-6">
+                                <p:selectOneMenu value="#{controlLicenciaBean.idTipoEspecifico}" styleClass="form-control">
+                                    <f:selectItem itemLabel="Seleccione . . ." itemValue="-1"/>
+                                    <f:selectItems value="#{controlLicenciaBean.listaTipoEspecifico}"/>
+                                </p:selectOneMenu>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <label class="col-md-5 col-xs-6">Fecha expedición: </label>
+                            <div class="col-md-7 col-xs-6">
+                                <p:datePicker value="#{controlLicenciaBean.licenciaVo.expedida}" pattern="dd/MM/yyyy"
+                                              yearNavigator="true" monthNavigator="true"/>
+                            </div>
+
+                        </div>
+                        <div class="row">
+                            <label class="col-md-5 col-xs-6">Fecha de vencimiento:</label>
+                            <div class="col-md-7 col-xs-6">
+                                <p:datePicker value="#{controlLicenciaBean.licenciaVo.vencimiento}" pattern="dd/MM/yyyy"
+                                              yearNavigator="true" monthNavigator="true"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <p:commandButton  action="#{controlLicenciaBean.completarModificacionLicencia}" 
+                                          process="@form" update="editLicencia formControlLicencias" value="Guardar"/>
+                        <p:commandLink value="Cerrar" immediate="true" onclick="$(editLicenciaModal).modal('hide');"/>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </h:form>
+    <!--adjuntar archivo-->
+    <h:form id="addArchivo">
+        <div class="modal fade" id="addArchivoModal" data-backdrop="static" data-keyboard="false">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4>Adjuntar licencia</h4>
+                    </div>
+                    <div class="modal-body">
+                        <h:messages infoClass="alert alert-info" errorClass="alert alert-danger" />
+                        <div class="row alert alert-info">
+                            <label class="col-md-2 col-xs-4">Usuario: </label> #{controlLicenciaBean.licenciaVo.usuario}
+                        </div>
+                        <div class="row">
+                            <label class="col-md-3 col-xs-6">Archivo: </label>
+                            <div class="col-md-9 col-xs-6">
+                                <p:fileUpload id="fileEntryPago"
+                                              listener="#{controlLicenciaBean.subirLicencia}" 
+                                              update="formControlLicencias" process="@this"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <p:commandLink value="Cerrar" onclick="$(addArchivoModal).modal('hide');" immediate="true"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </h:form>
+
+
+
+</ui:composition>

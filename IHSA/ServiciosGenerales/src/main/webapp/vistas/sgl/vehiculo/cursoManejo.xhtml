@@ -1,0 +1,357 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      >
+
+    <body>
+
+        <ui:composition template="./../../../WEB-INF/facelets/templates/templateServiciosGenerales.xhtml">
+            <ui:define name="contenido">
+                <div class="card  card-primary">
+                    <div class="card -heading">
+                        <center><h3>Curso de Manejo</h3></center>
+                        <script>
+                            function datosAdd() {
+                                $("#filtrosYAdd").slideToggle();
+                                $("#newCurso").slideToggle();
+
+                            }
+
+                            function cargarUsuarioCurso(json, idElement) {
+                                var index = 0;
+                                var newlist = document.getElementById(idElement);
+                                var nav = navigator.userAgent.toLowerCase();
+
+
+                                $(json).each(function () {
+                                    var op = document.createElement('option');
+                                    op.value = this.label;
+                                    op.setAttribute("id", this.value);
+                                    newlist.appendChild(op);
+                                    index++;
+                                });
+                            }
+
+                            function limpiarDataListUsuario() {
+                                var des = document.getElementById('completarEmpleado');
+                                $('#usuariosCursoList').empty();
+                                des.value = '';
+
+                            }
+                            //bloque que solo se escrinban numeros
+                            $('.input-number').on('input', function () {
+                                this.value = this.value.replace(/[^0-9]/g, '');
+                            });
+
+                            $(function () {
+                                $(".fechaInt1").datepicker({
+                                    showButtonPanel: true,
+                                    buttonImage: "#{msgs['sgl.ruta.imagen']}cal_button.gif",
+                                    buttonImageOnly: true,
+                                    numberOfMonths: 2,
+                                    dateFormat: "dd/mm/yy",
+                                    onSelect: function (date) {
+                                        fechaSeleccinadaSalida = date;
+                                    },
+                                    onClose: function (selectedDate) {
+                                        $(".fechaInt2").datepicker("option", "minDate", selectedDate);
+                                        $(".fechaInt2").datepicker('show');
+                                    }
+                                });
+                            });
+                            $(function () {
+                                $(".fechaInt2").datepicker({
+                                    showButtonPanel: true,
+                                    buttonImage: "#{msgs['sgl.ruta.imagen']}cal_button.gif",
+                                    buttonImageOnly: true,
+                                    dateFormat: "dd/mm/yy",
+                                    numberOfMonths: 2,
+                                    onSelect: function (date) {
+                                        fechaSeleccinadaSalida = date;
+                                    }
+                                });
+                            });
+
+                            $(function () { //buscar forma de eliminar duplicidad
+                                $(".fechaIntV1").datepicker({
+                                    showButtonPanel: true,
+                                    buttonImage: "#{msgs['sgl.ruta.imagen']}cal_button.gif",
+                                    buttonImageOnly: true,
+                                    numberOfMonths: 2,
+                                    dateFormat: "dd/mm/yy",
+                                    onSelect: function (date) {
+                                        fechaSeleccinadaSalida = date;
+                                    },
+                                    onClose: function (selectedDate) {
+                                        $(".fechaIntV2").datepicker("option", "minDate", selectedDate);
+                                        $(".fechaIntV2").datepicker('show');
+                                    }
+                                });
+                            });
+                            $(function () {
+                                $(".fechaIntV2").datepicker({
+                                    showButtonPanel: true,
+                                    buttonImage: "#{msgs['sgl.ruta.imagen']}cal_button.gif",
+                                    buttonImageOnly: true,
+                                    dateFormat: "dd/mm/yy",
+                                    numberOfMonths: 2,
+                                    onSelect: function (date) {
+                                        fechaSeleccinadaSalida = date;
+                                    }
+                                });
+                            });
+
+                        </script>
+                        <style>
+                            .ui-datepicker-calendar .ui-state-active {                                
+                                background: #6eafbf;
+                                -webkit-box-shadow: inset 0px 0px 10px 0px rgba(0, 0, 0, .1);
+                                -moz-box-shadow: inset 0px 0px 10px 0px rgba(0, 0, 0, .1);
+                                box-shadow: inset 0px 0px 10px 0px rgba(0, 0, 0, .1);
+                                color: #e0e0e0;
+                                text-shadow: 0px 1px 0px #4d7a85;
+                                filter: dropshadow(color=#4d7a85, offx=0, offy=1);
+                                border: 1px solid #55838f;
+                                position: relative;
+                                margin: -1px;
+                            }
+                            .ui-datepicker-unselectable .ui-state-default {
+                                background-image:  url(#{msgs['sgl.ruta.imagen']}flight-status-icon.png);
+                            }
+                        </style>
+                    </div>
+                    <div class="card-body">
+                        <h:form  id="formCursoManejo">
+
+                            <div class="row" style="display: block" id="filtrosYAdd">
+                                <div class="col-md-1 col-xs-2">
+                                    <div class="btn-group">
+                                        <button type="button"  data-toggle="dropdown" class="btn btn-default dropdown-toggle"  id="btnaOpciones" style="display: #{sesion.idRol != 12 ? 'block' : 'none'};">
+                                            <label>Opciones</label><span class="glyphicon glyphicon-chevron-down"></span>
+                                        </button>
+                                        <ul class="dropdown-menu" id="opc">
+                                            <li><a href="#"  id="addUsuarioManual" onclick="datosAdd()">Agregar usuario</a></li>
+                                            <li><a href="#"  id="addUsuarioExcel" onclick="$('#addOrUpdateCursos').modal('show');">Agregar usuario desde excel</a></li>
+                                            <li><a href="#"  id="actualizarUsuarioExcel" onclick="$('#addOrUpdateCursos').modal('show');">Actualizar usuarios desde excel</a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="col-md-11 col-xs-10">
+                                    <div class="col-md-5">
+                                        <div class="col-md-3 col-xs-3">
+                                            <label class="radio-inline" style="font-size: 13px">
+                                                <input type="radio" class="radio-inline"  name="selecFiltro" checked="true" value="todos">
+                                                    <strong>Todos</strong>
+                                                </input>
+                                            </label>
+                                        </div>
+                                        <div class="col-md-3 col-xs-3">
+                                            <label class="radio-inline" style="font-size: 13px">
+                                                <input type="radio" class="radio-inline"  name="selecFiltro" value="vigentes">
+                                                    <strong>Vigentes</strong>
+                                                </input>
+                                            </label>
+                                        </div>
+                                        <div class="col-md-3 col-xs-3">
+                                            <label class="radio-inline" style="font-size: 13px">
+                                                <input type="radio" class="radio-inline"  name="selecFiltro" value="vencidos" >
+                                                    <strong>Vencidos</strong>
+                                                </input>
+                                            </label>
+                                        </div>
+                                        <div class="col-md-3 col-xs-3">
+                                            <label class="radio-inline" style="font-size: 13px">
+                                                <input type="radio" class="radio-inline"  name="selecFiltro" value="PorVencer" >
+                                                    <strong>Por Vencer</strong>
+                                                </input>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-5">
+                                        <label class="col-md-4 co-xs-4" style="text-align: right; font-size: 13px">Fecha Vencimiento:</label>
+                                        <div class="col-md-4 col-xs-4">
+                                            <h:inputText id="fechaIntV" value="#{cursoManejoBean.fechaVencimientoInicio}" styleClass="form-control fechaIntV1"> 
+                                                <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                            </h:inputText>
+                                        </div>
+                                        <div class="col-md-4 col-xs-4">
+                                            <h:inputText id="fechaIntV2" value="#{cursoManejoBean.fechaVencimientoFin}" styleClass="form-control fechaIntV2" >
+                                                <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                            </h:inputText>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="col-md-6 col-xs-6">
+                                            <button type="button" class="btn btn-primary"
+                                                    onclick="ejecutarBoton('formCursoManejo', 'buscarByFiltros')"
+                                                    title="Buscar curso por fecha y/o vigencia">
+                                                <span class="glyphicon glyphicon-search"></span>
+                                            </button>
+                                            <p:commandLink  action="#{cursoManejoBean.buscarByFiltros()}" id="buscarByFiltros"/>
+                                        </div>
+                                        <div class="col-md-6 col-xs-6">
+                                            <button type="button" class="btn btn-default form-control"
+                                                    title="Notificar a los usuarios la caducuidad de su curso" onclick="ejecutarBoton('formCursoManejo', 'sendEmail')">
+                                                <span class="glyphicon glyphicon-envelope" style="color: #3276b1;"></span>
+                                            </button>
+                                            <p:commandLink  action="#{cursoManejoBean.notificarCursos()}" id="sendEmail"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row" id="newCurso" style="display: none;" >
+                                <div class="col-md-2 col-xs-8">
+                                    <input type="text" list="usuariosCursoList" autocomplete="on" class="form-control" 
+                                           onclick="if (this.value != '') {
+                                                       this.value = ''
+
+                                                   }"
+                                           onkeypress="if (event.keyCode == 13) {
+                                                       ejecutarBoton('formCursoManejo', 'selectUsuario');
+
+                                                   }" 
+                                           id="completarEmpleado" name="completarEmpleado"  placeholder="Usuario..." />                   
+                                    <datalist id="usuariosCursoList"></datalist> 
+                                    <p:commandLink  action="#{cursoManejoBean.buscarUsuarioCurso()}" id="selectUsuario"/>
+                                </div>
+                                <div class="col-md-1">
+
+                                    <input type="text" class="form-control input-number" placeholder="Numero..." id="idCursoM" name="idCursoM"/>
+                                </div>
+
+                                <div class="col-md-2 col-xs-3">
+                                    <h:inputText id="fechaInt1" value="#{cursoManejoBean.fechaInicio}" styleClass="form-control fechaInt1"> 
+                                        <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                    </h:inputText>
+                                </div>
+                                <div class="col-md-2 col-xs-3">
+                                    <h:inputText id="fechaInt2" value="#{cursoManejoBean.fechaFin}" styleClass="form-control fechaInt2" >
+                                        <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                    </h:inputText>
+                                </div>
+                                <div class="col-md-1 col-xs-2">
+                                    <button type="button" class="btn btn-primary" title="Agregar Curso de manejo" onclick="ejecutarBoton('formCursoManejo', 'addCursoM')">
+                                        <span class="glyphicon glyphicon-ok"></span>
+                                    </button>
+                                    <p:commandLink  action="#{cursoManejoBean.crearCurso()}" id="addCursoM"/>
+                                </div>
+                                <div class="col-md-1 col-xs-2">
+                                    <button type="button" class="btn btn-default" id="cancelNewCurso" onclick="datosAdd()" title="cancelar">
+                                        <span class="glyphicon glyphicon-remove" style="color: grey"></span>
+                                    </button>
+                                </div>
+                            </div>
+                            <br/>
+                            <div class="row">
+                                <div class="table-responsive">
+                                    <p:dataTable id="CursoManejo" value="#{cursoManejoBean.usuariosConCurso}" var="via"
+                                                   styleClass="table table-striped" style="width: 99.9%" rows="20" paginator="true" paginatorPosition="bottom">
+                                        <p:columnGroup type="header">
+                                            <p:row>
+                                                <p:column id="idSelecTodo" style="font-size: small; border-color:  whitesmoke;">
+                                                    <f:facet name="header">
+                                                        <h:selectBooleanCheckbox  class="todos" onchange="seleccionarTodo('todos', 'seleccion')"
+                                                                                  id="selectTodo" value="#{cursoManejoBean.selectTodos}"
+                                                                                  valueChangeListener="#{cursoManejoBean.seleccionTodo}" immediate="true">
+                                                            <f:ajax event="click" />
+                                                        </h:selectBooleanCheckbox>
+                                                    </f:facet>
+                                                </p:column>
+                                                <p:column id="hUsuario" headerText="Usuario" style="font-size: small; border-color:  whitesmoke;" />
+                                                <p:column id="hCampo" headerText="Bloque" style="font-size: small; border-color:  whitesmoke; display: none;"/>
+                                                <p:column id="hOficina" headerText="Oficina" style="font-size: small; border-color:  whitesmoke;" />
+                                                <p:column id="hFechaAlta" headerText="Fecha del curso" style="font-size: small; border-color:  whitesmoke;"/>
+                                                <p:column id="hFechaVence" headerText="Fecha de Vencimiento" style="font-size: small; border-color:  whitesmoke;"/>
+                                                <p:column id="hNumCurso" headerText="Numero" style="font-size: small; border-color:  whitesmoke;"/>
+                                                <p:column id="hFechaAltaFalse" headerText="Fecha del curso" style="font-size: small; border-color:  whitesmoke; display: none;"/>
+                                                <p:column id="hFechaVenceFalse" headerText="Fecha de Vencimiento" style="font-size: small; border-color:  whitesmoke; display: none;"/>
+                                                <p:column id="hNumCursoFalse" headerText="Numero" style="font-size: small; border-color:  whitesmoke; display: none;"/>
+                                                <p:column id="hmod" headerText="" style="font-size: small; border-color:  whitesmoke;"/>
+                                            </p:row>
+                                        </p:columnGroup>
+                                        <p:column id="selectCurso" style="font-size: small; text-align: center; padding: 3px 0px 3px 0px; 
+                                                    border-color:  whitesmoke; background-color: #{via.vigente ? '': '#f1dddd'}">
+                                            <h:selectBooleanCheckbox value="#{via.select}" style="font-size: 12px;" class="seleccion">
+                                                <!--f:ajax event="valueChange" execute="@this"/-->
+                                            </h:selectBooleanCheckbox>
+                                        </p:column>
+                                        <p:column  style="font-size: small; text-align: center; padding: 3px 0px 3px 0px; 
+                                                     border-color:  whitesmoke; background-color: #{via.vigente ? '': '#f1dddd'}" >
+                                            <h:outputText value="#{via.nameUser}"/>
+                                        </p:column>
+                                        <p:column  style="font-size: small; text-align: center; padding: 3px 0px 3px 0px; display: none;
+                                                     border-color:  whitesmoke; background-color: #{via.vigente ? '': '#f1dddd'}" >
+                                            <h:outputText value="#{via.campo}"/>
+                                        </p:column>
+                                        <p:column  style="font-size: small; text-align: center; padding: 3px 0px 3px 0px; 
+                                                     border-color:  whitesmoke; background-color: #{via.vigente ? '': '#f1dddd'}" >
+                                            <h:outputText value="#{via.oficina}"/>
+                                        </p:column>
+                                        <p:column  style="font-size: small; text-align: center; padding: 3px 0px 3px 0px; 
+                                                     border-color:  whitesmoke; background-color: #{via.vigente ? '': '#f1dddd'}">
+                                            <h:outputText id="fexpedida" value="#{via.fechaExpedicion}" title="Fecha en que se realizo la solicitud">
+                                                <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                            </h:outputText>
+                                        </p:column>
+                                        <p:column  style="font-size: small; text-align: center; padding: 3px 0px 3px 0px; 
+                                                     border-color:  whitesmoke; background-color: #{via.vigente ? '': '#f1dddd'}">
+                                            <h:outputText id="fVencimiento" value="#{via.fechaVencimiento}" title="Fecha en que se realizo la solicitud">
+                                                <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                            </h:outputText>
+                                        </p:column>
+                                        <p:column  style="font-size: small; text-align: center; padding: 3px 0px 3px 0px; 
+                                                     border-color:  whitesmoke; background-color: #{via.vigente ? '': '#f1dddd'}" >
+                                            <h:outputText value="#{via.numCurso}" />
+                                        </p:column>
+                                        <p:column style="font-size: small; text-align: center; padding: 3px 0px 3px 0px; border-color:  whitesmoke; background-color: #{via.vigente ? '': '#f1dddd'}">
+                                            <p:commandLink action="#{cursoManejoBean.modUsuarioCurso()}" id="actualizarFechasC" 
+                                                              title="modificar" type="button">
+                                                <f:param value="#{via.idCursoManejo}" name="idActual"/>
+                                                <i class="fa fa-edit"></i>
+                                            </p:commandLink>
+                                        </p:column>
+                                        <p:column style="font-size: small; text-align: center; padding: 3px 0px 3px 0px; display: none;
+                                                    border-color:  whitesmoke; background-color: #{via.vigente ? '': '#f1dddd'}"></p:column>
+                                        <p:column style="font-size: small; text-align: center; padding: 3px 0px 3px 0px; display: none;
+                                                    border-color:  whitesmoke; background-color: #{via.vigente ? '': '#f1dddd'}"></p:column>
+                                        <p:column style="font-size: small; text-align: center; padding: 3px 0px 3px 0px; display: none;
+                                                    border-color:  whitesmoke; background-color: #{via.vigente ? '': '#f1dddd'}"></p:column>
+                                    </p:dataTable>
+                                    <div class="row">
+                                        <div class="col-md-8">
+
+                                        </div>
+                                        <div class="col-md-2" style="text-align: right;">
+                                            <p:commandButton value="Exportar">
+                                            <p:dataExporter id="exportTabla" type="xls" 
+                                                              fileName="Curso de manejo" target="CursoManejo" >
+
+                                            </p:dataExporter>
+                                            </p:commandButton>
+                                        </div>
+                                        <div class="col-md-2" style="text-align: right;">
+                                            <p:dataExporter id="exportTabla2" type="xls" 
+                                                              fileName="Curso de manejo" target="CursoManejo" >
+
+                                            </p:dataExporter>
+                                        </div>
+                                    </div>
+
+
+                                </div>
+                            </div>
+
+                        </h:form>  
+                        <ui:include src="/vistas/sgl/vehiculo/popsCursoManejo.xhtml"/>
+                    </div>
+                </div>
+
+
+            </ui:define>    
+        </ui:composition>
+    </body>
+</html>

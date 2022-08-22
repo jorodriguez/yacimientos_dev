@@ -1,0 +1,90 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <body>
+        <ui:composition template="./../../../WEB-INF/facelets/templates/templateGrupos.xhtml">
+            <ui:define name="tituloPagina">
+                #{msgs['sia.gerencia.catalogo.titulo']}
+            </ui:define>
+            <ui:define name="contenido">
+                <h:form id="formPrincipal"   >
+                    <div class="col-12 col-xs-12" style="display: #{ catalogoApGerenciaBean.validaRolDesarrollo() ? 'block':'none'}">
+                        <!--p:commandLink  immediate="true"
+                                        title="{msgs['sia.catalogo.gerencia.agregar.responsable']}" 
+                                        action="/vistas/administracion/gerencia/altaGerencia.xhtml?faces-redirect=true"  
+                                        styleClass="btn btn-primary">
+                            <i class="fa fa-plus text-white"/>
+                        </p:commandLink-->
+                    </div>
+                    <div class="col-12 col-xs-12">
+                        <p:selectOneMenu value="#{catalogoApGerenciaBean.idCampo}" >
+                            <f:selectItems value="#{catalogoApGerenciaBean.campos}"/>
+                            <p:ajax listener="#{catalogoApGerenciaBean.idCampoSel}" update="formPrincipal:dataGridModulo"/>
+                        </p:selectOneMenu>
+                    </div>
+                    <p:dataTable id="dataGridModulo" rows="10" var="data" showGridlines="true" size="small"
+                                 value="#{catalogoApGerenciaBean.dataModel}" 
+                                 paginator="true" paginatorPosition="bottom">
+                        <p:column headerText="#{msgs['sia.rh.gerencia']}">
+                            <h:outputText value="#{data.nombreGerencia}" />
+                        </p:column>
+                        <p:column headerText="#{msgs['usuario.responsable']}">
+                            <h:outputText value="#{data.nombreResponsable}"/>
+                        </p:column>
+                        <p:column style="text-align: center;" width="5%" headerText="#{msgs['sistema.visible']}">
+                            <p:commandLink value="#{data.visibleApCampo eq true ? 'Si' : 'No'}"
+                                           action="#{catalogoApGerenciaBean.cambiarVisible(data.id)}"
+                                           process="@this" update="formPrincipal:dataGridModulo"/>
+                        </p:column>
+                        <p:column width="15%">
+                            <p:commandLink title="#{msgs['sistema.cambiar.responsable']}" value="#{msgs['sistema.cambiar.responsable']}" 
+                                           action="#{catalogoApGerenciaBean.cambiarResponsable(data)}"
+                                           process="@this" update="frmPopResponsableGerencia"/>
+                        </p:column>
+                        <p:column rendered="#{catalogoApGerenciaBean.validaRolDesarrollo()}" width="15%">
+                            <p:commandLink title="Eliminar Gerencia" value="Eliminar gerencia" 
+                                           action="#{catalogoApGerenciaBean.eliminarGerencia(data.id, data.idGerencia)}"
+                                           process="@this" update="formPrincipal:dataGridModulo"/>
+                        </p:column>
+                    </p:dataTable>
+                </h:form>
+
+                <div class="modal fade" id="dialogoResponsableGerencia" data-backdrop="static" data-keyboard="false">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h4 class="modal-title">Agregar responsable a gerencias</h4>
+                            </div>
+                            <h:form id="frmPopResponsableGerencia">
+                                <div class="modal-body">
+                                    <center><h:messages for="frmPopCambiarResponsable" errorClass="errorMessage" infoClass="infoMessage" styleClass="textoMensajeError"/></center>
+                                    <p:panelGrid columns="2">
+                                        <h:outputText value="#{msgs['sia.rh.gerencia']}:"/>
+                                        <h:outputText value="#{catalogoApGerenciaBean.apCampoGerenciaVo.nombreGerencia}"/>
+                                        <h:outputText value="#{msgs['usuario.responsable']}: "/>
+                                        <p:autoComplete value="#{catalogoApGerenciaBean.responsable}" 
+                                                        completeMethod="#{catalogoApGerenciaBean.completarUsuario}"
+                                                        size="40" forceSelection="true" >
+                                        </p:autoComplete>
+                                    </p:panelGrid>
+                                </div>
+                                <div class="modal-footer">
+                                    <p:commandButton id="btnGuardar" value="#{msgs['sistema.aceptar']}"
+                                                     action="#{catalogoApGerenciaBean.completarCambiarResponsable}" styleClass="btn btn-info text-white" />
+                                    <p:commandLink id="btnCerrar" value="#{msgs['sistema.cancelar']}"
+                                                   action="#{catalogoApGerenciaBean.cerrarCambioResponsable}" styleClass="btn btn-default"
+                                                   immediate="true" />
+                                </div>
+                            </h:form>
+                        </div>
+                    </div>
+                </div>
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

@@ -1,0 +1,130 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:p="http://primefaces.org/ui">
+    <div class="row">
+        <div class="col-10 col-xs-10"></div>
+        <div class="col-1 col-xs-1">
+            <p:commandLink  action="#{exportarContactosBean.limpiarBusqueda}"
+                            styleClass="btn btn-warning"
+                            title="Limpiar filtros"
+                            process="@this" update="frmTablaPrincipalContactos">
+                <i class="fa fa-eraser text-danger"></i>
+            </p:commandLink>
+            <p:commandLink styleClass="btn btn-success ml-2" action="#{exportarContactosBean.buscarAvanzadoContactos}"
+                           title="Buscar convenios" process="@form" update="frmTablaPrincipalContactos:dtContactos">
+                <i class="fa fa-search"/>
+            </p:commandLink>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12 ">
+            <p:dataTable id="tblFiltro" value="#{exportarContactosBean.listaFiltro}" var="data"
+                         size="small" showGridlines="true">	    
+                <p:column headerText="Nexo"  width="100">
+                    <p:selectOneMenu value="#{data.operadorLogicoSeleccionado}"
+                                     rendered="#{data.id gt 0}">
+                        <f:selectItems value="#{data.operadorLogico}"/>
+                        <p:ajax event="change" process="@this" update="frmPrincipalContrato:tblFiltro"
+                                listener="#{exportarContactosBean.agregarOperadorLogicoCondiciones(index, data.operadorLogicoSeleccionado)}"/>
+                    </p:selectOneMenu>
+                </p:column>
+                <p:column headerText="Campo" >
+                    <p:selectOneMenu value="#{data.campoSeleccionado}"
+                                     style="width: 150px;">
+                        <f:selectItems value="#{data.campos}"/>
+                        <p:ajax event="change" process="@this" update="frmPrincipalContrato:tblFiltro"
+                                listener="#{exportarContactosBean.mostrarCondiciones(index, data.campoSeleccionado)}"/>
+                    </p:selectOneMenu>
+                </p:column>
+                <p:column headerText="Operador">
+                    <p:selectOneMenu value="#{data.operadorRelacionalSeleccionado}"
+                                     style="width: 150px;">
+                        <f:selectItems value="#{data.operadorRelacional}"/>
+                        <p:ajax event="change" process="@this" update="frmPrincipalContrato:tblFiltro"
+                                listener="#{exportarContactosBean.seleccionarOperadorRelacional(index, data.operadorRelacionalSeleccionado)}"/>
+                    </p:selectOneMenu>
+
+                </p:column>
+                <p:column headerText="Valor">
+                    <p:datePicker value="#{data.fecha}" 
+                                  rendered="#{data.filtroFecha}"
+                                  pattern="dd/MM/yyyy"
+                                  readonly="true"
+                                  yearRange="2008:2024"
+                                  >
+                    </p:datePicker>
+                    <div class="col-12" style="display: #{data.filtroFechaRango ? 'block;' : 'none;'} ">
+                        <div class="col-6">
+                            <p:datePicker value="#{data.fechaInicio}" 
+                                          pattern="dd/MM/yyyy"
+                                          readonly="true"
+                                          yearRange="2008:2024">
+                            </p:datePicker>
+                        </div>
+                        <div class="col-2">
+                            <h:outputText value="a" styleClass="control-label"/>
+                        </div>
+                        <div class="col-4">
+                            <p:datePicker value="#{data.fechaFin}" 
+                                          pattern="dd/MM/yyyy"
+                                          readonlyInput="true"
+                                          yearRange="2008:2024"
+                                          mindate="#{data.fechaInicio}">
+                            </p:datePicker>
+                        </div>
+                    </div>
+                    <h:inputText value="#{data.alcance}" rendered="#{data.filtroCaja}"
+                                 styleClass="form-control"/>
+
+                    <h:selectOneMenu value="#{data.idMoneda}" rendered="#{data.campoSeleccionado eq 'Monto'}"
+                                     styleClass="custom-select">
+                        <f:selectItems value="#{data.listaMoneda}" />
+                    </h:selectOneMenu>
+                    <h:selectOneMenu value="#{data.idEstado}" rendered="#{data.filtroCombo and data.campoSeleccionado eq 'Estado'}"
+                                     styleClass="custom-select">
+                        <f:selectItems value="#{data.listaEstatus}"/>
+                    </h:selectOneMenu>
+                    <h:selectOneMenu value="#{data.idGerencia}" rendered="#{data.filtroCombo  and data.campoSeleccionado eq 'Gerencia'}"
+                                     styleClass="custom-select">
+                        <f:selectItems value="#{data.listaGerencia}"/>
+                    </h:selectOneMenu>		
+                </p:column>	    
+                <p:column width="50">
+                    <p:commandLink action="#{exportarContactosBean.agregarNuevoFiltro}"
+                                   rendered="#{data.id eq exportarContactosBean.listaFiltro.size()-1}"
+                                   process="@this" update="frmPrincipalContrato:tblFiltro"> 
+                        <i class="fa fa-plus text-primary"/>
+                    </p:commandLink>
+                </p:column>
+                <p:column rendered="#{exportarContactosBean.listaFiltro.size() gt 1}" width="50">
+                    <p:commandLink action="#{exportarContactosBean.quitarFiltroContacto(data.id)}"
+                                   rendered="#{data.id gt 0}"
+                                   process="@this" update="frmPrincipalContrato:tblFiltro">
+                        <i class="fa fa-minus text-warning"/>
+                    </p:commandLink>
+                </p:column>
+            </p:dataTable>
+        </div>
+    </div>
+    <div class="row">            
+        <div class="col-9 ">
+            <div class="col-3 ">
+                <strong><h:outputLabel styleClass="control-label" value="Contactos "/></strong>
+                <p:selectBooleanCheckbox value="#{exportarContactosBean.conConts}"/>
+            </div>
+            <div class="col-3 ">
+                <strong><h:outputLabel styleClass="control-label" value="Rep. Legal "/></strong>
+                <p:selectBooleanCheckbox value="#{exportarContactosBean.conRLs}"/>
+            </div>
+            <div class="col-3 ">
+                <strong><h:outputLabel styleClass="control-label" value="Rep. Técnico "/></strong>
+                <p:selectBooleanCheckbox value="#{exportarContactosBean.conRTs}"/>
+            </div>
+        </div>
+    </div>
+
+
+</ui:composition>    

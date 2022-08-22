@@ -1,0 +1,128 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:composite="http://java.sun.com/jsf/composite" 
+      >
+
+    <composite:interface>
+        <composite:attribute name="embedded" type="Boolean"/>
+    </composite:interface>
+    <composite:implementation>
+        <h:panelGroup id="panelInformacionArticulo">
+            <table class="table-form">
+                <tr>
+                    <td class="bold">#{msg['sia.inventarios.articulos.categoria']}: <span class="required">*</span></td>
+                    <td>
+                        <h:selectOneMenu id="smCategoriasPrincipales"
+                                         styleClass="ui-widget ui-inputfield ui-state-default ui-state-optional"
+                                         requiredMessage="#{msg['sia.validaciones.required']}"
+                                         onchange="selecionoCategoriaRaiz(this)">
+                            <f:selectItem itemLabel="#{msg['sia.inventarios.comun.seleccione']}" itemValue="#{null}"
+                                          noSelectionOption="true"/>
+                            <f:selectItems value="#{articulo.categoriasPrincipales}" var="c" itemLabel="#{c.nombre}"
+                                           itemValue="#{c.id}" itemDescription="fasdfasdfsdaf"/>
+                        </h:selectOneMenu>
+                        <h:outputText id="hdCodigosPrincipales" value="#{articulo.codigosPrincipales}" styleClass="hidden"/>
+                        <h:inputHidden required="true" id="hdCategoria"
+                                       requiredMessage="#{msg['sia.validaciones.required']}"/>
+                        <h:message for="hdCategoria" id="msjCategoria"
+                                   styleClass="ui-widget ui-corner-all ui-state-error input-msg"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width: 102px">#{msg['sia.inventarios.articulos.codigo']}:</td>
+                    <td>
+                        <h:inputText value="#{articulo.elemento.codigo}" id="txtCodigo" label="Código"
+                                     styleClass="ui-inputfield ui-textentry ui-widget ui-state-optional ui-corner-all ui-disabled"
+                                     readonly="#{facesContext.renderResponse}"
+                                     validator="#{articulo.validarCodigoUnico}">
+                        </h:inputText>
+                        <h:message for="txtCodigo" id="msjCodigo"
+                                   styleClass="ui-widget ui-corner-all ui-state-error input-msg"/>
+                        <h:inputHidden value="#{articulo.elemento.categorias}" id="hdCategoriasIds" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>#{msg['sia.inventarios.comun.nombre']}:</td>
+                    <td>
+                        <h:inputText value="#{articulo.elemento.nombre}" id="txtNombre" label="Nombre"
+                                     styleClass="ui-inputfield ui-textentry ui-widget ui-state-optional ui-corner-all ui-disabled"
+                                     readonly="#{facesContext.renderResponse}">
+                        </h:inputText>
+                    </td>
+                </tr>
+                <tr>
+                    <td>#{msg['sia.inventarios.comun.descripcion']}:</td>
+                    <td>
+                        <h:inputTextarea id="txtDescripcion" value="#{articulo.elemento.descripcion}"
+                                         styleClass="ui-inputfield ui-textareaentry ui-widget ui-state-default ui-corner-all ui-state-optional ui-textareaentry-non-resizable"
+                                         rows="5" cols="50"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="bold">#{msg['sia.inventarios.articulos.unidad']}: <span class="required">*</span></td>
+                    <td>
+                        <div>
+                            <h:selectOneMenu id="smUnidad" value="#{articulo.elemento.unidadId}"
+                                             styleClass="ui-widget ui-inputfield ui-state-default ui-state-optional"
+                                             required="true" requiredMessage="#{msg['sia.validaciones.required']}">
+                                <f:selectItem itemLabel="#{msg['sia.inventarios.comun.seleccione']}" itemValue="#{null}"
+                                              noSelectionOption="true"/>
+                                <f:selectItems value="#{articulo.unidades}" var="u" itemLabel="#{u.nombre}"
+                                               itemValue="#{u.id}"/>
+                                <f:ajax event="blur" render="msjUnidad"/>
+                            </h:selectOneMenu>
+                            <h:commandLink styleClass="crear-foraneo" actionListener="#{articulo.nuevaUnidad}"
+                                           immediate="true" rendered="#{not cc.attrs.embedded}">
+                                <h:graphicImage library="images" name="icon-catalog-link.png"/>
+                                <f:ajax onevent="fijarTituloDialogo" render="@all"
+                                        execute="@form"/>
+                            </h:commandLink>
+                        </div>
+                        <h:message for="smUnidad" id="msjUnidad"
+                                   styleClass="ui-widget ui-corner-all ui-state-error input-msg"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="bold">Precio<span class="required">*</span></td>
+                    <td>
+                        <div>
+                            <h:inputText value="#{articulo.elemento.precio}" id="txtPrecio" label="Precio"
+                                         styleClass="ui-inputfield ui-textentry ui-widget ui-state-optional ui-corner-all">
+                            </h:inputText>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="bold">Moneda<span class="required">*</span></td>
+                    <td>
+                        <div>
+                            <h:selectOneMenu id="smMoneda" value="#{articulo.elemento.idMoneda}"
+                                             styleClass="ui-widget ui-inputfield ui-state-default ui-state-optional"
+                                             required="true" requiredMessage="#{msg['sia.validaciones.required']}">
+                                <f:selectItem itemLabel="#{msg['sia.inventarios.comun.seleccione']}" itemValue="#{null}"
+                                              noSelectionOption="true"/>
+                                <f:selectItems value="#{articulo.monedas}" var="m" itemLabel="#{m.nombre}"
+                                               itemValue="#{m.id}"/>
+                            </h:selectOneMenu>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+            <h:commandButton styleClass="hbutton" value="#{msg['sia.inventarios.comun.guardar']}"
+                             actionListener="#{articulo.guardarElemento}"
+                             title="#{cc.attrs.embedded ? msg['sia.inventarios.comun.crearRegistro'] : ''}">
+                <f:ajax execute="panelInformacionArticulo" render="@all"
+                        onevent="#{cc.attrs.embedded ? 'fijarTituloDialogo' : 'ajaxGuardar'}"/>
+            </h:commandButton>
+            <h:commandButton styleClass="hbutton cancelar hidden" value="#{msg['sia.inventarios.comun.cancelar']}"
+                             actionListener="#{articulo.cancelar}"
+                             rendered="#{cc.attrs.embedded}">
+                <f:ajax render="@all" onevent="fijarTituloDialogo"/>
+            </h:commandButton>
+        </h:panelGroup>
+    </composite:implementation>
+</html>

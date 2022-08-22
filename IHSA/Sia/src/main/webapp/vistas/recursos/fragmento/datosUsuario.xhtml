@@ -1,0 +1,119 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+                xmlns:h="http://xmlns.jcp.org/jsf/html">
+    <h:messages id="error" errorClass="errorMessage" infoClass="infoMessage"/>
+    <table align="center" class="table table-bordered table-striped" cellpadding="0" cellspacing="0" style="width: 80%;">
+        <tr>
+            <td align="left" valign="top"  style="border-style: solid; padding: 0px; margin: 0px; border-width: 0px 0px 1px 0px; border-color: #cccccc;">
+
+                <p:panelGrid columns="2"  >
+                    <f:facet name="header"><h:outputText value="Datos personales" styleClass="textoListaTabla"/></f:facet>                        
+                    <p:panelGrid columns="2">
+                        <h:outputText value="Nombre"/>
+                        <h:outputText value="*"/>
+                    </p:panelGrid>
+                    <p:panelGrid columns="2">
+                        <p:inputText value="#{usuarioBean.usuarioVOAlta.nombre}" id="nombre" size="40" required="true" requiredMessage="El nombre es requerido"/>                            
+                    </p:panelGrid>
+                    <h:outputText value="Mail *"/>
+                    <p:panelGrid columns="2">                                
+                        <p:inputTextarea rows="1" cols="45" value="#{usuarioBean.usuarioVOAlta.mail}" id="mail" style="width: 200px;" 
+                                         required="true" requiredMessage="Es necesario agregar el correo"/>                        
+                    </p:panelGrid>
+                    <h:outputText value="Teléfono"/>
+                    <p:inputText value="#{usuarioBean.usuarioVOAlta.telefono}" size="20"/>
+                    <h:outputText value="Celular"/>
+                    <p:inputText value="#{usuarioBean.usuarioVOAlta.celular}"/>
+                    <h:outputText value="Extensión"/>
+                    <p:inputText value="#{usuarioBean.usuarioVOAlta.extension}" size="10"/>
+                    <h:outputText value="Sexo"/>
+                    <p:selectOneRadio value="#{usuarioBean.usuarioVOAlta.sexo}">
+                        <f:selectItem itemLabel="Masculino" itemValue="M"/>
+                        <f:selectItem itemLabel="Femenino" itemValue="F"/>
+                    </p:selectOneRadio>
+                    <h:outputText value="Fecha nacimiento"/>
+                    <p:datePicker value="#{usuarioBean.usuarioVOAlta.fechaNacimiento}"
+                                  pattern="dd/MM/yyyy">
+                    </p:datePicker>
+                </p:panelGrid>
+            </td>
+            <td align="left" valign="top" style="border-style: solid; padding: 0px; margin: 0px; border-width: 0px 0px 1px 1px; border-color: #cccccc;">
+                <p:panelGrid columns="2" >                    
+                    <f:facet name="header"><h:outputText value="Datos profesionales" styleClass="textoListaTabla"/></f:facet>                                               
+                    <p:panelGrid columns="2">
+                        <h:outputText value="Campo default"/>
+                        <h:outputText value="*"/>
+                    </p:panelGrid>      
+                    <p:panelGrid columns="2">
+                        <p:selectOneMenu value="#{usuarioBean.usuarioVOAlta.idCampo}" style="width: 200px;" id="cmbCampo"
+                                         valueChangeListener="#{usuarioBean.cambiarValorCampoNuevoIngreso}" >
+                            <f:selectItem itemLabel="Seleccione . . . " itemValue="-1"/>
+                            <f:selectItems value="#{usuarioBean.listaCampoPorUsuario}"/>
+                        </p:selectOneMenu>                        
+                    </p:panelGrid>
+                    <p:panelGrid columns="2">
+                        <h:outputText value="Oficina"/>
+                        <h:outputText value="*"/>
+                    </p:panelGrid>      
+                    <p:panelGrid columns="2">
+                        <p:selectOneMenu value="#{usuarioBean.usuarioVOAlta.idOficina}" style="width: 200px;" id="cmbOficina">
+                            <f:selectItem itemLabel="Seleccione . . . " itemValue="-1"/>
+                            <f:selectItems value="#{usuarioBean.listaOficina}"/>
+                        </p:selectOneMenu>
+                    </p:panelGrid>
+                    <h:outputText value="Gerencia *"/>
+                    <p:selectOneMenu id="cmbGerencia" value="#{usuarioBean.usuarioVOAlta.idGerencia}" style="width: 200px;">
+                        <f:selectItem itemLabel="Seleccione . . ." itemValue="-1"/>
+                        <f:selectItems value="#{usuarioBean.gerencias}"/>
+                    </p:selectOneMenu>       
+                    <p:panelGrid columns="2">
+                        <h:outputText value="Puesto actual"/>
+                    </p:panelGrid>
+                    <p:panelGrid columns="2">                        
+                        <h:outputText value="#{usuarioBean.usuarioVOAlta.puesto}"/>
+                    </p:panelGrid>       
+                    <p:panelGrid columns="2">
+                        <h:outputText value="Puesto"/>
+                    </p:panelGrid>
+                    <p:panelGrid columns="2">                        
+                        <p:inputText id="autocompletePuesto" size="40" value="#{usuarioBean.usuarioVOAlta.puesto}"
+                                     onclick="autocompletarPuesto(this, 'hidenDesPuesto', 'frmModDatosUsr');"/>
+                        <h:inputHidden id="hidenDesPuesto" value="#{usuarioBean.idPuesto}"/>
+                    </p:panelGrid>   
+                    <p:panelGrid columns="2">
+                        <h:outputText value="Fecha ingreso"/>
+                        <h:outputText value="*"/>
+                    </p:panelGrid>   
+                    <p:datePicker value="#{usuarioBean.usuarioVOAlta.fechaIngreso}" 
+                                  required="true" requiredMessage="Es necesario seleccionar la fecha de ingreso"
+                                  pattern="dd/MM/yyyy">
+                    </p:datePicker>
+                    <p:panelGrid columns="2">
+                        <h:outputText value="Nomina"/>
+                        <h:outputText value="*"/>
+                    </p:panelGrid>                            
+                    <p:selectOneMenu id="cmbNomina" value="#{usuarioBean.usuarioVOAlta.idNomina}" style="width: 200px;">
+                        <f:selectItem itemLabel="Seleccione . . ." itemValue="-1"/>
+                        <f:selectItems value="#{usuarioBean.listaEmpresa}"/>
+                    </p:selectOneMenu>  
+                </p:panelGrid>                                
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2" align="center" style="padding: 10px;">
+                <p:panelGrid columns="2" >   
+                    <p:commandLink id="guardar" value="Guardar" onclick="return validaModificarUsuario('frmModDatosUsr', 'cmbCampo', 'cmbOficina', 'cmbGerencia', 'cmbNomina');"
+                                   action="#{usuarioBean.modificarDatos}"
+                                   styleClass="btn btn-info"/>
+                    <p:commandLink value="Cancelar" immediate="true"  style="margin-left: 30px;"
+                                   action="#{usuarioBean.cancelarModificacion}"
+                                   styleClass="btn btn-default" />
+                </p:panelGrid>
+            </td>
+        </tr>
+    </table>
+    <br/>
+</ui:composition>

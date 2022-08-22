@@ -1,0 +1,244 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+
+      xmlns:c="http://java.sun.com/jsp/jstl/core">      
+
+    <body>
+
+        <ui:composition template="./../../../../WEB-INF/facelets/templates/templateServiciosGenerales.xhtml">
+
+            <ui:define name="contenido">
+
+                <h:panelGroup rendered="#{empty sesion.usuario}" styleClass="altura">
+                    <ui:include src="./../../../../login.xhtml"/>
+                </h:panelGroup> 
+                <h:panelGroup rendered="#{not empty sesion.usuario}">
+                    <p class="tituloEncabezado">#{msgs['sia.siCiudad.catalogo']}</p>
+                    <center><h:messages globalOnly="true" errorClass="errorMessage" infoClass="infoMessage"/></center>
+                    <h:form >
+                        <h:panelGrid columns="3">
+                            <h:outputLabel value="#{msgs['sia.siPais']}: " styleClass="f11" />
+                            <p:selectOneMenu id="somSiPais" 
+                                             value="#{direccionBean.id}"
+
+                                             valueChangeListener="#{direccionBean.loadSiEstadoBySiPaisOnComboListener}"
+                                             styleClass="form-control">
+                                <f:selectItem itemLabel="#{msgs['sistema.seleccionar']} #{msgs['sia.siPais']}..." itemValue="-1" />
+                                <f:selectItems value="#{direccionBean.allSiPaisSelectItem}" />
+                            </p:selectOneMenu>
+                            <p:commandLink type="submit" value="+" title="#{msgs['sistema.crear']} #{msgs['sia.siPais']}" action="#{direccionBean.openPopupCreateSiPais(actionEvent)}" styleClass="btn btn-default" />
+
+                            <h:outputLabel value="#{msgs['sia.siEstado']}: " styleClass="f11" />
+                            <p:selectOneMenu id="somSiEstado" 
+                                             value="#{direccionBean.idSiEstado}"
+
+                                             valueChangeListener="#{direccionBean.loadSiCiudadBySiEstadoOnTableListener}"
+                                             styleClass="form-control">
+                                <f:selectItem itemLabel="#{msgs['sistema.seleccionar']} #{msgs['sia.siEstado']}..." itemValue="-1" />
+                                <f:selectItems value="#{direccionBean.selectItemList}" />
+                            </p:selectOneMenu>
+                            <p:commandLink type="submit" value="+" title="#{msgs['sistema.crear']} #{msgs['sia.siEstado']}" action="#{direccionBean.openPopupCreateSiEstadoFromCatalogoSiCiudad(actionEvent)}" styleClass="btn btn-default" />
+                        </h:panelGrid>
+                    </h:form>
+
+                    <br/>                    
+
+                    <h:form >
+                        <h:panelGrid>
+                            <p:commandLink title="#{msgs['sistema.crear']} #{msgs['sia.siCiudad']}" actionListener="#{direccionBean.openPopupCreateSiCiudad(event)}" styleClass="btn btn-default">
+                                <h:graphicImage title="#{msgs['sistema.crear']} #{msgs['sia.siCiudad']}" alt="#{msgs['sistema.crear']} #{msgs['sia.siCiudad']}" url="#{msgs['sgl.ruta.imagen']}button_create.png" styleClass="imagenSinBorde"/>
+                            </p:commandLink>
+                            <p:commandLink value="#{msgs['sistema.crear']} #{msgs['sia.siCiudad']}" title="#{msgs['sistema.crear']} #{msgs['sia.siCiudad']}"  actionListener="#{direccionBean.openPopupCreateSiCiudad(event)}" styleClass="linkPequenio" />
+                        </h:panelGrid>  
+                    </h:form>
+
+                    <br/>
+
+                    <h:form id="catSiCiudad" >
+                        <p:dataTable id="dgsiCiudad" rows="10" value="#{direccionBean.allSiCiudadDataModel}"
+                                     var="data">
+                            <p:column>
+                                <f:facet name="header"><h:outputText value="#{msgs['sia.siCiudad']}"/></f:facet>
+                                <h:outputText value="#{data.nombre}"/>
+                            </p:column>
+                            <p:column>
+                                <center>
+                                    <p:commandLink value="#{msgs['sistema.modificar']}" actionListener="#{direccionBean.openPopupUpdateSiCiudad(event)}" styleClass="link" />
+                                </center>
+                            </p:column>
+                            <p:column>
+                                <center>
+                                    <p:commandLink value="#{msgs['sistema.eliminar']}" 
+                                                   actionListener="#{direccionBean.deleteSiCiudad(event)}" styleClass="link" />
+                                </center>
+
+                                <p:confirm id="pnlCon" header="Confirmar"  message="#{msgs['sia.siCiudad.msg.delete']}"
+                                           />
+                            </p:column>
+                        </p:dataTable>
+                        <br/>
+                    </h:form>           
+                </h:panelGroup>   
+
+                <!--Crear SiCiudad-->
+                <h:form id="formPopupCreateSiCiudad" >
+                    <p:dialog header="#{msgs['sistema.crear']} #{msgs['sia.siCiudad']}" 
+                              >
+                        <h:outputText id="msgsPopupCreateSiCiudad" value="" />
+                        <center><h:message for="msgsPopupCreateSiCiudad" errorClass="errorMessage" infoClass="infoMessage"/></center>                    
+
+                        <h:panelGrid columns="2">
+                            <h:outputLabel value="#{msgs['sia.siPais']}: " />
+                            <h:outputText value="#{direccionBean.siPais.nombre}" />                             
+                            <h:outputLabel value="#{msgs['sia.siEstado']}: " />
+                            <h:outputText value="#{direccionBean.siEstado.nombre}" />                               
+                            <h:panelGrid columns="2">
+                                <h:outputLabel value="#{msgs['sgl.generales.nombre']}: "/>
+                                <h:outputText value="*" styleClass="textoRojo" />
+                            </h:panelGrid>
+                            <h:panelGrid columns="2">
+                                <p:inputText id="inpTxtNombre" value="#{direccionBean.siCiudad.nombre}"  maxlength="64" size="32" required="true" requiredMessage="#{msgs['sgl.generales.nombre']} #{msgs['sistema.mensaje.error.esRequerido']}"/>
+                                <h:message id="nombre" for="inpTxtNombre" errorClass="errorMessage" infoClass="infoMessage"/>
+                            </h:panelGrid>
+
+                            <h:panelGrid columns="2">
+                                <h:outputLabel value="Latitud: "/>
+                                <h:outputText value="*" styleClass="textoRojo" />
+                            </h:panelGrid>
+                            <h:panelGrid columns="2">
+                                <p:inputText id="inpTxtLatitud" value="#{direccionBean.siCiudad.latitud}"  maxlength="64" size="32" required="true" requiredMessage="Latitud #{msgs['sistema.mensaje.error.esRequerido']}"/>
+                                <h:message id="latitud" for="inpTxtLatitud" errorClass="errorMessage" infoClass="infoMessage"/>
+                            </h:panelGrid>
+                            <h:panelGrid columns="2">
+                                <h:outputLabel value="Longitud: "/>
+                                <h:outputText value="*" styleClass="textoRojo" />
+                            </h:panelGrid>
+                            <h:panelGrid columns="2">
+                                <p:inputText id="inpTxtLongitud" value="#{direccionBean.siCiudad.longitud}"  maxlength="64" size="32" required="true" requiredMessage="Longitud #{msgs['sistema.mensaje.error.esRequerido']}"/>
+                                <h:message id="longitud" for="inpTxtLongitud" errorClass="errorMessage" infoClass="infoMessage"/>
+                            </h:panelGrid>
+
+                        </h:panelGrid>
+
+                        <center>
+                            <h:panelGrid columns="2">
+                                <p:commandLink value="#{msgs['sistema.crear']}"  styleClass="btn btn-info" />
+                                <p:commandLink value="#{msgs['sistema.cancelar']}" actionListener="#{direccionBean.closePopupCreateSiCiudad(event)}" immediate="true" styleClass="btn btn-default" />
+                            </h:panelGrid>
+                        </center>                                  
+                    </p:dialog>
+                </h:form>
+
+                <!--Modificar SiCiudad-->
+                <h:form id="formPopupUpdateSiCiudad" >
+                    <p:dialog header="#{msgs['sistema.modificar']} #{msgs['sia.siCiudad']}" 
+                              >
+                        <h:outputText id="msgsPopupUpdateSiCiudad" value="" />
+                        <center><h:message for="msgsPopupUpdateSiCiudad" errorClass="errorMessage" infoClass="infoMessage"/></center>       
+
+                        <h:panelGrid columns="2">
+                            <h:outputLabel value="#{msgs['sia.siPais']}: " />
+                            <h:outputText value="#{direccionBean.siPais.nombre}" />                            
+                            <h:outputLabel value="#{msgs['sia.siEstado']}: " />
+                            <h:outputText value="#{direccionBean.siEstado.nombre}" />                            
+                            <h:panelGrid columns="2">
+                                <h:outputLabel value="#{msgs['sgl.generales.nombre']}: "/>
+                                <h:outputText value="*" styleClass="textoRojo" />
+                            </h:panelGrid>
+                            <h:panelGrid columns="2">
+                                <p:inputText id="inpTxtNombre" value="#{direccionBean.siCiudad.nombre}"  maxlength="64" size="32" required="true" requiredMessage="#{msgs['sgl.generales.nombre']} #{msgs['sistema.mensaje.error.esRequerido']}"/>
+                                <h:message id="nombre" for="inpTxtNombre" errorClass="errorMessage" infoClass="infoMessage"/>
+                            </h:panelGrid>
+
+                            <h:panelGrid columns="2">
+                                <h:outputLabel value="Latitud: "/>
+                                <h:outputText value="*" styleClass="textoRojo" />
+                            </h:panelGrid>
+                            <h:panelGrid columns="2">
+                                <p:inputText id="inpTxtLatitud" value="#{direccionBean.siCiudad.latitud}"  maxlength="64" size="32" required="true" requiredMessage="Latitud #{msgs['sistema.mensaje.error.esRequerido']}"/>
+                                <h:message id="latitud" for="inpTxtLatitud" errorClass="errorMessage" infoClass="infoMessage"/>
+                            </h:panelGrid>
+                            <h:panelGrid columns="2">
+                                <h:outputLabel value="Longitud: "/>
+                                <h:outputText value="*" styleClass="textoRojo" />
+                            </h:panelGrid>
+                            <h:panelGrid columns="2">
+                                <p:inputText id="inpTxtLongitud" value="#{direccionBean.siCiudad.longitud}"  maxlength="64" size="32" required="true" requiredMessage="Longitud #{msgs['sistema.mensaje.error.esRequerido']}"/>
+                                <h:message id="longitud" for="inpTxtLongitud" errorClass="errorMessage" infoClass="infoMessage"/>
+                            </h:panelGrid>
+                        </h:panelGrid>
+
+                        <center>
+                            <h:panelGrid columns="2">
+                                <p:commandLink value="#{msgs['sistema.actualizar']}" actionListener="#{direccionBean.updateSiCiudad(event)}" styleClass="btn btn-info" />
+                                <p:commandLink value="#{msgs['sistema.cancelar']}" actionListener="#{direccionBean.closePopupUpdateSiCiudad(event)}" immediate="true" styleClass="btn btn-default" />
+                            </h:panelGrid>
+                        </center>                                 
+                    </p:dialog>
+                </h:form> 
+
+                <!--Crear SiPais-->
+                <h:form id="formPopupCreateSiPais" >
+                    <p:dialog header="#{msgs['sistema.crear']} #{msgs['sia.siPais']}" >
+                        <h:outputText id="msgsPopupCreateSiPais" value="" />
+                        <center><h:message for="msgsPopupCreateSiPais" errorClass="errorMessage" infoClass="infoMessage"/></center>                    
+
+                        <h:panelGrid columns="2">
+                            <h:panelGrid columns="2">
+                                <h:outputLabel value="#{msgs['sgl.generales.nombre']}: "/>
+                                <h:outputText value="*" styleClass="textoRojo" />
+                            </h:panelGrid>
+                            <h:panelGrid columns="2">
+                                <p:inputText id="inpTxtNombre" value="#{direccionBean.siPais.nombre}"  maxlength="64" size="32" required="true" requiredMessage="#{msgs['sgl.generales.nombre']} #{msgs['sistema.mensaje.error.esRequerido']}"/>
+                                <h:message id="nombre" for="inpTxtNombre" errorClass="errorMessage" infoClass="infoMessage"/>
+                            </h:panelGrid>
+                        </h:panelGrid>
+
+                        <center>
+                            <h:panelGrid columns="2">
+                                <p:commandLink value="#{msgs['sistema.crear']}" actionListener="#{direccionBean.saveSiPaisOnly(event)}" styleClass="btn btn-info" />
+                                <p:commandLink value="#{msgs['sistema.cancelar']}" actionListener="#{direccionBean.closePopupCreateSiPais(event)}" immediate="true" styleClass="btn btn-default" />
+                            </h:panelGrid>
+                        </center>                                  
+                    </p:dialog>
+                </h:form>  
+
+                <!--Crear SiEstado-->
+                <h:form id="formPopupCreateSiEstado" >
+                    <p:dialog header="#{msgs['sistema.crear']} #{msgs['sia.siEstado']}" >
+                        <h:outputText id="msgsPopupCreateSiEstado" value="" />
+                        <center><h:message for="msgsPopupCreateSiEstado" errorClass="errorMessage" infoClass="infoMessage"/></center>                    
+
+                        <h:panelGrid columns="2">
+                            <h:outputLabel value="#{msgs['sia.siPais']}: " />
+                            <h:outputText value="#{direccionBean.siPais.nombre}" />                               
+                            <h:panelGrid columns="2">
+                                <h:outputLabel value="#{msgs['sgl.generales.nombre']}: "/>
+                                <h:outputText value="*" styleClass="textoRojo" />
+                            </h:panelGrid>
+                            <h:panelGrid columns="2">
+                                <p:inputText id="inpTxtNombre" value="#{direccionBean.siEstado.nombre}"  maxlength="64" size="32" required="true" requiredMessage="#{msgs['sgl.generales.nombre']} #{msgs['sistema.mensaje.error.esRequerido']}"/>
+                                <h:message id="nombre" for="inpTxtNombre" errorClass="errorMessage" infoClass="infoMessage"/>
+                            </h:panelGrid>
+                        </h:panelGrid>
+
+                        <center>
+                            <h:panelGrid columns="2">
+                                <p:commandLink value="#{msgs['sistema.crear']}" actionListener="#{direccionBean.saveSiEstadoFromSiCiudad(event)}" styleClass="btn btn-info" />
+                                <p:commandLink value="#{msgs['sistema.cancelar']}" actionListener="#{direccionBean.closePopupCreateSiEstado(event)}" immediate="true" styleClass="btn btn-default" />
+                            </h:panelGrid>
+                        </center>                                  
+                    </p:dialog>
+                </h:form>                
+
+            </ui:define>
+
+        </ui:composition>
+
+    </body>
+</html>

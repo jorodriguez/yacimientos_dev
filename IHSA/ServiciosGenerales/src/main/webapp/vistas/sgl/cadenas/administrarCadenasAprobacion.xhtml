@@ -1,0 +1,251 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html  xmlns="http://www.w3.org/1999/xhtml"
+       xmlns:ui="http://java.sun.com/jsf/facelets"
+       xmlns:p="http://primefaces.org/ui"
+       xmlns:h="http://java.sun.com/jsf/html"
+       xmlns:f="http://java.sun.com/jsf/core"
+               
+      
+       >
+    <body>
+        <ui:composition template="./../../../WEB-INF/facelets/templates/templateServiciosGenerales.xhtml">
+            <ui:define name="contenido">            
+                <h:form   rendered="#{not empty sesion.usuario}"   >
+                    <center>
+                        <h:panelGrid>
+                            <h:messages errorClass="mensaje" infoClass="mensaje"/> 
+                        </h:panelGrid> 
+                    </center> 
+                </h:form>
+                <h:outputText value="#{msgs['sgl.cadena.titulo']}" styleClass="tituloEncabezado"/>
+                <br />
+                <br />
+                <h:form >
+                    <h:outputText rendered="#{cadenasBean.idTipoSolicitud == -1}" value="#{msgs['sgl.cadena.mensaje.seleccionar']}"  styleClass="fGris"/>
+                    <h:panelGrid columns="2">
+                        <!-- <h:outputLabel value="Via :"/>
+                         <p:selectOneMenu value="#{cadenasBean.idTipoEspecifico}"
+                                            valueChangeListener="#{cadenasBean.seleccionarTipoEspecifico}"
+                                             >
+                             <f:selectItem itemLabel="Seleccione.." itemValue="-1" />                    
+                             <f:selectItems value="#{cadenasBean.tipoEspecificoItems}"/>
+                         </p:selectOneMenu> -->
+                        <h:outputLabel value="#{msgs['sgl.solicitudViaje.tipo']} :"/> 
+                        <p:selectOneMenu value="#{cadenasBean.idTipoSolicitud}"
+                                           valueChangeListener="#{cadenasBean.seleccionarTipoSolicitud}" 
+                                            >
+                            <f:selectItem itemLabel="#{msgs['sistema.seleccione']}.." itemValue="-1" />                    
+                            <f:selectItems value="#{cadenasBean.tipoSolicitudesItems}"/>
+                        </p:selectOneMenu>
+                    </h:panelGrid>
+                    <h:panelGrid  rendered="#{cadenasBean.cadenaAprobacionPorTipoSolicitud.rowCount == 0 and cadenasBean.idTipoSolicitud != -1}">                               
+                        <h:panelGrid columns="2">
+                            <h:panelGrid columns="2" style="text-align: end;">
+                                <p:commandLink title="#{msgs['sgl.cadena.asignar.cadena.tipo.solicitud']}"                                                 
+                                                 actionListener="#{cadenasBean.mostrarEstatusPorAsignarCadenas(event)}" action="asignarCadena" styleClass="btn btn-default" >
+                                    <h:graphicImage url="#{msgs['sgl.ruta.imagen']}button_create.png" 
+                                                      styleClass="imagenSinBorde"/>                            
+                                </p:commandLink>                        
+                            </h:panelGrid>           
+                            <p:commandLink value="#{msgs['sgl.cadena.mensjae.asignar.cadena.aprobacion']}" 
+                                             title="#{msgs['sgl.cadena.mensaje.asignar.title']} "
+                                             actionListener="#{cadenasBean.mostrarEstatusPorAsignarCadenas(event)}" 
+                                             action="asignarCadena" styleClass="linkPequenio" />   
+                        </h:panelGrid>
+                    </h:panelGrid>
+                    <br/>
+                   <!-- <p:dataTable showGridlines="true" size="small"  value="#{cadenasBean.cadenaAprobacionPorTipoSolicitud}"
+                                   var="data"
+                                   varStatus="status"
+                                   rows="10"
+                                    cellspacing="1" cellpadding="5">                        
+                        <h:inputHidden value="#{data['id']}"
+                                         binding="#{cadenasBean.inputHidden}"/>
+                        <p:column>
+                            <f:facet name="header">
+                                Estatus
+                            </f:facet>
+                    #{data['estatus'].nombre}
+                </p:column>
+                <p:column> 
+                    <f:facet name="header">
+                        Gerencia
+                    </f:facet>
+                    #{data['gerencia'].nombre}
+                </p:column>
+                <p:column >
+                    <ui:repeat value="#{cadenasBean.cadenaNegacion}" var="dataNeg">
+                        <p:column>
+                            <h:outputText value="#{dataNeg['operacion'].nombre}"/>
+                           <td>
+                                <strong>Operación</strong> #{dataNeg['operacion'].nombre}
+                                <strong>va al estatus</strong> #{dataNeg['estatus'].nombre}
+                            </td> 
+                        </p:column>
+                    </ui:repeat>
+                </p:column>
+                <p:column>
+                    <p:commandLink value="#{msgs['sistema.modificar']}" actionListener="#{cadenasBean.mostrarPopupModificarAsignarGerencia(event)}"
+                                     styleClass="link"/>
+                </p:column> 
+            </p:dataTable> -->
+                    <h:outputText rendered="#{cadenasBean.idTipoSolicitud == 2}" value="#{msgs['sgl.cadena.mensaje.tipo2']}"/>
+                    <h:outputText rendered="#{cadenasBean.idTipoSolicitud == 4}" value="#{msgs['sgl.cadena.mensaje.tipo4']}"/>
+                    <h:outputText rendered="#{cadenasBean.idTipoSolicitud == 7}" value="#{msgs['sgl.cadena.mensaje.tipo7']}"/>
+		    <br/>
+
+		    <table> 
+			<tbody>
+			    <tr>
+				<tr>                                   
+				    <ui:repeat value="#{cadenasBean.cadenaAprobacionPorTipoSolicitud}" var="data">
+				     <!-- <h:dataTable value="#{cadenasBean.cadenaAprobacionPorTipoSolicitud}" var="data">-->
+					<p:column> 
+					    <td>
+						<table style="width: 200px;height: 80px; border: 1px solid #b5b5b5; box-shadow: 0px 0px 5px rgba(0,0,0,0.10);border-radius: 6px;padding: 0px 0px 0px 0px; word-spacing: 2px;margin: 0px auto 0px auto;">
+						    <th style="margin: 0px auto 0px auto;">
+							<table style="background-color: #B6C9DE; width: 200px;height: 30px; border: 1px solid #b5b5b5; border-radius: 6px; word-spacing: 0px;margin: 0px auto 0px auto;">
+							    <tr align="center">
+								<td> 
+								    <div style="font-size: 12px">                                                                
+									<h:outputLabel rendered="#{data['nombreEstatus'] eq 'APROBADA'}" value="APRUEBA"/>
+									<h:outputLabel rendered="#{data['nombreEstatus'] eq 'SEGURIDAD'}" value="RECOMIENDA"/>
+									<h:outputLabel rendered="#{data['nombreEstatus'] eq 'FINALIZADA'}" value="FINALIZA"/>                                                                                                                                                
+								    </div>
+								</td>
+							    </tr>
+							</table>
+						    </th>
+						    <tr>
+							<td style="width: 200px;height: 60px">
+							    <div style="font-size: 11px">
+								<center>
+								    <h:outputLabel value="#{data['nombrePuestoResponsableGerencia']}" styleClass="f12"/>
+								    <br/>
+								    <strong> #{data['nombreGerencia']}</strong> <br/> <br/>                                                               
+								    <h:outputText value="#{data['nombreResponsableGerencia']}" styleClass="f12" /> <br/>
+								</center>
+							    </div>
+							</td>  
+						    </tr>
+						    <tr>
+							<td style="width: 200px;height: 60px">
+							    <table >
+								<tr align="center">
+								    <h:inputHidden value="#{data['id']}"
+										     binding="#{cadenaBeanModel.inputHidden}"/>
+								    <ui:repeat value="#{cadenasBean.cadenaNegacion}" var="dataNeg">
+									<p:column rendered="false">
+									    #{dataNeg['id']}
+									</p:column>
+									<td valign="middle" style="color:gray;">                                                                              
+									    <h:outputText value="#{dataNeg['siOperacion'].nombre}" styleClass="fGris" />                                                                            
+									   <!-- <h:outputText value="#{dataNeg['siOperacion'].nombre}" 
+											    rendered="#{dataNeg['siOperacion'].id == 3 or data['estatus'].id == 420 }"/>
+									    
+									    <p:commandLink rendered="#{dataNeg['siOperacion'].id != 3}" 
+											     value="#{dataNeg['siOperacion'].nombre}" title="Clic aqui para modificar el estatus.."
+											     actionListener="#{cadenasBean.mostrarPopupModificarCadenaNegacion(event)}"
+											     styleClass="link"> 
+										<f:param name="idCadenaNegacion" value="#{dataNeg['id']}"/>
+									    </p:commandLink> -->
+									    <strong> #{dataNeg['estatus'].nombre} </strong>                               
+									</td>                                                                        
+								    </ui:repeat>
+								</tr>
+							    </table>
+							</td>
+						    </tr>
+						    <tr style="background-color: #dddddd;" align="center" >
+							<td valign="middle"  style="margin: 0px auto 0px auto;">
+							    <p:commandLink value="#{msgs['sgl.cadena.modificar.Asignacion']}"
+									     title="#{msgs['sgl.cadena.mensjae.modificar']}.."
+									     actionListener="#{cadenasBean.mostrarPopupModificarAsignarGerencia(event)}"
+									     styleClass="link"/>
+							</td>
+						    </tr>
+						</table>                                          
+					    </td>
+					</p:column>
+					<!--</h:dataTable>-->
+				    </ui:repeat>
+				</tr>
+			    </tr>
+			</tbody>
+		    </table> 
+                </h:form>
+                <br/>
+
+                <h:form >
+                    <p:dialog  header="#{msgs['sgl.cadena.modificar.responsable']} ">
+                        <h:panelGrid>
+                            <center>
+                                <h:messages errorClass="mensaje" infoClass="mensaje"/>                                    
+                            </center>                              
+                        </h:panelGrid>
+                        <h:panelGrid styleClass="borderPanelGrid">
+                            <h:panelGrid columns="2">
+                                Estatus :
+                                <h:outputLabel rendered="#{cadenasBean.estatusActivo.nombre eq 'APROBADA'}" value="APRUEBA"/>
+                                <h:outputLabel rendered="#{cadenasBean.estatusActivo.nombre eq 'SEGURIDAD'}" value="RECOMIENDA"/>
+                                <h:outputLabel rendered="#{cadenasBean.estatusActivo.nombre eq 'FINALIZADA'}" value="FINALIZA"/>                                                                                                                                                                                
+                            </h:panelGrid>
+                            <br/>
+                            <h:panelGrid columns="2" >
+                                <h:outputLabel value="Gerencia : "/>
+                                <p:selectOneMenu value="#{cadenasBean.idGerencia}"  
+                                                   valueChangeListener="#{cadenasBean.seleccionarGerencia}">
+                                    <f:selectItem itemLabel="#{msgs['sistema.seleccione']}.." itemValue="-1"/>
+                                    <f:selectItems value="#{cadenasBean.gerenciaItems}"/>
+                                </p:selectOneMenu>
+                            </h:panelGrid>
+                            <br/>
+                            <h:panelGrid columns="2" style="margin:0px auto 0px auto;">
+                                <p:commandLink value="#{msgs['sistema.asignar']}" 
+                                                 onclick="if(!confirm('#{msgs['sgl.cadena.mensaje.confirmacion.cambios']} ...? ')) return false;"
+                                                 actionListener="#{cadenasBean.modificarAsignacionCadena(event)}" 
+                                                 styleClass="btn btn-info" />
+                                <p:commandLink value="Cancelar" actionListener="#{cadenasBean.ocultarPopup(event)}" styleClass="btn btn-default"/>
+                            </h:panelGrid>
+                        </h:panelGrid>
+                    </my:panelPopup>
+                </h:form>
+
+                <!-- modificar el estatus de negacion -->
+                <h:form >
+                    <p:dialog  header="#{msgs['sistema.modificar']} "  >
+                        <h:panelGrid>
+                            <center>
+                                <h:messages errorClass="mensaje" infoClass="mensaje"/>                                    
+                            </center>                              
+                        </h:panelGrid>
+                        <h:panelGrid styleClass="borderPanelGrid">
+                            <h:panelGrid columns="2">
+                                Para el estatus:
+                                <h:outputLabel value="#{cadenasBean.cadenaAprobacionActiva.estatus.nombre}"/>
+                            </h:panelGrid>
+                            <br/>
+                            <h:panelGrid columns="2" >
+                                <h:outputLabel value="#{msgs['sgl.cadena.ir.estatus']}:"/>
+                                <p:selectOneMenu value="#{cadenasBean.idEstatusCadenaNegacionSeleccionado}"  
+                                                   valueChangeListener="#{cadenasBean.seleccionarEstatusActivo}">
+                                    <f:selectItem itemLabel="#{msgs['sistema.seleccione']}.." itemValue="-1"/>
+                                    <f:selectItems value="#{cadenasBean.listaEstatusItems}"/>
+                                </p:selectOneMenu>
+                            </h:panelGrid>
+                            <h:panelGrid columns="2" style="margin:0px auto 0px auto;">
+                                <p:commandLink value="Confirmar" 
+                                                 onclick="if(!confirm(#{msgs['sgl.cadena.mensaje.confirmar.cambios1']} + '\n ' +#{msgs['sgl.cadena.mensaje.confirmar.cambios2']} + '...? ')) return false;"
+                                                 actionListener="#{cadenasBean.modificarCadenaNegacion(event)}"  
+                                                 styleClass="btn btn-info" />
+                                <p:commandLink value="Cancelar" actionListener="#{cadenasBean.ocultarPopupModificarCadenaNegacion(event)}" styleClass="btn btn-default"/>
+                            </h:panelGrid>
+                        </h:panelGrid>
+                    </my:panelPopup>
+                </h:form>
+
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

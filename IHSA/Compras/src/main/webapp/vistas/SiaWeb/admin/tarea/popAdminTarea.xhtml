@@ -1,0 +1,77 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                >
+    <div class="modal fade" data-backdrop="static" id="dialogoCargarTareas" data-keyboard="false">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Tareas</h4>
+                </div>
+                <h:form id="frmArchivoFact">
+                    <div class="modal-body">
+                        <ui:fragment rendered="#{adminTareaBean.lstTareaTemp.size() eq 0}">
+                            <div class="card">
+                                <p:dataTable size="small" stripedRows="true" showGridlines="true" value="#{adminTareaBean.listaCampo}" var="data">
+                                    <f:facet name="header">Campos</f:facet>
+                                    <p:column>
+                                        <h:selectBooleanCheckbox value="#{data.selected}"/>
+                                    </p:column>
+                                    <p:column style="text-align: left;">
+                                        <h:outputLabel value="#{data.nombre}"/>
+                                    </p:column>
+                                </p:dataTable> 
+                            </div>
+                            <div class="row">
+                                <h4>
+                                    <h:outputLabel value="Archivo de tareas"/>
+                                </h4>
+                            </div>
+                            <div class="row panel">
+                                <p:fileUpload id="file-entry"         
+                                               listener="#{adminTareaBean.uploadFile}"/>
+                                <h:panelGrid styleClass="centeredPanelGrid">
+                                    <p:commandButton id="submit" type="submit" value="Cargar archivo" class="btn btn-info"/>
+                                </h:panelGrid>
+                            </div>
+                        </ui:fragment>
+                        <ui:fragment rendered="#{adminTareaBean.lstTareaTemp.size() gt 0}">
+                            <div class="table table-responsive">
+                                <p:dataTable size="small" stripedRows="true" showGridlines="true" id="TareasDetID" 
+                                               value="#{adminTareaBean.lstTareaTemp}" var="data"
+                                                                                                  
+                                               style="font-size: 1em; width: 100%"  >                                
+                                    <p:column style="width: 5%;">
+                                        <h:outputText value="#{data['cuentaContable']}"/>
+                                        <f:facet name="header"><h:outputText value="Nº proyecto"/></f:facet>
+                                    </p:column>
+                                    <p:column style="width: 10%;">
+                                        <h:outputText value="#{data['codigoTarea']}"/>
+                                        <f:facet name="header"><h:outputText value="Nº tarea proyecto"/></f:facet>
+                                    </p:column>
+                                    <p:column style="width: 10%;">
+                                        <h:outputText value="#{data['nombreTarea']}"/>
+                                        <f:facet name="header">
+                                            <h:outputText value="Nombre tarea"/>
+                                        </f:facet>
+                                    </p:column>                                    
+                                </p:dataTable>
+                            </div>
+
+                        </ui:fragment>
+                    </div>
+                    <div class="modal-footer">
+                        <p:commandLink value="Cerrar" class="btn btn-default" 
+                                       action="#{adminTareaBean.cerrarCargaTareas}"
+                                       immediate="true">
+                            <f:ajax render="@all"/>
+                        </p:commandLink>
+                    </div>
+                </h:form>
+            </div>
+        </div>
+    </div>  
+</ui:composition>

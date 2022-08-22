@@ -1,0 +1,114 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      >
+    <body>
+        <ui:composition template="./../templates/template.xhtml">
+            <ui:define name="tituloPagina">
+                Comprobante de pago
+            </ui:define>
+            <ui:define name="contenido">
+                <h:form id="frmCompPago">
+                    <div class="form-row" id="divCompPago">
+                        <div class="form-row">
+                            <div class="col-9">
+                                <div class="col-3">
+                                    <h:outputLabel value="Inicio: "/>
+                                    <div>
+                                        <p:datePicker value="#{comprobantePagoBean.inicio}" 
+                                                      pattern="dd/MM/yyyy"/>
+                                    </div>
+                                </div>
+
+                                <div class="col-3">
+                                    <h:outputLabel value="Fin: "/>
+                                    <div>
+                                        <p:datePicker value="#{comprobantePagoBean.fin}"
+                                                      pattern="dd/MM/yyyy"/>
+                                    </div>
+                                </div>
+                                <div class="col-5">
+                                    <h:outputLabel value="Proveedor: "/>
+                                    <div>
+                                        <!<!-- textChangeListener="#{comprobantePagoBean.proveedorListener}" -->
+                                        <p:autoComplete id="proveedorSelectCP"
+                                                        value="#{comprobantePagoBean.provSelected}"
+                                                        style="z-index: 9999999999; width: 100%;">                                    
+                                            <f:selectItems value="#{comprobantePagoBean.proveedores}"/>
+                                        </p:autoComplete>
+                                    </div>
+                                </div>
+                                <div class="col-1">
+                                    <p:commandLink action="#{comprobantePagoBean.buscarFactura}" class="btn btn-primary" 
+                                                   styleClass="btn btn-primary" title="ejecuta el proceso de descarga de comprobantes de pago"
+                                                   process="@form" update="@form">
+                                        <i class="fa fa-search"/>
+                                    </p:commandLink>
+                                </div>
+                            </div>
+                            <!--div class="col-3" >  
+                                <p:commandButton value="Ejecutar el proceso Carga de comprobantes de pago"
+                                                 action="{comprobantePagoBean.ejecutarProcesoComprobantePago(e)}"
+                                                 styleClass="btn btn-primary" title="La acción ejecutará el proceso externo  al SIA llamado, Carga de Comprobantes de Pagos."
+                                                 onclick="return confirmar('frmCompPago', 'La acción ejecutará el proceso externo  al SIA llamado, Carga de Comprobantes de Pagos, ¿está seguro de continuar?')"/>
+                            </div-->
+                        </div>
+                        <div class="form-row">
+                            <p:dataTable size="small" stripedRows="true" showGridlines="true" id="tblFacturaCP" value="#{comprobantePagoBean.listaFactura}" var="dataFac" rows="20"
+                                         paginator="true" paginatorAlwaysVisible="true" paginatorPosition="bottom"
+                                         >
+
+                                <p:column headerText="Proveedor"  style="text-align: left;">
+                                    <h:outputText value="#{dataFac.proveedor}"/>
+                                </p:column>
+                                <p:column headerText="Folio">
+                                    <h:outputText value="#{dataFac.folio}"/>
+                                </p:column>
+                                <p:column headerText="Emisión">
+                                    <h:outputText value="#{dataFac.fechaEmision}">
+                                        <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                    </h:outputText>
+                                </p:column>v
+                                <p:column headerText="AceptaciónCCN">
+                                    <h:outputText value="#{dataFac.fechaEstatus}">
+                                        <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                    </h:outputText>
+                                </p:column>
+                                <p:column headerText="Concepto"  style="text-align: left;">
+                                    <h:outputText value="#{dataFac.concepto}"/>
+                                </p:column>
+                                <p:column headerText="SubTotal" style="text-align:  right;">
+                                    <h:outputText value="#{dataFac.subTotal}"/>
+                                </p:column>
+                                <p:column headerText="Total" style="text-align:  right;">
+                                    <h:outputText value="#{dataFac.monto}"/>
+                                </p:column>
+                                <p:column headerText="Moneda">
+                                    <h:outputText value="#{dataFac.moneda}"/>
+                                </p:column>
+                                <p:column >
+                                    <p:commandLink action="#{comprobantePagoBean.seleccionar(dataFac.id)}">
+                                        <i class="fa fa-cog text-primary"/>
+                                    </p:commandLink>
+                                </p:column>                                
+                            </p:dataTable>
+                        </div>
+                        <div class="form-inline">
+                            <p:commandButton value="Exportar">
+                                <p:dataExporter fileName="facturasCP" type="xls" target="tblFacturaCP"/>
+                            </p:commandButton>
+                        </div>
+                    </div>                    
+                </h:form>
+                <ui:include src="fragmentos/popComplementoPago.xhtml"/>
+            </ui:define>
+        </ui:composition>
+
+    </body>
+</html>

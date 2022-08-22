@@ -1,0 +1,96 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"    
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"  
+
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <body>
+        <ui:composition template="./../../../WEB-INF/facelets/templates/templateGrupos.xhtml">
+            <ui:define name="tituloPagina">
+                #{msgs['sia.usuario.adiministrar.titulo']}
+            </ui:define>
+            <ui:define name="contenido">
+                <h:form     id="frmUser">
+                    <div class="col-lg-12 col-xs-12">
+                        <p:autoComplete value="#{usuarioBean.u}" 
+                                        completeMethod="#{usuarioBean.completarUsuario}"
+                                        size="40" forceSelection="true" minQueryLength="3"
+                                        placeholder="Nombre del usuario">
+                            <p:ajax listener="#{usuarioBean.buscarUsuarioConsulta}" update="frmUser:pnlDatos"/>
+                        </p:autoComplete>
+                    </div>
+                    <p:panel id="pnlDatos">
+                        <div class="row"> 
+                            <h:panelGrid columns="2">
+                                <f:facet name="header"><h:outputText value="Modificación de datos del usuario: #{usuarioBean.usuarioVO.nombre}" styleClass="textoListaTabla"/></f:facet>
+                                <h:panelGrid columns="2">
+                                    <h:outputText value="Id"/>
+                                    <p:inputText value="#{usuarioBean.usuarioVOAlta.id}" disabled="true"/>
+                                    <h:outputText value="Nombre"/>
+                                    <p:inputText value="#{usuarioBean.usuarioVOAlta.nombre}" size="30"/>
+                                    <h:outputText value="Puesto"/>
+                                    <p:inputText value="#{usuarioBean.usuarioVOAlta.puesto}" size="35" disabled="true"/>                                
+
+                                    <h:outputText value="#{msgs['sia.bloque.nombre']}"/>
+                                    <p:selectOneMenu value="#{usuarioBean.idCampo}" >
+                                        <f:selectItem itemLabel="Seleccione . . ." itemValue="-1"/>
+                                        <f:selectItems value="#{usuarioBean.listaCampo}"/>
+                                        <p:ajax listener="#{usuarioBean.cambiarCampoUsuario}" update="frmUser:cmbGer"/>
+                                    </p:selectOneMenu>
+                                    <h:outputText value="Gerencia"/>
+                                    <p:selectOneMenu id="cmbGer" value="#{usuarioBean.idGerencia}">
+                                        <f:selectItem itemLabel="Seleccione . . ." itemValue="-1"/>
+                                        <f:selectItems value="#{usuarioBean.gerencias}"/>
+                                    </p:selectOneMenu>
+                                    <h:outputText value="Mail"/>
+                                    <h:panelGrid>
+                                        <p:inputTextarea cols="55" value="#{usuarioBean.usuarioVOAlta.mail}"/>                           
+                                        <h:outputText value="Si tiene más de un mail, separarlos por comas." styleClass="textoPequenio"/>
+                                    </h:panelGrid>
+                                    <h:outputText value="Usuario en Directorio"/>
+                                    <p:inputText value="#{usuarioBean.usuarioVOAlta.usuarioDirectorio}"/>
+
+                                    <h:outputText value="Destinatarios"/>
+                                    <h:panelGrid>
+                                        <p:inputTextarea cols="55" value="#{usuarioBean.usuarioVOAlta.destinatarios}" />                           
+                                        <h:outputText value="Si tiene más de un mail, separarlos por comas." styleClass="textoPequenio"/>
+                                    </h:panelGrid>                              
+                                </h:panelGrid>
+                                <h:panelGrid columns="2" >    
+                                    <h:outputText value="Teléfono"/>
+                                    <p:inputText value="#{usuarioBean.usuarioVOAlta.telefono}" size="20"/>
+                                    <h:outputText value="Extensión"/>
+                                    <p:inputText value="#{usuarioBean.usuarioVOAlta.extension}" size="15"/>
+                                    <h:outputText value="Sexo"/>
+                                    <h:panelGrid columns="2">
+                                        <p:selectOneRadio value="#{usuarioBean.usuarioVOAlta.sexo}">
+                                            <f:selectItem itemValue="M" itemLabel="M"/>
+                                            <f:selectItem itemValue="F" itemLabel="F"/>
+                                        </p:selectOneRadio>
+                                    </h:panelGrid>
+                                    <h:outputText value="Celular"/>
+                                    <p:inputText value="#{usuarioBean.usuarioVOAlta.celular}"/>
+                                    <h:outputText value="Fecha nacimiento"/>
+                                    <p:datePicker value="#{usuarioBean.usuarioVOAlta.fechaNacimiento}"  />
+                                    <h:outputText value="RFC"/>
+                                    <p:inputText value="#{usuarioBean.usuarioVOAlta.rfc}" />
+                                </h:panelGrid>
+                            </h:panelGrid>
+                        </div>
+                        <div class="row">
+                            <p:commandButton style="text-align: right;" styleClass="btn btn-info text-white" value="Actualizar"  
+                                             action="#{usuarioBean.modificarUsuario()}" title="Modificar usuario"
+                                             process="@form" update="frmUser frmUser:pnlDatos"/>
+                            <p:commandLink styleClass="btn btn-default" value="Cancelar" 
+                                             action="#{usuarioBean.cancelarModificacionUuario}" immediate="true"/>
+                        </div>
+                    </p:panel>
+                </h:form>
+            </ui:define>
+
+        </ui:composition>
+
+    </body>
+</html>

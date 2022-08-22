@@ -1,0 +1,145 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <body>
+
+        <ui:composition template="./../WEB-INF/template/plantilla.xhtml">
+
+            <ui:define name="title">
+                Contratos y Exhortos
+            </ui:define>
+            <ui:define name="contenido">
+                <h:form id="frmExhProv">
+                    <div class="col-lg-12">
+                        <h:outputLink  rendered="#{not empty exhortoProveedorBean.contratos}"
+                                       style="color: blue"
+                                       target="_blank"  
+                                       id="solFiniquito"
+                                       title="Para iniciar el proceso finiquito de contrato descargue, llene y adjunte la siguiente plantilla, a cada uno de los contratos." 
+                                       value="/Proveedor/AbrirArchivo?ZWZ2W=#{exhortoProveedorBean.adjuntoVo.id}&amp;ZWZ3W=#{exhortoProveedorBean.adjuntoVo.uuid}"
+                                       >
+                            #{exhortoProveedorBean.adjuntoVo.nombre}
+                        </h:outputLink>                                
+                    </div>
+                    <p:dataTable id="dtConvenios" value="#{exhortoProveedorBean.contratos}" var="dataConv"
+                                 rows="15" paginator="true" paginatorPosition="bottom" paginatorAlwaysVisible="true"
+                                 size="small" showGridlines="true">
+                        <p:column headerText="Número" style="text-align: left;" width="18%" >
+                            <h:outputText value="#{dataConv.numero}" />
+                        </p:column>
+                        <p:column headerText="Contrato" style="text-align: left;" >
+                            <h:outputText value="#{dataConv.nombre}" />
+                        </p:column>
+                        <p:column headerText="Inicio" width="8%">
+                            <h:outputText value="#{dataConv.fechaInicio}">
+                                <f:convertDateTime pattern="dd/MM/yyyy"/>
+                            </h:outputText>
+                        </p:column>
+                        <p:column headerText="Vencimiento" width="8%">
+                            <h:outputText value="#{dataConv.fechaVencimiento}">
+                                <f:convertDateTime pattern="dd/MM/yyyy"/>
+                            </h:outputText>
+                        </p:column>
+                        <p:column headerText="Vigencia" width="8%">
+                            <h:outputText value="#{dataConv.vigencia}"/>
+                        </p:column>
+                        <p:column width="5%">
+                            <p:commandLink value="Iniciar" action="#{exhortoProveedorBean.iniciarProceso(dataConv.numero)}"
+                                           styleClass="text text-primary" style="color: cornflowerblue;"
+                                           process="@this " update="frmFinConv">
+                            </p:commandLink>
+                        </p:column>
+                    </p:dataTable>
+
+
+                </h:form> 
+                <div class="modal fade" id="dialogoIniciar" data-backdrop="static" data-keyboard="false">                    
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h4 class="modal-title">Solicitud de finiquito</h4>
+                            </div>
+                            <h:form id="frmFinConv">
+                                <div class="modal-body">
+                                    <div class="row">
+                                        <div class="input-group">
+                                            <div class="col-lg-8">
+                                                <div class="form-group">
+                                                    <h:outputText value="Número:"/>
+                                                    <div >
+                                                        <h:outputLabel value="#{exhortoProveedorBean.contratoVo.numero}"
+                                                                       styleClass="control-label"/>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <h:outputText value="Contrato:"/>
+                                                    <div >
+                                                        <h:outputLabel value="#{exhortoProveedorBean.contratoVo.nombre}"/>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-4">
+                                                <div class="form-group">
+                                                    <h:outputText value="Inicio:"/>
+                                                    <div >
+                                                        <h:outputLabel value="#{exhortoProveedorBean.contratoVo.fechaInicio}"/>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <h:outputText value="Vencimiento:"/>
+                                                    <div >
+                                                        <h:outputLabel value="#{exhortoProveedorBean.contratoVo.fechaVencimiento}"/>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>                                        
+                                        <div class="col-lg-12">
+                                            <label>Para iniciar el proceso de finiquito adjunte la solicitud de finiquito</label>                                            
+                                        </div>                                        
+                                        <div class="col-lg-12 form-group">
+                                            <p:fileUpload id="file-entry"
+                                                          style=" color: maroon;"                                                         
+                                                          listener="#{exhortoProveedorBean.uploadFile}"                                                           
+                                                          process="@this" update="frmFinConv:dtSol" />
+                                        </div>
+                                        <h:message  id="msg-file" for="file-entry" styleClass="text-danger" showDetail="false" showSummary="true"/>
+                                        <div class="col-lg-12">
+                                            <p:dataTable id="dtSol" value="">
+                                                <p:column headerText="Ruta" width="20%">
+                                                    <h:outputText id="txtRutaDoc" value="#{exhortoProveedorBean.documentoAnexo.ruta}"/>
+                                                </p:column>
+                                                <p:column headerText="Archivo" >
+                                                    <h:outputText id="txtDoc" value="#{exhortoProveedorBean.documentoAnexo.nombreBase}"/>
+                                                </p:column>
+                                                <p:column width="5%">
+                                                    <p:commandLink  action="#{exhortoProveedorBean.eliminarSolicitud}"
+                                                                    process="@this" update="frmFinConv:dtSol"> 
+                                                        <i class="fa fa-trash text-danger"/>
+                                                    </p:commandLink>
+                                                </p:column>
+                                            </p:dataTable>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <p:commandLink id="btnCerrar" value="Cancelar" class="btn btn-default"
+                                                   action="#{exhortoProveedorBean.cancelarEnviarSolicitud}"
+                                                   immediate="true"/>
+                                    <p:commandButton value="Enviar" 
+                                                     styleClass="btn btn-primary"
+                                                     action="#{exhortoProveedorBean.enviarSolicitud}"
+                                                     process="@form" update="frmExhProv"/>
+                                </div>
+                            </h:form>
+                        </div>
+                    </div>
+                </div>
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

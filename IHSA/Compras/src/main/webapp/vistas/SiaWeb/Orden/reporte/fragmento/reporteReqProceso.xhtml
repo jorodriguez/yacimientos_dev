@@ -1,0 +1,55 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                >
+    <p:panel  >
+        <h:outputLabel value="Requisiciones en proceso de aprobación" styleClass="textoTitulo"/>
+        <p:commandLink value="#{msgs['sistema.buscar']}" action="#{reporteBean.traerRequisicionesProceso}" 
+                       styleClass="btn btn-sm btn-info text-white"
+                       process="@this" update="frmRep:tbReportes:dtReqProce"/>
+    </p:panel>
+    
+    <p:dataTable size="small" stripedRows="true" showGridlines="true" id="dtReqProce" value="#{reporteBean.listaR}" var="data"
+                 rows="10" 
+                 paginator="true"  
+                 paginatorPosition="bottom" >
+        <f:facet name="header"><h:outputLabel value="#{reporteBean.nombreUsuario}"/></f:facet>
+        <p:column headerText="#{msgs['orden.consecutivo']}" style="text-align: left;"
+                  filterBy="#{data.consecutivo}" filterMatchMode="contains">
+            <h:outputText value="#{data.consecutivo}"/>
+        </p:column>
+        <p:column headerText="#{msgs['orden.gerencia.nombre']}" style="text-align: left;"
+                  filterBy="#{data.gerencia}" filterMatchMode="contains">
+            <h:outputText value="#{data.gerencia}"/>
+        </p:column>        
+        <p:column headerText="#{msgs['requisicion.referencia']}" style="text-align: left;"
+                  filterBy="#{data.referencia}" filterMatchMode="contains">
+            <h:outputText value="#{data.referencia}"/>
+        </p:column>
+        <p:column headerText="Destino" style="text-align: left;"
+                  filterBy="#{data.lugarEntrega}" filterMatchMode="contains">
+            <h:outputText value="#{data.lugarEntrega}"/>
+        </p:column>
+        <p:column headerText="#{msgs['orden.estado']}" style="text-align: left;"
+                  filterBy="#{data.estatus}" filterMatchMode="contains">
+            <h:outputText value="#{data.estatus}"/>
+        </p:column>
+        <p:column headerText="#{msgs['requisicion.solicito']}" style="text-align: left;"
+                  filterBy="#{data.solicita}" filterMatchMode="contains">
+            <h:outputText value="#{data.solicita}"/>
+        </p:column>
+        <p:column headerText="#{msgs['orden.fecha.solicita']}" style="text-align: left;">
+            <h:outputText value="#{data.fechaSolicitada}">
+                <f:convertDateTime pattern="dd/MM/yyyy"/>
+            </h:outputText>
+        </p:column>
+    </p:dataTable>
+
+    <p:commandButton value="Exportar" styleClass="p-mr-2 p-mb-2" process="@this frmRep:tbReportes:dtReqProce"> 
+        <p:dataExporter fileName="RequisicionesProceso" type="xls" target="dtReqProce" />
+    </p:commandButton>
+
+</ui:composition>

@@ -1,0 +1,564 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core">
+    <body>
+
+        <ui:composition template="./../WEB-INF/template/plantilla.xhtml">
+            <ui:define name="title">
+                #{msgs['sia.administrar.pedidos']}
+            </ui:define>
+            <ui:define name="contenido">
+                <h:form id="frmAdminCompras">
+                    <div class="row">
+                        <div class="col-lg-3">
+                            <h:outputLabel value="#{msgs['sia.orden.pedido']}: #{administrarCompraBean.compraVo.navCode}"/> 
+                        </div>
+                        <h:outputLabel value="#{msgs['sia.orden.codigo']}: #{administrarCompraBean.compraVo.consecutivo}"/>
+                        <p:tabView id="tbCompras">
+                            <p:tab id="tabOrdenCompra" title="#{msgs['sia.orden.compra']}">
+                                <div class="row" style="margin-top: 15px;">                    
+                                    <div class="col-4 col-xs-12">                                        
+                                        <div class="form-group col-lg-12 col-xs-12">
+                                            <div class="col-lg-12 col-xs-12" >
+                                                <strong><h:outputLabel styleClass="control-label"   value="#{msgs['presupuesto.nuevos.campoCompania']}: "/></strong>
+                                            </div>
+                                            <div class="col-lg-12 col-xs-12">
+                                                <h:outputText styleClass="control-label"  value="#{administrarCompraBean.compraVo.compania}"/>
+                                            </div>
+                                            <div class="col-lg-12 col-xs-12" >
+                                                <strong><h:outputLabel styleClass="control-label"   value="#{msgs['sia.bloque.nombre']}:"/></strong>
+                                            </div>
+                                            <div class="col-lg-12 col-xs-12">
+                                                <h:outputText styleClass="control-label"  value="#{administrarCompraBean.compraVo.bloque}"/>
+                                            </div>
+                                        </div>
+                                        <div class="form-group col-lg-12 col-xs-12">
+                                            <div class="col-lg-12 col-xs-12" >
+                                                <strong><h:outputLabel styleClass="control-label" value="#{msgs['sia.compra']}:"/></strong>
+                                            </div>
+                                            <div class="col-lg-12 col-xs-12">                        
+                                                <h:outputText styleClass="control-label" value="#{administrarCompraBean.compraVo.consecutivo}"/>
+                                            </div>
+                                        </div>
+                                    </div>                
+                                    <div class="col-4 col-xs-12">  
+                                        <div class="form-group col-lg-12 col-xs-12">
+                                            <div class="col-lg-12 col-xs-12" >
+                                                <strong><h:outputLabel styleClass="control-label" value="#{msgs['sia.destino']}:"/></strong>
+                                            </div>
+                                            <div class="col-lg-12 col-xs-12">                        
+                                                <h:outputText styleClass="control-label" value="#{administrarCompraBean.compraVo.destino}"/>
+                                            </div>
+                                            <div class="col-lg-12 col-xs-12" >
+                                                <strong><h:outputLabel styleClass="control-label" value="#{msgs['sia.contrato']}:"/></strong>
+                                            </div>
+                                            <div class="col-lg-12 col-xs-12"> 
+                                                <h:outputLabel value="#{administrarCompraBean.compraVo.contratoVO.numero eq 'OCS_SIN_CONTRATO' ? 'Sin contrato' : administrarCompraBean.compraVo.contratoVO.numero}"/>
+                                            </div>
+                                            <div class="col-lg-12 col-xs-12" >
+                                                <strong><h:outputLabel styleClass="control-label" value="#{msgs['sia.orden.pdf']}:"/></strong>
+                                            </div>
+                                            <div class="col-lg-12 col-xs-12">
+                                                <h:outputLink styleClass="link" style="color: blue;"
+                                                              id="abrir"
+                                                              target="_blank" 
+                                                              title="#{msgs['sia.clic.abrir.archivo']}" 
+                                                              value="#{administrarCompraBean.compraVo.url}">
+                                                    <h:outputText value="#{msgs['sistema.abrir']}"/>
+                                                </h:outputLink>  
+                                            </div>
+                                        </div>
+                                    </div>                
+                                    <div class="col-4 col-xs-12">  
+                                        <div class="form-group col-lg-12 col-xs-12" >
+                                            <div class="col-12 col-xs-12" >
+                                                <strong><h:outputLabel styleClass="control-label"    value="#{msgs['sia.nombre.referencia']}:"/></strong>
+                                            </div>
+                                            <div class="col-lg-12 col-xs-12">
+                                                <h:outputText styleClass="control-label"  value="#{administrarCompraBean.compraVo.referencia}"/>
+                                            </div>
+                                            <div class="col-lg-2 col-xs-12" >
+                                                <strong><h:outputLabel styleClass="control-label"    value="#{msgs['sia.destino']}:"/></strong>
+                                            </div>
+                                            <div class="col-lg-12 col-xs-12">
+                                                <h:outputText styleClass="control-label"  value="#{administrarCompraBean.compraVo.destino}"/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>   
+                                <div class="row">
+                                    <div class="col-lg-8"></div>
+                                    <div class="col-lg-4 input-group">
+                                        <div class="col-lg-8" style="text-align: right;">
+                                            <strong><h:outputLabel styleClass="control-label" value="#{msgs['sia.orden.subtotal']}:"/></strong>
+                                        </div>
+                                        <div class="col-lg-4" >
+                                            <h:outputLabel value="#{administrarCompraBean.compraVo.subTotal}">
+                                                <f:convertNumber groupingUsed="true" maxFractionDigits="4" type="currency"
+                                                                 pattern="#,###.0000"/>
+                                            </h:outputLabel>
+                                        </div>
+                                        <div class="col-lg-8" style="text-align: right;">
+                                            <strong><h:outputLabel styleClass="control-label" value="#{msgs['sia.iva']}: "/></strong>
+                                        </div>
+                                        <div class="col-lg-4" >
+                                            <h:outputLabel value="#{administrarCompraBean.compraVo.iva}">
+                                                <f:convertNumber currencySymbol="$" groupingUsed="true" maxFractionDigits="2" type="currency"/>
+                                            </h:outputLabel>
+                                        </div>
+                                        <div class="col-lg-8" style="text-align: right;">
+                                            <strong><h:outputLabel styleClass="control-label" value="#{msgs['sia.orden.total']}:"/></strong>
+                                        </div>
+                                        <div class="col-lg-4">
+                                            <h:outputLabel value="#{administrarCompraBean.compraVo.total}">
+                                                <f:convertNumber groupingUsed="true" pattern="#,###.0000"
+                                                                 maxFractionDigits="2" type="currency"/>
+                                            </h:outputLabel>
+                                            #{administrarCompraBean.compraVo.moneda}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <p:dataTable value="#{administrarCompraBean.compraVo.detalleOrden}" var="data"  paginator="true" 
+                                                 rows="10" paginatorPosition="bottom" size="small" showGridlines="true">
+                                        <f:facet name="header">#{msgs['sia.orden.item.compra']}</f:facet>
+                                        <p:column headerText="#{msgs['sia.descripcion']}" style="text-align: left;">
+                                            #{data.artNombre}
+                                        </p:column>
+                                        <p:column headerText="#{msgs['sia.orden.cantidad.sol']}" width="8%">
+                                            <h:outputText value="#{data.cantidad}">
+                                                <f:convertNumber maxFractionDigits="2"/>
+                                            </h:outputText>
+                                        </p:column>
+                                        <p:column headerText="#{msgs['sia.orden.cantidad.entregada']}" width="8%">
+                                            <h:outputText value="#{data.totalRecibido}">
+                                                <f:convertNumber maxFractionDigits="2"/>
+                                            </h:outputText>
+                                        </p:column>
+                                        <p:column headerText="#{msgs['sia.orden.precio']}" style="text-align: right;" width="8%">
+                                            <h:outputText value="#{data.precioUnitario}">
+                                                <f:convertNumber maxFractionDigits="2"  pattern="#,###.0000" type="currency"/>
+                                            </h:outputText>
+                                        </p:column>
+                                        <p:column headerText="#{msgs['sia.factura.importe']}" style="text-align:  right;" width="8%">
+                                            <h:outputText value="#{data.importe}">
+                                                <f:convertNumber maxFractionDigits="2" pattern="#,###.0000" type="currency"/>
+                                            </h:outputText>
+                                        </p:column>                                    
+                                    </p:dataTable>
+                                </div>
+                            </p:tab>
+                            <p:tab id="tabFactura" title="#{msgs['sia.factura']}">
+                                <div id="divFactura" class="row" >
+                                    <ui:fragment rendered="#{sesion.proveedorVo.nacional eq true}">
+                                        <div class="col-lg-2">
+                                            <p:commandLink  id="btnCargarXml"
+                                                            class="btn btn-info text-white" 
+                                                            action="#{administrarCompraBean.inicioRegistroFacturaXML}"
+                                                            disabled="#{administrarCompraBean.facturaVo.id gt 0}"
+                                                            process="@this" update="frmArchivoFact">
+                                                <i class="fa fa-file"/> <b>#{msgs['sia.factura.cargar.xml']}</b>
+                                            </p:commandLink>
+                                        </div>
+                                        <div class="col-lg-2">
+                                            <p:commandLink class="btn btn-info col-lg-12" 
+                                                           action="#{administrarCompraBean.procesarFactura}"
+                                                           rendered="#{administrarCompraBean.facturaVo.id gt 0}"
+                                                           process="@this" update="frmAdminCompras:tbCompras">
+                                                <i class="fa fa-check text-white"/><b> </b>
+                                                <p:confirm header="Confirmar" message="#{msgs['sia.factura.procesar']}" 
+                                                           icon="pi pi-exclamation-triangle" />
+                                            </p:commandLink>
+                                        </div>
+                                    </ui:fragment>
+                                    <ui:fragment rendered="#{sesion.proveedorVo.nacional eq false}">
+                                        <div class="col-lg-2">
+                                            <p:commandLink  id="btnCargarFactExt"
+                                                            class="btn btn-info col-lg-12" 
+                                                            action="#{administrarCompraBean.inicioRegistroFacturaExtranjera}"
+                                                            disabled="#{administrarCompraBean.facturaVo.id gt 0}"
+                                                            process="@this" update="frmRegFacExt">
+                                                <i class="fa fa-file"/> <b>#{msgs['sia.factura.registrar']}</b>
+                                            </p:commandLink>
+                                        </div>
+                                        <div class="col-lg-2">
+                                            <p:commandLink class="btn btn-info col-lg-12 text-white" 
+                                                           action="#{administrarCompraBean.procesarFacturaExtranjera}"
+                                                           rendered="#{administrarCompraBean.facturaVo.id gt 0}">
+                                                <i class="fa fa-check text-primary"/>
+                                                <p:confirm header="Confirmar" message="#{msgs['sia.factura.procesar']}" 
+                                                           icon="pi pi-exclamation-triangle" />
+                                            </p:commandLink>
+                                        </div>
+                                    </ui:fragment>
+
+                                    <div class="col-lg-2">
+                                        <p:commandLink action="#{administrarCompraBean.eliminarFactura()}" class="btn btn-info col-lg-12"
+                                                       rendered="#{administrarCompraBean.facturaVo.id gt 0}"
+                                                       process="@this" update="frmAdminCompras:tbCompras" >
+                                            <i class="fa fa-trash text text-danger"/>
+                                            <p:confirm header="Confirmar" message="#{msgs['sistema.eliminar']}" 
+                                                       icon="pi pi-exclamation-triangle" 
+                                                       />
+                                        </p:commandLink>
+                                    </div>
+                                    <div class="col-lg-5">
+                                    </div>
+
+                                    <div class="col-lg-1">
+                                        <!--p:commandLink id="btnAyudaFactura" title="Ayuda factura" onclick="introFactura();">
+                                            <i class="fa fa-question-circle fa-2x"></i>
+                                        </p:commandLink -->
+                                    </div>
+                                </div>
+                                <div id="divProcesoFactura" class="row">         
+                                    <div class="row">
+                                        <div class="col-lg-6">
+                                            <div class="form-group co col-lg-12">
+                                                <h:outputText value="#{msgs['sia.factura.folio']}: " class="control-label col-lg-2"></h:outputText>
+                                                <div class="col-lg-10">
+                                                    <h:outputText value="#{administrarCompraBean.facturaVo.folio}"/>
+                                                </div>
+                                            </div>
+                                            <div class="form-group co col-lg-12">
+                                                <h:outputText value="#{msgs['sia.factura.concepto']}: " class="control-label col-lg-2"></h:outputText>
+                                                <div class="col-lg-10">
+                                                    <h:outputText value="#{administrarCompraBean.facturaVo.concepto}"/>
+                                                </div>
+                                            </div>                                            
+                                            <div class="form-group co col-lg-12">
+                                                <h:outputText value="#{msgs['sia.factura.fecha']}: " class="control-label col-lg-2"></h:outputText>
+                                                <div class="col-lg-10">
+                                                    <h:outputText value="#{administrarCompraBean.facturaVo.fechaEmision}">
+                                                        <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                                    </h:outputText>
+                                                </div>
+                                            </div>
+                                            <div class="form-group co col-lg-12">
+                                                <h:outputText value="#{msgs['sia.factura.tipo.cambio']}: " class="control-label col-lg-2"></h:outputText>
+                                                <div class="col-lg-2">
+                                                    <h:outputLabel  value="#{administrarCompraBean.facturaVo.tipoCambio}">
+                                                        <f:convertNumber pattern="#,###.0000"/>
+                                                    </h:outputLabel>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <div class="form-group co col-lg-12">
+                                                <h:outputText value="#{msgs['sia.orden.subtotal']}: " class="control-label col-lg-2"></h:outputText>
+                                                <div class="col-lg-2">
+                                                    <h:outputText  value="#{administrarCompraBean.facturaVo.subTotal}">
+                                                        <f:convertNumber  type="currency" pattern="#,###.0000" />
+                                                    </h:outputText>
+                                                </div>
+                                            </div>
+                                            <div class="form-group co col-lg-12">
+                                                <h:outputText value="#{msgs['sia.orden.subtotal.mxn']}: " class="control-label col-lg-2"></h:outputText>
+                                                <div class="col-lg-2">
+                                                    <h:outputLabel  value="#{administrarCompraBean.facturaVo.subTotalPesos}">
+                                                        <f:convertNumber type="currency" pattern="#,###.0000" />
+                                                    </h:outputLabel>
+                                                </div>
+                                            </div>
+                                            <div class="form-group co col-lg-12">
+                                                <h:outputText value="#{msgs['sia.orden.total']}: " class="control-label col-lg-2"></h:outputText>
+                                                <div class="col-lg-2">
+                                                    <h:outputText id="facMonto" value="#{administrarCompraBean.facturaVo.monto}">
+                                                        <f:convertNumber  pattern="#,###.0000"/>
+                                                    </h:outputText>
+                                                </div>
+                                            </div>
+                                            <div class="form-group co col-lg-12">
+                                                <h:outputText value="#{msgs['sia.orden.moneda']}: " class="control-label col-lg-2"></h:outputText>
+                                                <div class="col-lg-2">
+                                                    <h:outputLabel value="#{administrarCompraBean.facturaVo.moneda}"/>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <p:tabView id="tbFacturas">
+                                        <p:tab id="tabPartidasFactura" title="#{msgs['sia.factura.partidas']}" 
+                                               rendered="#{sesion.proveedorVo.nacional eq true}">
+                                            <div class="row panel">
+                                                <p:commandLink value="#{msgs['sia.factura.conciliar']}" class="btn btn-info text-white"
+                                                               action="#{administrarCompraBean.inicioRelacionDetOcsDetFac}"
+                                                               rendered="#{administrarCompraBean.facturaVo.id gt 0}"
+                                                               process="@this" update="frmRelPartidaFacturaOcs"/>
+                                            </div>
+                                            <div class="row">
+                                                <p:dataTable value="#{administrarCompraBean.listaFacturaDetalle}" var="dataDet"
+                                                             rowIndexVar="indice"  paginator="true" rows="10" 
+                                                             paginatorPosition="bottom"  paginatorAlwaysVisible="true"
+                                                             size="small" showGridlines="true">
+                                                    <p:column headerText="Conc." width="35">
+                                                        <i class="#{dataDet.idOrdenDetalle gt 0 ? 'fa fa-check text-primary' : 'fa fa-remove text-warning'}"
+                                                           title="#{dataDet.idOrdenDetalle gt 0 ? ' Partida relacionada con partida de la compra' : 'Falta relacionar con una partida de la orden de compra'}"/>
+                                                    </p:column>
+                                                    <p:column headerText="#{msgs['sia.descripcion']}" style="text-align: justify">
+                                                        #{dataDet.descripcion}
+                                                    </p:column>
+                                                    <p:column headerText="Cant." width="5%">
+                                                        <h:outputText value="#{dataDet.cantidad}" >
+                                                            <f:convertNumber maxFractionDigits="2"/>
+                                                        </h:outputText>
+                                                    </p:column>
+                                                    <p:column headerText="#{msgs['sia.orden.precio']}" style="text-align: right;" width="8%">
+                                                        <h:outputText value="#{dataDet.precio}">
+                                                            <f:convertNumber maxFractionDigits="2"  pattern="#####.##"/>
+                                                        </h:outputText>
+                                                    </p:column>
+                                                    <p:column headerText="#{msgs['sia.factura.importe']}" style="text-align: right;" width="8%">
+                                                        <h:outputText value="#{dataDet.importe}">
+                                                            <f:convertNumber maxFractionDigits="2" pattern="#####.##"/>
+                                                        </h:outputText>
+                                                    </p:column>
+                                                </p:dataTable>
+                                            </div>
+                                        </p:tab>
+                                        <p:tab id="tabContenidoNal" title="Contenido Nacional" rendered="#{sesion.proveedorVo.nacional eq true}">
+                                            <div class="row panel">                                                
+                                                <div class="col-lg-2">
+                                                    <p:commandLink class="btn btn-info text-white"
+                                                                   rendered="#{administrarCompraBean.facturaVo.id gt 0}"
+                                                                   action="#{administrarCompraBean.iniciarAgragarContNac}"
+                                                                   process="@this" update="frmContNac">
+                                                        <i class="fa fa-file text-primary"/> <b>Contenido Nac.</b>
+                                                    </p:commandLink>
+                                                </div>
+                                                <div class="col-lg-1">
+                                                    <p:commandLink id="btnCarta"  action="#{administrarCompraBean.iniciarCartaContenido}" 
+                                                                   class="btn btn-info text-white"
+                                                                   rendered="#{administrarCompraBean.facturaVo.idAdjunto eq 0 and
+                                                                               administrarCompraBean.facturaVo.id gt 0}" title="Iniciar la carta de Contenido Nacional"
+                                                                   process="@this" update="frmArchivoFact">
+                                                        <i class="fa fa-paperclip"/><b> Carta CN</b>
+                                                    </p:commandLink>
+                                                </div>
+                                            </div>                 
+                                            <div class="row">
+                                                <h:messages id="msgCartaContNac" for="btnCarta" styleClass="text-danger text-primary"/>
+                                            </div>
+                                            <div class="row">                                                
+                                                <div class="col-lg-8">
+                                                    <p:dataTable id="dtCN" value="#{administrarCompraBean.contenidoNacionalPorFactura}" var="dataCN"
+                                                                 size="small" showGridlines="true"> 
+                                                        <p:column headerText="Código">                                    
+                                                            <h:outputText value="#{dataCN.codigoCatalogoHidro}" rendered="#{dataCN.id gt 0}"/>
+                                                        </p:column>
+                                                        <p:column headerText="Descripción" style="text-align: left;">
+                                                            <h:outputText value="#{dataCN.nombreCatalogoHidro}" rendered="#{dataCN.id gt 0}"/>
+                                                        </p:column>
+                                                        <p:column headerText="Cont. Nac." >
+                                                            <h:outputText value="#{dataCN.proporcionContenido}" rendered="#{dataCN.id gt 0}"/>
+                                                            <h:outputText value="#{dataCN.nombreCatalogoHidro}" rendered="#{dataCN.id eq 0}"/>
+                                                        </p:column>
+                                                        <p:column headerText="Monto Facturado" style="text-align: right;">
+                                                            <h:outputText value="#{dataCN.montoFacturado}" rendered="#{dataCN.id gt 0}" >
+                                                                <f:convertNumber  pattern="#,###.0000" type="currency"/>
+                                                            </h:outputText>
+                                                            <h:outputLabel value="#{dataCN.totalMontoFacturado}" style="text-align: right;">
+                                                                <f:convertNumber pattern="#,###.0000"/>
+                                                            </h:outputLabel>
+                                                        </p:column>
+                                                        <p:column width="40">
+                                                            <p:commandLink action="#{administrarCompraBean.eliminarContNac(dataCN.id)}"
+                                                                           rendered="#{dataCN.id gt 0}" process="@this" 
+                                                                           update="frmAdminCompras:tbCompras:tbFacturas:dtCN"> 
+                                                                <i class="fa fa-trash text-danger fa-2x"/>
+                                                            </p:commandLink>
+                                                        </p:column>                                                        
+                                                    </p:dataTable>                                                    
+                                                </div>
+                                            </div>
+                                        </p:tab>
+                                        <p:tab id="tabSoportes" title="#{msgs['sia.factura.soporte.evidencias']}">
+                                            <div class="row input-group">
+                                                <ui:fragment rendered="#{administrarCompraBean.listaSoporteFacturaXmlPdf.size() lt 2}">
+                                                    <div class="col-6">
+                                                        <p:commandLink class="btn btn-info text-white" 
+                                                                       action="#{administrarCompraBean.iniciarCargaPDF}"
+                                                                       rendered="#{administrarCompraBean.facturaVo.id gt 0}"
+                                                                       title="#{msgs['sia.pdf.factura']}" process="@this" update="frmArchivoFact">
+                                                            <i class="fa fa-file"/> <b>#{msgs['sia.pdf.factura']}</b>
+                                                        </p:commandLink>      
+                                                    </div>
+                                                </ui:fragment>
+                                                <div class="col-6">
+                                                    <p:commandLink id="btnSoportes" class="btn btn-info text-white" action="#{administrarCompraBean.iniciarCargaSoporte}"
+                                                                   rendered="#{administrarCompraBean.facturaVo.id gt 0 and sesion.proveedorVo.nacional eq true}"
+                                                                   title="#{msgs['sia.factura.generadores']}" process="@this" update="frmArchivoFact">
+                                                        <i class="fa fa-paperclip"/> <b>Soportes y/o Evidencias</b>
+                                                    </p:commandLink>      
+                                                    <p:commandLink id="btnDoctoAd" class="btn btn-info text-white" 
+                                                                   action="#{administrarCompraBean.iniciarCargaDocumentoAduanal}"
+                                                                   rendered="#{administrarCompraBean.facturaVo.id gt 0 and sesion.proveedorVo.nacional eq false}"
+                                                                   title="* #{msgs['sia.factura.documento.aduana']}" process="@this" update="frmArchivoFact">
+                                                        <i class="fa fa-paperclip"/> <b>#{msgs['sia.documento.aduanal']}</b>
+                                                    </p:commandLink>      
+                                                </div>
+
+                                            </div>
+                                            <div class="row">
+                                                <p:dataTable id="dtSoportes" value="#{administrarCompraBean.listaSoporteFactura}" var="data"
+                                                             size="small" showGridlines="true">
+                                                    <p:column headerText="#{msgs['sia.factura.soportes']}" style="text-align: left;" >
+                                                        #{data.tipo}
+                                                    </p:column>
+                                                    <p:column headerText="#{msgs['sia.archivo']}">
+                                                        #{data.adjuntoVo.nombre}
+                                                    </p:column>
+                                                    <p:column width="40">
+                                                        <h:outputLink id="abrir" target="_blank" 
+                                                                      style="color: blue;"
+                                                                      title="#{msgs['sia.clic.abrir.archivo']}" 
+                                                                      value="/Proveedor/AbrirArchivo?ZWZ2W=#{data.adjuntoVo.id}&amp;ZWZ3W=#{data.adjuntoVo.uuid}">
+                                                            <h:outputText value=" #{msgs['sistema.abrir']}"/>
+                                                        </h:outputLink>  
+                                                    </p:column>
+                                                    <p:column width="40">
+                                                        <p:commandLink  action="#{administrarCompraBean.eliminarSoporteFactura(data.id)}"
+                                                                        rendered="#{data.tipo ne 'XML (Factura)'}" process="@this" 
+                                                                        update="frmAdminCompras:tbCompras:tbFacturas:dtSoportes">
+                                                            <i class="fa fa-trash fa-2x text text-danger"/>
+                                                        </p:commandLink>
+                                                    </p:column>
+                                                </p:dataTable>
+                                            </div>
+                                        </p:tab>
+                                        <p:tab id="tabNotaCred" title="Nota de crédito" rendered="#{sesion.proveedorVo.nacional eq true}">
+                                            <div class="col-12">
+                                                <p:commandLink class="btn btn-info text-white" 
+                                                               action="#{administrarCompraBean.inicioRegistroNotaCreditoXML}"
+                                                               rendered="#{administrarCompraBean.facturaVo.id gt 0}"
+                                                               process="@this" update="frmArchivoFact">
+                                                    <i class="fa fa-file text-primary"/> <b>Nota crédito</b>
+                                                </p:commandLink>
+                                            </div>
+                                            <div class="table table-responsive">
+                                                <p:dataTable id="tblNotaCre" value="#{administrarCompraBean.listaNotaCredito}" var="dataNota"
+                                                             rowIndexVar="index" size="small" showGridlines="true">                                            
+                                                    <p:column headerText="Factura">                                                
+                                                        #{administrarCompraBean.facturaVo.folio}
+                                                    </p:column>
+                                                    <p:column headerText="N. de Crédito">
+                                                        #{dataNota.folio}
+                                                    </p:column>
+                                                    <p:column headerText="Total">
+                                                        <h:outputText value="#{dataNota.monto}">
+                                                            <f:convertNumber maxFractionDigits="2"/>
+                                                        </h:outputText>                                                
+                                                    </p:column>
+                                                    <p:column width="5%">
+                                                        <p:commandLink action="#{administrarCompraBean.seleccionarNotaCredito(index)}"
+                                                                       process="@this" update="frmPopNotaCred">
+                                                            <i class="fa fa-cog fa-2x text-primary"/>
+                                                        </p:commandLink>
+                                                    </p:column>
+                                                    <p:column width="5%">
+                                                        <p:commandLink action="#{administrarCompraBean.eliminarNotaCredito(index)}"
+                                                                       title="Elimina la nota de crédito"  process="@this" 
+                                                                       update="frmAdminCompras:tbCompras:tbFacturas:tblNotaCre">
+                                                            <i class="fa fa-trash fa-2x text-danger"/>
+                                                        </p:commandLink>
+                                                    </p:column>
+                                                </p:dataTable>
+                                            </div>
+                                        </p:tab>
+                                        <p:tab id="tabRechazos" title="#{msgs['sia.factura.motivo.rechazo']}">
+                                            <p:dataTable id="tblMov" value="#{administrarCompraBean.movimientosFactura}" var="dataMov"
+                                                         rowIndexVar="index" size="small" showGridlines="true">                                            
+                                                <p:column headerText="#{msgs['sistema.genero']}" width="20%">                                                
+                                                    #{dataMov.genero}
+                                                </p:column>
+                                                <p:column headerText="#{msgs['sia.factura.fecha']}" width="8%">
+                                                    <h:outputText value="#{dataMov.fecha}">
+                                                        <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                                    </h:outputText>
+                                                </p:column>
+                                                <p:column headerText="#{msgs['sia.rechazo.motivo']}">
+                                                    <h:outputText value="#{dataMov.movimientoVO.motivo}">
+                                                    </h:outputText>                                                
+                                                </p:column>
+                                            </p:dataTable>
+                                        </p:tab>
+                                    </p:tabView>
+                                </div>
+                            </p:tab>
+                        </p:tabView>
+                        <div class="row">
+                            <div class="col-lg-11"></div>
+                            <div class="col-lg-1">
+                                <p:commandLink action="/principal.xhtml?faces-redirect=true" class="btn btn-info text-white">
+                                    <i class="fa fa-arrow"/>#{msgs['sia.regresar']}
+                                </p:commandLink>
+                            </div>
+                        </div>
+                    </div>
+                </h:form>
+
+                <script type="text/javascript">
+//                    function startIntro(){
+//                        var intro = introJs();
+//                        intro.setOptions({
+//                            steps: [
+//                                {
+//                                    element: document.querySelector('#tabOrdenCompraLbl'),
+//                                    intro: "Esta pestaña le muestra la información sobre la orden de compra.",
+//                                },
+//                                {
+//                                    element: document.querySelector('#tabFacturaLbl'),
+//                                    intro: "En esta pestaña es en donde debe cargar los soportes de la factura relacionada a la orden.",
+//                                }
+//                            ]
+//                        });
+//
+//                        intro.start();
+//                    }
+
+//                    function introFactura(){
+//                        var intro = introJs();
+//                        intro.setOptions({
+//                            steps: [
+//                                {
+//                                    element: document.querySelector('#frmFactura\\:btnCargarXml'),
+//                                    intro: "Primero debe cargar el archivo XML de la factura. Este debe contener el número del pedido, exactamente igual al que se recibió en el correo de asignación de la orden.",
+//                                },
+//                                {
+//                                    element: document.querySelector('#tabPartidasFacturaLbl'),
+//                                    intro: "En esta pestaña se mostrarán las partidas del XML. Estas deben conciliarse contra las partidas de la orden.",
+//                                },
+//                                {
+//                                    element: document.querySelector('#tabContenidoNalLbl'),
+//                                    intro: "En esta pestaña debe agregar la carta de contenido nacional, en formato PDF, además de ingresar el desglose del contenido nacional.",
+//                                },
+//                                {
+//                                    element: document.querySelector('#tabSoportesLbl'),
+//                                    intro: "En esta pestaña debe cargar el archivo PDF de la factura. Adiccionalmente puede agregar cualquier archivo de soporte requerido por el cliente.",
+//                                },
+//                                {
+//                                    element: document.querySelector('#tabNotaCredLbl'),
+//                                    intro: "En esta pestaña puede cargar las notas de crédito relacionadas a la factura/orden que está ingresando.",
+//                                },
+//                                {
+//                                    element: document.querySelector('#tabRechazosLbl'),
+//                                    intro: "En esta pestaña se muestran los rechazos que se hayan hecho de la factura, mostrando el motivo de los mismos.",
+//                                }
+//                                
+//                            ]
+//                        });
+//
+//                        intro.start();
+//                    }
+
+                </script>
+
+
+                <ui:include src="fragmento/popUpAdminCompra.xhtml"/>
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

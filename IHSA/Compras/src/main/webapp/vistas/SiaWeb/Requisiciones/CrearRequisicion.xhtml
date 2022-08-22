@@ -1,0 +1,175 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+    <body>
+        <ui:composition template="./../templates/template.xhtml">
+            <ui:define name="tituloPagina">
+                Solicitar Requisiciones
+            </ui:define>
+            <ui:define name="contenido">
+                <ui:include src="../Requisiciones/fragmentos/popUpRequisicion.xhtml"/>                
+                <ui:include src="../Requisiciones/SolicitarRequisicion.xhtml"/>                
+                <h:form id="form1" >
+                    <!--   Ponga todo su codigo aqui... -->                    
+                    <div class="row">
+                        <div id="divAutoriza" class="btn-group" style="text-align: left;" >                                                                
+                            <p:commandLink value="#{msgs['requisicion.nueva']}"  
+                                           action="#{requisicionBean.crearNuevaRequisicion}"
+                                           onclick="$(dialogoCrearNewReq).modal('show');"
+                                           title="Click aqui para generar una nueva requisición..."                                               
+                                           styleClass="btn btn-default" process="@this" update="frmCrearRequisicion"
+                                           />                                            
+                            <p:commandLink value="Nueva requisición a partir de Otra." 
+                                           title="#{msgs['sistema.tooltip.genera.nueva.requision']} "
+                                           onclick="$(dialogoCrearReq).modal('show');"
+                                           styleClass="btn btn-default"
+                                           process="@this" update="frmDialogoCrearReq"
+                                           />                                                                
+                        </div>                            
+                        <div id="divOperacion" class="btn-group" style="text-align: left; display: none;">                                
+                            <p:commandLink value="Regresar" action="#{requisicionBean.limpiarRequisicion}"
+                                           onclick="regresar('divTabla', 'divDatos', 'divOperacion', 'divAutoriza')"
+                                           styleClass="btn btn-default"/>
+
+                            <p:commandLink value="#{msgs['sistema.solicitar']}" styleClass="btn btn-default"
+                                           action="#{requisicionBean.solicitarRequisicion()}"
+                                           title="Click aqui para solicitar la requisición..."
+                                           process="@this" update="form1SolicitandoRequi"
+                                           >
+                            </p:commandLink>
+
+                            <p:commandLink value="#{msgs['sistema.modificar']}" styleClass="btn btn-default"
+                                           action="#{requisicionBean.modificarRequisicion}"
+                                           title="Click aqui para modificar la requisición..." 
+                                           process="@this" update="frmCrearRequisicion">
+                            </p:commandLink>
+
+                            <p:commandLink value="#{msgs['sistema.eliminar']}" styleClass="btn btn-default"
+                                           action="#{requisicionBean.eliminarRequisicion}"
+                                           title="Click aqui para eliminar la requisiciòn..." 
+                                           process="@this" update="form1">
+                                <p:confirm header="Confirmar" message="Está seguro de Eliminar la requisición...? "/>
+                            </p:commandLink>
+
+                            <p:commandLink value="#{msgs['sistema.cargar.ets']}" 
+                                           onclick="$(dialogoAdjArchReq).modal('show');"
+                                           styleClass="btn btn-default"                                                   
+                                           title="Clic aqui para agregar Especificación Tecnica de Suministro de la requisición..." 
+                                           process="@this" update="frmDialogoAdjArch">
+                            </p:commandLink>    
+                            <p:confirmDialog global="true" showEffect="fade" hideEffect="fade" responsive="true" width="350">
+                                <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no ui-button-flat"/>
+                                <p:commandButton value="Si" type="button" styleClass="ui-confirmdialog-yes" />
+                            </p:confirmDialog>                            
+                        </div>                            
+                    </div>
+
+                    <div id="divTabla" class="container-fluid"> 
+                        <div class="col-pull-11">                            
+                            <div class="col-12 col-xs-12" style="text-align: right;padding-bottom: 10px;">
+                                <h:outputText value="*PS: requisiciones para productos y servicios." style="font-size: 10px" styleClass="col-12 col-xs-12 f11gris"/>
+                                <h:outputText value="*AF: requsiciones para activos fijos." style="font-size: 10px"  styleClass="col-12 col-xs-12 f11gris"/>
+                                <h:outputText value="*AI: requisiciones para modificar." style="font-size: 10px"  styleClass="col-12 col-xs-12 f11gris"/>
+                            </div>
+                        </div>
+                        <div class="table table-responsive">
+                            <p:dataTable size="small" stripedRows="true" showGridlines="true"  id="dataTable1" rows="10"   
+                                         value="#{requisicionBean.requisicionesSinSolicitar}"
+                                         var="currentRow" styleClass="table table-striped">
+                                <f:facet name="header"><h:outputText value="Requisiciones sin solicitar"/></f:facet>
+                                <p:column style="text-align: center;">
+                                    <h:outputText value="#{currentRow['id']}"/>
+                                    <f:facet name="header">
+                                        <h:outputText value="#{msgs['sistema.id']}"/>
+                                    </f:facet>
+                                </p:column>
+                                <p:column>
+                                    <center>
+                                        <h:outputText   value="#{currentRow['rechazada'] ? 'Si' : 'No'}"/>
+                                    </center>
+                                    <f:facet name="header">
+                                        <h:outputText value="#{msgs['sistema.devuelta']}"/>
+                                    </f:facet>
+                                </p:column>
+                                <p:column>
+                                    <center>
+                                        <h:outputText value="#{currentRow['compania']}"/>
+                                    </center>
+                                    <f:facet name="header">
+                                        <h:outputText value="#{msgs['sistema.compania.abreviatura']}"/>
+                                    </f:facet>
+                                </p:column>                                
+                                <p:column style="text-align: center;">
+                                    <h:outputText value="#{currentRow['tipo']}"/>
+                                    <f:facet name="header">
+                                        <h:outputText value="Tipo"/>
+                                    </f:facet>
+                                </p:column>                                
+                                <p:column>
+                                    <p:commandLink value="#{msgs['sistema.seleccionar']}"                                                   
+                                                   action="#{requisicionBean.seleccionarRequisicion(currentRow.id)}"
+                                                   title="Click aqui para ver y agregar Items..." 
+                                                   update="form1:tbRequi form1:lblReq" process="@this">
+                                    </p:commandLink>
+                                </p:column>
+                            </p:dataTable>                            
+                        </div>
+                    </div>                    
+                    <!-- PanelTapset que contiene las pestañas de mas informacion --> 
+                    <div id="divDatos" style="display: none;">
+                        <div class="col-5" style="margin-top: 15px;">
+                            <h:outputText value="Más información de la requisición: "/>
+                            <h:outputText id="lblReq" value="#{requisicionBean.requisicionActual.id}" style="font-weight:  bold;"/>
+                        </div>
+                        <div class="container-fluid" >
+                            <p:tabView id="tbRequi" activeIndex="0">
+                                <p:tab title="Requisición">
+                                    <ui:include src="../Requisiciones/verMasInfoCrearRequi.xhtml"/>
+                                </p:tab>
+                                <p:tab title="Especificación Técnica">
+                                    <ui:include src="../Requisiciones/verETS.xhtml"/>
+                                </p:tab>
+                                <p:tab title="Devolución">
+                                    <ui:include src="../Requisiciones/verDevoluciones.xhtml"/>
+                                </p:tab>
+                            </p:tabView>                            
+                        </div>
+                    </div>
+                </h:form>
+                <div id="dialogoAyudaItem" style="display: none;" title="Trabajos relacionados" >
+                    <h:form id="frmCerrarAyuda" >
+                        <ul style="font-size: 1.1em;">
+                            <li><b>Gastos de intertek</b>, van al proyecto consumibles del taladro y con la tarea de capacitación contratistas.</li>
+                            <li><b>Árbol de valvulas</b>, va con la gerencia de Terminación y con la tarea a nivel de item de "árbol de valvulas".</li>
+                        </ul>
+                        <c:choose>
+                            <c:when  test="#{requisicionBean.listaAyuda.size() gt 0}">
+                                <p:dataTable size="small" stripedRows="true" showGridlines="true"  value="#{requisicionBean.listaAyuda}" var="la" style="font-size: 1.1em;">
+                                    <p:column style="font-weight: bold;">
+                                        <f:facet name="header">Tarea</f:facet>
+                                        <h:outputText value="#{la.tarea}" />
+                                    </p:column>
+                                    <p:column>
+                                        <f:facet name="header">Trabajo</f:facet>
+                                        <h:outputText value="#{la.trabajo}" />
+                                    </p:column>
+                                </p:dataTable>
+                            </c:when>
+                            <c:otherwise>
+                                <h:outputText value="No hay datos para mostrar . . . ."
+                                              styleClass="textoFuerte" />
+                            </c:otherwise>
+                        </c:choose>
+
+                    </h:form>
+                </div>                          
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

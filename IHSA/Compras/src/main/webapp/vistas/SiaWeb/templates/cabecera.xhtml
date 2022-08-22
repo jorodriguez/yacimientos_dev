@@ -1,0 +1,115 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:h="http://xmlns.jcp.org/jsf/html">
+    <h:form id="Cabecera" rendered="#{not empty usuarioBean.usuarioConectado}">    
+        <div class="nav navbar-default navbar-static-top navbar-collapse" style="background-color: #70CEE2;">
+            <div class="row-fluid">
+                <button type="button" 
+                        class="navbar-toggle" 
+                        data-toggle="collapse" 
+                        data-target=".navbar-collapse">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <div class="navbar-header" style="padding-left: 2%;">
+                    <p:graphicImage value="/Compras/MostraImagen?ZWZ2W=#{usuarioBean.compania.rfc}" 
+                                      style="width: 90px; height: 45px;" />
+
+                </div>
+                <div class="nav navbar-collapse collapse " style="background-color: #70CEE2;">
+                    <ul class="nav navbar-nav col-4 btn" style="font-weight:  bold;">  
+                        <li><p:commandLink id="inicio" 
+                                           value="Inicio"
+                                           title="Clic aqui para ir inicio del sistema..."
+                                           action="#{usuarioBean.siaGo}"/></li>
+                        <li><p:commandLink id="principal"  
+                                           value="Principal"                                                                   
+                                           title="Clic aqui para ir a la página principal del sistema..."
+                                           action="/Principal" 
+                                           action="#{ordenBean.iniciarLimpiar}"
+                                           process="@form" update="@form">
+                            </p:commandLink></li>
+                        <li >
+                            <p:commandLink id="ayuda" 
+                                           value="Ayuda"
+                                           title="Clic aqui para ver la ayuda del sistema..."
+                                           action="#{menuBarBean.accionMenu}"
+                                           action="#{menuBarBean.escuchaClick}" >
+                            </p:commandLink>
+                        </li>
+                        <li >
+                            <p:commandLink id="cerrarSesion" 
+                                           value="Salir"
+                                           title="Clic aqui para salir del sistema..."
+                                           action="#{usuarioBean.cerrarSesion}" >
+                            </p:commandLink>
+                        </li>
+                    </ul>
+                    <ul class=" nav navbar-nav">
+                        <ui:fragment rendered="#{not empty ordenBean.buscarTrabajoPendiente}">
+                            <!--li class="dropdown">
+                                <a class="dropdown-toggle" data-toggle="dropdown" onclick="ocultarDiv('divBuscar');"><span class="text-danger">Pendiente</span><i class="caret"></i></a-->
+                            <ui:repeat value="#{ordenBean.buscarTrabajoPendiente}" var="d">
+                                <li >
+                                    <p:commandLink id="btnCambiar"  action="#{usuarioBean.cambiarCampo(d.total, d.campo)}"
+                                                   onclick="return confirm('La operación lo cambiará de bloque. ¿Está seguro?');"
+                                                   value="#{d.campo}">
+                                    </p:commandLink>
+                                </li>
+                            </ui:repeat>
+                        </ui:fragment>
+
+                    </ul>
+                    <ul class="nav navbar-nav navbar-right text-right col-4">
+                        <li class="dropdown nav navbar-nav" > 
+                            <a class="dropdown-toggle btn btn-lg" onclick="mostrarDiv('divBuscar');" >
+                                <i class="fa fa-search"></i>
+                            </a>
+                            <div id="divBuscar" class="dropdown-menu card col-12 " 
+                                 style="width: 300px; display: none; " 
+                                 onmouseout="ocultarDiv('divBuscar');" >
+                                <div class="col-12" onmouseover="mostrarDiv('divBuscar');">
+                                    <h:selectOneRadio  style="padding-left: 23%;" value="#{estiloBean.seleccion}">
+                                        <f:selectItem itemLabel="Req." itemValue="REQUISICIÓN."/>
+                                        <f:selectItem itemLabel="OC/S" itemValue="OCS"/>
+                                    </h:selectOneRadio>
+                                    <div class="container-fluid" >
+                                        <div class="col-8">                                                    
+                                            <h:inputText styleClass="form-control" value="#{estiloBean.codigo}"
+                                                           />
+                                        </div>
+                                        <div class="col-3" >
+                                            <p:commandLink styleClass="btn btn-info" action="#{menuBarBean.accionMenu}"
+                                                           value="Buscar"
+                                                           onclick="ocultarDiv('divBuscar');"
+                                                           action="#{estiloBean.buscarElemento}"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </li> 
+                        <li class="nav navbar-nav col-10" style="margin-left: 5%;">
+                            <div class="col-12 text-right">
+                                <div>
+                                    <h:outputLabel value="#{usuarioBean.usuarioConectado.nombre}"/>
+                                </div>
+                                <p:commandLink onclick="$(modalBloqueActivo).modal('show');" 
+                                                style="font-style: italic; text-decoration: underline; color: #008eff; font-weight: bold;"
+                                                value="#{usuarioBean.usuarioConectado.apCampo.nombre} "/>
+                            </div>
+                            <!--div  class="col-1">
+                                <h:graphicImage height="52" width="50" value="/sia/resources/img/usuario.png"/> 
+                            </div-->
+                        </li>
+                    </ul>
+
+                </div>
+            </div>
+        </div>
+
+    </h:form>
+    
+</ui:composition>

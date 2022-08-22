@@ -1,0 +1,322 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://java.sun.com/jsf/html"
+      
+      xmlns:f="http://java.sun.com/jsf/core"
+     >
+
+    <body>
+        <ui:composition template="./../../../WEB-INF/facelets/templates/templateServiciosGenerales.xhtml">
+            <ui:define name="contenido">  
+
+                <h:panelGrid  rendered="#{empty sesion.usuario}"  styleClass="altura">
+                    <ui:include src="./../../../login.xhtml"/>
+                </h:panelGrid>
+
+                <h:form  rendered="#{not empty sesion.usuario}">                
+                    <p class="tituloEncabezado">#{msgs['sgl.sgHotel.titulo.catalogo']}</p>
+
+                    <h:panelGrid columns="2">
+                        <h:panelGrid columns="2" style="text-align: end;">
+                            <p:commandLink title="#{msgs['sistema.crear']} #{msgs['sgl.sgHotel']}" action="#{hotelBean.mostrarPopupAgregarHotel()}" styleClass="btn btn-default" >
+                                <h:graphicImage url="#{msgs['sgl.ruta.imagen']}button_create.png" title="#{msgs['sistema.crear']} #{msgs['sgl.sgHotel']}" styleClass="imagenSinBorde"/>                            
+                            </p:commandLink>                        
+                        </h:panelGrid>           
+                        <p:commandLink value="#{msgs['sistema.crear']} #{msgs['sgl.sgHotel']}" title="#{msgs['sistema.crear']} #{msgs['sgl.sgHotel']}" action="#{hotelBean.mostrarPopupAgregarHotel()}"  styleClass="linkPequenio" />   
+                    </h:panelGrid>
+
+                    <center>                                                        
+                        <p:dataTable id="dataGridHotel" value="#{hotelBean.allHotelModel}"
+                                     rows="8"                              
+                                     var="data">                       
+                            <p:column>
+                                <f:facet name="header"><h:outputText value="#{msgs['sgl.aseguradora.proveedor']}"/></f:facet>
+                                <h:outputText value="#{data['proveedor'].nombre}"/>
+                            </p:column>
+                            <p:column style="text-align: center">
+                                <f:facet name="header"><h:outputText value="#{msgs['sgl.sgHotel.estrellas']}"/></f:facet>                                                                                        
+                                <h:outputText value="#{data.estrellas}" />
+                            </p:column>                                                                       
+                            <p:column>         
+                                <!-- actionListener="#{hotelBean.mostrarPopupAgregarHabitacionToHotel(event)}" -->
+                                <p:commandLink value="#{msgs['sgl.staff.titulo.accordionPane.habitaciones']}"
+                                                 action="#{hotelBean.goToAgregarHabitacionToHotel()}"
+                                                 styleClass="link"/>                            
+                            </p:column>
+                            <p:column>         
+                                <!-- actionListener="#{hotelBean.openPopupAddServicesToHotel(event)}"  -->
+                                <p:commandLink value="#{msgs['sgl.sgHotel.servicio']}s" 
+                                                 action="#{hotelBean.goToAddServicesToHotel()}"
+                                                 styleClass="link"/>                            
+                            </p:column>                            
+                            <p:column>                            
+                                <p:commandLink value="#{msgs['sistema.modificar']}"  action="#{hotelBean.mostrarPopupModificarHotel()}" styleClass="link"/>                            
+                            </p:column>
+                            <p:column>                            
+                                <p:commandLink value="#{msgs['sistema.eliminar']}" 
+                                                 onclick="if(!confirm('#{msgs['sgl.sgHotel.mensaje.info.eliminar']}  #{data['proveedor'].nombre} ? ')) return false;"
+                                                 actionListener="#{hotelBean.deleteHotel(event)}"  styleClass="link"/>                            
+                            </p:column>
+                            <p:column>                            
+                                <p:commandLink value="#{msgs['sistema.detalle']}" actionListener="#{hotelBean.mostrarPopupDetalleHotel(event)}" styleClass="link" />                                                            
+                                <!--   -->
+                            </p:column>    
+                        </p:dataTable>
+                    </center>
+                </h:form>
+
+                <br/>
+
+                <!-- Detalle de Hotel-->                   
+                <h:form  rendered="#{hotelBean.mrPopupDetalleHotel}" >    
+                    <table class="bordePanelGrid"  >
+                        <tr>
+                            <td>
+                                <table>
+                                    <tr>
+                                        <td>
+                                            <h:outputText value="#{msgs['sgl.sgHotel']} #{hotelBean.sgHotel.proveedor.nombre} - #{hotelBean.sgHotel.estrellas} #{msgs['sgl.sgHotel.estrellas']}" styleClass="fNegrita12"/> 
+                                        </td>
+                                    </tr>    
+                                    <tr>
+                                        <td>
+                                            <br />
+                                        </td>
+                                    </tr>
+                                    <!--<tr>
+                                        <td>
+                                            <h:outputText  value="#{hotelBean.sgHotel.proveedor.nombre}"/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <h:outputLabel value="#{msgs['sgl.sgHotel.estrellas']}"/>
+                                        </td>
+                                    </tr>     
+                                    <tr>
+                                        <td>
+                                            <h:outputText value="#{hotelBean.sgHotel.estrellas}"/>
+                                        </td>
+                                    </tr>-->      
+                                </table>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td valign="top" class="bordePanelGrid">
+                                <h:outputText value="#{msgs['sgl.staff.titulo.accordionPane.habitaciones']}" styleClass="fNegrita12"/>
+                                <p:dataTable id="dataGridHotelHabitaciones" rows="6" value="#{hotelBean.allHabitacionToHotelModel}"
+                                              
+                                             var="data"  rendered="#{hotelBean.allHabitacionToHotelModel.rowCount > 0}" >                                                     
+                                    <p:column>
+                                        <f:facet name="header"><h:outputText value="#{msgs['sgl.sgHotel.tipo.habitacion']}"/></f:facet>
+                                        <h:panelGrid>
+                                            <h:outputText value="#{data['sgTipoEspecifico'].nombre}"/>                                    
+                                        </h:panelGrid>
+                                    </p:column>                                                                                                                                                           
+                                    <p:column>
+                                        <f:facet name="header"><h:outputText value="#{msgs['sgl.generales.precio']}"/></f:facet>
+                                        <h:outputText value="#{data['precio']}">
+                                            <f:convertNumber currencySymbol="$" groupingUsed="true" maxFractionDigits="2" type="currency"/>
+                                        </h:outputText>
+                                    </p:column>                                                                                                                                                                                           
+                                </p:dataTable> 
+                            </td>
+
+                            <td valign="top" class="bordePanelGrid">
+                                <h:outputText value="#{msgs['sgl.sgHotel.servicio']}s" styleClass="fNegrita12" />
+                                <p:dataTable id="dataGridHotelHServicios" rows="6" value="#{hotelBean.tipoHabitacionModel}"
+                                             var="data"  rendered="#{hotelBean.tipoHabitacionModel.rowCount > 0}" >                                                     
+                                    <p:column>
+                                        <f:facet name="header"><h:outputText value="#{msgs['sgl.generales.nombre']}"/></f:facet>
+                                        <h:panelGrid>
+                                            <h:outputText value="#{data['nombreSgTipoEspecifico']}"/>                                    
+                                        </h:panelGrid>
+                                    </p:column>                                                                                                                                                           
+                                </p:dataTable> 
+                            </td>
+                        </tr>
+                    </table>
+                </h:form>
+
+                <!-- Habitaciones -->
+               <!-- <h:form id="formPopupHotelHabitaciones"  rendered="#{sesion.controladorPopups['popupSgHotelHabitaciones']}">
+                    <p:dialog  header="#{msgs['sistema.agregar']} #{msgs['sgl.sgHotel.tipo.habitacion']}" mostrarPanel="#{sesion.controladorPopups['popupSgHotelHabitaciones']}" conBoton="false">
+
+                        <h:outputText id="msgsPopupHotelHabitaciones" value="" />
+                        <center><h:message for="msgsPopupHotelHabitaciones" errorClass="errorMessage" infoClass="infoMessage"/></center> 
+
+                        <h:panelGrid columns="2" styleClass="bordePanelGrid">
+                            <h:outputLabel value="#{msgs['sgl.sgHotel']}:" />
+                            <h:outputText value="#{hotelBean.sgHotel.proveedor.nombre}" />
+
+                            <h:panelGrid columns="2">
+                                <h:outputLabel value="#{msgs['sgl.sgHotel.tipo.habitacion']}:"/>
+                                <h:outputText value="*" styleClass="textoRojo" />
+                            </h:panelGrid>
+
+                            <h:panelGrid columns="2">
+                                <p:selectOneMenu id="selectTipoHabitacion" 
+                                                   value="#{hotelBeanModel.idTipoEspecificoHabitacion}">                                                                                                                                   
+                                    <f:selectItem itemValue="-1" itemLabel="#{msgs['sistema.seleccionar']} #{msgs['sgl.sgHotel.tipo.habitacion']}..."/>
+                                    <f:selectItems  value="#{hotelBean.traerTiposHabitacionItems}"/>
+                                </p:selectOneMenu>
+                                <h:message for="selectTipoHabitacion" infoClass="infoMessage" errorClass="errorMessage" />
+                            </h:panelGrid>
+
+                            <h:panelGrid columns="2">
+                                <h:outputLabel value="#{msgs['sgl.generales.precio']}:"/>
+                                <h:outputText value="*" styleClass="textoRojo" />
+                            </h:panelGrid>
+
+                            <h:panelGrid columns="5" >
+                                <h:outputText value="$" />
+                                <p:inputText id="precio" value="#{hotelBean.bigDecimal}" size="12" title="Ejemplo: 1538.50" styleClass="f10">
+                                    <f:converter converterId="javax.faces.BigDecimal" />
+                                </p:inputText>
+                                <h:message for="precio" infoClass="infoMessage" errorClass="errorMessage" />
+                                <h:outputText id="helpPrecio" value="?" styleClass="textoAyuda" />     
+                                <p:tooltip id="pnlToolTipHelpPrecio"
+                                             for="helpPrecio"
+                                             showEvent="mouseover"
+                                             showEffect="slide"
+                                             hideEffect="slide"
+                                             hideDelay="2300"
+                                             showEffectLength="200">
+                                    <h:panelGrid width="190px;" styleClass="textoAyuda">
+                                        <h:outputText value="Ejemplo: 1538.50" />
+                                    </h:panelGrid>
+                                </p:tooltip>                                
+                            </h:panelGrid>                            
+
+                            <p:commandLink value="#{msgs['sistema.agregar']}" actionListener="#{hotelBean.createHabitacionToHotel(event)}" styleClass="link"/>        
+                        </h:panelGrid>
+
+                        <br/>
+
+                        <p:dataTable showGridlines="true" size="small"  id="dataGridHotelHabitacion"
+                                       value="#{hotelBean.dataModel}"
+                                       var="data"
+                                       scrollable="true"
+                                       scrollHeight="100px"
+                                       columnWidths="200px,50px,30px"
+                                        >
+                            <f:facet name="header"><h:outputText value="#{msgs['sgl.staff.titulo.accordionPane.habitaciones']}" styleClass="f12" /></f:facet>
+                            <p:column>
+                                <f:facet name="header">
+                                    <h:outputText value="#{msgs['sgl.sgHotel.tipo.habitacion']}"/>
+                                </f:facet>
+                                <h:outputText value="#{data.sgTipoEspecifico.nombre}" />
+                            </p:column>                                
+                            <p:column>
+                                <f:facet name="header">
+                                    <h:outputText value="#{msgs['sgl.generales.precio']}">
+                                        <f:convertNumber currencySymbol="$" maxFractionDigits="2" type="currency" groupingUsed="true" />
+                                    </h:outputText>
+                                </f:facet>
+                                <h:outputText value="#{data.precio}" >
+                                    <f:convertNumber currencySymbol="$" groupingUsed="true" maxFractionDigits="2" type="currency"/>
+                                </h:outputText>
+                            </p:column>
+                            <p:column style="text-align: center;">
+                                <center>
+                                    <p:commandLink value="#{msgs['sistema.quitar']}"
+                                                     onclick="if(!confirm('#{msgs['sgl.sgHotel.sgHabitacionHotel.mensaje.info.eliminar']}')) return false;"
+                                                     actionListener="#{hotelBean.deleteHotelHabitacion(actionEvent)}"
+                                                     title="#{msgs['sistema.quitar']}" styleClass="link" />
+                                </center>
+                            </p:column>                            
+                        </p:dataTable>
+
+                        <br/>
+
+                        <center>
+                            <p:commandLink value="#{msgs['sistema.cerrar']}"  actionListener="#{hotelBean.ocultarPopupAgregarHabitacionToHotel(event)}" styleClass="btn btn-default"/>        
+                        </center>
+                    </my:panelPopup>
+                </h:form>-->
+
+                <!-- Servicios -->
+                <!-- <h:form id="formPopupHotelServicios"  rendered="#{sesion.controladorPopups['popupSgHotelServices']}">
+                    <p:dialog  header="#{msgs['sistema.agregar']} #{msgs['sgl.sgHotel.servicio']}s" mostrarPanel="#{sesion.controladorPopups['popupSgHotelServices']}" conBoton="false">
+
+                        <h:outputText id="msgsPopupHotelServicios" value="" />
+                        <center><h:message for="msgsPopupHotelServicios" errorClass="errorMessage" infoClass="infoMessage"/></center> 
+
+                        <br/>
+
+                        <h:panelGrid columns="2" styleClass="bordePanelGrid" >
+                            <h:outputLabel value="#{msgs['sgl.sgHotel']}:" />
+                            <h:outputText value="#{hotelBean.sgHotel.proveedor.nombre}" />
+
+                            <h:panelGrid columns="2" >
+                                <h:outputLabel value="#{msgs['sgl.sgHotel.servicio']}:"/>
+                                <h:outputText value="*" styleClass="textoRojo" />
+                            </h:panelGrid>
+
+                            <h:panelGrid columns="3" >
+                                <p:selectOneMenu id="selectOneMenuServicios" 
+                                                   value="#{hotelBeanModel.idServicio}">                                                                                                                                   
+                                    <f:selectItem itemValue="-1" itemLabel="#{msgs['sistema.seleccionar']} #{msgs['sgl.sgHotel.servicio']}..."/>
+                                    <f:selectItems  value="#{hotelBean.allServiciosHotelSelectItem}"/>
+                                </p:selectOneMenu>
+                                <p:commandLink value="#{msgs['sistema.agregar']}" actionListener="#{hotelBean.saveSgHotelTipoEspecificoToHotel(event)}" styleClass="link"/>        
+                                <h:message for="selectOneMenuServicios" infoClass="infoMessage" errorClass="errorMessage" />
+                            </h:panelGrid>
+                        </h:panelGrid>
+
+                        <p:dataTable showGridlines="true" size="small"  id="dataGridHotelServicios"
+                                       value="#{hotelBean.dataModel}"
+                                       var="data"
+                                       scrollable="true"
+                                       scrollHeight="100px"
+                                       columnWidths="200px,50px"
+                                        >
+                            <f:facet name="header"><h:outputText value="#{msgs['sgl.sgHotel.servicio']}s" styleClass="f12" /></f:facet>
+                            <p:column>
+                                <h:outputText value="#{data.nombreSgTipoEspecifico}" />
+                            </p:column>                                
+                            <p:column style="text-align: center;">
+                                <center>
+                                    <p:commandLink value="#{msgs['sistema.quitar']}"
+                                                     onclick="if(!confirm('#{msgs['sgl.sgHotel.sgHabitacionHotel.mensaje.info.eliminar']}?')) return false;"
+                                                     actionListener="#{hotelBean.deleteSghotelTipoEspecifico(actionEvent)}"
+                                                     title="#{msgs['sistema.quitar']}" styleClass="link" />
+                                </center>
+                            </p:column>                            
+                        </p:dataTable>
+
+                        <br/>
+
+                        <center>
+                            <p:commandLink value="#{msgs['sistema.cerrar']}"  actionListener="#{hotelBean.closePopupAddServicesToHotel(event)}" styleClass="btn btn-default"/>        
+                        </center>
+                    </my:panelPopup>
+                </h:form>         -->    
+
+                <!--card de Aviso -->
+                <h:form  rendered="#{not empty sesion.usuario}">
+                    <p:dialog  header="Información " >
+                        <center><h:messages errorClass="mensaje" infoClass="mensaje"/></center>  
+                        <h:panelGrid columns="3">                            
+                            <h:outputText value="No se puede eliminar el hotel, el registro esta siendo utilizado por otro proceso" style="font-weight: bold;" />                            
+                        </h:panelGrid>
+                        <center>
+                            <h:panelGrid>                                
+                                <p:commandLink actionListener="#{hotelBean.ocultarPopupAviso(event)}"  value="Cerrar" styleClass="btn btn-default"/>        
+                            </h:panelGrid>                        
+                        </center>
+                    </my:panelPopup>
+                </h:form>
+                <!-- FIN Panel de Aviso -->
+
+            </ui:define>
+        </ui:composition>
+
+    </body>
+</html>
+
+
