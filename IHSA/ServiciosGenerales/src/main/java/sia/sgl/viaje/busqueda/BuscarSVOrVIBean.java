@@ -7,9 +7,10 @@ package sia.sgl.viaje.busqueda;
 
 import java.io.Serializable;
 import java.util.List;
+import javax.enterprise.context.RequestScoped;
 import javax.inject.Named;
 import javax.faces.bean.ManagedProperty;
-import javax.faces.bean.RequestScoped;
+import javax.inject.Inject;
 import sia.modelo.sgl.viaje.vo.EstatusAprobacionSolicitudVO;
 import sia.modelo.sgl.viaje.vo.SolicitudViajeVO;
 import sia.modelo.sgl.viaje.vo.ViajeVO;
@@ -24,7 +25,7 @@ import sia.sgl.viaje.busqueda.model.BuscarSVOrVIBeanModel;
 public class BuscarSVOrVIBean implements Serializable{
 
     
-    @ManagedProperty(value = "#{buscarSVOrVIBeanModel}")
+    @Inject
     private BuscarSVOrVIBeanModel buscarSVOrVIBeanModel;
     
     public BuscarSVOrVIBean(){

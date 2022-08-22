@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.faces.event.ActionEvent;
-import javax.faces.event.ValueChangeEvent;
 import javax.faces.model.SelectItem;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
@@ -88,20 +87,20 @@ public class GrViaje implements Serializable {
     private int idSiOperacionViajero = 1;
     private boolean viajeFueraOficina;
     private int idRuta;
-    private List<SelectItem> listaOficinaVehiculo = new ArrayList<SelectItem>();
-    private List<SelectItem> listaOficinaRuta = new ArrayList<SelectItem>();
-    private List<SelectItem> listaVehiculos = new ArrayList<SelectItem>();
-    private List<SelectItem> listaRuta = new ArrayList<SelectItem>();
-    private List<SelectItem> listaHoras = new ArrayList<SelectItem>();
-    private List<SelectItem> listaMinutos = new ArrayList<SelectItem>();
+    private List<SelectItem> listaOficinaVehiculo = new ArrayList<>();
+    private List<SelectItem> listaOficinaRuta = new ArrayList<>();
+    private List<SelectItem> listaVehiculos = new ArrayList<>();
+    private List<SelectItem> listaRuta = new ArrayList<>();
+    private List<SelectItem> listaHoras = new ArrayList<>();
+    private List<SelectItem> listaMinutos = new ArrayList<>();
     private Date fechaProgramada = new Date();
     private String responsable;
     private String empleado;
     private String autorizo;
-    private List<SelectItem> listaUsuario = new ArrayList<SelectItem>();
-    private List<SelectItem> listaEmpleados = new ArrayList<SelectItem>();
-    private List<SelectItem> listaAutorizo = new ArrayList<SelectItem>();
-    private List<SelectItem> listaInvitados = new ArrayList<SelectItem>();
+    private List<String> listaUsuario = new ArrayList<>();
+    private List<String> listaEmpleados = new ArrayList<>();
+    private List<String> listaAutorizo = new ArrayList<>();
+    private List<SelectItem> listaInvitados = new ArrayList<>();
     private List<ViajeroVO> listaViajeros = new ArrayList<ViajeroVO>();
     private String msgExitoCrearViaje;
     private List<GrRutaZonasVO> zonas;
@@ -406,14 +405,14 @@ public class GrViaje implements Serializable {
     /**
      * @return the listaUsuario
      */
-    public List<SelectItem> getListaUsuario() {
+    public List<String> getListaUsuario() {
         return listaUsuario;
     }
 
     /**
      * @param listaUsuario the listaUsuario to set
      */
-    public void setListaUsuario(List<SelectItem> listaUsuario) {
+    public void setListaUsuario(List<String> listaUsuario) {
         this.listaUsuario = listaUsuario;
     }
 
@@ -534,14 +533,14 @@ public class GrViaje implements Serializable {
     /**
      * @return the listaEmpleados
      */
-    public List<SelectItem> getListaEmpleados() {
+    public List<String> getListaEmpleados() {
         return listaEmpleados;
     }
 
     /**
      * @param listaEmpleados the listaEmpleados to set
      */
-    public void setListaEmpleados(List<SelectItem> listaEmpleados) {
+    public void setListaEmpleados(List<String> listaEmpleados) {
         this.listaEmpleados = listaEmpleados;
     }
 
@@ -560,7 +559,7 @@ public class GrViaje implements Serializable {
     }
 
     public List<SelectItem> itemsHoras() {
-        List<SelectItem> listSelectItem = new ArrayList<SelectItem>();
+        List<SelectItem> listSelectItem = new ArrayList<>();
 
         for (Integer i = 1; i < 10; i++) { //01am - 09am
             listSelectItem.add(new SelectItem(i, ("0" + i.toString() + " am")));
@@ -581,7 +580,7 @@ public class GrViaje implements Serializable {
     }
 
     public List<SelectItem> itemsMinutos() {
-        List<SelectItem> listSelectItem = new ArrayList<SelectItem>();
+        List<SelectItem> listSelectItem = new ArrayList<>();
 
         for (Integer i = 0; i < 60; i++) {
             listSelectItem.add(new SelectItem(i, ((i < 10) ? ("0".toString().concat(i.toString())) : i.toString())));
@@ -594,7 +593,7 @@ public class GrViaje implements Serializable {
             if (getOpcionSeleccionada().equals(Constantes.VEHICULO_EMPRESA)) {
                 this.setListaVehiculos(mtlistaVehiculos());
             } else {
-                this.setListaVehiculos(new ArrayList<SelectItem>());
+                this.setListaVehiculos(new ArrayList<>());
             }
         } catch (Exception e) {
             UtilLog4j.log.fatal(this, "Error enLista ve" + e.getMessage());
@@ -603,7 +602,7 @@ public class GrViaje implements Serializable {
     }
 
     private List<SelectItem> mtlistaVehiculos() {
-        List<SelectItem> l = new ArrayList<SelectItem>();
+        List<SelectItem> l = new ArrayList<>();
         try {
             List<VehiculoVO> lv = sgVehiculoImpl.traerVehiculoPorOficina(getIdOficinaVehiculo(), Constantes.NO_ELIMINADO);
             for (VehiculoVO sgV : lv) {
@@ -616,23 +615,19 @@ public class GrViaje implements Serializable {
         return l;
     }
 
-    public void traerListaVehiculo(ValueChangeEvent event) {
-        setIdOficinaVehiculo((Integer) event.getNewValue());
+    public void traerListaVehiculo() {
         if (getIdOficinaVehiculo() != -1) {
             this.setListaVehiculos(mtlistaVehiculos());
         }
     }
 
-    public void traerListaRutas(ValueChangeEvent event) {
-        setIdOficinaRuta((Integer) event.getNewValue());
+    public void traerListaRutas() {
         if (getIdOficinaRuta() != -1) {
             setListaRuta(mtlistaRutas());
         }
     }
 
-    public void cabiarDestino(ValueChangeEvent event) {
-        setIdSiOperacion((Integer) event.getNewValue());
-
+    public void cabiarDestino() {
         if (getIdSiOperacion() == Constantes.RUTA_TIPO_OFICINA) {
             setViajeFueraOficina(false);
         } else {
@@ -642,7 +637,7 @@ public class GrViaje implements Serializable {
     }
 
     public List<SelectItem> mtlistaRutas() {
-        List<SelectItem> l = new ArrayList<SelectItem>();
+        List<SelectItem> l = new ArrayList<>();
         List<RutaTerrestreVo> lc;
         try {
             int ofic = getIdOficinaRuta();
@@ -666,7 +661,7 @@ public class GrViaje implements Serializable {
             }
         } catch (Exception e) {
             UtilLog4j.log.fatal(this, e);
-            l = new ArrayList<SelectItem>();
+            l = new ArrayList<>();
         }
         return l;
     }
@@ -781,7 +776,7 @@ public class GrViaje implements Serializable {
     }
 
     public List<SelectItem> mtlistaOficina() {
-        List<SelectItem> l = new ArrayList<SelectItem>();
+        List<SelectItem> l = new ArrayList<>();
         try {
             List<OficinaVO> lv = oficinaService.traerListaOficina();
             for (OficinaVO sgO : lv) {
@@ -793,9 +788,8 @@ public class GrViaje implements Serializable {
         return l;
     }
 
-    public void goPopupRutaDet(ActionEvent actionEvent) {
+    public void goPopupRutaDet(int idRuta) {
         try {
-            int idRuta = Integer.parseInt(FacesUtilsBean.getRequestParameter("idRuta"));
             if (idRuta > 0) {
                 RutaTerrestreVo vo = new RutaTerrestreVo(idRuta);
                 setZonas(grRutasZonasImpl.zonasPorRuta(vo, true));
@@ -809,7 +803,7 @@ public class GrViaje implements Serializable {
         }
     }
 
-    public void goPopupCrearViaje(ActionEvent actionEvent) {
+    public void goPopupCrearViaje() {
         try {
             setResponsable("");
             setFechaProgramada(new Date());
@@ -817,11 +811,11 @@ public class GrViaje implements Serializable {
             setListaMinutos(itemsMinutos());
             setListaOficinaRuta(mtlistaOficina());
             setListaOficinaVehiculo(mtlistaOficina());
-            setListaRuta(new ArrayList<SelectItem>());
-            setListaVehiculos(new ArrayList<SelectItem>());
-            setListaEmpleados(new ArrayList<SelectItem>());
-            setListaInvitados(new ArrayList<SelectItem>());
-            setListaUsuario(new ArrayList<SelectItem>());
+            setListaRuta(new ArrayList<>());
+            setListaVehiculos(new ArrayList<>());
+            setListaEmpleados(new ArrayList<>());
+            setListaInvitados(new ArrayList<>());
+            setListaUsuario(new ArrayList<>());
             setListaViajeros(new ArrayList<ViajeroVO>());
             setEmpleado("");
             setInvitado("");
@@ -840,76 +834,95 @@ public class GrViaje implements Serializable {
         }
     }
 
-    public void usuarioListener(ValueChangeEvent event) {
-        setListaUsuario(traerUsuario(event.getNewValue().toString()));
+    public List<String> usuarioListener(String cadena) {
+        return traerUsuario(cadena);
 
     }
 
-    public void empleadoListener(ValueChangeEvent event) {
-        setListaEmpleados(traerUsuario(event.getNewValue().toString()));
+    public List<String> empleadoListener(String cadena) {
+        return (traerUsuario(cadena));
 
     }
 
-    public void autorizoListener(ValueChangeEvent event) {
-        setListaAutorizo(traerUsuario(event.getNewValue().toString()));
+    public List<String> autorizoListener(String cadena) {
+        return (traerUsuario(cadena));
 
     }
 
-    public void invitadoListener(ValueChangeEvent event) {
-        setListaInvitados(traerInvitados(event.getNewValue().toString()));
-
+    public List<String> invitadoListener(String cadena) {
+        return traerInvitados(cadena);
     }
 
-    private List<SelectItem> traerUsuario(String cadena) {
-        List<SelectItem> list = new ArrayList<SelectItem>();
+    private List<String> traerUsuario(String cadena) {
+        List<String> list = new ArrayList<>();
         try {
             if (cadena != null && !cadena.isEmpty() && cadena.length() > 2) {
                 list = soporteListas.regresaUsuarioActivo(cadena, sesionBean.getUsuario().getApCampo().getId());
             }
         } catch (Exception e) {
-            list = new ArrayList<SelectItem>();
+            list = new ArrayList<>();
         }
         return list;
     }
 
-    private List<SelectItem> traerInvitados(String cadena) {
-        List<SelectItem> list = new ArrayList<SelectItem>();
+    private List<String> traerInvitados(String cadena) {
+        List<String> list = new ArrayList<>();
+        List<InvitadoVO> invs = new ArrayList<>();
         try {
-            if (cadena != null && !cadena.isEmpty() && cadena.length() > 2) {
-                list = soporteListas.regresaInvitadosActivo(cadena);
+            invs = sgInvitadoImpl.buscarInvitadoParteNombre(cadena);
+            for (InvitadoVO inv : invs) {
+                list.add(inv.getNombre() + " // " + inv.getEmpresa());
             }
         } catch (Exception e) {
-            list = new ArrayList<SelectItem>();
+            list = new ArrayList<>();
         }
         return list;
     }
 
-    public void eliminarViajero(ActionEvent actionEvent) {
+    public void eliminarViajero(ViajeroVO viajeroVo) {
         try {
-            int indice = Integer.parseInt(FacesUtilsBean.getRequestParameter("indice"));
-            getListaViajeros().remove(indice);
+            getListaViajeros().remove(viajeroVo);
         } catch (Exception e) {
             UtilLog4j.log.fatal(this, e);
             FacesUtilsBean.addErrorMessage("Ocurrió una excepción, favor de comunicar a sia@ihsa.mx");
         }
     }
 
-    public void agregarViajero(ActionEvent event) {
+    public void agregarEmpleado() {
         try {
             ViajeroVO newViajero = new ViajeroVO();
-            if (getIdSiOperacionViajero() == 1) {
-                UsuarioVO newEmpleado = usuarioImpl.findByName(getEmpleado());
-                newViajero.setUsuario(newEmpleado.getNombre());
-                newViajero.setIdUsuario(newEmpleado.getId());
-                newViajero.setEsEmpleado(true);
-                newViajero.setIdInvitado(0);
+            UsuarioVO newEmpleado = usuarioImpl.findByName(getEmpleado());
+            newViajero.setUsuario(newEmpleado.getNombre());
+            newViajero.setIdUsuario(newEmpleado.getId());
+            newViajero.setEsEmpleado(true);
+            newViajero.setIdInvitado(0);
+
+            newViajero.setAgregado(false);
+            newViajero.setViajo(Constantes.BOOLEAN_TRUE);
+            newViajero.setId(getListaViajeros().size());
+            setEmpleado("");
+            setInvitado("");
+            if (!getListaViajeros().contains(newViajero)) {
+                getListaViajeros().add(newViajero);
             } else {
-                InvitadoVO newInvitado = sgInvitadoImpl.buscarInvitado(getInvitado());
-                newViajero.setIdInvitado(newInvitado.getIdInvitado());
-                newViajero.setInvitado(newInvitado.getNombre());
-                newViajero.setEsEmpleado(false);
-                newViajero.setUsuario("");
+                FacesUtilsBean.addErrorMessage("El viajero ya esta agregado al viaje.");
             }
+
+        } catch (Exception e) {
+            UtilLog4j.log.fatal(this, e);
+            FacesUtilsBean.addErrorMessage("Ocurrió una excepción, favor de comunicar a sia@ihsa.mx");
+        }
+    }
+
+    public void agregarInvitado() {
+        try {
+            ViajeroVO newViajero = new ViajeroVO();
+            String[] cad = invitado.split("//");
+            InvitadoVO newInvitado = sgInvitadoImpl.buscarInvitado(cad[0].trim());
+            newViajero.setIdInvitado(newInvitado.getIdInvitado());
+            newViajero.setInvitado(newInvitado.getNombre());
+            newViajero.setEsEmpleado(false);
+            newViajero.setUsuario("");
             newViajero.setAgregado(false);
             newViajero.setViajo(Constantes.BOOLEAN_TRUE);
             newViajero.setId(getListaViajeros().size());
@@ -958,14 +971,14 @@ public class GrViaje implements Serializable {
     /**
      * @return the listaAutorizo
      */
-    public List<SelectItem> getListaAutorizo() {
+    public List<String> getListaAutorizo() {
         return listaAutorizo;
     }
 
     /**
      * @param listaAutorizo the listaAutorizo to set
      */
-    public void setListaAutorizo(List<SelectItem> listaAutorizo) {
+    public void setListaAutorizo(List<String> listaAutorizo) {
         this.listaAutorizo = listaAutorizo;
     }
 

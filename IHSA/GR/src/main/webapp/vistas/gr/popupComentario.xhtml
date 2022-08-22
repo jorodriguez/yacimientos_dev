@@ -7,7 +7,7 @@
                 >
 
     <div class="modal fade" id="dialogoPopUpAddComentario" data-backdrop="static" data-keyboard="false" style="color: black;">
-        <div class="modal-dialog" style="width: 70%;">
+        <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">                    
                     <h4 class="modal-title">Agregar Comentario</h4>
@@ -15,27 +15,27 @@
                 <h:form id="frmPnlAddCom" styleClass="textoIzquierda">
                     <div class="modal-body">                                                                                                        
                         <div class="container-fluid">
-                            <div class="form-group panel">                                                            
+                            <div class="form-group card">                                                            
                                 <div class="col-lg-12" style="margin-bottom: 5px;">
-                                    <h:inputTextarea styleClass="form-control" value="#{sesion.txtComentario}" />
+                                    <h:inputTextarea styleClass="form-control" value="#{sesion.txtComentario}" 
+                                                     required="true" requiredMessage="Agregue el comentario"/>
                                 </div>
                             </div>
                         </div>
                         <div class="col-lg-9"></div>  
                     </div>
                     <div class="modal-footer" style="border-top: white;">
-                        <h:commandButton id="saveComentario"
+                        <p:commandButton id="saveComentario"
                                          value="Guardar"
                                          styleClass="btn btn-info" 
-                                         onclick="return window.confirm('¿Está seguro de agregar el comentario?');"
-                                         actionListener="#{sesion.agregarComentario(actionEvent)}"
-                                         />
-                        <h:commandButton
+                                         action="#{sesion.agregarComentario()}"
+                                         process="@form" update="@form"/>
+                        <p:commandLink
                             value="Cerrar"
-                            styleClass="btn btn-cancelar"
+                            styleClass="btn btn-default"
                             onclick="$(dialogoPopUpAddComentario).modal('hide');"
                             title="Cerrar ventana..." 
-                            />
+                            immediate="true"/>
                     </div>    
                 </h:form>
             </div>
@@ -51,14 +51,14 @@
                 <h:form id="frmPnlIntViaje" styleClass="textoIzquierda">
                     <div class="modal-body">                                                                                                        
                         <div class="container-fluid">
-                            <div class="form-group panel">                                                                                            
-                                <div class="form-group col-lg-12 col-xs-12" >
+                            <div class="form-group card">                                                                                            
+                                <div class="form-group col-lg-12" >
                                     <div class="visible-lg col-lg-1" ></div>
-                                    <strong><h:outputText class="col-lg-2 col-xs-12 control-label" value="Viaje:"/></strong>
-                                    <div class="col-lg-7 col-xs-12">                                            
+                                    <strong><h:outputText class="col-lg-2 control-label" value="Viaje:"/></strong>
+                                    <div class="col-lg-7">                                            
                                         <h:selectOneMenu id="idPuntoS" styleClass="form-control"
-                                                           value="#{sesion.idViajeIntB}"                                                           
-                                                           >
+                                                         value="#{sesion.idViajeIntB}"                                                           
+                                                         >
                                             <f:selectItem itemValue="0" itemLabel="Seleccione . . . "/>
                                             <c:forEach items="#{sesion.lstViajesInt}" var="vint">
                                                 <f:selectItem itemValue="#{vint.id}" itemLabel="#{vint.codigo} Responsable: #{vint.responsable}"/>
@@ -72,16 +72,16 @@
                         <div class="col-lg-9"></div>  
                     </div>
                     <div class="modal-footer" style="border-top: white;">
-                        <h:commandButton id="saveInterseccion"
+                        <p:commandButton id="saveInterseccion"
                                          value="Guardar"
                                          styleClass="btn btn-info" 
-                                         onclick="return window.confirm('¿Está seguro de guardar la intercepción de los viajes?');"
-                                         actionListener="#{sesion.interceptarViaje(actionEvent)}"
-                                         />
-                        <p:commandButton
+                                         action="#{sesion.interceptarViaje()}"
+                                         process="@form" update="@form"/>
+                        <p:commandLink
                             value="Cerrar"
-                            styleClass="btn btn-cancelar"
+                            styleClass="btn btn-default"
                             onclick="$(dialogoPopUpInterseccion).modal('hide');"
+                            immediate="true"
                             title="Cerrar ventana..." 
                             />
                     </div>    
@@ -99,18 +99,18 @@
                 <h:form id="frmPnlLlegadaPS" styleClass="textoIzquierda">
                     <div class="modal-body">                                                                                                        
                         <div class="container-fluid">
-                            <div class="form-group panel">                                          
-                                <div style="margin-top: 0px;" class="col-lg-12 col-xs-12">                        
+                            <div class="form-group card">                                          
+                                <div style="margin-top: 0px;" class="col-lg-12">                        
                                     <h:message  for="" style="display: block;" infoClass="alert alert-success" warnClass="alert alert-warning"
                                                 errorClass="alert alert-danger" fatalClass="alert alert-danger"  />
                                 </div>
-                                <div class="form-group col-lg-12 col-xs-12" >
+                                <div class="form-group col-lg-12" >
                                     <div class="visible-lg col-lg-3" ></div>
-                                    <strong><h:outputText class="col-lg-2 col-xs-12 control-label" value="P. Seguridad:"/></strong>
-                                    <div class="col-lg-7 col-xs-12">                                            
+                                    <strong><h:outputText class="col-lg-2 control-label" value="P. Seguridad:"/></strong>
+                                    <div class="col-lg-7">                                            
                                         <h:selectOneMenu id="idPuntoS" styleClass="form-control"
-                                                           value="#{sesion.idPSLlegada}"                                                               
-                                                           >
+                                                         value="#{sesion.idPSLlegada}"                                                               
+                                                         >
                                             <f:selectItem itemValue="0" itemLabel="Seleccione . . . "/>
                                             <f:selectItems value="#{sesion.puntosItems}"/>
                                         </h:selectOneMenu>
@@ -124,18 +124,17 @@
                         <div class="col-lg-9"></div>  
                     </div>
                     <div class="modal-footer" style="border-top: white;">
-                        <h:commandButton id="saveLlegada"
+                        <p:commandButton id="saveLlegada"
                                          value="Guardar"
                                          styleClass="btn btn-info" 
-                                         onclick="return window.confirm('¿Está seguro de guardar la llegada al punto de seguridad?');"
-                                         actionListener="#{sesion.guardarLlegadaPS(actionEvent)}"
-                                         />
+                                         action="#{sesion.guardarLlegadaPS(actionEvent)}"
+                                         process="@form" update="@form"/>
                         <p:commandButton
                             value="Cerrar"
-                            styleClass="btn btn-cancelar"
+                            styleClass="btn btn-default"
                             onclick="$(dialogoPopUpLlegadaPS).modal('hide');"
                             title="Cerrar ventana..." 
-                            />
+                            immediate="true"/>
                     </div>    
                 </h:form>
             </div>
@@ -151,24 +150,24 @@
                 <h:form id="frmPnlDetalleInt" styleClass="textoIzquierda">
                     <div class="modal-body">                                                                                                        
                         <div class="container-fluid">
-                            <div class="form-group panel">                                                                                                                            
-                                <strong><h:outputText class="col-lg-12 col-xs-12 control-label" value="Intercambio entre los viajes #{sesion.intercepcion.viajeA.codigo} y el viaje #{sesion.intercepcion.viajeB.codigo}"/></strong>
-                                <div class="form-group col-lg-12 col-xs-12" >                                                                        
-                                    <div class="col-lg-12 col-xs-12" style="margin-top: 5px;">                                            
+                            <div class="form-group card">                                                                                                                            
+                                <strong><h:outputText class="col-lg-12 control-label" value="Intercambio entre los viajes #{sesion.intercepcion.viajeA.codigo} y el viaje #{sesion.intercepcion.viajeB.codigo}"/></strong>
+                                <div class="form-group col-lg-12" >                                                                        
+                                    <div class="col-lg-12" style="margin-top: 5px;">                                            
                                         <h:outputText class="col-lg-1 col-xs-8 control-label" value="Vehículos:"/>
                                         <h:selectBooleanCheckbox styleClass="col-lg-1 col-xs-4" value="#{sesion.intercepcion.intercambiarVehiculo}"/>
                                     </div>                                    
 
-                                    <div class="col-lg-12 col-xs-12" style="margin-top: 20px;">                                            
-                                        <strong><h:outputText class="col-lg-12 col-xs-12 control-label" value="Viajeros del viaje #{sesion.intercepcion.viajeA.codigo} (#{sesion.intercepcion.viajeA.ruta})"/></strong>
+                                    <div class="col-lg-12" style="margin-top: 20px;">                                            
+                                        <strong><h:outputText class="col-lg-12 control-label" value="Viajeros del viaje #{sesion.intercepcion.viajeA.codigo} (#{sesion.intercepcion.viajeA.ruta})"/></strong>
                                         <c:forEach items="#{sesion.intercepcion.viajeA.listaViajeros}" var="viajeroA">
-                                            <div class="col-lg-12 col-xs-12 input-group panel panel-default" style="border: white; border-style: none; border-width: 1px; margin-bottom: 0px;">
-                                                <div class="form-group col-lg-12 col-xs-12" style="border: white; border-bottom: #eee; border-top: white;  border-style: solid; border-width: 2px;">
-                                                    <h:outputText styleClass="col-lg-5 col-xs-12 control-label" value="#{viajeroA.idInvitado eq 0 ? viajeroA.usuario : viajeroA.invitado}" /> 
-                                                    <div class="col-lg-2 col-xs-12">
+                                            <div class="col-lg-12 input-group card card-default" style="border: white; border-style: none; border-width: 1px; margin-bottom: 0px;">
+                                                <div class="form-group col-lg-12" style="border: white; border-bottom: #eee; border-top: white;  border-style: solid; border-width: 2px;">
+                                                    <h:outputText styleClass="col-lg-5 control-label" value="#{viajeroA.idInvitado eq 0 ? viajeroA.usuario : viajeroA.invitado}" /> 
+                                                    <div class="col-lg-2">
                                                         <h:outputText styleClass="control-label" value="#{viajeroA.idInvitado eq 0 ? 'Empleado' : 'Invitado'}"/>
                                                     </div>
-                                                    <div class="col-lg-5 col-xs-12">
+                                                    <div class="col-lg-5">
                                                         <h:outputText styleClass="control-label" value=" se intercabiara al viaje #{sesion.intercepcion.viajeB.codigo}  "/>
                                                         <h:selectBooleanCheckbox style="margin-left: 5px;" value="#{viajeroA.intercambiarEnViaje}"/>
                                                     </div>                                                    
@@ -176,16 +175,16 @@
                                             </div>                                            
                                         </c:forEach>     
                                     </div>
-                                    <div class="col-lg-12 col-xs-12" style="margin-top: 20px;">                                            
-                                        <strong><h:outputText class="col-lg-12 col-xs-12 control-label" value="Viajeros del viaje #{sesion.intercepcion.viajeB.codigo} (#{sesion.intercepcion.viajeB.ruta})"/></strong>
+                                    <div class="col-lg-12" style="margin-top: 20px;">                                            
+                                        <strong><h:outputText class="col-lg-12 control-label" value="Viajeros del viaje #{sesion.intercepcion.viajeB.codigo} (#{sesion.intercepcion.viajeB.ruta})"/></strong>
                                         <c:forEach items="#{sesion.intercepcion.viajeB.listaViajeros}" var="viajeroB">
-                                            <div class="col-lg-12 col-xs-12 input-group panel panel-default" style="border: white; border-style: none; border-width: 1px; margin-bottom: 0px;">
-                                                <div class="form-group col-lg-12 col-xs-12" style="border: white; border-bottom: #eee; border-top: white;  border-style: solid; border-width: 2px;">
-                                                    <h:outputText styleClass="col-lg-5 col-xs-12 control-label" value="#{viajeroB.idInvitado eq 0 ? viajeroB.usuario : viajeroB.invitado}" /> 
-                                                    <div class="col-lg-2 col-xs-12">
+                                            <div class="col-lg-12 input-group card card-default" style="border: white; border-style: none; border-width: 1px; margin-bottom: 0px;">
+                                                <div class="form-group col-lg-12" style="border: white; border-bottom: #eee; border-top: white;  border-style: solid; border-width: 2px;">
+                                                    <h:outputText styleClass="col-lg-5 control-label" value="#{viajeroB.idInvitado eq 0 ? viajeroB.usuario : viajeroB.invitado}" /> 
+                                                    <div class="col-lg-2">
                                                         <h:outputText styleClass="control-label" value="#{viajeroB.idInvitado eq 0 ? 'Empleado' : 'Invitado'}"/>
                                                     </div>
-                                                    <div class="col-lg-5 col-xs-12">
+                                                    <div class="col-lg-5">
                                                         <h:outputText styleClass="control-label" value=" se intercabiara al viaje #{sesion.intercepcion.viajeA.codigo}  "/>
                                                         <h:selectBooleanCheckbox style="margin-left: 5px;" value="#{viajeroB.intercambiarEnViaje}"/>
                                                     </div>                                                    
@@ -199,18 +198,16 @@
                         <div class="col-lg-9"></div>  
                     </div>
                     <div class="modal-footer" style="border-top: white;">
-                        <h:commandButton id="saveDetalleInt"
+                        <p:commandButton id="saveDetalleInt"
                                          value="Guardar"
                                          styleClass="btn btn-info" 
-                                         onclick="return window.confirm('¿Está seguro de realizar el intercambio entre los viajes?');"
-                                         actionListener="#{sesion.guardarDetalleInt(actionEvent)}"
-                                         />
-                        <p:commandButton
+                                         action="#{sesion.guardarDetalleInt}"
+                                         process="@form" update="@form"/>
+                        <p:commandLink
                             value="Cerrar"
-                            styleClass="btn btn-cancelar"
+                            styleClass="btn btn-default"
                             onclick="$(dialogoPopUpDetalleInt).modal('hide');"
-                            title="Cerrar ventana..." 
-                            />
+                            title="Cerrar ventana..."  immediate="true"/>
                     </div>    
                 </h:form>
             </div>
@@ -218,7 +215,7 @@
     </div>
 
     <div class="modal fade" id="dialogoPopUpSS" data-backdrop="static" data-keyboard="false" style="color: black;">
-        <div class="modal-dialog" style="width: 70%;">
+        <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">                    
                     <h4 class="modal-title">Gestion de Riesgos Autoriza</h4>
@@ -226,7 +223,7 @@
                 <h:form id="frmPnlGRAUT" styleClass="textoIzquierda">
                     <div class="modal-body">                                                                                                        
                         <div class="container-fluid">
-                            <div class="form-group panel">                                                            
+                            <div class="form-group card">                                                            
                                 <div class="col-lg-12" style="margin-bottom: 5px;">
                                     <h:inputTextarea styleClass="form-control" value="#{sesion.grAutTxtMotivo}">
                                         <f:validateLength maximum="1028"/>
@@ -237,17 +234,16 @@
                         <div class="col-lg-9"></div>  
                     </div>
                     <div class="modal-footer" style="border-top: white;">
-                        <h:commandButton id="saveGRAUT"
+                        <p:commandButton id="saveGRAUT"
                                          value="Guardar"
                                          styleClass="btn btn-info" 
-                                         onclick="return window.confirm('¿Está seguro de guardar el cambio?');"
-                                         actionListener="#{sesion.guardarGRAutoriza(actionEvent)}"
-                                         />
-                        <p:commandButton
+                                         action="#{sesion.guardarGRAutoriza(actionEvent)}"
+                                         process="@form" update="@form"/>
+                        <p:commandLink
                             value="Cerrar"
-                            styleClass="btn btn-cancelar"
+                            styleClass="btn btn-default"
                             onclick="$(dialogoPopUpSS).modal('hide');"
-                            title="Cerrar ventana..." 
+                            title="Cerrar ventana..."  immediate="true"
                             />
                     </div>    
                 </h:form>
@@ -256,292 +252,273 @@
     </div>
 
 
-        <div class="modal fade" id="dialogoPopUpViajeDet" data-backdrop="static" data-keyboard="false">
-        <div class="modal-dialog">
-            <div class="modal-content">
+    <div class="modal fade" id="dialogoPopUpViajeDet" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content" >
                 <div class="modal-header">                    
                     <h4 class="modal-title">Detalle del viaje</h4>
                 </div>
                 <h:form id="frmPnlViajeDet">
                     <div class="modal-body">                                                                                                        
+                        <div class="row" style="margin-top: 5px;">
 
-                        <div class="card">
-                            <div class="card-header">
-                                <h3 class="card-title">                                                                                                                                                                        
-                                    <strong>#{sesion.viajeD.codigo} (#{sesion.viajeD.responsable} / #{sesion.viajeD.responsableTel}) (#{sesion.viajeD.vehiculoVO.modelo}/#{sesion.viajeD.vehiculoVO.numeroPlaca}) (Viajeros:#{sesion.viajeD.listaViajeros.size()})(F.Prog: #{sesion.viajeD.fechaProgramadaTxt} #{sesion.viajeD.horaProgramadaTxt})</strong>
-                                </h3>                                                                
-                            </div>
-                            <div class="card-body" id="pbvprRV#{sesion.viajeD.id}">                                         
-                                <div class="col-lg-12 col-xs-12" style="margin-bottom: 15px;">
-                                    <c:forEach items="#{sesion.viajeD.listaViajeros}" var="viajero">
-                                        <div class="col-lg-12 col-xs-12 input-group panel panel-default" style="border: white; border-style: none; border-width: 1px; margin-bottom: 0px;">
-                                            <div class="form-group col-lg-12 col-xs-12" style="border: white; border-bottom: #eee; border-top: white;  border-style: solid; border-width: 2px;">
-                                                <div class="col-lg-5 col-xs-12">                                                    
-                                                    <h:outputText styleClass="control-label" value="Viajero"/>  
-                                                    <strong><h:outputText styleClass="col-lg-12 col-xs-12 control-label" value="#{viajero.idInvitado eq 0 ? viajero.usuario : viajero.invitado}" /></strong> 
+                            <div class="input-group card">
+                                <div class="card-header">
+                                    <h3 class="card-title">                                                                                                                                                                        
+                                        <strong>#{sesion.viajeD.codigo} (#{sesion.viajeD.responsable} / #{sesion.viajeD.responsableTel}) (#{sesion.viajeD.vehiculoVO.modelo}/#{sesion.viajeD.vehiculoVO.numeroPlaca}) (Viajeros:#{sesion.viajeD.listaViajeros.size()})(F.Prog: #{sesion.viajeD.fechaProgramadaTxt} #{sesion.viajeD.horaProgramadaTxt})</strong>
+                                    </h3>                                                                
+                                </div>
+                                <div class="card-body" id="pbvprRV#{sesion.viajeD.id}">                                         
+                                    <div class="card mt-1">
+                                        <c:forEach items="#{sesion.viajeD.listaViajeros}" var="viajero">
+                                            <div class="row" style="border: white; border-bottom: #eee; border-top: white;  border-style: solid; border-width: 2px; margin-top: 5px;">
+                                                <div class="col-3">
+                                                    <div class="col-12">
+                                                        <h:outputText styleClass="control-label" value="Viajero"/>                                                              
+                                                    </div>
+                                                    <div class="col-12">
+                                                        <strong><h:outputText styleClass="control-label" value="#{viajero.idInvitado eq 0 ? viajero.usuario : viajero.invitado}" /></strong> 
+                                                    </div>
                                                 </div>
-
                                                 <ui:fragment  rendered="#{sesion.viajeD.idEstatus ne 515}">
-                                                    <div class="col-lg-3 col-xs-12">
-                                                        <h:outputText styleClass="control-label" value="Tipo"/>  
-                                                        <strong><h:outputText styleClass="col-lg-12 col-xs-12 control-label" value="#{viajero.idInvitado eq 0 ? 'Empleado' : 'Invitado'}"/></strong>
+                                                    <div class="col-3">
+                                                        <div class="col-12">
+                                                            <h:outputText styleClass="control-label" value="Tipo"/>  
+                                                        </div>
+                                                        <div class="col-12">
+                                                            <strong><h:outputText styleClass="control-label" value="#{viajero.idInvitado eq 0 ? 'Empleado' : 'Invitado'}"/></strong>
+                                                        </div>
                                                     </div>
                                                 </ui:fragment>
                                                 <ui:fragment  rendered="#{sesion.viajeD.idEstatus eq 515}">
-                                                    <div class="col-lg-3 col-xs-12">
-                                                        <h:outputText styleClass="control-label" value="Gerente"/>  
-                                                        <strong><h:outputText styleClass="col-lg-12 col-xs-12 control-label" value="#{viajero.responsableDeGerencia}"/></strong>
+                                                    <div class="col-3">
+                                                        <div class="col-12">
+                                                            <h:outputText styleClass="control-label" value="Gerente"/>  
+                                                        </div>
+                                                        <div class="col-12">
+                                                            <strong><h:outputText styleClass="control-label" value="#{viajero.responsableDeGerencia}"/></strong>
+                                                        </div>
                                                     </div>
                                                 </ui:fragment>
-
-
-
                                                 <ui:fragment rendered="#{viajero.idSolicitudViaje eq 0 and !viajero.grAutorizo}">                                                                
-                                                    <p:commandLink 
-                                                        styleClass="col-lg-2 col-xs-12 control-label text-danger" 
-                                                        value="Sin Solicitud" 
-                                                        title="#{viajero.generoSolicitudViaje ne null ? viajero.generoSolicitudViaje : ''}"
-                                                        actionListener="#{sesion.goGRAutoriza(actionEvent)}">                                                                
-                                                        <f:param name="idViajero" value="#{viajero.id}"/>
-                                                    </p:commandLink>
+                                                    <div class="col-3">
+                                                        <p:commandLink 
+                                                            styleClass="btn btn-default" 
+                                                            value="Sin Solicitud" 
+                                                            title="#{viajero.generoSolicitudViaje ne null ? viajero.generoSolicitudViaje : ''}"
+                                                            action="#{sesion.goGRAutoriza(viajero.id)}"
+                                                            process="@this" update="frmPnlViajeDet">                                                                
+                                                        </p:commandLink>
+                                                    </div>
                                                 </ui:fragment>
                                                 <ui:fragment rendered="#{viajero.idSolicitudViaje eq 0 and viajero.grAutorizo}">                                                                
-                                                    <p:commandLink 
-                                                        styleClass="col-lg-2 col-xs-12 control-label text-danger" 
-                                                        value="GR Autorizo" 
-                                                        title="#{viajero.generoSolicitudViaje ne null ? viajero.generoSolicitudViaje : ''}"
-                                                        actionListener="#{sesion.goGRAutoriza(actionEvent)}">                                                                
-                                                        <f:param name="idViajero" value="#{viajero.id}"/>
-                                                    </p:commandLink>
+                                                    <div class="col-3">
+                                                        <p:commandLink 
+                                                            styleClass="btn btn-default" 
+                                                            value="GR Autorizo" 
+                                                            title="#{viajero.generoSolicitudViaje ne null ? viajero.generoSolicitudViaje : ''}"
+                                                            action="#{sesion.goGRAutoriza(viajero.id)}"
+                                                            process="@this" update="frmPnlViajeDet">
+                                                        </p:commandLink>
+                                                    </div>
                                                 </ui:fragment>                                                            
                                                 <ui:fragment rendered="#{viajero.idSolicitudViaje gt 0}">
-                                                    <div class="col-lg-2 col-xs-12">
-                                                        <h:outputText styleClass="control-label" value="Código"/>  
-                                                        <strong><h:outputText styleClass="col-lg-12 col-xs-12 control-label" value="#{viajero.codigoSolicitudViaje}" title="#{viajero.generoSolicitudViaje ne null ? viajero.generoSolicitudViaje : ''}"/></strong>
+                                                    <div class="col-3">
+                                                        <div class="col-12">
+                                                            <h:outputText styleClass="control-label" value="Código"/>  
+                                                        </div>
+                                                        <div class="col-12">
+                                                            <strong><h:outputText styleClass="control-label" value="#{viajero.codigoSolicitudViaje}" title="#{viajero.generoSolicitudViaje ne null ? viajero.generoSolicitudViaje : ''}"/></strong>
+                                                        </div>
                                                     </div>
                                                 </ui:fragment>
-
-                                                <div class="col-lg-1 col-xs-12">
-                                                    <h:outputText styleClass="control-label" value="Telefono"/>  
-                                                    <strong><h:outputText styleClass="control-label" value="#{viajero.telefono}"/></strong>
+                                                <div class="col-3">
+                                                    <div class="col-12">
+                                                        <h:outputText styleClass="control-label" value="Telefono"/>  
+                                                    </div>
+                                                    <div class="col-12">
+                                                        <strong><h:outputText styleClass="control-label" value="#{viajero.telefono}"/></strong>
+                                                    </div>
                                                 </div>
                                                 <ui:fragment rendered="#{sesion.viajeD.idEstatus eq 515}">
-                                                    <p:commandLink styleClass="col-lg-1 col-xs-12 btn btn-info btn-sm"                                                                                                                                                                                      
-                                                                     action="#{sesion.bajarViajero(event)}" 
-                                                                     title="Bajar viajero"
-                                                                     >
-                                                        <span class="glyphicon glyphicon-remove-sign"></span> 
-                                                        <f:param name="idViajeroBaja" value="#{viajero.id}"/>
-                                                    </p:commandLink>
+                                                    <div class="col-3">
+                                                        <p:commandLink styleClass="btn btn-default"                                                                                                                                                                                      
+                                                                       action="#{sesion.bajarViajero(viajero.id)}" 
+                                                                       title="Bajar viajero"
+                                                                       process="@this" update="@form">
+                                                            <span class="fa fa-trash text-danger"></span> 
+                                                        </p:commandLink>
+                                                    </div>
                                                 </ui:fragment>
                                             </div>    
-                                        </div>                                            
-                                    </c:forEach>                                                                                
+                                        </c:forEach>                                                                                
+                                    </div>
+
+                                    <ui:fragment rendered="#{sesion.viajeD.idNoticia gt 0}">
+                                        <div class="card card-info">
+                                            <div class="card-header">
+                                                <h3 class="visible-lg card-title">                                                                                                                                                                        
+                                                    <strong>Comentarios</strong>
+                                                </h3>
+                                            </div>
+                                            <div class="card-body" id="pbvprRVC#{sesion.viajeD.id}"> 
+                                                <ui:fragment rendered="#{grBean.admin}">
+                                                    <div class="col-12" style="margin-bottom: 15px;">                                                                                                            
+                                                        <div class="visible-lg col-9"></div>                                                                                    
+                                                        <p:commandLink 
+                                                            value="Agregar Comentario"
+                                                            styleClass="btn btn-default"
+                                                            action="#{sesion.goAddComentario(0)}"
+                                                            title="Click aquí para agregar un comentario..." 
+                                                            process="@this" update="frmPnlAddCom">                                                        
+                                                        </p:commandLink>
+                                                    </div>
+                                                </ui:fragment>
+                                                <c:forEach items="#{sesion.viajeD.noticia.listaComentario}" var="comentario">
+                                                    <div class="col-12 input-group card card-default" style="border: white; border-style: none; border-width: 1px; margin-bottom: 0px;">
+                                                        <div class="form-group col-12" style="border: white; border-bottom: #eee; border-top: white;  border-style: solid; border-width: 2px;">                                                            
+                                                            <div class="row" style="margin-top: 5px;">
+                                                                <h:outputLabel styleClass="control-label" value="#{comentario.usuarioNombre}"/>
+                                                                <h:outputText styleClass="control-label" value=" - "/>  
+                                                                <h:outputText styleClass="control-label" value="#{comentario.fechaGenero}">
+                                                                    <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                                                </h:outputText>
+                                                                <h:outputText styleClass="control-label" value=" - "/>  
+                                                                <h:outputText styleClass="control-label" value="#{comentario.horaGenero}">
+                                                                    <f:convertDateTime pattern="h:mm a" timeStyle="default" type="time"/>
+                                                                </h:outputText>
+                                                            </div>
+                                                            <div class="row" style="margin-top: 5px;">
+                                                                <strong><h:outputText styleClass="control-label" value="Comentario: "/></strong>
+                                                                <h:outputText styleClass="control-label" value="#{comentario.mensaje}"/>
+                                                            </div>                                                                                                                                                                        
+                                                        </div>    
+                                                    </div>                                            
+                                                </c:forEach>    
+                                            </div>                                       
+                                        </div>
+                                    </ui:fragment>
+                                    <ui:fragment rendered="#{grBean.admin}">                                    
+                                        <div class="row">
+                                            <p:commandLink 
+                                                rendered="#{sesion.viajeD.idEstatus eq 501}"                                        
+                                                value="Iniciar viaje"
+                                                styleClass="btn btn-default"   
+                                                action="#{sesion.iniciarViaje(sesion.viajeD.id,sesion.viajeD.idIntercambio)}"
+                                                title="Click aquí para iniciar el viaje..." 
+                                                process="@this" update="frmViajesPen">
+                                            </p:commandLink>
+                                            <ui:fragment rendered="#{sesion.viajeD.idEstatus eq 501}"><div class="visible-lg col-1"></div></ui:fragment>
+                                            <p:commandLink 
+                                                rendered="#{sesion.viajeD.idEstatus eq 501}"
+                                                value="Cancelar Viaje"
+                                                styleClass="btn btn-default"                                                     
+                                                action="#{sesion.cancelarViajePendiente(sesion.viajeD.id)}"
+                                                title="Click aquí para cancelar el viaje..." 
+                                                process="@this" update="frmViajesPen">                                                                                        
+                                            </p:commandLink>
+                                            <ui:fragment rendered="#{sesion.viajeD.idEstatus eq 501}"><div class="visible-lg col-1"></div></ui:fragment>
+                                            <p:commandLink 
+                                                rendered="#{sesion.viajeD.idIntercambio eq 0 and sesion.viajeD.idEstatus eq 510}"
+                                                value="Finalizar Viaje"
+                                                styleClass="btn btn-default"
+                                                action="#{sesion.finalizarViaje(sesion.viajeD.id, 0)}"
+                                                title="Click aquí para finalizar el viaje..." 
+                                                process="@this" update="viajesProID">                                                                                        
+                                            </p:commandLink>        
+                                            <ui:fragment rendered="#{sesion.viajeD.idIntercambio eq 0 and sesion.viajeD.idEstatus eq 510}"><div class="visible-lg col-1"></div></ui:fragment>
+                                            <p:commandLink 
+                                                rendered="#{sesion.viajeD.idEstatus eq 515}"
+                                                value="Cancelar Viaje"
+                                                styleClass="btn btn-default"
+                                                action="#{sesion.cancelarViaje(sesion.viajeD.id)}"
+                                                title="Click aquí para cancelar el viaje..." 
+                                                process="@this" update="@form">
+                                            </p:commandLink>
+                                            <ui:fragment rendered="#{sesion.viajeD.idEstatus eq 515}"><div class="visible-lg col-1"></div></ui:fragment>
+                                            <p:commandLink 
+                                                rendered="#{sesion.viajeD.idIntercambio eq 0 and sesion.viajeD.idEstatus eq 515}"
+                                                value="Autorizar Viaje"
+                                                styleClass="btn btn-default"
+                                                action="#{sesion.autorizarViaje(sesion.viajeD.id)}"
+                                                title="Click aquí para autorizar el viaje..." 
+                                                process="@this" update="@form">
+                                            </p:commandLink>
+                                            <ui:fragment rendered="#{sesion.viajeD.idIntercambio eq 0 and sesion.viajeD.idEstatus eq 515}"><div class="visible-lg col-1"></div></ui:fragment>
+                                            <p:commandLink 
+                                                rendered="#{sesion.viajeD.idIntercambio eq 0 and (sesion.viajeD.idEstatus eq 501 or sesion.viajeD.idEstatus eq 510)}"
+                                                style="margin-bottom: 15px;"
+                                                value="Interceptar Viaje"
+                                                styleClass="btn btn-default"
+                                                action="#{sesion.goInterceptarViaje(sesion.viajeD.id, 0)}"
+                                                title="Click aquí para interceptar el viaje..." 
+                                                process="@this" update="frmPnlIntViaje">
+                                            </p:commandLink>  
+                                            <ui:fragment rendered="#{sesion.viajeD.idIntercambio eq 0 and (sesion.viajeD.idEstatus eq 501 or sesion.viajeD.idEstatus eq 510)}"><div class="visible-lg col-1"></div></ui:fragment>
+                                            <p:commandLink 
+                                                rendered="#{sesion.viajeD.idIntercambio gt 0 and sesion.viajeD.idEstatus eq 510 and sesion.viajeD.idOpercion gt 0 and sesion.viajeD.idOpercionRetomarViaje gt 0 and sesion.viajeB.idOpercion gt 0 and sesion.viajeB.idOpercionRetomarViaje gt 0}"
+                                                style="margin-bottom: 15px;"
+                                                value="Interceptar Viaje"
+                                                styleClass="btn btn-default"
+                                                action="#{sesion.goInterceptarViaje(sesion.viajeD.id,sesion.viajeD.idIntercambio)}"
+                                                title="Click aquí para interceptar el viaje..." 
+                                                process="@this" update="frmPnlIntViaje">
+                                            </p:commandLink>  
+                                            <ui:fragment rendered="#{sesion.viajeD.idIntercambio gt 0 and sesion.viajeD.idEstatus eq 510 and sesion.viajeD.idOpercion gt 0 and sesion.viajeD.idOpercionRetomarViaje gt 0 and sesion.viajeB.idOpercion gt 0 and sesion.viajeB.idOpercionRetomarViaje gt 0}"><div class="visible-lg col-1"></div></ui:fragment>
+                                            <p:commandLink 
+                                                rendered="#{sesion.viajeD.idIntercambio gt 0 and sesion.viajeD.idEstatus eq 510 and ((sesion.viajeD.idOpercion gt 0 and sesion.viajeD.idOpercionRetomarViaje gt 0) or sesion.viajeD.idOpercion eq 0)}"
+                                                value="Finalizar Viaje"
+                                                styleClass="btn btn-default"
+                                                action="#{sesion.finalizarViaje(sesion.viajeD.id, sesion.viajeD.idIntercambio)}"
+                                                title="Click aquí para editar mapa..." 
+                                                process="@this" update="viajesProID">
+                                            </p:commandLink>        
+                                            <ui:fragment rendered="#{sesion.viajeD.idIntercambio gt 0 and sesion.viajeD.idEstatus eq 510 and ((sesion.viajeD.idOpercion gt 0 and sesion.viajeD.idOpercionRetomarViaje gt 0) or sesion.viajeD.idOpercion eq 0)}"><div class="visible-lg col-1"></div></ui:fragment>
+                                            <p:commandLink 
+                                                style="margin-bottom: 15px;"
+                                                value="Retomar viaje"
+                                                styleClass="btn btn-default"
+                                                rendered="#{sesion.viajeD.idIntercambio gt 0 and sesion.viajeD.idEstatus eq 510 and sesion.viajeD.idOpercion gt 0 and sesion.viajeD.idOpercionRetomarViaje eq 0 }"
+                                                action="#{sesion.retomarViaje(sesion.viajeD.id, sesion.viajeD.idIntercambio)}"
+                                                title="Click aquí para notificar que se retomara el viaje..." 
+                                                process="@this"  update="frmPnlViajeDet">
+                                            </p:commandLink>
+                                            <ui:fragment rendered="#{sesion.viajeD.idIntercambio gt 0 and sesion.viajeD.idEstatus eq 510 and sesion.viajeD.idOpercion gt 0 and sesion.viajeD.idOpercionRetomarViaje eq 0 }"><div class="visible-lg col-1"></div></ui:fragment>
+                                            <p:commandLink 
+                                                style="margin-bottom: 15px;"
+                                                value="Intercambio"
+                                                rendered="#{sesion.viajeD.idIntercambio gt 0 and sesion.viajeD.idOpercion gt 0 and sesion.viajeB.idOpercion gt 0 and sesion.viajeB.idOpercionIntercambio eq 0 and sesion.viajeD.idOpercionIntercambio eq 0}"
+                                                styleClass="btn btn-default"
+                                                action="#{sesion.abrirInterceptarViaje(sesion.viajeD.id,sesion.viajeD.idIntercambio)}"
+                                                title="Click aquí para realizar el intercambio de los viajes..." 
+                                                process="@this" update="frmPnlDetalleInt">
+                                            </p:commandLink>
+                                            <ui:fragment rendered="#{sesion.viajeD.idIntercambio gt 0 and sesion.viajeD.idOpercion gt 0 and sesion.viajeB.idOpercion gt 0 and sesion.viajeB.idOpercionIntercambio eq 0 and sesion.viajeD.idOpercionIntercambio eq 0}"><div class="visible-lg col-1"></div></ui:fragment>
+                                            <p:commandLink 
+                                                style="margin-bottom: 15px;"
+                                                value="Llego a P.Seguridad"
+                                                styleClass="btn btn-default"
+                                                rendered="#{sesion.viajeD.idIntercambio gt 0 and sesion.viajeD.idEstatus eq 510 and sesion.viajeD.idOpercion eq 0}"
+                                                action="#{sesion.llegoPSeguridad(sesion.viajeD.id,sesion.viajeD.idIntercambio)}"
+                                                title="Click aquí para notificar que el viaje llegó al punto de seguridad para intercepción..." 
+                                                process="@this" update="frmPnlLlegadaPS">
+                                            </p:commandLink>
+                                        </div>
+                                    </ui:fragment>
                                 </div>
 
-                                <ui:fragment rendered="#{sesion.viajeD.idNoticia gt 0}">
-                                    <div class="col-lg-12 col-xs-12 panel panel-info panel-heading" style="margin-bottom: 15px;">
-                                        <div class="panel-heading">
-                                            <h3 class="visible-lg panel-title">                                                                                                                                                                        
-                                                <strong>Comentarios</strong>
-                                            </h3>
-                                            <h3 class="visible-xs" title="Comentarios">
-                                                <span class="pull-left"><i class="glyphicon glyphicon-comment"></i></span>
-                                            </h3>
-                                            <span class="pull-right clickable panel-collapsed"><i class="glyphicon glyphicon-chevron-down"  id="ivprRVC#{sesion.viajeD.id}"></i></span>
-                                            <input type="hidden" class="hiddenID" value="vprRVC#{sesion.viajeD.id}"></input>
-                                        </div>
-                                        <div class="panel-body" id="pbvprRVC#{sesion.viajeD.id}" style="display: none;"> 
-                                            <ui:fragment rendered="#{grBean.admin}">
-                                                <div class="col-lg-12 col-xs-12" style="margin-bottom: 15px;">                                                                                                            
-                                                    <div class="visible-lg col-lg-9"></div>                                                                                    
-                                                    <p:commandLink 
-                                                        value="Agregar Comentario"
-                                                        styleClass="visible-lg col-lg-3 btn btn-info"
-                                                        actionListener="#{sesion.goAddComentario(actionEvent)}"
-                                                        title="Click aquí para agregar un comentario..." >
-                                                    </p:commandLink>
-                                                    <p:commandLink
-                                                        value="Comentario"
-                                                        styleClass="visible-xs col-xs-12 btn btn-info btn-xs"                                                                                                             
-                                                        actionListener="#{sesion.goAddComentario(actionEvent)}"
-                                                        title="Click aquí para agregar un comentario..." >                                                        
-                                                        <span class="glyphicon glyphicon-plus"></span>                                         
-                                                    </p:commandLink>
-                                                </div>
-                                            </ui:fragment>
-                                            <c:forEach items="#{sesion.viajeD.noticia.listaComentario}" var="comentario">
-                                                <div class="col-lg-12 col-xs-12 input-group panel panel-default" style="border: white; border-style: none; border-width: 1px; margin-bottom: 0px;">
-                                                    <div class="form-group col-lg-12 col-xs-12" style="border: white; border-bottom: #eee; border-top: white;  border-style: solid; border-width: 2px;">                                                            
-                                                        <div class="row" style="margin-top: 5px;">
-                                                            <h:outputLabel styleClass="control-label" value="#{comentario.usuarioNombre}"/>
-                                                            <h:outputText styleClass="control-label" value=" - "/>  
-                                                            <h:outputText styleClass="control-label" value="#{comentario.fechaGenero}">
-                                                                <f:convertDateTime pattern="dd/MM/yyyy"/>
-                                                            </h:outputText>
-                                                            <h:outputText styleClass="control-label" value=" - "/>  
-                                                            <h:outputText styleClass="control-label" value="#{comentario.horaGenero}">
-                                                                <f:convertDateTime pattern="h:mm a" timeStyle="default" type="time"/>
-                                                            </h:outputText>
-                                                        </div>
-                                                        <div class="row" style="margin-top: 5px;">
-                                                            <strong><h:outputText styleClass="control-label" value="Comentario: "/></strong>
-                                                            <h:outputText styleClass="control-label" value="#{comentario.mensaje}"/>
-                                                        </div>                                                                                                                                                                        
-                                                    </div>    
-                                                </div>                                            
-                                            </c:forEach>    
-                                        </div>                                       
-                                    </div>
-                                </ui:fragment>
-                                <ui:fragment rendered="#{grBean.admin}">                                    
-                                    <p:commandLink 
-                                        rendered="#{sesion.viajeD.idEstatus eq 501}"                                        
-                                        value="Iniciar viaje"
-                                        styleClass="col-lg-2 col-xs-12 btn btn-info btn-sm"   
-                                        onclick="if (!confirm('¿Desea iniciar el viaje..?'))
-                                                    return false;"
-                                        actionListener="#{sesion.IniciarViaje(actionEvent)}"
-                                        title="Click aquí para iniciar el viaje..." >                                                                                                        
-                                        <f:param name="idViaje" value="#{sesion.viajeD.id}"/>
-                                        <f:param name="idInter" value="#{sesion.viajeD.idIntercambio}"/>                                    
-                                        <f:ajax event="click" render="viajesPenID"/>
-                                    </p:commandLink>
-                                    <ui:fragment rendered="#{sesion.viajeD.idEstatus eq 501}"><div class="visible-lg col-lg-1"></div></ui:fragment>
-                                    <p:commandLink 
-                                        rendered="#{sesion.viajeD.idEstatus eq 501}"
-                                        value="Cancelar Viaje"
-                                        styleClass="col-lg-2 col-xs-12 btn btn-info btn-sm"                                                     
-                                        onclick="if (!confirm('¿Está seguro de cancelar el viaje..?'))
-                                                    return false;"
-                                        actionListener="#{sesion.cancelarViajePendiente(actionEvent)}"
-                                        title="Click aquí para cancelar el viaje..." >                                                                                        
-                                        <f:param name="idViaje" value="#{sesion.viajeD.id}"/>
-                                    </p:commandLink>
-                                    <ui:fragment rendered="#{sesion.viajeD.idEstatus eq 501}"><div class="visible-lg col-lg-1"></div></ui:fragment>
-                                    <p:commandLink 
-                                        rendered="#{sesion.viajeD.idIntercambio eq 0 and sesion.viajeD.idEstatus eq 510}"
-                                        value="Finalizar Viaje"
-                                        styleClass="col-lg-2 col-xs-12 btn btn-info btn-sm"                                                                                                         
-                                        onclick="if (!confirm('¿Está seguro de finalizar el viaje..?'))
-                                                    return false;"
-                                        actionListener="#{sesion.finalizarViaje(actionEvent)}"
-                                        title="Click aquí para finalizar el viaje..." >                                                                                        
-                                        <f:param name="idViaje" value="#{sesion.viajeD.id}"/>  
-                                        <f:param name="idInter" value="0"/>                                    
-                                        <f:ajax event="click" render="viajesProID"/>
-                                    </p:commandLink>        
-                                    <ui:fragment rendered="#{sesion.viajeD.idIntercambio eq 0 and sesion.viajeD.idEstatus eq 510}"><div class="visible-lg col-lg-1"></div></ui:fragment>
-                                    <p:commandLink 
-                                        rendered="#{sesion.viajeD.idEstatus eq 515}"
-                                        value="Cancelar Viaje"
-                                        styleClass="col-lg-2 col-xs-12 btn btn-info btn-sm"                                                     
-                                        onclick="if (!confirm('¿Está seguro de cancelar el viaje..?'))
-                                                    return false;"
-                                        actionListener="#{sesion.cancelarViaje(actionEvent)}"
-                                        title="Click aquí para cancelar el viaje..." >                                                                                        
-                                        <f:param name="idViaje" value="#{sesion.viajeD.id}"/>
-                                    </p:commandLink>
-                                    <ui:fragment rendered="#{sesion.viajeD.idEstatus eq 515}"><div class="visible-lg col-lg-1"></div></ui:fragment>
-                                    <p:commandLink 
-                                        rendered="#{sesion.viajeD.idIntercambio eq 0 and sesion.viajeD.idEstatus eq 515}"
-                                        value="Autorizar Viaje"
-                                        styleClass="col-lg-2 col-xs-12 btn btn-info btn-sm"                                                                                                         
-                                        onclick="if (!confirm('¿Está seguro de autorizar el viaje..?'))
-                                                    return false;"
-                                        actionListener="#{sesion.AutorizarViaje(actionEvent)}"
-                                        title="Click aquí para autorizar el viaje..." >                                                                                        
-                                        <f:param name="idViaje" value="#{sesion.viajeD.id}"/>
-                                    </p:commandLink>
-                                    <ui:fragment rendered="#{sesion.viajeD.idIntercambio eq 0 and sesion.viajeD.idEstatus eq 515}"><div class="visible-lg col-lg-1"></div></ui:fragment>
-                                    <p:commandLink 
-                                        rendered="#{sesion.viajeD.idIntercambio eq 0 and (sesion.viajeD.idEstatus eq 501 or sesion.viajeD.idEstatus eq 510)}"
-                                        style="margin-bottom: 15px;"
-                                        value="Interceptar Viaje"
-                                        styleClass="col-lg-2 col-xs-12 btn btn-info btn-sm"                                                                     
-                                        onclick="if (!confirm('¿Desea interceptar el viaje con otro..?'))
-                                                    return false;"
-                                        actionListener="#{sesion.goInterceptarViaje(actionEvent)}"
-                                        title="Click aquí para interceptar el viaje..." >                                                                                                        
-                                        <f:param name="idViaje" value="#{sesion.viajeD.id}"/>
-                                    </p:commandLink>  
-                                    <ui:fragment rendered="#{sesion.viajeD.idIntercambio eq 0 and (sesion.viajeD.idEstatus eq 501 or sesion.viajeD.idEstatus eq 510)}"><div class="visible-lg col-lg-1"></div></ui:fragment>
-                                    <p:commandLink 
-                                        rendered="#{sesion.viajeD.idIntercambio gt 0 and sesion.viajeD.idEstatus eq 510 and sesion.viajeD.idOpercion gt 0 and sesion.viajeD.idOpercionRetomarViaje gt 0 and sesion.viajeB.idOpercion gt 0 and sesion.viajeB.idOpercionRetomarViaje gt 0}"
-                                        style="margin-bottom: 15px;"
-                                        value="Interceptar Viaje"
-                                        styleClass="col-lg-2 col-xs-12 btn btn-info btn-sm"                                                                     
-                                        onclick="if (!confirm('¿Desea interceptar el viaje con otro..?'))
-                                                    return false;"
-                                        actionListener="#{sesion.goInterceptarViaje(actionEvent)}"
-                                        title="Click aquí para interceptar el viaje..." >                                                                                                        
-                                        <f:param name="idViaje" value="#{sesion.viajeD.id}"/>
-                                        <f:param name="idInter" value="#{sesion.viajeD.idIntercambio}"/>                                    
-                                    </p:commandLink>  
-                                    <ui:fragment rendered="#{sesion.viajeD.idIntercambio gt 0 and sesion.viajeD.idEstatus eq 510 and sesion.viajeD.idOpercion gt 0 and sesion.viajeD.idOpercionRetomarViaje gt 0 and sesion.viajeB.idOpercion gt 0 and sesion.viajeB.idOpercionRetomarViaje gt 0}"><div class="visible-lg col-lg-1"></div></ui:fragment>
-                                    <p:commandLink 
-                                        rendered="#{sesion.viajeD.idIntercambio gt 0 and sesion.viajeD.idEstatus eq 510 and ((sesion.viajeD.idOpercion gt 0 and sesion.viajeD.idOpercionRetomarViaje gt 0) or sesion.viajeD.idOpercion eq 0)}"
-                                        value="Finalizar Viaje"
-                                        styleClass="col-lg-2 col-xs-12 btn btn-info btn-sm"                                                                                                         
-                                        onclick="if (!confirm('¿Está seguro de finalizar el viaje..?'))
-                                                    return false;"
-                                        actionListener="#{sesion.finalizarViaje(actionEvent)}"
-                                        title="Click aquí para editar mapa..." >                                                                                        
-                                        <f:param name="idViaje" value="#{sesion.viajeD.id}"/>  
-                                        <f:param name="idInter" value="#{sesion.viajeD.idIntercambio}"/>                                    
-                                        <f:ajax event="click" render="viajesProID"/>
-                                    </p:commandLink>        
-                                    <ui:fragment rendered="#{sesion.viajeD.idIntercambio gt 0 and sesion.viajeD.idEstatus eq 510 and ((sesion.viajeD.idOpercion gt 0 and sesion.viajeD.idOpercionRetomarViaje gt 0) or sesion.viajeD.idOpercion eq 0)}"><div class="visible-lg col-lg-1"></div></ui:fragment>
-                                    <p:commandLink 
-                                        style="margin-bottom: 15px;"
-                                        value="Retomar viaje"
-                                        styleClass="col-lg-2 col-xs-12 btn btn-info btn-sm"                                                                     
-                                        rendered="#{sesion.viajeD.idIntercambio gt 0 and sesion.viajeD.idEstatus eq 510 and sesion.viajeD.idOpercion gt 0 and sesion.viajeD.idOpercionRetomarViaje eq 0 }"
-                                        actionListener="#{sesion.retomarViaje(actionEvent)}"                                    
-                                        onclick="if (!confirm('¿Desea retomar el viaje..?'))
-                                                    return false;"
-                                        title="Click aquí para notificar que se retomara el viaje..." >
-                                        <f:param name="idViaje" value="#{sesion.viajeD.id}"/>
-                                        <f:param name="idInter" value="#{sesion.viajeD.idIntercambio}"/>                                    
-                                    </p:commandLink>
-                                    <ui:fragment rendered="#{sesion.viajeD.idIntercambio gt 0 and sesion.viajeD.idEstatus eq 510 and sesion.viajeD.idOpercion gt 0 and sesion.viajeD.idOpercionRetomarViaje eq 0 }"><div class="visible-lg col-lg-1"></div></ui:fragment>
-                                    <p:commandLink 
-                                        style="margin-bottom: 15px;"
-                                        value="Intercambio"
-                                        rendered="#{sesion.viajeD.idIntercambio gt 0 and sesion.viajeD.idOpercion gt 0 and sesion.viajeB.idOpercion gt 0 and sesion.viajeB.idOpercionIntercambio eq 0 and sesion.viajeD.idOpercionIntercambio eq 0}"
-                                        styleClass="col-lg-2 col-xs-12 btn btn-info btn-sm"                                                                                                         
-                                        actionListener="#{sesion.abrirInterceptarViaje(actionEvent)}"
-                                        title="Click aquí para realizar el intercambio de los viajes..." >                                                                                                        
-                                        <f:param name="idViaje" value="#{sesion.viajeD.id}"/>
-                                        <f:param name="idInter" value="#{sesion.viajeD.idIntercambio}"/>
-                                    </p:commandLink>
-                                    <ui:fragment rendered="#{sesion.viajeD.idIntercambio gt 0 and sesion.viajeD.idOpercion gt 0 and sesion.viajeB.idOpercion gt 0 and sesion.viajeB.idOpercionIntercambio eq 0 and sesion.viajeD.idOpercionIntercambio eq 0}"><div class="visible-lg col-lg-1"></div></ui:fragment>
-                                    <p:commandLink 
-                                        style="margin-bottom: 15px;"
-                                        value="Llego a P.Seguridad"
-                                        styleClass="col-lg-2 col-xs-12 btn btn-info btn-sm"                                                                     
-                                        rendered="#{sesion.viajeD.idIntercambio gt 0 and sesion.viajeD.idEstatus eq 510 and sesion.viajeD.idOpercion eq 0}"
-                                        actionListener="#{sesion.llegoPSeguridad(actionEvent)}"
-                                        title="Click aquí para notificar que el viaje llegó al punto de seguridad para intercepción..." >                                                                                                        
-                                        <f:param name="idViaje" value="#{sesion.viajeD.id}"/>
-                                        <f:param name="idInter" value="#{sesion.viajeD.idIntercambio}"/>                                    
-                                    </p:commandLink>
-
-                                </ui:fragment>
                             </div>
+
 
                         </div>
 
-
-
-
                     </div>
                     <div class="modal-footer" style="border-top: white;">                        
-                        <p:commandButton
+                        <p:commandLink
                             value="Cerrar"
-                            styleClass="btn btn-cancelar"
+                            styleClass="btn btn-default"
                             onclick="$(dialogoPopUpViajeDet).modal('hide');"
-                            title="Cerrar ventana..." 
+                            title="Cerrar ventana..." immediate="true"
                             />
                     </div>    
                 </h:form>

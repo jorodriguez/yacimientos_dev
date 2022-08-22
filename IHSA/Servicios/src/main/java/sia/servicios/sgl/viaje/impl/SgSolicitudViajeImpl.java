@@ -2183,7 +2183,7 @@ public class SgSolicitudViajeImpl extends AbstractFacade<SgSolicitudViaje> {
             UtilLog4j.log.info(this, "Id sol viaje cancelada: " + solicitudViajeVO.getIdSolicitud());
             UtilLog4j.log.info(this, "Id sol viaje nueva: " + idSol);
             UtilLog4j.log.info(this, "paso acá 1");
-            List<ViajeroVO> lvro = new ArrayList<ViajeroVO>();
+            List<ViajeroVO> lvro = new ArrayList<>();
             if (lstVros == null) {
                 lvro.addAll(sgViajeroRemote.getAllViajerosList(solicitudViajeVO.getIdSolicitud(), true));
             } else {
@@ -2737,7 +2737,7 @@ public class SgSolicitudViajeImpl extends AbstractFacade<SgSolicitudViaje> {
                         sol.setIdSiCiudadDestino((Integer) objects[21] != null ? (Integer) objects[21] : 0);
                         sol.setRedondo(((Boolean) objects[20]));
                         sol.setSolicitudViajeDeRetorno(v.getViajeroQuedado());
-                        sol.setViajeros(new ArrayList<ViajeroVO>());
+                        sol.setViajeros(new ArrayList<>());
                         sol.getViajeros().add(v);
                     } else if (solID == (Integer) objects[16]) {
                         sol.getViajeros().add(v);
@@ -2758,7 +2758,7 @@ public class SgSolicitudViajeImpl extends AbstractFacade<SgSolicitudViaje> {
                         sol.setIdSiCiudadDestino((Integer) objects[21] != null ? (Integer) objects[21] : 0);
                         sol.setRedondo(((Boolean) objects[20]));
                         sol.setSolicitudViajeDeRetorno(v.getViajeroQuedado());
-                        sol.setViajeros(new ArrayList<ViajeroVO>());
+                        sol.setViajeros(new ArrayList<>());
                         sol.getViajeros().add(v);
                     }
                 }
@@ -2767,7 +2767,7 @@ public class SgSolicitudViajeImpl extends AbstractFacade<SgSolicitudViaje> {
                 lv.add(sol);
             }
         } catch (Exception e) {
-            lv = new ArrayList<SolicitudViajeVO>();
+            lv = new ArrayList<>();
             UtilLog4j.log.fatal(e);
         }
         return lv;
@@ -2775,7 +2775,7 @@ public class SgSolicitudViajeImpl extends AbstractFacade<SgSolicitudViaje> {
 
     
     public List<ViajeroVO> traerSolicitudesAereas() {
-        List<ViajeroVO> lv = new ArrayList<ViajeroVO>();
+        List<ViajeroVO> lv = new ArrayList<>();
         try {
             StringBuilder sb = new StringBuilder();
             sb.append("select v.id, "
@@ -2858,7 +2858,7 @@ public class SgSolicitudViajeImpl extends AbstractFacade<SgSolicitudViaje> {
 //                        sol.setIdOficinaOrigen(Constantes.ID_OFICINA_TORRE_MARTEL);
 //                        sol.setIdSiCiudadDestino((Integer) objects[22] != null ? (Integer) objects[22] : 0);
 //                        sol.setRedondo(((Boolean) objects[18]));
-//                        sol.setViajeros(new ArrayList<ViajeroVO>());
+//                        sol.setViajeros(new ArrayList<>());
 //                        sol.getViajeros().add(v);
 //                    } else if (solID == (Integer) objects[8]) {
 //                        sol.getViajeros().add(v);
@@ -2876,7 +2876,7 @@ public class SgSolicitudViajeImpl extends AbstractFacade<SgSolicitudViaje> {
 //                        sol.setIdOficinaOrigen(Constantes.ID_OFICINA_TORRE_MARTEL);
 //                        sol.setIdSiCiudadDestino((Integer) objects[22] != null ? (Integer) objects[22] : 0);
 //                        sol.setRedondo(((Boolean) objects[18]));
-//                        sol.setViajeros(new ArrayList<ViajeroVO>());
+//                        sol.setViajeros(new ArrayList<>());
 //                        sol.getViajeros().add(v);
 //                    }
                     lv.add(v);
@@ -3081,7 +3081,7 @@ public class SgSolicitudViajeImpl extends AbstractFacade<SgSolicitudViaje> {
                         sol.setHoraRegreso((Date) objects[11]);
                         sol.setIdOficinaOrigen((Integer) objects[17]);
                         sol.setRedondo(((Boolean) objects[12]));
-                        sol.setViajeros(new ArrayList<ViajeroVO>());
+                        sol.setViajeros(new ArrayList<>());
                         sol.getViajeros().add(v);
                         sol.setSelect(Constantes.FALSE);
                         sol.setIdEstatus((Integer) objects[24] != null ? (Integer) objects[24] : 0);
@@ -3116,7 +3116,7 @@ public class SgSolicitudViajeImpl extends AbstractFacade<SgSolicitudViaje> {
                         sol.setHoraRegreso((Date) objects[11]);
                         sol.setIdOficinaOrigen((Integer) objects[17]);
                         sol.setRedondo(((Boolean) objects[12]));
-                        sol.setViajeros(new ArrayList<ViajeroVO>());
+                        sol.setViajeros(new ArrayList<>());
                         sol.getViajeros().add(v);
                         sol.setSelect(Constantes.FALSE);
                         sol.setIdEstatus((Integer) objects[24] != null ? (Integer) objects[24] : 0);
@@ -3201,7 +3201,7 @@ public class SgSolicitudViajeImpl extends AbstractFacade<SgSolicitudViaje> {
                     sol.setIdSiCiudadDestino((Integer) objects[20] != null ? (Integer) objects[20] : 0);
                     sol.setRedondo(((Boolean) objects[19]));
                     sol.setSolicitudViajeDeRetorno(v.getViajeroQuedado());
-                    sol.setViajeros(new ArrayList<ViajeroVO>());
+                    sol.setViajeros(new ArrayList<>());
                     sol.getViajeros().add(v);
                     sol.setSelect(Constantes.FALSE);
                     sol.setIdEstatus((Integer) objects[22] != null ? (Integer) objects[22] : 0);
@@ -3247,7 +3247,7 @@ public class SgSolicitudViajeImpl extends AbstractFacade<SgSolicitudViaje> {
                     sol.setIdSiCiudadDestino((Integer) objects[20] != null ? (Integer) objects[20] : 0);
                     sol.setRedondo(((Boolean) objects[19]));
                     sol.setSolicitudViajeDeRetorno(v.getViajeroQuedado());
-                    sol.setViajeros(new ArrayList<ViajeroVO>());
+                    sol.setViajeros(new ArrayList<>());
                     sol.getViajeros().add(v);
                     sol.setSelect(Constantes.FALSE);
                     sol.setIdEstatus((Integer) objects[22] != null ? (Integer) objects[22] : 0);
@@ -3409,7 +3409,7 @@ public class SgSolicitudViajeImpl extends AbstractFacade<SgSolicitudViaje> {
                         solicitud.setHoraModifico((Date) ob[15]);
                         solicitud.setIdSgTipoEspecifico((int) ob[34]);
                         solicitud.setRedondo((boolean) ob[35]);
-                        solicitud.setViajeros(new ArrayList<ViajeroVO>());
+                        solicitud.setViajeros(new ArrayList<>());
                         solicitud.setNombreRuta((String) ob[12]);
                         solicitud.setSelect((boolean) ob[36]);
 
@@ -3507,7 +3507,7 @@ public class SgSolicitudViajeImpl extends AbstractFacade<SgSolicitudViaje> {
                     solicitud.setHoraModifico((Date) ob[15]);
                     solicitud.setIdSgTipoEspecifico((int) ob[34]);
                     solicitud.setRedondo((boolean) ob[35]);
-                    solicitud.setViajeros(new ArrayList<ViajeroVO>());
+                    solicitud.setViajeros(new ArrayList<>());
                     solicitud.setNombreRuta((String) ob[12]);
                     solicitud.setSelect((boolean) ob[36]);
 

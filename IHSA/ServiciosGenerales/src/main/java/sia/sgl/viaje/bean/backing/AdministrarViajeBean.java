@@ -7,20 +7,22 @@ package sia.sgl.viaje.bean.backing;
 
 import java.io.Serializable;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import javax.enterprise.context.RequestScoped;
 import javax.inject.Named;
-import javax.faces.bean.ManagedProperty;
-import javax.faces.bean.RequestScoped;
-import javax.faces.event.ActionEvent;
 import javax.faces.event.ValueChangeEvent;
 import javax.faces.model.SelectItem;
+import javax.inject.Inject;
 import org.primefaces.PrimeFaces;
 import sia.constantes.Constantes;
 import sia.excepciones.SIAException;
+import sia.modelo.sgl.viaje.vo.InvitadoVO;
 import sia.modelo.sgl.viaje.vo.SolicitudViajeVO;
 import sia.modelo.sgl.viaje.vo.ViajeVO;
 import sia.modelo.sgl.viaje.vo.ViajeroVO;
+import sia.modelo.usuario.vo.UsuarioVO;
 import sia.sgl.sistema.bean.support.FacesUtils;
 import sia.sgl.viaje.bean.model.AdministrarViajeBeanModel;
 import sia.util.UtilLog4j;
@@ -29,22 +31,15 @@ import sia.util.UtilLog4j;
  *
  * @author ihsa
  */
-@Named(value = "administrarViajeBean")
+@Named(value = "old_administrarViajeBean")
 @RequestScoped
 public class AdministrarViajeBean implements Serializable {
-    
-    @ManagedProperty(value = "#{administrarViajeBeanModel}")
-    private AdministrarViajeBeanModel administrarViajeBeanModel;
-    
-    public AdministrarViajeBean() {
-        
-    }
 
-    /**
-     * @param administrarViajeBeanModel the administrarViajeBeanModel to set
-     */
-    public void setAdministrarViajeBeanModel(AdministrarViajeBeanModel administrarViajeBeanModel) {
-        this.administrarViajeBeanModel = administrarViajeBeanModel;
+    @Inject
+    AdministrarViajeBeanModel administrarViajeBeanModel;
+
+    public AdministrarViajeBean() {
+
     }
 
     /**
@@ -69,7 +64,7 @@ public class AdministrarViajeBean implements Serializable {
     }
 
     /**
-     * @param viajesCreados the viajesCreados to set 
+     * @param viajesCreados the viajesCreados to set
      */
     public void setViajesCreados(List<ViajeVO> viajesCreados) {
         this.administrarViajeBeanModel.setViajesCreados(viajesCreados);
@@ -102,15 +97,13 @@ public class AdministrarViajeBean implements Serializable {
     public void setViajesEnProceso(List<ViajeVO> viajesEnProceso) {
         this.administrarViajeBeanModel.setViajesEnProceso(viajesEnProceso);
     }
-    
-    public void iniciarConversasionCrearViaje(ActionEvent actionEvent) {
-        this.cargarSolicitudesYViajes();
-        String metodo = ";draggableInit();";
-        PrimeFaces.current().executeScript(metodo);
+
+    public void iniciarConversasionCrearViaje() {
+        cargarSolicitudesYViajes();
     }
-    
+
     public void cargarSolicitudesYViajes() {
-        administrarViajeBeanModel.cargarSolicitudesYViajes();        
+        administrarViajeBeanModel.cargarSolicitudesYViajes();
     }
 
     /**
@@ -154,15 +147,14 @@ public class AdministrarViajeBean implements Serializable {
     public void setTextBusqueda(String textBusqueda) {
         this.administrarViajeBeanModel.setTextBusqueda(textBusqueda);
     }
-    
+
     public String getUsrID() {
         return this.administrarViajeBeanModel.getUsrID();
     }
-    
-    public void goPopupCrearViaje(ActionEvent actionEvent) {
+
+    public void goPopupCrearViaje() {
         administrarViajeBeanModel.inicializarCrearViaje();
-        String metodo = ";abrirDialogModal(dialogoPopUpCrearViaje);";
-        PrimeFaces.current().executeScript(metodo);
+        PrimeFaces.current().executeScript("$(dialogoPopUpCrearViaje).modal('show');");
     }
 
     /**
@@ -269,20 +261,20 @@ public class AdministrarViajeBean implements Serializable {
     public void setIdOficinaRuta(int idOficinaRuta) {
         administrarViajeBeanModel.setIdOficinaRuta(idOficinaRuta);
     }
-    
+
     public void tipoRedondo() {
         setRedondoSencillo(Constantes.TRUE);
         getViajeVO().setRedondo(Constantes.BOOLEAN_TRUE);
     }
-    
+
     public void tipoSencillo() {
         setRedondoSencillo(Constantes.FALSE);
         getViajeVO().setRedondo(Constantes.BOOLEAN_FALSE);
     }
-    
+
     public void cargarListaVehiculos(ValueChangeEvent event) {
         setIdOficinaVehiculo((Integer) event.getNewValue());
-        
+
         if (getIdOficinaVehiculo() != -1) {
             String cv = FacesUtils.getRequestParameter("cargarVehiculos");
             if (cv != null && cv.equals("on")) {
@@ -290,17 +282,17 @@ public class AdministrarViajeBean implements Serializable {
             } else {
                 administrarViajeBeanModel.tdosLosVehiculosByOficina();
             }
-            
+
         }
-        
+
     }
-    
+
     public void cargarResponsableVehiculo(ValueChangeEvent event) {
         setIdVehiculo((Integer) event.getNewValue());
         if (getIdVehiculo() != -1) {
             administrarViajeBeanModel.traerResponsableVehiculo();
         }
-        
+
     }
 
     /**
@@ -323,30 +315,30 @@ public class AdministrarViajeBean implements Serializable {
     public boolean isTieneResponsable() {
         return administrarViajeBeanModel.isTieneResponsable();
     }
-    
+
     public void cambiarResponsable() {
         administrarViajeBeanModel.cambiarResponsable();
     }
-    
+
     public void crearViaje() throws ParseException {
         try {
             if (administrarViajeBeanModel.crearViaje()) {
                 String metodo = ";cerrarDialogoCrearViaje();";
                 PrimeFaces.current().executeScript(metodo);
-            }            
-            
-        } catch (Exception e) {            
+            }
+
+        } catch (Exception e) {
             FacesUtils.addErrorMessage("Ocurrió una excepción, favor de comunicar a sia@ihsa.mx");
             UtilLog4j.log.fatal(e);
         }
     }
-    
+
     public void actualizaHoraSalida() {
         administrarViajeBeanModel.actualizaHoraSalida();
     }
-    
-    public void goPopUpAddOrRemoveViajeros(ActionEvent actionEvent) {
-        administrarViajeBeanModel.llenarlistaViajeros();
+
+    public void goPopUpAddOrRemoveViajeros(int idViaje) {
+        administrarViajeBeanModel.llenarlistaViajeros(idViaje);
         administrarViajeBeanModel.usuariosActivos();
         administrarViajeBeanModel.listInvitados();
         String metodo = ";abrirDialogModal(dialogoPopUpAddOrRemoveViajeros);";
@@ -359,9 +351,9 @@ public class AdministrarViajeBean implements Serializable {
     public List<ViajeroVO> getListaViajeros() {
         return administrarViajeBeanModel.getListaViajeros();
     }
-    
-    public void removerViajero() {
-        administrarViajeBeanModel.removeViajeros();
+
+    public void removerViajero(String viajero, String usuario, String invitado) {
+        administrarViajeBeanModel.removeViajeros(viajero, usuario, invitado);
     }
 
     /**
@@ -391,19 +383,41 @@ public class AdministrarViajeBean implements Serializable {
     public void setEmpleadoEmergente(String empleadoEmergente) {
         administrarViajeBeanModel.setEmpleadoEmergente(empleadoEmergente);
     }
-    
+
     public void agregarInvitado() {
         administrarViajeBeanModel.agreagarEmpleadoOInvitadoEmergente(Constantes.FALSE);
+        administrarViajeBeanModel.setInvitadoEmergente("");
     }
-    
+
     public void agregarEmpleado() {
         administrarViajeBeanModel.agreagarEmpleadoOInvitadoEmergente(Constantes.TRUE);
+        administrarViajeBeanModel.setEmpleadoEmergente("");
     }
-    
+
     public void addAndOrRemoveViajeros() throws SIAException {
         administrarViajeBeanModel.addAndOrRemoveViajeros(Constantes.FALSE);
-        String metodo = ";draggableInit();";
-        PrimeFaces.current().executeScript(metodo);
+//        String metodo = ";draggableInit();";
+//        PrimeFaces.current().executeScript(metodo);
+    }
+
+    public List<String> usuarioListener(String cadena) {
+        administrarViajeBeanModel.setInvitadoEmergente("");
+        List<String> nombres = new ArrayList<>();
+        List<UsuarioVO> usVos = administrarViajeBeanModel.traerUsuarios(cadena);
+        usVos.stream().forEach(us -> {
+            nombres.add(us.getNombre());
+        });
+        return nombres;
+    }
+
+    public List<String> invitadoListener(String cadena) {
+        administrarViajeBeanModel.setInvitadoEmergente("");
+        List<String> nombres = new ArrayList<>();
+        List<InvitadoVO> invs = administrarViajeBeanModel.traerInvitados(cadena);
+        invs.stream().forEach(us -> {
+            nombres.add(us.getNombre() + " // " + us.getEmpresa());
+        });
+        return nombres;
     }
 
     /**
@@ -412,15 +426,19 @@ public class AdministrarViajeBean implements Serializable {
     public int getEstatusViaje() {
         return administrarViajeBeanModel.getEstatusViaje();
     }
-    
-    public void iniciarModifcarViaje(ActionEvent actionEvent) {
-        administrarViajeBeanModel.iniciarModificarViaje();
+
+    public void iniciarModifcarViaje(int idViaje) {
+       // administrarViajeBeanModel.iniciarModificarViaje(idViaje);
         String metodo = ";abrirDialogModal(dialogoPopUpCrearViaje);";
         PrimeFaces.current().executeScript(metodo);
     }
-    
-    public void moverViajeAPorSalir(){
-        administrarViajeBeanModel.moverViaje();
+
+    public void selecionarSolicitud(int idSol) {
+        administrarViajeBeanModel.llenarlistaViajerosPorSolicitud(idSol);
+    }
+
+    public void moverViajeAPorSalir(int idV) {
+        administrarViajeBeanModel.moverViaje(idV);
     }
 
     /**
@@ -436,7 +454,7 @@ public class AdministrarViajeBean implements Serializable {
     public void setModificar(boolean modificar) {
         administrarViajeBeanModel.setModificar(modificar);
     }
-    
+
     public void editarViaje() throws ParseException {
         try {
             administrarViajeBeanModel.modificarViaje();
@@ -445,47 +463,50 @@ public class AdministrarViajeBean implements Serializable {
         } catch (Exception e) {
             UtilLog4j.log.fatal(e);
         }
-        
+
     }
-    
-    public void crearViajeRegreso() {
+
+    public void crearViajeRegreso(int idVi) {
         try {
-            administrarViajeBeanModel.crearRegreso();
-            String metodo = ";draggableInit();";
-            PrimeFaces.current().executeScript(metodo);
+            administrarViajeBeanModel.crearRegreso(idVi);
+//            String metodo = ";draggableInit();";
+//            PrimeFaces.current().executeScript(metodo);
         } catch (Exception e) {
             UtilLog4j.log.fatal(e);
         }
     }
-    
+
     public void cargarListaConTodosLosVehiculosOficina() {
         if (getIdOficinaVehiculo() != -1) {
             administrarViajeBeanModel.tdosLosVehiculosByOficina();
         }
     }
-    
+
     public void cargarVehiculos() {
         if (getIdOficinaVehiculo() != -1) {
             administrarViajeBeanModel.actualizarListaVehiculos();
         }
-        
+
     }
 
-    public void agregarDeSV() {
-        int idViajero = Integer.parseInt(FacesUtils.getRequestParameter("seleccionado"));
+    public void agregarDeSV(int idViajero) {
         administrarViajeBeanModel.addViajeroConSV(idViajero);
-        
+
     }
 
     public void agregarDeSVTodos() {
         int idSV = Integer.parseInt(FacesUtils.getRequestParameter("seleccionado"));
         administrarViajeBeanModel.addTodosSV(idSV);
     }
-    
+
     public void cargarConductoresSGL() {
-        administrarViajeBeanModel.llenarListaEmpleadosSGL(Constantes.FALSE);
+        if (administrarViajeBeanModel.isEmpleadosSgl()) {
+            administrarViajeBeanModel.llenarListaEmpleadosSGL(Constantes.FALSE);
+        } else {
+            cargarConductoresTodos();
+        }
     }
-    
+
     public void cargarConductoresTodos() {
         administrarViajeBeanModel.llenarListaEmpleadosSGL(Constantes.TRUE);
     }
@@ -503,16 +524,85 @@ public class AdministrarViajeBean implements Serializable {
     public void setUltimaActualizacion(String ultimaActualizacion) {
         administrarViajeBeanModel.setUltimaActualizacion(ultimaActualizacion);
     }
-    public void conInterception(){
+
+    public void conInterception() {
         getViajeVO().setConInter(Constantes.TRUE);
-    } 
-    
-    public void sinInterception(){
-         getViajeVO().setConInter(Constantes.FALSE);
     }
-    
-    public void eliminarViaje(){
-        administrarViajeBeanModel.eliminarViajeById();
-        
+
+    public void sinInterception() {
+        getViajeVO().setConInter(Constantes.FALSE);
+    }
+
+    public void eliminarViaje(int idV) {
+        administrarViajeBeanModel.eliminarViajeById(idV);
+
+    }
+
+    /**
+     * @return the redondoSencillo
+     */
+    public boolean isVehiculoSgl() {
+        return administrarViajeBeanModel.isVehiculoSgl();
+    }
+
+    /**
+     */
+    public void setVehiculoSgl(boolean vehiculoSgl) {
+        administrarViajeBeanModel.setVehiculoSgl(vehiculoSgl);
+    }
+
+    /**
+     * @return the redondoSencillo
+     */
+    public boolean isEmpleadosSgl() {
+        return administrarViajeBeanModel.isEmpleadosSgl();
+    }
+
+    /**
+     */
+    public void setEmpleadosSgl(boolean empleadosSgl) {
+        administrarViajeBeanModel.setEmpleadosSgl(empleadosSgl);
+    }
+
+    /**
+     * @return the listaEmpleadosSGL
+     */
+    public List<String> getListaEmpleadosSGL() {
+        return administrarViajeBeanModel.getListaEmpleadosSGL();
+    }
+
+    /**
+     * @param listaEmpleadosSGL the listaEmpleadosSGL to set
+     */
+    public void setListaEmpleadosSGL(List<String> listaEmpleadosSGL) {
+        administrarViajeBeanModel.setListaEmpleadosSGL(listaEmpleadosSGL);
+    }
+
+    /**
+     * @return the listaViajerosSolicitud
+     */
+    public List<ViajeroVO> getListaViajerosSolicitud() {
+        return administrarViajeBeanModel.getListaViajerosSolicitud();
+    }
+
+    /**
+     * @param listaViajerosSolicitud the listaViajerosSolicitud to set
+     */
+    public void setListaViajerosSolicitud(List<ViajeroVO> listaViajerosSolicitud) {
+        administrarViajeBeanModel.setListaViajerosSolicitud(listaViajerosSolicitud);
+    }
+
+    /**
+     * @return the destinos
+     */
+    public List<SelectItem> getDestinos() {
+        return administrarViajeBeanModel.getDestinos();
+    }
+
+    /**
+     * @param destinos the destinos to set
+     */
+    public void setDestinos(List<SelectItem> destinos) {
+        administrarViajeBeanModel.setDestinos(destinos);
     }
 }

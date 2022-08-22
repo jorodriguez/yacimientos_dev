@@ -17,11 +17,10 @@ import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
 import javax.faces.event.ValueChangeEvent;
 import javax.faces.model.SelectItem;
-import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
-import lombok.extern.slf4j.Slf4j;
+import org.primefaces.event.TabChangeEvent;
 import sia.constantes.Constantes;
 import sia.excepciones.SIAException;
 import sia.modelo.SgViaje;
@@ -168,7 +167,7 @@ public class Sesion implements Serializable {
                         setUser(null);
                         setPass(null);
                         llenarUsuarioVO(getUsuario());
-                        p = "/GR";//p = "/vistas/gr/principal";
+                        p = "/GR/vistas/gr/principal.xhtml?faces-redirect=true";
                         if (isAdmin() || isGrVia()) {
                             this.setRutas();
                         } else {
@@ -196,7 +195,7 @@ public class Sesion implements Serializable {
         return p;
     }
 
-    public String salir(ActionEvent event) {
+    public String salir() {
         usuarioVO = null;
         this.setUser(this.getUserTxt());
         this.setPass(this.getPassTxt());
@@ -207,10 +206,6 @@ public class Sesion implements Serializable {
             redireccionar(Constantes.URL_REL_SIA_SIGN_OUT);
         }
         return ret;
-    }
-
-    public void goSia(ActionEvent event) {
-        this.goSia();
     }
 
     public void goSia() {
@@ -231,7 +226,7 @@ public class Sesion implements Serializable {
         }
     }
 
-    public String principal(ActionEvent event) {
+    public String principal() {
         if (isAdmin()) {
             this.setRutas();
         } else {
@@ -240,7 +235,28 @@ public class Sesion implements Serializable {
         if (isResponsable()) {
             this.setRutasPausaGerente(sgRutaTerrestreImpl.traerRutaTerrestreViaje(Constantes.VIAJE_ESPERA_AUTORIZACION, getUsuarioVO().getId()));
         }
-        return "/vistas/gr/principal.xhtml";
+        return "/vistas/gr/principal.xhtml?faces-redirect=true";
+    }
+
+    public void onTabChange(TabChangeEvent tabEvent) {
+        String tabTitle = tabEvent.getTab().getTitle();
+        switch (tabTitle) {
+            case "Viajes Pendientes":
+                setRutasViajesPenMtd();
+                PrimeFaces.current().ajax().update("frmViajesPen:tbViajes:pnlRutas");
+                break;
+            case "Viajes en Proceso":
+                setRutasViajesProMtd();
+                PrimeFaces.current().ajax().update("frmViajesPen:tbViajes:pnlViaProc");
+                break;
+            case "Viajes por autorizar":
+                setRutasViajesPauMtd();
+                PrimeFaces.current().ajax().update("frmViajesPen:tbViajes:pnlViaPausa");
+                break;
+            default:
+                setRutasViajesIntMtd();
+                PrimeFaces.current().ajax().update("frmViajesPen:tbViajes:pnlViajesInter");
+        }
     }
 
     public void llenarUsuarioVO(Usuario u) {
@@ -290,7 +306,7 @@ public class Sesion implements Serializable {
         }
     }
 
-    public void cerrarSecion(ActionEvent event) {
+    public void cerrarSecion() {
         UtilLog4j.log.info(this, "CERRO SESION SECURITY");
         setUsuarioVO(null);
     }
@@ -483,10 +499,9 @@ public class Sesion implements Serializable {
         }
     }
 
-    public void actRutasPendientesCambio(ValueChangeEvent event) {
+    public void actRutasPendientesCambio() {
         try {
-            int dias = (Integer) event.getNewValue();
-            setRutasPendienes(sgRutaTerrestreImpl.traerRutaTerrestreViaje(Constantes.ESTATUS_VIAJE_POR_SALIR, null, dias));
+            setRutasPendienes(sgRutaTerrestreImpl.traerRutaTerrestreViaje(Constantes.ESTATUS_VIAJE_POR_SALIR, null, numDias));
             if (isResponsable()) {
                 this.setRutasPausaGerente(sgRutaTerrestreImpl.traerRutaTerrestreViaje(Constantes.VIAJE_ESPERA_AUTORIZACION, getUsuarioVO().getId()));
             }
@@ -509,10 +524,8 @@ public class Sesion implements Serializable {
         this.rutasPendienes = rutas;
     }
 
-    public void finalizarViaje(ActionEvent actionEvent) {
+    public void finalizarViaje(int idViaje, int idInter) {
         try {
-            int idViaje = Integer.parseInt(FacesUtilsBean.getRequestParameter("idViaje"));
-            int idInter = Integer.parseInt(FacesUtilsBean.getRequestParameter("idInter"));
             if (idViaje > 0) {
                 SgViaje vi = sgViajeImpl.find(idViaje);
                 if (vi != null) {
@@ -570,12 +583,10 @@ public class Sesion implements Serializable {
         }
     }
 
-    public void IniciarViaje(ActionEvent actionEvent) {
+    public void iniciarViaje(int idViaje, int idInter) {
         try {
-            int idViaje = Integer.parseInt(FacesUtilsBean.getRequestParameter("idViaje"));
-            int idInter = Integer.parseInt(FacesUtilsBean.getRequestParameter("idInter"));
-            List<ViajeroVO> viajeros = new ArrayList<ViajeroVO>();
-            List<ViajeroVO> viajerosRegreso = new ArrayList<ViajeroVO>();
+            List<ViajeroVO> viajeros = new ArrayList<>();
+            List<ViajeroVO> viajerosRegreso = new ArrayList<>();
             ViajeroVO newViajero;
             if (idViaje > 0) {
                 SgViaje viaje = sgViajeImpl.find(idViaje);
@@ -617,9 +628,8 @@ public class Sesion implements Serializable {
         }
     }
 
-    public void cancelarViaje(ActionEvent actionEvent) {
+    public void cancelarViaje(int idViaje) {
         try {
-            int idViaje = Integer.parseInt(FacesUtilsBean.getRequestParameter("idViaje"));
             SgViaje viaje = sgViajeImpl.find(idViaje);
             StringBuilder motivoCancelacion = new StringBuilder();
             motivoCancelacion.append("El viaje <b>");
@@ -635,9 +645,8 @@ public class Sesion implements Serializable {
         }
     }
 
-    public void cancelarViajePendiente(ActionEvent actionEvent) {
+    public void cancelarViajePendiente(int idViaje) {
         try {
-            int idViaje = Integer.parseInt(FacesUtilsBean.getRequestParameter("idViaje"));
             SgViaje viaje = sgViajeImpl.find(idViaje);
             StringBuilder motivoCancelacion = new StringBuilder();
             motivoCancelacion.append("El viaje <b>");
@@ -653,9 +662,8 @@ public class Sesion implements Serializable {
         }
     }
 
-    public void bajarViajero(ActionEvent actionEvent) {
+    public void bajarViajero(int idViajero) {
         try {
-            int idViajero = Integer.parseInt(FacesUtilsBean.getRequestParameter("idViajeroBaja"));
             if (idViajero > 0) {
                 ViajeroVO vo = sgViajeroImpl.buscarViajeroPorId(idViajero);
                 sgViajeroSiMovimientoImpl.guardaMovimiento(usuario.getId(), idViajero,
@@ -670,9 +678,8 @@ public class Sesion implements Serializable {
         }
     }
 
-    public void AutorizarViaje(ActionEvent actionEvent) {
+    public void autorizarViaje(int idViaje) {
         try {
-            int idViaje = Integer.parseInt(FacesUtilsBean.getRequestParameter("idViaje"));
             sgViajeImpl.updateViajeDireccion(idViaje, getUsuario());
             //sgViajeImpl.cambiarEstado(idViaje, getUsuario().getId(), Constantes.ESTATUS_VIAJE_POR_SALIR);
             //sgViajeImpl.mensajeLlegada(idViaje, getUsuario().getId(), Constantes.DESTINO, "");
@@ -685,7 +692,7 @@ public class Sesion implements Serializable {
         }
     }
 
-    public void agregarComentario(ActionEvent actionEvent) {
+    public void agregarComentario() {
         try {
             if (getViajeD() != null && getViajeD().getIdNoticia() > 0) {
                 coNoticiaImpl.nuevoComentario(getViajeD().getIdNoticia(), getUsuario().getId(), getTxtComentario(), true, true, Constantes.AP_CAMPO_DEFAULT, Constantes.MODULO_GR);
@@ -707,7 +714,7 @@ public class Sesion implements Serializable {
         }
     }
 
-    public void guardarGRAutoriza(ActionEvent actionEvent) {
+    public void guardarGRAutoriza() {
         try {
             if (getIdViajeroGRAut() > 0) {
                 sgViajeroImpl.cambiarGRAutorizacion(getUsuario().getId(), getIdViajeroGRAut(), getGrAutTxtMotivo());
@@ -720,7 +727,7 @@ public class Sesion implements Serializable {
         }
     }
 
-    public void interceptarViaje(ActionEvent actionEvent) {
+    public void interceptarViaje() {
         try {
             if (this.getIntercepcion() == null) {
                 if (getIdViajeIntA() > 0 && getIdViajeIntB() > 0) {
@@ -775,10 +782,10 @@ public class Sesion implements Serializable {
         this.rutasPausa = rutasPausa;
     }
 
-    public void goAddComentario(ActionEvent actionEvent) {
+    public void goAddComentario(int idNot) {
         try {
 //            int idNoticiaAux = Integer.parseInt(FacesUtilsBean.getRequestParameter("idNoticia"));
-//            setIdNoticia(idNoticiaAux);
+            // setIdViajeIntA(idNot);
             String metodo = ";abrirDialogoAddComentario();cerrarDialogoGRViajeDet();";
             PrimeFaces.current().executeScript(metodo);
         } catch (Exception e) {
@@ -820,9 +827,8 @@ public class Sesion implements Serializable {
         }
     }
 
-    public void goGRAutoriza(ActionEvent actionEvent) {
+    public void goGRAutoriza(int idViajero) {
         try {
-            int idViajero = Integer.parseInt(FacesUtilsBean.getRequestParameter("idViajero"));
             setIdViajeroGRAut(idViajero);
             ViajeroVO vo = sgViajeroImpl.buscarViajeroPorId(idViajero);
             setGrAutTxtMotivo(vo.getGrAutorizoMotivo());
@@ -834,10 +840,9 @@ public class Sesion implements Serializable {
         }
     }
 
-    public void goInterceptarViaje(ActionEvent actionEvent) {
+    public void goInterceptarViaje(int idViaje, int idViajeInter) {
         try {
             setIntercepcion(null);
-            int idViaje = Integer.parseInt(FacesUtilsBean.getRequestParameter("idViaje"));
             setIdViajeIntA(idViaje);
             setLstViajesInt(new ArrayList<ViajeVO>());
             getLstViajesInt().addAll(sgViajeImpl.traerViajesInterceptantes(Constantes.ESTATUS_VIAJE_POR_SALIR, getIdViajeIntA(), null, null));
@@ -872,10 +877,8 @@ public class Sesion implements Serializable {
         }
     }
 
-    public void abrirInterceptarViaje(ActionEvent actionEvent) {
+    public void abrirInterceptarViaje(int idViaje, int idInter) {
         try {
-            int idViaje = Integer.parseInt(FacesUtilsBean.getRequestParameter("idViaje"));
-            int idInter = Integer.parseInt(FacesUtilsBean.getRequestParameter("idInter"));
             if (idViaje > 0 && idInter > 0) {
                 List<GrIntercepcionVO> inters = grInterseccionImpl.traerViajesPorInterceptar(idInter);
                 if (inters != null && inters.size() > 0) {
@@ -892,10 +895,8 @@ public class Sesion implements Serializable {
         }
     }
 
-    public void llegoPSeguridad(ActionEvent actionEvent) {
+    public void llegoPSeguridad(int idViaje, int idInter) {
         try {
-            int idViaje = Integer.parseInt(FacesUtilsBean.getRequestParameter("idViaje"));
-            int idInter = Integer.parseInt(FacesUtilsBean.getRequestParameter("idInter"));
             if (idViaje > 0 && idInter > 0) {
                 List<GrIntercepcionVO> inters = grInterseccionImpl.traerViajesPorInterceptar(idInter);
                 if (inters != null && inters.size() > 0) {
@@ -913,7 +914,7 @@ public class Sesion implements Serializable {
         }
     }
 
-    public void guardarLlegadaPS(ActionEvent actionEvent) {
+    public void guardarLlegadaPS() {
         try {
             boolean error = false;
             if (getIdPSLlegada() > 0 && getIdViajeLlegadaPS() > 0) {
@@ -940,7 +941,7 @@ public class Sesion implements Serializable {
         }
     }
 
-    public void guardarDetalleInt(ActionEvent actionEvent) {
+    public void guardarDetalleInt() {
         boolean actualiza = false;
         try {
             if (getIntercepcion() != null && getIntercepcion().getId() > 0) {
@@ -970,10 +971,8 @@ public class Sesion implements Serializable {
         }
     }
 
-    public void retomarViaje(ActionEvent actionEvent) {
+    public void retomarViaje(int idViaje, int idInter) {
         try {
-            int idViaje = Integer.parseInt(FacesUtilsBean.getRequestParameter("idViaje"));
-            int idInter = Integer.parseInt(FacesUtilsBean.getRequestParameter("idInter"));
             if (idViaje > 0 && idInter > 0) {
                 List<GrIntercepcionVO> inters = grInterseccionImpl.traerViajesPorInterceptar(idInter);
                 if (inters != null && inters.size() > 0) {

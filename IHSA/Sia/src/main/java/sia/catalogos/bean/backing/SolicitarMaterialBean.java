@@ -135,6 +135,7 @@ public class SolicitarMaterialBean implements Serializable {
 
     public void buscarUsuarioSolicitudNuevoIngreso() {
         usuarioVo = usuarioImpl.findByName(usuarioVo.getNombre());
+        traerListaMateriales();
     }
 
     public String solicitarMaterialUSuarios() {

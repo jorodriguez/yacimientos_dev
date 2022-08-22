@@ -12,6 +12,7 @@ import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import sia.util.UtilLog4j;
 
 /**
  *
@@ -23,7 +24,7 @@ public class SiaFilter implements Filter {
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
-        log.info("Initializing filter ...");
+        UtilLog4j.log.info("Initializing filter ...");
     }
 
     @Override
@@ -42,7 +43,7 @@ public class SiaFilter implements Filter {
 
     @Override
     public void destroy() {
-        log.info("Destroying filter ...");
+        UtilLog4j.log.info("Destroying filter ...");
     }
     
 }

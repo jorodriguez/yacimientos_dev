@@ -68,7 +68,7 @@ function abrirDialogoInterceptarViaje() {
 
 function cerrarDialogoCrearViaje() {
     cerrarDialogoModal(dialogoPopUpCrearViaje);
-    abrirDialogoModal(dialogoPopUpCrearViajeExito);
+   // abrirDialogoModal(dialogoPopUpCrearViajeExito);
 }
 
 function cerrarDialogoSemaforos() {
@@ -168,7 +168,7 @@ function abrirDialogoSituacionRiesgo() {
 }  
 
 function abrirDialogoImagen() {
-    abrirDialogoModal(dialogoVerImagen);
+    abrirDialogoModal(dialogoVerImagen  );
 }
 
 function abrirDialogoImagenMapa() {
