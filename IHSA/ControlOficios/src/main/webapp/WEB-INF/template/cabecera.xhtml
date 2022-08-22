@@ -1,0 +1,203 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"      
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core">
+    
+
+    <!-- Cabecera alterna - Con Bootstrap -->
+
+
+    <body>
+
+        <ui:composition>
+
+            <!-- Navbar -->
+
+            <h:form rendered="#{not empty sesion.usuario}">
+                <div class="navbar navbar-default navbar-fixed-top">
+                    <div class="container">
+
+                        <button type="button" 
+                                class="navbar-toggle" 
+                                data-toggle="collapse" 
+                                data-target=".navbar-collapse">
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                        </button>
+
+                        <a class="navbar-brand text-muted" href="#">
+                            <h:panelGrid>
+                                <h:commandLink  actionListener="#{sesion.siaGo(actionEvent)}">
+                                      
+                                     <p:graphicImage name="../../resources/imagenes/sia.png" 
+                                                     alt="logo"                                                     
+                                                     style="height: 25px; " 
+                                                     title="#{msgs['sistema.paginaPrincipalSia']}" />
+                                    <!--<h:graphicImage 
+                                            style="height: 25px; " 
+                                            title="#{msgs['sistema.paginaPrincipalSia']}" 
+                                            value="../../resources/imagenes/sia.png" 
+                                            alt="logo"/>-->
+                                </h:commandLink>
+                            </h:panelGrid>
+                        </a>
+                        <div class="collapse navbar-collapse">
+                            <ul class="nav navbar-nav navbar-left">
+
+                                <li>
+                                    <p:commandLink 
+                                        styleClass="parent" 
+                                        ajax="false"
+                                        actionListener="#{sesion.siaGo(actionEvent)}">
+                                        <span>Inicio</span>
+                                    </p:commandLink>
+                                </li>
+
+                                <!--li><a href="#">Menu item</a></li-->
+
+                                <li class="dropdown active">
+
+                                    <a data-toggle="dropdown" 
+                                       class="dropdown-toggle" 
+                                       href="#">
+                                        Oficios <b class="caret"></b>
+                                    </a>
+                                    <ul class="dropdown-menu">
+                                        <li>
+                                            <h:commandLink  action="#{sesion.goToBandejaEntrada()}" 
+                                                            rendered="#{sesion.permisos.rolEdicionOficios}">
+                                                <h:outputText value="Bandeja de Entrada" />
+                                            </h:commandLink>                                            
+                                        </li>
+                                        <li>
+                                            <h:commandLink action="#{sesion.goToConsultar()}">
+                                                <span>Consulta de Oficios</span>
+                                            </h:commandLink>
+                                        </li>
+                                    </ul>
+                                </li>
+                                <li>
+                                    <h:commandLink                                          
+                                        action="#{sesion.goToOficios()}"
+                                            
+                                         >
+                                        <span >Tickets</span>
+                                    </h:commandLink>
+                                </li>
+                            </ul>
+
+
+                            <ul class="nav navbar-nav navbar-right">
+                                <li style="text-align: right; line-height: 100%; margin-top: 12px; margin-right: 8px;">
+                                    <h:outputText 
+                                        value="#{sesion.usuario.nombre}" 
+                                        style="color: gray;" /><br/>
+                                    <h:outputText 
+                                        value="#{sesion.puesto}" 
+                                        style="font-size: 11px; color: gray; font-style: italic;" /> ·
+                                    <!-- Etiqueta de bloque activo -->
+                                    <!-- antes era un outputtext-->
+                                    <p:commandLink                                       
+                                        value="#{sesion.bloqueActivo.bloqueNombre}"
+                                        style="font-size: 11px; color: gray; text-decoration: underline; cursor: pointer;"                                                                                 
+                                        onclick="$(modalBloqueActivo).modal('show');"                                         
+                                        process="@this"
+                                        update=":form_bloques"
+                                        >                                                                                
+                                    </p:commandLink>                                    
+                                </li>
+                                <li class="dropdown">
+                                    <div data-toggle="dropdown" 
+                                         class="dropdown-toggle" style="cursor: pointer;">
+                                         <p:graphicImage name="../../resources/imagenes/usuario.png" styleClass="dimensionFoto" />
+                                        <!--
+                                        <h:graphicImage 
+                                                    styleClass="dimensionFoto" 
+                                                    value="../../resources/imagenes/usuario.png"/>
+                                        -->
+                                        <b class="caret"></b>
+                                    </div>
+                                    <ul class="dropdown-menu">
+                                        <li>
+                                            <p:commandLink  ajax="false" actionListener="#{sesion.cerrarSesion(actionEvent)}" >
+                                                <span>Cerrar Sesión</span>
+                                            </p:commandLink>
+                                        </li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </h:form>
+
+
+            <!-- Termina navbar -->
+
+
+            <!-- Modal - Cambiar bloque activo -->
+
+            <div class="modal fade" id="modalBloqueActivo">
+                <div class="modal-dialog" style="width: 260px;">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                                &times;
+                            </button>
+                            <h4 class="modal-title">Cambiar Bloque Activo</h4>
+                        </div>
+                        <div class="modal-body">
+                            <h:form id="form_bloques" >
+                                <center>
+                                    <p:dataTable value="#{sesion.bloquesUsuario}" var="bloque">
+                                        <p:column>
+                                            <f:facet name="header"><h:outputText value="Campo"/></f:facet>
+                                            <h:outputText value="#{bloque.bloqueNombre}" />
+                                        </p:column>
+                                        <p:column>
+                                            <f:facet name="header"><h:outputText value="Actual"/></f:facet>
+                                            <center>
+                                                <p:graphicImage name="../../resources/imagenes/tick.png" 
+                                                                rendered="#{bloque.registroId eq sesion.bloqueActivo.registroId}"/>
+                                                
+                                                
+                                            </center>
+                                        </p:column>
+                                        <p:column>                                            
+                                            <p:commandLink 
+                                                value="Cambiar" 
+                                                ajax="false"
+                                                actionListener="#{oficioPlantillaBean.cambiarBloqueActivo()}" 
+                                                style="color: #0000EE; text-decoration: underline;" 
+                                                rendered="#{bloque.registroId ne sesion.bloqueActivo.registroId}">
+                                                <f:param name="registroId" value="#{bloque.registroId}" />
+                                            </p:commandLink>
+                                        </p:column>
+                                    </p:dataTable>
+                                </center>
+                            </h:form>
+
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default btn-xs" data-dismiss="modal">
+                                Cerrar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- Termina modal - Cambiar bloque activo -->
+
+        </ui:composition>
+
+    </body>
+</html>
+
+

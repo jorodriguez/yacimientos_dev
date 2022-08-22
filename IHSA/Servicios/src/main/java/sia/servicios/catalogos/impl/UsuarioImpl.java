@@ -141,7 +141,7 @@ public class UsuarioImpl extends AbstractFacade<Usuario> {
     }
 
     public Usuario find(String id) {
-        try {
+        try {                 
             return (Usuario) em.createNamedQuery("Usuario.findById").setParameter(1, id).getSingleResult();
         } catch (Exception e) {
             log.warn("No encontró el usuario {} ", id, e);

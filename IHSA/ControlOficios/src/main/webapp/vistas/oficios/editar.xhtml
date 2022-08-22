@@ -1,0 +1,1145 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"      
+      xmlns:p="http://primefaces.org/ui"      
+      xmlns:f="http://java.sun.com/jsf/core"      
+      xmlns:my="http://www.mytags.com/schema/mytags"
+      xmlns:c="http://java.sun.com/jsp/jstl/core">    
+    <body>
+        <ui:composition template="./../../WEB-INF/template/template.xhtml">
+            <ui:define name="content">
+                <h:panelGroup rendered="#{empty sesion.usuario}">
+                    <ui:include src="../../salir.xhtml"/>
+                </h:panelGroup>
+
+                <h:form styleClass="textoIzquierda" rendered="#{not empty sesion.usuario}" id="formOficios">
+
+                    <div class="page-header">
+                        <h3>
+                            #{oficioEditarBean.titulo}
+                        </h3>
+                    </div>
+
+                    <!-- Mensajes con estilos de Bootstrap  -->
+                    <h:message style="display: block;"
+                               for=""
+                               infoClass="alert alert-success"
+                               warnClass="alert alert-warning"
+                               errorClass="alert alert-danger"
+                               fatalClass="alert alert-danger"
+                               />
+
+
+                    <div class="jumbotron">
+
+                        <div class="row">
+                            <div class="col-sm-2">
+                                #{msgs['sistema.oficios.comun.oficio.numero']}
+                            </div>
+                            <div class="col-sm-6">
+                                <!--cambio del 13/02/15 rango de caracteres de 25 a 50 jevazquez-->
+                                <!-- Nota: Se permiten solo 50 caracteres para dejar espacio en el campo de BD para anulación. Se anexa sufijo "-<ID>" en número de Oficio para diferenciar. -->
+                                <p:inputText 
+                                    id="numeroOficio" 
+                                    size="58" 
+                                    value="#{oficioEditarBean.vo.oficioNumero}" 
+                                    tabindex="" 
+                                    maxlength="50" />
+                            </div>                               
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-12">
+                                &nbsp;
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-2">
+                                #{msgs['sistema.oficios.comun.asunto']}
+                            </div>
+                            <div class="col-sm-6">
+                                <p:inputTextarea 
+                                    id="asunto" 
+                                    value="#{oficioEditarBean.vo.oficioAsunto}" 
+                                    tabindex="" 
+                                    rows="2" 
+                                    maxlength="300" 
+                                    style="width: 650px ; resize: none;" />
+                            </div>
+                        </div>
+
+                        <hr />
+
+                        <div class="row">
+                            <div class="col-sm-2">
+                                #{msgs['sistema.comun.compania.nombre']}
+                            </div>
+                            <div class="col-sm-5">
+                                <!-- Opción Mostrar todas las gerencias -->
+                                <p:selectOneMenu id="idCompania"
+                                                 value="#{oficioEditarBean.vo.companiaId}"
+                                                 valueChangeListener="#{catalogosBean.actualizarBloques}"
+                                                 tabindex=""                                                    
+                                                 required="false" 
+                                                 requiredMessage="Seleccione una compañía"
+                                                 rendered="#{oficioEditarBean.mostrarTodasGerencias}"
+                                                 >
+                                    <f:selectItem itemValue="-1" itemLabel="Seleccione..."/>
+                                    <f:selectItems value="#{catalogosBean.companias}"/>
+                                </p:selectOneMenu>
+                                <!-- Opción Mostrar opciones bloque u opción única -->
+                                <h:outputText value="#{oficioEditarBean.vo.companiaNombre}" rendered="#{oficioEditarBean.mostrarOpcionesBloques or oficioEditarBean.mostrarOpcionUnicaBloque}" />
+                            </div>
+                            <div class="col-sm-2">
+                                #{msgs['sistema.oficios.comun.oficio.fecha']}
+                            </div>
+                            <div class="col-sm-3">                                
+                                <p:datePicker  id="idFechaOficio"
+                                               value="#{oficioEditarBean.vo.oficioFecha}" 
+                                               valueChangeListener="#{oficioConsultaBean.buscarOficios(actionEvent)}"                                                   
+                                               dateTemplate="dd/MM/yyyy"
+                                               rendered="false"
+                                               >
+                                    <f:convertDateTime dateStyle="default" type="date" pattern="dd/MM/yyyy" timeZone="America/Monterrey"/>
+                                </p:datePicker>
+
+                                <!--<e:selectInputDate  id="idFechaOficio" 
+                                                      renderAsPopup="true"  
+                                                      value="#{oficioEditarBean.vo.oficioFecha}"
+                                                      highlightUnit="DAY_OF_WEEK: MONTH"
+                                                      highlightValue="1,7: 8"
+                                                      tabindex="" 
+                                                      required="false" 
+                                                      requiredMessage="Proporcione la fecha de oficio"
+                                                      partialSubmit="true" >
+                                    <f:convertDateTime dateStyle="default" type="date" pattern="dd/MM/yyyy" timeZone="America/Monterrey"/>
+                                </ice:selectInputDate>-->
+                            </div>
+                        </div> <!-- row -->
+
+                        <div class="row">
+                            <div class="col-sm-2">
+                                #{msgs['sistema.comun.bloque.nombre']}
+                            </div>
+                            <div class="col-sm-5">
+                                <!-- Combo de bloques de usuario con permiso para ver todas las gerencias -->
+
+                                <p:selectOneMenu id="idBloque"
+                                                 value="#{oficioEditarBean.vo.bloqueId}"
+                                                 valueChangeListener="#{catalogosBean.actualizarGerencias}"                                                   
+                                                 tabindex="" 
+                                                 required="false"
+                                                 requiredMessage="Seleccione un bloque"
+                                                 rendered="#{oficioEditarBean.mostrarTodasGerencias}"
+                                                 >
+                                    <f:selectItem itemValue="-1" itemLabel="Seleccione..."/> 
+                                    <f:selectItems value="#{catalogosBean.bloques}"/>
+                                </p:selectOneMenu>
+
+                                <!-- Combo de bloques de usuario sin acceso a todas las gerencias y compañías -->
+                                <p:selectOneMenu valueChangeListener="#{oficioEditarBean.actualizarCompaniaGerencia}"
+                                                 value="#{oficioEditarBean.vo.bloqueId}"
+                                                 tabindex="" 
+                                                 rendered="#{oficioEditarBean.mostrarOpcionesBloques}"
+                                                 >
+                                    <f:selectItems value="#{oficioEditarBean.opcionesBloques}"/>
+                                </p:selectOneMenu>
+
+                                <h:outputText value="#{oficioEditarBean.vo.bloqueNombre}" rendered="#{oficioEditarBean.mostrarOpcionUnicaBloque}" />
+
+                            </div>
+                            <div class="col-sm-2">
+                                #{msgs['sistema.oficios.comun.fecha.alta']}
+                            </div>
+                            <div class="col-sm-3">
+                                <h:outputText value="#{oficioEditarBean.fechaActual}" rendered="#{empty oficioEditarBean.vo.oficioId}"/>
+                                <h:outputText value="#{oficioEditarBean.vo.fechaGeneroFormato}" rendered="#{not empty oficioEditarBean.vo.oficioId}"/>
+                            </div>
+                        </div> <!-- row -->
+
+                        <div class="row">
+                            <div class="col-sm-2">
+                                #{msgs['sistema.comun.gerencia.nombre']}
+                            </div>
+                            <div class="col-sm-5">
+                                <!-- Combo de las gerencias del bloque seleccionado -->
+                                <p:selectOneMenu id="idGerencia"
+                                                 value="#{oficioEditarBean.vo.gerenciaId}"
+
+                                                 tabindex="" 
+                                                 required="false"
+                                                 requiredMessage="Seleccione una gerencia"
+                                                 >
+                                    <f:selectItem itemValue="-1" itemLabel="Seleccione..."/>
+                                    <f:selectItems value="#{catalogosBean.gerencias}"/>
+                                </p:selectOneMenu>
+
+<!--h:outputText value="#{oficioEditarBean.gerenciaUsuario.nombre}" rendered="#{!oficioEditarBean.permisos.verTodoGerencias}" /-->
+
+                            </div>
+                            <div class="col-sm-2">
+                                Tipo de Oficio
+                            </div>
+                            <div class="col-sm-3">
+                                #{oficioEditarBean.vo.tipoOficioNombre}
+                            </div>
+                        </div> <!-- row -->
+
+                        <div class="row">
+                            <div class="col-sm-2">
+                                Acceso
+                            </div>
+                            <div class="col-sm-5">
+
+                                <script type="text/javascript" >
+
+                                    function toggleRestringidos() {
+
+                                        if (document.getElementById("formOficios:acceso:_3").checked) {
+                                            $(divUsuariosRestringidos).slideDown('fast');
+                                        } else {
+                                            $(divUsuariosRestringidos).slideUp('fast');
+                                        }
+                                    }
+
+                                </script>
+
+                                <p:selectOneRadio id="acceso" 
+                                                  value="#{oficioEditarBean.vo.acceso}"                                                                                                      
+                                                  onchange="toggleRestringidos();">
+                                    <f:selectItem 
+                                        itemLabel="&nbsp;Gerencia&nbsp;&nbsp;&nbsp;" 
+                                        itemValue="#{oficioEditarBean.accesoGerencia}"/>
+                                    <f:selectItem 
+                                        itemLabel="&nbsp;Público&nbsp;&nbsp;&nbsp;" 
+                                        itemValue="#{oficioEditarBean.accesoPublico}" />                                 
+                                    <f:selectItem 
+                                        itemLabel="&nbsp;Restringido" 
+                                        itemValue="#{oficioEditarBean.accesoRestringido}"/>
+
+                                </p:selectOneRadio>
+                            </div>
+                            <div class="col-sm-2">
+                                Urgente
+                            </div>
+                            <div class="col-sm-3">
+                                <h:selectOneRadio id="oficioUrgente" value="#{oficioEditarBean.vo.urgente}">
+                                    <f:selectItem itemLabel="&nbsp;Sí&nbsp;&nbsp;&nbsp;" itemValue="true" />
+                                    <f:selectItem itemLabel="&nbsp;No" itemValue="false"/>
+                                </h:selectOneRadio>
+                            </div>
+
+                        </div> <!-- row -->
+
+
+
+                        <div class="row">
+                            <div class="col-sm-12">
+                                &nbsp;
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-sm-2">
+
+                                <ui:fragment rendered="#{!oficioEditarBean.modificacion}">
+                                    Archivo Adjunto
+                                </ui:fragment>
+                                <ui:fragment rendered="#{oficioEditarBean.modificacion}">
+                                    Estatus Actual
+                                </ui:fragment>
+
+                            </div>
+                            <div class="col-sm-10">
+                                <h:commandButton title="Buscar Archivo" 
+                                                 alt="Buscar Archivo" 
+                                                 image="../../resources/imagenes/search.png"
+                                                 tabindex=""
+                                                 style="vertical-align: middle;margin: 4px;display: inline;"
+                                                 rendered="#{!oficioEditarBean.modificacion}"
+                                                 onclick="$(modalAdjuntarOficio).modal('show');" />
+
+                                <!-- +++++++++++++++++++++ Tests +++++++++++++++++++++++ -->
+
+                                <!--h:commandButton title="Buscar Archivo - con Listener" 
+                                                 alt="Buscar Archivo - con Listener" 
+                                                 image="./resources/imagenes/search.png"
+                                                 style="vertical-align: middle;margin: 4px;display: inline;"
+                                                 actionListener="#{oficioEditarBean.mostrarDialogoAdjunto(event)}"/-->
+
+                                <!--h:commandButton title="Buscar Archivo - Test 2" 
+                                                 alt="Buscar Archivo - Test 2" 
+                                                 image="./resources/imagenes/search.png"
+                                                 style="vertical-align: middle;margin: 4px;display: inline;"
+                                                 onclick="dialogoAdjunto2.show();" />
+                                                             
+                                                             
+                                <h:commandButton title="Buscar Archivo - Test 3" 
+                                                 alt="Buscar Archivo - Test 3" 
+                                                 image="./resources/imagenes/search.png"
+                                                 style="vertical-align: middle;margin: 4px;display: inline;"
+                                                 onclick="dialogoAdjunto3.show();" />
+                                                             
+                                                             
+                                <h:commandButton title="Buscar Archivo - Test 4" 
+                                                 alt="Buscar Archivo - Test 4" 
+                                                 image="./resources/imagenes/search.png"
+                                                 style="vertical-align: middle;margin: 4px;display: inline;"
+                                                 onclick="dialogoAdjunto4.show();" / -->
+
+
+
+                                <!-- +++++++++++++++++++++ Tests +++++++++++++++++++++++ -->
+
+                                <h:commandButton title="Remover Archivo Adjunto" 
+                                                 type="button" 
+                                                 tabindex=""
+                                                 alt="Remover Archivo Adjunto" 
+                                                 rendered="#{oficioEditarBean.archivoAdjuntoSeleccionado and !oficioEditarBean.modificacion}"
+                                                 immediate="false" 
+                                                 actionListener="#{oficioEditarBean.removerArchivoAdjunto(event)}"
+                                                 image="../../resources/imagenes/icon_bad.png"
+                                                 style="vertical-align: middle;margin: 4px;display: inline;"/>
+                                <h:outputText 
+                                    id="nombreAdjunto" 
+                                    value="#{!oficioEditarBean.archivoAdjuntoSeleccionado ? 'Ninguno seleccionado' : oficioEditarBean.vo.archivoAdjunto.nombreUUID}"
+                                    rendered="#{!oficioEditarBean.modificacion}"
+                                    />
+
+
+                                <h:outputText value="#{oficioEditarBean.vo.estatusNombre}" rendered="#{oficioEditarBean.modificacion}" />
+
+                            </div>
+                        </div> <!-- row -->
+
+                        <div class="row">
+                            <div class="col-sm-12">
+                                &nbsp;
+                            </div>
+                        </div> <!-- row -->
+
+
+                        <div class="row">
+                            <div class="col-sm-2">
+                                Asociado a Oficio(s)
+                            </div>
+                            <div class="col-sm-10">
+                                <p:dataTable id="oficiosAsociados"  
+                                             showGridlines="true" 
+                                             size="small" 
+                                             rows="10"  
+                                             value="#{oficioEditarBean.vo.asociadoHaciaOficios}" 
+                                             binding="#{oficioEditarBean.tablaAsociados}"
+                                             var="currentRow"
+                                             paginator="true" paginatorPosition="both"
+                                            paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                            currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} registros"
+                                            rowsPerPageTemplate="5,10,{ShowAll|'All'}"
+                                             >
+                                    <!--<ice:dataTable id="oficiosAsociados" 
+                                                   rows="5" 
+                                                   value="#{oficioEditarBean.vo.asociadoHaciaOficios}" 
+                                                   var="currentRow" 
+                                                   width="100%"
+                                                   binding="#{oficioEditarBean.tablaAsociados}"
+                                                   >-->
+                                    <p:column>
+                                        <h:outputText value="#{currentRow['oficioNumero']}"/>
+                                        <f:facet name="header">
+                                            <h:outputText value="#{msgs['sistema.oficios.comun.oficio.numero']}"/>
+                                        </f:facet>
+                                    </p:column>
+                                    <p:column>
+                                        <h:outputText value="#{currentRow['oficioAsunto']}"/>
+                                        <f:facet name="header">
+                                            <h:outputText value="#{msgs['sistema.oficios.comun.asunto']}"/>
+                                        </f:facet>
+                                    </p:column>
+                                    <p:column>
+                                        <h:outputText value="#{currentRow['companiaSiglas']}"/>
+                                        <f:facet name="header">
+                                            <h:outputText value="#{msgs['sistema.comun.compania.nombre']}"/>
+                                        </f:facet>
+                                    </p:column>
+                                    <p:column>
+                                        <h:outputText value="#{currentRow['bloqueNombre']}"/>
+                                        <f:facet name="header">
+                                            <h:outputText value="#{msgs['sistema.comun.bloque.nombre']}"/>
+                                        </f:facet>
+                                    </p:column>
+                                    <p:column>
+                                        <h:outputText value="#{currentRow['gerenciaNombre']}"/>
+                                        <f:facet name="header">
+                                            <h:outputText value="#{msgs['sistema.comun.gerencia.nombre']}"/>
+                                        </f:facet>
+                                    </p:column>
+                                    <p:column style="width: 10px;">
+                                        <p:commandLink styleClass="link"
+                                                       actionListener="#{oficioEditarBean.removerDeAsociados(actionEvent)}"
+                                                       title="Desasociar a este oficio" 
+                                                       rendered="true" >
+                                            <center>
+                                                <i class="fa fa-remove icono-contenido" style="font-size: 18px;"></i>
+                                            </center>
+                                            <f:param name="oficioId" value="#{currentRow['oficioId']}" />
+                                        </p:commandLink>
+                                    </p:column>
+                                    </p:dataTable>
+
+                                    <br></br>
+
+                                    <p:commandLink value="Agregar..." 
+                                                   styleClass="btn btn-default btn-xs"
+                                                   style="float: right;"
+                                                   actionListener="#{oficioEditarBean.limpiarOficiosAsociados(event)}"
+                                                   onclick="setTimeout(function () {
+                                                             $(modalAsociarOficio).modal('show')
+                                                         }, 1000);"
+                                                   immediate="true"
+                                                   rendered="true"
+                                                   title="Buscar oficios a asociar" />
+
+                                    <!--<center>
+                                        <p:dataPaginator for="oficiosAsociados"
+                                                           rowsCountVar="rowsCount"
+                                                           displayedRowsCountVar="displayedRowsCount"
+                                                           firstRowIndexVar="firstRowIndex"
+                                                           lastRowIndexVar="lastRowIndex"
+                                                           pageCountVar="pageCount"
+                                                           pageIndexVar="pageIndex">
+                                            <ice:outputFormat
+                                                styleClass="standard"
+                                                value="{0} Oficio(s) Asociado(s), mostrando {1} oficio(s), del {2} al {3}. Página {4} de {5}.">
+                                                <f:param value="#{rowsCount}"/>
+                                                <f:param value="#{displayedRowsCount}"/>
+                                                <f:param value="#{firstRowIndex}"/>
+                                                <f:param value="#{lastRowIndex}"/>
+                                                <f:param value="#{pageIndex}"/>
+                                                <f:param value="#{pageCount}"/>
+                                            </ice:outputFormat>
+                                        </ice:dataPaginator>
+    
+                                        <ice:dataPaginator 
+                                            for="oficiosAsociados"
+                                            fastStep="4"
+                                            paginator="true"
+                                            paginatorMaxPages="5">
+                                            <f:facet name="first">
+                                                <ice:graphicImage 
+                                                    url="./xmlhttp/css/rime/css-images/arrow-first.gif"
+                                                    style="border:none;"
+                                                    title="Primera Página"/>
+                                            </f:facet>
+                                            <f:facet name="last">
+                                                <ice:graphicImage 
+                                                    url="./xmlhttp/css/rime/css-images/arrow-last.gif"
+                                                    style="border:none;"
+                                                    title="Ultima Página"/>
+                                            </f:facet>
+                                        </ice:dataPaginator>
+                                    </center>-->
+                            </div>
+                        </div> <!-- row -->
+
+                        <div id="divUsuariosRestringidos" style="display: #{oficioEditarBean.vo.restringido ? 'block' : 'none'};">
+                            <div class="row">
+                                <div class="col-sm-2">
+                                    Restringido a Usuario(s)
+                                </div>
+                                <div class="col-sm-10">
+                                    <p:dataTable id="usuariosRestringido"  
+                                                 showGridlines="true" 
+                                                 size="small" 
+                                                 rows="10"  
+                                                 value="#{oficioEditarBean.vo.restringidoAUsuarios}" 
+                                                 binding="#{oficioEditarBean.tablaUsuariosRestringido}"
+                                                 var="currentRow"
+                                                 paginator="true" paginatorPosition="both"
+                                            paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                            currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} registros"
+                                            rowsPerPageTemplate="5,10,{ShowAll|'All'}"
+                                                 >
+                                        <!--<ice:dataTable id="usuariosRestringido" 
+                                                       rows="5" 
+                                                       value="#{oficioEditarBean.vo.restringidoAUsuarios}" 
+                                                       var="currentRow" 
+                                                       width="100%"
+                                                       binding="#{oficioEditarBean.tablaUsuariosRestringido}"
+                                                       >-->
+                                        <p:column style="width: 150px;">
+                                            <h:outputText value="#{currentRow['id']}"/>
+                                            <f:facet name="header">
+                                                <h:outputText value="Usuario"/>
+                                            </f:facet>
+                                        </p:column>
+                                        <p:column>
+                                            <h:outputText value="#{currentRow['nombre']}"/>
+                                            <f:facet name="header">
+                                                <h:outputText value="Nombre Completo"/>
+                                            </f:facet>
+                                        </p:column>
+
+                                        <p:column style="width: 10px;">
+                                            <p:commandLink styleClass="link"
+                                                           actionListener="#{oficioEditarBean.removerUsuarioRestringido(actionEvent)}"
+                                                           title="Remover usuario" 
+                                                           rendered="true" >
+                                                <center>
+                                                    <i class="fa fa-remove icono-contenido" style="font-size: 18px;"></i>
+                                                </center>
+                                                <f:param name="usuarioId" value="#{currentRow['id']}" />
+                                            </p:commandLink>
+                                        </p:column>
+                                        </p:dataTable>
+
+                                        <br></br>
+
+                                        <p:commandLink value="Agregar..." 
+                                                       styleClass="btn btn-default btn-xs"
+                                                       style="float: right;"
+                                                       actionListener="#{oficioEditarBean.limpiarUsuariosAcceso(event)}"
+                                                       onclick="setTimeout(function () {
+                                                                 $(modalUsuariosAcceso).modal('show')
+                                                             }, 1000);"
+                                                       immediate="true"
+                                                       rendered="true"
+                                                       title="Buscar usuarios" />
+
+                                        <!--<center>
+                                            <ice:dataPaginator for="usuariosRestringido"
+                                                               rowsCountVar="rowsCount"
+                                                               displayedRowsCountVar="displayedRowsCount"
+                                                               firstRowIndexVar="firstRowIndex"
+                                                               lastRowIndexVar="lastRowIndex"
+                                                               pageCountVar="pageCount"
+                                                               pageIndexVar="pageIndex">
+                                                <ice:outputFormat
+                                                    styleClass="standard"
+                                                    value="{0} Usuario(s), mostrando {1} usuario(s), del {2} al {3}. Página {4} de {5}.">
+                                                    <f:param value="#{rowsCount}"/>
+                                                    <f:param value="#{displayedRowsCount}"/>
+                                                    <f:param value="#{firstRowIndex}"/>
+                                                    <f:param value="#{lastRowIndex}"/>
+                                                    <f:param value="#{pageIndex}"/>
+                                                    <f:param value="#{pageCount}"/>
+                                                </ice:outputFormat>
+                                            </ice:dataPaginator>
+    
+                                            <ice:dataPaginator 
+                                                for="usuariosRestringido"
+                                                fastStep="4"
+                                                paginator="true"
+                                                paginatorMaxPages="5">
+                                                <f:facet name="first">
+                                                    <ice:graphicImage 
+                                                        url="./xmlhttp/css/rime/css-images/arrow-first.gif"
+                                                        style="border:none;"
+                                                        title="Primera Página"/>
+                                                </f:facet>
+                                                <f:facet name="last">
+                                                    <ice:graphicImage 
+                                                        url="./xmlhttp/css/rime/css-images/arrow-last.gif"
+                                                        style="border:none;"
+                                                        title="Ultima Página"/>
+                                                </f:facet>
+                                            </ice:dataPaginator>
+                                        </center>-->
+                                </div>
+                            </div> <!-- row -->
+                        </div>
+
+
+
+                        <div class="row">
+                            <div class="col-sm-2">
+                                Observaciones
+                            </div>
+                            <div class="col-sm-10">
+                                <p:inputTextarea 
+                                    id="observaciones" 
+                                    value="#{oficioEditarBean.vo.observaciones}" 
+                                    tabindex="" 
+                                    rows="2" 
+                                    maxlength="200" 
+                                    style="width: 100%; resize: none;" />
+                            </div>
+                        </div> <!-- row -->
+                        <br/>
+                        <div class="row">
+                            <script type="text/javascript" >
+
+                                function toggleCrearCopia() {
+
+                                    if (document.getElementById("formOficios:conCopia:_1").checked) {
+                                        $(selectBloque).slideDown('fast');
+                                        e
+                                    } else {
+                                        $(selectBloque).slideUp('fast');
+                                    }
+                                }
+
+                            </script>
+                            <div class="col-sm-5" style="display: #{oficioEditarBean.mulitoBlque ?'block':'none'}">
+                                <label class="col-md-8">Crear copia(s) en otro(s) bloque(s)?</label> 
+                                <div class="col-md-4">
+                                    <p:selectOneRadio id="conCopia" 
+                                                      value="#{oficioEditarBean.crearCopia}"
+                                                      onchange="toggleCrearCopia();">
+                                        <f:selectItem 
+                                            itemLabel="&nbsp;Si&nbsp;&nbsp;&nbsp;" 
+                                            itemValue="true"/>
+                                        <f:selectItem 
+                                            itemLabel="&nbsp;No&nbsp;&nbsp;&nbsp;" 
+                                            itemValue="false" />                                 
+                                    </p:selectOneRadio>
+                                </div>
+
+                            </div>
+                            <div class="col-sm-7" id="selectBloque" style="display: #{oficioEditarBean.crearCopia ? 'block' : 'none'};">
+                                <label class="col-md-2">Bloque(s)</label>
+                                <div class="col-md-5">
+                                    <p:selectOneMenu id="idBloqueCopi"
+                                                     value="#{oficioEditarBean.bloqueACopiarId}"
+                                                     valueChangeListener="#{oficioEditarBean.agregarBloqueCopy}"                                                       
+                                                     tabindex="" 
+                                                     required="false"
+                                                     requiredMessage="Seleccionar bloque(S) donde se generara la(s) copia(s)."
+                                                     >
+                                        <f:selectItem itemValue="-1" itemLabel="Seleccione..."/>
+                                        <f:selectItems value="#{catalogosBean.bloques}"/>
+                                    </p:selectOneMenu>
+                                </div>
+
+                            </div>
+
+                        </div>
+                        <br/>
+                        <div class="row" style="display: #{oficioEditarBean.crearCopia ? 'block' : 'none'};">
+                            <label class="col-md-5">Se creara una copia del archivo en el o los Bloques: </label>
+                            <label class="col-md-7">#{oficioEditarBean.listaBloques}</label>
+                        </div>
+
+
+                        <div class="row">
+                            <div class="col-sm-12" align="right">
+                                &nbsp;
+                            </div>
+                        </div> <!-- row -->
+
+
+                        <hr />
+
+                        <div class="row">
+                            <div class="col-sm-12" style="text-align: right;">
+
+                                <!-- Boton Guardar - Altas -->
+
+                                <p:commandLink value="Guardar" 
+                                               tabindex=""
+                                               styleClass="btn btn-success btn-xs"
+                                               onclick="bloquearPantalla('true');"
+                                               action="#{oficioEditarBean.guardarOficio(actionEvent)}"
+                                               rendered="#{oficioEditarBean.botonGuardarNuevo.visible}"
+                                               title="Guardar nuevo oficio" />
+
+                                <h:outputText value="&nbsp;&nbsp;" />
+
+                                <!-- Boton Guardar - Cambios -->
+
+                                <p:commandLink value="Guardar" 
+                                               tabindex=""
+                                               styleClass="btn btn-success btn-xs"
+                                               onclick="bloquearPantalla('true');"
+                                               action="#{oficioEditarBean.guardarOficio(actionEvent)}"
+                                               rendered="#{oficioEditarBean.botonGuardarEdicion.visible}"
+                                               title="Guardar cambios" >
+                                    <f:param name="oficioId" value="#{oficioEditarBean.vo.oficioId}" />
+                                    </p:commandLink>
+
+
+                                    <!-- Boton Guardar y Promover - Altas -->
+
+                                    <p:commandLink value="Guardar y Promover" 
+                                                   tabindex=""
+                                                   styleClass="btn btn-info btn-xs"
+                                                   onclick="bloquearPantalla('true');"
+                                                   action="#{oficioEditarBean.guardarPromover(actionEvent)}"
+                                                   rendered="#{oficioEditarBean.botonGuardarPromover.visible}"
+                                                   title="Guardar nuevo oficio y promover" />
+
+                                    <h:outputText value="&nbsp;&nbsp;" />
+
+                                    <!--Boton crear con copia -->
+                                    <!--ice:commandLink value="Guardar con copia" 
+                                                     tabindex=""
+                                                     styleClass="btn btn-primary btn-xs"
+                                                     action="detalle"
+                                                     title="Guardar el oficio con copia en otro(s) bloque(s)" >
+                                        <f:param name="oficioId" value="#{oficioEditarBean.vo.oficioId}" />
+                                    </ice:commandLink>
+                                    <h:outputText value="&nbsp;&nbsp;" /-->
+
+                                    <!-- Boton Cancelar -->
+
+                                    <p:commandLink value="Cancelar" 
+                                                   tabindex=""
+                                                   styleClass="btn btn-default btn-xs"
+                                                   action="bandejaEntrada"
+                                                   rendered="#{oficioEditarBean.botonCancelarNuevo.visible}"
+                                                   title="Cancelar operación" />
+
+
+                                    <p:commandLink value="Cancelar" 
+                                                   tabindex=""
+                                                   styleClass="btn btn-default btn-xs"
+                                                   action="detalle"
+                                                   rendered="#{oficioEditarBean.botonCancelarEdicion.visible}"
+                                                   title="Cancelar operación" >
+                                        <f:param name="oficioId" value="#{oficioEditarBean.vo.oficioId}" />
+                                    </p:commandLink>
+                            </div>
+                        </div> <!-- row -->
+
+                    </div> <!-- jumbotron -->
+
+                    <!-- Dialogo para seleccionar archivo adjunto (Test 4) -->
+
+                    <!--ace:dialog widgetVar="dialogoAdjunto4"
+                                modal="true"
+                                showEffect="header"
+                                showHeader="true"
+                                closable="true">
+                        <ice:panelGrid>
+                            <ice:outputLabel value="Test 4"/>
+                        </ice:panelGrid>
+                        <br/>
+                    </ace:dialog-->
+
+                </h:form>
+
+                <!-- Modal - Seleccionar archivo adjunto -->
+
+                <div class="modal fade" id="modalAdjuntarOficio">
+                    <div class="modal-dialog" style="width: 650px;">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                                    &times;
+                                </button>
+                                <h4 class="modal-title">Adjuntar Archivo de Oficio</h4>
+                            </div>
+                            <div class="modal-body">
+                                <h:form id="formAdjunto">
+                                    <div class="jumbotron">
+                                        <div class="row">
+                                            <center>
+                                                <div class="col-sm-12">
+                                                    <table width="100%">
+                                                        <tr>
+                                                            <td>
+                                                                <h:outputLabel id="labelArchivo" 
+                                                                               for="fileEntryAdjunto" 
+                                                                               value="Archivo"/>
+                                                            </td>
+                                                            <td>
+                                                                <!--<ace:fileEntry id="fileEntryAdjunto"
+                                                                               useSessionSubdir="true" 
+                                                                               absolutePath="/tmp"
+                                                                               fileEntryListener="{oficioEditarBean.prepararArchivoAdjuntoVo}"
+                                                                               useOriginalFilename="true"
+                                                                               />-->
+                                                                <h:form enctype="multipart/form-data">
+                                                                    <!-- Probar -->
+                                                                    <p:fileUpload id="fileEntryAdjunto" value="#{fileUploadView.file}" 
+                                                                                   mode="simple"                                                                                    
+                                                                                   skinSimple="true"/>
+
+                                                                    <p:commandButton value="Submit" ajax="false" action="#{oficioEditarBean.prepararArchivoAdjuntoVo}" styleClass="mt-3 ui-button-outlined block"/>
+                                                                </h:form>
+                                                            </td>
+                                                            <td>
+                                                                <h:commandButton value="Subir" 
+                                                                                 styleClass="btn btn-success btn-xs"
+                                                                                 onclick="$(modalAdjuntarOficio).modal('hide')" />
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+                                                </div>
+                                            </center>
+                                        </div>
+                                    </div>
+                                </h:form>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default btn-xs" data-dismiss="modal">
+                                    Cerrar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Termina modal - Seleccionar archivo adjunto -->
+
+
+                <!-- Modal - Asociar a Oficio(s) -->
+
+                <div class="modal fade" id="modalAsociarOficio">
+                    <div class="modal-dialog" style="width: 700px;">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                                    &times;
+                                </button>
+                                <h4 class="modal-title">Asociar a Oficio(s)</h4>
+                            </div>
+                            <div class="modal-body">
+
+                                <h:form id="formAsociado" styleClass="textoIzquierda">
+
+                                    <div class="jumbotron">
+                                        <div class="row">
+                                            <div class="col-sm-12">
+                                                <center>
+                                                    Nº Oficio
+                                                    &nbsp;
+                                                    <h:inputText 
+                                                        id="txtOficioAsociadoNumero" 
+                                                        size="30"
+                                                        value="#{oficioEditarBean.numeroOficioAsociado}" 
+                                                        onkeypress="return submitEnter('formAsociado:botonBuscarAsociado', event);" 
+                                                        />
+                                                    &nbsp;
+                                                    <h:commandButton 
+                                                        id="botonBuscarAsociado" 
+                                                        value="Buscar" 
+                                                        styleClass="btn btn-default btn-xs"
+                                                        action="#{oficioEditarBean.buscarOficiosAsociacion(event)}" />
+                                                </center>
+                                            </div>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="col-sm-12">
+                                                &nbsp;
+                                            </div>
+                                        </div>
+
+                                        <div class="row">
+                                            <center>
+                                                  <p:dataTable id="dataTable1"  
+                                         showGridlines="true" 
+                                         size="small" 
+                                         rows="5"  
+                                         value="#{oficioEditarBean.resultados}" 
+                                         binding="#{oficioEditarBean.tablaResultados}"
+                                         var="currentRow"
+                                         paginator="true" paginatorPosition="both"
+                                            paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                            currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} registros"
+                                            rowsPerPageTemplate="5,10,{ShowAll|'All'}"
+                                         >
+                                                <!--
+                                                <ice:dataTable 
+                                                    id="dataTable1" 
+                                                    rows="5" 
+                                                    style="width: 100%;"
+                                                    value="#{oficioEditarBean.resultados}" 
+                                                    var="currentRow" 
+                                                    binding="#{oficioEditarBean.tablaResultados}"
+                                                    >
+                                                    -->
+                                                    <p:column style="white-space: nowrap;">
+                                                        <h:outputText value="#{currentRow['oficioNumero']}"/>
+                                                        <f:facet name="header">
+                                                            <h:outputText value="Nº Oficio"/>
+                                                        </f:facet>
+                                                    </p:column>
+                                                    <p:column style="width: 20px;">
+                                                        <h:graphicImage value="../../resources/imagenes/tipo_oficio/tipo_oficio_#{currentRow['tipoOficioId']}.png" 
+                                                                        alt="Oficio de #{currentRow['tipoOficioNombre']}" 
+                                                                        title="Oficio de #{currentRow['tipoOficioNombre']}" />
+                                                        <f:facet name="header">
+                                                            <h:outputText value="Tipo"/>
+                                                        </f:facet>
+                                                    </p:column>
+                                                    <p:column style="white-space: nowrap; width: 180px;">
+                                                        <h:outputText value="#{currentRow['companiaSiglas']}"/>
+                                                        <f:facet name="header">
+                                                            <h:outputText value="Compañía"/>
+                                                        </f:facet>
+                                                    </p:column>
+                                                    <p:column style="white-space: nowrap;">
+                                                        <h:outputText value="#{currentRow['bloqueNombre']}"/>
+                                                        <f:facet name="header">
+                                                            <h:outputText value="Bloque"/>
+                                                        </f:facet>
+                                                    </p:column>
+                                                    <p:column style="white-space: nowrap; width: 180px;">
+                                                        <h:outputText value="#{currentRow['gerenciaNombre']}"/>
+                                                        <f:facet name="header">
+                                                            <h:outputText value="Gerencia"/>
+                                                        </f:facet>
+                                                    </p:column>
+                                                    <p:column>
+                                                        <p:commandLink styleClass="link"
+                                                                         actionListener="#{oficioEditarBean.agregarAAsociados(actionEvent)}"
+                                                                         title="Asociar a este oficio" 
+                                                                         rendered="true" >
+                                                            <center>
+                                                                <i class="fa fa-plus icono-contenido" style="font-size: 18px;"></i>
+                                                            </center>
+                                                            <f:param name="oficioId" value="#{currentRow['oficioId']}" />   
+                                                        </p:commandLink>
+                                                    </p:column>
+                                                </p:dataTable>
+
+                                                <br/>
+
+                                                <!--<ice:dataPaginator for="dataTable1"
+                                                                   rowsCountVar="rowsCount"
+                                                                   displayedRowsCountVar="displayedRowsCount"
+                                                                   firstRowIndexVar="firstRowIndex"
+                                                                   lastRowIndexVar="lastRowIndex"
+                                                                   pageCountVar="pageCount"
+                                                                   pageIndexVar="pageIndex">
+                                                    <ice:outputFormat
+                                                        styleClass="standard"
+                                                        value="{0} Oficios encontrados, mostrando del {1} al {2}.">
+                                                        <f:param value="#{rowsCount}"/>
+                                                        <f:param value="#{firstRowIndex}"/>
+                                                        <f:param value="#{lastRowIndex}"/>
+                                                    </ice:outputFormat>
+                                                </ice:dataPaginator>
+
+                                                <ice:dataPaginator 
+                                                    for="dataTable1"
+                                                    fastStep="4"
+                                                    paginator="true"
+                                                    paginatorMaxPages="5">
+                                                    <f:facet name="first">
+                                                        <ice:graphicImage 
+                                                            url="./xmlhttp/css/rime/css-images/arrow-first.gif"
+                                                            style="border:none;"
+                                                            title="Primera Página"/>
+                                                    </f:facet>
+                                                    <f:facet name="last">
+                                                        <ice:graphicImage 
+                                                            url="./xmlhttp/css/rime/css-images/arrow-last.gif"
+                                                            style="border:none;"
+                                                            title="Ultima Página"/>
+                                                    </f:facet>
+                                                    <f:facet name="previous">
+                                                        <ice:graphicImage 
+                                                            url="./xmlhttp/css/rime/css-images/arrow-previous.gif"
+                                                            style="border:none;"
+                                                            title="Página Anterior"/>
+                                                    </f:facet>
+                                                    <f:facet name="next">
+                                                        <ice:graphicImage 
+                                                            url="./xmlhttp/css/rime/css-images/arrow-next.gif"
+                                                            style="border:none;"
+                                                            title="Página Siguiente"/>
+                                                    </f:facet>
+                                                    <f:facet name="fastforward">
+                                                        <ice:graphicImage 
+                                                            url="./xmlhttp/css/rime/css-images/arrow-ff.gif"
+                                                            style="border:none;"
+                                                            title="Avance Rapido 3 páginas"/>
+                                                    </f:facet>
+                                                    <f:facet name="fastrewind">
+                                                        <ice:graphicImage 
+                                                            url="./xmlhttp/css/rime/css-images/arrow-fr.gif"
+                                                            style="border:none;"
+                                                            title="Retroceso rápido 3 páginas"/>
+                                                    </f:facet>
+                                                </ice:dataPaginator>-->
+                                            </center>
+                                        </div>
+                                    </div>  <!-- jumbotron -->
+                                </h:form>
+                            </div>
+
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default btn-xs" data-dismiss="modal">
+                                    Cerrar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Termina Modal - Asociar a Oficio -->
+
+
+
+                <!-- Modal - Usuarios con Acceso -->
+
+                <div class="modal fade" id="modalUsuariosAcceso">
+                    <div class="modal-dialog" style="width: 550px;">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                                    &times;
+                                </button>
+                                <h4 class="modal-title">Restringir a Usuario(s) - Bloque #{oficioEditarBean.vo.bloqueNombre}</h4>
+                            </div>
+                            <div class="modal-body">
+
+                                <h:form id="formUsuariosAcceso" styleClass="textoIzquierda">
+                                    <div class="jumbotron">
+                                        <div class="row">
+                                            <div class="col-sm-12">
+                                                <center>
+                                                    Nombre del Usuario
+                                                    &nbsp;
+                                                    <h:inputText 
+                                                        size="20"
+                                                        value="#{oficioEditarBean.nombreUsuarioAcceso}" 
+                                                        onkeypress="return submitEnter('formUsuariosAcceso:botonBuscarUsuariosAcceso', event);" 
+                                                        />
+                                                    &nbsp;
+                                                    <h:commandButton 
+                                                        id="botonBuscarUsuariosAcceso" 
+                                                        value="Buscar" 
+                                                        styleClass="btn btn-default btn-xs"
+                                                        action="#{oficioEditarBean.buscarUsuariosAcceso(event)}" />
+                                                </center>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-sm-12">
+                                                &nbsp;
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <center>
+                                                   <p:dataTable id="dataTable2" 
+                                         showGridlines="true" 
+                                         size="small" 
+                                         rows="10"  
+                                         value="#{oficioEditarBean.resultadosUsuariosAcceso}" 
+                                         var="currentRow"
+                                         binding="#{oficioEditarBean.tablaResultadosUsuariosAcceso}"
+                                         paginator="true" paginatorPosition="both"
+                                            paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                            currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} registros"
+                                            rowsPerPageTemplate="5,10,{ShowAll|'All'}"
+                                         >
+                                                <!--
+                                                <ice:dataTable 
+                                                    id="dataTable2"  
+                                                    rows="5" 
+                                                    style="width: 100%;"
+                                                    value="#{oficioEditarBean.resultadosUsuariosAcceso}" 
+                                                    var="currentRow" 
+                                                    binding="#{oficioEditarBean.tablaResultadosUsuariosAcceso}"
+                                                    >
+                                                    -->
+                                                    <p:column style="width: 120px;">
+                                                        <h:outputText value="#{currentRow['id']}"/>
+                                                        <f:facet name="header">
+                                                            <h:outputText value="Usuario"/>
+                                                        </f:facet>
+                                                    </p:column>
+                                                    <p:column style="white-space: nowrap;">
+                                                        <h:outputText value="#{currentRow['nombre']}"/>
+                                                        <f:facet name="header">
+                                                            <h:outputText value="Nombre Completo"/>
+                                                        </f:facet>
+                                                    </p:column>
+                                                    <p:column style="width: 10px;">
+                                                        <p:commandLink styleClass="link"
+                                                                         actionListener="#{oficioEditarBean.agregarAUsuariosAcceso(actionEvent)}"
+                                                                         title="Agregar usuario" 
+                                                                         rendered="true" >
+                                                            <center>
+                                                                <i class="fa fa-plus icono-contenido" style="font-size: 18px;"></i>
+                                                            </center>
+                                                            <f:param name="usuarioId" value="#{currentRow['id']}" />
+                                                        </p:commandLink>
+                                                    </p:column>
+                                                </p:dataTable>
+                                                <br/>
+                                                <!--
+                                                <ice:dataPaginator for="dataTable2"
+                                                                   rowsCountVar="rowsCount"
+                                                                   displayedRowsCountVar="displayedRowsCount"
+                                                                   firstRowIndexVar="firstRowIndex"
+                                                                   lastRowIndexVar="lastRowIndex"
+                                                                   pageCountVar="pageCount"
+                                                                   pageIndexVar="pageIndex">
+                                                    <ice:outputFormat
+                                                        styleClass="standard"
+                                                        value="{0} Usuario(s) encontrado(s), mostrando del {1} al {2}.">
+                                                        <f:param value="#{rowsCount}"/>
+                                                        <f:param value="#{firstRowIndex}"/>
+                                                        <f:param value="#{lastRowIndex}"/>
+                                                    </ice:outputFormat>
+                                                </ice:dataPaginator>
+
+                                                <ice:dataPaginator 
+                                                    for="dataTable2"
+                                                    fastStep="4"
+                                                    paginator="true"
+                                                    paginatorMaxPages="5">
+                                                    <f:facet name="first">
+                                                        <ice:graphicImage 
+                                                            url="./xmlhttp/css/rime/css-images/arrow-first.gif"
+                                                            style="border:none;"
+                                                            title="Primera Página"/>
+                                                    </f:facet>
+                                                    <f:facet name="last">
+                                                        <ice:graphicImage 
+                                                            url="./xmlhttp/css/rime/css-images/arrow-last.gif"
+                                                            style="border:none;"
+                                                            title="Ultima Página"/>
+                                                    </f:facet>
+                                                    <f:facet name="previous">
+                                                        <ice:graphicImage 
+                                                            url="./xmlhttp/css/rime/css-images/arrow-previous.gif"
+                                                            style="border:none;"
+                                                            title="Página Anterior"/>
+                                                    </f:facet>
+                                                    <f:facet name="next">
+                                                        <ice:graphicImage 
+                                                            url="./xmlhttp/css/rime/css-images/arrow-next.gif"
+                                                            style="border:none;"
+                                                            title="Página Siguiente"/>
+                                                    </f:facet>
+                                                    <f:facet name="fastforward">
+                                                        <ice:graphicImage 
+                                                            url="./xmlhttp/css/rime/css-images/arrow-ff.gif"
+                                                            style="border:none;"
+                                                            title="Avance Rapido 3 páginas"/>
+                                                    </f:facet>
+                                                    <f:facet name="fastrewind">
+                                                        <ice:graphicImage 
+                                                            url="./xmlhttp/css/rime/css-images/arrow-fr.gif"
+                                                            style="border:none;"
+                                                            title="Retroceso rápido 3 páginas"/>
+                                                    </f:facet>
+                                                </ice:dataPaginator>
+                                                -->
+                                            </center>
+                                        </div>
+                                    </div>  <!-- jumbotron -->
+                                </h:form>
+                            </div>
+
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default btn-xs" data-dismiss="modal">
+                                    Cerrar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Termina Modal - Usuarios con Acceso -->
+
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>
