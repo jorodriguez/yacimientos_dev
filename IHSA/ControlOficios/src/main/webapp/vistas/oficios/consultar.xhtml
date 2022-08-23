@@ -76,14 +76,13 @@
                                                        value="#{oficioConsultaBean.vo.companiaId}"
                                                        valueChangeListener="#{catalogosBean.actualizarBloques}"
                                                        rendered="#{oficioConsultaBean.mostrarTodasGerencias}"                                                                                                              
+                                                       onchange="buscar()"
                                                        >
                                         <f:selectItem itemValue="0" itemLabel="Todos"/>
                                         <f:selectItems value="#{catalogosBean.companias}"/>                                        
-                                        <p:ajax process="@this" update="@form"/>
+                                        <p:ajax process="@this" update="@form"  />
                                     </p:selectOneMenu>
                                     
-                                    <h:outputLabel value="compania id #{oficioConsultaBean.vo.companiaId}"/>
-                                   
                                     <h:outputText value="#{oficioConsultaBean.vo.companiaNombre}" rendered="#{!oficioConsultaBean.mostrarTodasGerencias}" />
 
                                 </div>
@@ -93,6 +92,7 @@
                                 <div class="col-sm-3">
                                     <p:datePicker id="idFechaOficioDesde"                                                   
                                                   valueChangeListener="#{oficioConsultaBean.buscarOficios(actionEvent)}"
+                                                  
                                                   >                 
                                         <f:convertDateTime dateStyle="default" type="date" pattern="dd/MM/yyyy" timeZone="America/Monterrey"/>
                                     </p:datePicker>
@@ -125,14 +125,13 @@
                                                        value="#{oficioConsultaBean.vo.bloqueId}"
                                                        valueChangeListener="#{catalogosBean.actualizarGerencias}"
                                                        rendered="#{oficioConsultaBean.mostrarTodasGerencias}"                                                                
+                                                       onchange="buscar()"
                                                        >
                                         <f:selectItem itemValue="0" itemLabel="Todos"/>
                                         <f:selectItems value="#{catalogosBean.bloques}"/>
                                         <p:ajax process="@this" update="@form"/>
                                     </p:selectOneMenu>
                                     
-                                    <h:outputLabel value="bloque id #{oficioConsultaBean.vo.bloqueId}"/>
-
                                     <!--
                                     onchange="document.getElementById('formOficios:botonBuscar').click();"
                                                        onkeyup="return submitEnter('formOficios:botonBuscar', event);"
@@ -142,13 +141,12 @@
                                     <p:selectOneMenu valueChangeListener="#{oficioConsultaBean.actualizarCompaniaGerencia}"
                                                        value="#{oficioConsultaBean.vo.bloqueId}"
                                                        rendered="#{oficioConsultaBean.mostrarOpcionesBloques}"                                       
+                                                       onchange="buscar()"
                                                        >
                                         <f:selectItems value="#{oficioConsultaBean.opcionesBloques}"/>
                                         <p:ajax process="@this" update="@form"/>
                                     </p:selectOneMenu>
 
-                                    <h:outputLabel value="bloque id #{oficioConsultaBean.vo.bloqueId}"/>
-                                    
                                     <h:outputText value="#{oficioConsultaBean.vo.bloqueNombre}" rendered="#{oficioConsultaBean.mostrarOpcionUnicaBloque}" />
                                 </div>
                                 <div class="col-sm-2">
@@ -191,13 +189,12 @@
                                     <p:selectOneMenu id="idGerencia"
                                                        value="#{oficioConsultaBean.vo.gerenciaId}"
                                                        rendered="#{oficioConsultaBean.mostrarOpcionesBloques or oficioConsultaBean.mostrarTodasGerencias}"
+                                                       onchange="buscar()"
                                                        >
                                         <f:selectItem itemValue="0" itemLabel="Todos"/>
                                         <f:selectItems value="#{catalogosBean.gerencias}"/>
                                         <p:ajax process="@this" update="@form"/>
                                     </p:selectOneMenu>
-                                    
-                                    <h:outputLabel value="gerendia id #{oficioConsultaBean.vo.gerenciaId}"/>
                                     
                                     <!-- Usuario con acceso solo a su gerencia -->
 
@@ -236,6 +233,7 @@
                                     <!-- onchange="document.getElementById('formOficios:botonBuscar').click();"-->
                                     <p:selectOneRadio  
                                         value="#{oficioConsultaBean.vo.seguimientoConsulta}"                                        
+                                        onchange="buscar()"
                                         >
                                         <f:selectItem itemLabel="Sí" itemValue="1" />
                                         <f:selectItem itemLabel="No" itemValue="-1"/>
@@ -277,6 +275,7 @@
                                     <!-- onchange="document.getElementById('formOficios:botonBuscar').click();"-->
                                     <p:selectOneRadio  
                                         value="#{oficioConsultaBean.vo.mostrarPublicos}"                                        
+                                        onchange="buscar()"
                                         >
                                         <f:selectItem itemLabel="Sí" itemValue="1" />
                                         <f:selectItem itemLabel="No" itemValue="0"/>                                        
@@ -320,7 +319,7 @@
                                 <div class="col-sm-3" style="text-align: right">
                                     <p:remoteCommand actionListener="#{oficioConsultaBean.buscarOficios(actionEvent)}"                                                     
                                                      name="buscar"
-                                                     delay="1000"
+                                                     delay="100"
                                                      update="@form"
                                                      process="@this"/>
                                         
@@ -330,7 +329,7 @@
                                                    actionListener="#{oficioConsultaBean.buscarOficios(actionEvent)}"
                                                    rendered="true"
                                                    process="@this"
-                                                   update="@form"
+                                                   update="consultaResultados"
                                                    title="Buscar oficios" />
                                                                         
                                     
@@ -351,14 +350,21 @@
                                                style="width: 99.9%" paginator="true" paginatorPosition="bottom" >
                                     -->
                                     
-                                <p:dataTable id="dataTable1"  
+                                <p:dataTable id="consultaResultados"  
                                          showGridlines="true" 
                                          size="small" 
                                          rows="10"  
                                          value="#{oficioConsultaBean.resultados}" 
                                          var="currentRow">
-                                    <p:column headerText="#{msgs['sistema.oficios.comun.oficio.numero']}">
-                                        <h:outputText value="#{currentRow['oficioNumero']}" title="#{currentRow['oficioAsunto']}" style="font-weight: bold;"/>
+                                    <!--?faces-redirect=true;-->
+                                    <p:column headerText="#{msgs['sistema.oficios.comun.oficio.numero']}">                                        
+                                        <h:commandLink styleClass="link"
+                                                         action="./detalle.xhtml"                                                         
+                                           title="Ver detalle del oficio" >
+                                            <h:outputText value="#{currentRow['oficioNumero']}" title="#{currentRow['oficioAsunto']}" style="font-weight: bold;"/>
+                                            <f:param name="oficioId" value="#{currentRow['oficioId']}" />                                               
+                                        </h:commandLink>
+                                        
                                     </p:column>
                                     <p:column  headerText="Asunto" style=" display: none">
                                         <h:outputText value="#{currentRow['oficioAsunto']}" style="font-weight: bold;" />
@@ -404,14 +410,14 @@
                                                      style="height: 25px; " 
                                                      title="#{currentRow['tipoOficioNombre']} - #{currentRow['estatusNombre']}"  />
                                            -->
-                                           <!--<h:graphicImage value="./resources/imagenes/estatus_oficio/estatus_oficio_#{currentRow['tipoOficioId']}_#{currentRow['estatusId']}.png" 
+                                           <h:graphicImage value="../../resources/imagenes/estatus_oficio/estatus_oficio_#{currentRow['tipoOficioId']}_#{currentRow['estatusId']}.png" 
                                                             alt="#{currentRow['tipoOficioNombre']} - #{currentRow['estatusNombre']}" 
                                                             title="#{currentRow['tipoOficioNombre']} - #{currentRow['estatusNombre']}" />
-                                           -->
+                                           
                                         </a>
                                     </p:column>
                                     <p:column style="width: 30px; border-left: none;" rendered="#{oficioConsultaBean.permisos.verDetalleOficio}">
-                                        <p:commandLink styleClass="link"
+                                        <h:commandLink styleClass="link"
                                                          action="detalle"
                                                          title="Ver detalle del oficio" >
                                             <center>
@@ -419,22 +425,27 @@
                                             </center>
 
                                             <f:param name="oficioId" value="#{currentRow['oficioId']}" />   
-                                        </p:commandLink>
+                                        </h:commandLink>
                                     </p:column>
                                 </p:dataTable>
+                                    <p:blockUI block="consultaResultados" trigger="botonBuscar"> 
+                                            LOADING<br />
+                                            
+                                    </p:blockUI>
 
                             </div>
                             <!--Cambio agregar asunto a excel 16/02/15 jevazquez-->    
                             <br/>
                             <div class="row" style="text-align: right">
-                                   <p:commandButton value="XLSX" styleClass="mr-2 mb-2">
-                                           <i class="fa fa-file-excel-o" aria-hidden="true" title="Exportar a Excel" style="color: green; white-space: nowrap"></i>
+                                <p:commandButton  value="Descargar" 
+                                                   styleClass="btn btn-success mr-2 mb-2"
+                                                   icon="fa fa-file-excel-o">                                           
                                            <p:dataExporter id="exportTabla"  
                                                            type="xlsxstream" 
                                                            target="consultaResultados" 
                                                            fileName="Oficios"                                                            
                                                             />
-                                     </p:commandButton>
+                                </p:commandButton>
                             <!--<ace:dataExporter id="exportTabla" label="Descargar excel" type="xls"
                                               fileName="Oficios" target="consultaResultados" excludeColumns="7,8,9" >
                             </ace:dataExporter>-->
@@ -443,11 +454,12 @@
 
                         </div> <!-- jumbotron -->
 
-<!--
+
                         <ui:include src="popupOficioSalida.xhtml" />
 
+
                         <ui:include src="popupOficioEntrada.xhtml" />
-                        -->
+
 
                     </h:form>
                 </ui:define>

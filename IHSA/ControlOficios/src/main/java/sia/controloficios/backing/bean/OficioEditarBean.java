@@ -470,7 +470,7 @@ public class OficioEditarBean extends OficioOpcionesBloquesUIBean {
 
         // obtener solamente los oficios del bloque 
         // del oficio a asociar
-        setOficios(getOficioServicioRemoto()
+        setOficios(getOficioConsultaServicioRemoto()
                 .buscarOficiosAsociacion(
                         asociadoVo,
                         getVo().getBloqueId()));
@@ -485,8 +485,7 @@ public class OficioEditarBean extends OficioOpcionesBloquesUIBean {
 
         // excluir de los resultados los usuarios ya agregados
         usuariosAcceso
-                = getOficioServicioRemoto()
-                        .buscarUsuariosAccesoOficioRestringido(
+                = getOficioConsultaServicioRemoto().buscarUsuariosAccesoOficioRestringido(
                                 getNombreUsuarioAcceso(),
                                 getVo());
 

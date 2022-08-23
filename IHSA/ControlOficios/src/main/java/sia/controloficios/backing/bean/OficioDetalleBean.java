@@ -62,13 +62,17 @@ public class OficioDetalleBean extends OficioBaseBean {
      */
     @Override
     protected void postConstruct() throws InsufficientPermissionsException {
-            
+        
+        System.out.println("en postconstructo de OficioDetalle");
+        
         // valor inicial para la vista
         
         // obtener registro de oficio
         
         // se debe recibir un ID
         Integer oficioId = Integer.parseInt(FacesUtils.getRequestParameter("oficioId"));
+        
+        System.out.println("oficioIdRecibido "+oficioId);
         
         // obtener desde bd
         this.setVo(buscarOficioVo(oficioId));

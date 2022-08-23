@@ -99,7 +99,7 @@ public class OficioBandejaEntradaBean extends OficioBaseBean {
     public void buscarOficiosBandejaEntrada(ActionEvent actionEvent) {
         
   // List<OficioPromovibleVo> oficiosPromoviblesVo=  
-     this.setOficios(      this.getOficioServicioRemoto()
+     this.setOficios(      this.getOficioConsultaServicioRemoto()
                 .buscarOficiosBandejaEntrada(
                 getVo(), 
                 getPermisos(), 

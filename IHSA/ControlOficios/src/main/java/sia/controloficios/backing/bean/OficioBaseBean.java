@@ -43,7 +43,7 @@ import sia.modelo.oficio.vo.*;
 import sia.modelo.rol.vo.RolVO;
 import sia.servicios.campo.nuevo.impl.ApCampoUsuarioRhPuestoImpl;
 import sia.servicios.oficio.impl.OfOficioImpl;
-import sia.servicios.oficio.impl.OfOficioImpl2;
+import sia.servicios.oficio.impl.OfOficioConsultaImpl;
 import sia.servicios.sistema.impl.SiParametroImpl;
 import sia.servicios.sistema.impl.SiPermisoImpl;
 import sia.util.UtilLog4j;
@@ -131,11 +131,12 @@ public abstract class OficioBaseBean implements Serializable {
     // Servicios remotos
     @Inject
     private SiParametroImpl siParametroRemote;
-    @Inject
-    private OfOficioImpl oficioServicioRemoto;
     
     @Inject
-    private OfOficioImpl2 oficioServicioRemoto2;
+    private OfOficioImpl oficioServicioRemoto;
+           
+    @Inject
+    private OfOficioConsultaImpl ofOficioConsultaImpl;
     
     @Inject
     private ApCampoUsuarioRhPuestoImpl campoUsuarioRemote;
@@ -353,6 +354,11 @@ public abstract class OficioBaseBean implements Serializable {
 
         return this.oficioServicioRemoto;
     }
+    
+    protected OfOficioConsultaImpl getOficioConsultaServicioRemoto() {
+
+        return this.ofOficioConsultaImpl;
+    }
 
     /**
      *
@@ -536,7 +542,7 @@ public abstract class OficioBaseBean implements Serializable {
     protected final OficioPromovibleVo buscarOficioVo(Integer oficioId)
             throws InsufficientPermissionsException {
 
-        return getOficioServicioRemoto().buscarOficioVoPorId(
+        return getOficioConsultaServicioRemoto().buscarOficioVoPorId(
                 oficioId,
                 getUsuarioId(),
                 !getSesion().puedeVerOficioRestringido());
@@ -563,7 +569,7 @@ public abstract class OficioBaseBean implements Serializable {
         }
 
                 
-        ResultadosConsultaVo resultadosVo = oficioServicioRemoto2.buscarOficios(
+        ResultadosConsultaVo resultadosVo = ofOficioConsultaImpl.buscarOficios(
                 this.vo,
                 !getSesion().puedeVerOficioRestringido(),
                 getUsuarioId());
