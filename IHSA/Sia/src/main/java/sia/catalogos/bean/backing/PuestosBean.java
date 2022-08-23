@@ -45,7 +45,7 @@ public class PuestosBean implements Serializable {
         clearComponent("formPrincipal", "buscarPuesto");
         puestosBeanModel.controlaPopUpFalso("popupCreateRhPuesto");
         puestosBeanModel.controlaPopUpFalso("popupUpdateRhPuesto");
-        return "/vistas/administracion/usuario/catalogoPuesto";
+        return "/vistas/administracion/usuario/catalogoPuesto.xhtml?faces-redirect=true";
 
     }
 
@@ -85,8 +85,7 @@ public class PuestosBean implements Serializable {
         }
     }
 
-    public void traerPorFiltro(ValueChangeEvent changeEvent) {
-        puestosBeanModel.setOpcionSeleccionada(changeEvent.getNewValue().toString());
+    public void traerPorFiltro() {
         if (puestosBeanModel.getOpcionSeleccionada().equals("todo")) {
             puestosBeanModel.reloadAllRhPuesto();
         }
@@ -130,9 +129,9 @@ public class PuestosBean implements Serializable {
         }
     }
 
-    public void deleteRhPuesto() {
+    public void deleteRhPuesto(int idPuesto) {
         try {
-            this.puestosBeanModel.setRhPuestoVo((RhPuestoVo) this.puestosBeanModel.getDataModel().getRowData());
+            this.puestosBeanModel.setIdPuesto(idPuesto);
             this.puestosBeanModel.deleteRhPuesto();
             FacesUtils.addInfoMessage(FacesUtils.getKeyResourceBundle("rhPuesto") + " " + FacesUtils.getKeyResourceBundle("sistema.mensaje.info.eliminacionSatisfactoria"));
         } catch (ItemUsedBySystemException iue) {
@@ -169,7 +168,7 @@ public class PuestosBean implements Serializable {
         this.puestosBeanModel.setNombrePuesto(this.puestosBeanModel.getRhPuestoVo().getNombre());
         this.puestosBeanModel.setDescripcionPuesto(this.puestosBeanModel.getRhPuestoVo().getDescripcion());
         this.puestosBeanModel.setIdPuesto(this.puestosBeanModel.getRhPuestoVo().getId());
-        puestosBeanModel.controlaPopUpTrue("popupUpdateRhPuesto");
+        //puestosBeanModel.controlaPopUpTrue("popupUpdateRhPuesto");
         //this.sesion.getControladorPopups().put("popupUpdateRhPuesto", Boolean.TRUE);
     }
 

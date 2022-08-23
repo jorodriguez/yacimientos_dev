@@ -27,7 +27,6 @@ import sia.modelo.SiAdjunto;
 import sia.modelo.SiCategoriaIncidencia;
 import sia.modelo.sgl.vo.AdjuntoVO;
 import sia.modelo.sistema.vo.CategoriaIncidenciaVo;
-import sia.modelo.sistema.vo.IncidenciaAdjuntoVo;
 import sia.modelo.sistema.vo.IncidenciaVo;
 import sia.servicios.catalogos.impl.PrioridadImpl;
 import sia.servicios.orden.impl.OrdenImpl;
@@ -46,6 +45,7 @@ import sia.util.ValidadorNombreArchivo;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.faces.view.ViewScoped;
+
 /**
  *
  * @author mluis
@@ -60,7 +60,7 @@ public class IncidenciaGrBean implements Serializable {
     public IncidenciaGrBean() {
 
     }
-    
+
     private Sesion sesion = (Sesion) FacesUtilsBean.getManagedBean("sesion");
 
     @Inject
@@ -129,13 +129,13 @@ public class IncidenciaGrBean implements Serializable {
         getIncidencias().addAll(incidenciaImpl.traerPorUsuario(sesion.getUsuario().getId(), TicketEstadoEnum.ASIGNADO.getId()));
     }
 
-    public void mostrarTickets(ActionEvent event) {
+    public void mostrarTickets() {
         llenarIncidencias();
         //
         PrimeFaces.current().executeScript("$(dialogoTickts).modal('show');");
     }
 
-    public void traerCategoria(AjaxBehaviorEvent event) {
+    public void traerCategoria() {
         setCategoriaIncidenciaVo(categoriaIncidenciaImpl.buscarPorId(idCatIncidencia));
         //
         if (categoriaIncidenciaVo.getTabla() != null && !categoriaIncidenciaVo.getTabla().isEmpty()) {
@@ -161,7 +161,7 @@ public class IncidenciaGrBean implements Serializable {
         }
     }
 
-    public void crearIncidecnia(ActionEvent event) {
+    public void crearIncidecnia() {
         setIncidenciaVo(new IncidenciaVo());
         incidenciasAdjunto = new ArrayList<>();
         PrimeFaces.current().executeScript("$(dialogoNuevoTickts).modal('show');");
@@ -176,7 +176,7 @@ public class IncidenciaGrBean implements Serializable {
         }
     }
 
-    public void eliminarAAdjunto(ActionEvent event) {
+    public void eliminarAAdjunto() {
         //
         int index = Integer.parseInt(FacesUtilsBean.getRequestParameter("indexAdj"));
         //
@@ -273,14 +273,13 @@ public class IncidenciaGrBean implements Serializable {
         PrimeFaces.current().executeScript("$(dialogoNuevoTickts).modal('hide');");
     }
 
-    public void inicioCerrarTicket(ActionEvent event) {
-        int idT = Integer.parseInt(FacesUtilsBean.getRequestParameter("idTicket"));
+    public void inicioCerrarTicket(int idT) {
         incidenciaVo = incidenciaImpl.buscarPorId(idT);
         //
         PrimeFaces.current().executeScript("$(dialogoCierreTickt).modal('show');");
     }
 
-    public void cerrarTicket(ActionEvent event) {
+    public void cerrarTicket() {
         incidenciaImpl.cerrarIncidencia(incidenciaVo, getComplemento(), sesion.getUsuario());
         complemento = "";
         //
@@ -288,22 +287,20 @@ public class IncidenciaGrBean implements Serializable {
         PrimeFaces.current().executeScript("$(dialogoCierreTickt).modal('hide');");
     }
 
-    public void inicioReenviarTicket(ActionEvent event) {
-        int idT = Integer.parseInt(FacesUtilsBean.getRequestParameter("idTicket"));
+    public void inicioReenviarTicket(int idT) {
         incidenciaVo = incidenciaImpl.buscarPorId(idT);
         //
         PrimeFaces.current().executeScript("$(dialogoComplementoTickt).modal('show');");
     }
 
-    public void agregarAdjunto(ActionEvent event) {
-        int idT = Integer.parseInt(FacesUtilsBean.getRequestParameter("idTicket"));
+    public void agregarAdjunto(int idT) {
         incidenciaVo = incidenciaImpl.buscarPorId(idT);
         incidenciasAdjunto = incidenciaAdjuntoImpl.traerArchivoPorIncidencia(idT);
         //
         PrimeFaces.current().executeScript("$(dialogoAdjuntaarTickt).modal('show');");
     }
 
-    public void reenviarTicket(ActionEvent event) {
+    public void reenviarTicket() {
         incidenciaImpl.reenviarIncidencia(incidenciaVo, getComplemento(), sesion.getUsuario());
         complemento = "";
         llenarIncidencias();
@@ -478,7 +475,7 @@ public class IncidenciaGrBean implements Serializable {
         this.idTieneCod = idTieneCod;
     }
 
-    public void refrescarTickets(ActionEvent event) {
+    public void refrescarTickets() {
         this.llenarIncidencias();
     }
 }

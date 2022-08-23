@@ -98,7 +98,7 @@ public class PuestosBeanModel implements Serializable {
     }
 
     public void deleteRhPuesto() throws ItemUsedBySystemException {
-        this.rhPuestoImpl.deletePuesto(rhPuestoVo.getId(), this.sesion.getUsuario().getId(), this.getNombrePuesto());
+        this.rhPuestoImpl.deletePuesto(idPuesto, this.sesion.getUsuario().getId(), this.getNombrePuesto());
         reloadAllRhPuesto();
 
     }

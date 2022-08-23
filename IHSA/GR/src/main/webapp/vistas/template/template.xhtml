@@ -3,12 +3,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:ui="http://java.sun.com/jsf/facelets"   
       xmlns:p="http://primefaces.org/ui"
-      xmlns:h="http://java.sun.com/jsf/html">
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
     <h:head>
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <meta content="text/html; charset=UTF-8" http-equiv="Content-Type" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        
+
         <!-- Font Awesome -->
         <link rel="stylesheet" href="/resources/css/all.min.css" />
         <!-- Theme style -->
@@ -19,46 +20,21 @@
         <!-- Google Font -->
         <link rel="stylesheet"
               href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic"></link>
-        
-        <!-- New Relic RUM -->
-	<script type="text/javascript">
-	    //@@RUM@@ 
-	</script>
-        
-        <link href="#{request.contextPath}/recursos/css/kanban.css" rel="stylesheet"  type="text/css"></link>    
-        <script type="text/javascript" src="#{request.contextPath}/recursos/js/kanban.js"></script>
-        
-        <!-- link href="#{request.contextPath}/xmlhttp/css/rime/rime.css" rel="stylesheet" type="text/css" ></link>  
-        <link href="#{request.contextPath}/recursos/css/bootstrap.min.css" rel="stylesheet" type="text/css"></link>
-        <link href="#{request.contextPath}/recursos/css/panel/metisMenu.css" rel="stylesheet"></link>
-        <link href="#{request.contextPath}/recursos/css/panel/sb-admin-2.css" rel="stylesheet"></link>
 
-        <link href="#{request.contextPath}/recursos/css/bootstrap-magnify.min.css" rel="stylesheet"></link>
-        <link href="#{request.contextPath}/recursos/css/bootstrap-magnify.css" rel="stylesheet"></link>
-        <link href="#{request.contextPath}/recursos/less/bootstrap-magnify.less" rel="stylesheet"></link-->        
+        <style type="text/css">
+            .ui-datepicker {
+                z-index: 10004 !important;
+            }
 
-        <!-- script type="text/javascript" src="#{request.contextPath}/recursos/js/jquery1.11.0.js"></script>        
-        <script type="text/javascript" src="#{request.contextPath}/recursos/js/bootstrap.min.js"></script>
-        <script type="text/javascript" src="#{request.contextPath}/recursos/js/panel/sb-admin-2.js"></script>
-        <script type="text/javascript" src="#{request.contextPath}/recursos/js/panel/metisMenu.js"></script-->
-        <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDsAcBS8m9i6wAupl_XhAIrociYzb0W1LA"></script>
-                                                  // Code that uses other library's $ can follow here.
-        <script src="/resources/js/jquery-ui.min.js"></script>
-        <!-- Resolve conflict in jQuery UI tooltip with Bootstrap tooltip -->
-        <script>
-                                                       $.widget.bridge('uibutton', $.ui.button)
-        </script>
-        <!-- Bootstrap 4 -->
-        <script src="/resources/js/bootstrap.bundle.min.js"></script>
-        <!-- overlayScrollbars -->
-        <script src="/resources/js/jquery.overlayScrollbars.min.js"></script>
-         <!-- jQuery -->
-        <script src="/resources/js/jquery.min.js"></script>
-        <!-- jQuery UI 1.11.4 -->
-        <script>
-                                    $.noConflict(true);
-                                    // Code that uses other library's $ can follow here.
-        </script>
+            .ui-autocomplete-panel {
+                z-index: 10004 !important;
+            }
+            .ui-selectonemenu-panel{
+                z-index: 100004 !important;
+
+            }
+        </style>
+        <link href="#{request.contextPath}/recursos/css/kanban.css" rel="stylesheet"  type="text/css"></link>   
 
         <!--[if lt IE 9]
             <script type="text/javascript" src="../resources/js/externa/html5shiv.js"></script>
@@ -71,29 +47,19 @@
 
         <!--Grafica-->
         <!--CSS UI-->
-        <!-- link href="../resources/css/externo/jquery-ui.css" rel="stylesheet" type="text/css"></link -->
         <!-- link href="../resources/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css"></link -->        
         <!--JS UI-->
         <!-- script type="text/javascript" src="../resources/boot/js/bootbox.js"></script -->
-        <!-- script type="text/javascript" src="../resources/js/externa/jquery-ui.js"></script -->
-        <!-- script type="text/javascript" src="../resources/boot/js/bootstrap-magnify.js"></script -->
-        <!-- script type="text/javascript" src="../resources/boot/js/bootstrap-magnify.min.js"></script -->
         <noscript>
             <p>Su navegador no soporta javaScript</p>
         </noscript>
         <title>Dirección de Gestión de Riesgos</title>
 
-        <!-- script src="../resources/js/template.js" type="text/javascript"></script -->  
-        <script src="#{request.contextPath}/recursos/js/grValidar.js" type="text/javascript"></script>  
-
-
         <script type="text/javascript">
             //<![CDATA[
-
             function ejecutarFiltros() {
                 $("#formaTamplateCab\\:btnRefescarViajes").click();
             }
-           
 
             function checkTime(i) {
                 if (i < 10) {
@@ -159,34 +125,77 @@
                 border-bottom-right-radius: 3px;
             }
             .navbar-inverse .navbar-nav > li > a {
-                color: #222;                
-            }       
+                color: #222;
+            }
             .navbar-inverse .navbar-nav > .open > a, .navbar-inverse .navbar-nav > .open > a:hover, .navbar-inverse .navbar-nav > .open > a:focus {
                 background-color: #b6c9de;
             }
         </style>
 
     </h:head>
-    <h:body>
-        <div id="top" class="container">
-            <ui:insert name="top">
-                <ui:include src="cabecera.xhtml" />
-            </ui:insert>
+    <h:body class="hold-transition layout-top-nav">
+        <div class="wrapper">
+            <c:if test="#{not empty sesion.usuarioVO}">
+                <div id="top" class="container">
+                    <ui:insert name="top">
+                        <ui:include src="cabecera.xhtml" />
+                    </ui:insert>
+                </div>
+                <div class="container">
+                    <div id="content">
+                        <div  class="row">
+                            <h:message  for="" style="display: block;" infoClass="alert alert-success" warnClass="alert alert-warning"
+                                        errorClass="alert alert-danger" fatalClass="alert alert-danger"  />
+                        </div>
+                        <ui:insert name="content">
+                            Contenido a sustituir
+                        </ui:insert>
+                        <ui:include src="proceso.xhtml" />
+                    </div>
+                    <br/>
+                    <div id="bottom" class="container">
+                        <ui:insert name="bottom">
+                            <ui:include src="pie.xhtml" />
+                        </ui:insert>
+                    </div>
+                </div>
+            </c:if>
         </div>
-        <div class="container">
-            <div id="content">
-                <ui:insert name="content">
-                    Contenido a sustituir
-                </ui:insert>
-                <ui:include src="proceso.xhtml" />
-            </div>
-            <br/>
-            <div id="bottom" class="container">
-                <ui:insert name="bottom">
-                    <ui:include src="pie.xhtml" />
-                </ui:insert>
-            </div>
-        </div>
-        <ui:include src="/vistas/gr/popupComentario.xhtml"/>                                
+        <c:if test="#{empty sesion.usuarioVO}">
+            <div class="row">      
+                <div class="col-12">                    
+                    <h:form id="logouGR">
+                        <h:panelGrid style="text-align: center; width: 100%; margin-top: 12%; ">
+                            <h:outputText value="Su sesión ha caducado, para utilizar el sistema tiene que iniciar sesión de nuevo…"/>
+                            <p:commandLink value="Clic aquí para iniciar sesión." action="#{sesion.salir}" 
+                                           styleClass="link"/>                                
+                        </h:panelGrid>
+                    </h:form>
+
+                </div>
+            </div>   
+        </c:if>
+        <!-- jQuery -->
+        <script src="/resources/js/jquery.min.js"></script>
+        <!-- jQuery UI 1.11.4 -->
+        <script>
+            $.noConflict(true);
+            // Code that uses other library's $ can follow here.
+        </script>
+        <script src="/resources/js/jquery-ui.min.js"></script>
+        <!-- Resolve conflict in jQuery UI tooltip with Bootstrap tooltip -->
+        <script>
+            $.widget.bridge('uibutton', $.ui.button);
+        </script>
+        <!-- Bootstrap 4 -->
+        <script src="/resources/js/bootstrap.bundle.min.js"></script>
+        <!-- overlayScrollbars -->
+        <script src="/resources/js/jquery.overlayScrollbars.min.js"></script>
+        <!-- AdminLTE App -->
+        <script src="/resources/js/adminlte.js"></script>                            
+
+        <script src="#{request.contextPath}/recursos/js/grValidar.js" type="text/javascript"></script> 
+        <script type="text/javascript" src="#{request.contextPath}/recursos/js/kanban.js"></script>
+
     </h:body>
 </html>

@@ -1483,5 +1483,9 @@ public class Constantes {
     public static final boolean AUTORIZADO = true;
     public static final boolean NO_SELECCION = false;
     public static final String COD_ROL_REV_FACT = "HISFAC";
-    
+
+    /**
+     * Formato para fecha - yyyy-MM-dd Ejemplo: 2012-08-19
+     */
+    public static final SimpleDateFormat FMT_dd_MM_yyyy = new SimpleDateFormat("dd-MM-yyyy");    
 }

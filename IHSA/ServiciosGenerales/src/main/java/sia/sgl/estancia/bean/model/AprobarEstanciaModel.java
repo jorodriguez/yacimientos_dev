@@ -30,7 +30,7 @@ public class AprobarEstanciaModel implements Serializable {
     @Inject
     private Sesion sesion;
     //
-    private List<SgSolicitudEstanciaVo> listaSolicitud = new ArrayList<SgSolicitudEstanciaVo>();
+    private List<SgSolicitudEstanciaVo> listaSolicitud = new ArrayList<>();
 
     public AprobarEstanciaModel() {
     }

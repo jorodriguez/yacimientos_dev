@@ -12,9 +12,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.enterprise.context.RequestScoped;
 import javax.inject.Named;
 import javax.faces.bean.ManagedProperty;
-import javax.faces.bean.RequestScoped;
 import javax.faces.component.UIComponent;
 import javax.faces.component.UIData;
 import javax.faces.component.UIInput;
@@ -39,6 +39,7 @@ import sia.sgl.viaje.solicitud.bean.model.SolicitudViajeBeanModel;
 import sia.util.UtilLog4j;
 import javax.faces.model.DataModel;
 import javax.faces.model.ListDataModel;
+import javax.inject.Inject;
 import org.primefaces.PrimeFaces;
 import sia.excepciones.ItemUsedBySystemException;
 import sia.fechas.asueto.SiDiasAsueto;
@@ -47,6 +48,7 @@ import sia.modelo.SgLugar;
 import sia.modelo.sgl.viaje.vo.InvitadoVO;
 import sia.modelo.sgl.viaje.vo.VehiculoVO;
 import sia.modelo.sgl.viaje.vo.ViajeroVO;
+import sia.modelo.usuario.vo.UsuarioVO;
 
 /**
  *
@@ -59,7 +61,7 @@ import sia.modelo.sgl.viaje.vo.ViajeroVO;
 @RequestScoped
 public class SolicitudViajeBean implements Serializable {
 
-    @ManagedProperty(value = "#{solicitudViajeBeanModel}")
+    @Inject
     private SolicitudViajeBeanModel solicitudViajeBeanModel;
     /*
      * @Inject private Sesion sesion;
@@ -78,18 +80,18 @@ public class SolicitudViajeBean implements Serializable {
     public SolicitudViajeBean() throws SIAException {
     }
 
-    public String goToSolicitudViaje() throws SIAException {
-        UtilLog4j.log.info(this, "goToSolicitudViaje");
-        UtilLog4j.log.info(this, "Mensaje de prueba");
-        //  solicitudViajeBeanModel.setCadena(null);
-        if (getOperacion().equals(Constantes.insertar)) {
-            InicializarComponentes();
-        }
-        solicitudViajeBeanModel.setUrl("/vistas/sgl/viaje/solicitud/solicitudViaje");
-
-        //   cargarSolicitudesPorJustificar();
-        return solicitudViajeBeanModel.getUrl();
-    }
+//    public String goToSolicitudViaje() throws SIAException {
+//        UtilLog4j.log.info(this, "goToSolicitudViaje");
+//        UtilLog4j.log.info(this, "Mensaje de prueba");
+//        //  solicitudViajeBeanModel.setCadena(null);
+//        if (getOperacion().equals(Constantes.insertar)) {
+//            inicializarComponentes();
+//        }
+//        solicitudViajeBeanModel.setUrl("/vistas/sgl/viaje/solicitud/solicitudViaje");
+//
+//        //   cargarSolicitudesPorJustificar();
+//        return solicitudViajeBeanModel.getUrl();
+//    }
 
     @Deprecated
     public String goToCreateSgSolicitudViaje() {
@@ -384,8 +386,7 @@ public class SolicitudViajeBean implements Serializable {
             } else {
                 if (solicitudViajeBeanModel.modificarSolicitudViaje()) {
 
-                    // PrimeFaces.current().executeScript(";abrirDialogModal('modalFinalizar');");
-                    PrimeFaces.current().executeScript(";$('#modalFinalizar').modal('show');");
+                    PrimeFaces.current().executeScript("$(modalFinalizar).modal('show');");
                 } else {
                     FacesUtils.addErrorMessage("Ocurrio un problema al  actualizar la solicitud, favor de contactar al equipo del SIA al correo soportesia@ihsa.mx");
 
@@ -1368,52 +1369,62 @@ public class SolicitudViajeBean implements Serializable {
 
     }
 
+    public List<String> usuarioListener(String cadena) {
+        solicitudViajeBeanModel.setEmpleado("");
+        List<String> nombres = new ArrayList<>();
+        List<UsuarioVO> usVos = solicitudViajeBeanModel.traerUsuarios(cadena);
+        usVos.stream().forEach(us -> {
+            nombres.add(us.getNombre());
+        });
+        return nombres;
+    }
+
+    public List<String> invitadoListener(String cadena) {
+        solicitudViajeBeanModel.setInvitado("");
+        List<String> nombres = new ArrayList<>();
+        List<InvitadoVO> invs = solicitudViajeBeanModel.traerInvitados(cadena);
+        invs.stream().forEach(us -> {
+            nombres.add(us.getNombre() + " // " + us.getEmpresa());
+        });
+        return nombres;
+    }
+
     public void addEmpleado() {
-        String empleado = FacesUtils.getRequestParameter("completarEmpleado");
-        List<Object[]> listUsuarios = solicitudViajeBeanModel.getListaEmpleadosActivos();
-        if (empleado != null && !empleado.isEmpty()) {
-            for (Object[] ob : listUsuarios) {
-                if (empleado.equals(ob[1])) {
-                    setEmpleadoAdd(ob[0].toString());
-                    break;
-                }
-            }
+        UsuarioVO usVo = solicitudViajeBeanModel.buscarUsuario();
+        if (usVo != null) {
+            setEmpleadoAdd(usVo.getId());
             if (getEmpleadoAdd() == null || getEmpleadoAdd().isEmpty()) {
                 FacesUtils.addErrorMessage("El empleado no se encuentra registrado en el sistema");
                 UtilLog4j.log.info("El empleado no se encuentra registrado en el sistema");
             } else {
                 solicitudViajeBeanModel.confirmarUsuarioYTelefono(0, getEmpleadoAdd());
             }
-
-            // solicitudViajeBeanModel.addOrRemoveViajeros(getEmpleadoAdd(), Constantes.TRUE, Constantes.CERO);
+            solicitudViajeBeanModel.addOrRemoveViajeros(getEmpleadoAdd(), Constantes.TRUE, Constantes.CERO);
+            solicitudViajeBeanModel.setEmpleado("");
             // solicitudViajeBeanModel.usuariosActivos(Constantes.CERO);
         }
     }
 
     public void addInvitado() {
-        String invitado = FacesUtils.getRequestParameter("completarInvitado");
         setEmpleadoAdd("");
-        List<Object[]> listInv = solicitudViajeBeanModel.getListInvitados();
-        if (invitado != null && !invitado.isEmpty()) {
-            for (Object[] ob : listInv) {
-                if (invitado.equals(ob[1])) {
-                    setInvitadoAdd(Integer.parseInt(ob[0].toString()));
-                    break;
-                }
-            }
+        InvitadoVO inVo = solicitudViajeBeanModel.buscarInvitado();
+        if (inVo != null) {
+            setInvitadoAdd(inVo.getIdInvitado());
+
             if (getInvitadoAdd() > 0) {
-                //solicitudViajeBeanModel.addOrRemoveViajeros("", Constantes.TRUE, getInvitadoAdd());
+                solicitudViajeBeanModel.addOrRemoveViajeros("", Constantes.TRUE, getInvitadoAdd());
                 solicitudViajeBeanModel.confirmarUsuarioYTelefono(getInvitadoAdd(), "");
             } else {
-                setNewInvitado(invitado);
-                solicitudViajeBeanModel.empresas();
+                setNewInvitado(inVo.getNombre());
+                //solicitudViajeBeanModel.empresas();
                 setNewTelefono("");
-                PrimeFaces.current().executeScript(";$('#modalCrearInvitado').modal('show');");
+                PrimeFaces.current().executeScript(";$(modalCrearInvitado).modal('show');");
             }
-
-            solicitudViajeBeanModel.llenarInvitadoJson();
         }
 
+        solicitudViajeBeanModel.setInvitado("");
+
+        //solicitudViajeBeanModel.llenarInvitadoJson();
     }
 
     public void addViajero() {
@@ -1423,7 +1434,7 @@ public class SolicitudViajeBean implements Serializable {
             getTemporal().setTelefono(tel);
             getTemporal().setConfirTel(Constantes.TRUE);
             solicitudViajeBeanModel.addOrRemoveViajeros(getEmpleadoAdd(), Constantes.TRUE, getInvitadoAdd());
-            PrimeFaces.current().executeScript(";$('#modalAddTel').modal('hide');");
+            PrimeFaces.current().executeScript(";$(modalAddTel).modal('hide');");
         } else {
             FacesUtils.addErrorMessage("Favor de agregar el Telefono");
         }
@@ -1545,7 +1556,7 @@ public class SolicitudViajeBean implements Serializable {
         solicitudViajeBeanModel.inicializarlistInvitados(true);
     }
 
-    public String reiniciarComponentes() throws SIAException {
+    public void reiniciarComponentes() throws SIAException {
 
         setCadena(Constantes.redondo);
         setOrigen("Origen...");
@@ -1561,58 +1572,23 @@ public class SolicitudViajeBean implements Serializable {
 
         solicitudViajeBeanModel.setPanelSV(Constantes.TRUE);
 
-        return "/vistas/sgl/viaje/solicitud/solicitudViaje";
+        // return "/vistas/sgl/viaje/solicitud/solicitudViaje";
     }
 
     public void visitoAEmpleado() {
-        String empleado = FacesUtils.getRequestParameter("completarEmpleadoVisita");
-        List<Object[]> listUsuarios = solicitudViajeBeanModel.getListaEmpleadosActivos();
-        if (empleado != null && !empleado.isEmpty()) {
-            for (Object[] ob : listUsuarios) {
-                if (empleado.equals(ob[1])) {
-                    setEmpleadoAdd(ob[0].toString());
-                    break;
-                }
-            }
-        }
-        if (empleado == null || empleado.isEmpty()) {
-            FacesUtils.addInfoMessage("Es necesario agregar a la persona que visita.");
+        if (getEmpleadoAdd() == null || getEmpleadoAdd().isEmpty()) {
+            FacesUtils.addErrorMessage("El empleado no se encuentra registrado en el sistema");
+            UtilLog4j.log.info("El empleado no se encuentra registrado en el sistema");
         } else {
-            if (getEmpleadoAdd() == null || getEmpleadoAdd().isEmpty()) {
-                FacesUtils.addErrorMessage("El empleado no se encuentra registrado en el sistema");
-                UtilLog4j.log.info("El empleado no se encuentra registrado en el sistema");
-            } else {
-                solicitudViajeBeanModel.visito(Constantes.EMPLEADO);
-                PrimeFaces.current().executeScript(";$('#modalFinalizar').modal('show');");
-            }
-
+            solicitudViajeBeanModel.visito(Constantes.EMPLEADO);
+           // PrimeFaces.current().executeScript(";$(modalFinalizar).modal('show');");
         }
 
     }
 
     public void visitoAOtro() {
-        String visito = FacesUtils.getRequestParameter("completarOtro");
-        List<Object[]> list
-                = solicitudViajeBeanModel.getListInvitados();
-        setIdVisito(Constantes.CERO);
-        if (visito != null && !visito.isEmpty()) {
-            for (Object[] ob : list) {
-                if (visito.equals(ob[1])) {
-                    setIdVisito(Integer.parseInt(ob[0].toString()));
-                    break;
-                }
-            }
-            if (getIdVisito() == 0) {
-                FacesUtils.addErrorMessage("La persona no se encuentra registrado en el sistema");
-                UtilLog4j.log.info("La persona no se encuentra registrado en el sistema");
-            }
-        }
-        if (getIdVisito() <= 0) {
-            FacesUtils.addInfoMessage("Es necesario agregar a la persona que visita.");
-        } else {
-            solicitudViajeBeanModel.visito(Constantes.INVITADO);
-            PrimeFaces.current().executeScript(";$('#modalFinalizar').modal('show');");
-        }
+        solicitudViajeBeanModel.visito(Constantes.INVITADO);
+        //PrimeFaces.current().executeScript(";$(modalFinalizar).modal('show');");
 
     }
 
@@ -1699,7 +1675,7 @@ public class SolicitudViajeBean implements Serializable {
         solicitudViajeBeanModel.setJustifica(Justifica);
     }
 
-    public void InicializarComponentes() throws SIAException {
+    public void inicializarComponentes() throws SIAException {
         solicitudViajeBeanModel.inicializarComponetes();
     }
 
@@ -1712,10 +1688,8 @@ public class SolicitudViajeBean implements Serializable {
                 } else {
                     if (isConChofer()) {
                         solicitado = solicitudViajeBeanModel.solicitarViaje();
-                        //InicializarComponentes();
-                        // reiniciarComponentes();
                         solicitudViajeBeanModel.setPanelSV(Constantes.TRUE);
-                        PrimeFaces.current().executeScript(";$('#modalFinalizar').modal('hide');");
+                        PrimeFaces.current().executeScript(";$(modalFinalizar).modal('hide');");
                     } else {
                         solicitudViajeBeanModel.cargarVehiculo();
                         if (isConfirVehiculo()) {
@@ -1723,7 +1697,7 @@ public class SolicitudViajeBean implements Serializable {
                             //InicializarComponentes();
                             // reiniciarComponentes();
                             solicitudViajeBeanModel.setPanelSV(Constantes.TRUE);
-                            PrimeFaces.current().executeScript(";$('#modalFinalizar').modal('hide');");
+                            PrimeFaces.current().executeScript(";$(modalFinalizar).modal('hide');");
                         }
                     }
                 }
@@ -1733,7 +1707,7 @@ public class SolicitudViajeBean implements Serializable {
                     //InicializarComponentes();
                     // reiniciarComponentes();
                     solicitudViajeBeanModel.setPanelSV(Constantes.TRUE);
-                    PrimeFaces.current().executeScript(";$('#modalFinalizar').modal('hide');");
+                    PrimeFaces.current().executeScript(";$(modalFinalizar).modal('hide');");
                 } else {
                     solicitudViajeBeanModel.cargarVehiculo();
                     if (isConfirVehiculo()) {
@@ -1741,16 +1715,16 @@ public class SolicitudViajeBean implements Serializable {
                         //InicializarComponentes();
                         // reiniciarComponentes();
                         solicitudViajeBeanModel.setPanelSV(Constantes.TRUE);
-                        PrimeFaces.current().executeScript(";$('#modalFinalizar').modal('hide');");
+                        PrimeFaces.current().executeScript(";$(modalFinalizar).modal('hide');");
                     }
                 }
             }
             if (solicitado) {
 
                 solicitudViajeBeanModel.setUrl("");
-                //goToSolicitudViaje();
                 //InicializarComponentes();
                 solicitudViajeBeanModel.traerOficinaModal();
+                PrimeFaces.current().executeScript(";$(modalFinalizar).modal('hide');");
             }
 
         } catch (Exception e) {
@@ -1972,7 +1946,7 @@ public class SolicitudViajeBean implements Serializable {
     public void cancelar() {
         setMensaje(FacesUtils.getRequestParameter("msjCancelacion"));
         solicitudViajeBeanModel.cancelarSolictud();
-        PrimeFaces.current().executeScript(";$('#modalCancelar').modal('hide');");
+        PrimeFaces.current().executeScript(";$(modalCancelar).modal('hide');");
     }
 
     public void validaSeleccion(boolean cancel, boolean gerenteAp) {
@@ -1996,7 +1970,7 @@ public class SolicitudViajeBean implements Serializable {
     public void popMotivoCancelar(boolean terrestre, boolean gerenteAp) {
         validaSeleccion(Constantes.TRUE, gerenteAp);
         if (isValidaCheck()) {
-            PrimeFaces.current().executeScript(";$('#modalCancelar').modal('show');");
+            PrimeFaces.current().executeScript(";$(modalCancelar).modal('show');");
         } else {
             FacesUtils.addErrorMessage("Debe de seleccionar al menos una Solicitud para poder Cancelar");
         }
@@ -2546,4 +2520,33 @@ public class SolicitudViajeBean implements Serializable {
     public void setListDias(List<SiDiasAsueto> listDias) {
         solicitudViajeBeanModel.setListDias(listDias);
     }
+
+    /**
+     * @return the empleado
+     */
+    public String getEmpleado() {
+        return solicitudViajeBeanModel.getEmpleado();
+    }
+
+    /**
+     * @param empleado the empleado to set
+     */
+    public void setEmpleado(String empleado) {
+        solicitudViajeBeanModel.setEmpleado(empleado);
+    }
+
+    /**
+     * @return the invitado
+     */
+    public String getInvitado() {
+        return solicitudViajeBeanModel.getInvitado();
+    }
+
+    /**
+     * @param invitado the invitado to set
+     */
+    public void setInvitado(String invitado) {
+        solicitudViajeBeanModel.setInvitado(invitado);
+    }
+
 }

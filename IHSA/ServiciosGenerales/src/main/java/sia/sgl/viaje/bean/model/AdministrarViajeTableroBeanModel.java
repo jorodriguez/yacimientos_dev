@@ -18,6 +18,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.model.SelectItem;
+import javax.faces.view.ViewScoped;
 import sia.constantes.Constantes;
 import sia.modelo.gr.vo.GrIntercepcionVO;
 import sia.modelo.gr.vo.GrPuntoVO;
@@ -38,11 +39,11 @@ import sia.util.UtilLog4j;
  * @author ihsa
  */
 @Named(value = "administrarViajeTableroBeanModel")
-
+@ViewScoped
 public class AdministrarViajeTableroBeanModel implements Serializable {
 
     @Inject
-    private Sesion sesion;
+    Sesion sesion;
 
     @Inject
     private SgViajeImpl sgViajeImpl;
@@ -81,7 +82,7 @@ public class AdministrarViajeTableroBeanModel implements Serializable {
     private int idPSLlegada;
     private ViajeVO infoViaje;
     private int oficinaID;
-    private List<SelectItem> lstOficinasOrigen = new ArrayList<SelectItem>();
+    private List<SelectItem> lstOficinasOrigen = new ArrayList<>();
     private boolean conChofer = true;
     private int indexTab = 1;
     private String activeTab1 = "active";
@@ -127,62 +128,62 @@ public class AdministrarViajeTableroBeanModel implements Serializable {
         if (this.getOficinaID() == 0 || this.getOficinaID() == Constantes.ID_OFICINA_TORRE_MARTEL) {
             this.setViajesProgramadosMTY(this.traerLstViajesProgramados(Constantes.ID_OFICINA_TORRE_MARTEL, Constantes.SOLICITUDES_TERRESTRE_OFICINA, false, isConChofer()));
         } else {
-            this.setViajesProgramadosMTY(new ArrayList<ItinerarioTerrestreVO>());
+            this.setViajesProgramadosMTY(new ArrayList<>());
         }
         if (this.getOficinaID() == 0 || this.getOficinaID() == Constantes.ID_OFICINA_REY_PRINCIPAL) {
             this.setViajesProgramadosREY(this.traerLstViajesProgramados(Constantes.ID_OFICINA_REY_PRINCIPAL, Constantes.SOLICITUDES_TERRESTRE_OFICINA, false, isConChofer()));
         } else {
-            this.setViajesProgramadosREY(new ArrayList<ItinerarioTerrestreVO>());
+            this.setViajesProgramadosREY(new ArrayList<>());
         }
         if (this.getOficinaID() == 0 || this.getOficinaID() == Constantes.ID_OFICINA_SAN_FERNANDO) {
             this.setViajesProgramadosSF(this.traerLstViajesProgramados(Constantes.ID_OFICINA_SAN_FERNANDO, Constantes.SOLICITUDES_TERRESTRE_OFICINA, false, isConChofer()));
         } else {
-            this.setViajesProgramadosSF(new ArrayList<ItinerarioTerrestreVO>());
+            this.setViajesProgramadosSF(new ArrayList<>());
         }
         if (this.getOficinaID() == 0 || this.getOficinaID() == Constantes.ID_OFICINA_TORRE_MARTEL) {
             this.setViajesEnCursoMTY(this.traerLstViajesEnCurso(Constantes.ID_OFICINA_TORRE_MARTEL, Constantes.SOLICITUDES_TERRESTRE_OFICINA, false, isConChofer()));
         } else {
-            this.setViajesEnCursoMTY(new ArrayList<ItinerarioTerrestreVO>());
+            this.setViajesEnCursoMTY(new ArrayList<>());
         }
         if (this.getOficinaID() == 0 || this.getOficinaID() == Constantes.ID_OFICINA_REY_PRINCIPAL) {
             this.setViajesEnCursoREY(this.traerLstViajesEnCurso(Constantes.ID_OFICINA_REY_PRINCIPAL, Constantes.SOLICITUDES_TERRESTRE_OFICINA, false, isConChofer()));
         } else {
-            this.setViajesEnCursoREY(new ArrayList<ItinerarioTerrestreVO>());
+            this.setViajesEnCursoREY(new ArrayList<>());
         }
         if (this.getOficinaID() == 0 || this.getOficinaID() == Constantes.ID_OFICINA_SAN_FERNANDO) {
             this.setViajesEnCursoSF(this.traerLstViajesEnCurso(Constantes.ID_OFICINA_SAN_FERNANDO, Constantes.SOLICITUDES_TERRESTRE_OFICINA, false, isConChofer()));
         } else {
-            this.setViajesEnCursoSF(new ArrayList<ItinerarioTerrestreVO>());
+            this.setViajesEnCursoSF(new ArrayList<>());
         }
         if (this.getOficinaID() == 0 || this.getOficinaID() == Constantes.ID_OFICINA_TORRE_MARTEL) {
             this.setViajesProgramadosMTYCd(this.traerLstViajesProgramados(Constantes.ID_OFICINA_TORRE_MARTEL, Constantes.SOLICITUDES_TERRESTRE_CIUDAD, false, isConChofer()));
         } else {
-            this.setViajesProgramadosMTYCd(new ArrayList<ItinerarioTerrestreVO>());
+            this.setViajesProgramadosMTYCd(new ArrayList<>());
         }
         if (this.getOficinaID() == 0 || this.getOficinaID() == Constantes.ID_OFICINA_REY_PRINCIPAL) {
             this.setViajesProgramadosREYCd(this.traerLstViajesProgramados(Constantes.ID_OFICINA_REY_PRINCIPAL, Constantes.SOLICITUDES_TERRESTRE_CIUDAD, false, isConChofer()));
         } else {
-            this.setViajesProgramadosREYCd(new ArrayList<ItinerarioTerrestreVO>());
+            this.setViajesProgramadosREYCd(new ArrayList<>());
         }
         if (this.getOficinaID() == 0 || this.getOficinaID() == Constantes.ID_OFICINA_SAN_FERNANDO) {
             this.setViajesProgramadosSFCd(this.traerLstViajesProgramados(Constantes.ID_OFICINA_SAN_FERNANDO, Constantes.SOLICITUDES_TERRESTRE_CIUDAD, false, isConChofer()));
         } else {
-            this.setViajesProgramadosSFCd(new ArrayList<ItinerarioTerrestreVO>());
+            this.setViajesProgramadosSFCd(new ArrayList<>());
         }
          if (this.getOficinaID() == 0 || this.getOficinaID() == Constantes.ID_OFICINA_TORRE_MARTEL) {
             this.setViajesEnCursoMTYCd(this.traerLstViajesEnCurso(Constantes.ID_OFICINA_TORRE_MARTEL, Constantes.SOLICITUDES_TERRESTRE_CIUDAD, false, isConChofer()));
         } else {
-            this.setViajesEnCursoMTYCd(new ArrayList<ItinerarioTerrestreVO>());
+            this.setViajesEnCursoMTYCd(new ArrayList<>());
         }
         if (this.getOficinaID() == 0 || this.getOficinaID() == Constantes.ID_OFICINA_REY_PRINCIPAL) {
             this.setViajesEnCursoREYCd(this.traerLstViajesEnCurso(Constantes.ID_OFICINA_REY_PRINCIPAL, Constantes.SOLICITUDES_TERRESTRE_CIUDAD, false, isConChofer()));
         } else {
-            this.setViajesEnCursoREYCd(new ArrayList<ItinerarioTerrestreVO>());
+            this.setViajesEnCursoREYCd(new ArrayList<>());
         }
         if (this.getOficinaID() == 0 || this.getOficinaID() == Constantes.ID_OFICINA_SAN_FERNANDO) {
             this.setViajesEnCursoSFCd(this.traerLstViajesEnCurso(Constantes.ID_OFICINA_SAN_FERNANDO, Constantes.SOLICITUDES_TERRESTRE_CIUDAD, false, isConChofer()));
         } else {
-            this.setViajesEnCursoSFCd(new ArrayList<ItinerarioTerrestreVO>());
+            this.setViajesEnCursoSFCd(new ArrayList<>());
         }
         if (this.getItinerarioReferencia() != null && this.getItinerarioReferencia().getLstRutaDetPredefinida() != null && !this.getItinerarioReferencia().getLstRutaDetPredefinida().isEmpty()) {
             this.setViajesProgramadosInt(this.traerLstItinerioInserseccion(0, this.getItinerarioReferencia().getLstRutaDetPredefinida()));
@@ -228,7 +229,7 @@ public class AdministrarViajeTableroBeanModel implements Serializable {
     }
 
     public List<ItinerarioTerrestreVO> traerLstViajesProgramados(int oficinaID, int tipoSolicitud, boolean enInterseccion, boolean conChofer) {
-        List<ItinerarioTerrestreVO> l = new ArrayList<ItinerarioTerrestreVO>();
+        List<ItinerarioTerrestreVO> l = new ArrayList<>();
         try {
             for (ViajeVO vo : sgViajeImpl.getRoadTripByExit(oficinaID,
                     Constantes.ESTATUS_VIAJE_POR_SALIR,
@@ -252,7 +253,7 @@ public class AdministrarViajeTableroBeanModel implements Serializable {
     }
 
     public List<ItinerarioTerrestreVO> traerLstViajesEnCurso(int oficinaID, int tipoSolicitud, boolean enInterseccion, boolean conChofer) {
-        List<ItinerarioTerrestreVO> l = new ArrayList<ItinerarioTerrestreVO>();
+        List<ItinerarioTerrestreVO> l = new ArrayList<>();
         try {
             for (ViajeVO vo : sgViajeImpl.getRoadTripByExit(oficinaID,
                     Constantes.ESTATUS_VIAJE_PROCESO,
@@ -276,7 +277,7 @@ public class AdministrarViajeTableroBeanModel implements Serializable {
     }
 
     public List<ItinerarioTerrestreVO> traerLstItinerioInserseccion(int IDInterseccion, List<GrPuntoVO> puntos) {
-        List<ItinerarioTerrestreVO> l = new ArrayList<ItinerarioTerrestreVO>();
+        List<ItinerarioTerrestreVO> l = new ArrayList<>();
         try {
             l.addAll(grInterseccionImpl.traerItinerarioIntercecciones(IDInterseccion, puntos));
         } catch (Exception e) {

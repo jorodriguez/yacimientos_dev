@@ -128,19 +128,17 @@ public class GrBean implements Serializable {
         this.situaciones = situaciones;
     }
 
-    public String goMapa() {
-        int tipo = Integer.parseInt(FacesUtilsBean.getRequestParameter("tipoArchivo"));
+    public String goMapa(int tipo) {
         setMapa(grArchivoImpl.getArchivo(tipo));
         return "/vistas/gr/mapa";
     }
 
-    public String goGPS() {
+    public String goGPS(int idViaje) {
         try {
-            int idViaje = Integer.parseInt(FacesUtilsBean.getRequestParameter("idViaje"));
             if (idViaje > 0) {
                 SgViaje viaje = sgViajeImpl.find(idViaje);
-                List<GrMapaGPSVO> puntosOrGPS = new ArrayList<GrMapaGPSVO>();
-                List<GrMapaGPSVO> puntosDeGPS = new ArrayList<GrMapaGPSVO>();
+                List<GrMapaGPSVO> puntosOrGPS = new ArrayList<>();
+                List<GrMapaGPSVO> puntosDeGPS = new ArrayList<>();
                 GrMapaGPSVO origen = new GrMapaGPSVO(String.valueOf(idViaje), viaje.getSgRutaTerrestre().getSgOficina().getLongitud(), viaje.getSgRutaTerrestre().getSgOficina().getLatitud());
                 //new StringBuilder().append(Constantes.FMT_yyyy_MM_dd.format(new Date())).append("T").append(Constantes.FMT_HHmmss.format(new Date())).append(".511Z").toString());
                 puntosOrGPS.add(origen);
@@ -161,31 +159,31 @@ public class GrBean implements Serializable {
             UtilLog4j.log.fatal(this, e.toString());
             FacesUtilsBean.addErrorMessage("Ocurrió una excepción, favor de comunicar a sia@ihsa.mx");
         }
-        return "/vistas/gr/mapaGPS";
+        return "/vistas/gr/mapaGPS.xhtml?faces-redirect=true";
     }
 
     public String goRecomendaciones() {
-        return "/vistas/gr/recomendaciones";
+        return "/vistas/gr/recomendaciones.xhtml?faces-redirect=true";
     }
 
     public String goSitios() {
         setSitios(grSitioImpl.getSitios(false));
-        return "/vistas/gr/sitios";
+        return "/vistas/gr/sitios.xhtml?faces-redirect=true";
     }
 
     public String goSituaciones() {
-        return "/vistas/gr/situaciones.xhtml";
+        return "/vistas/gr/situaciones.xhtml?faces-redirect=true";
     }
 
     public String goMensaje() {
         popUpGRBean.setDirectorioArchivos("GR/Mensajes/");
-        return "/vistas/gr/mensaje";
+        return "/vistas/gr/mensaje.xhtml?faces-redirect=true";
     }
 
     public String goAutorizar() {
         popUpGRBean.setDirectorioArchivos("GR/Autorizar/");
         sesionBean.actualizarRutasPausaGerente();
-        return "/vistas/gr/autorizarViaje";
+        return "/vistas/gr/autorizarViaje.xhtml?faces-redirect=true";
     }
 
     public boolean isResponsable() {

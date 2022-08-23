@@ -3,418 +3,227 @@
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:f="http://java.sun.com/jsf/core"
-                
-               
                 xmlns:c="http://java.sun.com/jsp/jstl/core">
 
-
-
-    <style>        
-        article.solicitudDraggable {}
-        article.viajeroDraggable {}
-        article.bodyViajeItem {}
-        article.bodyViajeItemProgramado {}
-        article.bodyViajeItemProceso {}
-        .panel-body.bodySolicitud {}
-        .panel-body.bodyViajeCreado {}
-        .panel-body.bodyViajeProgramado {}
-        .panel-body.bodyViajeProceso {}
-        .fechaInt1 {}        
-        .fechaInt2 {}        
-        .usrSesion {}        
-        .textBusqueda {}        
-        div.bodyNoDragable {}
-        #radioBtn .notActive{
-            color: #3276b1;
-            background-color: #fff;
-        }
-
-        .nodo {
-            position:absolute;
-            margin-top:-10px;
-            z-index:1;
-            height:20px;
-            width:20px;
-            border-radius:25px;
-        }
-        .textInstrucciones{
-            width: 115px;                        
-            text-align: center;
-            padding-top: 5px;
-        }
-        .primary-color-retorno{
-            background-color:#bce8f1;
-        }        
-        .danger-color-escalas{
-            background-color:#ebccd1;
-        }
-
-
-    </style>
-    <script>
-        function recargar() {
-            ejecutarBoton('frmCrearViaje', 'btnRecargarSol');
-        }
-    </script>
-    <h:form id="frmCrearViaje" rendered="#{not empty sesion.usuario}">
+    <h:form id="frmCrearViaje">
         <div class="row-fluid" >            
             <center><h:message for="frmCrearViaje" errorClass="errorMessage" infoClass="infoMessage" styleClass="textoMensajeError"/></center>
         </div>
-        <div class="col-lg-12" style="margin-top: 5px;">
-            <label class="col-lg-12 control-label" style="color: #f0ad4e;" > La información en esta pantalla no se refresca automáticamente es necesario hacerlo manual. Actualizada: #{administrarViajeBean.getUltimaActualizacion()}</label>
+        <div class="col-12" style="margin-top: 5px;">
+            <label class="col-12 control-label" style="color: #f0ad4e;" > La información en esta pantalla no se refresca automáticamente es necesario hacerlo manual. Actualizada: #{administrarViajeBean.getUltimaActualizacion()}</label>
         </div>
-        <div class="row-fluid" style="font-size: smaller 10;">
-            <div class="row" style="margin-top: 10px;">   
-                <div class="col-lg-1 col-xs-12">
-                    <button type="button" class="btn btn-primary " onclick="recargar();" title="Click aquí para recargar la información..." >
-                        <span class="glyphicon glyphicon-refresh" style="color: whitesmoke;"></span>
-                    </button>
-                    <p:commandLink 
-                        id="btnRecargarSol"
-                        actionListener="#{administrarViajeBean.iniciarConversasionCrearViaje(actionEvent)}" />
-                </div>
-                <div class="col-lg-1 col-xs-1" style="margin-top: 5px;">
-                    <label class="control-label" >Filtros: </label>
-                </div>
-                <div class="col-lg-2 col-xs-3">
-                    <script>
-                        $(function () {
-                            $(".fechaInt1").datepicker({
-                                showButtonPanel: true,
-                                buttonImage: "#{msgs['sgl.ruta.imagen']}cal_button.gif",
-                                buttonImageOnly: true,
-                                numberOfMonths: 2,
-                                dateFormat: "dd/mm/yy",
-                                onSelect: function (date) {
-                                    fechaSeleccinadaSalida = date;
-                                },
-                                onClose: function (selectedDate) {
-                                    $(".fechaInt2").datepicker("option", "minDate", selectedDate);
-                                    $(".fechaInt2").datepicker('show');
-                                }
-                            });
-                        });
-                    </script>
-                    <style>
-                        .ui-datepicker-calendar .ui-state-active {                                
-                            background: #6eafbf;
-                            -webkit-box-shadow: inset 0px 0px 10px 0px rgba(0, 0, 0, .1);
-                            -moz-box-shadow: inset 0px 0px 10px 0px rgba(0, 0, 0, .1);
-                            box-shadow: inset 0px 0px 10px 0px rgba(0, 0, 0, .1);
-                            color: #e0e0e0;
-                            text-shadow: 0px 1px 0px #4d7a85;
-                            filter: dropshadow(color=#4d7a85, offx=0, offy=1);
-                            border: 1px solid #55838f;
-                            position: relative;
-                            margin: -1px;
-                        }
-                        .ui-datepicker-unselectable .ui-state-default {
-                            background-image:  url(#{msgs['sgl.ruta.imagen']}flight-status-icon.png);
-                        }
-                    </style>
-                    <h:inputText id="fechaInt1" value="#{administrarViajeBean.fechaInt1}" styleClass="form-control fechaInt1"> 
-                        <f:convertDateTime pattern="dd/MM/yyyy"/>
-                    </h:inputText>
-                </div>
-                <div class="col-lg-2 col-xs-3">
-                    <script>
-                        $(function () {
-                            $(".fechaInt2").datepicker({
-                                showButtonPanel: true,
-                                buttonImage: "#{msgs['sgl.ruta.imagen']}cal_button.gif",
-                                buttonImageOnly: true,
-                                dateFormat: "dd/mm/yy",
-                                numberOfMonths: 2,
-                                onSelect: function (date) {
-                                    fechaSeleccinadaSalida = date;
-                                }
-                            });
-                        });
-                    </script>
-                    <h:inputText id="fechaInt2" value="#{administrarViajeBean.fechaInt2}" styleClass="form-control fechaInt2" >
-                        <f:convertDateTime pattern="dd/MM/yyyy"/>
-                    </h:inputText>
-                </div>
-                <div class="col-lg-2 col-xs-3">                    
-                    <h:inputText id="textBusqueda" value="#{administrarViajeBean.textBusqueda}" styleClass="form-control textBusqueda" >                    
-                    </h:inputText>
-                </div>
-                <p:commandLink 
-                    id="btnRecargarSolFiltro"
-                    styleClass="col-lg-1 col-xs-3 btn btn-primary btn-lg"
-                    style="width: 5%;"
-                    actionListener="#{administrarViajeBean.iniciarConversasionCrearViaje(actionEvent)}"
-                    title="Click aquí para filtrar la información..." >   
-                    <span class="glyphicon glyphicon-search" style="color: whitesmoke"></span>
-                </p:commandLink>                 
-                <div class="col-lg-2 col-xs-3" style="margin-left: 20px; margin-top: 20px; margin-bottom: 20px;">                    
-                    <div class="nodo primary-color-retorno"
-                         style="left: 10%;">
-                        <span><div class="textInstrucciones">Retornos</div></span>
+        <div class="row-fluid">
+            <p:panel id="pnlFiltro">
+                <div class="row mt-2">
+                    <div class="col-1 col-xs-12">
+                        <p:commandLink class="btn btn-primary" title="Click aquí para recargar la información..."
+                                       id="btnRecargarSol" process="@this" update="@form" 
+                                       action="#{administrarViajeBean.cargarSolicitudesYViajes}" >
+                            <span class="fa fa-sync text-white"></span>
+                        </p:commandLink>
                     </div>
-                    <div class="nodo danger-color-escalas"
-                         style="left: 65%;">
-                        <span><div class="textInstrucciones">Escalas</div></span>
-                    </div>                      
-                </div>                   
-            </div>
-            <div class="row" style="margin-top: 10px;">
-                <div class="container-fluid">
-                    <div id="sortableKanbanBoards" class="row bodyNoDragable">
-                        <!--sütun başlangıç-->
-                        <div class="col-lg-3 col-xs-12">
-                        <div class="card  card-primary kanban-col" style="width: 100%;">
-                            <div class="card -heading">
-                                Viajeros                                
-                                <!-- i class="fa fa-2x fa-plus-circle pull-right"></i -->
-                            </div>
-                            <div class="card-body bodySolicitud">
-                                <div id="TODOSolicitud" class="kanban-centered">
-                                    <c:forEach items="#{administrarViajeBean.solicitudesViajeros}" var="solViaje">
-                                        <article class="kanban-entry grab solicitudDraggable" id="solViaje#{solViaje.idSolicitud}" draggable="true">
-                                            <div class="kanban-entry-inner" style="#{solViaje.solicitudViajeDeRetorno eq 6 ? 'background-color: #d9edf7; border-color: #bce8f1;' : solViaje.solicitudViajeDeRetorno eq 9 ? 'background-color: #f2dede; border-color: #ebccd1;' :''}">
-                                                <div class="kanban-label" style="#{solViaje.solicitudViajeDeRetorno eq 6 ? 'background-color: #d9edf7; border-color: #bce8f1;' : solViaje.solicitudViajeDeRetorno eq 9 ? 'background-color: #f2dede; border-color: #ebccd1;' : ''}">
-                                                    <h2>                                                        
-                                                        <div style="width: 100%;" data-toggle="collapse" data-target="#solViajeColap#{solViaje.idSolicitud}">
-                                                            #{solViaje.codigo} a #{solViaje.destino}
+                    <div class="col-1 col-xs-1" style="margin-top: 5px;">
+                        <label class="control-label" >Filtros: </label>
+                    </div>
+                    <div class="col-2 col-xs-3">
+                        <p:datePicker id="fechaInt1" value="#{administrarViajeBean.fechaInt1}" pattern="dd/MM/yyyy" />
+                    </div>
+                    <div class="col-2 col-xs-3">
+                        <p:datePicker id="fechaInt2" value="#{administrarViajeBean.fechaInt2}" pattern="dd/MM/yyyy"/>
+                    </div>
+                    <div class="col-2 col-xs-3">                    
+                        <h:inputText id="textBusqueda" value="#{administrarViajeBean.textBusqueda}" styleClass="form-control textBusqueda" 
+                                     >                    
+                        </h:inputText>
+                    </div>
+                    <div class="col-1 col-xs-12">
+                        <p:commandLink id="btnRecargarSolFiltro"
+                                       styleClass="btn btn-primary"
+                                       action="#{administrarViajeBean.cargarSolicitudesYViajes}"
+                                       title="Click aquí para filtrar la información..." 
+                                       process="frmCrearViaje:pnlFiltro" update="frmCrearViaje:pnlViajes">   
+                            <span class="fa fa-search" style="color: whitesmoke"></span>
+                        </p:commandLink>    
+                    </div>
+                    <div class="col-2 col-xs-3 input-group" >
+                        <div class="text text-info">
+                            <span class="bg bg-info"><div >Retornos</div></span>
+                        </div>
+                        <div class="text text-warning"
+                             style="left: 65%;">
+                            <span class="bg bg-warning"><div >Escalas</div></span>
+                        </div>                      
+                    </div>  
+                </div>
+            </p:panel>
+            <p:panel id="pnlViajes">
+                <div class="row mt-2">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <!--sütun başlangıç-->
+                            <div class="col-3 col-xs-12">
+                                <div class="card  card-primary">
+                                    <div class="card-header">
+                                        Viajeros                                
+                                    </div>
+                                    <div class="card-body ">
+                                        <p:accordionPanel>
+                                            <c:forEach items="#{administrarViajeBean.solicitudesViajeros}" var="solViaje">
+                                                <p:tab title="#{solViaje.codigo} a #{solViaje.destino}">
+                                                    #{solViaje.fechaHoraSalidaTxt}
+                                                    <c:forEach items="#{solViaje.viajeros}" var="viajero">
+                                                        <div class="row" style="#{solViaje.idOficinaDestino ne viajero.idDestino ? 'background-color: #d9edf7; border-color: #bce8f1;' : ''}">
+                                                            <div class="row" style="#{solViaje.idOficinaDestino ne viajero.idDestino ? 'background-color: #d9edf7; border-color: #bce8f1;' : ''}">
+                                                                <h2><span>#{viajero.usuarioTxt}</span></h2>                                                                    
+                                                            </div>
                                                         </div>
-                                                    </h2>
-                                                    <div id="solViajeColap#{solViaje.idSolicitud}" class="collapse in">                                                        
-                                                        #{solViaje.fechaHoraSalidaTxt}
-                                                        <c:forEach items="#{solViaje.viajeros}" var="viajero">
-                                                            <article class="kanban-entry grab viajeroDraggable" id="viajero#{viajero.id}" draggable="true">
-                                                                <div class="kanban-entry-inner" style="#{solViaje.idOficinaDestino ne viajero.idDestino ? 'background-color: #d9edf7; border-color: #bce8f1;' : ''}">
-                                                                    <div class="kanban-label-viajero" style="#{solViaje.idOficinaDestino ne viajero.idDestino ? 'background-color: #d9edf7; border-color: #bce8f1;' : ''}">
-                                                                        <h2><span>#{viajero.usuarioTxt}</span></h2>                                                                    
-                                                                    </div>
-                                                                </div>
-                                                            </article>
-                                                        </c:forEach>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </article>
-                                    </c:forEach>
+                                                    </c:forEach>
+                                                </p:tab>
+                                            </c:forEach>
+                                        </p:accordionPanel>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="card -footer">
-
-                            </div>
-                        </div>
-                    </div>
-                        <!--sütun bitiş-->
-                        <!--sütun başlangıç-->
-                        <div class="col-lg-3 col-xs-12">
-                        <div class="card  card-primary kanban-col" style="width: 100%;">
-                            <div class="card -heading">
-                                Viajes creados
-                                <!-- i class="fa fa-2x fa-plus-circle pull-right"></i -->
-                            </div>
-                            <div class="card-body bodyViajeCreado">
-                                <div id="DOINGVC" class="kanban-centered">
-                                    <c:forEach items="#{administrarViajeBean.viajesCreados}" var="viaje">
-                                        <article class="kanban-entry grab bodyViajeItem" id="viaje#{viaje.id}" draggable="true">
-                                            <div class="kanban-entry-inner" style="#{viaje.sgViaje > 0 ? 'background-color: #d9edf7; border-color: #bce8f1;' : ''}">
-                                                <div class="kanban-label" style="#{viaje.sgViaje > 0 ? 'background-color: #d9edf7; border-color: #bce8f1;' : ''}">
-                                                    <h2 style="width: 100%;">
-                                                        <div style="width: 100%;" title="#{viaje.codigo}"
-                                                             data-toggle="collapse" data-target="#viajeColap#{viaje.id}">
-                                                            #{viaje.codigo} a #{viaje.destino}                                                             
-                                                            <span class="fa fa-users fa-1g"></span>                                                            
-                                                            (#{viaje.listaViajeros.size()}/#{viaje.vehiculoVO.capacidadPasajeros})                                                             
-                                                        </div>
-                                                    </h2>                                                    
-                                                    <div id="viajeColap#{viaje.id}" class="collapse" >
+                            <div class="col-3 col-xs-12">
+                                <div class="card  card-primary ">
+                                    <div class="card-header">
+                                        Viajes creados
+                                    </div>
+                                    <div class="card-body">
+                                        <p:accordionPanel>
+                                            <c:forEach items="#{administrarViajeBean.viajesCreados}" var="viaje">  
+                                                <p:tab title="#{viaje.codigo} a #{viaje.destino} (#{viaje.listaViajeros.size()}/#{viaje.vehiculoVO.capacidadPasajeros})"> 
+                                                    <div class="card-body">
                                                         <p><strong>#{viaje.responsable} </strong>                                                            
-                                                            <br/>#{viaje.fechaProgramadaTxt} #{viaje.horaProgramadaTxt}
+                                                            #{viaje.fechaProgramadaTxt} #{viaje.horaProgramadaTxt}
                                                         </p>
                                                         <p:commandLink                                                         
-                                                            styleClass="col-lg-3 col-xs-3 btn btn-link btn-lg"                                                                                                                                                             
-                                                            actionListener="#{administrarViajeBean.goPopUpAddOrRemoveViajeros(actionEvent)}"
+                                                            styleClass="col-3 col-xs-3 btn btn-link btn-lg"                                                                                                                                                             
+                                                            action="#{administrarViajeBean.goPopUpAddOrRemoveViajeros(viaje.id)}"
                                                             style="margin-top: 4px; margin-bottom: 4px; align-content: center;"
-                                                            title="Click aquí para ver los viajeros..." >   
-                                                            <f:param name="idViaje" value="#{viaje.id}"/>
+                                                            title="Click aquí para ver los viajeros..." 
+                                                            process="@this" update="frmPnlAddorRemoveViajeros">   
                                                             <span class="fa fa-users"></span>
                                                         </p:commandLink>   
                                                         <p:commandLink                                                         
-                                                            styleClass="col-lg-3 col-xs-3 btn btn-link btn-lg"                                                                                                                                                             
-                                                            actionListener="#{administrarViajeBean.iniciarModifcarViaje(actionEvent)}"
+                                                            styleClass="col-3 col-xs-3 btn btn-link btn-lg"                                                                                                                                                             
+                                                            action="#{administrarViajeBean.iniciarModifcarViaje(viaje.id)}"
                                                             style="margin-top: 4px; margin-bottom: 4px;align-content: center;"
-                                                            title="Click aquí para modificar el viaje" >   
-                                                            <f:param name="idViajeMod" value="#{viaje.id}"/>
+                                                            title="Click aquí para modificar el viaje" process="@this" 
+                                                            update="frmPnlCrearViajes">   
                                                             <span class="fa fa-edit"></span>
                                                         </p:commandLink>
                                                         <p:commandLink                                                         
-                                                            styleClass="col-lg-3 col-xs-3 btn btn-link btn-lg"                                                                                                                                                             
-                                                            actionListener="#{administrarViajeBean.moverViajeAPorSalir()}"
+                                                            styleClass="col-3 col-xs-3 btn btn-link btn-lg"                                                                                                                                                             
+                                                            action="#{administrarViajeBean.moverViaje(viaje.id)}"
                                                             style="margin-top: 4px; margin-bottom: 4px; align-content: center;"
-                                                            title="Click aquí para mover el viaje a por salir" >   
-                                                            <f:param name="idViajeMover" value="#{viaje.id}"/>
+                                                            title="Click aquí para mover el viaje a por salir" 
+                                                            process="@this" update="@form">   
                                                             <span class="fa fa-arrow-right"></span>
                                                         </p:commandLink>
                                                         <p:commandLink                                                         
-                                                            styleClass="col-lg-3 col-xs-3 btn btn-link btn-lg"                                                                                                                                                             
-                                                            actionListener="#{administrarViajeBean.eliminarViaje()}"
+                                                            styleClass="col-3 col-xs-3 btn btn-link btn-lg"                                                                                                                                                             
+                                                            action="#{administrarViajeBean.eliminarViajeById(viaje.id)}"
                                                             style="margin-top: 4px; margin-bottom: 4px; align-content: center;"
-                                                            title="Click aquí para eliminar el viaje" >   
-                                                            <f:param name="idViajeEliminar" value="#{viaje.id}"/>
-                                                            <span class="fa fa-close" style="color: red"></span>
+                                                            title="Click aquí para eliminar el viaje" process="@this" update="@form">   
+                                                            <span class="fa fa-trash" style="color: red"></span>
                                                         </p:commandLink>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </article>
-                                    </c:forEach>
+                                                    </div> 
+                                                </p:tab>
+                                            </c:forEach>
+                                        </p:accordionPanel>
+                                    </div>
+                                    <div class="card-footer" style="text-align: right;">
+                                        <p:commandLink action="#{administrarViajeBean.inicializarCrearViaje}" 
+                                                       process="@this" update="frmPnlCrearViajes">
+                                            <span class="fa fa-plus"></span>
+                                        </p:commandLink>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="card -footer" style="text-align: right;">
-                                <p:commandLink action="#{administrarViajeBean.goPopupCrearViaje(actionEvent)}" 
-                                                 styleClass="link" ><span class="glyphicon glyphicon-plus"></span>
-                                </p:commandLink>
-                            </div>
-                        </div>
-                    </div>
-                        <!--sütun bitiş-->
-                        <!--sütun başlangıç-->
-                        <div class="col-lg-3 col-xs-12">
-                            <div class="card  card-primary kanban-col" style="width: 100%;">
-                            <div class="card -heading">
-                                Viajes por salir 
-                                <!-- i class="fa fa-2x fa-plus-circle pull-right"></i -->
-                            </div>
-                            <div class="card-body bodyViajeProgramado">
-                                <div id="DONEVP" class="kanban-centered">
-                                    <c:forEach items="#{administrarViajeBean.viajesProgramados}" var="viaje">
-                                        <article class="kanban-entry grab bodyViajeItemProgramado" id="viaje#{viaje.id}" draggable="false">
-                                            <div class="kanban-entry-inner" style="#{viaje.sgViaje > 0 ? 'background-color: #d9edf7; border-color: #bce8f1;' : ''}">
-                                                <div class="kanban-label" style="#{viaje.sgViaje > 0 ? 'background-color: #d9edf7; border-color: #bce8f1;' : ''}">
-                                                    <h2 style="width: 100%;">
-                                                        <div style="width: 100%; text-align: center;" title="(#{viaje.listaViajeros.size()}/#{viaje.vehiculoVO.capacidadPasajeros})"
-                                                             data-toggle="collapse" data-target="#viajeColap#{viaje.id}">
-                                                            #{viaje.codigo}
-                                                        </div>
-                                                    </h2>                                                    
-                                                    <div id="viajeColap#{viaje.id}" class="collapse">
-                                                        <p><strong>#{viaje.responsable} </strong>                                                            
-                                                            <br/> A #{viaje.destino}
-                                                            <br/>#{viaje.fechaProgramadaTxt} #{viaje.horaProgramadaTxt}
-                                                        </p>
-                                                        <div class="col-lg-6 col-xs-6"></div>
-                                                        <p:commandLink                                                         
-                                                            styleClass="col-lg-2 col-xs-3 btn btn-link btn-lg"                                                                                                                                                             
-                                                            actionListener="#{administrarViajeBean.goPopUpAddOrRemoveViajeros(actionEvent)}"
-                                                            style="margin-top: 5px; margin-bottom: 5px;"
-                                                            title="Click aquí para ver los viajeros..." >                                                                 
-                                                            <f:param name="idViaje" value="#{viaje.id}"/>
-                                                            <span class="fa fa-users"></span>
-                                                        </p:commandLink>       
-                                                        <p:commandLink                                                         
-                                                            styleClass="col-lg-2 col-xs-3 btn btn-link btn-lg"                                                                                                                                                             
-                                                            actionListener="#{administrarViajeBean.iniciarModifcarViaje(actionEvent)}"
-                                                            style="margin-top: 5px; margin-bottom: 5px;"
-                                                            title="Click aquí para modificar el viaje" >   
-                                                            <f:param name="idViajeMod" value="#{viaje.id}"/>
-                                                            <span class="fa fa-edit"></span>
-                                                        </p:commandLink>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </article>
-                                    </c:forEach>
+                            <!--sütun bitiş-->
+                            <!--sütun başlangıç-->
+                            <div class="col-3 col-xs-12">
+                                <div class="card  card-primary">
+                                    <div class="card-header">
+                                        Viajes por salir 
+                                    </div>
+                                    <div class="card-body">
+                                        <p:accordionPanel>
+                                            <c:forEach items="#{administrarViajeBean.viajesProgramados}" var="viaje"> 
+                                                <p:tab title="#{viaje.codigo} a #{viaje.destino} (#{viaje.listaViajeros.size()}/#{viaje.vehiculoVO.capacidadPasajeros})"> 
+                                                    <p><strong>#{viaje.responsable} </strong>                                                            
+                                                        <br/> A #{viaje.destino}
+                                                        <br/>#{viaje.fechaProgramadaTxt} #{viaje.horaProgramadaTxt}
+                                                    </p>
+                                                    <div class="col-6 col-xs-6"></div>
+                                                    <p:commandLink                                                         
+                                                        styleClass="col-2 col-xs-3 btn btn-link btn-lg"                                                                                                                                                             
+                                                        action="#{administrarViajeBean.goPopUpAddOrRemoveViajeros(viaje.id)}"
+                                                        style="margin-top: 5px; margin-bottom: 5px;"
+                                                        title="Click aquí para ver los viajeros..." process="@this" update="frmPnlAddorRemoveViajeros">                                                                 
+                                                        <span class="fa fa-users"></span>
+                                                    </p:commandLink>       
+                                                    <p:commandLink                                                         
+                                                        styleClass="col-2 col-xs-3 btn btn-link btn-lg"                                                                                                                                                             
+                                                        action="#{administrarViajeBean.iniciarModifcarViaje(viaje.id)}"
+                                                        style="margin-top: 5px; margin-bottom: 5px;"
+                                                        title="Click aquí para modificar el viaje" process="@this" update="frmPnlCrearViajes">   
+                                                        <span class="fa fa-edit"></span>
+                                                    </p:commandLink>
+                                                </p:tab>
+                                            </c:forEach>
+                                        </p:accordionPanel>
+                                    </div>
+                                    <div class="card -footer">
 
-
+                                    </div>
                                 </div>
                             </div>
-                            <div class="card -footer">
 
-                            </div>
-                        </div>
-                    </div>
+                            <div class="col-3 col-xs-12">
+                                <div class="card  card-primary kanban-col" style="width: 100%;">
+                                    <div class="card-header">
+                                        Viajes por regresar
+                                    </div>
+                                    <div class="card-body">
+                                        <p:accordionPanel>
+                                            <c:forEach items="#{administrarViajeBean.viajesEnProceso}" var="viaje"> 
+                                                <p:tab title="#{viaje.codigo}">
+                                                    <p><strong>#{viaje.responsable} </strong>                                                                                                                        
+                                                        <br/>#{viaje.codigo}
+                                                    </p>
+                                                    <div class="col-6 col-xs-6"></div>
+                                                    <p:commandLink                                                         
+                                                        styleClass="col-2 col-xs-3 btn btn-link btn-lg"                                                                                                                                                             
+                                                        action="#{administrarViajeBean.goPopUpAddOrRemoveViajeros(viaje.id)}"
+                                                        style="margin-top: 5px; margin-bottom: 5px;"
+                                                        title="Click aquí para ver los viajeros..." process="@this" update="frmPnlAddorRemoveViajeros">                                                                                                                         
+                                                        <span class="fa fa-users"></span>
+                                                    </p:commandLink>   
+                                                    <p:commandLink    rendered="#{!viaje.tieneRegreso}"                                                     
+                                                                      styleClass="col-2 col-xs-3 btn btn-link btn-lg"                                                                                                                                                             
+                                                                      action="#{administrarViajeBean.crearRegreso(viaje.id)}"
+                                                                      style="margin-top: 5px; margin-bottom: 5px;"
+                                                                      title="Click aquí para crear viaje de regreso"
+                                                                      process="@this" update="@form">
+                                                        <span class="fa fa-share-square warning-color"></span>
+                                                    </p:commandLink> 
+                                                </p:tab>
 
-                        <div class="col-lg-3 col-xs-12">
-                        <div class="card  card-primary kanban-col" style="width: 100%;">
-                            <div class="card -heading">
-                                Viajes por regresar
-                                <!-- i class="fa fa-2x fa-plus-circle pull-right"></i -->
-                            </div>
-                            <div class="card-body bodyViajeProceso">
-                                <div id="DONEVPR" class="kanban-centered">
-
-                                    <c:forEach items="#{administrarViajeBean.viajesEnProceso}" var="viaje">
-                                        <article class="kanban-entry grab bodyViajeItemProceso" id="viaje#{viaje.id}" draggable="false">
-                                            <div class="kanban-entry-inner" style="#{viaje.tieneRegreso ? 'background-color: #d9edf7; border-color: #bce8f1;' : ''}">
-                                                <div class="kanban-label" style="#{viaje.tieneRegreso ? 'background-color: #d9edf7; border-color: #bce8f1;' : ''}">
-                                                    <h2 style="width: 100%;">
-                                                        <div style="width: 100%; text-align: center;" title="#{viaje.codigo}"
-                                                             data-toggle="collapse" data-target="#viajeColap#{viaje.id}">
-                                                            #{viaje.fechaRegresoTxt} #{viaje.horaRegresoTxt}
-                                                        </div>
-                                                    </h2>                                                    
-                                                    <div id="viajeColap#{viaje.id}" class="collapse">
-                                                        <p><strong>#{viaje.responsable} </strong>                                                                                                                        
-                                                            <br/>#{viaje.codigo}
-                                                        </p>
-                                                        <div class="col-lg-6 col-xs-6"></div>
-                                                        <p:commandLink                                                         
-                                                            styleClass="col-lg-2 col-xs-3 btn btn-link btn-lg"                                                                                                                                                             
-                                                            actionListener="#{administrarViajeBean.goPopUpAddOrRemoveViajeros(actionEvent)}"
-                                                            style="margin-top: 5px; margin-bottom: 5px;"
-                                                            title="Click aquí para ver los viajeros..." >                                                                                                                         
-                                                            <f:param name="idViaje" value="#{viaje.id}"/>
-                                                            <span class="fa fa-users"></span>
-                                                        </p:commandLink>   
-                                                        <p:commandLink    rendered="#{!viaje.tieneRegreso}"                                                     
-                                                                            styleClass="col-lg-2 col-xs-3 btn btn-link btn-lg"                                                                                                                                                             
-                                                                            actionListener="#{administrarViajeBean.crearViajeRegreso()}"
-                                                                            style="margin-top: 5px; margin-bottom: 5px;"
-                                                                            title="Click aquí para crear viaje de regreso">                                                                                                                         
-                                                            <f:param name="idViajeRegresar" value="#{viaje.id}"/>
-                                                            <span class="fa fa-share-square warning-color"></span>
-                                                        </p:commandLink>   
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </article>
-                                    </c:forEach>
+                                            </c:forEach>
+                                        </p:accordionPanel>
+                                    </div>
+                                </div>
+                                <div class="card -footer">
 
                                 </div>
                             </div>
-                            <div class="card -footer">
-
-                            </div>
-                        </div>
                         </div>
                         <input type="hidden" class="usrSesion" value="#{administrarViajeBean.getUsrID()}"/>
                     </div>
                 </div>
-                <!-- Static Modal -->
-                <div class="modal modal-static fade" id="processing-modal" role="dialog" aria-hidden="true">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="modal-body">
-                                <div class="text-center">
-                                    <i class="fa fa-refresh fa-5x fa-spin"></i>
-                                    <h4>Processing...</h4>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>    
-
+            </p:panel>
         </div>
-        <script>
-            $(document).ready($(function () {
-                var kanbanCol = $('.panel-body');
-                kanbanCol.css('max-height', (window.innerHeight - 150) + 'px');
-                var kanbanColCount = parseInt(kanbanCol.length);
-                $('.container-fluid').css('width', '100%');
-                draggableInit();
-                $('.panel-heading').click(function () {
-                    var $panelBody = $(this).parent().children('.panel-body');
-                    $panelBody.slideToggle();
-                });
-            }));
-        </script>
     </h:form>
 </ui:composition>
