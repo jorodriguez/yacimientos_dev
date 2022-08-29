@@ -15,10 +15,11 @@
                 <h:form styleClass="textoIzquierda" rendered="#{not empty sesion.usuario}" id="formOficios">
 
                     <div class="page-header">
-                        <h3>
+                        <h3>detl
                             #{oficioDetalleBean.tituloPagina}
                         </h3>
                     </div>
+                   
 
                     <!-- Mensajes con estilos de Bootstrap  -->
                     <h:message style="display: block;"
@@ -34,7 +35,7 @@
 
                         <div class="row" style="font-weight: bold;">
                             <div class="col-sm-12">
-                                <h:outputLabel value="#{oficioDetalleBean.vo.oficioNumero} - #{oficioDetalleBean.vo.oficioAsunto}"/>
+                                <h:outputLabel class="h4" value="#{oficioDetalleBean.vo.oficioNumero} - #{oficioDetalleBean.vo.oficioAsunto}"/>
                             </div>
                         </div> <!-- row -->
 
@@ -42,7 +43,7 @@
 
                         <ul id="tabs" class="nav nav-tabs" data-tabs="tabs">
                             <li class="active">
-                                <a href="#divInformacionOficio" data-toggle="tab">Informaci oacute;n</a>
+                                <a href="#divInformacionOficio" data-toggle="tab">Información</a>
                             </li>
                             <li><a href="#divAsociadoHaciaOficios" data-toggle="tab">Asociado A Oficio (<span style="color: red;">#{oficioDetalleBean.vo.asociadoHaciaOficios.size()}</span>)</a></li>
                             <!-- 
@@ -170,9 +171,9 @@
                                     <div class="col-sm-10">
                                         <!--ice:dataTable rows="10" width="100%" value="{oficioDetalleBean.vo.movimientosAdjuntosActivos}" var="movimiento"-->
                                         <p:dataTable 
-                                            showGridlines="true" 
+                                            showGridlines="false" 
                                             size="small" 
-                                            rows="10"  
+                                            rows="10"                                              
                                             value="#{oficioDetalleBean.vo.movimientosAdjuntosActivos}" 
                                             var="movimiento">
 
@@ -182,7 +183,6 @@
                                                 <h:outputText 
                                                     value="#{movimiento.adjunto.nombreUUID}" 
                                                     rendered="#{movimiento.tieneAdjunto()}"/>
-
                                                 <f:facet name="header">
                                                     <h:outputText value="Nombre de Archivo"/>
                                                 </f:facet>
@@ -190,11 +190,11 @@
 
                                             <!-- Columna para icono de visualizacion / descarga -->
 
-                                            <p:column style="width: 2px;" rendered="#{oficioDetalleBean.permisos.verArchivoAdjuntoHistorialOficio}">
+                                            <p:column style="width:10%" rendered="#{oficioDetalleBean.permisos.verArchivoAdjuntoHistorialOficio}">
 
                                                 <!-- Icono de vista previa -->
 
-                                                <p:commandLink title="Vista previa"
+                                                <h:commandLink title="Vista previa"
                                                                actionListener="#{oficioDetalleBean.prepararAdjuntoVisor(event)}"
                                                                rendered="#{oficioDetalleBean.permisos.verArchivoAdjuntoHistorialOficio 
                                                                            and movimiento.tieneAdjunto()
@@ -205,7 +205,10 @@
                                                         <img src="../../resources/imagenes/preview.png" border="0" />
                                                     </center>
                                                     <f:param name="adjuntoId" value="#{movimiento.adjunto.id}" />   
-                                                </p:commandLink>
+                                                </h:commandLink>
+                                                                                       
+                                            </p:column>
+                                            <p:column style="width:10%" rendered="#{oficioDetalleBean.permisos.verArchivoAdjuntoHistorialOficio}">
 
                                                 <!-- Icono de descarga -->
 
@@ -243,7 +246,6 @@
                                                     </center>
                                                 </h:outputLink>
 
-
                                                 <!-- Termina TEMPORAL 2/sep/14 - Permitir descarga -->
 
                                             </p:column>
@@ -252,7 +254,7 @@
 
                                             <p:column style="width: 10px;" rendered="#{oficioDetalleBean.mostrarEdicionArchivos()}">
 
-                                                <p:commandLink title="Sustituir archivo"
+                                                <h:commandLink title="Sustituir archivo"
                                                                action="editarAdjunto"
                                                                rendered="#{oficioDetalleBean.linkEditarAdjunto.visible and movimiento.tieneAdjunto()}"
                                                                styleClass="link" >
@@ -260,7 +262,7 @@
                                                     <f:param name="oficioId" value="#{movimiento.oficioId}" />
                                                     <f:param name="movimientoId" value="#{movimiento.id}" />
                                                     <f:param name="oficioMovimientoId" value="#{movimiento.oficioMovimientoId}" />
-                                                </p:commandLink>
+                                                </h:commandLink>
 
                                                 <f:facet name="header">
                                                     <h:outputText value="-"/>
@@ -286,40 +288,40 @@
 
                                         <!-- Boton Promover para cambiar de estatus al oficio -->
 
-                                        <p:commandLink value="#{oficioDetalleBean.botonPromover.valor}" 
+                                        <h:commandLink value="#{oficioDetalleBean.botonPromover.valor}" 
                                                        styleClass="btn btn-success btn-xs"
                                                        action="#{oficioDetalleBean.botonPromover.accion.toString()}"
                                                        rendered="#{oficioDetalleBean.botonPromover.visible}"
                                                        title="#{oficioDetalleBean.botonPromover.titulo}" >
                                             <f:param name="oficioId" value="#{oficioDetalleBean.vo.oficioId}" />
-                                        </p:commandLink>
+                                        </h:commandLink>
 
 
-                                        <p:commandLink value="Modificar" 
+                                        <h:commandLink value="Modificar" 
                                                        styleClass="btn btn-info btn-xs"
                                                        action="editar"
                                                        rendered="#{oficioDetalleBean.botonModificar.visible}"
                                                        title="Modificar oficio" >
                                             <f:param name="oficioId" value="#{oficioDetalleBean.vo.oficioId}" />
-                                        </p:commandLink>
+                                        </h:commandLink>
 
 
-                                        <p:commandLink value="Anular" 
+                                        <h:commandLink value="Anular" 
                                                        styleClass="btn btn-danger btn-xs"
                                                        action="anular"
                                                        rendered="#{oficioDetalleBean.botonAnular.visible}"
                                                        title="Anular oficio" >
                                             <f:param name="oficioId" value="#{oficioDetalleBean.vo.oficioId}" />
-                                        </p:commandLink>
+                                        </h:commandLink>
 
 
-                                        <p:commandLink value="#{oficioDetalleBean.botonSeguimiento.valor}" 
+                                        <h:commandLink value="#{oficioDetalleBean.botonSeguimiento.valor}" 
                                                        styleClass="btn btn-warning btn-xs"
                                                        action="#{oficioDetalleBean.botonSeguimiento.accion.toString()}"
                                                        rendered="#{oficioDetalleBean.botonSeguimiento.visible}"
                                                        title="#{oficioDetalleBean.botonSeguimiento.titulo}" >
                                             <f:param name="oficioId" value="#{oficioDetalleBean.vo.oficioId}" />
-                                        </p:commandLink>
+                                        </h:commandLink>
 
 
                                     </div>
@@ -376,7 +378,7 @@
                                         </f:facet>
                                     </p:column>
                                     <p:column style="width: 30px" rendered="#{oficioDetalleBean.permisos.verDetalleOficio}">
-                                        <p:commandLink styleClass="link"
+                                        <h:commandLink styleClass="link"
                                                        action="detalle"
                                                        title="Ver detalle del oficio"  >
                                             <center>
@@ -385,7 +387,7 @@
                                             </center>
 
                                             <f:param name="oficioId" value="#{currentRow['oficioId']}" />   
-                                        </p:commandLink>
+                                        </h:commandLink>
                                     </p:column>
                                 </p:dataTable>
 
@@ -452,7 +454,7 @@
                                             </f:facet>
                                         </p:column>
                                         <p:column style="width: 30px" rendered="#{oficioDetalleBean.permisos.verDetalleOficio}">
-                                            <p:commandLink styleClass="link"
+                                            <h:commandLink styleClass="link"
                                                            action="detalle"
                                                            title="Ver detalle del oficio"  >
                                                 <center>
@@ -461,52 +463,12 @@
                                                 </center>
 
                                                 <f:param name="oficioId" value="#{currentRow['oficioId']}" />   
-                                            </p:commandLink>
+                                            </h:commandLink>
                                         </p:column>
                                     </p:dataTable>
 
                                     <br></br>
-                                    <!--
-                                                                        <center>
-                                                                            <ice:dataPaginator for="dataAsociadoDesdeOficios"
-                                                                                               rowsCountVar="rowsCount"
-                                                                                               displayedRowsCountVar="displayedRowsCount"
-                                                                                               firstRowIndexVar="firstRowIndex"
-                                                                                               lastRowIndexVar="lastRowIndex"
-                                                                                               pageCountVar="pageCount"
-                                                                                               pageIndexVar="pageIndex">
-                                                                                <ice:outputFormat
-                                                                                    styleClass="standard"
-                                                                                    value="{0} Oficios Asociados, mostrando {1} oficio(s), del {2} al {3}. Página {4} de {5}.">
-                                                                                    <f:param value="#{rowsCount}"/>
-                                                                                    <f:param value="#{displayedRowsCount}"/>
-                                                                                    <f:param value="#{firstRowIndex}"/>
-                                                                                    <f:param value="#{lastRowIndex}"/>
-                                                                                    <f:param value="#{pageIndex}"/>
-                                                                                    <f:param value="#{pageCount}"/>
-                                                                                </ice:outputFormat>
-                                                                            </ice:dataPaginator>
-                                    
-                                                                            <ice:dataPaginator 
-                                                                                for="dataAsociadoDesdeOficios"
-                                                                                fastStep="4"
-                                                                                paginator="true"
-                                                                                paginatorMaxPages="5">
-                                                                                <f:facet name="first">
-                                                                                    <ice:graphicImage 
-                                                                                        url="./xmlhttp/css/rime/css-images/arrow-first.gif"
-                                                                                        style="border:none;"
-                                                                                        title="Primera Página"/>
-                                                                                </f:facet>
-                                                                                <f:facet name="last">
-                                                                                    <ice:graphicImage 
-                                                                                        url="./xmlhttp/css/rime/css-images/arrow-last.gif"
-                                                                                        style="border:none;"
-                                                                                        title="Ultima Página"/>
-                                                                                </f:facet>
-                                                                            </ice:dataPaginator>
-                                                                        </center>
-                                    -->
+                                 
                                 </div> <!-- div tab-pane -->
 
                             </ui:fragment>
@@ -550,47 +512,7 @@
                                     </p:dataTable>
 
                                     <br></br>
-                                    <!--
-                                                                        <center>
-                                                                            <ice:dataPaginator for="dataUsuariosAcceso"
-                                                                                               rowsCountVar="rowsCount"
-                                                                                               displayedRowsCountVar="displayedRowsCount"
-                                                                                               firstRowIndexVar="firstRowIndex"
-                                                                                               lastRowIndexVar="lastRowIndex"
-                                                                                               pageCountVar="pageCount"
-                                                                                               pageIndexVar="pageIndex">
-                                                                                <ice:outputFormat
-                                                                                    styleClass="standard"
-                                                                                    value="{0} Usuario(s), mostrando {1} usuario(s), del {2} al {3}. Página {4} de {5}.">
-                                                                                    <f:param value="#{rowsCount}"/>
-                                                                                    <f:param value="#{displayedRowsCount}"/>
-                                                                                    <f:param value="#{firstRowIndex}"/>
-                                                                                    <f:param value="#{lastRowIndex}"/>
-                                                                                    <f:param value="#{pageIndex}"/>
-                                                                                    <f:param value="#{pageCount}"/>
-                                                                                </ice:outputFormat>
-                                                                            </ice:dataPaginator>
-                                    
-                                                                            <ice:dataPaginator 
-                                                                                for="dataUsuariosAcceso"
-                                                                                fastStep="4"
-                                                                                paginator="true"
-                                                                                paginatorMaxPages="5">
-                                                                                <f:facet name="first">
-                                                                                    <ice:graphicImage 
-                                                                                        url="./xmlhttp/css/rime/css-images/arrow-first.gif"
-                                                                                        style="border:none;"
-                                                                                        title="Primera Página"/>
-                                                                                </f:facet>
-                                                                                <f:facet name="last">
-                                                                                    <ice:graphicImage 
-                                                                                        url="./xmlhttp/css/rime/css-images/arrow-last.gif"
-                                                                                        style="border:none;"
-                                                                                        title="Ultima Página"/>
-                                                                                </f:facet>
-                                                                            </ice:dataPaginator>
-                                                                        </center>
-                                    -->
+                                  
 
                                 </div> <!-- div tab-pane -->
                             </ui:fragment>
@@ -707,7 +629,7 @@
                                         <!-- Permitir modificar archivo solo si se está en modo Edición y el oficio está en estado inicial -->
 
                                         <p:column rendered="#{oficioDetalleBean.mostrarEdicionArchivos()}" style="width: 10px">
-                                            <p:commandLink title="Sustituir archivo"
+                                            <h:commandLink title="Sustituir archivo"
                                                            action="editarAdjunto"
                                                            rendered="#{oficioDetalleBean.linkEditarAdjunto.visible 
                                                                        and movimiento.tieneAdjunto()
@@ -717,7 +639,7 @@
                                                 <f:param name="oficioId" value="#{movimiento.oficioId}" />
                                                 <f:param name="movimientoId" value="#{movimiento.id}" />
                                                 <f:param name="oficioMovimientoId" value="#{movimiento.oficioMovimientoId}" />
-                                            </p:commandLink>
+                                            </h:commandLink>
                                             <f:facet name="header">
                                                 <h:outputText value="-"/>
                                             </f:facet>
@@ -727,46 +649,6 @@
 
                                 <p></p>
 
-                                <!--<center>
-                                    <ice:dataPaginator for="dataHistorialMovimientos"
-                                                       rowsCountVar="rowsCount"
-                                                       displayedRowsCountVar="displayedRowsCount"
-                                                       firstRowIndexVar="firstRowIndex"
-                                                       lastRowIndexVar="lastRowIndex"
-                                                       pageCountVar="pageCount"
-                                                       pageIndexVar="pageIndex">
-                                        <ice:outputFormat
-                                            styleClass="standard"
-                                            value="{0} Movimientos, mostrando {1} movimiento(s), del {2} al {3}. Página {4} de {5}.">
-                                            <f:param value="#{rowsCount}"/>
-                                            <f:param value="#{displayedRowsCount}"/>
-                                            <f:param value="#{firstRowIndex}"/>
-                                            <f:param value="#{lastRowIndex}"/>
-                                            <f:param value="#{pageIndex}"/>
-                                            <f:param value="#{pageCount}"/>
-                                        </ice:outputFormat>
-                                    </ice:dataPaginator>
-
-                                    <ice:dataPaginator 
-                                        for="dataHistorialMovimientos"
-                                        fastStep="4"
-                                        paginator="true"
-                                        paginatorMaxPages="5">
-                                        <f:facet name="first">
-                                            <ice:graphicImage 
-                                                url="./xmlhttp/css/rime/css-images/arrow-first.gif"
-                                                style="border:none;"
-                                                title="Primera Página"/>
-                                        </f:facet>
-                                        <f:facet name="last">
-                                            <ice:graphicImage 
-                                                url="./xmlhttp/css/rime/css-images/arrow-last.gif"
-                                                style="border:none;"
-                                                title="Ultima Página"/>
-                                        </f:facet>
-                                    </ice:dataPaginator>
-                                </center>
-                                -->
 
                             </div> <!-- div tab-pane -->
                         </div> <!-- div tab-content -->
@@ -783,6 +665,7 @@
 
                         <p:commandLink value="#{oficioDetalleBean.botonCancelar.valor}" 
                                        styleClass="btn btn-default btn-xs"
+                                       ajax="false"
                                        action="#{oficioDetalleBean.botonCancelar.accion.toString()}"
                                        rendered="#{oficioDetalleBean.botonCancelar.visible}"
                                        title="#{oficioDetalleBean.botonCancelar.titulo}" >
@@ -828,7 +711,7 @@
                                         <p align="center">
                                             <iframe 
                                                 id="viewer" 
-                                                src = "/resources/js/Viewer.js/#../../../#{oficioDetalleBean.adjuntoVisor.urlVisorArchivoTemporal}"
+                                                src= "../../resources/js/Viewer.js/#../../../#{oficioDetalleBean.adjuntoVisor.urlVisorArchivoTemporal}"
                                                 width="700" 
                                                 height="400"
                                                 allowfullscreen="true" 

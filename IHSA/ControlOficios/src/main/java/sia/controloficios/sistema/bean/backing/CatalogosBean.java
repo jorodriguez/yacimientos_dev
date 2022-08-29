@@ -10,10 +10,11 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.ejb.EJB;
 import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
+import javax.faces.view.ViewScoped;
 import javax.faces.event.ValueChangeEvent;
 import javax.faces.model.SelectItem;
 import javax.inject.Inject;
+import javax.inject.Named;
 import sia.modelo.Compania;
 import sia.modelo.gerencia.vo.GerenciaVo;
 import sia.modelo.vo.ApCampoVo;
@@ -30,7 +31,8 @@ import sia.util.UtilLog4j;
  *
  * @author esapien
  */
-@ManagedBean
+//@ManagedBean
+@Named(value = "catalogosBean")
 @ViewScoped
 public class CatalogosBean implements Serializable {
 

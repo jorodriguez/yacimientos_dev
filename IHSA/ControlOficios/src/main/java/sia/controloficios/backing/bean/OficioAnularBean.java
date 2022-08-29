@@ -4,6 +4,7 @@ package sia.controloficios.backing.bean;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.event.ActionEvent;
+import javax.inject.Named;
 import sia.controloficios.sistema.soporte.FacesUtils;
 import sia.excepciones.InsufficientPermissionsException;
 import sia.excepciones.InvalidBusinessOperationException;
@@ -15,7 +16,8 @@ import sia.modelo.oficio.vo.OficioPromovibleVo;
  *
  * @author esapien
  */
-@ManagedBean
+//@ManagedBean
+@Named(value = "oficioAnularBean")
 public class OficioAnularBean extends OficioBaseBean {
     
     /**

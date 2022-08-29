@@ -7,17 +7,15 @@ import java.util.Calendar;
 import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
-import javax.ejb.EJB;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedProperty;
-import javax.faces.bean.ViewScoped;
+import javax.faces.view.ViewScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
 import javax.faces.model.DataModel;
 import javax.faces.model.ListDataModel;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
-import lombok.SneakyThrows;
 /*import org.icefaces.ace.component.fileentry.FileEntry;
 import org.icefaces.ace.component.fileentry.FileEntryEvent;
 import org.icefaces.ace.component.fileentry.FileEntryResults;*/
@@ -88,7 +86,7 @@ import sia.util.ValidadorNombreArchivo;
  *
  * @author esapien
  */
-//@ViewScoped
+@ViewScoped
 public abstract class OficioBaseBean implements Serializable {
 
     /**
@@ -168,17 +166,18 @@ public abstract class OficioBaseBean implements Serializable {
             System.out.println("@PostConstruct entro a buscar permisos");
             List<RolVO> newpermisos = siPermisoServicio.fetchPermisosPorUsuarioModulo(sesion.getUsuario().getId(), Constantes.OFICIOS_MODULO_ID, sesion.getBloqueActivo().getBloqueId());
             if (!newpermisos.isEmpty()) {
+                System.out.println("@PostConstruct set permisos");
                 sesion.setPermisos(new PermisosVo(newpermisos));
             }
         }
 
         // TODO: Pasar este proceso a un interceptor de permisos.
         if (getPermisos() != null) {
-            System.out.println("@PostConstruct entro a mermisso != null");
+            System.out.println("@PostConstruct entro a permisso != null ");
             if (!this.permisosRequeridos()) {
                 System.out.println("@ InsufficientPermissionsException");
                 getLogger().fatal(this, getClass().getName() + " - Error de permisos requeridos");
-
+                System.out.println("@PostConstruct trown InsufficientPermissionsException  ");
                 throw new InsufficientPermissionsException();
             }
         }

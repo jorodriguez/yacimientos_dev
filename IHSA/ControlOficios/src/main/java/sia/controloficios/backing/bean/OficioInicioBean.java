@@ -4,13 +4,16 @@ package sia.controloficios.backing.bean;
 
 import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
+import javax.inject.Named;
+import jdk.jfr.Name;
 import sia.excepciones.SIAException;
 
 /**
  *
  * @author esapien
  */
-@ManagedBean
+//@ManagedBean
+@Named(value = "oficioInicioBean")
 public class OficioInicioBean extends OficioBaseBean {
     
     
@@ -39,11 +42,14 @@ public class OficioInicioBean extends OficioBaseBean {
         
         
         if (isEditor && acceso) {          
-            paginaPrincipal = "/vistas/oficios/bandejaEntrada.xhtml?faces-redirect=true";
+            //paginaPrincipal = "/vistas/oficios/bandejaEntrada.xhtml?faces-redirect=true";
+            paginaPrincipal = "/vistas/oficios/bandejaEntrada";
         } else if(!isEditor && acceso){
-            paginaPrincipal = "/vistas/oficios/consultar.xhtml?faces-redirect=true";
+            //paginaPrincipal = "/vistas/oficios/consultar.xhtml?faces-redirect=true";
+            paginaPrincipal = "/vistas/oficios/consultar";
         } else {
-            paginaPrincipal =  "/vistas/oficios/noTieneAcceso.xhtml?faces-redirect=true";
+            //paginaPrincipal =  "/vistas/oficios/noTieneAcceso.xhtml?faces-redirect=true";
+            paginaPrincipal =  "/vistas/oficios/noTieneAcceso";
         }
         System.out.println("=================Pagina principal "+paginaPrincipal);
        

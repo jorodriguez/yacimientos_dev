@@ -13,6 +13,7 @@ import javax.faces.event.ValueChangeEvent;
 import javax.faces.model.DataModel;
 import javax.faces.model.ListDataModel;
 import javax.faces.model.SelectItem;
+import javax.inject.Named;
 import javax.mail.MessagingException;
 import org.primefaces.event.FilesUploadEvent;
 import sia.constantes.Constantes;
@@ -30,7 +31,8 @@ import sia.util.ui.AccionUI;
  *
  * @author esapien
  */
-@ManagedBean
+//@ManagedBean
+@Named(value ="oficioEditarBean" )
 public class OficioEditarBean extends OficioOpcionesBloquesUIBean {
 
     /**

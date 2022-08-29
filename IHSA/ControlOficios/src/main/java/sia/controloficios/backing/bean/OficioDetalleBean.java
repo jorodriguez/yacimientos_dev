@@ -1,8 +1,10 @@
 
 package sia.controloficios.backing.bean;
 
+import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
 import javax.faces.event.ActionEvent;
+import javax.inject.Named;
 import sia.constantes.Constantes;
 import sia.controloficios.sistema.soporte.FacesUtils;
 import sia.excepciones.InsufficientPermissionsException;
@@ -17,7 +19,8 @@ import sia.util.ui.AccionUI;
  *
  * @author esapien
  */
-@ManagedBean
+//@ManagedBean
+@Named(value = "oficioDetalleBean")
 public class OficioDetalleBean extends OficioBaseBean {
     
     private String tituloPagina;
@@ -32,7 +35,7 @@ public class OficioDetalleBean extends OficioBaseBean {
     private AccionUI botonCancelar;
     private AccionUI linkEditarAdjunto;
     private AccionUI botonSeguimiento;
-    
+    private String parameterOficioId;
     /**
      * Auxiliar para uso en la vista.
      * 
@@ -60,19 +63,33 @@ public class OficioDetalleBean extends OficioBaseBean {
      * @throws InsufficientPermissionsException En caso que entrar en modo de 
      * edición sin tener un rol de edición.
      */
+    
+    @PostConstruct
+    private void postconstruct(){
+        System.out.println("@@@ postconstruct  OficioDetalle SIMPLE");
+        
+        String oficioIdStr = FacesUtils.getRequestParameter("oficioId");
+        
+        System.out.println("oficioIdRecibido str"+oficioIdStr);
+    
+    }       
+    
     @Override
     protected void postConstruct() throws InsufficientPermissionsException {
         
-        System.out.println("en postconstructo de OficioDetalle");
+        System.out.println("@@@ postconstructo de OficioDetalle");
         
         // valor inicial para la vista
         
         // obtener registro de oficio
         
-        // se debe recibir un ID
-        Integer oficioId = Integer.parseInt(FacesUtils.getRequestParameter("oficioId"));
+        String oficioIdStr = FacesUtils.getRequestParameter("oficioId");
         
-        System.out.println("oficioIdRecibido "+oficioId);
+        System.out.println("oficioIdRecibido str"+oficioIdStr);
+        
+        // se debe recibir un ID
+        Integer oficioId = Integer.parseInt(oficioIdStr);
+              
         
         // obtener desde bd
         this.setVo(buscarOficioVo(oficioId));
@@ -84,7 +101,7 @@ public class OficioDetalleBean extends OficioBaseBean {
         
         modoEdicion = getSesion().isModoEdicion();
         
-        LOGGER.info(this, "oficioId = " + oficioId + ", modoEdicion = " + modoEdicion);
+        LOGGER.info(this, "oficioId = " + parameterOficioId + ", modoEdicion = " + modoEdicion);
         
         // si se consulta detalle de oficio para para promover, validar permisos
         if (modoEdicion) {
@@ -457,6 +474,14 @@ public class OficioDetalleBean extends OficioBaseBean {
      */
     public String getTituloPagina() {
         return tituloPagina;
+    }
+
+    public String getParameterOficioId() {
+        return parameterOficioId;
+    }
+
+    public void setParameterOficioId(String parameterOficioId) {
+        this.parameterOficioId = parameterOficioId;
     }
 
     

@@ -13,6 +13,28 @@
     <body>
 
         <ui:composition>
+            
+        <p:ajaxStatus styleClass="block mb-4">
+        <f:facet name="default">
+            <h:outputText value="Status: StandBy" />
+        </f:facet>
+
+        <f:facet name="start">
+            <i class="pi pi-spin pi-spinner loading-icon" aria-hidden="true"></i>
+        </f:facet>
+
+        <f:facet name="complete">
+            <h:outputText value="Status: Completed" />
+        </f:facet>
+    </p:ajaxStatus>
+
+            <p:ajaxStatus onstart="PF('statusDialog').show()" delay="1000" onsuccess="PF('statusDialog').hide()"/>
+
+    <p:dialog widgetVar="statusDialog"  modal="true" draggable="false" closable="false" resizable="false" showHeader="false">
+        <div class="text-center">
+            <i class="pi pi-spin pi-spinner loading-icon" aria-hidden="true"></i>
+        </div>
+    </p:dialog>
 
             <!-- Navbar -->
 
@@ -144,7 +166,7 @@
             <!-- Modal - Cambiar bloque activo -->
 
             <div class="modal modal-md fade" id="modalBloqueActivo">
-                <div class="modal-dialog" style="width: 360px;">
+                <div class="modal-dialog" style="width: 600px;">
                     <div class="modal-content">
                         <div class="modal-header">
                             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
@@ -153,13 +175,31 @@
                             <h4 class="modal-title">Cambiar de Campo</h4>
                         </div>
                         <div class="modal-body">
-                            <h:form id="form_bloques" >
+                            <h:form id="form_bloques" >                                
+                                    <!--<p:panelGrid columns="4" layout="flex" >
+                                        <ui:repeat value="#{sesion.bloquesUsuario}" var="bloque" >
+                                         <p:panel id="blind" header="Blind" >                                                                                                
+                                                <h:commandLink 
+                                                    value="#{bloque.bloqueNombre}"                                                
+                                                    actionListener="#{oficioPlantillaBean.cambiarBloqueActivo()}" 
+                                                    style="color: #0000EE; text-decoration: none;" 
+                                                    rendered="#{bloque.registroId ne sesion.bloqueActivo.registroId}">
+                                                    <f:param name="registroId" value="#{bloque.registroId}" />
+                                                </h:commandLink>
+                                                <h:outputText rendered="#{bloque.registroId eq sesion.bloqueActivo.registroId}" value="Seleccionado" />
+                                                <p:effect type="blind"  event="click">
+                                                    <f:param name="direction" value="'horizontal'"/>
+                                                </p:effect>
+                                        </p:panel>
+                                            </ui:repeat>
+                                    </p:panelGrid>
+                                -->
                                 <center>                
                                     
                                     <p:dataTable  value="#{sesion.bloquesUsuario}" var="bloque">
                                         <p:column >
                                             <f:facet name="header"><h:outputText value="Campo"/></f:facet>
-                                            <h:outputText value="#{bloque.bloqueNombre}" />
+                                            <p:outputLabel value="#{bloque.bloqueNombre}"  />
                                         </p:column>                                        
                                         <p:column> 
                                             <h:outputLabel value="Seleccionado" rendered="#{bloque.registroId eq sesion.bloqueActivo.registroId}"/>
@@ -168,11 +208,11 @@
                                                 actionListener="#{oficioPlantillaBean.cambiarBloqueActivo()}" 
                                                 style="color: #0000EE; text-decoration: none;" 
                                                 rendered="#{bloque.registroId ne sesion.bloqueActivo.registroId}">
-                                                <f:param name="registroId" value="#{bloque.registroId}" />
+                                                <f:param name="registroId" value="{bloque.registroId}" />
                                             </h:commandLink>
                                         </p:column>
                                     </p:dataTable>
-                                    
+                                                                       
                                 </center>
                             </h:form>
 

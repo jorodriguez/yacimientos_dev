@@ -14,6 +14,7 @@ import javax.faces.event.ActionEvent;
 import javax.faces.event.AjaxBehaviorEvent;
 import javax.faces.model.SelectItem;
 import javax.inject.Inject;
+import javax.inject.Named;
 import lombok.Getter;
 import lombok.Setter;
 import org.primefaces.event.FilesUploadEvent;
@@ -58,7 +59,8 @@ import sia.util.ValidadorNombreArchivo;
  *
  * @author mluis
  */
-@ManagedBean
+//@ManagedBean
+@Named(value = "incidenciaBean")
 public class IncidenciaBean extends OficioOpcionesBloquesUIBean {
 
     

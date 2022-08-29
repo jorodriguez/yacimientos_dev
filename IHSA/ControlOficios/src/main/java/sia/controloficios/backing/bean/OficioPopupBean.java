@@ -4,6 +4,7 @@ package sia.controloficios.backing.bean;
 
 import java.util.List;
 import javax.faces.bean.ManagedBean;
+import javax.inject.Named;
 import sia.excepciones.SIAException;
 import sia.modelo.estatus.vo.EstatusVo;
 import sia.modelo.oficio.vo.OficioEntradaVo;
@@ -19,7 +20,8 @@ import sia.modelo.oficio.vo.OficioSalidaVo;
  *
  * @author esapien
  */
-@ManagedBean
+//@ManagedBean
+@Named(value = "oficioPopupBean")
 public class OficioPopupBean extends OficioBaseBean {
     
     List<EstatusVo> estatusEntrada;

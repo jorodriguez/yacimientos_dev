@@ -21,9 +21,8 @@ import sia.modelo.oficio.vo.OficioSalidaVo;
  * 
  * @author esapien
  */
-@ManagedBean
-//@Named
-@ViewScoped
+//@ManagedBean
+@Named(value = "oficioConsultaBean")
 public class OficioConsultaBean extends OficioOpcionesBloquesUIBean {
     
     

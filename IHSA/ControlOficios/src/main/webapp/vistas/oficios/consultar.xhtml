@@ -116,11 +116,7 @@
                                     #{msgs['sistema.comun.bloque.nombre']}
                                 </div>
                                 <div class="col-sm-5">
-                                    <!-- Combo de Bloque de usuario con acceso a Todas las Gerencias -->
-                                    <!-- 
-                                    onchange="document.getElementById('formOficios:botonBuscar').click();"
-                                                       onkeyup="return submitEnter('formOficios:botonBuscar', event);"
-                                    -->
+                                    <!-- Combo de Bloque de usuario con acceso a Todas las Gerencias -->                                    
                                     <p:selectOneMenu id="idBloque"
                                                        value="#{oficioConsultaBean.vo.bloqueId}"
                                                        valueChangeListener="#{catalogosBean.actualizarGerencias}"
@@ -131,12 +127,7 @@
                                         <f:selectItems value="#{catalogosBean.bloques}"/>
                                         <p:ajax process="@this" update="@form"/>
                                     </p:selectOneMenu>
-                                    
-                                    <!--
-                                    onchange="document.getElementById('formOficios:botonBuscar').click();"
-                                                       onkeyup="return submitEnter('formOficios:botonBuscar', event);"
-                                    -->
-                                    
+                                                                       
                                     <!-- Combo de Bloque de usuario con acceso restringido a Compañía -->
                                     <p:selectOneMenu valueChangeListener="#{oficioConsultaBean.actualizarCompaniaGerencia}"
                                                        value="#{oficioConsultaBean.vo.bloqueId}"
@@ -181,11 +172,7 @@
                                     #{msgs['sistema.comun.gerencia.nombre']}
                                 </div>
                                 <div class="col-sm-5">
-                                    <!-- Usuario con acceso a todas las gerencias -->
-                                    <!--
-                                    onchange="document.getElementById('formOficios:botonBuscar').click();"
-                                                       onkeyup="return submitEnter('formOficios:botonBuscar', event);" 
-                                    -->
+                                    <!-- Usuario con acceso a todas las gerencias -->                                    
                                     <p:selectOneMenu id="idGerencia"
                                                        value="#{oficioConsultaBean.vo.gerenciaId}"
                                                        rendered="#{oficioConsultaBean.mostrarOpcionesBloques or oficioConsultaBean.mostrarTodasGerencias}"
@@ -241,7 +228,6 @@
                                         <p:ajax process="@this" update="@form"/>
                                     </p:selectOneRadio>
                                     
-                                    <h:outputLabel value=" sequimiendo #{oficioConsultaBean.vo.seguimientoConsulta}"/>
                                 </div>
                                 <div class="col-sm-2">
                                     
@@ -282,7 +268,6 @@
                                         <p:ajax process="@this" update="@form"/>
                                     </p:selectOneRadio>
                                     
-                                    <h:outputLabel value=" mostrar publicos #{oficioConsultaBean.vo.mostrarPublicos}"/>
                                 </div>
                                 <div class="col-md-2" style="white-space: nowrap;">
                                     Maximo No. de oficios:
@@ -317,15 +302,16 @@
                                     <!--<my:barraIconos />-->
                                 </div>
                                 <div class="col-sm-3" style="text-align: right">
-                                    <p:remoteCommand actionListener="#{oficioConsultaBean.buscarOficios(actionEvent)}"                                                     
+                                    <p:remoteCommand id="comandoBuscar"
+                                                     actionListener="#{oficioConsultaBean.buscarOficios(actionEvent)}"                                                     
                                                      name="buscar"
-                                                     delay="100"
+                                                     delay="500"
                                                      update="@form"
                                                      process="@this"/>
                                         
-                                    <p:commandLink id="botonBuscar"
+                                    <p:commandButton id="botonBuscar"
                                                    value="#{msgs['sistema.comun.buscar']}" 
-                                                   styleClass="btn btn-info btn-xs"
+                                                   styleClass="ui-button-primary"
                                                    actionListener="#{oficioConsultaBean.buscarOficios(actionEvent)}"
                                                    rendered="true"
                                                    process="@this"
@@ -333,9 +319,9 @@
                                                    title="Buscar oficios" />
                                                                         
                                     
-                                    <p:commandLink id="botonLimpiar"
+                                    <p:commandButton id="botonLimpiar"
                                                    value="#{msgs['sistema.comun.limpiar']}" 
-                                                   styleClass="btn btn-default btn-xs"
+                                                   styleClass="ui-button-secondary"
                                                    actionListener="#{oficioConsultaBean.limpiarConsultaVo(actionEvent)}"
                                                    rendered="true"
                                                    process="@this"
@@ -344,11 +330,7 @@
                                 </div>
                             </div> <!-- row -->
                             <br/>
-                            <div >
-                                <!--
-                                    ace:dataTable id="consultaResultados" rows="10" value="{oficioConsultaBean.resultados}" var="currentRow"
-                                               style="width: 99.9%" paginator="true" paginatorPosition="bottom" >
-                                    -->
+                            <div >                               
                                     
                                 <p:dataTable id="consultaResultados"  
                                          showGridlines="true" 
@@ -359,10 +341,12 @@
                                     <!--?faces-redirect=true;-->
                                     <p:column headerText="#{msgs['sistema.oficios.comun.oficio.numero']}">                                        
                                         <h:commandLink styleClass="link"
-                                                         action="./detalle.xhtml"                                                         
-                                           title="Ver detalle del oficio" >
-                                            <h:outputText value="#{currentRow['oficioNumero']}" title="#{currentRow['oficioAsunto']}" style="font-weight: bold;"/>
-                                            <f:param name="oficioId" value="#{currentRow['oficioId']}" />                                               
+                                                       action="detalle"                                                                                                              
+                                                       title="Ver detalle del oficio" >
+                                            <h:outputText value="#{currentRow['oficioNumero']}" title="#{currentRow['oficioAsunto']}" style="font-weight: bold;"/>                                            
+                                            <f:param name="oficioId" value="#{currentRow['oficioId']}"  />                                               
+                                             <f:attribute name="oficioId" value="#{currentRow['oficioId']}" />
+                                            <!--<f:setPropertyActionListener value="#{currentRow['oficioId']}"  target="#{oficioDetalleBean.parameterOficioId}" />-->
                                         </h:commandLink>
                                         
                                     </p:column>
@@ -404,12 +388,7 @@
                                     </p:column>
 
                                     <p:column style="width: 80px; white-space: nowrap;" headerText="#{msgs['sistema.oficios.comun.estatus']}">
-                                        <a href="#" data-toggle="modal" data-target="#modalTipoOficio_#{currentRow['tipoOficioId']}">
-                                           <!--<p:graphicImage name="../../resources/imagenes/estatus_oficio/estatus_oficio_#{currentRow['tipoOficioId']}_#{currentRow['estatusId']}.png"                                                     
-                                                     alt="#{currentRow['tipoOficioNombre']} - #{currentRow['estatusNombre']}" 
-                                                     style="height: 25px; " 
-                                                     title="#{currentRow['tipoOficioNombre']} - #{currentRow['estatusNombre']}"  />
-                                           -->
+                                        <a href="#" data-toggle="modal" data-target="#modalTipoOficio_#{currentRow['tipoOficioId']}">                                           
                                            <h:graphicImage value="../../resources/imagenes/estatus_oficio/estatus_oficio_#{currentRow['tipoOficioId']}_#{currentRow['estatusId']}.png" 
                                                             alt="#{currentRow['tipoOficioNombre']} - #{currentRow['estatusNombre']}" 
                                                             title="#{currentRow['tipoOficioNombre']} - #{currentRow['estatusNombre']}" />
@@ -418,7 +397,7 @@
                                     </p:column>
                                     <p:column style="width: 30px; border-left: none;" rendered="#{oficioConsultaBean.permisos.verDetalleOficio}">
                                         <h:commandLink styleClass="link"
-                                                         action="detalle"
+                                                         action="detalle"                                                         
                                                          title="Ver detalle del oficio" >
                                             <center>
                                                 <i class="fa fa-eye icono-contenido" style="font-size: 18px;"></i>                                                
@@ -428,9 +407,8 @@
                                         </h:commandLink>
                                     </p:column>
                                 </p:dataTable>
-                                    <p:blockUI block="consultaResultados" trigger="botonBuscar"> 
-                                            LOADING<br />
-                                            
+                                    <p:blockUI block="consultaResultados" trigger="botonBuscar comandoBuscar"> 
+                                            Cargando...<br />                                            
                                     </p:blockUI>
 
                             </div>
@@ -438,29 +416,20 @@
                             <br/>
                             <div class="row" style="text-align: right">
                                 <p:commandButton  value="Descargar" 
-                                                   styleClass="btn btn-success mr-2 mb-2"
-                                                   icon="fa fa-file-excel-o">                                           
+                                                   styleClass="rounded-button ui-button-success "
+                                                   icon="fa fa-file-excel-o"                                                   
+                                                   >                                           
+                                    
                                            <p:dataExporter id="exportTabla"  
                                                            type="xlsxstream" 
                                                            target="consultaResultados" 
                                                            fileName="Oficios"                                                            
                                                             />
                                 </p:commandButton>
-                            <!--<ace:dataExporter id="exportTabla" label="Descargar excel" type="xls"
-                                              fileName="Oficios" target="consultaResultados" excludeColumns="7,8,9" >
-                            </ace:dataExporter>-->
                             </div>
-
-
                         </div> <!-- jumbotron -->
-
-
                         <ui:include src="popupOficioSalida.xhtml" />
-
-
                         <ui:include src="popupOficioEntrada.xhtml" />
-
-
                     </h:form>
                 </ui:define>
             </ui:composition>

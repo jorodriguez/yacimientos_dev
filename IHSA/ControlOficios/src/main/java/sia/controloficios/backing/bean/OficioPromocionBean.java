@@ -5,9 +5,11 @@ package sia.controloficios.backing.bean;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.event.ActionEvent;
+import javax.inject.Named;
 import javax.mail.MessagingException;
 //import org.icefaces.ace.component.fileentry.FileEntryEvent;
 import org.primefaces.event.FilesUploadEvent;
+import org.primefaces.model.file.UploadedFile;
 import sia.constantes.Constantes;
 import sia.controloficios.sistema.soporte.FacesUtils;
 import sia.excepciones.InvalidStateException;
@@ -22,9 +24,12 @@ import sia.modelo.oficio.vo.OficioPromovibleVo;
  *
  * @author esapien
  */
-@ManagedBean
+//@ManagedBean
+@Named(value = "oficioPromocionBean")
 public class OficioPromocionBean extends OficioBaseBean {
     
+    
+    private UploadedFile file;
     
     /**
      * PostConstruct
@@ -35,6 +40,8 @@ public class OficioPromocionBean extends OficioBaseBean {
     protected void postConstruct() throws SIAException {
         
         getLogger().info(this, "@postConstruct");
+        
+        System.out.println("@@OficioPromocionBean ");
         
         // obtener registro de oficio
         
@@ -123,6 +130,15 @@ public class OficioPromocionBean extends OficioBaseBean {
     }
     
     
+    public void upload() {
+        if (file != null) {
+            
+            FacesUtils.addInfoMessage("updload");
+        }
+    }
+    
+      
+    
     /**
      * 
      * @param actionEvent 
@@ -203,6 +219,15 @@ public class OficioPromocionBean extends OficioBaseBean {
         
         prepararArchivoAdjuntoVo(e, getVo().getArchivoPromocion());
         
+    }
+
+
+    public UploadedFile getFile() {
+        return file;
+    }
+
+    public void setFile(UploadedFile file) {
+        this.file = file;
     }
     
 }

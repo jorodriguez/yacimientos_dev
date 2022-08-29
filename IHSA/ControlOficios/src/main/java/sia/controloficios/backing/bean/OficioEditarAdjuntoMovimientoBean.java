@@ -5,6 +5,7 @@ package sia.controloficios.backing.bean;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.event.ActionEvent;
+import javax.inject.Named;
 import javax.mail.MessagingException;
 //import org.icefaces.ace.component.fileentry.FileEntryEvent;
 import org.primefaces.event.FilesUploadEvent;
@@ -26,7 +27,8 @@ import sia.modelo.oficio.vo.OficioSalidaVo;
  * 
  * @author esapien
  */
-@ManagedBean
+//@ManagedBean
+@Named(value = "oficioEditarAdjuntoMovimientoBean")
 public class OficioEditarAdjuntoMovimientoBean extends OficioBaseBean {
     
     /**
