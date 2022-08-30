@@ -143,7 +143,8 @@ public class OficioPromocionBean extends OficioBaseBean {
      * 
      * @param actionEvent 
      */
-    public String promoverEstatusOficio(ActionEvent actionEvent) {
+    //public String promoverEstatusOficio(ActionEvent actionEvent) {
+    public String promoverEstatusOficio() {
         
         getLogger().info(this, "@promoverEstatusOficio = " + getVo().toString());
         

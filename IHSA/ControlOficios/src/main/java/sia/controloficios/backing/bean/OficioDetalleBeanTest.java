@@ -3,6 +3,7 @@ package sia.controloficios.backing.bean;
 
 import java.io.Serializable;
 import javax.annotation.PostConstruct;
+import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 import sia.controloficios.sistema.soporte.FacesUtils;
@@ -17,6 +18,7 @@ import sia.controloficios.sistema.soporte.FacesUtils;
 @ViewScoped
 public class OficioDetalleBeanTest implements Serializable{   
     
+    private static final long serialVersionUID = 1L;
  
     private String parameterOficioId;
    
@@ -31,8 +33,11 @@ public class OficioDetalleBeanTest implements Serializable{
         
         // obtener registro de oficio
         
-        String oficioIdStr = FacesUtils.getRequestParameter("oficioId");
+        //String oficioIdStr = FacesUtils.getRequestParameter("oficioId");
         
+        FacesContext fc = FacesContext.getCurrentInstance();
+        String oficioIdStr = fc.getExternalContext().getRequestParameterMap().get("oficioId");
+                
         this.parameterOficioId = oficioIdStr;
         
         System.out.println("///////////////oficioIdRecibido str"+oficioIdStr);

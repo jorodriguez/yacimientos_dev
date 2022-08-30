@@ -43,13 +43,10 @@ public class OficioInicioBean extends OficioBaseBean {
         
         if (isEditor && acceso) {          
             //paginaPrincipal = "/vistas/oficios/bandejaEntrada.xhtml?faces-redirect=true";
-            paginaPrincipal = "/vistas/oficios/bandejaEntrada";
         } else if(!isEditor && acceso){
             //paginaPrincipal = "/vistas/oficios/consultar.xhtml?faces-redirect=true";
-            paginaPrincipal = "/vistas/oficios/consultar";
         } else {
             //paginaPrincipal =  "/vistas/oficios/noTieneAcceso.xhtml?faces-redirect=true";
-            paginaPrincipal =  "/vistas/oficios/noTieneAcceso";
         }
         System.out.println("=================Pagina principal "+paginaPrincipal);
        
