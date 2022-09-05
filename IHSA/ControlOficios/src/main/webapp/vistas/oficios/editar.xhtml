@@ -77,36 +77,40 @@
                             </div>
                             <div class="col-sm-5">
                                 <!-- Opción Mostrar todas las gerencias -->
+                                <!--
+                                TODO: se comento 
+                                rendered="{oficioEditarBean.mostrarTodasGerencias}"-->
                                 <p:selectOneMenu id="idCompania"
                                                  value="#{oficioEditarBean.vo.companiaId}"
                                                  valueChangeListener="#{catalogosBean.actualizarBloques}"
                                                  tabindex=""                                                    
                                                  required="false" 
-                                                 requiredMessage="Seleccione una compañía"
-                                                 rendered="#{oficioEditarBean.mostrarTodasGerencias}"
+                                                 requiredMessage="Seleccione una compañía"                                                 
                                                  >
                                     <f:selectItem itemValue="-1" itemLabel="Seleccione..."/>
                                     <f:selectItems value="#{catalogosBean.companias}"/>
+                                    <p:ajax process="@this" update="formOficios:idBloque"  />
                                 </p:selectOneMenu>
+                                                                                                
                                 <!-- Opción Mostrar opciones bloque u opción única -->
-                                <h:outputText value="#{oficioEditarBean.vo.companiaNombre}" rendered="#{oficioEditarBean.mostrarOpcionesBloques or oficioEditarBean.mostrarOpcionUnicaBloque}" />
+                                <h:outputText value="#{oficioEditarBean.vo.companiaNombre}" 
+                                              rendered="#{oficioEditarBean.mostrarOpcionesBloques or oficioEditarBean.mostrarOpcionUnicaBloque}" />
                             </div>
                             <div class="col-sm-2">
                                 #{msgs['sistema.oficios.comun.oficio.fecha']}
                             </div>
-                            <div class="col-sm-3">                                
+                            <div class="col-sm-3">         
                                 <p:datePicker  id="idFechaOficio"
-                                               value="#{oficioEditarBean.vo.oficioFecha}" 
-                                               valueChangeListener="#{oficioConsultaBean.buscarOficios(actionEvent)}"                                                   
-                                               dateTemplate="dd/MM/yyyy"
-                                               rendered="false"
+                                               value="#{oficioEditarBean.vo.oficioFecha}"                                                
+                                               required="false"                                                
+                                               requiredMessage="Proporcione la fecha de oficio"                                               
                                                >
                                     <f:convertDateTime dateStyle="default" type="date" pattern="dd/MM/yyyy" timeZone="America/Monterrey"/>
                                 </p:datePicker>
-
+                                
                                 <!--<e:selectInputDate  id="idFechaOficio" 
                                                       renderAsPopup="true"  
-                                                      value="#{oficioEditarBean.vo.oficioFecha}"
+                                                      value="{oficioEditarBean.vo.oficioFecha}"
                                                       highlightUnit="DAY_OF_WEEK: MONTH"
                                                       highlightValue="1,7: 8"
                                                       tabindex="" 
@@ -124,17 +128,17 @@
                             </div>
                             <div class="col-sm-5">
                                 <!-- Combo de bloques de usuario con permiso para ver todas las gerencias -->
-
+                                <!--rendered="#{oficioEditarBean.mostrarTodasGerencias}"-->
                                 <p:selectOneMenu id="idBloque"
                                                  value="#{oficioEditarBean.vo.bloqueId}"
                                                  valueChangeListener="#{catalogosBean.actualizarGerencias}"                                                   
                                                  tabindex="" 
                                                  required="false"
-                                                 requiredMessage="Seleccione un bloque"
-                                                 rendered="#{oficioEditarBean.mostrarTodasGerencias}"
+                                                 requiredMessage="Seleccione un bloque"                                                 
                                                  >
                                     <f:selectItem itemValue="-1" itemLabel="Seleccione..."/> 
                                     <f:selectItems value="#{catalogosBean.bloques}"/>
+                                     <p:ajax process="@this" update="formOficios:idGerencia"  />
                                 </p:selectOneMenu>
 
                                 <!-- Combo de bloques de usuario sin acceso a todas las gerencias y compañías -->
@@ -144,6 +148,7 @@
                                                  rendered="#{oficioEditarBean.mostrarOpcionesBloques}"
                                                  >
                                     <f:selectItems value="#{oficioEditarBean.opcionesBloques}"/>
+                                    <p:ajax process="@this" update="formOficios:idGerencia"  />
                                 </p:selectOneMenu>
 
                                 <h:outputText value="#{oficioEditarBean.vo.bloqueNombre}" rendered="#{oficioEditarBean.mostrarOpcionUnicaBloque}" />
@@ -173,9 +178,10 @@
                                                  >
                                     <f:selectItem itemValue="-1" itemLabel="Seleccione..."/>
                                     <f:selectItems value="#{catalogosBean.gerencias}"/>
+                                     <p:ajax process="@this" />
                                 </p:selectOneMenu>
 
-<!--h:outputText value="#{oficioEditarBean.gerenciaUsuario.nombre}" rendered="#{!oficioEditarBean.permisos.verTodoGerencias}" /-->
+                                <h:outputText value="#{oficioEditarBean.gerenciaUsuario.nombre}" rendered="#{!oficioEditarBean.permisos.verTodoGerencias}" />
 
                             </div>
                             <div class="col-sm-2">
@@ -252,14 +258,14 @@
 
                             </div>
                             <div class="col-sm-10">
-                                <h:commandButton title="Buscar Archivo" 
-                                                 alt="Buscar Archivo" 
-                                                 image="../../resources/imagenes/search.png"
+                                <p:panel id="panelAdjunto">
+                                <p:commandButton title="Buscar Archivo" 
+                                                 alt="Buscar Archivo"                                   
                                                  tabindex=""
                                                  style="vertical-align: middle;margin: 4px;display: inline;"
                                                  rendered="#{!oficioEditarBean.modificacion}"
-                                                 onclick="$(modalAdjuntarOficio).modal('show');" />
-
+                                                 onclick="$('#modalAdjuntarOficio').modal('show');" />
+                                
                                 <!-- +++++++++++++++++++++ Tests +++++++++++++++++++++++ -->
 
                                 <!--h:commandButton title="Buscar Archivo - con Listener" 
@@ -310,6 +316,8 @@
 
                                 <h:outputText value="#{oficioEditarBean.vo.estatusNombre}" rendered="#{oficioEditarBean.modificacion}" />
 
+                                </p:panel>
+                                
                             </div>
                         </div> <!-- row -->
 
@@ -410,12 +418,12 @@
                                     Restringido a Usuario(s)
                                 </div>
                                 <div class="col-sm-10">
+                                    <!-- binding="#{oficioEditarBean.tablaUsuariosRestringido}"-->
                                     <p:dataTable id="usuariosRestringido"  
                                                  showGridlines="true" 
                                                  size="small" 
                                                  rows="10"  
                                                  value="#{oficioEditarBean.vo.restringidoAUsuarios}" 
-                                                 binding="#{oficioEditarBean.tablaUsuariosRestringido}"
                                                  var="currentRow"
                                                  paginator="true" paginatorPosition="both"
                                             paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
@@ -424,10 +432,10 @@
                                                  >
                                         <!--<ice:dataTable id="usuariosRestringido" 
                                                        rows="5" 
-                                                       value="#{oficioEditarBean.vo.restringidoAUsuarios}" 
+                                                       value="{oficioEditarBean.vo.restringidoAUsuarios}" 
                                                        var="currentRow" 
                                                        width="100%"
-                                                       binding="#{oficioEditarBean.tablaUsuariosRestringido}"
+                                                       binding="{oficioEditarBean.tablaUsuariosRestringido}"
                                                        >-->
                                         <p:column style="width: 150px;">
                                             <h:outputText value="#{currentRow['id']}"/>
@@ -563,7 +571,7 @@
                                                tabindex=""
                                                styleClass="btn btn-success btn-xs"
                                                onclick="bloquearPantalla('true');"
-                                               action="#{oficioEditarBean.guardarOficio(actionEvent)}"
+                                               action="#{oficioEditarBean.guardarOficio()}"
                                                rendered="#{oficioEditarBean.botonGuardarNuevo.visible}"
                                                title="Guardar nuevo oficio" />
 
@@ -571,15 +579,15 @@
 
                                 <!-- Boton Guardar - Cambios -->
 
-                                <p:commandLink value="Guardar" 
+                                <p:button value="Guardar" 
                                                tabindex=""
                                                styleClass="btn btn-success btn-xs"
                                                onclick="bloquearPantalla('true');"
-                                               action="#{oficioEditarBean.guardarOficio(actionEvent)}"
+                                               outcome="#{oficioEditarBean.guardarOficio()}"
                                                rendered="#{oficioEditarBean.botonGuardarEdicion.visible}"
                                                title="Guardar cambios" >
                                     <f:param name="oficioId" value="#{oficioEditarBean.vo.oficioId}" />
-                                    </p:commandLink>
+                                </p:button>
 
 
                                     <!-- Boton Guardar y Promover - Altas -->
@@ -588,8 +596,9 @@
                                                    tabindex=""
                                                    styleClass="btn btn-info btn-xs"
                                                    onclick="bloquearPantalla('true');"
-                                                   action="#{oficioEditarBean.guardarPromover(actionEvent)}"
-                                                   rendered="#{oficioEditarBean.botonGuardarPromover.visible}"
+                                                   action="#{oficioEditarBean.guardarPromover()}"
+                                                   ajax="false"
+                                                   rendered="#{oficioEditarBean.botonGuardarPromover.visible}"                                                   
                                                    title="Guardar nuevo oficio y promover" />
 
                                     <h:outputText value="&nbsp;&nbsp;" />
@@ -600,28 +609,28 @@
                                                      styleClass="btn btn-primary btn-xs"
                                                      action="detalle"
                                                      title="Guardar el oficio con copia en otro(s) bloque(s)" >
-                                        <f:param name="oficioId" value="#{oficioEditarBean.vo.oficioId}" />
+                                        <f:param name="oficioId" value="{oficioEditarBean.vo.oficioId}" />
                                     </ice:commandLink>
                                     <h:outputText value="&nbsp;&nbsp;" /-->
 
                                     <!-- Boton Cancelar -->
 
-                                    <p:commandLink value="Cancelar" 
+                                    <p:button value="Cancelar" 
                                                    tabindex=""
                                                    styleClass="btn btn-default btn-xs"
-                                                   action="bandejaEntrada"
+                                                   outcome="bandejaEntrada"
                                                    rendered="#{oficioEditarBean.botonCancelarNuevo.visible}"
                                                    title="Cancelar operación" />
 
 
-                                    <p:commandLink value="Cancelar" 
+                                    <p:button value="Cancelar" 
                                                    tabindex=""
                                                    styleClass="btn btn-default btn-xs"
-                                                   action="detalle"
+                                                   outcome="detalle"
                                                    rendered="#{oficioEditarBean.botonCancelarEdicion.visible}"
                                                    title="Cancelar operación" >
                                         <f:param name="oficioId" value="#{oficioEditarBean.vo.oficioId}" />
-                                    </p:commandLink>
+                                    </p:button>
                             </div>
                         </div> <!-- row -->
 
@@ -661,11 +670,11 @@
                                                 <div class="col-sm-12">
                                                     <table width="100%">
                                                         <tr>
-                                                            <td>
+                                                            <!--<td>
                                                                 <h:outputLabel id="labelArchivo" 
                                                                                for="fileEntryAdjunto" 
                                                                                value="Archivo"/>
-                                                            </td>
+                                                            </td>-->
                                                             <td>
                                                                 <!--<ace:fileEntry id="fileEntryAdjunto"
                                                                                useSessionSubdir="true" 
@@ -674,19 +683,24 @@
                                                                                useOriginalFilename="true"
                                                                                />-->
                                                                 <h:form enctype="multipart/form-data">
-                                                                    <!-- Probar -->
-                                                                    <p:fileUpload id="fileEntryAdjunto" value="#{fileUploadView.file}" 
-                                                                                   mode="simple"                                                                                    
-                                                                                   skinSimple="true"/>
+                                                                    <!-- Probar -->                                                            
+                                                                    
+                                                                     <p:fileUpload id="fileEntryAdjunto" 
+                                                                                  multiple="false"
+                                                                                  mode="advanced"
+                                                                                  label="Archivo"                                                                                  
+                                                                                  update="@form formOficios:panelAdjunto"
+                                                                                  listener="#{oficioEditarBean.prepararArchivoAdjuntoVo}"/>
 
-                                                                    <p:commandButton value="Submit" ajax="false" action="#{oficioEditarBean.prepararArchivoAdjuntoVo}" styleClass="mt-3 ui-button-outlined block"/>
+                                                                    <!--<p:commandButton value="Submit" ajax="false" action="{oficioEditarBean.prepararArchivoAdjuntoVo}" styleClass="mt-3 ui-button-outlined block"/>
+                                                                    -->
                                                                 </h:form>
                                                             </td>
-                                                            <td>
+                                                            <!--<td>
                                                                 <h:commandButton value="Subir" 
                                                                                  styleClass="btn btn-success btn-xs"
                                                                                  onclick="$(modalAdjuntarOficio).modal('hide')" />
-                                                            </td>
+                                                            </td>-->
                                                         </tr>
                                                     </table>
                                                 </div>
@@ -820,66 +834,6 @@
                                                     </p:column>
                                                 </p:dataTable>
 
-                                                <br/>
-
-                                                <!--<ice:dataPaginator for="dataTable1"
-                                                                   rowsCountVar="rowsCount"
-                                                                   displayedRowsCountVar="displayedRowsCount"
-                                                                   firstRowIndexVar="firstRowIndex"
-                                                                   lastRowIndexVar="lastRowIndex"
-                                                                   pageCountVar="pageCount"
-                                                                   pageIndexVar="pageIndex">
-                                                    <ice:outputFormat
-                                                        styleClass="standard"
-                                                        value="{0} Oficios encontrados, mostrando del {1} al {2}.">
-                                                        <f:param value="#{rowsCount}"/>
-                                                        <f:param value="#{firstRowIndex}"/>
-                                                        <f:param value="#{lastRowIndex}"/>
-                                                    </ice:outputFormat>
-                                                </ice:dataPaginator>
-
-                                                <ice:dataPaginator 
-                                                    for="dataTable1"
-                                                    fastStep="4"
-                                                    paginator="true"
-                                                    paginatorMaxPages="5">
-                                                    <f:facet name="first">
-                                                        <ice:graphicImage 
-                                                            url="./xmlhttp/css/rime/css-images/arrow-first.gif"
-                                                            style="border:none;"
-                                                            title="Primera Página"/>
-                                                    </f:facet>
-                                                    <f:facet name="last">
-                                                        <ice:graphicImage 
-                                                            url="./xmlhttp/css/rime/css-images/arrow-last.gif"
-                                                            style="border:none;"
-                                                            title="Ultima Página"/>
-                                                    </f:facet>
-                                                    <f:facet name="previous">
-                                                        <ice:graphicImage 
-                                                            url="./xmlhttp/css/rime/css-images/arrow-previous.gif"
-                                                            style="border:none;"
-                                                            title="Página Anterior"/>
-                                                    </f:facet>
-                                                    <f:facet name="next">
-                                                        <ice:graphicImage 
-                                                            url="./xmlhttp/css/rime/css-images/arrow-next.gif"
-                                                            style="border:none;"
-                                                            title="Página Siguiente"/>
-                                                    </f:facet>
-                                                    <f:facet name="fastforward">
-                                                        <ice:graphicImage 
-                                                            url="./xmlhttp/css/rime/css-images/arrow-ff.gif"
-                                                            style="border:none;"
-                                                            title="Avance Rapido 3 páginas"/>
-                                                    </f:facet>
-                                                    <f:facet name="fastrewind">
-                                                        <ice:graphicImage 
-                                                            url="./xmlhttp/css/rime/css-images/arrow-fr.gif"
-                                                            style="border:none;"
-                                                            title="Retroceso rápido 3 páginas"/>
-                                                    </f:facet>
-                                                </ice:dataPaginator>-->
                                             </center>
                                         </div>
                                     </div>  <!-- jumbotron -->
@@ -958,9 +912,9 @@
                                                     id="dataTable2"  
                                                     rows="5" 
                                                     style="width: 100%;"
-                                                    value="#{oficioEditarBean.resultadosUsuariosAcceso}" 
+                                                    value="{oficioEditarBean.resultadosUsuariosAcceso}" 
                                                     var="currentRow" 
-                                                    binding="#{oficioEditarBean.tablaResultadosUsuariosAcceso}"
+                                                    binding="{oficioEditarBean.tablaResultadosUsuariosAcceso}"
                                                     >
                                                     -->
                                                     <p:column style="width: 120px;">
@@ -988,66 +942,6 @@
                                                     </p:column>
                                                 </p:dataTable>
                                                 <br/>
-                                                <!--
-                                                <ice:dataPaginator for="dataTable2"
-                                                                   rowsCountVar="rowsCount"
-                                                                   displayedRowsCountVar="displayedRowsCount"
-                                                                   firstRowIndexVar="firstRowIndex"
-                                                                   lastRowIndexVar="lastRowIndex"
-                                                                   pageCountVar="pageCount"
-                                                                   pageIndexVar="pageIndex">
-                                                    <ice:outputFormat
-                                                        styleClass="standard"
-                                                        value="{0} Usuario(s) encontrado(s), mostrando del {1} al {2}.">
-                                                        <f:param value="#{rowsCount}"/>
-                                                        <f:param value="#{firstRowIndex}"/>
-                                                        <f:param value="#{lastRowIndex}"/>
-                                                    </ice:outputFormat>
-                                                </ice:dataPaginator>
-
-                                                <ice:dataPaginator 
-                                                    for="dataTable2"
-                                                    fastStep="4"
-                                                    paginator="true"
-                                                    paginatorMaxPages="5">
-                                                    <f:facet name="first">
-                                                        <ice:graphicImage 
-                                                            url="./xmlhttp/css/rime/css-images/arrow-first.gif"
-                                                            style="border:none;"
-                                                            title="Primera Página"/>
-                                                    </f:facet>
-                                                    <f:facet name="last">
-                                                        <ice:graphicImage 
-                                                            url="./xmlhttp/css/rime/css-images/arrow-last.gif"
-                                                            style="border:none;"
-                                                            title="Ultima Página"/>
-                                                    </f:facet>
-                                                    <f:facet name="previous">
-                                                        <ice:graphicImage 
-                                                            url="./xmlhttp/css/rime/css-images/arrow-previous.gif"
-                                                            style="border:none;"
-                                                            title="Página Anterior"/>
-                                                    </f:facet>
-                                                    <f:facet name="next">
-                                                        <ice:graphicImage 
-                                                            url="./xmlhttp/css/rime/css-images/arrow-next.gif"
-                                                            style="border:none;"
-                                                            title="Página Siguiente"/>
-                                                    </f:facet>
-                                                    <f:facet name="fastforward">
-                                                        <ice:graphicImage 
-                                                            url="./xmlhttp/css/rime/css-images/arrow-ff.gif"
-                                                            style="border:none;"
-                                                            title="Avance Rapido 3 páginas"/>
-                                                    </f:facet>
-                                                    <f:facet name="fastrewind">
-                                                        <ice:graphicImage 
-                                                            url="./xmlhttp/css/rime/css-images/arrow-fr.gif"
-                                                            style="border:none;"
-                                                            title="Retroceso rápido 3 páginas"/>
-                                                    </f:facet>
-                                                </ice:dataPaginator>
-                                                -->
                                             </center>
                                         </div>
                                     </div>  <!-- jumbotron -->

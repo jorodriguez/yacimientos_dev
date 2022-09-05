@@ -3,16 +3,26 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:ui="http://java.sun.com/jsf/facelets"      
       xmlns:p="http://primefaces.org/ui"
-      xmlns:h="http://java.sun.com/jsf/html">
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
 
     <body>
             
         <ui:composition template="./WEB-INF/template/template.xhtml">
+            <ui:define  name="top">
+                
+            </ui:define >
             <ui:define name="content">
                 <h:panelGroup rendered="#{empty sesion.usuario}">
                     <ui:include src="salir.xhtml"/>
                 </h:panelGroup>
                 <h:form rendered="#{not empty sesion.usuario}" id="formInicio">
+                    
+                    <!--<f:metadata>
+                        <f:event type="preRenderView"  listener="{oficioInicioBean.iniciarPermisos}"  />
+                    </f:metadata>
+                    -->
+                    
                     <h:panelGroup style="height:580px;">
                         
                         <div style="color: lightsteelblue; text-align: center; vertical-align: middle;">
@@ -34,29 +44,47 @@
                                 
                         </div>
                         
-                        <!--<p:remoteCommand action="{oficioInicioBean.paginaPrincipal()}"
+                        <p:remoteCommand 
+                                         action="#{oficioInicioBean.iniciarPermisos}"
                                          name="redireccion"                                                
-                                         onstart="alert('start');"
-                                         delay="1000"
-                                         onerror="alert('error');"                                         
-                                         oncomplete="alert('complete');"                                         
-                                         />-->
-                                                                                             
+                                         onstart="PF('splashScreen').show()"
+                                         autoRun="true"
+                                         delay="2000"            
+                                         
+                                         onerror="PF('splashScreen').hide()"                                         
+                                         oncomplete="PF('splashScreen').hide()"                                         
+                                         />
+                      
+                        <p:dialog widgetVar="splashScreen"  
+                                  modal="true"
+                                  draggable="false" 
+                                  closable="false" 
+                                  resizable="false" 
+                                  showHeader="false">
+                            <div class="text-center">                                 
+                                 <h:graphicImage value="./resources/imagenes/icon_oficio_256.png" 
+                                            style="opacity: 0.3; height: 400px;"
+                                            alt="#{currentRow['estatusNombre']}" 
+                                            title="#{currentRow['estatusNombre']}" />
+                                 <i class="pi pi-spin pi-spinner loading-icon" aria-hidden="true"></i>
+                            </div>
+                        </p:dialog>
+
                                                 
                         <!--<h:commandLink
                             id="principalLink"                                         
                             value="redireccion"
-                            action="#{oficioInicioBean.paginaPrincipal()}" >                                                                                
+                            action="{oficioInicioBean.paginaPrincipal()}" >                                                                                
                        </h:commandLink>-->
-                        
+                        <!--
                         <p:button id="principalLink"  outcome="#{oficioInicioBean.paginaPrincipal()}">
-                        </p:button>
-                            
+                        </p:button>-->
+                                                    
                     </h:panelGroup>
                 </h:form>
                 
                 <script>
-                    document.getElementById('formInicio:principalLink').click();                    
+                    //document.getElementById('formInicio:principalLink').click();                    
                     //redireccion();
                 </script>
                 

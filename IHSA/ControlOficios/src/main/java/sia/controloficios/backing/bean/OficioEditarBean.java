@@ -15,6 +15,7 @@ import javax.faces.model.ListDataModel;
 import javax.faces.model.SelectItem;
 import javax.inject.Named;
 import javax.mail.MessagingException;
+import org.primefaces.event.FileUploadEvent;
 import org.primefaces.event.FilesUploadEvent;
 import sia.constantes.Constantes;
 import sia.controloficios.sistema.soporte.FacesUtils;
@@ -107,6 +108,8 @@ public class OficioEditarBean extends OficioOpcionesBloquesUIBean {
      */
     @Override
     protected void postConstruct() throws InsufficientPermissionsException {
+        
+        System.out.println("@postcontruct de oficioEditar");
 
         // valor inicial para la vista
         // en caso de recibir un oficioId, obtener objeto vo correspondiente
@@ -123,7 +126,7 @@ public class OficioEditarBean extends OficioOpcionesBloquesUIBean {
         modificacion = !UtilSia.isNullOrBlank(oficioId);
 
         if (modificacion) {
-
+            System.out.println("Es una edicion de oficio "+oficioId);
             // Operacion de Modificacion
             // obtener desde bd
             this.setVo(buscarOficioVo(Integer.parseInt(oficioId)));
@@ -160,6 +163,8 @@ public class OficioEditarBean extends OficioOpcionesBloquesUIBean {
 
         } else {
 
+            System.out.println("Es una captura nueva de oficio ");
+            
             // Operacion de Alta
             // inicializar bean default
             // el tipo dependerá del rol de emisor de oficio del usuario
@@ -236,13 +241,16 @@ public class OficioEditarBean extends OficioOpcionesBloquesUIBean {
      * @param actionEvent
      * @return
      */
-    public String guardarPromover(ActionEvent actionEvent) {
+    //public String guardarPromover(ActionEvent actionEvent) {
+    public String guardarPromover() {
+        
+        System.out.println("=== Click en guardar y promover");
 
         String resultado = Constantes.VACIO;
 
         try {
 
-            List<InformacionOficioVo> listVo = new ArrayList<>();
+          //  List<InformacionOficioVo> listVo = new ArrayList<>();
                 OficioPromovibleVo newOficio = (OficioPromovibleVo) getVo();
                 List<List<Object>> listOfProm = new ArrayList<>();
 
@@ -263,6 +271,7 @@ public class OficioEditarBean extends OficioOpcionesBloquesUIBean {
              listOfProm = getOficioServicioRemoto().agregarOficio(informacionVo,bloquesCopia);
             
             for(List<Object> lo : listOfProm){
+                        System.out.println("@@ "+lo);
                         informacionVo.getOficioVo().setOficioId(Integer.parseInt(lo.get(0).toString()));
                         informacionVo.getOficioVo().setBloqueId(Integer.parseInt(lo.get(1).toString()));
                         informacionVo.getOficioVo().setBloqueNombre(lo.get(2).toString());
@@ -334,7 +343,10 @@ public class OficioEditarBean extends OficioOpcionesBloquesUIBean {
      *
      * @param actionEvent
      */
-    public String guardarOficio(ActionEvent actionEvent) {
+    //public String guardarOficio(ActionEvent actionEvent) {
+    public String guardarOficio() {
+        
+        System.out.println("=== Click en guardarOficio");
 
         String resultado = Constantes.VACIO;
 
@@ -696,7 +708,7 @@ public class OficioEditarBean extends OficioOpcionesBloquesUIBean {
      *
      * @param e
      */
-    public void prepararArchivoAdjuntoVo(FilesUploadEvent e) {
+    public void prepararArchivoAdjuntoVo(FileUploadEvent e) {
 
         prepararArchivoAdjuntoVo(e, getVo().getArchivoAdjunto());
 

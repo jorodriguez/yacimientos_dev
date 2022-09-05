@@ -7,6 +7,7 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.event.ActionEvent;
 import javax.inject.Named;
 import javax.mail.MessagingException;
+import org.primefaces.event.FileUploadEvent;
 //import org.icefaces.ace.component.fileentry.FileEntryEvent;
 import org.primefaces.event.FilesUploadEvent;
 import org.primefaces.model.file.UploadedFile;
@@ -236,7 +237,7 @@ public class OficioEditarAdjuntoMovimientoBean extends OficioBaseBean {
      * 
      * @param e 
      */
-    public void prepararArchivoAdjuntoVo(FilesUploadEvent e) {
+    public void prepararArchivoAdjuntoVo(FileUploadEvent e) {
         
         prepararArchivoAdjuntoVo(e, getMovimiento().getAdjunto());
         

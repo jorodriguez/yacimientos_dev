@@ -99,8 +99,7 @@
 
                                 <!-- image="../../resources/imagenes/search.png"-->
                                 <p:commandButton title="Buscar Archivo" 
-                                                 alt="Buscar Archivo" 
-                                                 
+                                                 alt="Buscar Archivo"                                                  
                                                  style="vertical-align: middle;margin: 4px;display: inline;"
                                                  onclick="$('#modalPromocion').modal('show');" />
 
@@ -109,14 +108,16 @@
                                 <p:commandButton title="Remover Archivo Seleccionado" 
                                                  type="button" 
                                                  alt="Remover Archivo Seleccionado" 
+                                                 styleClass="ui-button-danger"
                                                  rendered="#{oficioPromocionBean.archivoPromocionSeleccionado}"
-                                                 immediate="false" 
+                                                                                                  
                                                  actionListener="#{oficioPromocionBean.removerArchivoPromocion(event)}"
-
+                                                 icon="pi pi-times"
                                                  style="vertical-align: middle;margin: 4px;display: inline;"/>
 
                                 <h:outputText id="nombreArchivoPromocion" value="#{!oficioPromocionBean.archivoPromocionSeleccionado ? 'Ninguno seleccionado' : oficioPromocionBean.vo.archivoPromocion.nombreUUID}"/>
-
+                                
+                                
                             </div>
                         </div>
 
@@ -129,28 +130,40 @@
                                     id="btnAceptar"
                                     value="Aceptar" 
                                     styleClass="btn btn-success btn-xs"
-                                    outcome="#{oficioPromocionBean.promoverEstatusOficio()}"                                                                                    
+                                    outcome="{oficioPromocionBean.promoverEstatusOficio()}"                                                                                    
                                     title="Confirmar promoción" >
                                     <f:param name="oficioId" value="#{oficioPromocionBean.vo.oficioId}" />
                                     <p:ajax onstart="bloquearPantalla('true');" oncomplete="bloquearPantalla('false');"
                                             onerror="bloquearPantalla('false');"/>
                                 </p:button>-->
-                                <p:commandLink 
-                                    id="btnAceptar"
-                                    value="Aceptar" 
-                                    styleClass="btn btn-success btn-xs"
-                                    action="#{oficioPromocionBean.promoverEstatusOficio()}" 
+                                <!--
                                     onstart="bloquearPantalla('true');"
                                     onsuccess="bloquearPantalla('false');"
-                                    oncomplete="bloquearPantalla('false');"
-                                    rendered="true"
-                                    onclick="bloquearPantalla('true');"
+                                    oncomplete="bloquearPantalla('false');"                                    
+                                -->
+                                <p:commandLink 
+                                    value="Aceptar ajax false"
+                                    action="#{oficioPromocionBean.promoverEstatusOficio()}"
+                                    onstart="bloquearPantalla('true');"
+                                    onsuccess="bloquearPantalla('false');"
+                                    oncomplete="bloquearPantalla('false');"                                    
+                                    ajax="false"
+                                    >
+                                </p:commandLink>
+                                
+                                <p:button
+                                    id="btnAceptar"
+                                    value="Aceptar" 
+                                    styleClass="ui-button-primary"
+                                    outcome="#{oficioPromocionBean.promoverEstatusOficio()}" 
+                                    onclick="bloquearPantalla('true');"                                                                        
                                     title="Confirmar promoción" >
                                     <f:param name="oficioId" value="#{oficioPromocionBean.vo.oficioId}" />
-                                </p:commandLink>
+                                </p:button>
+                                
                                 &nbsp;
                                 <p:button value="Cancelar" 
-                                          styleClass="btn btn-default btn-xs"
+                                          styleClass="ui-button-secondary"
                                           outcome="detalle"                                          
                                           title="Cancelar promoción" >
                                     <f:param name="oficioId" value="#{oficioPromocionBean.vo.oficioId}" /> 
@@ -181,11 +194,11 @@
                                                 <div class="col-sm-12">
                                                     <table width="100%">
                                                         <tr>
-                                                            <td>
+                                                            <!--<td>
                                                                 <h:outputLabel id="labelArchivo" 
                                                                                for="fileEntryPromocion" 
                                                                                value="Archivo"/>
-                                                            </td>
+                                                            </td>-->
                                                             <td>
                                                                 <!--<ace:fileEntry id="fileEntryPromocion"
                                                                    useSessionSubdir="false" 
@@ -195,20 +208,28 @@
                                                                    />-->
                                                                 <h:form enctype="multipart/form-data">
                                                                     <!-- Probar -->
+                                                                    <!--
+                                                                    <p:fileUpload value="oficioPromocionBean.file}" mode="simple" skinSimple="true"/>                                                                   
+                                                                    -->
                                                                     
-                                                                    <p:fileUpload value="#{oficioPromocionBean.file}" mode="simple" skinSimple="true"/>                                                                   
+                                                                    <p:fileUpload id="fileEntryPromocion" 
+                                                                                  multiple="false"
+                                                                                  mode="advanced"
+                                                                                  label="Archivo"                                                                                  
+                                                                                  update="@all"
+                                                                                  listener="#{oficioPromocionBean.prepararArchivoPromocionVo}"/>
 
-                                                                    <p:commandButton value="Submit" 
+                                                                    <!--<p:commandButton value="Submit" 
                                                                                      process="@this"
-                                                                                     action="#{oficioPromocionBean.prepararArchivoPromocionVo}"
-                                                                                     styleClass="mt-3 ui-button-outlined block"/>
+                                                                                     action="{oficioPromocionBean.prepararArchivoPromocionVo(e)}"
+                                                                                     styleClass="mt-3 ui-button-outlined block"/>-->
                                                                 </h:form>
                                                             </td>
-                                                            <td>
+                                                            <!--<td>
                                                                 <h:commandButton value="Subir" 
                                                                                  styleClass="btn btn-success btn-xs"
                                                                                  onclick="$('#modalPromocion').modal('hide')" />
-                                                            </td>
+                                                            </td>-->
                                                         </tr>
                                                     </table>
                                                 </div>

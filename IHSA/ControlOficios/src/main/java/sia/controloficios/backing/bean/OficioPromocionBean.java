@@ -5,8 +5,10 @@ package sia.controloficios.backing.bean;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.event.ActionEvent;
+import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 import javax.mail.MessagingException;
+import org.primefaces.event.FileUploadEvent;
 //import org.icefaces.ace.component.fileentry.FileEntryEvent;
 import org.primefaces.event.FilesUploadEvent;
 import org.primefaces.model.file.UploadedFile;
@@ -216,8 +218,8 @@ public class OficioPromocionBean extends OficioBaseBean {
      * 
      * @param e 
      */
-    public void prepararArchivoPromocionVo(FilesUploadEvent e) {
-        
+    public void prepararArchivoPromocionVo(FileUploadEvent e) {
+        System.out.println("@prepararArchivoPromocionVo");
         prepararArchivoAdjuntoVo(e, getVo().getArchivoPromocion());
         
     }
