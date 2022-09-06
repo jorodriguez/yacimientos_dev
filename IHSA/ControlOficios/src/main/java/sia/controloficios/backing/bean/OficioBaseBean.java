@@ -142,8 +142,8 @@ public abstract class OficioBaseBean implements Serializable {
     @Inject
     private SiPermisoImpl siPermisoServicio;
 
-    @ManagedProperty(value = "#{catalogosBean}")
-    //@Inject
+    //@ManagedProperty(value = "#{catalogosBean}")
+    @Inject
     private CatalogosBean catalogosBean;
 
     @Inject
@@ -704,6 +704,18 @@ public abstract class OficioBaseBean implements Serializable {
      */
     protected void configurarVo(OficioVo oficioVo, CompaniaBloqueGerenciaVo cbg) {
 
+        System.out.println("getCatalogosBean() "+(getCatalogosBean() == null));
+        
+        System.out.println("CompaniaRfc "+cbg.getCompaniaRfc());
+        System.out.println("CompaniaNombre "+cbg.getCompaniaNombre());
+        System.out.println("bloqieid"+cbg.getBloqueId());
+        System.out.println("bloqieNombre"+cbg.getBloqueNombre());
+        System.out.println("GerenciaId"+cbg.getGerenciaId());
+        System.out.println("GerenciaNombre"+cbg.getGerenciaId());
+        System.out.println("cbg "+cbg.toString());
+        
+        System.out.println("companias "+getCatalogosBean().getCompaniasIds().toString());
+        
         // compañía
         oficioVo.setCompaniaRfc(cbg.getCompaniaRfc());
         oficioVo.setCompaniaId(getCatalogosBean().obtenerCompaniaId(cbg.getCompaniaRfc()));

@@ -270,11 +270,12 @@ public class OficioEditarBean extends OficioOpcionesBloquesUIBean {
 
              listOfProm = getOficioServicioRemoto().agregarOficio(informacionVo,bloquesCopia);
             
-            for(List<Object> lo : listOfProm){
+            for(List<Object> lo : listOfProm){                
                         System.out.println("@@ "+lo);
+                        String nombreBloque = lo.get(2) != null ? lo.get(2).toString():"";                                
                         informacionVo.getOficioVo().setOficioId(Integer.parseInt(lo.get(0).toString()));
                         informacionVo.getOficioVo().setBloqueId(Integer.parseInt(lo.get(1).toString()));
-                        informacionVo.getOficioVo().setBloqueNombre(lo.get(2).toString());
+                        informacionVo.getOficioVo().setBloqueNombre(nombreBloque);
                         informacionVo.getOficioVo().setEstatusId(Integer.parseInt(lo.get(3).toString()));
                         informacionVo.getOficioVo().setEstatusNombre(lo.get(4).toString());
                     
