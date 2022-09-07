@@ -3,11 +3,8 @@
 package sia.controloficios.backing.bean;
 
 import java.util.List;
-import javax.faces.bean.ManagedBean;
 import javax.faces.event.ActionEvent;
-import javax.faces.view.ViewScoped;
 import javax.inject.Named;
-
 import sia.constantes.Constantes;
 import sia.excepciones.SIAException;
 import sia.modelo.estatus.vo.EstatusVo;
@@ -50,7 +47,6 @@ public class OficioConsultaBean extends OficioOpcionesBloquesUIBean {
         getVo().setMaxOficios(Constantes.OFICIOS_MAXIMO_RETORNO_CONSULTA_INICIAL);
         // establecer filtros de bloques para consulta 
         configurarCombosCompaniaBloqueGerencia();
-        
         
         // mostrar resultados con filtros actuales al ingresar
         this.buscarOficios(null);

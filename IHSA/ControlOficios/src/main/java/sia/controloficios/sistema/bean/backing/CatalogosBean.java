@@ -214,10 +214,16 @@ public class CatalogosBean implements Serializable {
      * @return
      */
     public int obtenerCompaniaId(String rfc) {
-
+        System.out.println("@@obtenerCompaniaId");
+        System.out.println("this.companiasIds "+this.companiasIds.toString());
         return getKeyByValue(this.companiasIds, rfc);
 
     }
+    
+    public Map<Integer,String> getCompaniasIds(){
+            return this.companiasIds;
+    }
+    
 
     /**
      * Método de utilería para obtener una llave de un mapa en función de su

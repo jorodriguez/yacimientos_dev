@@ -16,6 +16,7 @@ import javax.faces.model.DataModel;
 import javax.faces.model.ListDataModel;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
+import org.primefaces.event.FileUploadEvent;
 /*import org.icefaces.ace.component.fileentry.FileEntry;
 import org.icefaces.ace.component.fileentry.FileEntryEvent;
 import org.icefaces.ace.component.fileentry.FileEntryResults;*/
@@ -141,8 +142,8 @@ public abstract class OficioBaseBean implements Serializable {
     @Inject
     private SiPermisoImpl siPermisoServicio;
 
-    @ManagedProperty(value = "#{catalogosBean}")
-    //@Inject
+    //@ManagedProperty(value = "#{catalogosBean}")
+    @Inject
     private CatalogosBean catalogosBean;
 
     @Inject
@@ -472,28 +473,38 @@ public abstract class OficioBaseBean implements Serializable {
      * @param archivoVo
      */   
     
-    protected void prepararArchivoAdjuntoVo(FilesUploadEvent evt, AdjuntoOficioVo archivoVo) {
+    protected void prepararArchivoAdjuntoVo(FileUploadEvent evt, AdjuntoOficioVo archivoVo) {
 
         LOGGER.info(this, "@prepararArchivoAdjuntoVo");
-
-        UploadedFiles results = evt.getFiles();
+        System.out.println("prepararArchivoAdjuntoVo");
+        System.out.println(" evt "+evt == null);
+        //UploadedFiles results = evt.getFiles();
+        
+               
+        System.out.println(" FILE "+evt.getFile() == null);
+        
+        final UploadedFile fileInfo = evt.getFile();
+        
         
         ValidadorNombreArchivo validadorNombreArchivo = new ValidadorNombreArchivo();
         AlmacenDocumentos almacenDocumentos = proveedorAlmacenDocumentos.getAlmacenDocumentos();
 
         try {
             // obtener información del archivo
-            for (UploadedFile fileInfo : results.getFiles()) {
+          //  for (UploadedFile fileInfo : results.getFiles()) {
 
                 boolean addArchivo = validadorNombreArchivo.isNombreValido(fileInfo.getFileName());
 
                 if (addArchivo) {
 
                     DocumentoAnexo documentoAnexo = new DocumentoAnexo(fileInfo.getContent());
-                    documentoAnexo.setRuta(Constantes.OFICIOS_PATH_RELATIVO_OFICIOS);
+                    documentoAnexo.setRuta(Constantes.OFICIOS_PATH_RELATIVO_OFICIOS);                                        
+                    documentoAnexo.setNombreBase(fileInfo.getFileName());
+                    documentoAnexo.setTipoMime(fileInfo.getContentType());
                     almacenDocumentos.guardarDocumento(documentoAnexo);
 
                     LOGGER.info(this, "Archivo guardado OK");
+                    System.out.println("Archivo guardado OK");
 
                     // para mostrar nombre en pantalla y guardado en registro
                     archivoVo.setDirectorio(documentoAnexo.getRuta());
@@ -523,11 +534,65 @@ public abstract class OficioBaseBean implements Serializable {
                 /*if (!fileInfo.getFile().delete()) {
                     LOGGER.error(this, "File not deleted : {0}", new Object[]{fileInfo.getFileName()});
                 }*/
-            }
+            //}
         } catch (Exception e) {
             LOGGER.fatal(this, "+ + + ERROR + + +", e);
         }
     }
+    /*
+    public void subirPlanoOficina(FileUploadEvent fileEvent) {
+        try {
+            boolean valid = false;
+            fileInfo = fileEvent.getFile();
+            ValidadorNombreArchivo validadorNombreArchivo = new ValidadorNombreArchivo();
+
+            AlmacenDocumentos almacenDocumentos
+                    = proveedorAlmacenDocumentos.getAlmacenDocumentos();
+            boolean addArchivo = validadorNombreArchivo.isNombreValido(fileInfo.getFileName());
+
+            if (addArchivo) {
+                boolean error = true;
+                try {
+
+                    DocumentoAnexo documentoAnexo = new DocumentoAnexo(fileInfo.getContent());
+                    documentoAnexo.setRuta(getDirPlano());
+                    documentoAnexo.setNombreBase(fileInfo.getFileName());
+                    documentoAnexo.setTipoMime(fileInfo.getContentType());
+                    almacenDocumentos.guardarDocumento(documentoAnexo);
+
+                    valid
+                            = oficinaBeanModel.guardarPlanoOficina(
+                                    documentoAnexo.getNombreBase(),
+                                    documentoAnexo.getRuta(),
+                                    documentoAnexo.getTipoMime(),
+                                    documentoAnexo.getTamanio()
+                            );
+                    oficinaBeanModel.traerPlanoOficina();
+                    oficinaBeanModel.setSgOficinaPlano(null);
+                    oficinaBeanModel.setSubirArchivo(false);
+
+                    error = false;
+
+                } catch (SIAException e) {
+                    LOGGER.fatal(e);
+                }
+
+                if (!valid || error) {
+                    FacesUtils.addErrorMessage("No se pudo guardar el archivo. Porfavor pónganse en contacto con el Equipo del SIA al correo soportesia@ihsa.mx");
+                }
+            } else {
+                FacesUtils.addInfoMessage(new StringBuilder()
+                        .append("No se permiten los siguientes caracteres especiales en el nombre del Archivo: ")
+                        .append(validadorNombreArchivo.getCaracteresNoValidos())
+                        .toString());
+            }
+
+            fileInfo.delete();
+        } catch (IOException ex) {
+            Logger.getLogger(OficinaBean.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }*/
+
 
     /**
      * Busca el oficio correspondiente al ID. Si el usuario no tiene permisos
@@ -558,6 +623,8 @@ public abstract class OficioBaseBean implements Serializable {
         getLogger().info(this, "@Bean.buscarOficios - compania ID = " + vo.getCompaniaId() + ", compania RFC = " + vo.getCompaniaRfc());
         
         System.out.println( "@Bean.buscarOficios - compania ID = " + vo.getCompaniaId() + ", compania RFC = " + vo.getCompaniaRfc());
+        
+        System.out.println("VOO "+vo.toString());
                 
 
         // convertir Compañía ID
@@ -639,6 +706,18 @@ public abstract class OficioBaseBean implements Serializable {
      */
     protected void configurarVo(OficioVo oficioVo, CompaniaBloqueGerenciaVo cbg) {
 
+        System.out.println("getCatalogosBean() "+(getCatalogosBean() == null));
+        
+        System.out.println("CompaniaRfc "+cbg.getCompaniaRfc());
+        System.out.println("CompaniaNombre "+cbg.getCompaniaNombre());
+        System.out.println("bloqieid"+cbg.getBloqueId());
+        System.out.println("bloqieNombre"+cbg.getBloqueNombre());
+        System.out.println("GerenciaId"+cbg.getGerenciaId());
+        System.out.println("GerenciaNombre"+cbg.getGerenciaId());
+        System.out.println("cbg "+cbg.toString());
+        
+        System.out.println("companias "+getCatalogosBean().getCompaniasIds().toString());
+        
         // compañía
         oficioVo.setCompaniaRfc(cbg.getCompaniaRfc());
         oficioVo.setCompaniaId(getCatalogosBean().obtenerCompaniaId(cbg.getCompaniaRfc()));

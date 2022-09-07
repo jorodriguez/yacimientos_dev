@@ -1,6 +1,7 @@
 
 package sia.controloficios.sistema.soporte;
 
+import java.io.IOException;
 import java.util.ResourceBundle;
 import javax.faces.FactoryFinder;
 import javax.faces.application.Application;
@@ -164,6 +165,14 @@ public abstract class FacesUtils {
 
     private static String getJsfEl(String value) {
         return "#{" + value + "}";
+    }
+    
+     public static void redireccionar(final String url) throws IOException {
+
+	FacesContext fc = FacesContext.getCurrentInstance();
+
+	 fc.getExternalContext().redirect(url);//redirecciona la página
+	
     }
     
 }
