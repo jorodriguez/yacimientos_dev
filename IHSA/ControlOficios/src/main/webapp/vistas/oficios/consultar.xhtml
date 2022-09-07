@@ -45,7 +45,7 @@
                                                    size="25" 
                                                    maxlength="25" 
                                                    value="#{oficioConsultaBean.vo.oficioNumero}" 
-                                                   valueChangeListener="#{oficioConsultaBean.buscarOficios(actionEvent)}"
+                                                   
                                                    />
                                 </div>
                                 <div class="col-sm-1">
@@ -56,7 +56,7 @@
                                                    maxlength="150" 
                                                    style="width: 100%; resize: none;"
                                                    value="#{oficioConsultaBean.vo.oficioAsunto}" 
-                                                   valueChangeListener="#{oficioConsultaBean.buscarOficios(actionEvent)}" />
+                                                    />
                                 </div>
                             </div>
 
@@ -143,10 +143,10 @@
                                 <div class="col-sm-2">
                                 </div>
                                 <div class="col-sm-3">
-                                    
+                                    <!-- valueChangeListener="{oficioConsultaBean.buscarOficios(actionEvent)}"                                                   -->
                                     <p:datePicker  id="idFechaOficioHasta" 
                                                    value="#{oficioConsultaBean.vo.oficioFechaHasta}" 
-                                                   valueChangeListener="{oficioConsultaBean.buscarOficios(actionEvent)}"                                                   
+                                                   
                                                    dateTemplate="dd/MM/yyyy"
                                                    >
                                         <f:convertDateTime dateStyle="default" type="date" pattern="dd/MM/yyyy" timeZone="America/Monterrey"/>
@@ -192,9 +192,10 @@
                                     #{msgs['sistema.oficios.comun.fecha.alta']}
                                 </div>
                                 <div class="col-sm-3">
+                                    <!--valueChangeListener="{oficioConsultaBean.buscarOficios(actionEvent)}"-->
                                     <p:datePicker id="idFechaAltaDesde" 
                                                   value="#{oficioConsultaBean.vo.fechaAltaDesde}"                         
-                                                  valueChangeListener="{oficioConsultaBean.buscarOficios(actionEvent)}"
+                                                  
                                                   >
                                         <f:convertDateTime dateStyle="default" type="date" pattern="dd/MM/yyyy" timeZone="America/Monterrey"/>
                                     </p:datePicker>
@@ -304,18 +305,17 @@
                                 <div class="col-sm-3" style="text-align: right">
                                     <p:remoteCommand id="comandoBuscar"
                                                      actionListener="#{oficioConsultaBean.buscarOficios(actionEvent)}"                                                     
-                                                     name="buscar"
+                                                     name="buscar"                                                     
                                                      delay="500"
                                                      update="@form"
-                                                     process="@this"/>
+                                                     process="@form"/>
                                         
                                     <p:commandButton id="botonBuscar"
                                                    value="#{msgs['sistema.comun.buscar']}" 
                                                    styleClass="ui-button-primary"
                                                    actionListener="#{oficioConsultaBean.buscarOficios(actionEvent)}"
                                                    rendered="true"
-                                                   process="@this"
-                                                   update="consultaResultados"
+                                                   ajax="false"
                                                    title="Buscar oficios" />
                                                                         
                                     
@@ -333,20 +333,14 @@
                             <div >                               
                                     
                                 <p:dataTable id="consultaResultados"  
-                                         showGridlines="true" 
-                                         size="small" 
-                                         rows="10"  
+                                         showGridlines="false"                                          
+                                         stripedRows="true"
+                                         rows="10"                                           
                                          value="#{oficioConsultaBean.resultados}" 
                                          var="currentRow">
                                     <!--?faces-redirect=true;-->
                                     <p:column headerText="#{msgs['sistema.oficios.comun.oficio.numero']}">                                        
-                                        
-                                        <!--<my:link label="#{currentRow['oficioNumero']}"
-                                                 redirect="detalle"
-                                                 title="Ver detalle del oficio">
-                                                 <f:param name="oficioId" value="#{currentRow['oficioId']}"  />                                               
-                                        </my:link>-->
-                                        
+                                                
                                         <p:link 
                                              outcome="detalle" 
                                              includeViewParams="true"
@@ -354,13 +348,6 @@
                                              <h:outputText value="#{currentRow['oficioNumero']}" title="#{currentRow['oficioAsunto']}" style="font-weight: bold;"/>                                            
                                              <f:param name="oficioId" value="#{currentRow['oficioId']}"  />                                               
                                          </p:link>
-                                        <!--<h:commandLink styleClass="link"
-                                                       action="detalle"                                                                                                              
-                                                       title="Ver detalle del oficio" >
-                                            <h:outputText value="#{currentRow['oficioNumero']}" title="#{currentRow['oficioAsunto']}" style="font-weight: bold;"/>                                            
-                                            <f:param name="oficioId" value="#{currentRow['oficioId']}"  />                                               
-                                             <f:attribute name="oficioId" value="#{currentRow['oficioId']}" />                                            
-                                        </h:commandLink>-->
                                         
                                     </p:column>
                                     <p:column  headerText="Asunto" style=" display: none">

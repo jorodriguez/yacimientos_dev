@@ -623,6 +623,8 @@ public abstract class OficioBaseBean implements Serializable {
         getLogger().info(this, "@Bean.buscarOficios - compania ID = " + vo.getCompaniaId() + ", compania RFC = " + vo.getCompaniaRfc());
         
         System.out.println( "@Bean.buscarOficios - compania ID = " + vo.getCompaniaId() + ", compania RFC = " + vo.getCompaniaRfc());
+        
+        System.out.println("VOO "+vo.toString());
                 
 
         // convertir Compañía ID

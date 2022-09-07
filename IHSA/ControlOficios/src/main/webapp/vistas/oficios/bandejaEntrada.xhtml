@@ -13,8 +13,8 @@
                 <h:panelGroup rendered="#{empty sesion.usuario}">
                     <ui:include src="../../salir.xhtml"/>
                 </h:panelGroup>
-            
-              <h:form styleClass="textoIzquierda" rendered="#{not empty sesion.usuario}" id="formOficios" >
+
+                <h:form styleClass="textoIzquierda" rendered="#{not empty sesion.usuario}" id="formOficios" >
 
                     <!-- Puede usarse tag 'header' en lugar de 'div' -->
                     <div class="page-header">
@@ -22,7 +22,7 @@
                             #{msgs['sistema.oficios.bandeja.titulo']}
                         </h3>
                     </div>
-                    
+
                     <!-- Mensajes con estilos de Bootstrap  -->
                     <h:message style="display: block;"
                                for=""
@@ -31,38 +31,41 @@
                                errorClass="alert alert-danger"
                                fatalClass="alert alert-danger"
                                />
-                    
+
                     <div class="jumbotron">
-                        
+
                         <div class="row">
                             <div class="col-sm-1" style="white-space: nowrap;">
                                 #{msgs['sistema.oficios.comun.oficio.numero']}
                             </div>
                             <div class="col-sm-3">
                                 <p:inputText id="numeroOficio" 
-                                               size="25" 
-                                               maxlength="25" 
-                                               value="#{oficioBandejaEntradaBean.vo.oficioNumero}"                                                                                               
-                                               valueChangeListener="#{oficioBandejaEntradaBean.buscarOficiosBandejaEntrada(actionEvent)}" />
+                                             size="25" 
+                                             placeholder="No de oficio"
+                                             maxlength="25" 
+                                             value="#{oficioBandejaEntradaBean.vo.oficioNumero}"                                                                                               
+                                             valueChangeListener="#{oficioBandejaEntradaBean.buscarOficiosBandejaEntrada(actionEvent)}" />
                             </div>
                             <div class="col-sm-1">
                                 #{msgs['sistema.oficios.comun.asunto']}
                             </div>
                             <div class="col-sm-5">
                                 <p:inputText id="asunto" 
-                                               style="width: 100%; resize: none;"
-                                               maxlength="150"
-                                               value="#{oficioBandejaEntradaBean.vo.oficioAsunto}"                                                
-                                               valueChangeListener="#{oficioBandejaEntradaBean.buscarOficiosBandejaEntrada(actionEvent)}" />
+                                             style="width: 100%; resize: none;"
+                                             maxlength="150"
+                                             placeholder="Escribe algún fragmento "
+                                             value="#{oficioBandejaEntradaBean.vo.oficioAsunto}"                                                
+                                             valueChangeListener="#{oficioBandejaEntradaBean.buscarOficiosBandejaEntrada(actionEvent)}" />
                                 &nbsp;
                             </div>
                             <div class="col-sm-2">
-                                <p:commandLink id="botonBuscar"
+                                <p:commandButton id="botonBuscar"
                                                  value="#{msgs['sistema.comun.buscar']}" 
-                                                 styleClass="btn btn-default btn-xs"
+                                                 styleClass="rounded-button ui-button-secondary ui-button-outlined"
                                                  actionListener="#{oficioBandejaEntradaBean.buscarOficiosBandejaEntrada(actionEvent)}"                                                 
-                                                 update="dataTable1"
+                                                 update="dataTable1"                                                 
                                                  process="@this"
+                                                 icon="pi pi-search"
                                                  title="Buscar oficios" />                               
                             </div>
                             <!--div class="col-sm-2">
@@ -73,73 +76,66 @@
                                                  rendered="true"
                                                  title="Buscar oficios" />                               
                             </div-->
-                            
+
                         </div> <!-- row -->
-                        
+
                         <hr />
-                        
+
                         <div class="row">
-                            
+
                             <div class="col-sm-9">
-                                
+
                                 <my:barraIconos />
-                                
+
                             </div>
-                            
+
                             <div class="col-sm-3" style="text-align: right;">
-                            
+
                                 <!-- Solo los emisores pueden dar de alta oficios -->
-                                
-                                <!--<h:commandLink value="#{msgs['sistema.comun.nuevo']}" 
-                                                 styleClass="btn btn-success btn-xs"
-                                                 action="editar"
-                                                 rendered="#{oficioBandejaEntradaBean.botonNuevo.visible}"
-                                                 title="Dar de alta un oficio" />
-                                -->
-                              
                                 <p:button
-                                             outcome="editar" 
-                                             includeViewParams="true"
-                                             title="Dar de alta un oficio" 
-                                             value="#{msgs['sistema.comun.nuevo']}"
-                                             rendered="#{oficioBandejaEntradaBean.botonNuevo.visible}">                                            
+                                    outcome="editar" 
+                                    icon="pi pi-plus"
+                                    includeViewParams="true"
+                                    title="Dar de alta un oficio" 
+                                    value="#{msgs['sistema.comun.nuevo']}"
+                                    rendered="#{oficioBandejaEntradaBean.botonNuevo.visible}">                                            
 
                                 </p:button>                            
-                           </div>
+                            </div>
                         </div> <!-- row -->
-                            <br/>
+                        <br/>
                         <div class="row">
-                            
-                            <p:dataTable id="dataTable1"  
-                                         showGridlines="true" 
-                                         size="small" 
+
+                            <p:dataTable id="dataTable1"                                           
+                                         showGridlines="false"                                          
+                                         stripedRows="true"
                                          rows="10"  
                                          value="#{oficioBandejaEntradaBean.resultados}" 
                                          var="var">
-                                <p:column  id="columnFechaAlta" style="text-align: center;" headerText="#{msgs['sistema.oficios.comun.fecha.alta']}">
+                                <p:column  id="columnFechaAlta" style="text-align: center;width: 90px;" headerText="#{msgs['sistema.oficios.comun.fecha.alta']}">
                                     <h:outputText id="fechaGenero" value="#{var.fechaGeneroFormato}"/>
                                 </p:column>         
-                                <p:column id="columnNumOf" style="min-width: 200px; text-align: left;" headerText="#{msgs['sistema.oficios.comun.oficio.numero']}">
-                                     <p:link
-                                             outcome="detalle"                                              
-                                             includeViewParams="true"
-                                             title="#{var.oficioNumero}"                                             
-                                             >                                            
-                                          <h:outputText value="#{var.oficioNumero}" style="font-weight: bold;"/>
-                                         <f:param name="oficioId" value="#{var.oficioId}" />                                    
+                                <p:column id="columnNumOf" style="min-width: 100px; text-align: left;" headerText="#{msgs['sistema.oficios.comun.oficio.numero']}">
+                                    <p:link
+                                        outcome="detalle"                                              
+                                        includeViewParams="true"
+                                        title="#{var.oficioNumero}"                                             
+                                        >                                            
+                                        <h:outputText value="#{var.oficioNumero}" style="font-weight: bold;"/>
+                                        <f:param name="oficioId" value="#{var.oficioId}" />                                    
                                     </p:link>    
-                                    
+
                                 </p:column>
-                                <p:column id="columnAsunto" headerText="#{msgs['sistema.oficios.comun.asunto']}" style="text-align: left;">                                    
-                                     <p:button
-                                             outcome="detalle"                                              
-                                             includeViewParams="true"
-                                             title="#{var.oficioNumero}"                                             
-                                             styleClass="ui-button-secondary ui-button-flat"
-                                             style="text-align: left;"
-                                             value="#{var.oficioAsunto}"
-                                             >                                                                                      
-                                         <f:param name="oficioId" value="#{var.oficioId}" />                                    
+                                <p:column id="columnAsunto" headerText="#{msgs['sistema.oficios.comun.asunto']}" style="text-align: left;width: 250px;">                                    
+                                    <p:button
+                                        outcome="detalle"                                              
+                                        includeViewParams="true"
+                                        title="#{var.oficioNumero}"                                             
+                                        styleClass="ui-button-secondary ui-button-flat"
+                                        style="text-align: left;"
+                                        value="#{var.oficioAsunto}"
+                                        >                                                                                      
+                                        <f:param name="oficioId" value="#{var.oficioId}" />                                    
                                     </p:button>  
                                 </p:column>
                                 <p:column id="columnGerencia" style="width: 145px" headerText="#{msgs['sistema.comun.gerencia.nombre']}">
@@ -159,9 +155,9 @@
                                         rendered="#{var.publico eq true}" 
                                         title="Oficio Público" />
                                 </p:column>
-                                
+
                                 <p:column id="columnEstatus" style="width: 80px; white-space: nowrap;" headerText="#{msgs['sistema.oficios.comun.estatus']}">
-                                    
+
                                     <a href="#" data-toggle="modal" data-target="#modalTipoOficio_#{var.tipoOficioId}">
                                         <h:graphicImage value="../../resources/imagenes/estatus_oficio/estatus_oficio_#{var.tipoOficioId}_#{var.estatusId}.png" 
                                                         alt="#{var.tipoOficioNombre} - #{var.estatusNombre}" 
@@ -169,8 +165,8 @@
                                     </a>
 
                                 </p:column>
-                                
-                                <!-- action="detalle.xhtml?oficioId=#{var.oficioId}&amp;faces-redirect=true;"-->
+
+<!-- action="detalle.xhtml?oficioId=#{var.oficioId}&amp;faces-redirect=true;"-->
                                 <p:column style="width: 30px" rendered="#{oficioBandejaEntradaBean.permisos.verDetalleOficio}">                                    
                                     <!--
                                     <p:commandLink styleClass="link"
@@ -183,52 +179,57 @@
                                         <f:param name="oficioId" value="#{var.oficioId}" />                                    
                                     </p:commandLink>                                       
                                     -->
-                                     <p:link
-                                             outcome="detalle"                                              
-                                             includeViewParams="true"
-                                             title="Gestionar oficio"                                             
-                                             >                                            
+                                    <p:link
+                                        outcome="detalle"                                              
+                                        includeViewParams="true"
+                                        title="Gestionar oficio"                                             
+                                        >                                            
                                         <center>
                                             <i class="fa fa-cog icono-contenido" style="font-size: 18px;"></i>                                        
                                         </center>
-                                         <f:param name="oficioId" value="#{var.oficioId}" />                                    
+                                        <f:param name="oficioId" value="#{var.oficioId}" />                                    
                                     </p:link>    
                                 </p:column>
-                                
+
                             </p:dataTable>
-                            
-                            
+
+
                             <br/>
                         </div>
-                            <div class="row">
-                                <div class="col-lg-10"></div>
-                                <div class="col-lg-2" style="text-align: right" title="Exportar a Excel">
-                                     <p:commandButton value="XLSX" styleClass="mr-2 mb-2">
-                                           <i class="fa fa-file-excel-o" aria-hidden="true" title="Exportar a Excel" style="color: green; white-space: nowrap"></i>
-                                            <p:dataExporter type="xlsxstream" target="dataTable1" fileName="Oficios"
-                                                            
-                                                            />
-                                     </p:commandButton>
-                                    <!--<ace:dataExporter target="dataTable1" type="xls"  fileName="Oficios"  excludeColumns="4,5,6" style="height: 40px;width: 60px;">
-                                        <i class="fa fa-file-excel-o" aria-hidden="true" title="Exportar a Excel" style="color: green; white-space: nowrap"></i>
-                                    </ace:dataExporter>
-                                    -->
-                                </div>
+                        <div class="row">
+                            <div class="col-lg-10"></div>
+                            <div class="col-lg-2" style="text-align: right" title="Exportar a Excel">
+                                <p:commandButton value="EXCEL" 
+                                                 styleClass="mr-2 mb-2 rounded-button ui-button-success ui-button-outlined "
+                                                 icon="pi pi-download"
+                                                 >                                            
+                                    <p:dataExporter type="xlsxstream" target="dataTable1" fileName="Oficios"/>
+                                </p:commandButton>
+                                <!--<p:commandButton value="PDF" 
+                                                  styleClass="mr-2 mb-2 rounded-button ui-button-danger ui-button-outlined"
+                                                  icon="pi pi-download"
+                                                  >                                            
+                                        <p:dataExporter type="pdf" target="dataTable1" fileName="Oficios"/>
+                                 </p:commandButton>-->
+                                <!--<ace:dataExporter target="dataTable1" type="xls"  fileName="Oficios"  excludeColumns="4,5,6" style="height: 40px;width: 60px;">
+                                    <i class="fa fa-file-excel-o" aria-hidden="true" title="Exportar a Excel" style="color: green; white-space: nowrap"></i>
+                                </ace:dataExporter>
+                                -->
                             </div>
+                        </div>
 
 
                     </div> <!-- jumbotron -->
-                    
-                   
-                    
-               
-                 
-                 <ui:include src="popupOficioSalida.xhtml" />
-                    
+
+
+
+
+
+                    <ui:include src="popupOficioSalida.xhtml" />
+
                     <ui:include src="popupOficioEntrada.xhtml" />
-                    </h:form>
-           </ui:define>
+                </h:form>
+            </ui:define>
         </ui:composition>
     </body>
 </html>
-    

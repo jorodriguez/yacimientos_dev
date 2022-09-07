@@ -88,7 +88,8 @@ public class OficioSeguimientoBean extends OficioBaseBean {
      * 
      * @param actionEvent 
      */
-    public String gestionarSeguimiento(ActionEvent actionEvent) {
+    //public String gestionarSeguimiento(ActionEvent actionEvent) {
+    public String gestionarSeguimiento() {
         
         String resultado;
         

@@ -15,6 +15,7 @@ import javax.faces.model.ListDataModel;
 import javax.faces.model.SelectItem;
 import javax.inject.Named;
 import javax.mail.MessagingException;
+import org.primefaces.component.datatable.DataTable;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.event.FilesUploadEvent;
 import sia.constantes.Constantes;
@@ -58,15 +59,16 @@ public class OficioEditarBean extends OficioOpcionesBloquesUIBean {
 
     // para binding con datatable de resultados para la 
     // manipulación de los registros
-    private HtmlDataTable tablaResultados;
+    //private HtmlDataTable tablaResultados;
+    private DataTable tablaResultados;
 
     // para binding con datatable de resultados de usuarios para acceso a 
     // oficio restringido, para la manipulación de los registros
-    private HtmlDataTable tablaResultadosUsuariosAcceso;
+    private DataTable tablaResultadosUsuariosAcceso;
 
     // para binding con datatable de resultados para la 
     // manipulación de los registros
-    private HtmlDataTable tablaAsociados;
+    private DataTable tablaAsociados;
 
     /**
      * Para resultados de búsqueda de usuarios para acceso a oficio restringido
@@ -355,7 +357,9 @@ public class OficioEditarBean extends OficioOpcionesBloquesUIBean {
 
             // si se recibe un oficio ID, es para modificación
             if (UtilSia.greaterThanZero(getVo().getOficioId())) {
-
+                  
+                System.out.println("## es una modificacion");
+                
                 // modificacion
                 getLogger().info(this, "@guardarOficio - modificando oficioId = " + getVo().getOficioId());
 
@@ -367,7 +371,7 @@ public class OficioEditarBean extends OficioOpcionesBloquesUIBean {
                 resultado = Constantes.OFICIOS_VISTA_DETALLE;
 
             } else {
-
+                System.out.println("## es un alta");
                 // alta
                 getLogger().info(this, "@guardarOficio - realizando alta de nuevo oficio");
                 List<InformacionOficioVo> listVo = new ArrayList<>();
@@ -589,27 +593,20 @@ public class OficioEditarBean extends OficioOpcionesBloquesUIBean {
         this.nombreUsuarioAcceso = nombreUsuarioAcceso;
     }
 
-    public HtmlDataTable getTablaResultados() {
-        return tablaResultados;
-    }
-
-    public void setTablaResultados(HtmlDataTable tablaResultados) {
-        this.tablaResultados = tablaResultados;
-    }
-
-    public HtmlDataTable getTablaResultadosUsuariosAcceso() {
+ 
+    public DataTable getTablaResultadosUsuariosAcceso() {
         return tablaResultadosUsuariosAcceso;
     }
 
-    public void setTablaResultadosUsuariosAcceso(HtmlDataTable tablaResultadosUsuariosAcceso) {
+    public void setTablaResultadosUsuariosAcceso(DataTable tablaResultadosUsuariosAcceso) {
         this.tablaResultadosUsuariosAcceso = tablaResultadosUsuariosAcceso;
     }
 
-    public HtmlDataTable getTablaAsociados() {
+    public DataTable getTablaAsociados() {
         return tablaAsociados;
     }
 
-    public void setTablaAsociados(HtmlDataTable tablaAsociados) {
+    public void setTablaAsociados(DataTable tablaAsociados) {
         this.tablaAsociados = tablaAsociados;
     }
 
@@ -645,8 +642,13 @@ public class OficioEditarBean extends OficioOpcionesBloquesUIBean {
      * @param actionEvent
      */
     public void agregarAAsociados(ActionEvent actionEvent) {
+        
+        System.out.println("@agregarAAsociados");
 
         OficioVo voAsociado = (OficioVo) this.getTablaResultados().getRowData();
+        
+        System.out.println("Seleccion voAsociado"+(voAsociado==null));
+        System.out.println("Seleccion "+voAsociado.toString());
 
         getVo().getAsociadoHaciaOficios().add(voAsociado);
 
@@ -831,6 +833,14 @@ public class OficioEditarBean extends OficioOpcionesBloquesUIBean {
      */
     public void setMulitoBlque(boolean mulitoBlque) {
         this.multiBloque = mulitoBlque;
+    }
+
+    public DataTable getTablaResultados() {
+        return tablaResultados;
+    }
+
+    public void setTablaResultados(DataTable tablaResultados) {
+        this.tablaResultados = tablaResultados;
     }
 
 }
