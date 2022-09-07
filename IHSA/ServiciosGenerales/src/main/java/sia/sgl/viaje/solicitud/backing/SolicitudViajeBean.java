@@ -1355,17 +1355,9 @@ public class SolicitudViajeBean implements Serializable {
         setOperacion(Constantes.modificar);
     }
 
-    public void changeViajeroAddOrRemove(ActionEvent actionEvent) {
+    public void changeViajeroAddOrRemove(String idUsuario, int idInvitado, String addOrRemove) {
 
-        String idUsuario = (Constantes.NULL_minus.equals(FacesUtils.getRequestParameter(Constantes.param_ID_USUARIO)) ? null : FacesUtils.getRequestParameter(Constantes.param_ID_USUARIO));
-        String idInvitado = (Constantes.NULL_minus.equals(FacesUtils.getRequestParameter(Constantes.param_ID_INVITADO)) ? null : FacesUtils.getRequestParameter(Constantes.param_ID_INVITADO));
-        boolean addOrRemove = Constantes.param_ADD.equals(FacesUtils.getRequestParameter(Constantes.param_ADD_OR_REMOVE));
-        int inv = 0;
-        if (idInvitado != null && !idInvitado.isEmpty()) {
-            inv = Integer.parseInt(idInvitado);
-        }
-
-        solicitudViajeBeanModel.addOrRemoveViajeros(idUsuario, addOrRemove, inv);
+        solicitudViajeBeanModel.addOrRemoveViajeros(idUsuario, Constantes.param_ADD_OR_REMOVE.equals(addOrRemove), idInvitado);
 
     }
 
@@ -1399,7 +1391,7 @@ public class SolicitudViajeBean implements Serializable {
             } else {
                 solicitudViajeBeanModel.confirmarUsuarioYTelefono(0, getEmpleadoAdd());
             }
-            solicitudViajeBeanModel.addOrRemoveViajeros(getEmpleadoAdd(), Constantes.TRUE, Constantes.CERO);
+            solicitudViajeBeanModel.addOrRemoveViajeros(usVo.getId(), Constantes.TRUE, 0);
             solicitudViajeBeanModel.setEmpleado("");
             // solicitudViajeBeanModel.usuariosActivos(Constantes.CERO);
         }
@@ -1412,7 +1404,7 @@ public class SolicitudViajeBean implements Serializable {
             setInvitadoAdd(inVo.getIdInvitado());
 
             if (getInvitadoAdd() > 0) {
-                solicitudViajeBeanModel.addOrRemoveViajeros("", Constantes.TRUE, getInvitadoAdd());
+                solicitudViajeBeanModel.addOrRemoveViajeros("", Constantes.TRUE, inVo.getIdInvitado());
                 solicitudViajeBeanModel.confirmarUsuarioYTelefono(getInvitadoAdd(), "");
             } else {
                 setNewInvitado(inVo.getNombre());
@@ -1679,7 +1671,7 @@ public class SolicitudViajeBean implements Serializable {
         solicitudViajeBeanModel.inicializarComponetes();
     }
 
-    public void solicitarSolicitud() {
+    public void solicitarSolicitud() {        
         try {
             boolean solicitado = false;
             if (isJustifica()) {
@@ -1726,6 +1718,7 @@ public class SolicitudViajeBean implements Serializable {
                 solicitudViajeBeanModel.traerOficinaModal();
                 PrimeFaces.current().executeScript(";$(modalFinalizar).modal('hide');");
             }
+            FacesUtils.addInfoMessage("Solicitud completada.");
 
         } catch (Exception e) {
             UtilLog4j.log.info(this, " " + e.getMessage());
