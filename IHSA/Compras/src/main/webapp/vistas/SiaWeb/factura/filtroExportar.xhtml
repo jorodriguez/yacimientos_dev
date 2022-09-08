@@ -5,42 +5,39 @@
                 xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
                 xmlns:h="http://xmlns.jcp.org/jsf/html"
                 >
-    <div class="table-responsive">
-        <div class="col-10 col-xs-10" >
-            <div class="col-9 col-xs-9"></div>
-            <div class="col-1 col-xs-1" style="text-align: right; padding-top: 20px;">
-                <p:commandLink  action="#{exportarFacturaBean.limpiarBusqueda}"
-                                  styleClass="btn btn-warning"
-                                  title="Limpiar filtros"
-                                  style="text-align: right; margin-left: 0px;">
-                    <i class="fa fa-trash" aria-hidden="true"></i>
-                </p:commandLink>
-            </div>
-            <div class="col-1 col-xs-1" style="text-align: right; padding-top: 20px;">
-                <p:commandLink styleClass="btn btn-success" action="#{exportarFacturaBean.buscarFactura}"
-                                 style="text-align: right; margin-left: 0px;"
-                                 title="Buscar facturas">
-                    <i class="fa fa-search"/>
-                </p:commandLink>
-            </div>
-            <div class="col-1 col-xs-1" style="text-align: right; padding-top: 20px;">
-                <p:commandLink action="#{exportarFacturaBean.exportarFactura}" 
-                               class="btn btn-primary" 
-                               title="Exportar Facturas"
-                               onclick="return validaExportarZip('frmExpFact', 'seleccionEx');"
-                               update="@form">
-                    <i class="fa fa-export"/>                                        
-                </p:commandLink>
-            </div>
-
+    <div class="input-group col-10" >
+        <div class="col-9 col-xs-9"></div>
+        <div class="col-1 col-xs-1" >
+            <p:commandLink  action="#{exportarFacturaBean.limpiarBusqueda}"
+                            styleClass="btn btn-warning text-white"
+                            title="Limpiar filtros"
+                            style="text-align: right; margin-left: 0px;">
+                <i class="fa fa-trash" aria-hidden="true"></i>
+            </p:commandLink>
+        </div>
+        <div class="col-1 col-xs-1" >
+            <p:commandLink styleClass="btn btn-success text-white" action="#{exportarFacturaBean.buscarFactura}"
+                           style="text-align: right; margin-left: 0px;"
+                           title="Buscar facturas">
+                <i class="fa fa-search"/>
+            </p:commandLink>
+        </div>
+        <div class="col-1 col-xs-1" >
+            <p:commandLink action="#{exportarFacturaBean.exportarFactura}" 
+                           class="btn btn-primary text-white" 
+                           title="Exportar Facturas"
+                           onclick="return validaExportarZip('frmExpFact', 'seleccionEx');"
+                           update="@form">
+                <i class="fa fa-file"/>                                        
+            </p:commandLink>
         </div>
     </div>
     <div class="table-responsive">
         <div class="col-12 col-xs-12">
             <p:dataTable size="small" stripedRows="true" showGridlines="true" id="tblFiltro" value="#{exportarFacturaBean.listaFiltro}" var="data" style="text-align: left;
-                           width: 85%; font-size: 1.2em" 
-                           styleClass="table table-bordered table-striped"
-                           rowStyleClass="table table-bordered table-striped">	    
+                         width: 85%; font-size: 1.2em" 
+                         styleClass="table table-bordered table-striped"
+                         rowStyleClass="table table-bordered table-striped">	    
                 <p:column headerText="Nexo" style="width: 6%;">
                     <h:selectOneMenu value="#{data.operadorLogicoSeleccionado}"
                                      styleClass="form-control"
@@ -49,16 +46,16 @@
                     </h:selectOneMenu>
                 </p:column>
                 <p:column headerText="Campo" style="width: 20%;" >
-                    <h:selectOneMenu value="#{data.campoSeleccionado}"
-                                       styleClass="form-control"
-                                       
-                                       valueChangeListener="#{exportarFacturaBean.mostrarCondiciones}">
+                    <p:selectOneMenu value="#{data.campoSeleccionado}"
+                                     styleClass="form-control">
                         <f:selectItems value="#{data.campos}"/>
-                    </h:selectOneMenu>
+                        <p:ajax event="change" listener="#{consultaFacturaBean.mostrarCondiciones(index,data.campoSeleccionado)}"
+                                update="frmExpFact:tblFiltro"/>
+                    </p:selectOneMenu>
                 </p:column>
                 <p:column headerText="Operador" style="width: 20%;">
                     <h:selectOneMenu value="#{data.operadorRelacionalSeleccionado}"
-                                       styleClass="form-control">
+                                     styleClass="form-control">
                         <f:selectItems value="#{data.operadorRelacional}"/>
                     </h:selectOneMenu>
 
@@ -66,18 +63,18 @@
                 <p:column headerText="Valor" style="width: 50%; text-align: left;">
                     <div class="form-inline" style="display: #{data.filtroFechaRango ? 'block;' : 'none;'} ">
                         <p:datePicker value="#{data.fechaInicio}" 
-                                           pattern="dd/MM/yyyy" style="width: 60px"
-                                           mindate="#{exportarFacturaBean.fechaMinina}"
-                                           maxdate="#{exportarFacturaBean.fechaMaxima}"
-                                           readonly="true">
+                                      pattern="dd/MM/yyyy" style="width: 60px"
+                                      mindate="#{exportarFacturaBean.fechaMinina}"
+                                      maxdate="#{exportarFacturaBean.fechaMaxima}"
+                                      readonly="true">
 
                         </p:datePicker>
                         <h:outputText value="a" styleClass="control-label" style="margin: 15px;"/>
                         <p:datePicker value="#{data.fechaFin}" style="width: 60px"
-                                           pattern="dd/MM/yyyy"
-                                           readonly="true"
-                                           mindate="#{exportarFacturaBean.fechaMinina}"
-                                           maxdate="#{exportarFacturaBean.fechaMaxima}">
+                                      pattern="dd/MM/yyyy"
+                                      readonly="true"
+                                      mindate="#{exportarFacturaBean.fechaMinina}"
+                                      maxdate="#{exportarFacturaBean.fechaMaxima}">
                         </p:datePicker>
                     </div>
                     <h:inputText value="#{data.alcance}" rendered="#{data.filtroCaja}"
@@ -98,15 +95,16 @@
                 </p:column>	    
                 <p:column style="width: 2%;">
                     <p:commandLink action="#{exportarFacturaBean.agregarNuevoFiltro}"
-                                     rendered="#{data.id eq exportarFacturaBean.listaFiltro.size()-1}"
-                                     process="@form" update="@form">
+                                   rendered="#{data.id eq exportarFacturaBean.listaFiltro.size()-1}"
+                                   process="@form" update="@form">
                         <i class="fa fa-plus text-primary"/>
                     </p:commandLink>
                 </p:column>
                 <p:column rendered="#{exportarFacturaBean.listaFiltro.size() gt 1}" style="width: 2%;">
                     <p:commandLink action="#{exportarFacturaBean.quitarFiltro(data.id)}"
-                                     rendered="#{data.id gt 0}"
-                                     process="@form" update="@form">
+                                   rendered="#{data.id gt 0}"
+                                   process="@form" update="@form">
+                        <i class="fa fa-minus text-danger"/>
                     </p:commandLink>
                 </p:column>
             </p:dataTable>
