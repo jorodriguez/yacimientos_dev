@@ -171,6 +171,22 @@ public class VistoBuenoCostosBean implements Serializable {
         }
     }
 
+    public void iniciodevolverVariasRequisiciones() {
+        boolean continuar = false;
+        for (Object object : listaRequisiciones) {
+            RequisicionVO o = (RequisicionVO) object;
+            if (o.isSelected()) {
+                continuar = true;
+                break;
+            }
+        }
+        if (continuar) {
+            PrimeFaces.current().executeScript(";abrirDialogoModal(dialogoDevVariasReq);");
+        } else {
+            FacesUtilsBean.addErrorMessage("Es necesario seleccionar al menos una requisición");
+        }
+    }
+
     public void devolverVariasRequisicion() {
         try {
             for (Object object : listaRequisiciones) {
@@ -193,6 +209,21 @@ public class VistoBuenoCostosBean implements Serializable {
         }
     }
 
+    public void inicioCancelarVariasRequisiciones() {
+        boolean continuar = false;
+        for (Object object : listaRequisiciones) {
+            RequisicionVO o = (RequisicionVO) object;
+            if (o.isSelected()) {
+                continuar = true;
+                break;
+            }
+        }
+        if (continuar) {
+            PrimeFaces.current().executeScript(";abrirDialogoModal(dialogoCancelarVariasReq);");
+        } else {
+            FacesUtilsBean.addErrorMessage("Es necesario seleccionar al menos una requisición");
+        }
+    }
     public void cancelarVariasRequisicion() {
         try {
             for (Object object : listaRequisiciones) {

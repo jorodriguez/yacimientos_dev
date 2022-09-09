@@ -158,6 +158,22 @@ public class VistoBuenoContabilidad implements Serializable {
         ocRequisicionCoNoticiaImpl.finalizarNotas(usuarioBean.getUsuarioConectado().getId(), reqVo.getId());
     }
 
+    public void iniciodevolverVariasRequisiciones() {
+        boolean continuar = false;
+        for (Object object : listaRequisiciones) {
+            RequisicionVO o = (RequisicionVO) object;
+            if (o.isSelected()) {
+                continuar = true;
+                break;
+            }
+        }
+        if (continuar) {
+            PrimeFaces.current().executeScript(";abrirDialogoModal(dialogoDevVariasReq);");
+        } else {
+            FacesUtilsBean.addErrorMessage("Es necesario seleccionar al menos una requisición");
+        }
+    }
+
     public void devolverRequisicion() {
         try {
             PrimeFaces.current().executeScript(";abrirDialogoModal(dialogoDevReq);");
@@ -184,6 +200,22 @@ public class VistoBuenoContabilidad implements Serializable {
             requisicionesSinVistoBueno();
         } catch (Exception ex) {
             LOGGER.fatal(this, "Ex : : : : " + ex.getMessage(), ex);
+        }
+    }
+
+    public void inicioCancelarVariasRequisiciones() {
+        boolean continuar = false;
+        for (Object object : listaRequisiciones) {
+            RequisicionVO o = (RequisicionVO) object;
+            if (o.isSelected()) {
+                continuar = true;
+                break;
+            }
+        }
+        if (continuar) {
+            PrimeFaces.current().executeScript(";abrirDialogoModal(dialogoCancelarVariasReq);");
+        } else {
+            FacesUtilsBean.addErrorMessage("Es necesario seleccionar al menos una requisición");
         }
     }
 

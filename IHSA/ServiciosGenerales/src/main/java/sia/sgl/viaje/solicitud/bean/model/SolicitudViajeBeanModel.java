@@ -793,6 +793,8 @@ public class SolicitudViajeBeanModel implements Serializable {
                 setIdCampoActual(campoSelec);
             }
             setCampoUsuarioPuestoVo(campoUsuarioRhPuestoImpl.findByUsuarioCampo(getIdCampoActual(), sesion.getUsuario().getId()));
+            campoUsuarioPuestoVo.setIdUsuario(sesion.getUsuario().getId());
+            campoUsuarioPuestoVo.setUsuario(sesion.getUsuario().getNombre());
             setIdGerencia(getCampoUsuarioPuestoVo().getIdGerencia());// RECUPERAR SDE APCAMPOUSUARIRHPUESTO POR 
             v = sgSolicitudViajeImpl.modificarSolicitud(getIdSgTipoSolicitudViaje(), getIdGerencia(), getIdOficinaOrigen(), getIdDestino(),
                     getIdSgMotivo(), getObservacion(), fs, fr,
@@ -2590,14 +2592,14 @@ public class SolicitudViajeBeanModel implements Serializable {
                             }
                         }
                         if (!enLista) {
-                            // Usuario u = usuarioImpl.find(idUsuario);
+                             Usuario u = usuarioImpl.find(idUsuario);
 
-//			    newVO.setIdUsuario(idUsuario);
-//			    newVO.setUsuario(u.getNombre());
-//			    newVO.setEsEmpleado(Constantes.TRUE);
-//			    newVO.setGerencia(u.getGerencia().getNombre());
-//			    newVO.setEstanciaB(Constantes.TRUE);
-//                            newVO.setTelefono(u.getTelefono());
+			    newVO.setIdUsuario(idUsuario);
+			    newVO.setUsuario(u.getNombre());
+			    newVO.setEsEmpleado(Constantes.TRUE);
+			    newVO.setGerencia(u.getGerencia().getNombre());
+			    newVO.setEstanciaB(Constantes.TRUE);
+                            newVO.setTelefono(u.getTelefono());
                             getListViajeroVO().add(newVO);
                         }
 
@@ -2623,14 +2625,14 @@ public class SolicitudViajeBeanModel implements Serializable {
                                 count++;
                             }
                             if (!enLista) {
-//				SgInvitado nuevoInvitado = sgInvitadoImpl.find(idInvitado);
-//
-//				newVO.setIdInvitado(idInvitado);
-//				newVO.setInvitado(nuevoInvitado.getNombre());
-//				newVO.setEsEmpleado(Constantes.FALSE);
-//				newVO.setEmpresa(nuevoInvitado.getSgEmpresa().getNombre());
-//				newVO.setEstanciaB(Constantes.TRUE);
-//                                newVO.setTelefono(nuevoInvitado.getTelefono());
+				SgInvitado nuevoInvitado = sgInvitadoImpl.find(idInvitado);
+
+				newVO.setIdInvitado(idInvitado);
+				newVO.setInvitado(nuevoInvitado.getNombre());
+				newVO.setEsEmpleado(Constantes.FALSE);
+				newVO.setEmpresa(nuevoInvitado.getSgEmpresa().getNombre());
+				newVO.setEstanciaB(Constantes.TRUE);
+                                newVO.setTelefono(nuevoInvitado.getTelefono());
 
                                 getListViajeroVO().add(newVO);
                             }
