@@ -82,7 +82,7 @@ public class CargaEtsBean implements Serializable {
     @Inject
     UsuarioBean usuarioBean;
 
-//    private final RequisicionBean requisicionBean = (RequisicionBean) FacesUtilsBean.getManagedBean("requisicionBean");
+    private final RequisicionBean requisicionBean = (RequisicionBean) FacesUtilsBean.getManagedBean("requisicionBean");
 
     private DataModel<ReRequisicionEts> listaEts; //almacena la lista Especificacion tecnica de suministro
     private DataModel<OcCategoriaEts> listaOcCategoriaEts;
@@ -156,26 +156,26 @@ public class CargaEtsBean implements Serializable {
 //        return getListaEts();
 //    }
 //
-//    public DataModel getEtsPorRequisicionEspera() {
-//        if (requisicionBean.getRequisicionActual() == null) {
-//            listaEts = null;
-//        } else {
-//            try {
-//
-//                if (requisicionBean.getRequisicionActual() != null && requisicionBean.getRequisicionActual().getId() != null) {
-//
-//                    listaEtsEspera
-//                            = new ListDataModel(servicioReRequisicion.traerAdjuntosPorRequisicionVisibleTipo(
-//                                    requisicionBean.getRequisicionActual().getId(),
-//                                    false, "ESPERA"));
-//                }
-//            } catch (Exception ex) {
-//                listaEts = null;
-//                LOGGER.fatal(this, null, ex);
-//            }
-//        }
-//        return getListaEtsEspera();
-//    }
+    public DataModel getEtsPorRequisicionEspera() {
+        if (requisicionBean.getRequisicionActual() == null) {
+            listaEts = null;
+        } else {
+            try {
+
+                if (requisicionBean.getRequisicionActual() != null && requisicionBean.getRequisicionActual().getId() != null) {
+
+                    listaEtsEspera
+                            = new ListDataModel(servicioReRequisicion.traerAdjuntosPorRequisicionVisibleTipo(
+                                    requisicionBean.getRequisicionActual().getId(),
+                                    false, "ESPERA"));
+                }
+            } catch (Exception ex) {
+                listaEts = null;
+                LOGGER.fatal(this, null, ex);
+            }
+        }
+        return getListaEtsEspera();
+    }
 
     public void eliminarEts(Object adjReq) {
         try {

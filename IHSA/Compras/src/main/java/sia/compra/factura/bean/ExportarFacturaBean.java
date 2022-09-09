@@ -148,11 +148,9 @@ public class ExportarFacturaBean implements Serializable {
         listaFiltro.get(rowIndex).setOperadorLogicoSeleccionado((String) event.getNewValue());
     }
 
-    public void mostrarCondiciones(ValueChangeEvent event) {
-        UIData data = (UIData) event.getComponent().findComponent("tblFiltro");
-        int rowIndex = data.getRowIndex();
-        filtroVo = listaFiltro.get(rowIndex);
-        filtroVo.setCampoSeleccionado((String) event.getNewValue());
+    public void mostrarCondiciones(int ind, String campoSel) {
+        filtroVo = listaFiltro.get(ind);
+        filtroVo.setCampoSeleccionado(campoSel);
         if (filtroVo.getCampoSeleccionado().equals("Fecha")) {
             // mostrar fecha
             filtroVo.setFiltroCombo(false);
