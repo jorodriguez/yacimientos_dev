@@ -77,8 +77,7 @@ import sia.util.UtilSia;
  *
  * @author esapien
  */
-
-@Stateless 
+@Stateless
 public class OfOficioImpl extends AbstractFacade<OfOficio> {
 
     // <editor-fold defaultstate="collapsed" desc="Atributos del bean">
@@ -105,84 +104,12 @@ public class OfOficioImpl extends AbstractFacade<OfOficio> {
     private OfOficioUsuarioImpl oficioUsuarioRemoto;
     @Inject
     private OfOficioSiMovSiAdjuntoImpl oficioMovAdjuntoServicioRemoto;
-    
+
+    @Inject
+    private OfOficioConsultaImpl ofOficioConsultaImpl;
+
     @Inject
     private OfOficioUsuarioImpl oficioUsuarioRemote;
-   
-
-    private final String queryBase   = "select "
-                // tipo de oficio
-                + " tof.id as ID_TIPO_OFICIO, \n"
-                + " tof.nombre as TIPO_OFICIO, \n"
-                // oficio
-                + " of1.ID as ID_OFICIO, \n"
-                + " of1.numero_oficio, \n"
-                + " of1.fecha_oficio, \n"
-                + " of1.fecha_genero, \n"
-                + " of1.asunto as asunto_oficio, \n"
-                + " of1.observaciones as observaciones_oficio, \n"
-                // compañía
-                + " c.rfc, \n"
-                + " c.NOMBRE as COMPANIA,\n"
-                + " c.SIGLAS as COMPANIA_SIGLAS,\n"
-                // bloque
-                + " ap_c.id as ID_BLOQUE, \n"
-                + " ap_c.NOMBRE as BLOQUE, \n"
-                // gerencia
-                + " g.id as ID_GERENCIA, \n"
-                + " g.nombre as GERENCIA, \n"
-                // estatus
-                + " est.id as ID_ESTATUS, \n"
-                + " est.nombre as ESTATUS, \n"
-                // usuario
-                + " us1.id as USUARIO_GENERO_ID, \n"
-                + " us1.nombre as USUARIO_GENERO, \n"
-                + " of1.eliminado, \n"
-                + " of1.urgente, \n"
-                + " of1.seguimiento, \n"
-                + " of1.co_privacidad, \n"
-                + " (SELECT array_agg(usuario) FROM OF_OFICIO_USUARIO WHERE of_oficio = of1.id) \n"
-                + "from OF_OFICIO of1 \n"
-                + " inner join AP_CAMPO_GERENCIA ap_cg on (of1.AP_CAMPO_GERENCIA = ap_cg.ID) \n"
-                + " inner join AP_CAMPO ap_c on (ap_cg.AP_CAMPO = ap_c.ID) \n"
-                + " inner join GERENCIA g on (ap_cg.GERENCIA = g.ID) \n"
-                + " inner join COMPANIA c on (ap_c.COMPANIA = c.RFC) \n"
-                + " inner join OF_TIPO_OFICIO tof on (of1.OF_TIPO_OFICIO = tof.ID) \n"
-                + " inner join ESTATUS est on (of1.ESTATUS = est.ID) \n"
-                + " inner join USUARIO us1 on (of1.GENERO = us1.ID) \n"
-                + "where 1=1 \n";;
-
-    private final String queryBaseGroupBy = getQueryBaseGroupBy();;
-
-    //private final String queryOficiosAsociados;
-    private final String queryMovimientos = "SELECT \n"
-                + "  ofic_mov.ID as ID_OFICIO_MOVIMIENTO,  \n"
-                + "  ofic.ID as ID_OFICIO,  \n"
-                + "  ofic.NUMERO_OFICIO,  \n"
-                + "  oper.ID as ID_OPERACION, \n"
-                + "  oper.NOMBRE as OPERACION, \n"
-                + "  mov.ID as MOVIMIENTO_ID,  \n"
-                + "  mov.MOTIVO as MOTIVO,  \n"
-                + "  adj.ID as ADJUNTO_ID, \n"
-                + "  adj.NOMBRE as ADJUNTO_NOMBRE, \n"
-                + "  adj.URL as ADJUNTO_URL, \n"
-                + "  adj.TIPO_ARCHIVO as ADJUNTO_TIPO_ARCHIVO, \n"
-                + "  adj.PESO as ADJUNTO_PESO, \n"
-                + "  adj.UUID as ADJUNTO_UUID, \n"
-                + "  adj.ELIMINADO as ADJUNTO_ELIMINADO, \n"
-                + "  mov.GENERO as USUARIO_MOVIMIENTO,  \n"
-                + "  usu.NOMBRE as USUARIO_NOMBRE,  \n"
-                + "  mov.FECHA_GENERO as FECHA_MOVIMIENTO,  \n"
-                + "  mov.HORA_GENERO as HORA_MOVIMIENTO \n"
-                + "FROM SI_MOVIMIENTO mov \n"
-                + "  inner join USUARIO usu on (mov.GENERO = usu.ID) \n"
-                + "  inner join OF_OFICIO_SI_MOVIMIENTO ofic_mov on (ofic_mov.SI_MOVIMIENTO = mov.ID) \n"
-                + "  inner join OF_OFICIO ofic on (ofic_mov.OF_OFICIO = ofic.ID) \n"
-                + "  inner join ESTATUS est on (ofic.ESTATUS = est.ID) \n"
-                + "  inner join SI_OPERACION oper on (mov.SI_OPERACION = oper.ID) \n"
-                + "  left outer join OF_OFICIO_SI_MOV_SI_ADJUNTO ofic_mov_adj on (ofic_mov_adj.OF_OFICIO_SI_MOVIMIENTO = ofic_mov.ID) \n"
-                + "  left outer join SI_ADJUNTO adj on (ofic_mov_adj.SI_ADJUNTO = adj.ID) \n"
-                + "WHERE 1=1 \n";;
 
     // </editor-fold>
     // <editor-fold defaultstate="collapsed" desc="Métodos del ciclo de vida del bean">
@@ -195,7 +122,7 @@ public class OfOficioImpl extends AbstractFacade<OfOficio> {
         super(OfOficio.class);
 
         // construir query base para consultas
-       /* queryBase = "select "
+        /* queryBase = "select "
                 // tipo de oficio
                 + " tof.id as ID_TIPO_OFICIO, \n"
                 + " tof.nombre as TIPO_OFICIO, \n"
@@ -236,9 +163,8 @@ public class OfOficioImpl extends AbstractFacade<OfOficio> {
                 + " inner join ESTATUS est on (of1.ESTATUS = est.ID) \n"
                 + " inner join USUARIO us1 on (of1.GENERO = us1.ID) \n"
                 + "where 1=1 \n";
-*/
+         */
         //queryBase = sb.toString();
-
         //queryBaseGroupBy = getQueryBaseGroupBy();
 
         /*
@@ -276,7 +202,7 @@ public class OfOficioImpl extends AbstractFacade<OfOficio> {
 	 .append("WHERE 1=1 ");
 
 	 queryOficiosAsociados = sb.toString();*/
-      /*  queryMovimientos = "SELECT \n"
+ /*  queryMovimientos = "SELECT \n"
                 + "  ofic_mov.ID as ID_OFICIO_MOVIMIENTO,  \n"
                 + "  ofic.ID as ID_OFICIO,  \n"
                 + "  ofic.NUMERO_OFICIO,  \n"
@@ -304,9 +230,7 @@ public class OfOficioImpl extends AbstractFacade<OfOficio> {
                 + "  left outer join OF_OFICIO_SI_MOV_SI_ADJUNTO ofic_mov_adj on (ofic_mov_adj.OF_OFICIO_SI_MOVIMIENTO = ofic_mov.ID) \n"
                 + "  left outer join SI_ADJUNTO adj on (ofic_mov_adj.SI_ADJUNTO = adj.ID) \n"
                 + "WHERE 1=1 \n";*/
-
         //queryMovimientos = sb.toString();
-
     }
 
     /**
@@ -315,11 +239,8 @@ public class OfOficioImpl extends AbstractFacade<OfOficio> {
      */
     //@PostConstruct
     //private void inicio() {
-
 //        this.rutaRaizAdjuntos = siParametroRemote.find(1).getUploadDirectory();
-
     //}
-
     /**
      * Genera claúsula GROUP BY para el query base de SQL de oficios. Los campos
      * corresponden a los campos de la consulta para realizar efectivamente el
@@ -364,32 +285,30 @@ public class OfOficioImpl extends AbstractFacade<OfOficio> {
 
     // </editor-fold>
     // <editor-fold defaultstate="collapsed" desc="Métodos de negocio">
-    
     @PersistenceContext(unitName = "Sia-ServiciosPU")
     private EntityManager em;
-    
+
     @Override
     protected EntityManager getEntityManager() {
         return em;
     }
-    
+
     /**
      * Envía correo de notificación de los nuevos oficios registrados.
      *
      */
-    
     public void enviarNotificacionAltaOficios() throws MessagingException {
 
         getLogger().info(this, "@enviarNotificacionAltaOficios");
 
-        List<List<UsuarioVO>> usuariosByCampo = 
-                this.usuarioServicioRemoto.obtenerUsuariosPorModuloPermiso(
+        List<List<UsuarioVO>> usuariosByCampo
+                = this.usuarioServicioRemoto.obtenerUsuariosPorModuloPermiso(
                         Constantes.OFICIOS_MODULO_ID,
                         Constantes.OFICIOS_PERMISO_RECIBIR_CORREO_ALTA_OFICIO);
         //List<UsuarioVO> usuarios = new ArrayList<>();
         List<String> para = new ArrayList<>();
         final Joiner j = Joiner.on(",").skipNulls();
-        
+
         int campoActual = 0;
         //String nombreCampoActual= "";
         CorreoVo correo = new CorreoVo();
@@ -397,7 +316,6 @@ public class OfOficioImpl extends AbstractFacade<OfOficio> {
         correo.setCco(Constantes.VACIO);
 
         // obtener oficios no notificados con archivo adjunto para informe de avance
-
         for (List<UsuarioVO> listVo : usuariosByCampo) {
             String correoPara = Constantes.VACIO;
             //List<UsuarioVO> usuarios = listVo;
@@ -410,11 +328,11 @@ public class OfOficioImpl extends AbstractFacade<OfOficio> {
 
             correoPara = j.join(para);
             correo.setPara(correoPara);
-            
+
             getLogger().info(this, correoPara + " " + para.size() + " cantidad de usuarios en la lista de correos");
-            
+
             para = new ArrayList<>();
-            
+
             if (campoActual < 4 && campoActual > 0) {
                 correo.setAsunto(Constantes.OFICIOS_CORREO_ASUNTO_IHSA_PEMEX
                         + UtilSia.getFechaActual_ddMMyyy());
@@ -423,7 +341,7 @@ public class OfOficioImpl extends AbstractFacade<OfOficio> {
                         + UtilSia.getFechaActual_ddMMyyy());
             }
 
-            List<OficioPromovibleVo>oficios = this.buscarOficiosNoNotificados(campoActual);
+            List<OficioPromovibleVo> oficios = ofOficioConsultaImpl.buscarOficiosNoNotificados(campoActual);
             notificacionOficioServicioRemoto.enviarNotificacionAltaOficios(correo, oficios);
             // actualizar registros como notificados
             this.actualizarOficiosNotificados(oficios);
@@ -432,25 +350,24 @@ public class OfOficioImpl extends AbstractFacade<OfOficio> {
     }
 
     //jevazquez 23/feb/2015 aprobado
-    
     public void enviarNotificacionNoPromovidoOficios() throws MessagingException {
 
         getLogger().info(this, "@enviarNotificacionNoPromovidoOficios");
 
-        final List<UsuarioRolVo> usuariosMty = 
-                usuarioRolServicioRemoto.traerRolPorCodigo(
-                        Constantes.OFICIOS_ROL_RECEPTOR_MONTERREY_CODIGO, 
-                        Constantes.AP_CAMPO_DEFAULT, 
+        final List<UsuarioRolVo> usuariosMty
+                = usuarioRolServicioRemoto.traerRolPorCodigo(
+                        Constantes.OFICIOS_ROL_RECEPTOR_MONTERREY_CODIGO,
+                        Constantes.AP_CAMPO_DEFAULT,
                         Constantes.MODULO_CONTROL_OFICIO
                 );
 
         getLogger().info(this, "Usuarios encontrados = " + usuariosMty.size());
 
         final Iterator<UsuarioRolVo> itMty = usuariosMty.iterator();
-        final List<UsuarioRolVo> usuariosRey = 
-                usuarioRolServicioRemoto.traerRolPorCodigo(
-                        Constantes.OFICIOS_ROL_RECEPTOR_REYNOSA_CODIGO, 
-                        Constantes.AP_CAMPO_DEFAULT, 
+        final List<UsuarioRolVo> usuariosRey
+                = usuarioRolServicioRemoto.traerRolPorCodigo(
+                        Constantes.OFICIOS_ROL_RECEPTOR_REYNOSA_CODIGO,
+                        Constantes.AP_CAMPO_DEFAULT,
                         Constantes.MODULO_CONTROL_OFICIO
                 );
 
@@ -469,7 +386,7 @@ public class OfOficioImpl extends AbstractFacade<OfOficio> {
             correos.append(correo).append(Constantes.COMA);
 
         }
-        
+
         while (itRey.hasNext()) {
 
             UsuarioRolVo vo = itRey.next();
@@ -494,7 +411,7 @@ public class OfOficioImpl extends AbstractFacade<OfOficio> {
                 + UtilSia.getFechaActual_ddMMyyy());
 
         // obtener oficios no notificados con archivo adjunto para informe de avance
-        List<OficioPromovibleVo> oficios = this.buscarOficiosNoNotificadosSemana();
+        List<OficioPromovibleVo> oficios = ofOficioConsultaImpl.buscarOficiosNoNotificadosSemana();
 
         notificacionOficioServicioRemoto.enviarNotificacionNoPromovidas(correo, oficios);
 
@@ -622,7 +539,7 @@ public class OfOficioImpl extends AbstractFacade<OfOficio> {
      */
     private void registrarAnulacionAdjuntos(Integer oficioId, String usuarioId) {
 
-        List<MovimientoVo> movimientos = this.obtenerMovimientos(oficioId);
+        List<MovimientoVo> movimientos = ofOficioConsultaImpl.obtenerMovimientos(oficioId);
 
         for (MovimientoVo movimiento : movimientos) {
 
@@ -644,7 +561,6 @@ public class OfOficioImpl extends AbstractFacade<OfOficio> {
      * @param vo
      * @param idUsuario
      */
-    
     public void anularOficio(OficioPromovibleVo vo, String motivo, String idUsuario)
             throws MissingRequiredValuesException,
             InvalidBusinessOperationException {
@@ -681,7 +597,7 @@ public class OfOficioImpl extends AbstractFacade<OfOficio> {
      * @param motivo
      * @param idUsuario
      */
-    @Interceptors(ValidacionSeguimientoInterceptor.class)    
+    @Interceptors(ValidacionSeguimientoInterceptor.class)
     public void activarSeguimiento(OficioVo vo, String motivo, String idUsuario) {
 
         OfOficio entidad = this.find(vo.getOficioId());
@@ -708,7 +624,7 @@ public class OfOficioImpl extends AbstractFacade<OfOficio> {
      * @param idUsuario
      */
     @Interceptors(ValidacionSeguimientoInterceptor.class)
-    
+
     public void desactivarSeguimiento(OficioVo vo, String motivo, String idUsuario) {
 
         OfOficio entidad = this.find(vo.getOficioId());
@@ -792,7 +708,6 @@ public class OfOficioImpl extends AbstractFacade<OfOficio> {
      * @throws PromotionFailedException
      * @throws SIAException
      */
-    
     public void promoverEstatusOficio(OficioPromovibleVo vo, Usuario usuario)
             throws MissingRequiredValuesException,
             InvalidStateException,
@@ -924,14 +839,13 @@ public class OfOficioImpl extends AbstractFacade<OfOficio> {
 
         // obtener todos los usuariosRey con estos roles y que tengan acceso al bloque
         // del oficio entre los bloques a los que está asignado
-
         List<UsuarioVO> usuariosRey = usuarioServicioRemoto.getUsuariosPorRolBloque(
                 Constantes.OFICIOS_ROL_RECEPTOR_REYNOSA_CODIGO, vo.getBloqueId());
 
         for (UsuarioVO usuarioVo : usuariosRey) {
             mailsPara.add(usuarioVo.getMail().trim());
         }
-        
+
         List<UsuarioVO> usuariosMty = usuarioServicioRemoto.getUsuariosPorRolBloque(
                 Constantes.OFICIOS_ROL_RECEPTOR_MONTERREY_CODIGO, vo.getBloqueId());
 
@@ -998,7 +912,6 @@ public class OfOficioImpl extends AbstractFacade<OfOficio> {
      * @throws InvalidValuesException
      * @throws SIAException
      */
-    
     public List<List<Object>> agregarOficio(final InformacionOficioVo informacionOficioVo, final List<SelectItem> copyBloques)
             throws
             MissingRequiredValuesException,
@@ -1009,19 +922,18 @@ public class OfOficioImpl extends AbstractFacade<OfOficio> {
             SIAException {
 
         OficioPromovibleVo vo = null;
-        
-        
+
         final List<OfOficioSiMovimiento> lisMov = new ArrayList<>();
         OfOficioSiMovimiento oficioMovimiento = null;
         OfOficio oficio = new OfOficio();
-        
+
         //List<Integer> idsOficio = new ArrayList<Integer>();
         final List<List<Object>> newListOf = new ArrayList<>();
         List<Object> actual = new ArrayList<>();
-        
+
         if (informacionOficioVo != null && informacionOficioVo.getOficioVo() != null) {
             String idUsuario = informacionOficioVo.getIdUsuario();
-            
+
             // realizar validaciones necesarias
             validarCamposObligatorios(informacionOficioVo.getOficioVo(), true);
 
@@ -1102,10 +1014,10 @@ public class OfOficioImpl extends AbstractFacade<OfOficio> {
             }
 
             if (!lisMov.isEmpty()) {
-            // registrar archivo adjunto
-            SiAdjunto adjunto = registrarAdjunto(vo.getArchivoAdjunto(), lisMov, idUsuario);
-        }
-            
+                // registrar archivo adjunto
+                SiAdjunto adjunto = registrarAdjunto(vo.getArchivoAdjunto(), lisMov, idUsuario);
+            }
+
         }//regresar lista de vo seria mejor opcion
 
         return newListOf;
@@ -1175,7 +1087,6 @@ public class OfOficioImpl extends AbstractFacade<OfOficio> {
         }
     }
 
-  
     /**
      * Registra un movimiento de oficio.
      *
@@ -1230,7 +1141,6 @@ public class OfOficioImpl extends AbstractFacade<OfOficio> {
      * @throws InvalidValuesException
      * @throws SIAException
      */
-    
     public void modificarOficio(OficioPromovibleVo vo, String idUsuario)
             throws
             MissingRequiredValuesException,
@@ -1377,7 +1287,7 @@ public class OfOficioImpl extends AbstractFacade<OfOficio> {
         // el oficio a registrar
         for (Integer oficioId : vo.getAsociadoHaciaOficiosListaIds()) {
 
-            OficioVo asociadoVo = buscarOficioVoPorId(oficioId, idUsuario);
+            OficioVo asociadoVo = ofOficioConsultaImpl.buscarOficioVoPorId(oficioId, idUsuario);
 
             boolean mismoBloque = vo.getBloqueId().equals(asociadoVo.getBloqueId());
 
@@ -1400,15 +1310,12 @@ public class OfOficioImpl extends AbstractFacade<OfOficio> {
         this.edit(entidad);
     }
 
-    
-    
     /**
      * Regresa el vo de archivo adjunto correspondiente al ID proporcionado.
      *
      * @param adjuntoId
      * @return
      */
-    
     public AdjuntoOficioVo obtenerArchivoAdjunto(int adjuntoId) {
 
         SiAdjunto adjunto = siAdjuntoRemote.find(adjuntoId);
@@ -1428,7 +1335,7 @@ public class OfOficioImpl extends AbstractFacade<OfOficio> {
      * @throws SIAException
      */
     @Interceptors(ValidacionEdicionArchivoAdjuntoInterceptor.class)
-    
+
     public void actualizarAdjunto(OficioVo vo, MovimientoVo movimientoVo, String motivo, String idUsuario)
             throws SIAException, MessagingException {
 
@@ -1493,7 +1400,6 @@ public class OfOficioImpl extends AbstractFacade<OfOficio> {
         adjunto.setArchivoSubido(adjunto.getArchivoSubido());
     }
 
-    
     /**
      * Valida si ya existe un registro con el número de oficio proporcionado.
      *
@@ -1503,7 +1409,7 @@ public class OfOficioImpl extends AbstractFacade<OfOficio> {
      */
     private void validarRegistroDuplicado(String numeroOficio, int idbloque) throws ExistingItemException {
 
-        if (obtenerOficioVo(numeroOficio, idbloque) != null) {
+        if (ofOficioConsultaImpl.obtenerOficioVo(numeroOficio, idbloque) != null) {
             throw new ExistingItemException();
         }
     }
@@ -1706,15 +1612,13 @@ public class OfOficioImpl extends AbstractFacade<OfOficio> {
         }
     }
 
-    
     /**
      *
      *
      * @param ids
      * @return
      */
-    
-    public List<OficioPromovibleVo> buscarOficiosPorId(List<Integer> ids) {
+    /* public List<OficioPromovibleVo> buscarOficiosPorId(List<Integer> ids) {
 
         List<OficioPromovibleVo> resultado;
 
@@ -1744,8 +1648,7 @@ public class OfOficioImpl extends AbstractFacade<OfOficio> {
 
         return resultado;
 
-    }
-
+    }*/
     /**
      *
      * @param oficioId
@@ -1753,8 +1656,7 @@ public class OfOficioImpl extends AbstractFacade<OfOficio> {
      * @param validarRestringido
      * @return
      */
-    
-    public OficioPromovibleVo buscarOficioVoPorId(
+    /* public OficioPromovibleVo buscarOficioVoPorId(
             Integer oficioId,
             String usuarioId,
             boolean validarRestringido) throws InsufficientPermissionsException {
@@ -1770,15 +1672,14 @@ public class OfOficioImpl extends AbstractFacade<OfOficio> {
         }
 
         return vo;
-    }
-
+    }*/
     /**
      * Regresa el objeto OficioVo correspondiente al ID proporcionado.
      *
      * @param oficioId
      * @return
      */
-    private OficioPromovibleVo buscarOficioVoPorId(Integer oficioId, String usuarioId) {
+    /*  private OficioPromovibleVo buscarOficioVoPorId(Integer oficioId, String usuarioId) {
 
         getLogger().info(this, "@buscarOficioVoPorId");
 
@@ -1831,18 +1732,10 @@ public class OfOficioImpl extends AbstractFacade<OfOficio> {
 
         }
 
-        // copiar archivos adjuntos de los movimientos a ruta para
-        // acceso por el visor de archivos
-        /*
-	 * ESAPIEN-29/ene/15 - Opción de visor deshabilitado a la fecha. No
-	 * se requiere copia temporal.
-	 *
-         */
-        //copiarArchivosAdjuntos(resultadoVo.getMovimientos(), usuarioId);
+        
         return resultadoVo;
 
-    }
-
+    }*/
     /**
      * Obtiene la lista de usuariosRey registrados con acceso a un oficio
      * restringido.
@@ -1850,7 +1743,7 @@ public class OfOficioImpl extends AbstractFacade<OfOficio> {
      * @param oficioId
      * @return
      */
-    private List<UsuarioVO> obtenerUsuariosOficioRestringido(OficioVo vo) {
+    /* private List<UsuarioVO> obtenerUsuariosOficioRestringido(OficioVo vo) {
 
         List<UsuarioVO> usuarios;
 
@@ -1865,15 +1758,14 @@ public class OfOficioImpl extends AbstractFacade<OfOficio> {
 
         return usuarios;
 
-    }
-
+    }*/
     /**
      * Obtiene la lista de movimientos de un oficio determinado.
      *
      * @param oficioId
      * @return
      */
-    private List<MovimientoVo> obtenerMovimientos(final Integer oficioId) {
+    /*private List<MovimientoVo> obtenerMovimientos(final Integer oficioId) {
 
         final StringBuilder sql = new StringBuilder(100);
 
@@ -1892,15 +1784,14 @@ public class OfOficioImpl extends AbstractFacade<OfOficio> {
 
         return castMovimientosVo(resultado);
 
-    }
-
+    }*/
     /**
      * Regresa el oficio correspondiente al ID proporcionado.
      *
      * @param id
      * @return
      */
-    private OficioPromovibleVo obtenerOficioVo(final Integer id) {
+    /* private OficioPromovibleVo obtenerOficioVo(final Integer id) {
 
         // obtener información de oficio
         final StringBuilder sql = new StringBuilder();
@@ -1918,8 +1809,7 @@ public class OfOficioImpl extends AbstractFacade<OfOficio> {
         OficioPromovibleVo resultadoVo = (OficioPromovibleVo) castVo(resultado).get(0);
 
         return resultadoVo;
-    }
-
+    }*/
     /**
      *
      * Regresa el oficio correspondiente al número de oficio proporcionado.
@@ -1928,7 +1818,7 @@ public class OfOficioImpl extends AbstractFacade<OfOficio> {
      * @return El objeto con la información del registro o nulo en caso de no
      * encontrarlo.
      */
-    private OficioVo obtenerOficioVo(String numeroOficio, int idbloque) {
+    /* private OficioVo obtenerOficioVo(String numeroOficio, int idbloque) {
 
         // obtener información de oficio
         final StringBuilder sql = new StringBuilder(100);
@@ -1951,15 +1841,13 @@ public class OfOficioImpl extends AbstractFacade<OfOficio> {
         }
 
         return resultadoVo;
-    }
-
-    
+    }*/
     /**
      * Consulta los registros de oficio que no han sido notificados por email.
      *
      * @return
      */
-    private List<OficioPromovibleVo> buscarOficiosNoNotificados(final int idCampo) {
+    /* private List<OficioPromovibleVo> buscarOficiosNoNotificados(final int idCampo) {
 
         getLogger().info(this, "@buscarOficiosNoNotificados");
 
@@ -1971,10 +1859,7 @@ public class OfOficioImpl extends AbstractFacade<OfOficio> {
                 + " and of1.ELIMINADO = ? "
                 + " and ap_c.id = ?")
         .append(queryBaseGroupBy)
-        /*
-	 * se agreaga nuevo order by por nombre de compañia, bloque, gerencia,
-	 * oficio jevazquez 17/02/15
-         */
+      
         .append(" order by c.NOMBRE asc, ap_c.NOMBRE asc, g.NOMBRE asc, of1.numero_oficio asc ");
 
         Query qryNoNotif = em.createNativeQuery(sql.toString());
@@ -2002,10 +1887,9 @@ public class OfOficioImpl extends AbstractFacade<OfOficio> {
 
         return resultado;
 
-    }
-
+    }*/
     //jevazquez 23/feb/2015 aprobado
-    private List<OficioPromovibleVo> buscarOficiosNoNotificadosSemana() {
+    /* private List<OficioPromovibleVo> buscarOficiosNoNotificadosSemana() {
 
         getLogger().info(this, "@buscarOficiosNoNotificados");
 
@@ -2049,8 +1933,7 @@ public class OfOficioImpl extends AbstractFacade<OfOficio> {
 
         return resultado;
 
-    }
-
+    }*/
     /**
      *
      * Regresa las condiciones de consulta para obtener los tipos y estatus de
@@ -2060,7 +1943,7 @@ public class OfOficioImpl extends AbstractFacade<OfOficio> {
      * @param sql
      * @param params
      */
-    private void condicionesBandeja(PermisosVo permisosVo, StringBuilder sql, List<String> params) {
+    /* private void condicionesBandeja(PermisosVo permisosVo, StringBuilder sql, List<String> params) {
 
         String condicionOficio = " (of1.OF_TIPO_OFICIO = ?::integer and of1.ESTATUS = ?::integer) ";
 
@@ -2127,8 +2010,7 @@ public class OfOficioImpl extends AbstractFacade<OfOficio> {
         }
         sql.append(sb);
 
-    }
-
+    }*/
     /**
      *
      * Obtiene los oficios correspondientes a la bandeja de entrada de acuerdo a
@@ -2139,8 +2021,8 @@ public class OfOficioImpl extends AbstractFacade<OfOficio> {
      * @param bloques
      * @return
      */
-    
-    public List<OficioPromovibleVo> buscarOficiosBandejaEntrada(
+    // pasar al otro servicio
+    /* public List<OficioPromovibleVo> buscarOficiosBandejaEntrada(
             OficioVo oficioVo,
             PermisosVo permisosVo,
             List<CompaniaBloqueGerenciaVo> bloques, int bloqueActivo) {
@@ -2195,8 +2077,7 @@ public class OfOficioImpl extends AbstractFacade<OfOficio> {
 
         return castVo(resultado);
 
-    }
-
+    }*/
     /**
      *
      * @param vo
@@ -2205,8 +2086,7 @@ public class OfOficioImpl extends AbstractFacade<OfOficio> {
      * @param usuarioId
      * @return
      */
-    
-    public final ResultadosConsultaVo buscarOficios(
+    /*public final ResultadosConsultaVo buscarOficios(
             final OficioVo vo,
             final boolean filtrarRestringidos,
             final String usuarioId) {
@@ -2254,8 +2134,7 @@ public class OfOficioImpl extends AbstractFacade<OfOficio> {
 
         return resultadosVo;
 
-    }
-
+    }*/
     /**
      * Realiza una búsqueda de registros de oficios con los parámetros de
      * consulta especificados.
@@ -2264,7 +2143,7 @@ public class OfOficioImpl extends AbstractFacade<OfOficio> {
      * @return Lista con los resultados. En caso de no encontrar registros,
      * retorna lista vacía (nunca nulo).
      */
-    private List<OficioPromovibleVo> buscarOficios(OficioVo vo) {
+    /*private List<OficioPromovibleVo> buscarOficios(OficioVo vo) {
 
         getLogger().info(this, "@buscarOficios - params = {0}", new Object[]{vo});
         
@@ -2416,8 +2295,7 @@ public class OfOficioImpl extends AbstractFacade<OfOficio> {
 
         return castVo(resultado);
 
-    }
-
+    }*/
     /**
      *
      * Realiza la búsqueda de oficios para asociar. Los oficios deben estar en
@@ -2427,7 +2305,7 @@ public class OfOficioImpl extends AbstractFacade<OfOficio> {
      * @param bloqueId ID del bloque del oficio a asociar
      * @return
      */
-    
+    /* pasar al otro servicio
     public List<OficioPromovibleVo> buscarOficiosAsociacion(
             OficioVo vo,
             int bloqueId) {
@@ -2463,10 +2341,7 @@ public class OfOficioImpl extends AbstractFacade<OfOficio> {
         sb.append("and est.id = ? "); // estatus
         params.add(Constantes.OFICIOS_ESTATUS_ID_OFICIO_TERMINADO);
 
-        /*if (!puedeVerTodasGerencias) {
-
-	 agregarFiltroBloques(bloques, sb, params);
-	 }*/
+       
         // bloque ID
         sb.append("and ap_c.id = ? ");
         params.add(bloqueId);
@@ -2491,8 +2366,7 @@ public class OfOficioImpl extends AbstractFacade<OfOficio> {
 
         return castVo(resultado);
 
-    }
-
+    }*/
     /**
      * Realiza una búsqueda de usuariosRey con acceso al bloque proporcionado
      * para consulta de oficios con acceso restringido.
@@ -2502,7 +2376,7 @@ public class OfOficioImpl extends AbstractFacade<OfOficio> {
      * @return La lista de usuariosRey con permiso mínimo de consulta para
      * acceder al usuario restringido
      */
-    
+    /*  pasar al otro servicio
     public List<UsuarioVO> buscarUsuariosAccesoOficioRestringido(String nombre, OficioVo oficioVo) {
 
         getLogger().info(this, "@buscarUsuariosAccesoOficioRestringido - bloqueId = " + oficioVo.getBloqueId());
@@ -2520,8 +2394,7 @@ public class OfOficioImpl extends AbstractFacade<OfOficio> {
                         oficioVo.getRestringidoAUsuariosIds());
 
         return usuariosAcceso;
-    }
-
+    }*/
     /**
      *
      * @param bloques
@@ -2556,12 +2429,8 @@ public class OfOficioImpl extends AbstractFacade<OfOficio> {
      *
      * @return
      */
-  
     // </editor-fold>
     // <editor-fold defaultstate="collapsed" desc="Métodos de utilería">
-    
-   
-
     /**
      *
      * @return
@@ -2570,7 +2439,6 @@ public class OfOficioImpl extends AbstractFacade<OfOficio> {
         return UtilLog4j.log;
     }
 
-    
     /**
      * Prepara el value object con el resultado de la consulta.
      *
@@ -2685,7 +2553,7 @@ public class OfOficioImpl extends AbstractFacade<OfOficio> {
      * @param lista
      * @return
      */
-    private List<MovimientoVo> castMovimientosVo(List lista) {
+    /* private List<MovimientoVo> castMovimientosVo(List lista) {
 
         List<MovimientoVo> result = new ArrayList();
 
@@ -2701,15 +2569,14 @@ public class OfOficioImpl extends AbstractFacade<OfOficio> {
 
         return result;
 
-    }
-
+    }*/
     /**
      * Mapea el resultado de una consulta en un objeto de MovimientoVo.
      *
      * @param obj
      * @return
      */
-    private MovimientoVo castMovimientoVo(Object[] obj) {
+    /* private MovimientoVo castMovimientoVo(Object[] obj) {
 
         MovimientoVo vo = new MovimientoVo();
 
@@ -2749,7 +2616,7 @@ public class OfOficioImpl extends AbstractFacade<OfOficio> {
         return vo;
 
     }
-
+     */
     /**
      * Mapeo de entidad de archivo adjunto a VO.
      *

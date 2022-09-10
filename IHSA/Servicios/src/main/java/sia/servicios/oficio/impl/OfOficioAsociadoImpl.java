@@ -35,6 +35,9 @@ public class OfOficioAsociadoImpl extends AbstractFacade<OfOficioAsociado>{
     
     @Inject
     private OfOficioImpl oficioServicioRemoto;
+    
+    @Inject
+    private OfOficioConsultaImpl oficioServiciConsultaImpl;
 
     
     @Override
@@ -118,7 +121,7 @@ public class OfOficioAsociadoImpl extends AbstractFacade<OfOficioAsociado>{
         getLogger().info(this, "ids = " + UtilSia.toCommaSeparatedString(asociadoIds, false));
         
         // este casting es necesario generar lista para la clase base
-        List<OficioPromovibleVo> aux = oficioServicioRemoto.buscarOficiosPorId(asociadoIds);
+        List<OficioPromovibleVo> aux = oficioServiciConsultaImpl.buscarOficiosPorId(asociadoIds);
         
         resultado = new ArrayList<OficioVo>();
         
