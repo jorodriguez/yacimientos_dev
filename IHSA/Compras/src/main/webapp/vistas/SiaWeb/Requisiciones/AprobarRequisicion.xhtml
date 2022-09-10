@@ -26,26 +26,28 @@
                                            styleClass="btn btn-default" 
                                            action="#{requisicionBean.aprobarVariasRequisiciones}"
                                            title="Clic aqui para aprobar la requisición..."
-                                           disabled="#{requisicionBean.requisicionesSinAprobar.rowCount lt 1}"
+                                           disabled="#{requisicionBean.listaRequisiciones.size() lt 1}"
                                            process="@form" update="form1"> 
                                 <p:confirm header="Confirmar" 
                                            message="Está a punto de aprobar una requisición, ¿está seguro?." 
                                            icon="pi pi-exclamation-triangle"/>
                             </p:commandLink>                                    
                             <p:commandLink value="Devolver" styleClass="btn btn-default"
+                                           action="#{requisicionBean.inicioDevolverRequisicion()}"
                                            title="Clic aqui para devolver la(s) requisición(es)"
-                                           disabled="#{requisicionBean.requisicionesSinRevisar.rowCount lt 1}"
-                                           update="frmDevV" process="@this"/>
+                                           disabled="#{requisicionBean.listaRequisiciones.size() lt 1}"
+                                           update="frmDevV" process="@this form1:dataTable1"/>
                             <p:commandLink value="Cancelar" styleClass="btn btn-default"
+                                           action="#{requisicionBean.inicioCancelarRequisicion()}"
                                            title="Clic aqui para cancelar la(s) requisición(es)"
-                                           disabled="#{requisicionBean.requisicionesSinRevisar.rowCount lt 1}"
-                                           process="@this" update="frmCanReqV"/>
+                                           disabled="#{requisicionBean.listaRequisiciones.size() lt 1}"
+                                           process="@this form1:dataTable1" update="frmCanReqV"/>
                         </div>
                         <div id="divOperacion" class="btn-group" style="text-align: left; display: none;">                                
                             <p:commandLink value="Regresar" styleClass="btn btn-default" action="#{requisicionBean.limpiarRequisicion}"
                                            onclick="regresar('divTabla', 'divDatos', 'divOperacion', 'divAutoriza')"/>                                                                
 
-                            <p:commandLink value="Aprobar"
+                            <p:commandLink value="Aprobar" styleClass="btn btn-default"
                                            action="#{requisicionBean.aprobarRequisicion}"
                                            title="Clic aqui para aprobar la requisición..." 
                                            process="@this" update="form1">
@@ -62,13 +64,11 @@
 
                             <p:commandLink value="Cancelar"  
                                            styleClass="btn btn-default"   
-                                           action="#{requisicionBean.inicioCancelarRequisicion}"
                                            onclick="$(dialogoCancelarReq).modal('show');"
                                            title="Clic aqui para cancelar la requisición..." 
                                            process="@this" update="frmCanReq"/>
 
-                            <p:commandLink action="#{requisicionBean.crearNota}" 
-                                           styleClass="btn btn-default" 
+                            <p:commandLink styleClass="btn btn-default" 
                                            onclick="$(dialogoNotaReq).modal('show');"
                                            title="Clic aqui para generar una Nota sobre la requisición..." 
                                            value="Generar Nota" process="@this" update="frmNotaReq" />
@@ -77,7 +77,7 @@
                     <div id="divTabla" class="container-fluid">                         
                         <div class="table table-responsive">
                             <p:dataTable size="small" stripedRows="true" showGridlines="true"  id="dataTable1" rows="10" 
-                                         value="#{requisicionBean.requisicionesSinAprobar}" var="currentRow" styleClass="table table-striped">
+                                         value="#{requisicionBean.listaRequisiciones}" var="currentRow" styleClass="table table-striped">
                                 <p:column width="35">
                                     <f:facet name="header">
                                         <h:selectBooleanCheckbox  class="todos" onchange="seleccionarGeneral('todos', 'seleccion', 'divAutoriza')"/>

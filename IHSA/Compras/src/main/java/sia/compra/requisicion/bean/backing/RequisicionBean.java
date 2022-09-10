@@ -36,6 +36,7 @@ import javax.faces.model.SelectItem;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.servlet.http.HttpServletRequest;
 import lombok.Getter;
 import lombok.Setter;
 import org.primefaces.PrimeFaces;
@@ -242,7 +243,14 @@ public class RequisicionBean implements Serializable {
     //----------------------
     @Getter
     @Setter
-    private DataModel listaRequisiciones = null; //almacena la lista de Ordenes de compra
+    private List<RequisicionVO> listaRequisiciones = null; //almacena la lista de Ordenes de compra
+    @Getter
+    @Setter
+    private List<RequisicionVO> requisicionesSeleccionadas = null;
+    @Getter
+    @Setter
+    private List<RequisicionVO> listaRequisicionesConInventario = null;
+
     @Getter
     @Setter
     private DataModel listaItems = null; //almacena la lista de Items de la Orden de compra
@@ -565,6 +573,24 @@ public class RequisicionBean implements Serializable {
             Env.removeContext(usuarioBean.getCtx(), "REQ_ID");
         } else {
             requisicionActual = null;
+        }
+        FacesContext ctx = FacesContext.getCurrentInstance();
+        HttpServletRequest servletRequest = (HttpServletRequest) ctx.getExternalContext().getRequest(); // returns something like "/myapplication/home.faces" 
+        String fullURI = servletRequest.getRequestURI();
+        if (fullURI.contains("CrearRequisicion.xhtml")) { //
+            requisicionesSinSolicitar();
+        }
+        if (fullURI.contains("RevisarRequisicion.xhtml")) { //
+            requisicionesSinRevisar();
+        }
+        if (fullURI.contains("AprobarRequisicion.xhtml")) { //
+            requisicionesSinAprobar();
+        }
+        if (fullURI.contains("RequisicionEspera.xhtml")) { //
+            requisicionesEnEspera();
+        }
+        if (fullURI.contains("AsignarRequisicion.xhtml")) { //
+            requisicionesSinAsignar();
         }
     }
 
@@ -916,9 +942,19 @@ public class RequisicionBean implements Serializable {
         }
     }
 
+    public void inicioDevolverRequisicion() {
+        try {
+            motivo = "";
+            PrimeFaces.current().executeScript(";abrirDialogoModal(dialogoDevVariasReq);");
+        } catch (Exception e) {
+            LOGGER.fatal(this, e.getMessage(), e);
+        }
+    }
+
     public void inicioCancelarRequisicion() {
         try {
             motivo = "";
+            PrimeFaces.current().executeScript(";abrirDialogoModal(dialogoCancelarVariasReq);");
         } catch (Exception e) {
             LOGGER.fatal(this, e.getMessage(), e);
         }
@@ -1770,8 +1806,7 @@ public class RequisicionBean implements Serializable {
         try {
             if (requisicionActual == null) {
                 boolean entro = false;
-                for (Object object : listaRequisiciones) {
-                    RequisicionVO o = (RequisicionVO) object;
+                for (RequisicionVO o : listaRequisiciones) {
                     if (o.isSelected()) {
                         setRequisicionActual(requisicionServicioRemoto.find(o.getId()));
                         //revisarRequisicion(requisicionActual);
@@ -1797,6 +1832,7 @@ public class RequisicionBean implements Serializable {
                 String jsMetodo = ";regresar('divTabla', 'divDatos', 'divOperacion', 'divAutoriza');";
                 PrimeFaces.current().executeScript(jsMetodo);
             }
+            requisicionesSinRevisar();
             ContarBean contarBean = (ContarBean) FacesUtilsBean.getManagedBean("contarBean");
             contarBean.llenarReqSinRevisar();
         } catch (Exception ex) {
@@ -1860,6 +1896,7 @@ public class RequisicionBean implements Serializable {
             FacesUtilsBean.addInfoMessage(FacesUtilsBean.getKeyResourceBundle("requisiciones.correos.APRenviado"));
             cambiarRequisicion(0);
         }
+        requisicionesSinAprobar();
         requisicionActual = null;
         String jsMetodo = ";limpiarTodos();";
         PrimeFaces.current().executeScript(jsMetodo);
@@ -1875,6 +1912,8 @@ public class RequisicionBean implements Serializable {
             String jsMetodo = ";regresar('divTabla', 'divDatos', 'divOperacion', 'divAutoriza');";
             PrimeFaces.current().executeScript(jsMetodo);
 
+            //
+            requisicionesSinAprobar();
             ContarBean contarBean = (ContarBean) FacesUtilsBean.getManagedBean("contarBean");
             contarBean.llenarReqSinAprobar();
         } catch (Exception ex) {
@@ -1905,6 +1944,7 @@ public class RequisicionBean implements Serializable {
 
             cambiarRequisicion(0);
             //
+            requisicionesEnEspera();
             ContarBean contarBean = (ContarBean) FacesUtilsBean.getManagedBean("contarBean");
             contarBean.llenarRecReq();
             contarBean.llenarReqEnEspera();
@@ -2034,29 +2074,24 @@ public class RequisicionBean implements Serializable {
             FacesUtilsBean.addErrorMessage("Seleccione al menos una requisición");
         }
     }
-    
-    public void seleccionarTodasFilas(){
+
+    public void seleccionarTodasFilas() {
         for (Object listaRequisicione : listaRequisiciones) {
             RequisicionVO rvo = (RequisicionVO) listaRequisicione;
-            rvo.setSelected(!rvo.isSelected());
+            rvo.setSelected(rvo.isSelected() ? Boolean.FALSE : Boolean.TRUE);
         }
     }
 
     public void asignarVariasRequisiciones() {
         try {
-            List<RequisicionVO> lReqVo = new ArrayList<>();
-            for (Object obj : listaRequisiciones) {
-                RequisicionVO rVo = (RequisicionVO) obj;
-                if (rVo.isSelected()) {
-                    lReqVo.add(rVo);
-                }
-            }
             Preconditions.checkArgument(!idAnalista.equals("-1"), "Seleccione un analista de compras");
-            Preconditions.checkArgument(!lReqVo.isEmpty(), "Seleccione al menos una requisición.");
+            Preconditions.checkArgument(requisicionesSeleccionadas.isEmpty(), "Seleccione al menos una requisición.");
+
             StringBuilder requiOK = new StringBuilder();
             StringBuilder requiError = new StringBuilder();
             boolean entro = false;
-            for (RequisicionVO o : lReqVo) {
+            for (Object obj : requisicionesSeleccionadas) {
+                RequisicionVO o = (RequisicionVO) obj;
                 setRequisicionActual(requisicionServicioRemoto.find(o.getId()));
                 if (asignarRequisicionProceso(requisicionActual)) {
                     if (requiOK.toString().isEmpty()) {
@@ -2088,6 +2123,7 @@ public class RequisicionBean implements Serializable {
                         new StringBuilder().append("No se pudo asignar la(s) requisicion(es): ")
                                 .append(requiError.toString()).append(". Por favor notifique el problema a: soportesia@ihsa.mx").toString());
             }
+            requisicionesSinAsignar();
             String jsMetodo = ";limpiarTodos();";
             PrimeFaces.current().executeScript(jsMetodo);
         } catch (IllegalArgumentException e) {
@@ -2112,6 +2148,7 @@ public class RequisicionBean implements Serializable {
             }
             cambiarRequisicion(0);
             //
+            requisicionesSinAsignar();
             ContarBean contarBean = (ContarBean) FacesUtilsBean.getManagedBean("contarBean");
             contarBean.llenarReqSinAsignar();
         } catch (Exception ex) {
@@ -2214,15 +2251,14 @@ public class RequisicionBean implements Serializable {
     /**
      * @return Lista de Requisiciones Sin Solicitar
      */
-    public DataModel getRequisicionesSinSolicitar() {
+    public void requisicionesSinSolicitar() {
         try {
             List<RequisicionVO> lo = new ArrayList<>();
             RequisicionVO o;
-            List<Object[]> l
-                    = requisicionServicioRemoto.getRequisicionesSinSolicitar(
-                            usuarioBean.getUsuarioConectado().getId(),
-                            usuarioBean.getUsuarioConectado().getApCampo().getId()
-                    );
+            List<Object[]> l = requisicionServicioRemoto.getRequisicionesSinSolicitar(
+                    usuarioBean.getUsuarioConectado().getId(),
+                    usuarioBean.getUsuarioConectado().getApCampo().getId()
+            );
             for (Object[] objects : l) {
                 o = new RequisicionVO();
                 o.setId((Integer) objects[0]);
@@ -2232,7 +2268,7 @@ public class RequisicionBean implements Serializable {
                 o.setTipo(objects[4] != null ? (String) objects[4] : "");
                 lo.add(o);
             }
-            listaRequisiciones = new ListDataModel(lo);
+            listaRequisiciones = (lo);
 
             if (irInicio && requisicionActual != null && requisicionActual.getId() > 0) {
                 irInicio = false;
@@ -2246,40 +2282,11 @@ public class RequisicionBean implements Serializable {
             listaRequisiciones = null;
             LOGGER.fatal(this, "Ex : : : : " + ex.getMessage(), ex);
         }
-        return listaRequisiciones;
     }
 
     /**
-     * @return Lista de Requisiciones Sin Revisar
+     * Lista de Requisiciones Sin Revisar
      */
-    public DataModel getRequisicionesSinRevisar() {
-        try {
-            List<RequisicionVO> lo = new ArrayList<>();
-            RequisicionVO o;
-            List<Object[]> l = requisicionServicioRemoto.getRequisicionesSinRevisar(usuarioBean.getUsuarioConectado().getId(), usuarioBean.getUsuarioConectado().getApCampo().getId());
-            for (Object[] objects : l) {
-                o = new RequisicionVO();
-                o.setId((Integer) objects[0]);
-                o.setConsecutivo(String.valueOf(objects[1]));
-                o.setReferencia(String.valueOf(objects[2]));
-                o.setFechaSolicitada((Date) objects[3]);
-                o.setFechaRequerida((Date) objects[4]);
-                o.setPrioridad((String) objects[5]);
-                o.setCompania((String) objects[6]);
-                o.setMontoPesos(((Double) objects[7]));
-                o.setMontoDolares((Double) objects[8]);
-                o.setMontoTotalDolares((Double) objects[9]);
-                lo.add(o);
-            }
-            listaRequisiciones = new ListDataModel(lo);
-
-        } catch (Exception ex) {
-            listaRequisiciones = null;
-            LOGGER.fatal(this, "Ex : : : : " + ex.getMessage(), ex);
-        }
-        return listaRequisiciones;
-    }
-
     public void requisicionesSinRevisar() {
         try {
             List<RequisicionVO> lo = new ArrayList<>();
@@ -2299,7 +2306,7 @@ public class RequisicionBean implements Serializable {
                 o.setMontoTotalDolares((Double) objects[9]);
                 lo.add(o);
             }
-            listaRequisiciones = new ListDataModel(lo);
+            listaRequisiciones = (lo);
 
         } catch (Exception ex) {
             listaRequisiciones = null;
@@ -2308,36 +2315,8 @@ public class RequisicionBean implements Serializable {
     }
 
     /**
-     * @return Lista de Requisiciones Sin Aprobar
+     * Lista de Requisiciones Sin Aprobar
      */
-    public DataModel getRequisicionesSinAprobar() {
-        try {
-            List<RequisicionVO> lo = new ArrayList<>();
-            RequisicionVO o;
-            List<Object[]> l = requisicionServicioRemoto.getRequisicionesSinAprobar(usuarioBean.getUsuarioConectado().getId(), usuarioBean.getUsuarioConectado().getApCampo().getId());
-            for (Object[] objects : l) {
-                o = new RequisicionVO();
-                o.setId((Integer) objects[0]);
-                o.setConsecutivo(String.valueOf(objects[1]));
-                o.setReferencia(String.valueOf(objects[2]));
-                o.setFechaSolicitada((Date) objects[3]);
-                o.setFechaRequerida((Date) objects[4]);
-                o.setPrioridad((String) objects[5]);
-                o.setCompania((String) objects[6]);
-                o.setMontoPesos(((Double) objects[7]));
-                o.setMontoDolares((Double) objects[8]);
-                o.setMontoTotalDolares((Double) objects[9]);
-                lo.add(o);
-            }
-            listaRequisiciones = new ListDataModel(lo);
-
-        } catch (Exception ex) {
-            listaRequisiciones = null;
-            LOGGER.fatal(this, "Ex : : : : " + ex.getMessage(), ex);
-        }
-        return listaRequisiciones;
-    }
-
     public void requisicionesSinAprobar() {
         try {
 
@@ -2358,26 +2337,13 @@ public class RequisicionBean implements Serializable {
                 o.setMontoTotalDolares((Double) objects[9]);
                 lo.add(o);
             }
-            listaRequisiciones = new ListDataModel(lo);
+            listaRequisiciones = (lo);
 
         } catch (Exception ex) {
             listaRequisiciones = null;
             LOGGER.fatal(this, "Ex : : : : " + ex.getMessage(), ex);
         }
 
-    }
-
-    /**
-     * @return Lista de Requisiciones Sin Autorizar
-     */
-    public DataModel getRequisicionesSinAutorizar() {
-        try {
-            listaRequisiciones = new ListDataModel(requisicionServicioRemoto.getRequisicionesSinAutorizar(usuarioBean.getUsuarioConectado().getId()));
-        } catch (Exception ex) {
-            listaRequisiciones = null;
-            LOGGER.fatal(this, "Ex : : : : " + ex.getMessage(), ex);
-        }
-        return listaRequisiciones;
     }
 
     public void seleccionarTabAsignarRequisicion() {
@@ -2399,39 +2365,41 @@ public class RequisicionBean implements Serializable {
             }
         }
 
-        listaRequisiciones = new ListDataModel(lt);
+        listaRequisiciones = (lt);
     }
 
     /**
      * @return Lista de Requisiciones Sin Asignar
      */
-    public DataModel getRequisicionesSinAsignar() {
+    public void requisicionesSinAsignar() {
         try {
             // .out.println("aqui dando vueltas " + indexTab);
             totalReqConInventario = 0;
             List<RequisicionVO> lt = new ArrayList<>();
+            List<RequisicionVO> lr = new ArrayList<>();
             List<RequisicionVO> lo = requisicionServicioRemoto.getRequisicionesSinAsignar(usuarioBean.getUsuarioConectado().getId(),
                     usuarioBean.getUsuarioConectado().getApCampo().getId(),
                     Constantes.ROL_ASIGNA_REQUISICION, Constantes.REQUISICION_APROBADA);
             for (RequisicionVO rqVo : lo) {
                 if (rqVo.getTotal() == 0) {
-                    lt.add(rqVo);
+                    lr.add(rqVo);
                 } else {
                     totalReqConInventario++;
+                    lt.add(rqVo);
                 }
             }
-            listaRequisiciones = new ListDataModel(lt);
+            listaRequisiciones = (lr);
+            listaRequisicionesConInventario = (lt);
 
         } catch (Exception ex) {
             LOGGER.fatal(this, "Ex : : : : " + ex.getMessage(), ex);
         }
-        return listaRequisiciones;
     }
 
     /**
      * @return Lista de Requisiciones En Espera
      */
-    public DataModel getRequisicionesEnEspera() {
+    public void requisicionesEnEspera() {
         try {
             // .out.println("aqui dando vueltas " + indexTab);
             totalReqConInventario = 0;
@@ -2439,26 +2407,22 @@ public class RequisicionBean implements Serializable {
             List<RequisicionVO> lo = requisicionServicioRemoto.getRequisicionesEnEspera(usuarioBean.getUsuarioConectado().getId(),
                     usuarioBean.getUsuarioConectado().getApCampo().getId(),
                     admEsp ? Constantes.ROL_REQUISICION_ESPERA_ADM : Constantes.ROL_REQUISICION_ESPERA, Constantes.REQUISICION_EN_ESPERA, 0, admEsp);
-            listaRequisiciones = new ListDataModel(lo);
+            listaRequisiciones = (lo);
 
         } catch (Exception ex) {
             LOGGER.fatal(this, "Ex : : : : " + ex.getMessage(), ex);
         }
-        return listaRequisiciones;
     }
 
     /**
      * @return Lista de Requisiciones Sin Disgregar por un analista
      */
-    public DataModel getRequisicionesSinDisgregar() {
+    public List<RequisicionVO> getRequisicionesSinDisgregar() {
         try {
-            listaRequisiciones
-                    = new ListDataModel(
-                            requisicionServicioRemoto.getRequisicionesSinDisgregar(
-                                    usuarioBean.getUsuarioConectado().getId(),
-                                    usuarioBean.getUsuarioConectado().getApCampo().getId()
-                            )
-                    );
+            listaRequisiciones = requisicionServicioRemoto.getRequisicionesSinDisgregar(
+                    usuarioBean.getUsuarioConectado().getId(),
+                    usuarioBean.getUsuarioConectado().getApCampo().getId()
+            );
         } catch (Exception ex) {
             listaRequisiciones = null;
             LOGGER.fatal(this, "Ex : : : : " + ex.getMessage(), ex);

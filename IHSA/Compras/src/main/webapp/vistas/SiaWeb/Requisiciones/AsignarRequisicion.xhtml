@@ -4,7 +4,6 @@
       xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
       xmlns:p="http://primefaces.org/ui"
       xmlns:f="http://xmlns.jcp.org/jsf/core"
-
       xmlns:h="http://xmlns.jcp.org/jsf/html">
 
     <body>
@@ -38,10 +37,10 @@
                             <div id="divAutoriza" class="intput-group col-4">   
                                 <ui:fragment rendered="#{requisicionBean.requisicionActual == null}">
                                     <p:commandButton value="Asignar" 
-                                                   styleClass="btn btn-default"
-                                                   style="font-weight: bold;"
-                                                   action="#{requisicionBean.asignarVariasRequisiciones}"
-                                                   process="@form" update="form1"/>
+                                                     styleClass="btn btn-default"
+                                                     style="font-weight: bold;"
+                                                     action="#{requisicionBean.asignarVariasRequisiciones}"
+                                                     process="@form" update="form1"/>
                                     <p:commandLink value="Devolver" styleClass="btn btn-default"
                                                    action="#{requisicionBean.inicioDevolverRequisicionesAsignar()}"
                                                    style="font-weight: bold;" process="@this form1:tbAsig:dataTableAsignar" update="frmDevV"/>
@@ -76,14 +75,12 @@
                                                tabindex="#{requisicionBean.indexTab}" onTabChange="#{requisicionBean.seleccionarTabAsignarRequisicion()}">
                                         <p:tab title="Requisiciones" >
                                             <p:dataTable size="small" stripedRows="true" showGridlines="true"  id="dataTableAsignar" 
-                                                         value="#{requisicionBean.requisicionesSinAsignar}" 
-                                                         var="currentRow" >
-                                                <p:column style="width: 2%;">
-                                                    <f:facet name="header">
-                                                        <h:selectBooleanCheckbox  class="todos" onchange="seleccionarGeneral('todos', 'seleccion', 'divAutoriza')"/>
-                                                    </f:facet>
-                                                    <h:selectBooleanCheckbox value="#{currentRow.selected}" class="seleccion" />
-                                                </p:column>                                        
+                                                         value="#{requisicionBean.listaRequisiciones}" 
+                                                         var="currentRow" 
+                                                         rowKey="#{currentRow.id}" 
+                                                         selection="#{requisicionBean.requisicionesSeleccionadas}">
+                                                <p:column width="25" selectionMode="multiple">
+                                                </p:column>
                                                 <p:column style="text-align: center; width: 10%;">
                                                     <h:outputText value="#{currentRow['consecutivo']}"/>
                                                     <f:facet name="header">
@@ -139,19 +136,13 @@
                                                 </p:column>
                                             </p:dataTable>
                                         </p:tab>
-                                        <p:tab title="Con inventario (#{requisicionBean.totalReqConInventario}) "
-                                               rendered="#{requisicionBean.totalReqConInventario gt 0}">
+                                        <p:tab title="Con inventario (#{requisicionBean.totalReqConInventario}) ">
                                             <p:dataTable id="dtAsiginv" size="small" stripedRows="true" showGridlines="true"   
-                                                         value="#{requisicionBean.requisicionesSinAsignar}" 
+                                                         value="#{requisicionBean.listaRequisicionesConInventario}" 
                                                          var="currentRow" 
-                                                         >
-                                                <p:column style="text-align: center; width: 2%;">
-                                                    <f:facet name="header">
-                                                        <h:selectBooleanCheckbox  class="todos"
-                                                                                  onchange="seleccionarGeneral('todos', 'seleccion', 'divAutoriza')"/>
-                                                    </f:facet>
-                                                    <h:selectBooleanCheckbox value="#{currentRow.selected}" class="seleccion" onclick="mostrarDiv('divRevisa');"/>
-                                                </p:column>                                        
+                                                         rowKey="#{currentRow.id}" selection="#{requisicionBean.requisicionesSeleccionadas}">
+                                                <p:column width="25" selectionMode="multiple">
+                                                </p:column>
                                                 <p:column style="text-align: center; width: 10%;">
                                                     <h:outputText value="#{currentRow['consecutivo']}"/>
                                                     <f:facet name="header">
