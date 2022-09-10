@@ -27,7 +27,7 @@
                                            action="#{requisicionBean.aprobarVariasRequisiciones}"
                                            title="Clic aqui para aprobar la requisición..."
                                            disabled="#{requisicionBean.listaRequisiciones.size() lt 1}"
-                                           process="@form" update="form1"> 
+                                           process="@this form1:dataTable1" update="form1"> 
                                 <p:confirm header="Confirmar" 
                                            message="Está a punto de aprobar una requisición, ¿está seguro?." 
                                            icon="pi pi-exclamation-triangle"/>
@@ -51,7 +51,7 @@
                                            action="#{requisicionBean.aprobarRequisicion}"
                                            title="Clic aqui para aprobar la requisición..." 
                                            process="@this" update="form1">
-                                 <p:confirm header="Confirmar" 
+                                <p:confirm header="Confirmar" 
                                            message="Está a punto de aprobar una requisición, ¿está seguro?." 
                                            icon="pi pi-exclamation-triangle"/>
                             </p:commandLink>
@@ -77,13 +77,10 @@
                     <div id="divTabla" class="container-fluid">                         
                         <div class="table table-responsive">
                             <p:dataTable size="small" stripedRows="true" showGridlines="true"  id="dataTable1" rows="10" 
-                                         value="#{requisicionBean.listaRequisiciones}" var="currentRow" styleClass="table table-striped">
-                                <p:column width="35">
-                                    <f:facet name="header">
-                                        <h:selectBooleanCheckbox  class="todos" onchange="seleccionarGeneral('todos', 'seleccion', 'divAutoriza')"/>
-                                    </f:facet>
-                                    <h:selectBooleanCheckbox value="#{currentRow.selected}" class="seleccion" 
-                                                             onclick="mostrarDiv('divRevisa');"/>
+                                         value="#{requisicionBean.listaRequisiciones}" var="currentRow"
+                                         rowKey="#{currentRow.id}" 
+                                         selection="#{requisicionBean.requisicionesSeleccionadas}">
+                                <p:column width="25" selectionMode="multiple">
                                 </p:column>
                                 <p:column width="120">
                                     <h:outputText value="#{currentRow['consecutivo']}"/>
