@@ -6,6 +6,7 @@ import javax.ejb.EJB;
 import javax.faces.bean.ManagedBean;
 import javax.faces.event.ActionEvent;
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.mail.MessagingException; 
 import sia.constantes.Constantes;
 import sia.excepciones.InsufficientPermissionsException;
@@ -18,7 +19,8 @@ import sia.util.ui.AccionUI;
  * 
  * @author esapien
  */
-@ManagedBean
+//@ManagedBean
+@Named(value = "oficioBandejaEntradaBean")
 public class OficioBandejaEntradaBean extends OficioBaseBean {
     
     /**
@@ -44,6 +46,7 @@ public class OficioBandejaEntradaBean extends OficioBaseBean {
     protected void postConstruct() throws InsufficientPermissionsException {
         
         getLogger().info(this, "OficioBandejaEntradaBean - iniciar()");
+        System.out.println("@@@@OficioBandejaEntradaBean");
         
         // inicializar bean default
         setVo(new OficioConsultaVo());
@@ -66,7 +69,7 @@ public class OficioBandejaEntradaBean extends OficioBaseBean {
         
         this.oficioEntradaId = Constantes.OFICIOS_TIPO_OFICIO_ENTRADA_ID;
         this.oficioSalidaId = Constantes.OFICIOS_TIPO_OFICIO_SALIDA_ID;
-        
+        System.out.println("@@@@OficioBandejaEntradaBean Termino");
     }
     
     
@@ -99,7 +102,7 @@ public class OficioBandejaEntradaBean extends OficioBaseBean {
     public void buscarOficiosBandejaEntrada(ActionEvent actionEvent) {
         
   // List<OficioPromovibleVo> oficiosPromoviblesVo=  
-     this.setOficios(      this.getOficioServicioRemoto()
+     this.setOficios(      this.getOficioConsultaServicioRemoto()
                 .buscarOficiosBandejaEntrada(
                 getVo(), 
                 getPermisos(), 
@@ -134,6 +137,17 @@ public class OficioBandejaEntradaBean extends OficioBaseBean {
         return oficioSalidaId;
     }
     
+    public String goDetalleTestIncludeParam(){
+        return "detalle_test?faces-redirect=true&includeViewParams=true";
+    }
+    
+    public String goDetalleTest(){
+        return "detalle_test.xhtml?faces-redirect=true;";
+    }
+    
+    public String goDetalleTestConParams(int id){
+        return "detalle_test.xhtml?oficioId="+id+"&faces-redirect=true;";
+    }
     
     
 }

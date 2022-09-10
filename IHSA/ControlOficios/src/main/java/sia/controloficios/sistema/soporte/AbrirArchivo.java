@@ -33,6 +33,7 @@ import sia.modelo.rol.vo.RolVO;
 import sia.modelo.sgl.vo.AdjuntoVO;
 import sia.servicios.campo.nuevo.impl.ApCampoUsuarioRhPuestoImpl;
 import sia.servicios.catalogos.impl.UsuarioImpl;
+import sia.servicios.oficio.impl.OfOficioConsultaImpl;
 import sia.servicios.oficio.impl.OfOficioImpl;
 import sia.servicios.sistema.impl.SiAdjuntoImpl;
 import sia.servicios.sistema.impl.SiPermisoImpl;
@@ -57,7 +58,7 @@ public class AbrirArchivo extends HttpServlet {
     @Inject
     private ApCampoUsuarioRhPuestoImpl apCampoUsuarioRhPuestoRemote;
     @Inject
-    private OfOficioImpl oficioServicioRemoto;
+    private OfOficioConsultaImpl oficioConsultaServicioRemoto;
     @Inject
     private SiAdjuntoImpl siAdjuntoRemote;
     @Inject
@@ -115,7 +116,7 @@ public class AbrirArchivo extends HttpServlet {
                         permisos = sesion.getPermisos();
                     }
 
-                    OficioPromovibleVo of = oficioServicioRemoto.buscarOficioVoPorId(idOficio, user, Constantes.TRUE);
+                    OficioPromovibleVo of = oficioConsultaServicioRemoto.buscarOficioVoPorId(idOficio, user, Constantes.TRUE);
                     
                     
                     if (of.isPublico()) {

@@ -38,6 +38,7 @@ import sia.modelo.rol.vo.RolVO;
 import sia.modelo.sgl.vo.AdjuntoVO;
 import sia.servicios.campo.nuevo.impl.ApCampoUsuarioRhPuestoImpl;
 import sia.servicios.catalogos.impl.UsuarioImpl;
+import sia.servicios.oficio.impl.OfOficioConsultaImpl;
 import sia.servicios.oficio.impl.OfOficioImpl;
 import sia.servicios.sistema.impl.SiAdjuntoImpl;
 import sia.servicios.sistema.impl.SiPermisoImpl;
@@ -53,7 +54,7 @@ public class DACOF extends HttpServlet {
     @Inject
     private Sesion sesion;
     @Inject
-    private OfOficioImpl oficioServicioRemoto;
+    private OfOficioConsultaImpl oficioServicioRemoto;
     @Inject
     private SiAdjuntoImpl siAdjuntoRemote;
     @Inject

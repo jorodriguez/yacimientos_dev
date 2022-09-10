@@ -14,6 +14,7 @@ import javax.faces.event.ActionEvent;
 import javax.faces.event.AjaxBehaviorEvent;
 import javax.faces.model.SelectItem;
 import javax.inject.Inject;
+import javax.inject.Named;
 import lombok.Getter;
 import lombok.Setter;
 import org.primefaces.event.FilesUploadEvent;
@@ -58,7 +59,8 @@ import sia.util.ValidadorNombreArchivo;
  *
  * @author mluis
  */
-@ManagedBean
+//@ManagedBean
+@Named(value = "incidenciaBean")
 public class IncidenciaBean extends OficioOpcionesBloquesUIBean {
 
     
@@ -118,9 +120,10 @@ public class IncidenciaBean extends OficioOpcionesBloquesUIBean {
      */
     @Override
     protected void postConstruct() throws SIAException {
+        this.iniciarIncidencias();
         //setear valor nuevo para mostrar publicos
         // valores iniciales para pantalla de consulta
-        
+        /*
         // validar si no hay una consulta iniciada en la sesión
         if (getSesion().getOficioConsultaVo() == null) {
             
@@ -141,7 +144,7 @@ public class IncidenciaBean extends OficioOpcionesBloquesUIBean {
         // valores para popup de simbologia
         this.oficioEntradaId = Constantes.OFICIOS_TIPO_OFICIO_ENTRADA_ID;
         this.oficioSalidaId = Constantes.OFICIOS_TIPO_OFICIO_SALIDA_ID;
-        
+        */
         
     } // fin @PostConstruct
     

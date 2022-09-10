@@ -5,9 +5,13 @@ package sia.controloficios.backing.bean;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.event.ActionEvent;
+import javax.faces.view.ViewScoped;
+import javax.inject.Named;
 import javax.mail.MessagingException;
+import org.primefaces.event.FileUploadEvent;
 //import org.icefaces.ace.component.fileentry.FileEntryEvent;
 import org.primefaces.event.FilesUploadEvent;
+import org.primefaces.model.file.UploadedFile;
 import sia.constantes.Constantes;
 import sia.controloficios.sistema.soporte.FacesUtils;
 import sia.excepciones.InvalidStateException;
@@ -22,9 +26,12 @@ import sia.modelo.oficio.vo.OficioPromovibleVo;
  *
  * @author esapien
  */
-@ManagedBean
+//@ManagedBean
+@Named(value = "oficioPromocionBean")
 public class OficioPromocionBean extends OficioBaseBean {
     
+    
+    private UploadedFile file;
     
     /**
      * PostConstruct
@@ -35,6 +42,8 @@ public class OficioPromocionBean extends OficioBaseBean {
     protected void postConstruct() throws SIAException {
         
         getLogger().info(this, "@postConstruct");
+        
+        System.out.println("@@OficioPromocionBean ");
         
         // obtener registro de oficio
         
@@ -123,11 +132,21 @@ public class OficioPromocionBean extends OficioBaseBean {
     }
     
     
+    public void upload() {
+        if (file != null) {
+            
+            FacesUtils.addInfoMessage("updload");
+        }
+    }
+    
+      
+    
     /**
      * 
      * @param actionEvent 
      */
-    public String promoverEstatusOficio(ActionEvent actionEvent) {
+    //public String promoverEstatusOficio(ActionEvent actionEvent) {
+    public String promoverEstatusOficio() {
         
         getLogger().info(this, "@promoverEstatusOficio = " + getVo().toString());
         
@@ -199,10 +218,19 @@ public class OficioPromocionBean extends OficioBaseBean {
      * 
      * @param e 
      */
-    public void prepararArchivoPromocionVo(FilesUploadEvent e) {
-        
+    public void prepararArchivoPromocionVo(FileUploadEvent e) {
+        System.out.println("@prepararArchivoPromocionVo");
         prepararArchivoAdjuntoVo(e, getVo().getArchivoPromocion());
         
+    }
+
+
+    public UploadedFile getFile() {
+        return file;
+    }
+
+    public void setFile(UploadedFile file) {
+        this.file = file;
     }
     
 }

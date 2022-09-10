@@ -4,6 +4,7 @@ package sia.controloficios.backing.bean;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.event.ActionEvent;
+import javax.inject.Named;
 import sia.constantes.Constantes;
 import sia.controloficios.sistema.soporte.FacesUtils;
 import sia.excepciones.MissingRequiredValuesException;
@@ -14,7 +15,8 @@ import sia.util.ui.AccionUI;
  *
  * @author esapien
  */
-@ManagedBean
+//@ManagedBean
+@Named(value = "oficioSeguimientoBean")
 public class OficioSeguimientoBean extends OficioBaseBean {
     
     /**
@@ -42,10 +44,13 @@ public class OficioSeguimientoBean extends OficioBaseBean {
      */
     @Override
     protected void postConstruct() throws SIAException {
-        
+        System.out.println("@postconstruct en OficioSeguimientoBean");
         // obtener registro de oficio
         
         int oficioId = Integer.parseInt(FacesUtils.getRequestParameter("oficioId"));
+        
+        
+        System.out.println("=========== OFICIOID "+oficioId);
         
         setVo(buscarOficioVo(oficioId));
         
@@ -83,7 +88,8 @@ public class OficioSeguimientoBean extends OficioBaseBean {
      * 
      * @param actionEvent 
      */
-    public String gestionarSeguimiento(ActionEvent actionEvent) {
+    //public String gestionarSeguimiento(ActionEvent actionEvent) {
+    public String gestionarSeguimiento() {
         
         String resultado;
         

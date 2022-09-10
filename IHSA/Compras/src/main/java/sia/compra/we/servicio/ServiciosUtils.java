@@ -41,7 +41,7 @@ import sia.util.UtilLog4j;
 @Path("serviciosWebUtils")
 public class ServiciosUtils implements Serializable {
 
-       
+       /*
     @Inject
     private UsuarioImpl usuarioImpl;
         
@@ -61,7 +61,7 @@ public class ServiciosUtils implements Serializable {
 
     @GET
     @Path("/download")
-    @Produces(MediaType.APPLICATION_OCTET_STREAM)
+   @Produces(MediaType.APPLICATION_OCTET_STREAM)
     public Response downloadFile(@QueryParam("ZWZ2W") int zwz2w, @QueryParam("ZWZ3W") String zwz3w) {
         
         LOGGER.info("@downloadFile ");
@@ -142,5 +142,5 @@ public class ServiciosUtils implements Serializable {
 
         return responseReturn;
     }   
-
+*/
 }

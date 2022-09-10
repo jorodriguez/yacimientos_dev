@@ -7,6 +7,7 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
+import javax.inject.Named;
 import sia.constantes.Constantes;
 import sia.util.UtilLog4j;
 
@@ -15,8 +16,9 @@ import sia.util.UtilLog4j;
  *
  * @author esapien
  */
+@Named(value = "oficioSalirBean")
 @ViewScoped
-@ManagedBean
+//@ManagedBean
 public class OficioSalirBean {
         
     /**

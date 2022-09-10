@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import javax.faces.bean.ManagedBean;
 import javax.faces.model.SelectItem;
+import javax.inject.Named;
 import sia.constantes.Constantes;
 import sia.controloficios.sistema.bean.backing.Sesion;
 import sia.controloficios.sistema.soporte.FacesUtils;
@@ -22,7 +23,8 @@ import sia.modelo.rol.vo.RolVO;
  *
  * @author esapien
  */
-@ManagedBean
+//@ManagedBean
+@Named(value = "oficioPlantillaBean")
 public class OficioPlantillaBean extends OficioBaseBean {
     
     /**
@@ -43,8 +45,16 @@ public class OficioPlantillaBean extends OficioBaseBean {
     @Override
     //protected void postConstruct() throws SIAException {
     protected void postConstruct() {
-        
+        System.out.println("@postconstruct OficioPlantillaBean ");
         // llenar combo de bloques del usuario
+        refrescarListaCampos();
+        
+    }
+    
+    
+    private void refrescarListaCampos(){
+        
+        System.out.println("refrescarListaCampos ");
         
         List<CompaniaBloqueGerenciaVo> bloquesUsuario = getSesion().getBloquesUsuario();
         
@@ -65,8 +75,8 @@ public class OficioPlantillaBean extends OficioBaseBean {
             companiasBloquesGerencias.put(vo.getRegistroId(), vo);
 
         }
-        
     }
+    
 
     /**
      * 
@@ -90,6 +100,8 @@ public class OficioPlantillaBean extends OficioBaseBean {
         String registroId = FacesUtils.getRequestParameter("registroId");
         
         getLogger().info(this, "registroId = " + registroId);
+        
+        refrescarListaCampos();
         
         // obtener datos para compania y gerencia
         

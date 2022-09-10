@@ -5,7 +5,7 @@
       xmlns:h="http://java.sun.com/jsf/html"      
       xmlns:p="http://primefaces.org/ui"      
       xmlns:f="http://java.sun.com/jsf/core">
-    
+
     <body>
         <ui:composition template="./../../WEB-INF/template/template.xhtml">
             <ui:define name="content">
@@ -13,12 +13,13 @@
                     <ui:include src="../../salir.xhtml"/>
                 </h:panelGroup>
                 <h:form styleClass="textoIzquierda" rendered="#{not empty sesion.usuario}" id="formOficios">
-                    
+
                     <div class="page-header">
-                        <h3>
+                        <h3>detl
                             #{oficioDetalleBean.tituloPagina}
                         </h3>
                     </div>
+                   
 
                     <!-- Mensajes con estilos de Bootstrap  -->
                     <h:message style="display: block;"
@@ -28,21 +29,21 @@
                                errorClass="alert alert-danger"
                                fatalClass="alert alert-danger"
                                />
-                    
+
 
                     <div class="jumbotron">
-                        
+
                         <div class="row" style="font-weight: bold;">
                             <div class="col-sm-12">
-                                #{oficioDetalleBean.vo.oficioNumero}&nbsp;&nbsp;&nbsp;&nbsp;#{oficioDetalleBean.vo.oficioAsunto}
+                                <h:outputLabel class="h4" value="#{oficioDetalleBean.vo.oficioNumero} - #{oficioDetalleBean.vo.oficioAsunto}"/>
                             </div>
                         </div> <!-- row -->
-                        
+
                         <hr />
 
                         <ul id="tabs" class="nav nav-tabs" data-tabs="tabs">
                             <li class="active">
-                                <a href="#divInformacionOficio" data-toggle="tab">Informaci&oacute;n</a>
+                                <a href="#divInformacionOficio" data-toggle="tab">Información</a>
                             </li>
                             <li><a href="#divAsociadoHaciaOficios" data-toggle="tab">Asociado A Oficio (<span style="color: red;">#{oficioDetalleBean.vo.asociadoHaciaOficios.size()}</span>)</a></li>
                             <!-- 
@@ -62,9 +63,9 @@
 
                         <div id="my-tab-content" class="tab-content">                            
                             <!-- ······························· INICIA TAB ······························· -->
-                            
+
                             <div class="tab-pane fade in active" id="divInformacionOficio">
-                                
+
                                 <div class="row">
                                     <div class="col-sm-2">
                                         Compa&ntilde;&iacute;a
@@ -79,7 +80,7 @@
                                         #{oficioDetalleBean.vo.oficioFechaFormato}
                                     </div>
                                 </div> <!-- row -->
-                                
+
                                 <div class="row">
                                     <div class="col-sm-2">
                                         Bloque
@@ -94,7 +95,7 @@
                                         #{oficioDetalleBean.vo.fechaGeneroFormato}
                                     </div>
                                 </div> <!-- row -->
-                                
+
                                 <div class="row">
                                     <div class="col-sm-2">
                                         Gerencia
@@ -109,7 +110,7 @@
                                         <h:outputText value="#{oficioDetalleBean.vo.urgente ? 'Sí' : 'No'}" />
                                     </div>
                                 </div> <!-- row -->
-                                
+
                                 <div class="row">
                                     <div class="col-sm-2">
                                         Estatus
@@ -126,8 +127,8 @@
                                         <h:outputText value="#{oficioDetalleBean.vo.requiereSeguimiento ? 'Sí' : 'No'}" />
                                     </div>
                                 </div> <!-- row -->
-                                
-                                
+
+
                                 <div class="row">
                                     <div class="col-sm-2">
                                         Registrado Por
@@ -142,13 +143,12 @@
                                         #{oficioDetalleBean.vo.acceso}
                                     </div>
                                 </div> <!-- row -->
-                                
+
                                 <div class="row">
                                     <div class="col-sm-12">
-                                        &nbsp;
                                     </div>
                                 </div> <!-- row -->
-                                
+
                                 <div class="row">
                                     <div class="col-sm-2">
                                         #{msgs['sistema.oficios.comun.observaciones']}
@@ -158,13 +158,12 @@
                                         <h:outputText value="No proporcionado" rendered="#{empty oficioDetalleBean.vo.observaciones}" style="font-style: italic; color: gray;" />
                                     </div>
                                 </div> <!-- row -->
-                                
+
                                 <div class="row">
                                     <div class="col-sm-12">
-                                        &nbsp;
                                     </div>
                                 </div> <!-- row -->
-                                
+
                                 <div class="row">
                                     <div class="col-sm-2">
                                         Archivos Adjuntos
@@ -172,45 +171,47 @@
                                     <div class="col-sm-10">
                                         <!--ice:dataTable rows="10" width="100%" value="{oficioDetalleBean.vo.movimientosAdjuntosActivos}" var="movimiento"-->
                                         <p:dataTable 
-                                         showGridlines="true" 
-                                         size="small" 
-                                         rows="10"  
-                                         value="#{oficioDetalleBean.vo.movimientosAdjuntosActivos}" 
-                                         var="movimiento">
-                                                
+                                            showGridlines="false" 
+                                            size="small" 
+                                            rows="10"                                              
+                                            value="#{oficioDetalleBean.vo.movimientosAdjuntosActivos}" 
+                                            var="movimiento">
+
                                             <!-- Columna de archivo adjunto -->
-                                                    
+
                                             <p:column>
                                                 <h:outputText 
                                                     value="#{movimiento.adjunto.nombreUUID}" 
                                                     rendered="#{movimiento.tieneAdjunto()}"/>
-                                                            
                                                 <f:facet name="header">
                                                     <h:outputText value="Nombre de Archivo"/>
                                                 </f:facet>
                                             </p:column>
-                                                    
+
                                             <!-- Columna para icono de visualizacion / descarga -->
-                                                    
-                                            <p:column style="width: 2px;" rendered="#{oficioDetalleBean.permisos.verArchivoAdjuntoHistorialOficio}">
-                                                    
+
+                                            <p:column style="width:10%" rendered="#{oficioDetalleBean.permisos.verArchivoAdjuntoHistorialOficio}">
+
                                                 <!-- Icono de vista previa -->
-                                                        
-                                                <!--p:commandLink title="Vista previa"
-                                                                 actionListener="{oficioDetalleBean.prepararAdjuntoVisor(event)}"
-                                                                 rendered="#{oficioDetalleBean.permisos.verArchivoAdjuntoHistorialOficio 
-                                                                 and movimiento.tieneAdjunto()
-                                                                 and movimiento.adjunto.visualizable}"
-                                                                 styleClass="link"
-                                                                 onclick="$(modalVerAdjunto).modal('show');" >
+
+                                                <h:commandLink title="Vista previa"
+                                                               actionListener="#{oficioDetalleBean.prepararAdjuntoVisor(event)}"
+                                                               rendered="#{oficioDetalleBean.permisos.verArchivoAdjuntoHistorialOficio 
+                                                                           and movimiento.tieneAdjunto()
+                                                                           and movimiento.adjunto.visualizable}"
+                                                               styleClass="link"
+                                                               onclick="$(modalVerAdjunto).modal('show');" >
                                                     <center>
-                                                        <img src="./resources/imagenes/preview.png" border="0" />
+                                                        <img src="../../resources/imagenes/preview.png" border="0" />
                                                     </center>
-                                                    <f:param name="adjuntoId" value="{movimiento.adjunto.id}" />   
-                                                </p:commandLink-->
-                                                        
+                                                    <f:param name="adjuntoId" value="#{movimiento.adjunto.id}" />   
+                                                </h:commandLink>
+                                                                                       
+                                            </p:column>
+                                            <p:column style="width:10%" rendered="#{oficioDetalleBean.permisos.verArchivoAdjuntoHistorialOficio}">
+
                                                 <!-- Icono de descarga -->
-                                                        
+
                                                 <!--ice:outputLink 
                                                     target="_blank" 
                                                     rendered="{oficioDetalleBean.permisos.descargarArchivoAdjuntoHistorialOficio 
@@ -225,19 +226,17 @@
                                                             title="Descargar" />
                                                     </center>
                                                 </ice:outputLink-->
-                                                
-                                                
+
+
                                                 <!-- Inicia TEMPORAL 2/sep/14 - Permitir descarga -->
-                                                        
+
                                                 <h:outputLink 
                                                     target="_blank" 
                                                     style="width: 10px"
-                                                    rendered="#{
-                                                                    movimiento.tieneAdjunto()
-                                                                        and (oficioDetalleBean.permisos.descargarArchivoAdjuntoHistorialOficio 
-                                                                        or oficioDetalleBean.permisos.verArchivoAdjuntoHistorialOficio)}"
-                                                    value="/ControlOficios/DACOF?ZWZ2W=#{movimiento.adjunto.id}&amp;ZWZ3W=#{movimiento.adjunto.uuid}
-                                                    &amp;Z4BX2=#{movimiento.oficioId}&amp;4PC4WZ=0&amp;user=#{sesion.usuario.id}"
+                                                    rendered="#{movimiento.tieneAdjunto()
+                                                        and (oficioDetalleBean.permisos.descargarArchivoAdjuntoHistorialOficio 
+                                                        or oficioDetalleBean.permisos.verArchivoAdjuntoHistorialOficio)}"
+                                                    value="/ControlOficios/DACOF?ZWZ2W=#{movimiento.adjunto.id}&amp;ZWZ3W=#{movimiento.adjunto.uuid}&amp;Z4BX2=#{movimiento.oficioId}&amp;4PC4WZ=0&amp;user=#{sesion.usuario.id}"
                                                     >
                                                     <center>
                                                         <p:graphicImage 
@@ -246,118 +245,169 @@
                                                             title="Descargar archivo" />
                                                     </center>
                                                 </h:outputLink>
-                                                        
-                                                        
+
                                                 <!-- Termina TEMPORAL 2/sep/14 - Permitir descarga -->
-                                                        
+
                                             </p:column>
-                                                    
+
                                             <!-- Inicia Edición de archivo adjunto -->
-                                                    
+
                                             <p:column style="width: 10px;" rendered="#{oficioDetalleBean.mostrarEdicionArchivos()}">
-                                                    
-                                                <p:commandLink title="Sustituir archivo"
-                                                                 action="editarAdjunto"
-                                                                 rendered="#{oficioDetalleBean.linkEditarAdjunto.visible and movimiento.tieneAdjunto()}"
-                                                                 styleClass="link" >
+                                                <!--
+                                                <h:commandLink title="Sustituir archivo"
+                                                               action="editarAdjunto"
+                                                               rendered="#{oficioDetalleBean.linkEditarAdjunto.visible and movimiento.tieneAdjunto()}"
+                                                               styleClass="link" >
                                                     <img src="../../resources/imagenes/editar.png" border="0" />
                                                     <f:param name="oficioId" value="#{movimiento.oficioId}" />
                                                     <f:param name="movimientoId" value="#{movimiento.id}" />
-                                                   <f:param name="oficioMovimientoId" value="#{movimiento.oficioMovimientoId}" />
-                                                </p:commandLink>
-                                                        
+                                                    <f:param name="oficioMovimientoId" value="#{movimiento.oficioMovimientoId}" />
+                                                </h:commandLink>
+                                                -->
+                                                
+                                                <p:link 
+                                                        outcome="editarAdjunto" 
+                                                        includeViewParams="true"
+                                                        title="Sustituir archivo" 
+                                                        rendered="#{oficioDetalleBean.linkEditarAdjunto.visible and movimiento.tieneAdjunto()}">                                                        
+                                                        <img src="../../resources/imagenes/editar.png" border="0" />
+                                                        <f:param name="oficioId" value="#{movimiento.oficioId}" />
+                                                        <f:param name="movimientoId" value="#{movimiento.id}" />
+                                                        <f:param name="oficioMovimientoId" value="#{movimiento.oficioMovimientoId}" />
+                                                </p:link>
+
                                                 <f:facet name="header">
-                                                    <h:outputText value="&nbsp;"/>
+                                                    <h:outputText value="-"/>
                                                 </f:facet>
                                             </p:column>
-                                            
+
                                             <!-- Termina Edición de archivo adjunto -->
-                                                    
+
                                         </p:dataTable>
                                     </div>
                                 </div> <!-- row -->
-                                
+
                                 <hr />
-                                
+
                                 <div class="row">
                                     <div class="col-sm-12">
-                                        &nbsp;
+
                                     </div>
                                 </div> <!-- row -->
-                                
+
                                 <div class="row">
                                     <div class="col-sm-12" style="text-align: right">
-                                            
+
                                         <!-- Boton Promover para cambiar de estatus al oficio -->
-                                                
-                                        <p:commandLink value="#{oficioDetalleBean.botonPromover.valor}" 
-                                                         styleClass="btn btn-success btn-xs"
-                                                         action="#{oficioDetalleBean.botonPromover.accion.toString()}"
-                                                         rendered="#{oficioDetalleBean.botonPromover.visible}"
-                                                         title="#{oficioDetalleBean.botonPromover.titulo}" >
+                                        <p:button
+                                                        outcome="#{oficioDetalleBean.botonPromover.accion.toString()}"                                                         
+                                                        includeViewParams="true"                                                        
+                                                        value="#{oficioDetalleBean.botonPromover.valor}"
+                                                        rendered="#{oficioDetalleBean.botonPromover.visible}"
+                                                        title="#{oficioDetalleBean.botonPromover.titulo}"
+                                                        styleClass="ui-button-raised ui-button-success"                                                        
+                                                        icon="pi pi-check"
+                                                        >                                                                                                                
+                                                        <f:param name="oficioId" value="#{oficioDetalleBean.vo.oficioId}" />                                                        
+                                        </p:button>
+                                        <h:outputText value="&nbsp;" />
+<!--
+                                        <h:commandLink value="#{oficioDetalleBean.botonPromover.valor}" 
+                                                       styleClass="btn btn-success btn-xs"
+                                                       action="#{oficioDetalleBean.botonPromover.accion.toString()}"
+                                                       rendered="#{oficioDetalleBean.botonPromover.visible}"
+                                                       title="#{oficioDetalleBean.botonPromover.titulo}" >
                                             <f:param name="oficioId" value="#{oficioDetalleBean.vo.oficioId}" />
-                                        </p:commandLink>
-                                                
-                                        &nbsp;
-                                                
-                                        <p:commandLink value="Modificar" 
-                                                         styleClass="btn btn-info btn-xs"
-                                                         action="editar"
-                                                         rendered="#{oficioDetalleBean.botonModificar.visible}"
-                                                         title="Modificar oficio" >
+                                        </h:commandLink>
+                                        -->
+
+                                          <p:button
+                                                        outcome="editar"                                                         
+                                                        includeViewParams="true"                                                        
+                                                        value="Modificar"
+                                                        rendered="#{oficioDetalleBean.botonModificar.visible}"
+                                                        title="Modificar oficio"
+                                                        styleClass="ui-button-raised ui-button-info"
+                                                        icon="fa fa-edit"
+                                                        >                                                                                                                
+                                                    <f:param name="oficioId" value="#{oficioDetalleBean.vo.oficioId}" />
+                                          </p:button>
+                                        <h:outputText value="&nbsp;" />
+                                        <!--
+                                        <h:commandLink value="Modificar" 
+                                                       styleClass="btn btn-info btn-xs"
+                                                       action="editar"
+                                                       rendered="#{oficioDetalleBean.botonModificar.visible}"
+                                                       title="Modificar oficio" >
                                             <f:param name="oficioId" value="#{oficioDetalleBean.vo.oficioId}" />
-                                        </p:commandLink>
-                                                
-                                        &nbsp;
-                                                
-                                        <p:commandLink value="Anular" 
-                                                         styleClass="btn btn-danger btn-xs"
-                                                         action="anular"
-                                                         rendered="#{oficioDetalleBean.botonAnular.visible}"
-                                                         title="Anular oficio" >
+                                        </h:commandLink>
+                                        -->
+
+                                        <p:button
+                                                        outcome="editar"                                                         
+                                                        includeViewParams="true"                                                        
+                                                        value="Anular"
+                                                        rendered="#{oficioDetalleBean.botonAnular.visible}"
+                                                        title="Anular oficio"
+                                                        icon="pi pi-times"
+                                                        styleClass="ui-button-raised ui-button-danger"
+                                                        >                                                                                                                
+                                                    <f:param name="oficioId" value="#{oficioDetalleBean.vo.oficioId}" />
+                                          </p:button>
+                                        <h:outputText value="&nbsp;" />
+                                         <!--
+                                        <h:commandLink value="Anular" 
+                                                       styleClass="btn btn-danger btn-xs"
+                                                       action="anular"
+                                                       rendered="#{oficioDetalleBean.botonAnular.visible}"
+                                                       title="Anular oficio" >
                                             <f:param name="oficioId" value="#{oficioDetalleBean.vo.oficioId}" />
-                                        </p:commandLink>
-                                        
-                                        &nbsp;
-                                                
-                                        <p:commandLink value="#{oficioDetalleBean.botonSeguimiento.valor}" 
-                                                         styleClass="btn btn-warning btn-xs"
-                                                         action="#{oficioDetalleBean.botonSeguimiento.accion.toString()}"
-                                                         rendered="#{oficioDetalleBean.botonSeguimiento.visible}"
-                                                         title="#{oficioDetalleBean.botonSeguimiento.titulo}" >
+                                        </h:commandLink>
+                                          -->
+
+                                          <p:button
+                                                        outcome="#{oficioDetalleBean.botonSeguimiento.accion.toString()}"                                                         
+                                                        includeViewParams="true"                                                        
+                                                        value="#{oficioDetalleBean.botonSeguimiento.valor} " 
+                                                        rendered="#{oficioDetalleBean.botonSeguimiento.visible}"
+                                                        title="Anular oficio"
+                                                        styleClass="ui-button-raised ui-button-warning"
+                                                        >                                                                                                                
+                                                    <f:param name="oficioId" value="#{oficioDetalleBean.vo.oficioId}" />
+                                          </p:button>
+                                          <!--
+                                        <h:commandLink value="#{oficioDetalleBean.botonSeguimiento.valor}" 
+                                                       styleClass="btn btn-warning btn-xs"
+                                                       action="{oficioDetalleBean.botonSeguimiento.accion.toString()}"
+                                                       rendered="#{oficioDetalleBean.botonSeguimiento.visible}"
+                                                       title="#{oficioDetalleBean.botonSeguimiento.titulo}" >
                                             <f:param name="oficioId" value="#{oficioDetalleBean.vo.oficioId}" />
-                                        </p:commandLink>
-                                        
-                                        
+                                        </h:commandLink>
+                                          -->
+
                                     </div>
                                 </div> <!-- row -->
-                                
+
                             </div> <!-- div tab-pane -->
-                            
-                            
+
+
                             <!-- ······························· INICIA TAB ······························· -->
-                            
+
 
                             <div class="tab-pane fade" id="divAsociadoHaciaOficios">
 
-                                 <p:dataTable id="dataAsociadoHaciaOficios" 
-                                         showGridlines="true" 
-                                         size="small" 
-                                         rows="10"  
-                                         value="#{oficioDetalleBean.vo.asociadoHaciaOficios}" 
-                                         var="currentRow"
-                                         paginator="true" paginatorPosition="both"
-                                            paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
-                                            currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} registros"
-                                            rowsPerPageTemplate="5,10,{ShowAll|'All'}"
-                                         >
-                                <!--<ice:dataTable id="dataAsociadoHaciaOficios" 
-                                               rows="5" 
-                                               value="{oficioDetalleBean.vo.asociadoHaciaOficios}" 
-                                               var="currentRow" 
-                                               width="100%"
-                                               >
-                                    -->
+                                <p:dataTable id="dataAsociadoHaciaOficios" 
+                                             showGridlines="true" 
+                                             size="small" 
+                                             rows="10"  
+                                             value="#{oficioDetalleBean.vo.asociadoHaciaOficios}" 
+                                             var="currentRow"
+                                             paginator="true" paginatorPosition="both"
+                                             paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                             currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} registros"
+                                             rowsPerPageTemplate="5,10,{ShowAll|'All'}"
+                                             >
+
                                     <p:column>
                                         #{currentRow['oficioNumero']}
                                         <f:facet name="header">
@@ -389,65 +439,37 @@
                                         </f:facet>
                                     </p:column>
                                     <p:column style="width: 30px" rendered="#{oficioDetalleBean.permisos.verDetalleOficio}">
-                                        <p:commandLink styleClass="link"
-                                                         action="detalle"
-                                                         title="Ver detalle del oficio"  >
+                                        <p:link
+                                                        outcome="detalle"                                                         
+                                                        includeViewParams="true"                                                                                                                
+                                                        title="Ver detalle del oficio"                                               
+                                                        >                                                                                                                
                                             <center>
-                                                <i class="fa fa-eye icono-contenido" style="font-size: 18px;"></i>
-                                                <!--img src="./resources/imagenes/preview.png" border="0" /-->
+                                                <i class="fa fa-eye icono-contenido" style="font-size: 18px;"></i>                                           
+                                            </center>
+                                               <f:param name="oficioId" value="#{currentRow['oficioId']}" />   
+                                          </p:link>
+                                        <!--
+                                        <h:commandLink styleClass="link"
+                                                       action="detalle"
+                                                       title="Ver detalle del oficio"  >
+                                            <center>
+                                                <i class="fa fa-eye icono-contenido" style="font-size: 18px;"></i>                                           
                                             </center>
 
                                             <f:param name="oficioId" value="#{currentRow['oficioId']}" />   
-                                        </p:commandLink>
+                                        </h:commandLink>
+                                        -->
                                     </p:column>
                                 </p:dataTable>
 
                                 <br></br>
 
-                                <!--<center>
-                                    <ice:dataPaginator for="dataAsociadoHaciaOficios"
-                                                       rowsCountVar="rowsCount"
-                                                       displayedRowsCountVar="displayedRowsCount"
-                                                       firstRowIndexVar="firstRowIndex"
-                                                       lastRowIndexVar="lastRowIndex"
-                                                       pageCountVar="pageCount"
-                                                       pageIndexVar="pageIndex">
-                                        <ice:outputFormat
-                                            styleClass="standard"
-                                            value="{0} Oficios Asociados, mostrando {1} oficio(s), del {2} al {3}. Página {4} de {5}.">
-                                            <f:param value="#{rowsCount}"/>
-                                            <f:param value="#{displayedRowsCount}"/>
-                                            <f:param value="#{firstRowIndex}"/>
-                                            <f:param value="#{lastRowIndex}"/>
-                                            <f:param value="#{pageIndex}"/>
-                                            <f:param value="#{pageCount}"/>
-                                        </ice:outputFormat>
-                                    </ice:dataPaginator>
 
-                                    <ice:dataPaginator 
-                                        for="dataAsociadoHaciaOficios"
-                                        fastStep="4"
-                                        paginator="true"
-                                        paginatorMaxPages="5">
-                                        <f:facet name="first">
-                                            <ice:graphicImage 
-                                                url="./xmlhttp/css/rime/css-images/arrow-first.gif"
-                                                style="border:none;"
-                                                title="Primera Página"/>
-                                        </f:facet>
-                                        <f:facet name="last">
-                                            <ice:graphicImage 
-                                                url="./xmlhttp/css/rime/css-images/arrow-last.gif"
-                                                style="border:none;"
-                                                title="Ultima Página"/>
-                                        </f:facet>
-                                    </ice:dataPaginator>
-                                </center>
-                                -->
                             </div> <!-- div tab-pane -->
-                            
+
                             <!-- ······························· INICIA TAB ······························· -->
-                            
+
                             <!-- 
                                 El oficio solo podrá estar asociado desde otros oficios cuando este oficio esté
                                 en estatus Terminado. 
@@ -461,132 +483,102 @@
                                                    value="{oficioDetalleBean.vo.asociadoDesdeOficios}" 
                                                    var="currentRow" 
                                                    width="100%"
-                                                   -->
+                                    -->
                                     <p:dataTable id="dataAsociadoDesdeOficios" 
-                                         showGridlines="true" 
-                                         size="small" 
-                                         rows="10"  
-                                         value="#{oficioDetalleBean.vo.asociadoDesdeOficios}" 
-                                         var="currentRow"
-                                         paginator="true" paginatorPosition="both"
-                                            paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
-                                            currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} registros"
-                                            rowsPerPageTemplate="5,10,{ShowAll|'All'}"
-                                         >
+                                                 showGridlines="true" 
+                                                 size="small" 
+                                                 rows="10"  
+                                                 value="#{oficioDetalleBean.vo.asociadoDesdeOficios}" 
+                                                 var="currentRow"
+                                                 paginator="true" paginatorPosition="both"
+                                                 paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                                 currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} registros"
+                                                 rowsPerPageTemplate="5,10,{ShowAll|'All'}"
+                                                 >
                                         <p:column>
-                                        #{currentRow['oficioNumero']}
+                                            #{currentRow['oficioNumero']}
                                             <f:facet name="header">
                                                 <h:outputText value="#{msgs['sistema.oficios.comun.oficio.numero']}"/>
                                             </f:facet>
                                         </p:column>
                                         <p:column>
-                                        #{currentRow['oficioAsunto']}
+                                            #{currentRow['oficioAsunto']}
                                             <f:facet name="header">
                                                 <h:outputText value="#{msgs['sistema.oficios.comun.asunto']}"/>
                                             </f:facet>
                                         </p:column>
                                         <p:column>
-                                        #{currentRow['companiaSiglas']}
+                                            #{currentRow['companiaSiglas']}
                                             <f:facet name="header">
                                                 <h:outputText value="#{msgs['sistema.comun.compania.nombre']}"/>
                                             </f:facet>
                                         </p:column>
                                         <p:column>
-                                        #{currentRow['bloqueNombre']}
+                                            #{currentRow['bloqueNombre']}
                                             <f:facet name="header">
                                                 <h:outputText value="#{msgs['sistema.comun.bloque.nombre']}"/>
                                             </f:facet>
                                         </p:column>
                                         <p:column>
-                                        #{currentRow['gerenciaNombre']}
+                                            #{currentRow['gerenciaNombre']}
                                             <f:facet name="header">
                                                 <h:outputText value="#{msgs['sistema.comun.gerencia.nombre']}"/>
                                             </f:facet>
                                         </p:column>
                                         <p:column style="width: 30px" rendered="#{oficioDetalleBean.permisos.verDetalleOficio}">
-                                            <p:commandLink styleClass="link"
-                                                             action="detalle"
-                                                             title="Ver detalle del oficio"  >
+                                             <p:link
+                                                        outcome="detalle"                                                         
+                                                        includeViewParams="true"                                                                                                                
+                                                        title="Ver detalle del oficio" 
+                                                        >                                                                                                                
+                                            <center>
+                                                <i class="fa fa-eye icono-contenido" style="font-size: 18px;"></i>                                                    
+                                            </center>
+                                               <f:param name="oficioId" value="#{currentRow['oficioId']}" />   
+                                          </p:link>
+                                            
+                                            <!--<h:commandLink styleClass="link"
+                                                           action="detalle"
+                                                           title="Ver detalle del oficio"  >
                                                 <center>
-                                                    <i class="fa fa-eye icono-contenido" style="font-size: 18px;"></i>
-                                                    <!--img src="./resources/imagenes/preview.png" border="0" /-->
+                                                    <i class="fa fa-eye icono-contenido" style="font-size: 18px;"></i>                                                    
                                                 </center>
 
                                                 <f:param name="oficioId" value="#{currentRow['oficioId']}" />   
-                                            </p:commandLink>
+                                            </h:commandLink>-->
                                         </p:column>
                                     </p:dataTable>
 
                                     <br></br>
-<!--
-                                    <center>
-                                        <ice:dataPaginator for="dataAsociadoDesdeOficios"
-                                                           rowsCountVar="rowsCount"
-                                                           displayedRowsCountVar="displayedRowsCount"
-                                                           firstRowIndexVar="firstRowIndex"
-                                                           lastRowIndexVar="lastRowIndex"
-                                                           pageCountVar="pageCount"
-                                                           pageIndexVar="pageIndex">
-                                            <ice:outputFormat
-                                                styleClass="standard"
-                                                value="{0} Oficios Asociados, mostrando {1} oficio(s), del {2} al {3}. Página {4} de {5}.">
-                                                <f:param value="#{rowsCount}"/>
-                                                <f:param value="#{displayedRowsCount}"/>
-                                                <f:param value="#{firstRowIndex}"/>
-                                                <f:param value="#{lastRowIndex}"/>
-                                                <f:param value="#{pageIndex}"/>
-                                                <f:param value="#{pageCount}"/>
-                                            </ice:outputFormat>
-                                        </ice:dataPaginator>
-
-                                        <ice:dataPaginator 
-                                            for="dataAsociadoDesdeOficios"
-                                            fastStep="4"
-                                            paginator="true"
-                                            paginatorMaxPages="5">
-                                            <f:facet name="first">
-                                                <ice:graphicImage 
-                                                    url="./xmlhttp/css/rime/css-images/arrow-first.gif"
-                                                    style="border:none;"
-                                                    title="Primera Página"/>
-                                            </f:facet>
-                                            <f:facet name="last">
-                                                <ice:graphicImage 
-                                                    url="./xmlhttp/css/rime/css-images/arrow-last.gif"
-                                                    style="border:none;"
-                                                    title="Ultima Página"/>
-                                            </f:facet>
-                                        </ice:dataPaginator>
-                                    </center>
-                                    -->
+                                 
                                 </div> <!-- div tab-pane -->
 
                             </ui:fragment>
-                            
-                            
-                            
+
+
+
                             <!-- ······························· INICIA TAB ······························· -->
-                            
+
                             <ui:fragment rendered="#{oficioDetalleBean.vo.restringido}">
                                 <div class="tab-pane fade" id="divUsuariosAcceso">
-                                    
+
                                     <!--ice:dataTable id="dataUsuariosAcceso" 
                                                    rows="5" 
                                                    value="{oficioDetalleBean.vo.restringidoAUsuarios}" 
                                                    var="currentRow" 
                                                    width="100%"
-                                                   -->
+                                    -->
                                     <p:dataTable id="dataUsuariosAcceso" 
-                                         showGridlines="true" 
-                                         size="small" 
-                                         rows="10"  
-                                         value="#{oficioDetalleBean.vo.restringidoAUsuarios}" 
-                                         var="currentRow"
-                                         paginator="true" paginatorPosition="both"
-                                            paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
-                                            currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} registros"
-                                            rowsPerPageTemplate="5,10,{ShowAll|'All'}"
-                                         >
+                                                 showGridlines="true" 
+                                                 size="small" 
+                                                 rows="10"  
+                                                 value="#{oficioDetalleBean.vo.restringidoAUsuarios}" 
+                                                 var="currentRow"
+                                                 paginator="true" paginatorPosition="both"
+                                                 paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                                 currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} registros"
+                                                 rowsPerPageTemplate="5,10,{ShowAll|'All'}"
+                                                 >
                                         <p:column style="width: 150px;">
                                             <h:outputText value="#{currentRow['id']}"/>
                                             <f:facet name="header">
@@ -600,69 +592,29 @@
                                             </f:facet>
                                         </p:column>
                                     </p:dataTable>
-                                    
-                                    <br></br>
-<!--
-                                    <center>
-                                        <ice:dataPaginator for="dataUsuariosAcceso"
-                                                           rowsCountVar="rowsCount"
-                                                           displayedRowsCountVar="displayedRowsCount"
-                                                           firstRowIndexVar="firstRowIndex"
-                                                           lastRowIndexVar="lastRowIndex"
-                                                           pageCountVar="pageCount"
-                                                           pageIndexVar="pageIndex">
-                                            <ice:outputFormat
-                                                styleClass="standard"
-                                                value="{0} Usuario(s), mostrando {1} usuario(s), del {2} al {3}. Página {4} de {5}.">
-                                                <f:param value="#{rowsCount}"/>
-                                                <f:param value="#{displayedRowsCount}"/>
-                                                <f:param value="#{firstRowIndex}"/>
-                                                <f:param value="#{lastRowIndex}"/>
-                                                <f:param value="#{pageIndex}"/>
-                                                <f:param value="#{pageCount}"/>
-                                            </ice:outputFormat>
-                                        </ice:dataPaginator>
 
-                                        <ice:dataPaginator 
-                                            for="dataUsuariosAcceso"
-                                            fastStep="4"
-                                            paginator="true"
-                                            paginatorMaxPages="5">
-                                            <f:facet name="first">
-                                                <ice:graphicImage 
-                                                    url="./xmlhttp/css/rime/css-images/arrow-first.gif"
-                                                    style="border:none;"
-                                                    title="Primera Página"/>
-                                            </f:facet>
-                                            <f:facet name="last">
-                                                <ice:graphicImage 
-                                                    url="./xmlhttp/css/rime/css-images/arrow-last.gif"
-                                                    style="border:none;"
-                                                    title="Ultima Página"/>
-                                            </f:facet>
-                                        </ice:dataPaginator>
-                                    </center>
-                                    -->
+                                    <br></br>
+                                  
 
                                 </div> <!-- div tab-pane -->
                             </ui:fragment>
-                            
+
                             <!-- ······························· INICIA TAB ······························· -->
-                            
+
                             <div class="tab-pane fade" id="divHistorialMovimientos">
                                 <div style="">
                                     <!--ice:dataTable id="dataHistorialMovimientos" width="100%" rows="10" value="#{oficioDetalleBean.vo.movimientos}" var="movimiento"-->
-                                   <p:dataTable id="dataHistorialMovimientos" 
-                                         showGridlines="true" 
-                                         size="small" 
-                                         rows="10"  
-                                         value="#{oficioDetalleBean.vo.movimientos}" 
-                                         var="movimiento"
-                                         paginator="true" paginatorPosition="both"
-                                            paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
-                                            currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} registros"
-                                            rowsPerPageTemplate="5,10,{ShowAll|'All'}"
-                                         >
+                                    <p:dataTable id="dataHistorialMovimientos" 
+                                                 showGridlines="true" 
+                                                 size="small" 
+                                                 rows="10"  
+                                                 value="#{oficioDetalleBean.vo.movimientos}" 
+                                                 var="movimiento"
+                                                 paginator="true" paginatorPosition="both"
+                                                 paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                                 currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} registros"
+                                                 rowsPerPageTemplate="5,10,{ShowAll|'All'}"
+                                                 >
                                         <p:column style="width:120px; white-space: nowrap;">
                                             <h:outputText value="#{movimiento.fechaMovimiento}"/>
                                             <f:facet name="header">
@@ -736,12 +688,12 @@
                                             <h:outputLink 
                                                 target="_blank" 
                                                 rendered="#{
-                                                                    movimiento.tieneAdjunto() 
-                                                                        and !movimiento.adjuntoEliminado
-                                                                        and (oficioDetalleBean.permisos.descargarArchivoAdjuntoHistorialOficio 
-                                                                        or oficioDetalleBean.permisos.verArchivoAdjuntoHistorialOficio)}"
-                                                                    value="/ControlOficios/DACOF?ZWZ2W=#{movimiento.adjunto.id}&amp;ZWZ3W=#{movimiento.adjunto.uuid}
-                                                                    &amp;Z4BX2=#{movimiento.oficioId}&amp;4PC4WZ=0&amp;user=#{sesion.usuario.id}"
+                                                movimiento.tieneAdjunto() 
+                                                    and !movimiento.adjuntoEliminado
+                                                    and (oficioDetalleBean.permisos.descargarArchivoAdjuntoHistorialOficio 
+                                                    or oficioDetalleBean.permisos.verArchivoAdjuntoHistorialOficio)}"
+                                                value="/ControlOficios/DACOF?ZWZ2W=#{movimiento.adjunto.id}&amp;ZWZ3W=#{movimiento.adjunto.uuid}
+                                                &amp;Z4BX2=#{movimiento.oficioId}&amp;4PC4WZ=0&amp;user=#{sesion.usuario.id}"
                                                 >
                                                 <center>
                                                     <p:graphicImage 
@@ -750,8 +702,8 @@
                                                         title="Descargar archivo" />
                                                 </center>
                                             </h:outputLink>
-                                            
-                                            
+
+
                                             <!-- Temporal TEMPORAL 2/sep/14 - Permitir descarga -->
 
                                         </p:column>
@@ -759,92 +711,60 @@
                                         <!-- Permitir modificar archivo solo si se está en modo Edición y el oficio está en estado inicial -->
 
                                         <p:column rendered="#{oficioDetalleBean.mostrarEdicionArchivos()}" style="width: 10px">
-                                            <p:commandLink title="Sustituir archivo"
-                                                             action="editarAdjunto"
-                                                             rendered="#{oficioDetalleBean.linkEditarAdjunto.visible 
-                                                                         and movimiento.tieneAdjunto()
-                                                                         and !movimiento.adjuntoEliminado}"
-                                                             styleClass="link" >
+                                            <p:button title="Sustituir archivo"
+                                                           outcome="editarAdjunto"
+                                                           rendered="#{oficioDetalleBean.linkEditarAdjunto.visible 
+                                                                       and movimiento.tieneAdjunto()
+                                                                       and !movimiento.adjuntoEliminado}"
+                                                           styleClass="link" >
                                                 <img src="../../resources/imagenes/editar.png" border="0" />
                                                 <f:param name="oficioId" value="#{movimiento.oficioId}" />
                                                 <f:param name="movimientoId" value="#{movimiento.id}" />
                                                 <f:param name="oficioMovimientoId" value="#{movimiento.oficioMovimientoId}" />
-                                            </p:commandLink>
+                                            </p:button>
                                             <f:facet name="header">
-                                                <h:outputText value="&nbsp;"/>
+                                                <h:outputText value="-"/>
                                             </f:facet>
                                         </p:column>
                                     </p:dataTable>
                                 </div>
-                                
+
                                 <p></p>
 
-                                <!--<center>
-                                    <ice:dataPaginator for="dataHistorialMovimientos"
-                                                       rowsCountVar="rowsCount"
-                                                       displayedRowsCountVar="displayedRowsCount"
-                                                       firstRowIndexVar="firstRowIndex"
-                                                       lastRowIndexVar="lastRowIndex"
-                                                       pageCountVar="pageCount"
-                                                       pageIndexVar="pageIndex">
-                                        <ice:outputFormat
-                                            styleClass="standard"
-                                            value="{0} Movimientos, mostrando {1} movimiento(s), del {2} al {3}. Página {4} de {5}.">
-                                            <f:param value="#{rowsCount}"/>
-                                            <f:param value="#{displayedRowsCount}"/>
-                                            <f:param value="#{firstRowIndex}"/>
-                                            <f:param value="#{lastRowIndex}"/>
-                                            <f:param value="#{pageIndex}"/>
-                                            <f:param value="#{pageCount}"/>
-                                        </ice:outputFormat>
-                                    </ice:dataPaginator>
-
-                                    <ice:dataPaginator 
-                                        for="dataHistorialMovimientos"
-                                        fastStep="4"
-                                        paginator="true"
-                                        paginatorMaxPages="5">
-                                        <f:facet name="first">
-                                            <ice:graphicImage 
-                                                url="./xmlhttp/css/rime/css-images/arrow-first.gif"
-                                                style="border:none;"
-                                                title="Primera Página"/>
-                                        </f:facet>
-                                        <f:facet name="last">
-                                            <ice:graphicImage 
-                                                url="./xmlhttp/css/rime/css-images/arrow-last.gif"
-                                                style="border:none;"
-                                                title="Ultima Página"/>
-                                        </f:facet>
-                                    </ice:dataPaginator>
-                                </center>
-                                -->
 
                             </div> <!-- div tab-pane -->
                         </div> <!-- div tab-content -->
-                        
+
                         <p />
 
                     </div> <!-- jumbotron -->
-                    
+
                     <div style="text-align: right">
-                        
+
                         <!-- Boton Cancelar para salir de la pantalla de Detalle -->
-                        
+
                         <p />
-                                    
-                        <p:commandLink value="#{oficioDetalleBean.botonCancelar.valor}" 
-                                         styleClass="btn btn-default btn-xs"
-                                         action="#{oficioDetalleBean.botonCancelar.accion.toString()}"
-                                         rendered="#{oficioDetalleBean.botonCancelar.visible}"
-                                         title="#{oficioDetalleBean.botonCancelar.titulo}" >
-                        </p:commandLink>
-                        
+                         
+                        <p:button value="#{oficioDetalleBean.botonCancelar.valor}" 
+                                      outcome="#{oficioDetalleBean.botonCancelar.accion.toString()}"
+                                      rendered="#{oficioDetalleBean.botonCancelar.visible}"
+                                      title="#{oficioDetalleBean.botonCancelar.titulo}"
+                                      icon="pi pi-arrow-left"
+                                      styleClass="rounded-button ui-button-secondary">
+                        </p:button>
+                        <!--<p:commandLink value="#{oficioDetalleBean.botonCancelar.valor}" 
+                                       styleClass="btn btn-default btn-xs"
+                                       ajax="false"
+                                       action="{oficioDetalleBean.botonCancelar.accion.toString()}"
+                                       rendered="#{oficioDetalleBean.botonCancelar.visible}"
+                                       title="#{oficioDetalleBean.botonCancelar.titulo}" >
+                        </p:commandLink>-->
+
                     </div>
-                    
-                    
+
+
                     <!-- Modal - Visualizar archivo adjunto -->
-                        
+
                     <ui:fragment rendered="#{oficioDetalleBean.permisos.verArchivoAdjuntoHistorialOficio}">
                         <div class="modal fade" id="modalVerAdjunto">
                             <div class="modal-dialog" style="width: 750px;">
@@ -860,7 +780,7 @@
                                         <p align="center">
                                             <h:outputText value="#{oficioDetalleBean.adjuntoVisor.nombreUUID}"/>
 
-                                            <h:outputText value="&nbsp;&nbsp;"/>
+                                            <h:outputText value="-"/>
 
                                             <h:outputLink 
                                                 target="_blank" 
@@ -880,7 +800,7 @@
                                         <p align="center">
                                             <iframe 
                                                 id="viewer" 
-                                                src = "/resources/js/Viewer.js/#../../../#{oficioDetalleBean.adjuntoVisor.urlVisorArchivoTemporal}"
+                                                src= "../../resources/js/Viewer.js/#../../../#{oficioDetalleBean.adjuntoVisor.urlVisorArchivoTemporal}"
                                                 width="700" 
                                                 height="400"
                                                 allowfullscreen="true" 
@@ -897,11 +817,11 @@
                                 </div>
                             </div>
                         </div>
-                        
+
                     </ui:fragment>
-                        
+
                     <!-- Termina modal - Visualizar archivo adjunto -->
-                    
+
                 </h:form>
             </ui:define>
         </ui:composition>

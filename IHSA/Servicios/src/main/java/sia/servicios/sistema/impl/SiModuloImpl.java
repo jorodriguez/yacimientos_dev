@@ -39,6 +39,7 @@ import sia.modelo.rol.vo.RolVO;
 import sia.modelo.sistema.AbstractFacade;
 import sia.servicios.campo.nuevo.impl.ApCampoUsuarioRhPuestoImpl;
 import sia.servicios.catalogos.impl.UsuarioImpl;
+import sia.servicios.oficio.impl.OfOficioConsultaImpl;
 import sia.servicios.oficio.impl.OfOficioImpl;
 import sia.servicios.orden.impl.AutorizacionesOrdenImpl;
 import sia.servicios.orden.impl.OrdenImpl;
@@ -80,9 +81,9 @@ public class SiModuloImpl extends AbstractFacade<SiModulo> {
     @Inject
     private SgEstatusAprobacionImpl sgEstatusAprobacionRemote;
     @Inject
-    private RhUsuarioGerenciaImpl rhUsuarioGerenciaRemote;
+    private RhUsuarioGerenciaImpl rhUsuarioGerenciaRemote;    
     @Inject
-    private OfOficioImpl ofOficioRemote;
+    private OfOficioConsultaImpl ofOficioRemote;
     @Inject
     private SiPermisoImpl siPermisoRemote;
     @Inject
