@@ -2003,33 +2003,76 @@ public class RequisicionBean implements Serializable {
         return sb.toString();
     }
 
+    public void inicioDevolverRequisicionesAsignar() {
+        boolean continuar = false;
+        for (Object obj : listaRequisiciones) {
+            RequisicionVO rVo = (RequisicionVO) obj;
+            if (rVo.isSelected()) {
+                continuar = true;
+                break;
+            }
+        }
+        if (continuar) {
+            PrimeFaces.current().executeScript("$(dialogoDevVariasReq).modal('show');");
+        } else {
+            FacesUtilsBean.addErrorMessage("Seleccione al menos una requisición");
+        }
+    }
+
+    public void inicioCancelarRequisicionesAsignar() {
+        boolean continuar = false;
+        for (Object obj : listaRequisiciones) {
+            RequisicionVO rVo = (RequisicionVO) obj;
+            if (rVo.isSelected()) {
+                continuar = true;
+                break;
+            }
+        }
+        if (continuar) {
+            PrimeFaces.current().executeScript("$(dialogoCancelarVariasReq).modal('show');");
+        } else {
+            FacesUtilsBean.addErrorMessage("Seleccione al menos una requisición");
+        }
+    }
+    
+    public void seleccionarTodasFilas(){
+        for (Object listaRequisicione : listaRequisiciones) {
+            RequisicionVO rvo = (RequisicionVO) listaRequisicione;
+            rvo.setSelected(!rvo.isSelected());
+        }
+    }
+
     public void asignarVariasRequisiciones() {
         try {
+            List<RequisicionVO> lReqVo = new ArrayList<>();
+            for (Object obj : listaRequisiciones) {
+                RequisicionVO rVo = (RequisicionVO) obj;
+                if (rVo.isSelected()) {
+                    lReqVo.add(rVo);
+                }
+            }
             Preconditions.checkArgument(!idAnalista.equals("-1"), "Seleccione un analista de compras");
-            Preconditions.checkArgument(!idAnalista.equals("-1"), "Seleccione un analista de compras");
+            Preconditions.checkArgument(!lReqVo.isEmpty(), "Seleccione al menos una requisición.");
             StringBuilder requiOK = new StringBuilder();
             StringBuilder requiError = new StringBuilder();
             boolean entro = false;
-            for (Object object : listaRequisiciones) {
-                RequisicionVO o = (RequisicionVO) object;
-                if (o.isSelected()) {
-                    setRequisicionActual(requisicionServicioRemoto.find(o.getId()));
-                    if (asignarRequisicionProceso(requisicionActual)) {
-                        if (requiOK.toString().isEmpty()) {
-                            requiOK.append(requisicionActual.getConsecutivo());
-                        } else {
-                            requiOK.append(", ").append(requisicionActual.getConsecutivo());
-                        }
+            for (RequisicionVO o : lReqVo) {
+                setRequisicionActual(requisicionServicioRemoto.find(o.getId()));
+                if (asignarRequisicionProceso(requisicionActual)) {
+                    if (requiOK.toString().isEmpty()) {
+                        requiOK.append(requisicionActual.getConsecutivo());
                     } else {
-                        if (requiError.toString().isEmpty()) {
-                            requiError.append(requisicionActual.getConsecutivo());
-                        } else {
-                            requiError.append(", ").append(requisicionActual.getConsecutivo());
-                        }
+                        requiOK.append(", ").append(requisicionActual.getConsecutivo());
                     }
-                    if (!entro) {
-                        entro = true;
+                } else {
+                    if (requiError.toString().isEmpty()) {
+                        requiError.append(requisicionActual.getConsecutivo());
+                    } else {
+                        requiError.append(", ").append(requisicionActual.getConsecutivo());
                     }
+                }
+                if (!entro) {
+                    entro = true;
                 }
             }
             if (entro) {
