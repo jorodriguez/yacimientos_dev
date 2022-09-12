@@ -24,8 +24,10 @@ import sia.controloficios.sistema.soporte.PrimeUtils;
 import sia.excepciones.*;
 import sia.modelo.oficio.vo.*;
 import sia.modelo.usuario.vo.UsuarioVO;
+import sia.util.Env;
 import sia.util.UtilSia;
 import sia.util.ui.AccionUI;
+
 
 /**
  * Bean para la pantalla de edición de oficios. Para las operaciones de altas y
@@ -85,7 +87,7 @@ public class OficioEditarBean extends OficioOpcionesBloquesUIBean {
      * privacidad Restringido.
      *
      */
-    private HtmlDataTable tablaUsuariosRestringido;
+    private DataTable tablaUsuariosRestringido;
 
     // para identificar si es alta o cambio
     private boolean modificacion;
@@ -115,7 +117,17 @@ public class OficioEditarBean extends OficioOpcionesBloquesUIBean {
 
         // valor inicial para la vista
         // en caso de recibir un oficioId, obtener objeto vo correspondiente
-        String oficioId = FacesUtils.getRequestParameter("oficioId");
+        String oficioId = FacesUtils.getRequestParameter(OFICIO_ID);
+        
+        //prueba 
+        /*int oficioIdCtx = Env.getContextAsInt(getCtx(),OFICIO_ID);
+        
+        if(oficioIdCtx > 0){
+                System.out.println("============= oficioIdCtx ===============");        
+                System.out.println(oficioIdCtx);        
+                System.out.println("=========================================");        
+        }*/
+        
         setCrearCopia(Constantes.FALSE);
         setBloquesCopia(new ArrayList<SelectItem>());
         setBloqueACopiarId(-1);
@@ -610,11 +622,11 @@ public class OficioEditarBean extends OficioOpcionesBloquesUIBean {
         this.tablaAsociados = tablaAsociados;
     }
 
-    public HtmlDataTable getTablaUsuariosRestringido() {
+    public DataTable getTablaUsuariosRestringido() {
         return tablaUsuariosRestringido;
     }
 
-    public void setTablaUsuariosRestringido(HtmlDataTable tablaUsuariosRestringido) {
+    public void setTablaUsuariosRestringido(DataTable tablaUsuariosRestringido) {
         this.tablaUsuariosRestringido = tablaUsuariosRestringido;
     }
 

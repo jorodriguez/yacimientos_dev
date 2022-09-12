@@ -88,9 +88,10 @@ public class OficioEditarAdjuntoMovimientoBean extends OficioBaseBean {
      * 
      * @param actionEvent 
      * *///jevazquez 18/02/15
-    public String editarAdjunto(ActionEvent actionEvent) throws MessagingException {
+    //public String editarAdjunto(ActionEvent actionEvent) throws MessagingException {
+    public String editarAdjunto() throws MessagingException {
         
-        String resultado;
+        String resultado = Constantes.VACIO;
         
         getLogger().info(this, "@editarAdjunto");
         

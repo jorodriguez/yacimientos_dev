@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Properties;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.faces.application.FacesMessage;
@@ -16,6 +17,7 @@ import javax.faces.model.DataModel;
 import javax.faces.model.ListDataModel;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
+import lombok.Getter;
 import org.primefaces.event.FileUploadEvent;
 /*import org.icefaces.ace.component.fileentry.FileEntry;
 import org.icefaces.ace.component.fileentry.FileEntryEvent;
@@ -127,6 +129,11 @@ public abstract class OficioBaseBean implements Serializable {
     //@ManagedProperty(value="#{sesion}")
     private Sesion sesion;
 
+    @Getter
+    private Properties ctx;
+    
+    public static final String OFICIO_ID = "oficioId";
+    
     // Servicios remotos
     @Inject
     private SiParametroImpl siParametroRemote;
@@ -148,6 +155,8 @@ public abstract class OficioBaseBean implements Serializable {
 
     @Inject
     private ProveedorAlmacenDocumentos proveedorAlmacenDocumentos;
+    
+    
 
     protected static final UtilLog4j LOGGER = UtilLog4j.log;
 
