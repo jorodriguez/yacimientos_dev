@@ -94,7 +94,7 @@ public class RolesBean implements Serializable {
 
     public void abrirPopCampo() {
 	setEmbeddedCampo(true);
-	PrimeFaces.current().executeScript( ";mostrarDialogoCampo();");
+	PrimeFaces.current().executeScript("PF('crearDialogoCampo').show()");
     }
 
     public void cerrarPopCampo() {
