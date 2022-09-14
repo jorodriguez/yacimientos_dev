@@ -72,6 +72,8 @@ public class Sesion implements Serializable {
     public void iniciar() {
 
 	log("ControlOficios - Sesion@PostConstruct");
+        
+        this.ctx = new Properties();
     }
 
     @PreDestroy

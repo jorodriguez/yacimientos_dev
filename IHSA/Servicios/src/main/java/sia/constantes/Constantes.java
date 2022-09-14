@@ -760,11 +760,12 @@ public class Constantes {
     /**
      *
      */
-    public static final String OFICIOS_VISTA_BANDEJA_ENTRADA = "bandejaEntrada";
+    public static final String OFICIOS_VISTA_BANDEJA_ENTRADA = "bandejaEntrada.xhtml?faces-redirect=true;";
+    public static final String OFICIOS_VISTA_ANULAR = "anular.xhtml?faces-redirect=true;";
     /**
      *
      */
-    public static final String OFICIOS_VISTA_CONSULTAR = "consultar";
+    public static final String OFICIOS_VISTA_CONSULTAR = "consultar.xhtml?faces-redirect=true;";
     /**
      *
      */
@@ -772,15 +773,15 @@ public class Constantes {
     /**
      *
      */
-    public static final String OFICIOS_VISTA_DETALLE = "detalle";
+    public static final String OFICIOS_VISTA_DETALLE = "detalle.xhtml?faces-redirect=true;";
     /**
      *
      */
-    public static final String OFICIOS_VISTA_PROMOCION_ESTATUS = "promocionEstatus";
+    public static final String OFICIOS_VISTA_PROMOCION_ESTATUS = "promocionEstatus.xhtml?faces-redirect=true;";
     /**
      *
      */
-    public static final String OFICIOS_VISTA_SEGUIMIENTO = "seguimiento";
+    public static final String OFICIOS_VISTA_SEGUIMIENTO = "seguimiento.xhtml?faces-redirect=true;";
     /**
      * De Pemex a IHSA.
      */

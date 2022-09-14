@@ -9,9 +9,6 @@ import javax.inject.Named;
 import javax.mail.MessagingException;
 import org.primefaces.event.FileUploadEvent;
 //import org.icefaces.ace.component.fileentry.FileEntryEvent;
-import org.primefaces.event.FilesUploadEvent;
-import org.primefaces.model.file.UploadedFile;
-import org.primefaces.model.file.UploadedFiles;
 
 import sia.constantes.Constantes;
 import sia.controloficios.sistema.soporte.FacesUtils;
@@ -54,13 +51,22 @@ public class OficioEditarAdjuntoMovimientoBean extends OficioBaseBean {
      */
     @Override
     protected void postConstruct() throws InsufficientPermissionsException {
-        
+        System.out.println("@postConstruct - oficioEditarAdjunto");
         // obtener registro de oficio
         
+        /*
         int oficioId = Integer.parseInt(FacesUtils.getRequestParameter("oficioId"));
         int movimientoId = Integer.parseInt(FacesUtils.getRequestParameter("movimientoId"));
         int oficioMovimientoId = Integer.parseInt(FacesUtils.getRequestParameter("oficioMovimientoId"));
-        //int adjuntoId = Integer.parseInt(FacesUtils.getRequestParameter("adjuntoId"));
+        */
+        int oficioId = getContextParam(OFICIO_ID);        
+        int movimientoId = getContextParam(MOVIMIENTO_ID);
+        int oficioMovimientoId = getContextParam(OFICIO_MOVIMIENTO_ID);
+
+        System.out.println("oficioId "+oficioId);
+        System.out.println("movimientoId"+movimientoId);
+        System.out.println("oficioMovimientoId "+oficioMovimientoId);
+        
         
         getLogger().info(this,
                 "oficioId = " + oficioId + ", movimientoId = " + movimientoId + ", oficioMovimientoId = " + oficioMovimientoId);

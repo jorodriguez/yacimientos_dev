@@ -1575,33 +1575,33 @@ public class OfOficioImpl extends AbstractFacade<OfOficio> {
             mensaje.append("Nº Oficio, ");
         }
         if (vo.getOficioAsunto().isEmpty()) {
-            mensaje.append("Asunto, ");
+            mensaje.append(", Asunto");
         }
         if (vo.getOficioFecha() == null) {
-            mensaje.append("Fecha de Oficio, ");
+            mensaje.append(", Fecha de Oficio");
         }
 
         if (vo.getCompaniaId() <= 0) {
-            mensaje.append("Compañía, ");
+            mensaje.append(", Compañía");
         }
         if (vo.getBloqueId() <= 0) {
-            mensaje.append("Bloque, ");
+            mensaje.append(", Bloque");
         }
         if (vo.getGerenciaId() <= 0) {
-            mensaje.append("Gerencia, ");
+            mensaje.append(",  Gerencia");
         }
 
         if (validarAdjunto && UtilSia.isNullOrBlank(vo.getArchivoAdjunto().getNombre())) {
-            mensaje.append("Archivo Adjunto, ");
+            mensaje.append(", Archivo Adjunto");
         }
 
         if (vo.getAcceso().isRestringido() && vo.getRestringidoAUsuarios().isEmpty()) {
-            mensaje.append("Usuarios con Acceso, ");
+            mensaje.append(", Usuarios con Acceso");
         }
 
         if (mensaje.length() > 0) {
 
-            mensaje.delete(mensaje.length() - 3, mensaje.length() - 1);
+            //mensaje.delete(mensaje.length() - 3, mensaje.length() - 1);
             //mensaje.setLength(mensaje.length() - 2);
 
             final MissingRequiredValuesException ex = new MissingRequiredValuesException();

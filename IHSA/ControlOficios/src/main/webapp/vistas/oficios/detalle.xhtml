@@ -30,7 +30,6 @@
                                fatalClass="alert alert-danger"
                                />
 
-
                     <div class="jumbotron">
 
                         <div class="row" style="font-weight: bold;">
@@ -210,24 +209,6 @@
                                             </p:column>
                                             <p:column style="width:10%" rendered="#{oficioDetalleBean.permisos.verArchivoAdjuntoHistorialOficio}">
 
-                                                <!-- Icono de descarga -->
-
-                                                <!--ice:outputLink 
-                                                    target="_blank" 
-                                                    rendered="{oficioDetalleBean.permisos.descargarArchivoAdjuntoHistorialOficio 
-                                                    and movimiento.tieneAdjunto()
-                                                    and !movimiento.adjunto.visualizable}"
-                                                    value="/ControlOficios/DACOF?ZWZ2W={movimiento.adjunto.id}&amp;ZWZ3W=#{movimiento.adjunto.uuid}"
-                                                    >
-                                                    <center>
-                                                        <ice:graphicImage 
-                                                            url="./resources/imagenes/descargar.gif"  
-                                                            alt="Descargar" 
-                                                            title="Descargar" />
-                                                    </center>
-                                                </ice:outputLink-->
-
-
                                                 <!-- Inicia TEMPORAL 2/sep/14 - Permitir descarga -->
 
                                                 <h:outputLink 
@@ -253,18 +234,19 @@
                                             <!-- Inicia Edición de archivo adjunto -->
 
                                             <p:column style="width: 10px;" rendered="#{oficioDetalleBean.mostrarEdicionArchivos()}">
-                                                <!--
-                                                <h:commandLink title="Sustituir archivo"
-                                                               action="editarAdjunto"
-                                                               rendered="#{oficioDetalleBean.linkEditarAdjunto.visible and movimiento.tieneAdjunto()}"
-                                                               styleClass="link" >
+
+                                                <p:commandLink                                                    
+                                                   style="text-align: left;"                                                   
+                                                   action="#{oficioDetalleBean.editarAdjuntoAction()}"
+                                                   rendered="#{oficioDetalleBean.linkEditarAdjunto.visible and movimiento.tieneAdjunto()}"
+                                                   title="Editar Adjunto"
+                                                   >                                        
                                                     <img src="../../resources/imagenes/editar.png" border="0" />
-                                                    <f:param name="oficioId" value="#{movimiento.oficioId}" />
+                                                    <f:param name="oficioId" value="#{movimiento.oficioId}"  />
                                                     <f:param name="movimientoId" value="#{movimiento.id}" />
                                                     <f:param name="oficioMovimientoId" value="#{movimiento.oficioMovimientoId}" />
-                                                </h:commandLink>
-                                                -->
-                                                
+                                                </p:commandLink>  
+                                                <!--
                                                 <p:link 
                                                         outcome="editarAdjunto" 
                                                         includeViewParams="true"
@@ -274,7 +256,7 @@
                                                         <f:param name="oficioId" value="#{movimiento.oficioId}" />
                                                         <f:param name="movimientoId" value="#{movimiento.id}" />
                                                         <f:param name="oficioMovimientoId" value="#{movimiento.oficioMovimientoId}" />
-                                                </p:link>
+                                                </p:link>-->
 
                                                 <f:facet name="header">
                                                     <h:outputText value="-"/>
@@ -299,10 +281,11 @@
                                     <div class="col-sm-12" style="text-align: right">
 
                                         <!-- Boton Promover para cambiar de estatus al oficio -->
+                                        <!--
                                         <p:button
                                                         outcome="#{oficioDetalleBean.botonPromover.accion.toString()}"                                                         
                                                         includeViewParams="true"                                                        
-                                                        value="#{oficioDetalleBean.botonPromover.valor}"
+                                                        value="#{oficioDetalleBean.botonPromover.valor}ppp"
                                                         rendered="#{oficioDetalleBean.botonPromover.visible}"
                                                         title="#{oficioDetalleBean.botonPromover.titulo}"
                                                         styleClass="ui-button-raised ui-button-success"                                                        
@@ -310,18 +293,22 @@
                                                         >                                                                                                                
                                                         <f:param name="oficioId" value="#{oficioDetalleBean.vo.oficioId}" />                                                        
                                         </p:button>
-                                        <h:outputText value="&nbsp;" />
-<!--
-                                        <h:commandLink value="#{oficioDetalleBean.botonPromover.valor}" 
-                                                       styleClass="btn btn-success btn-xs"
-                                                       action="#{oficioDetalleBean.botonPromover.accion.toString()}"
-                                                       rendered="#{oficioDetalleBean.botonPromover.visible}"
-                                                       title="#{oficioDetalleBean.botonPromover.titulo}" >
-                                            <f:param name="oficioId" value="#{oficioDetalleBean.vo.oficioId}" />
-                                        </h:commandLink>
                                         -->
+                                        <p:commandButton 
+                                                        action="#{oficioDetalleBean.goToActionAndSendOficioId(oficioDetalleBean.botonPromover.accion)}"
+                                                        value="#{oficioDetalleBean.botonPromover.valor}"
+                                                        rendered="#{oficioDetalleBean.botonPromover.visible}"
+                                                        title="#{oficioDetalleBean.botonPromover.titulo}"
+                                                        styleClass="ui-button-raised ui-button-success"                                                        
+                                                        icon="pi pi-check">
+                                             <f:param name="oficioId" value="#{oficioDetalleBean.vo.oficioId}" />                                                        
+                                        </p:commandButton>
+                                        
+                                        
+                                        <h:outputText value="&nbsp;" />
 
-                                          <p:button
+
+                                        <!--<p:button
                                                         outcome="editar"                                                         
                                                         includeViewParams="true"                                                        
                                                         value="Modificar"
@@ -331,20 +318,21 @@
                                                         icon="fa fa-edit"
                                                         >                                                                                                                
                                                     <f:param name="oficioId" value="#{oficioDetalleBean.vo.oficioId}" />
-                                          </p:button>
+                                          </p:button>-->
+                                        <p:commandButton 
+                                                        action="#{oficioDetalleBean.seleccionarEditarOficio()}"
+                                                        value="Modificar"
+                                                        rendered="#{oficioDetalleBean.botonModificar.visible}"
+                                                        title="Modificar oficio"
+                                                        styleClass="ui-button-raised ui-button-info"                                                       
+                                                        icon="pi pi-check">
+                                             <f:param name="oficioId" value="#{oficioDetalleBean.vo.oficioId}" />                                                        
+                                        </p:commandButton>
+                                        
                                         <h:outputText value="&nbsp;" />
-                                        <!--
-                                        <h:commandLink value="Modificar" 
-                                                       styleClass="btn btn-info btn-xs"
-                                                       action="editar"
-                                                       rendered="#{oficioDetalleBean.botonModificar.visible}"
-                                                       title="Modificar oficio" >
-                                            <f:param name="oficioId" value="#{oficioDetalleBean.vo.oficioId}" />
-                                        </h:commandLink>
-                                        -->
-
-                                        <p:button
-                                                        outcome="editar"                                                         
+                                                                     
+                                        <!--<p:button
+                                                        outcome="anular"                                                         
                                                         includeViewParams="true"                                                        
                                                         value="Anular"
                                                         rendered="#{oficioDetalleBean.botonAnular.visible}"
@@ -353,19 +341,20 @@
                                                         styleClass="ui-button-raised ui-button-danger"
                                                         >                                                                                                                
                                                     <f:param name="oficioId" value="#{oficioDetalleBean.vo.oficioId}" />
-                                          </p:button>
+                                          </p:button>-->
+                                        <p:commandButton
+                                                        action="#{oficioDetalleBean.goToActionAndSendOficioId(oficioDetalleBean.botonAnular.accion)}"                                                        
+                                                        value="Anular"
+                                                        rendered="#{oficioDetalleBean.botonAnular.visible}"
+                                                        title="Anular oficio"
+                                                        icon="pi pi-times"
+                                                        styleClass="ui-button-raised ui-button-danger"
+                                                        >                                                                                                                
+                                                    <f:param name="oficioId" value="#{oficioDetalleBean.vo.oficioId}" />
+                                        </p:commandButton>
                                         <h:outputText value="&nbsp;" />
-                                         <!--
-                                        <h:commandLink value="Anular" 
-                                                       styleClass="btn btn-danger btn-xs"
-                                                       action="anular"
-                                                       rendered="#{oficioDetalleBean.botonAnular.visible}"
-                                                       title="Anular oficio" >
-                                            <f:param name="oficioId" value="#{oficioDetalleBean.vo.oficioId}" />
-                                        </h:commandLink>
-                                          -->
-
-                                          <p:button
+                                       
+                                        <!--<p:button
                                                         outcome="#{oficioDetalleBean.botonSeguimiento.accion.toString()}"                                                         
                                                         includeViewParams="true"                                                        
                                                         value="#{oficioDetalleBean.botonSeguimiento.valor} " 
@@ -374,17 +363,17 @@
                                                         styleClass="ui-button-raised ui-button-warning"
                                                         >                                                                                                                
                                                     <f:param name="oficioId" value="#{oficioDetalleBean.vo.oficioId}" />
-                                          </p:button>
-                                          <!--
-                                        <h:commandLink value="#{oficioDetalleBean.botonSeguimiento.valor}" 
-                                                       styleClass="btn btn-warning btn-xs"
-                                                       action="{oficioDetalleBean.botonSeguimiento.accion.toString()}"
-                                                       rendered="#{oficioDetalleBean.botonSeguimiento.visible}"
-                                                       title="#{oficioDetalleBean.botonSeguimiento.titulo}" >
-                                            <f:param name="oficioId" value="#{oficioDetalleBean.vo.oficioId}" />
-                                        </h:commandLink>
-                                          -->
-
+                                          </p:button>-->
+                                          <p:commandButton
+                                                        action="#{oficioDetalleBean.goToActionAndSendOficioId(oficioDetalleBean.botonSeguimiento.accion)}"                                                        
+                                                        value="#{oficioDetalleBean.botonSeguimiento.valor} " 
+                                                        rendered="#{oficioDetalleBean.botonSeguimiento.visible}"                                                        
+                                                        icon="pi pi-times"
+                                                        styleClass="ui-button-raised ui-button-warning"
+                                                        >                                                                                                                
+                                                    <f:param name="oficioId" value="#{oficioDetalleBean.vo.oficioId}" />
+                                        </p:commandButton>
+                                         
                                     </div>
                                 </div> <!-- row -->
 
