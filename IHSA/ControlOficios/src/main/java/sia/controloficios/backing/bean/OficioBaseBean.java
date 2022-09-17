@@ -195,7 +195,7 @@ public abstract class OficioBaseBean implements Serializable {
             }
         }
         
-        System.out.println("@ejecuanto postconstructo abstract");
+        System.out.println("@EJECUCION DE POSTCONSTRUCT EN CLASE HEREDADA");
         
         this.postConstruct();
         
@@ -309,7 +309,7 @@ public abstract class OficioBaseBean implements Serializable {
     
     protected int getContextParam(String name){
          
-        int oficioId = Env.getContextAsInt(sesion.getCtx(), OFICIO_ID);
+        int oficioId = Env.getContextAsInt(sesion.getCtx(), name);
          
         System.out.println("getContextParam  "+name+" value "+oficioId);
          

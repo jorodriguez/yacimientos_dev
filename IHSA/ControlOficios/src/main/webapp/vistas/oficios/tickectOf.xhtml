@@ -24,14 +24,19 @@
                     <div class="jumbotron">
                         <div class="form-row">
                             <div class="form-row">
-                                <h:commandLink actionListener="#{incidenciaBean.crearIncidecnia(e)}" styleClass="btn btn-primary"
-                                               title="Registrar nuevo ticket" >
-                                    <i class="fa fa-plus"/>                                    
-                                </h:commandLink>
-                                <h:commandLink actionListener="#{incidenciaBean.refrescarTickets(e)}" styleClass="btn btn-primary"
-                                               title="Refrescar tickets" immediate="true">
-                                    <i class="fa fa-refresh"/>
-                                </h:commandLink>
+                                <p:commandButton actionListener="#{incidenciaBean.crearIncidecnia(e)}" 
+                                                 icon="pi pi-plus"
+                                                 styleClass="ui-button"
+                                                 value="Registrar nuevo ticket"
+                                                 title="Registrar nuevo ticket" 
+                                                 
+                                                 >                                    
+                                </p:commandButton>
+                                <p:commandButton actionListener="#{incidenciaBean.refrescarTickets(e)}" 
+                                                 styleClass="ui-button ui-button-secondary"
+                                                 icon="fa fa-refresh"
+                                                title="Refrescar tickets" immediate="true">                                    
+                                </p:commandButton>
                             </div>
                             <div class="form-row">
                                 <!--<ace:dataTable value="{incidenciaBean.incidencias}" var="dataInc">-->
@@ -43,8 +48,22 @@
                                     value="#{incidenciaBean.incidencias}" 
                                     var="dataInc"
                                     >
-                                    <p:column headerText="Código" style="width: 15%">
-                                        <h:outputText value="#{dataInc.codigo}"/>
+                                    <p:column>
+                                        <div class="card">
+                                            <div class="card-title">
+                                                <h:outputLabel value="#{dataInc.codigo}:#{dataInc.titulo}"/>
+                                            </div>
+                                            <div class="card-body">
+                                            
+                                            <p class=" small">
+                                                <h:outputText value="#{dataInc.descripcion}"/>
+                                            </p>
+                                            <h:outputText value="#{dataInc.categoriaIncidencia}"/>
+                                            </div>
+                                        </div>
+                                    </p:column>
+                                    <!--<p:column headerText="Código" style="width: 15%">
+                                        <h:outputLabel value="#{dataInc.codigo}"/>
                                     </p:column>
                                     <p:column headerText="Categoría" style="width: 15%">
                                         <h:outputText value="#{dataInc.categoriaIncidencia}"/>
@@ -86,7 +105,8 @@
                                             <f:param name="idTicket" value="#{dataInc.idIncidencia}"/>
                                         </h:commandLink>					
                                     </p:column>
-                                    </p:dataTable>
+                                    -->
+                                </p:dataTable>
                                  <p:blockUI block="tickets" trigger="tickets" widgetVar="buiDatatable">
                                         <i class="pi pi-spin pi-spinner" style="font-size: 3rem"></i>
                                 </p:blockUI>
@@ -113,18 +133,33 @@
                                                    useOriginalFilename="true"
                                                    immediate="false" />
                                     -->
-                                    <h:form enctype="multipart/form-data">
+                                    
                                         <!-- Probar -->
-                                        <p:fileUpload id="adjArch" 
-                                                      value="#{fileUploadView.file}" 
-                                                      mode="simple"                                                                                    
-                                                      skinSimple="true"/>
+                                          <h:form id="formUpload" enctype="multipart/form-data">
+                                                                    <p:fileUpload id="fileEntryAdjunto" 
+                                                                                  multiple="false"
+                                                                                  label="Seleccionar"                                                                                  
+                                                                                  uploadLabel="Subir"                                                                                  
+                                                                                  uploadButtonTitle="Subir"
+                                                                                  uploadButtonStyleClass="ui-button-success  "                                                                                  
+                                                                                  cancelLabel="Cancelar"
+                                                                                  cancelButtonTitle="Cancelar"                
+                                                                                  cancelButtonStyleClass="ui-button-secondary"
+                                                                                  mode="advanced"                                                                                  
+                                                                                  fileLimit="1"
+                                                                                  fileLimitMessage="Solo puede subir 1 archivo"
+                                                                                  previewWidth="100"
+                                                                                  oncomplete="$('#dialogoAdjuntaarTickt').modal('hide')"
+                                                                                  update="@form frmTickets"
+                                                                                  listener="#{incidenciaBean.subirAdjunto}"/>
+                                                                </h:form>
 
-                                        <p:commandButton value="Submit" ajax="false" action="#{incidenciaBean.subirAdjunto}" 
+                                        <!--<p:commandButton value="Submit" ajax="false" action="#{incidenciaBean.subirAdjunto}" 
                                                          styleClass="mt-3 ui-button-outlined block"/>
-                                    </h:form>
+                                        -->
+                                    
 
-                                    <h:commandButton  styleClass="btn btn-default" id="uploadFile" value="Subir y Enviar"/>
+                                            <h:commandButton  styleClass="btn btn-default" id="uploadFile" value="Subir y Enviar"/>
                                     <div class="form-row">
                                         <!--
                                         <ace:dataTable id="dtArchivo" value="{incidenciaBean.incidenciasAdjunto}" var="dataAdj"

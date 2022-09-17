@@ -236,6 +236,7 @@ public class OficioDetalleBean extends OficioBaseBean {
     }
     
     public String editarAdjuntoAction(){
+        System.out.println("@@editarAdjuntoAction");
         
         int oficioId = Integer.parseInt(FacesUtils.getRequestParameter(OFICIO_ID));
         int movimientoId = Integer.parseInt(FacesUtils.getRequestParameter(MOVIMIENTO_ID));
@@ -245,6 +246,8 @@ public class OficioDetalleBean extends OficioBaseBean {
         setContextParam(MOVIMIENTO_ID, movimientoId);
         setContextParam(OFICIO_MOVIMIENTO_ID, oficioMovimientoId);    
        
+        System.out.println("Action "+EDITAR_ADJUNTO_PAGE);
+        
         return EDITAR_ADJUNTO_PAGE;
     }
     

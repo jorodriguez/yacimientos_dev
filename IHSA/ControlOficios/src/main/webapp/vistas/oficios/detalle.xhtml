@@ -15,7 +15,7 @@
                 <h:form styleClass="textoIzquierda" rendered="#{not empty sesion.usuario}" id="formOficios">
 
                     <div class="page-header">
-                        <h3>detl
+                        <h3>
                             #{oficioDetalleBean.tituloPagina}
                         </h3>
                     </div>
@@ -235,29 +235,17 @@
 
                                             <p:column style="width: 10px;" rendered="#{oficioDetalleBean.mostrarEdicionArchivos()}">
 
-                                                <p:commandLink                                                    
+                                                <p:commandLink
                                                    style="text-align: left;"                                                   
                                                    action="#{oficioDetalleBean.editarAdjuntoAction()}"
                                                    rendered="#{oficioDetalleBean.linkEditarAdjunto.visible and movimiento.tieneAdjunto()}"
-                                                   title="Editar Adjunto"
+                                                   title="Editar Adjunto"                                                   
                                                    >                                        
                                                     <img src="../../resources/imagenes/editar.png" border="0" />
                                                     <f:param name="oficioId" value="#{movimiento.oficioId}"  />
                                                     <f:param name="movimientoId" value="#{movimiento.id}" />
                                                     <f:param name="oficioMovimientoId" value="#{movimiento.oficioMovimientoId}" />
-                                                </p:commandLink>  
-                                                <!--
-                                                <p:link 
-                                                        outcome="editarAdjunto" 
-                                                        includeViewParams="true"
-                                                        title="Sustituir archivo" 
-                                                        rendered="#{oficioDetalleBean.linkEditarAdjunto.visible and movimiento.tieneAdjunto()}">                                                        
-                                                        <img src="../../resources/imagenes/editar.png" border="0" />
-                                                        <f:param name="oficioId" value="#{movimiento.oficioId}" />
-                                                        <f:param name="movimientoId" value="#{movimiento.id}" />
-                                                        <f:param name="oficioMovimientoId" value="#{movimiento.oficioMovimientoId}" />
-                                                </p:link>-->
-
+                                                </p:commandLink>                                                 
                                                 <f:facet name="header">
                                                     <h:outputText value="-"/>
                                                 </f:facet>
@@ -368,7 +356,7 @@
                                                         action="#{oficioDetalleBean.goToActionAndSendOficioId(oficioDetalleBean.botonSeguimiento.accion)}"                                                        
                                                         value="#{oficioDetalleBean.botonSeguimiento.valor} " 
                                                         rendered="#{oficioDetalleBean.botonSeguimiento.visible}"                                                        
-                                                        icon="pi pi-times"
+                                                        icon="pi pi-envelope"
                                                         styleClass="ui-button-raised ui-button-warning"
                                                         >                                                                                                                
                                                     <f:param name="oficioId" value="#{oficioDetalleBean.vo.oficioId}" />
@@ -428,6 +416,17 @@
                                         </f:facet>
                                     </p:column>
                                     <p:column style="width: 30px" rendered="#{oficioDetalleBean.permisos.verDetalleOficio}">
+                                        
+                                        <p:commandLink
+                                            action="#{oficioDetalleBean.seleccionarDetalleOficio()}"
+                                            title="Ver detalle del oficio"
+                                            >
+                                            <center>
+                                                <i class="fa fa-eye icono-contenido" style="font-size: 18px;"></i>                                           
+                                            </center>
+                                            <f:param name="oficioId" value="#{currentRow['oficioId']}" />   
+                                        </p:commandLink>
+                                        <!--
                                         <p:link
                                                         outcome="detalle"                                                         
                                                         includeViewParams="true"                                                                                                                
@@ -438,6 +437,7 @@
                                             </center>
                                                <f:param name="oficioId" value="#{currentRow['oficioId']}" />   
                                           </p:link>
+                                        -->
                                         <!--
                                         <h:commandLink styleClass="link"
                                                        action="detalle"
@@ -515,7 +515,17 @@
                                             </f:facet>
                                         </p:column>
                                         <p:column style="width: 30px" rendered="#{oficioDetalleBean.permisos.verDetalleOficio}">
-                                             <p:link
+                                         <p:commandLink
+                                            action="#{oficioDetalleBean.seleccionarDetalleOficio()}"
+                                            title="Ver detalle del oficio"
+                                            >
+                                            <center>
+                                                <i class="fa fa-eye icono-contenido" style="font-size: 18px;"></i>                                           
+                                            </center>
+                                            <f:param name="oficioId" value="#{currentRow['oficioId']}" />   
+                                        </p:commandLink>
+                                            
+                                             <!--<p:link
                                                         outcome="detalle"                                                         
                                                         includeViewParams="true"                                                                                                                
                                                         title="Ver detalle del oficio" 
@@ -524,7 +534,7 @@
                                                 <i class="fa fa-eye icono-contenido" style="font-size: 18px;"></i>                                                    
                                             </center>
                                                <f:param name="oficioId" value="#{currentRow['oficioId']}" />   
-                                          </p:link>
+                                          </p:link>-->
                                             
                                             <!--<h:commandLink styleClass="link"
                                                            action="detalle"
@@ -700,7 +710,22 @@
                                         <!-- Permitir modificar archivo solo si se está en modo Edición y el oficio está en estado inicial -->
 
                                         <p:column rendered="#{oficioDetalleBean.mostrarEdicionArchivos()}" style="width: 10px">
-                                            <p:button title="Sustituir archivo"
+                                            
+                                              <p:commandLink
+                                                   title="Sustituir archivo"
+                                                   style="text-align: left;"                                                   
+                                                   action="#{oficioDetalleBean.editarAdjuntoAction()}"
+                                                   rendered="#{oficioDetalleBean.linkEditarAdjunto.visible 
+                                                                       and movimiento.tieneAdjunto()
+                                                                       and !movimiento.adjuntoEliminado}"      
+                                                   >                                        
+                                                    <img src="../../resources/imagenes/editar.png" border="0" />
+                                                    <f:param name="oficioId" value="#{movimiento.oficioId}" />
+                                                    <f:param name="movimientoId" value="#{movimiento.id}" />
+                                                    <f:param name="oficioMovimientoId" value="#{movimiento.oficioMovimientoId}" />
+                                                </p:commandLink> 
+                                                                                                                                    
+                                            <!--<p:button title="Sustituir archivo"
                                                            outcome="editarAdjunto"
                                                            rendered="#{oficioDetalleBean.linkEditarAdjunto.visible 
                                                                        and movimiento.tieneAdjunto()
@@ -710,7 +735,7 @@
                                                 <f:param name="oficioId" value="#{movimiento.oficioId}" />
                                                 <f:param name="movimientoId" value="#{movimiento.id}" />
                                                 <f:param name="oficioMovimientoId" value="#{movimiento.oficioMovimientoId}" />
-                                            </p:button>
+                                            </p:button>-->
                                             <f:facet name="header">
                                                 <h:outputText value="-"/>
                                             </f:facet>
@@ -733,7 +758,7 @@
                         <!-- Boton Cancelar para salir de la pantalla de Detalle -->
 
                         <p />
-                         
+                         <!-- Este boton si esta permitido ser un button debido a que solo redirecciona-->
                         <p:button value="#{oficioDetalleBean.botonCancelar.valor}" 
                                       outcome="#{oficioDetalleBean.botonCancelar.accion.toString()}"
                                       rendered="#{oficioDetalleBean.botonCancelar.visible}"
@@ -741,16 +766,8 @@
                                       icon="pi pi-arrow-left"
                                       styleClass="rounded-button ui-button-secondary">
                         </p:button>
-                        <!--<p:commandLink value="#{oficioDetalleBean.botonCancelar.valor}" 
-                                       styleClass="btn btn-default btn-xs"
-                                       ajax="false"
-                                       action="{oficioDetalleBean.botonCancelar.accion.toString()}"
-                                       rendered="#{oficioDetalleBean.botonCancelar.visible}"
-                                       title="#{oficioDetalleBean.botonCancelar.titulo}" >
-                        </p:commandLink>-->
-
+                        
                     </div>
-
 
                     <!-- Modal - Visualizar archivo adjunto -->
 

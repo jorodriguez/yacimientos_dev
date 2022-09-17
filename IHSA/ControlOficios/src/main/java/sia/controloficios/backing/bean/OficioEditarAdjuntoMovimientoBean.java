@@ -3,7 +3,6 @@
 package sia.controloficios.backing.bean;
 
 import javax.faces.application.FacesMessage;
-import javax.faces.bean.ManagedBean;
 import javax.faces.event.ActionEvent;
 import javax.inject.Named;
 import javax.mail.MessagingException;
@@ -48,17 +47,14 @@ public class OficioEditarAdjuntoMovimientoBean extends OficioBaseBean {
 
     /**
      * 
+     * @throws sia.excepciones.InsufficientPermissionsException
      */
     @Override
     protected void postConstruct() throws InsufficientPermissionsException {
-        System.out.println("@postConstruct - oficioEditarAdjunto");
-        // obtener registro de oficio
         
-        /*
-        int oficioId = Integer.parseInt(FacesUtils.getRequestParameter("oficioId"));
-        int movimientoId = Integer.parseInt(FacesUtils.getRequestParameter("movimientoId"));
-        int oficioMovimientoId = Integer.parseInt(FacesUtils.getRequestParameter("oficioMovimientoId"));
-        */
+        System.out.println("@POSTCONSTRUCT EDITAR ADJUNTO");        
+        // obtener registro de oficio
+
         int oficioId = getContextParam(OFICIO_ID);        
         int movimientoId = getContextParam(MOVIMIENTO_ID);
         int oficioMovimientoId = getContextParam(OFICIO_MOVIMIENTO_ID);
@@ -75,6 +71,7 @@ public class OficioEditarAdjuntoMovimientoBean extends OficioBaseBean {
         setVo(buscarOficioVo(oficioId));
         
         // obtener el movimiento
+        
         
         MovimientoVo movimientoSeleccionado = getVo().getMovimiento(movimientoId);
         
@@ -167,22 +164,25 @@ public class OficioEditarAdjuntoMovimientoBean extends OficioBaseBean {
      */
     @Override
     protected boolean permisosRequeridos() throws InsufficientPermissionsException {
-        
+        System.out.println("@@permisosRequeridos oficioEditar");
         boolean resultado;
         
         if (getPermisos().isRolEditorMaestro()) {
-            
+            System.out.println("@@Es rol maestro");
             resultado = true;
             
         } else  {
-
-            int oficioId = Integer.parseInt(FacesUtils.getRequestParameter("oficioId"));
+            System.out.println("@@ NNOOO Es rol maestro");
+            //int oficioId = Integer.parseInt(FacesUtils.getRequestParameter("oficioId"));
+            int oficioId = getContextParam(OFICIO_ID);        
+            
 
             OficioPromovibleVo vo = buscarOficioVo(oficioId);
 
             boolean isAdjuntoEditable = !vo.isEstatusAnulado() && !vo.isEstatusTerminado();
 
             if (isAdjuntoEditable) {
+                System.out.println("@@ isAdjuntoEditable "+isAdjuntoEditable);
 
                 boolean permisoEdicion = getPermisos().isModificarOficio()
                         && getPermisos().isModificarAdjuntoHistorialOficio();
@@ -193,10 +193,13 @@ public class OficioEditarAdjuntoMovimientoBean extends OficioBaseBean {
                 resultado = permisoEdicion || permisoConsulta;
 
             } else {
+                System.out.println("@@ todo permitido "+isAdjuntoEditable);
                 resultado = false;
             }
             
         }
+        
+        System.out.println("@@ Return "+resultado);
         
         return resultado;
     }
@@ -210,8 +213,8 @@ public class OficioEditarAdjuntoMovimientoBean extends OficioBaseBean {
      * @return 
      */
     public boolean isArchivoAdjuntoSeleccionado() {
-        
-        AdjuntoOficioVo archivoAdjunto = getMovimiento().getAdjunto();
+
+        AdjuntoOficioVo archivoAdjunto = getMovimiento() != null ? getMovimiento().getAdjunto() : null;
         
         return archivoAdjunto != null 
                 && archivoAdjunto.getNombre() != null 

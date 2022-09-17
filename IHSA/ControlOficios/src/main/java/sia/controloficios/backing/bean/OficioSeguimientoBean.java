@@ -118,6 +118,8 @@ public class OficioSeguimientoBean extends OficioBaseBean {
 
             }
             
+            motivo = "";
+            
             setContextParamOficioId(getVo().getId());
                 
             resultado = Constantes.OFICIOS_VISTA_DETALLE;
