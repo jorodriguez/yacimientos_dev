@@ -2067,13 +2067,12 @@ public class RequisicionBean implements Serializable {
     public void asignarVariasRequisiciones() {
         try {
             Preconditions.checkArgument(!idAnalista.equals("-1"), "Seleccione un analista de compras");
-            Preconditions.checkArgument(requisicionesSeleccionadas.isEmpty(), "Seleccione al menos una requisición.");
+            Preconditions.checkArgument(!requisicionesSeleccionadas.isEmpty(), "Seleccione al menos una requisición.");
 
             StringBuilder requiOK = new StringBuilder();
             StringBuilder requiError = new StringBuilder();
             boolean entro = false;
-            for (Object obj : requisicionesSeleccionadas) {
-                RequisicionVO o = (RequisicionVO) obj;
+            for (RequisicionVO o : requisicionesSeleccionadas) {
                 setRequisicionActual(requisicionServicioRemoto.find(o.getId()));
                 if (asignarRequisicionProceso(requisicionActual)) {
                     if (requiOK.toString().isEmpty()) {
