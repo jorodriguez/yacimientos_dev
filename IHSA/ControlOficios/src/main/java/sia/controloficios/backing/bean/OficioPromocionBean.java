@@ -47,7 +47,11 @@ public class OficioPromocionBean extends OficioBaseBean {
         
         // obtener registro de oficio
         
-        int oficioId = Integer.parseInt(FacesUtils.getRequestParameter("oficioId"));
+        //int oficioId = Integer.parseInt(FacesUtils.getRequestParameter("oficioId"));
+        
+        int oficioId = getContextParamOficioId();
+        
+        System.out.println("@@OFICIOID "+oficioId);
                 
         setVo(buscarOficioVo(oficioId));
         

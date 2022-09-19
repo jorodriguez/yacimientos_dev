@@ -2,15 +2,13 @@
 package sia.controloficios.backing.bean;
 
 import javax.faces.application.FacesMessage;
-import javax.faces.bean.ManagedBean;
-import javax.faces.event.ActionEvent;
 import javax.inject.Named;
-import sia.controloficios.sistema.soporte.FacesUtils;
 import sia.excepciones.InsufficientPermissionsException;
 import sia.excepciones.InvalidBusinessOperationException;
 import sia.excepciones.MissingRequiredValuesException;
 import sia.modelo.oficio.vo.OficioPromovibleVo;
-
+import static sia.constantes.Constantes.*;
+        
 /**
  * Bean correspondiente a la pantalla de Anulación de Oficios.
  *
@@ -35,10 +33,14 @@ public class OficioAnularBean extends OficioBaseBean {
      */
     @Override
     protected void postConstruct() throws InsufficientPermissionsException {
-        
+        System.out.println("@postConstruct - OficioAnular ");
         // obtener registro de oficio
         
-        int oficioId = Integer.parseInt(FacesUtils.getRequestParameter("oficioId"));
+        //int oficioId = Integer.parseInt(FacesUtils.getRequestParameter("oficioId"));
+        
+        int oficioId = getContextParamOficioId();
+        
+        System.out.println("oficioIdContext "+oficioId);
         
         setVo(buscarOficioVo(oficioId));
         
@@ -63,7 +65,8 @@ public class OficioAnularBean extends OficioBaseBean {
      * 
      * @param actionEvent 
      */
-    public String anularOficio(ActionEvent actionEvent) {
+    //public String anularOficio(ActionEvent actionEvent) {
+    public String anularOficio() {
         
         String resultado;
 
@@ -73,25 +76,28 @@ public class OficioAnularBean extends OficioBaseBean {
 
             String idUsuario = getSesion().getUsuario().getId();
             
-            getOficioServicioRemoto().anularOficio((OficioPromovibleVo)getVo(), getMotivo(), idUsuario);
-            
+            getOficioServicioRemoto().anularOficio((OficioPromovibleVo)getVo(), getMotivo(), idUsuario);           
+                       
             mostrarMensaje(FacesMessage.SEVERITY_INFO, 
                     "El oficio " + getVo().getOficioNumero() + " fue anulado exitosamente.", null);
 
-            resultado = "bandejaEntrada";
+            //resultado = "bandejaEntrada.xhtml?faces-redirect=true;";
+            resultado = OFICIOS_VISTA_BANDEJA_ENTRADA;
 
         } catch (InvalidBusinessOperationException ex) {
 
             mostrarMensaje(FacesMessage.SEVERITY_ERROR, "El oficio no puede ser anulado debido a que se encuentra en una asociación.", null);
             
-            resultado = "anular";
+            resultado = "";
+            //resultado = OFICIOS_VISTA_ANULAR;            
             
         } catch (MissingRequiredValuesException ex) {
 
             //mostrarMensaje(FacesMessage.SEVERITY_ERROR, "Proporcione los siguientes campos obligatorios: " + ex.getValoresFaltantes(), null);
             mostrarMensaje(FacesMessage.SEVERITY_ERROR, "Proporcione un motivo de anulación.", null);
             
-            resultado = "anular";
+            resultado = "";
+            //resultado = OFICIOS_VISTA_ANULAR;            
 
         } finally {
             
@@ -104,6 +110,14 @@ public class OficioAnularBean extends OficioBaseBean {
     }
     
     
+    public String goToDetalleOficio(){
+        System.out.println("@ToDetalleOficio");
+        
+        setContextParamOficioId(this.getVo().getId());       
+        
+        //return "detalle.xhtml?faces-redirect=true;";
+        return OFICIOS_VISTA_DETALLE;
+    }
     
 
     /**

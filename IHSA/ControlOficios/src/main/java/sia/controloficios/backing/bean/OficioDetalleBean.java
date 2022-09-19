@@ -64,15 +64,7 @@ public class OficioDetalleBean extends OficioBaseBean {
      * edición sin tener un rol de edición.
      */
     
-    @PostConstruct
-    private void postconstruct(){
-        System.out.println("@@@ postconstruct  OficioDetalle SIMPLE");
-        
-        String oficioIdStr = FacesUtils.getRequestParameter("oficioId");
-        
-        System.out.println("oficioIdRecibido str"+oficioIdStr);
     
-    }       
     
     @Override
     protected void postConstruct() throws InsufficientPermissionsException {
@@ -81,14 +73,20 @@ public class OficioDetalleBean extends OficioBaseBean {
         
         // valor inicial para la vista
         
-        // obtener registro de oficio
+        // obtener registro de oficio        
         
-        String oficioIdStr = FacesUtils.getRequestParameter("oficioId");
+        //String oficioIdStr = FacesUtils.getRequestParameter("oficioId");
+              
+        //System.out.println("oficioIdRecibido str"+oficioIdStr);
         
-        System.out.println("oficioIdRecibido str"+oficioIdStr);
+        int oficioId = getContextParamOficioId();
+        
+        System.out.println("===================== oficioIdContext =?=====");
+        
+        System.out.println("oficioIdContext "+oficioId);        
         
         // se debe recibir un ID
-        Integer oficioId = Integer.parseInt(oficioIdStr);
+        //Integer oficioId = Integer.parseInt(oficioIdStr);
               
         
         // obtener desde bd
@@ -155,6 +153,7 @@ public class OficioDetalleBean extends OficioBaseBean {
                     //&& !vo.isAsociado();
             
             botonAnular.setVisible(visible);
+            botonAnular.setAccion(Constantes.OFICIOS_VISTA_ANULAR);
             
             // configurar link para modificar archivo adjunto de historial
             
@@ -236,6 +235,30 @@ public class OficioDetalleBean extends OficioBaseBean {
         
     }
     
+    public String editarAdjuntoAction(){
+        System.out.println("@@editarAdjuntoAction");
+        
+        int oficioId = Integer.parseInt(FacesUtils.getRequestParameter(OFICIO_ID));
+        int movimientoId = Integer.parseInt(FacesUtils.getRequestParameter(MOVIMIENTO_ID));
+        int oficioMovimientoId = Integer.parseInt(FacesUtils.getRequestParameter(OFICIO_MOVIMIENTO_ID));
+                                                            
+        setContextParamOficioId(oficioId);
+        setContextParam(MOVIMIENTO_ID, movimientoId);
+        setContextParam(OFICIO_MOVIMIENTO_ID, oficioMovimientoId);    
+       
+        System.out.println("Action "+EDITAR_ADJUNTO_PAGE);
+        
+        return EDITAR_ADJUNTO_PAGE;
+    }
+    
+    public String goToActionAndSendOficioId(String outcome){
+        
+        int oficioId = Integer.parseInt(FacesUtils.getRequestParameter(OFICIO_ID));
+        
+        setContextParamOficioId(oficioId);
+        
+        return outcome;    
+    }
     
     
     /**

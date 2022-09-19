@@ -5,7 +5,7 @@
       xmlns:h="http://java.sun.com/jsf/html" 
       xmlns:p="http://primefaces.org/ui"
       xmlns:f="http://java.sun.com/jsf/core">
-    
+
     <body>
         <ui:composition template="./../../WEB-INF/template/template.xhtml">
             <ui:define name="content">
@@ -13,17 +13,18 @@
                     <ui:include src="../../salir.xhtml"/>
                 </h:panelGroup>
                 <h:form styleClass="textoIzquierda" rendered="#{not empty sesion.usuario}" id="formOficios">
-                    
-                    
+
+
                     <div class="page-header">
                         <h3>
                             Anular Oficio de #{oficioAnularBean.vo.tipoOficioNombre}
                         </h3>
                     </div>
-                    
+
 
                     <!-- Mensajes con estilos de Bootstrap  -->
-                    <h:message style="display: block;"
+                    <h:message id="mensajes"
+                               style="display: block;"
                                for=""
                                infoClass="alert alert-success"
                                warnClass="alert alert-warning"
@@ -32,7 +33,7 @@
                                />
 
                     <div class="jumbotron">
-                        
+
                         <div class="row">
                             <div class="col-sm-12">
                                 El siguiente oficio será anulado. 
@@ -40,10 +41,10 @@
                                 ¿Desea continuar?
                             </div>
                         </div>
-                        
+
                         <hr />
-                        
-                        
+
+
                         <div class="row">
                             <div class="col-sm-2">
                                 Nº Oficio
@@ -94,43 +95,56 @@
                                     tabindex="" rows="4" 
                                     maxlength="450" 
                                     style="width: 100%; resize: none;" />
+                                
+                                
                             </div>
                         </div>
-                        
+
                         <br /><br /><br />
                         <hr />
-                        
+
                         <div class="row">
                             <div class="col-sm-12" style="text-align: right">
 
-                                <p:commandLink value="Aceptar" 
-                                                 styleClass="btn btn-success btn-xs"
-                                                 action="#{oficioAnularBean.anularOficio(actionEvent)}" 
+                                <p:commandButton 
+                                    value="Confirmar anulación"
+                                    styleClass="ui-button ui-button-danger"
+                                    action="#{oficioAnularBean.anularOficio()}"
+                                    onstart="bloquearPantalla('true');"
+                                    oncomplete="bloquearPantalla('false');"
+                                    rendered="#{not empty oficioAnularBean.vo.oficioId}"
+                                    process="@form"
+                                    update="@form"
+                                    >
+
+                                </p:commandButton>
+
+                                <!--
+                                <p:button value="Aceptar" 
+                                                 styleClass="ui-button ui-button-success"
+                                                 outcome="{oficioAnularBean.anularOficio(actionEvent)}" 
                                                  onclick="bloquearPantalla('true');"
                                                  rendered="#{not empty oficioAnularBean.vo.oficioId}"
-                                                 title="Confirmar anulación" 
-                                                 update="formOficios"
-                                                 process="@this"
+                                                 title="Confirmar anulación"                                                  
                                                  >
                                     <f:param name="oficioId" value="#{oficioAnularBean.vo.oficioId}" />
-                                </p:commandLink>
-
+                                </p:button>
+                                -->
                                 &nbsp;
 
-                                <p:commandLink value="Cancelar" 
-                                                 styleClass="btn btn-default btn-xs"
-                                                 action="detalle"
-                                                 rendered="#{not empty oficioAnularBean.vo.oficioId}"
-                                                 title="Cancelar anulación" >
-                                    <f:param name="oficioId" value="#{oficioAnularBean.vo.oficioId}" />
-                                </p:commandLink>
+                                <p:commandButton value="Cancelar" 
+                                               styleClass="ui-button ui-button-secondary"
+                                               action="#{oficioAnularBean.goToDetalleOficio()}"
+                                               rendered="#{not empty oficioAnularBean.vo.oficioId}"
+                                               title="Cancelar anulación" >                                    
+                                </p:commandButton>
                             </div>
                         </div>
-                        
+
                     </div> <!-- jumbotron -->
 
                 </h:form>
-                
+
             </ui:define>
         </ui:composition>
     </body>

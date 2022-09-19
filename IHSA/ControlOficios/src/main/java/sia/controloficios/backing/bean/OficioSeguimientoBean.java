@@ -47,8 +47,9 @@ public class OficioSeguimientoBean extends OficioBaseBean {
         System.out.println("@postconstruct en OficioSeguimientoBean");
         // obtener registro de oficio
         
-        int oficioId = Integer.parseInt(FacesUtils.getRequestParameter("oficioId"));
+        //int oficioId = Integer.parseInt(FacesUtils.getRequestParameter("oficioId"));
         
+        int oficioId = getContextParamOficioId();
         
         System.out.println("=========== OFICIOID "+oficioId);
         
@@ -101,21 +102,27 @@ public class OficioSeguimientoBean extends OficioBaseBean {
                 
                 mostrarMensaje(FacesMessage.SEVERITY_INFO,
                         "Se desactivó exitosamente el seguimiento para el oficio " + getVo().getOficioNumero(), 
-                        null);
-                
-                resultado = Constantes.OFICIOS_VISTA_DETALLE;
+                        null);                               
 
             } else {
 
-                getOficioServicioRemoto().activarSeguimiento(getVo(), motivo, getUsuarioId());
-                
+                getOficioServicioRemoto().activarSeguimiento(getVo(), motivo, getUsuarioId());               
+                               
                 mostrarMensaje(FacesMessage.SEVERITY_INFO,
                         "Se activó exitosamente el seguimiento para el oficio " + getVo().getOficioNumero(), 
                         null);
                 
-                resultado = Constantes.OFICIOS_VISTA_DETALLE;
+                /*setContextParamOficioId(getVo().getId());
+                
+                resultado = Constantes.OFICIOS_VISTA_DETALLE;*/
 
             }
+            
+            motivo = "";
+            
+            setContextParamOficioId(getVo().getId());
+                
+            resultado = Constantes.OFICIOS_VISTA_DETALLE;
 
             //PRUEBA:
         //} catch (MissingRequiredValuesException ex) {

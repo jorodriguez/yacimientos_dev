@@ -27,7 +27,8 @@ public class OfOficioUsuarioImpl extends AbstractFacade<OfOficioUsuario> {
     private EntityManager em;
     
     private final String queryBase;
-
+    
+    
     
     @Override
     protected EntityManager getEntityManager() {
@@ -162,28 +163,27 @@ public class OfOficioUsuarioImpl extends AbstractFacade<OfOficioUsuario> {
      */
     private OfOficioUsuario castToEntity(Object[] obj) {
         
-        OfOficioUsuario entidad = new OfOficioUsuario();
+        final OfOficioUsuario entidad = new OfOficioUsuario();
+                      
+        entidad.setId((Integer)obj[0]);
+        entidad.setOfOficio(new OfOficio((Integer)obj[1]));
+        entidad.setUsuario(new Usuario((String)obj[2]));
         
-        int i = 0;
+        entidad.setGenero(new Usuario((String)obj[3]));
+        entidad.setFechaGenero((Date)obj[4]);
+        entidad.setHoraGenero((Date)obj[5]);
         
-        entidad.setId((Integer)obj[i++]);
-        entidad.setOfOficio(new OfOficio((Integer)obj[i++]));
-        entidad.setUsuario(new Usuario((String)obj[i++]));
+        if(obj[6] == null){
+            final Usuario usuarioModifico = new Usuario((String)obj[6]);        
+            final Date fechaModifico = obj[7] == null ? null : (Date)obj[7];
+            final Date horaModifico = obj[8] == null ? null : (Date)obj[8];
         
-        entidad.setGenero(new Usuario((String)obj[i++]));
-        entidad.setFechaGenero((Date)obj[i++]);
-        entidad.setHoraGenero((Date)obj[i++]);
-        
-        i++;
-        Usuario usuario = obj[i] == null ? null : new Usuario((String)obj[i]);
-        i++;
-        Date fechaModifico = obj[i] == null ? null : (Date)obj[i];
-        
-        entidad.setModifico(usuario);
-        entidad.setFechaModifico(fechaModifico);
-        entidad.setHoraModifico(fechaModifico);
-        
-        entidad.setEliminado((Boolean)obj[i++]);
+            entidad.setModifico(usuarioModifico);
+            entidad.setFechaModifico(fechaModifico);
+            entidad.setHoraModifico(horaModifico);        
+        }
+                
+        entidad.setEliminado((Boolean)obj[9]);
         
         return entidad;
         

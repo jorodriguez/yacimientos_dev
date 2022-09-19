@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Properties;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.faces.application.FacesMessage;
@@ -16,6 +17,7 @@ import javax.faces.model.DataModel;
 import javax.faces.model.ListDataModel;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
+import lombok.Getter;
 import org.primefaces.event.FileUploadEvent;
 /*import org.icefaces.ace.component.fileentry.FileEntry;
 import org.icefaces.ace.component.fileentry.FileEntryEvent;
@@ -30,6 +32,7 @@ import sia.archivador.ProveedorAlmacenDocumentos;
 import sia.constantes.Constantes;
 import sia.controloficios.sistema.bean.backing.CatalogosBean;
 import sia.controloficios.sistema.bean.backing.Sesion;
+import sia.controloficios.sistema.soporte.FacesUtils;
 import sia.controloficios.sistema.soporte.PrimeUtils;
 import sia.excepciones.InsufficientPermissionsException;
 import sia.excepciones.SIAException;
@@ -45,6 +48,7 @@ import sia.servicios.oficio.impl.OfOficioImpl;
 import sia.servicios.oficio.impl.OfOficioConsultaImpl;
 import sia.servicios.sistema.impl.SiParametroImpl;
 import sia.servicios.sistema.impl.SiPermisoImpl;
+import sia.util.Env;
 import sia.util.UtilLog4j;
 import sia.util.UtilSia;
 import sia.util.ValidadorNombreArchivo;
@@ -127,6 +131,12 @@ public abstract class OficioBaseBean implements Serializable {
     //@ManagedProperty(value="#{sesion}")
     private Sesion sesion;
 
+     
+    public static final String OFICIO_ID = "oficioId";
+    public static final String MOVIMIENTO_ID = "movimientoId";
+    public static final String OFICIO_MOVIMIENTO_ID = "oficioMovimientoId";
+    public static final String EDITAR_ADJUNTO_PAGE = "editarAdjunto.xhtml?faces-redirect=true;";
+    
     // Servicios remotos
     @Inject
     private SiParametroImpl siParametroRemote;
@@ -148,6 +158,8 @@ public abstract class OficioBaseBean implements Serializable {
 
     @Inject
     private ProveedorAlmacenDocumentos proveedorAlmacenDocumentos;
+    
+    
 
     protected static final UtilLog4j LOGGER = UtilLog4j.log;
 
@@ -183,7 +195,7 @@ public abstract class OficioBaseBean implements Serializable {
             }
         }
         
-        System.out.println("@ejecuanto postconstructo abstract");
+        System.out.println("@EJECUCION DE POSTCONSTRUCT EN CLASE HEREDADA");
         
         this.postConstruct();
         
@@ -192,6 +204,7 @@ public abstract class OficioBaseBean implements Serializable {
         }
 
     }
+    
 
     /**
      * Tareas de inicialización particulares de las clases derivadas. Se ejecuta
@@ -240,6 +253,79 @@ public abstract class OficioBaseBean implements Serializable {
         this.preDestroy();
 
     }
+    
+    
+    //Si acepta el parametro
+    public String seleccionarDetalleOficio(){
+        
+        String param = FacesUtils.getRequestParameter(OFICIO_ID);
+                        
+        System.out.println("param recived"+param);
+        
+        int paramInt = Integer.parseInt(param);
+        
+        setContextParamOficioId(paramInt);
+                        
+        return "detalle.xhtml?faces-redirect=true";        
+    }
+    
+    public String seleccionarEditarOficio(){
+        
+        String param = FacesUtils.getRequestParameter(OFICIO_ID);
+                        
+        System.out.println("param recived"+param);
+        
+        int paramInt = Integer.parseInt(param);
+        
+        setContextParamOficioId(paramInt);
+                        
+        return "editar.xhtml?faces-redirect=true";        
+    }
+        
+    protected void setContextParamOficioId(int value){
+        
+        System.out.println("setContextParamOficioId "+value);
+        
+        //Env.setContext(sesion.getCtx(), OFICIO_ID, value);
+        setContextParam(OFICIO_ID, value);
+    }
+   
+    
+    protected int getContextParamOficioId(){
+         
+        int oficioId = getContextParam(OFICIO_ID);
+         
+        System.out.println("getContextParamOficioId "+oficioId);
+         
+        return oficioId;
+    }
+    
+    protected void setContextParam(String name,int value){
+        
+        System.out.println("setContextParam "+name+" value"+value);
+        
+        Env.setContext(sesion.getCtx(), name, value);
+    }
+    
+    protected int getContextParam(String name){
+         
+        int oficioId = Env.getContextAsInt(sesion.getCtx(), name);
+         
+        System.out.println("getContextParam  "+name+" value "+oficioId);
+         
+        return oficioId;
+    }
+    
+    protected void removeContextParam(String name){
+        
+        Env.removeContext(sesion.getCtx(), name);
+                 
+        
+    }
+    
+    
+     
+     
 
     /**
      * Tareas de terminación y limpieza particulares de las clases derivadas. Se
@@ -252,8 +338,9 @@ public abstract class OficioBaseBean implements Serializable {
      */
     protected void preDestroy() {
         getLogger().info(this, getClass().getName() + "@preDestroy");
-
+        
         // Sobreescritura opcional
+        
     }
 
     /**

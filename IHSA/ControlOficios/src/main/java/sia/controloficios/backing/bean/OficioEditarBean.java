@@ -24,8 +24,10 @@ import sia.controloficios.sistema.soporte.PrimeUtils;
 import sia.excepciones.*;
 import sia.modelo.oficio.vo.*;
 import sia.modelo.usuario.vo.UsuarioVO;
+import sia.util.Env;
 import sia.util.UtilSia;
 import sia.util.ui.AccionUI;
+
 
 /**
  * Bean para la pantalla de edición de oficios. Para las operaciones de altas y
@@ -85,7 +87,7 @@ public class OficioEditarBean extends OficioOpcionesBloquesUIBean {
      * privacidad Restringido.
      *
      */
-    private HtmlDataTable tablaUsuariosRestringido;
+    private DataTable tablaUsuariosRestringido;
 
     // para identificar si es alta o cambio
     private boolean modificacion;
@@ -115,7 +117,10 @@ public class OficioEditarBean extends OficioOpcionesBloquesUIBean {
 
         // valor inicial para la vista
         // en caso de recibir un oficioId, obtener objeto vo correspondiente
-        String oficioId = FacesUtils.getRequestParameter("oficioId");
+        //String oficioId = FacesUtils.getRequestParameter(OFICIO_ID);
+        
+        int oficioId = getContextParamOficioId();
+               
         setCrearCopia(Constantes.FALSE);
         setBloquesCopia(new ArrayList<SelectItem>());
         setBloqueACopiarId(-1);
@@ -125,13 +130,14 @@ public class OficioEditarBean extends OficioOpcionesBloquesUIBean {
         LOGGER.info(this, "oficioId = " + oficioId);
 
         // validar si es alta o modificacion
-        modificacion = !UtilSia.isNullOrBlank(oficioId);
+        //modificacion = !UtilSia.isNullOrBlank(oficioId);
+        modificacion = oficioId > 0;
 
         if (modificacion) {
             System.out.println("Es una edicion de oficio "+oficioId);
             // Operacion de Modificacion
             // obtener desde bd
-            this.setVo(buscarOficioVo(Integer.parseInt(oficioId)));
+            this.setVo(buscarOficioVo(oficioId));
 
             // establecer el ID numérico para la compañía
             this.getVo().setCompaniaId(getCatalogosBean()
@@ -610,11 +616,11 @@ public class OficioEditarBean extends OficioOpcionesBloquesUIBean {
         this.tablaAsociados = tablaAsociados;
     }
 
-    public HtmlDataTable getTablaUsuariosRestringido() {
+    public DataTable getTablaUsuariosRestringido() {
         return tablaUsuariosRestringido;
     }
 
-    public void setTablaUsuariosRestringido(HtmlDataTable tablaUsuariosRestringido) {
+    public void setTablaUsuariosRestringido(DataTable tablaUsuariosRestringido) {
         this.tablaUsuariosRestringido = tablaUsuariosRestringido;
     }
 
@@ -643,13 +649,8 @@ public class OficioEditarBean extends OficioOpcionesBloquesUIBean {
      */
     public void agregarAAsociados(ActionEvent actionEvent) {
         
-        System.out.println("@agregarAAsociados");
-
         OficioVo voAsociado = (OficioVo) this.getTablaResultados().getRowData();
         
-        System.out.println("Seleccion voAsociado"+(voAsociado==null));
-        System.out.println("Seleccion "+voAsociado.toString());
-
         getVo().getAsociadoHaciaOficios().add(voAsociado);
 
         getLogger().info(this, "@agregarAAsociados - asociado a oficios (cant.) = " + getVo().getAsociadoHaciaOficios().size());
