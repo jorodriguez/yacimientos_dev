@@ -11,6 +11,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 import java.util.TreeMap;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.context.FacesContext;
@@ -20,6 +21,7 @@ import javax.faces.model.SelectItem;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import org.primefaces.event.TabChangeEvent;
 import sia.constantes.Constantes;
 import sia.excepciones.SIAException;
@@ -53,6 +55,7 @@ import sia.servicios.sgl.viaje.impl.SgViajeroSiMovimientoImpl;
 import sia.servicios.sistema.impl.SiModuloImpl;
 import sia.servicios.sistema.impl.SiMovimientoImpl;
 import sia.servicios.sistema.impl.SiUsuarioRolImpl;
+import sia.util.Env;
 import sia.util.UtilLog4j;
 import sia.util.UtilSia;
 
@@ -134,7 +137,8 @@ public class Sesion implements Serializable {
     private String grAutTxtMotivo;
     private ViajeVO viajeD;
     private ViajeVO viajeB;
-
+    private Properties ctx;
+    private GrArchivoVO mapa;
     /**
      * Creates a new instance of Sesion
      */
@@ -446,7 +450,7 @@ public class Sesion implements Serializable {
     }
 
     public void setRutas() {
-//        setRutasProceso(sgRutaTerrestreImpl.traerRutaTerrestreViaje(Constantes.ESTATUS_VIAJE_PROCESO, null));
+        setRutasProceso(sgRutaTerrestreImpl.traerRutaTerrestreViaje(Constantes.ESTATUS_VIAJE_PROCESO, null));
         setRutasPendienes(sgRutaTerrestreImpl.traerRutaTerrestreViaje(Constantes.ESTATUS_VIAJE_POR_SALIR, null, getNumDias()));
 //        setRutasPausa(sgRutaTerrestreImpl.traerRutaTerrestreViaje(Constantes.VIAJE_ESPERA_AUTORIZACION, null));
 //        setIntercepcionesProgramadas(grInterseccionImpl.traerViajesPorInterceptar(0));
@@ -1217,6 +1221,43 @@ public class Sesion implements Serializable {
      */
     public void setViajeB(ViajeVO viajeB) {
         this.viajeB = viajeB;
+    }
+    
+    public void subirValoresContexto(HttpSession session) {
+        setCtx(new Properties());
+        Env.setContext(getCtx(), Env.SESSION_ID, session.getId());
+        //Env.setContext(ctx, Env.CLIENT_INFO, session. SessionUtils.getClientInfo(SessionUtils.getRequest()));
+        Env.setContext(getCtx(), Env.PUNTO_ENTRADA, "GR");
+        Env.setContext(getCtx(), Env.PROYECTO_ID, getUsuario().getApCampo().getId());
+        Env.setContext(getCtx(), Env.CODIGO_COMPANIA, getUsuario().getApCampo().getCompania().getRfc());
+    }
+
+    /**
+     * @return the ctx
+     */
+    public Properties getCtx() {
+        return ctx;
+    }
+
+    /**
+     * @param ctx the ctx to set
+     */
+    public void setCtx(Properties ctx) {
+        this.ctx = ctx;
+    }
+
+    /**
+     * @return the mapa
+     */
+    public GrArchivoVO getMapa() {
+        return mapa;
+    }
+
+    /**
+     * @param mapa the mapa to set
+     */
+    public void setMapa(GrArchivoVO mapa) {
+        this.mapa = mapa;
     }
 
 }

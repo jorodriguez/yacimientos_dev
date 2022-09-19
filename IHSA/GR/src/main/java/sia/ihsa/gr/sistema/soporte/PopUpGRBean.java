@@ -260,7 +260,8 @@ public class PopUpGRBean implements Serializable {
                 FacesUtilsBean.addInfoMessage("Se registró la zona correctamente. ");
                 this.setRutaZonas(grRutasZonasImpl.zonasPorRuta(getRuta(), false));
                 this.setRutaZonaVO(null);
-                String jsFuncion = ";cerrarDialogoRutas();";
+                this.setRutaZonaID(0);
+                String jsFuncion = "";//";cerrarDialogoRutas();";
                 PrimeFaces.current().executeScript(jsFuncion);
             }
         } catch (Exception e) {

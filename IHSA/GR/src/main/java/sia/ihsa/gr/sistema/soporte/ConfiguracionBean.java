@@ -41,8 +41,6 @@ import sia.util.UtilLog4j;
 @ViewScoped
 public class ConfiguracionBean implements Serializable {
 
-   
-
     //ManagedBeans
     //Servicios
     @Inject
@@ -111,18 +109,58 @@ public class ConfiguracionBean implements Serializable {
         }
     }
 
+    public List<GrArchivoVO> getMapasDir() {
+        return grArchivoImpl.getArchivos(Constantes.GR_TIPO_ARCHIVO_Mapas, false);
+    }
+
+    public List<GrPuntoVO> getPuntosDir() {
+        return grPuntoImpl.getPuntos();
+    }
+
+    public List<GrArchivoVO> getRecomendacionesDir() {
+        return grArchivoImpl.getArchivos(Constantes.GR_TIPO_ARCHIVO_Recomendaciones, true);
+    }
+
+    public List<SgEstadoSemaforoVO> getSemaforosDir() {
+        return sgEstadoSemaforoImpl.getEstadoSemaforos(this.getSemZonaID());
+    }
+
+    public List<SelectItem> getZonasSemDir() {
+        return grMapaImpl.getMapasItems(true, true);
+    }
+
+    public List<GrSitioVO> setSitiosDir() {
+        return grSitioImpl.getSitios(true);
+    }
+
+    public List<GrArchivoVO> getSituacionesDir() {
+        return grArchivoImpl.getArchivos(Constantes.GR_TIPO_ARCHIVO_Situacion, true);
+    }
+
+    public List<RutaTerrestreVo> getRutasDir() {
+        List<RutaTerrestreVo> lstRutas = sgRutaTerrestreImpl.traerRutaTerrestrePorOficina(getOficinaID(), Constantes.RUTA_TIPO_OFICINA);
+        lstRutas.addAll(sgRutaTerrestreImpl.traerRutaTerrestrePorOficina(getOficinaID(), Constantes.RUTA_TIPO_CIUDAD));
+        return lstRutas;
+    }
+
+    public List<MapaVO> getZonasDir() {
+        return grMapaImpl.getMapas(null);
+    }
+
     /**
      * @param mapas the mapas to set
      */
     public void setMapas(List<GrArchivoVO> mapas) {
         this.mapas = mapas;
     }
- /**
+
+    /**
      * @return the mapas
      */
     public List<GrArchivoVO> getMapas() {
         return mapas;
     }
+
     /**
      * @return the sitios
      */

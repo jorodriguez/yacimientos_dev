@@ -129,7 +129,7 @@ public class GrBean implements Serializable {
     }
 
     public String goMapa(int tipo) {
-        setMapa(grArchivoImpl.getArchivo(tipo));
+        sesionBean.setMapa(grArchivoImpl.getArchivo(tipo));
         return "/vistas/gr/mapa";
     }
 
