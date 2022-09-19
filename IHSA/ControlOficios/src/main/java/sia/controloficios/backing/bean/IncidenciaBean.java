@@ -6,13 +6,16 @@
 package sia.controloficios.backing.bean;
 
 import java.io.File;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.faces.bean.ManagedBean;
 import javax.faces.event.ActionEvent;
 import javax.faces.event.AjaxBehaviorEvent;
 import javax.faces.model.SelectItem;
+import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import lombok.Getter;
@@ -29,6 +32,7 @@ import sia.archivador.AlmacenDocumentos;
 import sia.archivador.DocumentoAnexo;
 import sia.archivador.ProveedorAlmacenDocumentos;
 import sia.constantes.Constantes;
+import sia.controloficios.sistema.bean.backing.Sesion;
 import sia.controloficios.sistema.soporte.FacesUtils;
 import sia.controloficios.sistema.soporte.PrimeUtils;
 import sia.excepciones.InsufficientPermissionsException;
@@ -61,7 +65,9 @@ import sia.util.ValidadorNombreArchivo;
  */
 //@ManagedBean
 @Named(value = "incidenciaBean")
-public class IncidenciaBean extends OficioOpcionesBloquesUIBean {
+@ViewScoped
+//public class IncidenciaBean extends OficioOpcionesBloquesUIBean {
+public class IncidenciaBean implements Serializable{
 
     
 
@@ -89,6 +95,9 @@ public class IncidenciaBean extends OficioOpcionesBloquesUIBean {
     SgViajeImpl sgViajeRemote;
     @Inject
     SiFacturaAdjuntoImpl facturaRemote;
+    
+    @Inject
+    private Sesion sesion;
     
     @Getter
     @Setter
@@ -118,9 +127,12 @@ public class IncidenciaBean extends OficioOpcionesBloquesUIBean {
      * 
      * @throws SIAException 
      */
-    @Override
-    protected void postConstruct() throws SIAException {
+    @PostConstruct
+    protected void postConstruct() {
+        System.out.println("@Postconstruct en tickets");
         this.iniciarIncidencias();
+        
+        System.out.println("@sesion "+sesion.getUsuario().getNombre());
         //setear valor nuevo para mostrar publicos
         // valores iniciales para pantalla de consulta
         /*
@@ -152,6 +164,8 @@ public class IncidenciaBean extends OficioOpcionesBloquesUIBean {
     
 
     public void iniciarIncidencias() {
+        System.out.println("@@iniciarIncidencias");
+        
         setIncidencias(new ArrayList<IncidenciaVo>());
         setIncidenciasAdjunto(new ArrayList<AdjuntoVO>());
         prioridades = new ArrayList<>();
@@ -159,14 +173,14 @@ public class IncidenciaBean extends OficioOpcionesBloquesUIBean {
         //
         llenarIncidencias();
         List<Prioridad> priors = prioridadRemote.findAll();
-        for (Prioridad prior : priors) {
+        priors.forEach(prior -> {
             prioridades.add(new SelectItem(prior.getId(), prior.getNombre()));
-        }
+        });
         categoriaIncidenciaVo = new CategoriaIncidenciaVo();
         List<SiCategoriaIncidencia> cats = categoriaIncidenciaLocal.findAll();
-        for (SiCategoriaIncidencia cat : cats) {
+        cats.forEach(cat -> {
             tiposEvidencias.add(new SelectItem(cat.getId(), cat.getNombre()));
-        }
+        });
         if (tiposEvidencias != null) {
             idCatIncidencia = Integer.parseInt(String.valueOf(tiposEvidencias.get(0).getValue()));
             setCategoriaIncidenciaVo(categoriaIncidenciaLocal.buscarPorId(idCatIncidencia));
@@ -174,11 +188,14 @@ public class IncidenciaBean extends OficioOpcionesBloquesUIBean {
     }
 
     private void llenarIncidencias() {
+        System.out.println("@llenarIncidencias");
         setIncidencias(incidenciaLocal.traerPorUsuario(getSesion().getUsuario().getId(), TicketEstadoEnum.NUEVO.getId()));
         getIncidencias().addAll(incidenciaLocal.traerPorUsuario(getSesion().getUsuario().getId(), TicketEstadoEnum.ASIGNADO.getId()));
     }
 
     public void mostrarTickets(ActionEvent event) {
+        System.out.println("@mostrarTickets");
+        
         llenarIncidencias();
         
         PrimeUtils.executeScript("$(dialogoTickts).modal('show')");
@@ -186,6 +203,9 @@ public class IncidenciaBean extends OficioOpcionesBloquesUIBean {
     }
 
     public void traerCategoria(AjaxBehaviorEvent event) {
+        
+        System.out.println("@traerCategoria");
+        
         setCategoriaIncidenciaVo(categoriaIncidenciaLocal.buscarPorId(idCatIncidencia));
         //
         if (categoriaIncidenciaVo.getTabla() != null && !categoriaIncidenciaVo.getTabla().isEmpty()) {
@@ -558,18 +578,22 @@ public class IncidenciaBean extends OficioOpcionesBloquesUIBean {
         
         // el rol de edición de oficios (emisores y receptores) deberán ver 
         // los combos sin preseleccionar para facilitar búsqueda y registro
-        if (!getPermisos().isRolEdicionOficios()) {
+        /*if (!getPermisos().isRolEdicionOficios()) {
             // inicializar a bloque activo del usuario
             configurarVo(vo, getSesion().getBloqueActivo());
-        }
+        }*/
 
         getSesion().setOficioConsultaVo(vo);
         iniciarIncidencias();
     }
 
-    @Override
+    /*@Override
     protected boolean permisosRequeridos() throws InsufficientPermissionsException {
         return getPermisos().isConsultarOficio();
+    }*/
+
+    public Sesion getSesion() {
+        return sesion;
     }
     
 }
