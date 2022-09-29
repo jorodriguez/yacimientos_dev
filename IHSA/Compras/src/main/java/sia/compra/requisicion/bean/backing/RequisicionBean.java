@@ -1336,8 +1336,71 @@ public class RequisicionBean implements Serializable {
         getListaAprueban();
     }
 
+    /*
+    }
+
+function validaRequisicion(forma) {
+    var e = 0;
+    var tipo = jQuery("input[name$='" + forma + "\\:tipoReq']':checked").val();
+    //bootbox.alert(tipo);
+    var retorno = false;
+    if (this.validarCombo(forma + "\\:idGerencia", 0)) {
+        if (this.validarCombo(forma + "\\:idProyectoOt", 0)) {
+            if (tipo == "PS") {
+                if (this.validarCombo(forma + "\\:unidaCosto", 0)) {
+                    if (this.validarCombo(forma + "\\:userRevisa", 'revisa')) {
+                        if (this.validarCombo(forma + "\\:userAAprueba", 'aprueba')) {
+                            $("#mensajeCombo").text("");
+                        } else {
+                            bootbox.alert("Por favor seleccione quien aprobará la requisición");
+                            $("#mensajeCombo").text("Por favor seleccione quien aprobará la requisición");
+                            e++;
+                        }
+                    } else {
+                        bootbox.alert("Por favor seleccione a quien revisará la requisición");
+                        $("#mensajeCombo").text("Por favor seleccione quien revisará la requisición");
+                        e++;
+                    }
+                } else {
+                    bootbox.alert("Por favor seleccione el tipo de tarea");
+                    $("#mensajeCombo").text("Por favor seleccione el tipo de tarea");
+                    e++;
+                }
+            } else {
+                if (this.validarCombo(forma + "\\:userRevisa", 'revisa')) {
+                    if (this.validarCombo(forma + "\\:userAAprueba", 'aprueba')) {
+                        $("#mensajeCombo").text("");
+                    } else {
+                        bootbox.alert("Por favor seleccione a quien aprobará la requisición");
+                        $("#mensajeCombo").text("Por favor seleccione quien aprobará la requisición");
+                        e++;
+                    }
+                } else {
+                    bootbox.alert("Por favor seleccione a quien revisará la requisición");
+                    $("#mensajeCombo").text("Por favor seleccione quien revisará la requisición");
+                    e++;
+                }
+            }
+        } else {
+            bootbox.alert("Por favor seleccione el proyecto OT");
+            $("#mensajeCombo").text("Por favor seleccione el proyecto OT");
+            e++;
+        }
+    } else {
+        bootbox.alert("Por favor seleccione la gerencia");
+        $("#mensajeCombo").text("Por favor seleccione la gerencia");
+        e++;
+    }
+F
+     */
     public void completarActualizacionRequisicion() {
         try {
+            Preconditions.checkArgument(idGerencia > 0, "Seleccione la gerencia");
+            Preconditions.checkArgument(requisicionActual.getApCampo().getTipo().equals("N")
+            && idProyectoOT > 0, "Seleccione el proyecto OT");
+            Preconditions.checkArgument(tipoRequisicion.equals("PS") && idUnidadCosto > 0, "Seleccione el tipo de requisición");
+            Preconditions.checkArgument(!idRevisa.equals("revisa"), "Seleccione al revisor");
+            Preconditions.checkArgument(!idRevisa.equals("aprueba"), "Seleccione al aprobador");
             if (operacionRequisicion.equals(UPDATE_OPERATION)) {
                 List<RequisicionDetalleVO> rd = requisicionServicioRemoto.getItemsAnalistaNativa(requisicionActual.getId(), false);
                 //Verifica cambios
@@ -1428,13 +1491,9 @@ public class RequisicionBean implements Serializable {
 
             //toggleModal();
             PrimeFaces.current().executeScript(";cerrarDialogoModal(dialogoCrearNewReq);");
-        } catch (Exception ex) {
+        } catch (IllegalArgumentException ex) {
             LOGGER.fatal(this, ex.getMessage(), ex);
-            FacesUtilsBean.addInfoMessage(
-                    "No se pudo " + operacionRequisicion.toLowerCase()
-                    + " la requisición.  Error inesperado: por favor notifique el problema a: soportesia@ihsa.mx  "
-                    + ex.toString()
-            );
+            FacesUtilsBean.addInfoMessage(ex.getMessage());
         }
     }
 
