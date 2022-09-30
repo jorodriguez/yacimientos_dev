@@ -534,7 +534,9 @@ public class RequisicionBean implements Serializable {
     @Getter
     @Setter
     private List<ReRequisicionEts> listaEts;
-
+    @Getter
+    @Setter
+    private List<ReRequisicionEts> etsPorRequisicionEspera;
     @Getter
     @Setter
     private SiAdjunto etsActualAdjunto;
@@ -559,6 +561,7 @@ public class RequisicionBean implements Serializable {
         fechaFin = LocalDate.now();
         fechaInicio = fechaFin.minusDays(30);
         listaEts = new ArrayList<>();
+        etsPorRequisicionEspera = new ArrayList<>();
         // Recibir parametro
         Integer parametro = Env.getContextAsInt(usuarioBean.getCtx(), "REQ_ID");
         if (parametro > 0) {
@@ -1041,9 +1044,13 @@ public class RequisicionBean implements Serializable {
             rechazosRequisicion();
             if (Constantes.REQUISICION_EN_ESPERA == requisicionActual.getEstatus().getId()) {
                 enEsperaDet();
+                etsPorRequisicionEspera = servicioReRequisicion.traerAdjuntosPorRequisicionVisibleTipo(
+                        getRequisicionActual().getId(),
+                        false, "ESPERA");
             }
             listaEts = servicioReRequisicion.traerAdjuntosPorRequisicion(requisicionActual.getId());
             //
+
             String jsMetodo = ";activarTab('tabsRequi',0, 'divDatos', 'divTabla', 'divOperacion', 'divAutoriza');";
             PrimeFaces.current().executeScript(jsMetodo);
         } catch (Exception e) {
@@ -1178,7 +1185,8 @@ public class RequisicionBean implements Serializable {
             if (requisicionServicioRemoto.crearRequisicionDesdeOtra(usuarioBean.getUsuarioConectado().getId(), requisicionVO)) {
                 requisicionVO = null;
                 setCodigo("");
-
+                llenarRequisiciones();
+                contarPendiente();
                 PrimeFaces.current().executeScript(";cerrarNRDO();");
             } else {
                 PrimeFaces.current().executeScript(";errorNRDO();");
@@ -1396,11 +1404,14 @@ F
     public void completarActualizacionRequisicion() {
         try {
             Preconditions.checkArgument(idGerencia > 0, "Seleccione la gerencia");
-            Preconditions.checkArgument(requisicionActual.getApCampo().getTipo().equals("N")
-            && idProyectoOT > 0, "Seleccione el proyecto OT");
-            Preconditions.checkArgument(tipoRequisicion.equals("PS") && idUnidadCosto > 0, "Seleccione el tipo de requisición");
+            if (requisicionActual.getApCampo().getTipo().equals("N")) {
+                Preconditions.checkArgument(idProyectoOT > 0, "Seleccione el proyecto OT");
+            }
+            if (tipoRequisicion.equals(TipoRequisicion.PS.toString()) && requisicionActual.getApCampo().getTipo().equals("N")) {
+                Preconditions.checkArgument((tipoRequisicion.equals("PS") && idUnidadCosto > 0), "Seleccione el tipo de requisición");
+            }
             Preconditions.checkArgument(!idRevisa.equals("revisa"), "Seleccione al revisor");
-            Preconditions.checkArgument(!idRevisa.equals("aprueba"), "Seleccione al aprobador");
+            Preconditions.checkArgument(!idAprueba.equals("aprueba"), "Seleccione al aprobador");
             if (operacionRequisicion.equals(UPDATE_OPERATION)) {
                 List<RequisicionDetalleVO> rd = requisicionServicioRemoto.getItemsAnalistaNativa(requisicionActual.getId(), false);
                 //Verifica cambios
@@ -1408,7 +1419,7 @@ F
                 if (getTipoRequisicion().equals(TipoRequisicion.PS.name())) {
                     if (requisicionActual.getApCampo() != null && "N".equals(requisicionActual.getApCampo().getTipo())) {
                         requisicionActual.setTipo(TipoRequisicion.PS);
-                        if (rd != null && rd.size() > 0) {
+                        if (rd != null && !rd.isEmpty()) {
                             if (requisicionActual.getGerencia().getId() != getIdGerencia()
                                     || requisicionActual.getProyectoOt().getId() != getIdProyectoOT()
                                     || (requisicionActual.getOcUnidadCosto() != null && requisicionActual.getOcUnidadCosto().getId() != getIdUnidadCosto())
@@ -1487,13 +1498,12 @@ F
             setIdUnidadCosto(0);
             setIdNombreTarea(0);
             requisicionActual = null;
-//
-
+            //
+            llenarRequisiciones();
             //toggleModal();
             PrimeFaces.current().executeScript(";cerrarDialogoModal(dialogoCrearNewReq);");
         } catch (IllegalArgumentException ex) {
-            LOGGER.fatal(this, ex.getMessage(), ex);
-            FacesUtilsBean.addInfoMessage(ex.getMessage());
+            FacesUtilsBean.addErrorMessage(ex.getMessage());
         }
     }
 
@@ -2173,27 +2183,30 @@ F
 
     public void asignarRequisicion() {
         try {
-            if (asignarRequisicionProceso(requisicionActual)) {
-                FacesUtilsBean.addInfoMessage(
-                        new StringBuilder().append("La(s) requisicion(es) ")
-                                .append(requisicionActual.getConsecutivo())
-                                .append(" se asignaron correctamente...").toString());
+            if (!idAnalista.equals("-1")) {
+                if (asignarRequisicionProceso(requisicionActual)) {
+                    FacesUtilsBean.addInfoMessage(
+                            new StringBuilder().append("La(s) requisicion(es) ")
+                                    .append(requisicionActual.getConsecutivo())
+                                    .append(" se asignaron correctamente...").toString());
+                    cambiarRequisicion(0);
+                    String jsMetodo = ";regresar('divTabla', 'divDatos', 'divOperacion', 'divAutoriza');";
+                    PrimeFaces.current().executeScript(jsMetodo);
+                } else {
+                    FacesUtilsBean.addErrorMessage(
+                            new StringBuilder().append("No se pudo asignar la(s) requisicion(es): ")
+                                    .append(requisicionActual.getConsecutivo()).append(". Por favor notifique el problema a: soportesia@ihsa.mx").toString());
+                }
                 cambiarRequisicion(0);
-                String jsMetodo = ";regresar('divTabla', 'divDatos', 'divOperacion', 'divAutoriza');";
-                PrimeFaces.current().executeScript(jsMetodo);
+                //
+                llenarRequisiciones();
+                ContarBean contarBean = (ContarBean) FacesUtilsBean.getManagedBean("contarBean");
+                contarBean.llenarReqSinAsignar();
             } else {
-                FacesUtilsBean.addErrorMessage(
-                        new StringBuilder().append("No se pudo asignar la(s) requisicion(es): ")
-                                .append(requisicionActual.getConsecutivo()).append(". Por favor notifique el problema a: soportesia@ihsa.mx").toString());
+                FacesUtilsBean.addErrorMessage("Seleccione el analista de compras");
             }
-            cambiarRequisicion(0);
-            //
-            llenarRequisiciones();
-            ContarBean contarBean = (ContarBean) FacesUtilsBean.getManagedBean("contarBean");
-            contarBean.llenarReqSinAsignar();
         } catch (Exception ex) {
             LOGGER.fatal(this, "", ex);
-            System.out.println(ex);
             FacesUtilsBean.addErrorMessage("Por favor pongase en contacto con el equipo de desarrollo al correo soportesia@ihsa.mx");
         }
     }
@@ -3513,6 +3526,69 @@ F
                 }
                 listaEts = servicioReRequisicion.traerAdjuntosPorRequisicion(requisicionActual.getId());
                 FacesUtilsBean.addInfoMessage("El archivo fue agregado correctamente.");
+            } else {
+                FacesUtilsBean.addErrorMessage(new StringBuilder()
+                        .append("No se permiten los siguientes caracteres especiales en el nombre del Archivo: ")
+                        .append(validadorNombreArchivo.getCaracteresNoValidos())
+                        .toString());
+            }
+
+            fileInfo.delete();
+
+        } catch (IOException e) {
+            LOGGER.fatal(this, "+ + + ERROR + + +", e);
+            FacesUtilsBean.addInfoMessage("Ocurrió un problema al cargar el archivo, por favor contacte al equipo de soporte SIA (soportesia@ihsa.mx)");
+        } catch (SIAException e) {
+            LOGGER.fatal(this, "+ + + ERROR + + +", e);
+            FacesUtilsBean.addInfoMessage("Ocurrió un problema al cargar el archivo, por favor contacte al equipo de soporte SIA (soportesia@ihsa.mx)");
+        }
+    }
+
+    public void uploadFileEspera(FileUploadEvent uploadEvent) {
+        ValidadorNombreArchivo validadorNombreArchivo = new ValidadorNombreArchivo();
+        try {
+            fileInfo = uploadEvent.getFile();
+
+            AlmacenDocumentos almacenDocumentos
+                    = proveedorAlmacenDocumentos.getAlmacenDocumentos();
+
+            boolean addArchivo = validadorNombreArchivo.isNombreValido(fileInfo.getFileName());
+
+            if (addArchivo) {
+                DocumentoAnexo documentoAnexo = new DocumentoAnexo(fileInfo.getContent());
+                documentoAnexo.setTipoMime(fileInfo.getContentType());
+                documentoAnexo.setNombreBase(fileInfo.getFileName());
+                documentoAnexo.setRuta(uploadDirectoryRequi());
+                almacenDocumentos.guardarDocumento(documentoAnexo);
+
+                SiAdjunto adj
+                        = servicioSiAdjuntoImpl.save(
+                                documentoAnexo.getNombreBase(),
+                                new StringBuilder()
+                                        .append(documentoAnexo.getRuta())
+                                        .append(File.separator).append(documentoAnexo.getNombreBase()).toString(),
+                                fileInfo.getContentType(),
+                                "ESPERA",
+                                fileInfo.getSize(),
+                                usuarioBean.getUsuarioConectado().getId()
+                        );
+
+                if (adj != null) {
+                    servicioReRequisicion.crear(
+                            getRequisicionActual(),
+                            adj,
+                            usuarioBean.getUsuarioConectado(),
+                            false
+                    );
+                }
+                requisicionSiMovimientoImpl.saveRequestMove(this.usuarioBean.getUsuarioConectado().getId(), "ADJUNTAR ARCHIVO " + documentoAnexo.getNombreBase(), getRequisicionActual().getId(), Constantes.ID_SI_OPERACION_ESPERAADJ);
+                FacesUtilsBean.addInfoMessage("El archivo fue agregado correctamente.");
+                enEsperaDet();
+
+                etsPorRequisicionEspera = servicioReRequisicion.traerAdjuntosPorRequisicionVisibleTipo(
+                        getRequisicionActual().getId(),
+                        false, "ESPERA");
+                PrimeFaces.current().executeScript(";cerrarDialogoModal(dialogoAdjuntoEsperaReq);");
             } else {
                 FacesUtilsBean.addErrorMessage(new StringBuilder()
                         .append("No se permiten los siguientes caracteres especiales en el nombre del Archivo: ")
