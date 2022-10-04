@@ -694,7 +694,9 @@ public class RecepcionRequisicionBean implements Serializable {
                     listaItems = (requisicionServicioRemoto.getItemsAnalistaNativa(requisicionActual.getId(), false));
                 }
                 actualizar = true;
-
+                ContarBean contarBean = (ContarBean) FacesUtilsBean.getManagedBean("contarBean");
+                contarBean.llenarOcsSinSolicitar();
+                contarBean.llenarRecReq();
             } catch (Exception e) {
                 UtilLog4j.log.fatal(this, e.getMessage(), e);
             }
