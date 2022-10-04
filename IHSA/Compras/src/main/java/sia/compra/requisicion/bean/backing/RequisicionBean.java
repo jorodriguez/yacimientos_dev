@@ -2140,7 +2140,6 @@ F
 
             StringBuilder requiOK = new StringBuilder();
             StringBuilder requiError = new StringBuilder();
-            boolean entro = false;
             for (RequisicionVO o : requisicionesSeleccionadas) {
                 setRequisicionActual(requisicionServicioRemoto.find(o.getId()));
                 if (asignarRequisicionProceso(requisicionActual)) {
@@ -2156,19 +2155,15 @@ F
                         requiError.append(", ").append(requisicionActual.getConsecutivo());
                     }
                 }
-                if (!entro) {
-                    entro = true;
-                }
             }
-            if (entro) {
-
+            if (requiOK.length() > 0) {
                 FacesUtilsBean.addInfoMessage(
                         new StringBuilder().append("La(s) requisicion(es) ")
                                 .append(requiOK.toString())
                                 .append(" se asignaron correctamente...").toString());
                 cambiarRequisicion(0);
             }
-            if (requiError.toString().isEmpty()) {
+            if (requiError.length() > 0) {
                 FacesUtilsBean.addErrorMessage(
                         new StringBuilder().append("No se pudo asignar la(s) requisicion(es): ")
                                 .append(requiError.toString()).append(". Por favor notifique el problema a: soportesia@ihsa.mx").toString());
@@ -2192,6 +2187,7 @@ F
                     cambiarRequisicion(0);
                     String jsMetodo = ";regresar('divTabla', 'divDatos', 'divOperacion', 'divAutoriza');";
                     PrimeFaces.current().executeScript(jsMetodo);
+                    PrimeFaces.current().ajax().update("form1:tbAsig frmMenu");
                 } else {
                     FacesUtilsBean.addErrorMessage(
                             new StringBuilder().append("No se pudo asignar la(s) requisicion(es): ")

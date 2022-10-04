@@ -6,57 +6,44 @@
                 xmlns:h="http://xmlns.jcp.org/jsf/html"
                 >  
     <h:form id="frmComReq">        
-        <p:dialog header="Comentar" styleClass="col-6 col-xs-11" 
+        <p:dialog header="#{msgs['sistema.modificar']} #{msgs['comunicacion.comentario']}" 
                   widgetVar="dlgComentar"
                   modal="true">
-            <f:facet name="header">
-                #{msgs['sistema.modificar']} #{msgs['comunicacion.comentario']}
-            </f:facet>
-            <f:facet name="body">
-                <h:panelGroup>
-                    <center><h:messages errorClass="mensaje" infoClass="mensaje"/></center>                             
-                    <p:panel >
-                        <h:inputTextarea styleClass="textAreaModificarNoticia"  
-                                         value="#{notaRequisicionBean.comentarioActual.mensaje}" cols="39" rows="3"/>
-                    </p:panel>
-                    
-                    <center>
-                        <p:panel  style="width: 30%; text-align: center;">                                
-                            <p:commandLink action="#{notaRequisicionBean.modificarComentario}"  
-                                           value="#{msgs['sistema.guardar']}" styleClass="compartir" />        
-                            <h:outputText value=" | "/>        
-                            <p:commandLink action="#{notaRequisicionBean.ocultarPopupModificarComentario}"  
-                                           value="#{msgs['sistema.cerrar']}" styleClass="cancelar" style="color: red;"/>        
-                        </p:panel>                        
-                    </center>
-                </h:panelGroup>
-            </f:facet>
+            <h:panelGroup>
+                <center><h:messages errorClass="mensaje" infoClass="mensaje"/></center>                             
+                <p:panel >
+                    <h:inputTextarea styleClass="form-control"  
+                                     value="#{notaRequisicionBean.comentarioActual.mensaje}" cols="39" rows="3"/>
+                </p:panel>
+
+                <f:facet name="footer">   
+                    <p:commandLink action="#{notaRequisicionBean.modificarComentario}"  
+                                   process="@form" update="form1:tbRequi"
+                                   value="#{msgs['sistema.guardar']}" />        
+                    <p:commandLink action="#{notaRequisicionBean.ocultarPopupModificarComentario}"  
+                                   value="#{msgs['sistema.cerrar']}" onclick="PF('dlgComentar').hide()"/>        
+                </f:facet>
+            </h:panelGroup>
         </p:dialog>
     </h:form>
     <h:form id="frmNotReq">
-        <p:dialog header="Comentar" widgetVar="dlgNoticiaReq"
-                  modal="true">
-            <f:facet name="header">
-                #{msgs['sistema.modificar']} #{msgs['comunicacion.noticia']}
-            </f:facet>
-            <f:facet name="body">
-                <h:panelGroup>
-                    <center><h:messages errorClass="mensaje" infoClass="mensaje"/></center>                             
-                    <p:panel >
-                        <h:inputTextarea styleClass="textAreaModificarNoticia" 
-                                         value="#{notaRequisicionBean.noticiaActual.mensajeAutomatico}" cols="60" rows="3"/>
-                    </p:panel>
-                    
-                    <center>
-                        <p:panel  style="width: 30%; text-align: center;">                                
-                            <p:commandLink action="#{notaRequisicionBean.modificarNoticia}"  
-                                           value="#{msgs['sistema.guardar']}" styleClass="compartir" />        
-                            <h:outputText value=" | "/>        
-                            <p:commandLink action="#{notaRequisicionBean.ocultarPopupModificarNoticia}"  value="#{msgs['sistema.cerrar']}" styleClass="cancelar" style="color: red;"/>        
-                        </p:panel>                        
-                    </center>
-                </h:panelGroup>
-            </f:facet>
+        <p:dialog header="#{msgs['sistema.modificar']} #{msgs['comunicacion.noticia']}" widgetVar="dlgNoticiaReq"
+                  modal="true" >
+            <h:panelGroup>
+                <center><h:messages errorClass="mensaje" infoClass="mensaje"/></center>                             
+                <p:panel >
+                    <h:inputTextarea styleClass="form-control" 
+                                     value="#{notaRequisicionBean.noticiaActual.mensajeAutomatico}" cols="60" rows="3"/>
+                </p:panel>
+                <f:facet name="footer">    
+                    <p:commandLink action="#{notaRequisicionBean.ocultarPopupModificarNoticia}"  
+                                   immediate="true" onclick="PF('dlgNoticiaReq').hide()"
+                                   value="#{msgs['sistema.cerrar']}" /> 
+                    <p:commandButton action="#{notaRequisicionBean.modificarNoticia}"  
+                                     process="@form" update="form1:tbRequi"
+                                     value="#{msgs['sistema.guardar']}" styleClass="compartir" />           
+                </f:facet>
+            </h:panelGroup>
         </p:dialog>
     </h:form>
     <!-- PANEL ADJUNTAR  -->
@@ -69,23 +56,21 @@
                     <h:outputText value="#{msgs['comunicacion.adjuntar.archivos']}" style="float: left; padding: 4px;text-align: center; vertical-align: middle;font: 11px;color: #484848; font-weight: bold;"/>
                 </h:panelGroup>
             </f:facet>
-            <f:facet name="body">
-                <h:panelGroup>
-                    <p:panel >
-                        <p:fileUpload id="fileEntryr"
-                                      immediate="true"
-                                      listener="#{notaRequisicionBean.subirArchivo}" 
-                                      label="#{msgs['sistema.subir.archivo']}"/>
-                        <p:commandButton type="submit" value="#{msgs['sistema.subir']}" />                        
-                        <p:commandButton value="#{msgs['sistema.cancelar']}" styleClass="cancelar"  title="Clic para cerrar el popup"
-                                         action="#{notaRequisicionBean.ocultarPopupSubirArchivo}" 
-                                         immediate="true"/>
-                    </p:panel>
-                </h:panelGroup>
+            <h:panelGroup>
+                <p:fileUpload id="fileEntryr"
+                              immediate="true"
+                              listener="#{notaRequisicionBean.subirArchivo}" 
+                              label="#{msgs['sistema.subir.archivo']}"/>
+            </h:panelGroup>
+            <f:facet name="footer">
+                <p:commandButton value="#{msgs['sistema.cancelar']}" styleClass="cancelar"  title="Clic para cerrar el popup"
+                                 action="#{notaRequisicionBean.ocultarPopupSubirArchivo}" 
+                                 onclick="PF('dlgSubArhNotReq').hide()"
+                                 immediate="true"/>
             </f:facet>
         </p:dialog>
     </h:form>
-    <h:form >
+    <h:form id="frmMvArchivo" >
         <p:dialog id="popup1" widgetVar="dlgMvArchReq" draggable="false" modal="true">
             <f:facet name="header">
                 <h:panelGroup>
@@ -145,7 +130,7 @@
                             </p:column>
                         </p:dataTable>
                     </p:panel>
-                    
+
                     <center>
                         <p:commandLink value="#{msgs['sistema.cerrar']}" styleClass="cancelar" 
                                        action="#{notaRequisicionBean.ocultarPopupVerAdjuntos}" immediate="true"/>
