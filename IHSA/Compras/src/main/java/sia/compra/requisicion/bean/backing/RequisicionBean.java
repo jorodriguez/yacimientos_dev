@@ -4061,7 +4061,7 @@ F
 
     public void actualizaProyectoOT() {
 //        idProyectoOt = (Integer) event.getNewValue();
-        if (idProyectoOt > 0 && idActPetrolera > 0 && idPresupuesto > 0) {
+        if (idProyectoOT > 0 && idActPetrolera > 0 && idPresupuesto > 0) {
             setMultiProyecto(false);
             setListaUnidadCosto(ocPresupuestoDetalleImpl.getUnidadCostosItems(
                     getIdPresupuesto(),
@@ -4071,7 +4071,7 @@ F
                     getAnioPresupuesto(),
                     getMesPresupuesto(),
                     false));
-        } else if (idProyectoOt == -2) {
+        } else if (idProyectoOT == -2) {
             setMultiProyecto(true);
             setListaUnidadCosto(ocPresupuestoDetalleImpl.getUnidadCostosItems(
                     getIdPresupuesto(),
@@ -4093,7 +4093,7 @@ F
 
     public void actualizaTipoTarea() {
 //        idTipoTarea = (Integer) event.getNewValue();
-        if (idProyectoOt > 0 && idActPetrolera > 0 && idTipoTarea > 0) {
+        if (idProyectoOT > 0 && idActPetrolera > 0 && idTipoTarea > 0) {
             setListaTO(ocPresupuestoDetalleImpl.getTareasItems(
                     getIdPresupuesto(),
                     getIdActPetrolera(),
@@ -4123,7 +4123,7 @@ F
 
     public void actualizaTarea() {
 //	idTarea= (Integer) event.getNewValue();
-        if (idProyectoOt > 0 && idActPetrolera > 0 && idTipoTarea > 0 && idTarea > 0) {
+        if (idProyectoOT > 0 && idActPetrolera > 0 && idTipoTarea > 0 && idTarea > 0) {
             setLstCentroCosto(ocPresupuestoDetalleImpl.getSubTareasItems(
                     getIdPresupuesto(),
                     getIdActPetrolera(),
