@@ -18,7 +18,7 @@
                 <h:form id="form1">      
                     <p:panel id="pnlAutorizacion">              
                         <div class="row">
-                            <div id="divOperacion" class="intput-group col-3" style="display: none;">                                
+                            <div id="divOperacion" class="intput-group" style="display: none;">                                
                                 <p:commandLink value="Regresar" styleClass="btn btn-default" 
                                                action="#{requisicionBean.limpiarRequisicion}"
                                                onclick="regresar('divTabla', 'divDatos', 'divOperacion', 'divAutoriza')"
@@ -26,39 +26,19 @@
                                 <p:commandLink value="Devolver" styleClass="btn btn-default" 
                                                action="#{requisicionBean.devolverRequisicion}"
                                                title="Clic aquí para devolver la requisición..."
-                                               process="@this" update="frmDev"/>                                                                
-                            </div>                
-                            <div class="col-4">                           
-                                <p:selectOneMenu styleClass="form-control" id="listaAnalistas" value="#{requisicionBean.idAnalista}">
+                                               process="@this" update="frmDev"/>  
+                                <p:selectOneMenu id="listaAnalistas" value="#{requisicionBean.idAnalista}">
                                     <f:selectItem itemLabel="Analista de compras . . ." itemValue="-1"/>
-                                    <f:selectItems id="SelectAnalistaItems" value="#{requisicionBean.listaAnalista}"/>
+                                    <f:selectItems value="#{requisicionBean.listaAnalista}"/>
                                 </p:selectOneMenu>    
-                            </div>            
-                            <div id="divAutoriza" class="intput-group col-4">   
-                                <ui:fragment rendered="#{requisicionBean.requisicionActual == null}">
-                                    <p:commandButton value="Asignar" 
-                                                     styleClass="btn btn-default"
-                                                     style="font-weight: bold;"
-                                                     action="#{requisicionBean.asignarVariasRequisiciones}"
-                                                     process="form1:tbAsig:dataTableAsignar form1:tbAsig:dtAsiginv form1:listaAnalistas @this" update="form1 frmMenu"/>
-                                    <p:commandLink value="Devolver" styleClass="btn btn-default"
-                                                   action="#{requisicionBean.inicioDevolverRequisicionesAsignar()}"
-                                                   style="font-weight: bold;" process="@this form1:tbAsig:dataTableAsignar" update="frmDevV"/>
-                                    <p:commandLink value="Cancelar" styleClass="btn btn-default"
-                                                   action="#{requisicionBean.inicioCancelarRequisicionesAsignar()}"
-                                                   style="font-weight: bold;" process="@this form1:tbAsig:dataTableAsignar" update="frmCanReqV"/>
-                                </ui:fragment>
-
-                            </div>   
-                            <div class="col-1">                           
                                 <ui:fragment rendered="#{requisicionBean.requisicionActual != null}">
                                     <p:commandButton value="Asignar" 
                                                      styleClass="btn btn-default"
                                                      style="font-weight: bold;"
                                                      action="#{requisicionBean.asignarRequisicion}"
                                                      process="@form"/>
-                                </ui:fragment>
-                            </div>
+                                </ui:fragment>                                                              
+                            </div>                
                         </div>
                     </p:panel>
                     <div id="divTabla" class="container-fluid"> 
@@ -74,6 +54,23 @@
                                     <p:tabView id="tbAsig"
                                                tabindex="#{requisicionBean.indexTab}" onTabChange="#{requisicionBean.seleccionarTabAsignarRequisicion()}">
                                         <p:tab title="Requisiciones" >
+                                            <div class="row intput-group">
+                                                <p:selectOneMenu  id="listaAnalistasSinInv" value="#{requisicionBean.idAnalista}">
+                                                    <f:selectItem itemLabel="Analista de compras . . ." itemValue="-1"/>
+                                                    <f:selectItems value="#{requisicionBean.listaAnalista}"/>
+                                                </p:selectOneMenu>  
+                                                <p:commandButton value="Asignar" 
+                                                                 styleClass="btn btn-default"
+                                                                 style="font-weight: bold;"
+                                                                 action="#{requisicionBean.asignarVariasRequisicionesSinInventario}"
+                                                                 process="form1:tbAsig:dataTableAsignar form1:tbAsig:listaAnalistasSinInv @this" update="form1 frmMenu"/>
+                                                <p:commandLink value="Devolver" styleClass="btn btn-default"
+                                                               action="#{requisicionBean.inicioDevolverRequisicionesAsignar()}"
+                                                               style="font-weight: bold;" process="@this form1:tbAsig:dataTableAsignar" update="frmDevV"/>
+                                                <p:commandLink value="Cancelar" styleClass="btn btn-default"
+                                                               action="#{requisicionBean.inicioCancelarRequisicionesAsignar()}"
+                                                               style="font-weight: bold;" process="@this form1:tbAsig:dataTableAsignar" update="frmCanReqV"/>
+                                            </div>
                                             <p:dataTable size="small" stripedRows="true" showGridlines="true"  id="dataTableAsignar" 
                                                          value="#{requisicionBean.listaRequisiciones}" 
                                                          var="currentRow" 
@@ -137,6 +134,24 @@
                                             </p:dataTable>
                                         </p:tab>
                                         <p:tab title="Con inventario (#{requisicionBean.totalReqConInventario}) ">
+                                            <div class="row intput-group">
+                                                <p:selectOneMenu id="listaAnalistasConInv" value="#{requisicionBean.idAnalista}">
+                                                    <f:selectItem itemLabel="Analista de compras . . ." itemValue="-1"/>
+                                                    <f:selectItems  value="#{requisicionBean.listaAnalista}"/>
+                                                </p:selectOneMenu>  
+                                                <p:commandButton value="Asignar" 
+                                                                 styleClass="btn btn-default"
+                                                                 style="font-weight: bold;"
+                                                                 action="#{requisicionBean.asignarVariasRequisicionesConInventario()}"
+                                                                 process="form1:tbAsig:dtAsiginv form1:tbAsig:listaAnalistasConInv @this"
+                                                                 update="form1:tbAsig frmMenu"/>
+                                                <p:commandLink value="Devolver" styleClass="btn btn-default"
+                                                               action="#{requisicionBean.inicioDevolverRequisicionesAsignar()}"
+                                                               style="font-weight: bold;" process="@this form1:tbAsig:dataTableAsignar" update="frmDevV"/>
+                                                <p:commandLink value="Cancelar" styleClass="btn btn-default"
+                                                               action="#{requisicionBean.inicioCancelarRequisicionesAsignar()}"
+                                                               style="font-weight: bold;" process="@this form1:tbAsig:dataTableAsignar" update="frmCanReqV"/>
+                                            </div>
                                             <p:dataTable id="dtAsiginv" size="small" stripedRows="true" showGridlines="true"   
                                                          value="#{requisicionBean.listaRequisicionesConInventario}" 
                                                          var="currentRow" 

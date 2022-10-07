@@ -540,6 +540,9 @@ public class RequisicionBean implements Serializable {
     @Getter
     @Setter
     private SiAdjunto etsActualAdjunto;
+    @Getter
+    @Setter
+    private boolean mostrarBotonAsignarConContrato;
 
     /**
      * Creates a new instance of ManagedBeanRequisiciones
@@ -578,6 +581,7 @@ public class RequisicionBean implements Serializable {
             requisicionActual = null;
         }
         llenarRequisiciones();
+        mostrarBotonAsignarConContrato = false;
     }
 
     private void llenarRequisiciones() {
@@ -1900,12 +1904,12 @@ F
                 cambiarRequisicion(0);
                 String jsMetodo = ";regresar('divTabla', 'divDatos', 'divOperacion', 'divAutoriza');";
                 PrimeFaces.current().executeScript(jsMetodo);
-                ContarBean contarBean = (ContarBean) FacesUtilsBean.getManagedBean("contarBean");
-                contarBean.llenarReqSinRevisar();
             } catch (Exception ex) {
                 LOGGER.fatal(this, "Ex : : : : " + ex.getMessage(), ex);
             }
         }
+        ContarBean contarBean = (ContarBean) FacesUtilsBean.getManagedBean("contarBean");
+        contarBean.llenarReqSinRevisar();
         llenarRequisiciones();
     }
 
@@ -1952,7 +1956,7 @@ F
      * @param
      */
     public void aprobarVariasRequisiciones() {
-        try {
+        try {   
 
             Preconditions.checkArgument(!requisicionesSeleccionadas.isEmpty(), "Seleccione al menos una requisición");
             requisicionesSeleccionadas.stream().forEach(o -> {
@@ -1961,6 +1965,8 @@ F
             });
             FacesUtilsBean.addInfoMessage(FacesUtilsBean.getKeyResourceBundle("requisiciones.correos.APRenviado"));
             llenarRequisiciones();
+            ContarBean contarBean = (ContarBean) FacesUtilsBean.getManagedBean("contarBean");
+            contarBean.llenarReqSinAprobar();
             requisicionActual = null;
             String jsMetodo = ";limpiarTodos();";
             PrimeFaces.current().executeScript(jsMetodo);
@@ -2133,7 +2139,15 @@ F
         }
     }
 
-    public void asignarVariasRequisiciones() {
+    public void asignarVariasRequisicionesSinInventario() {
+        asignarVariasRequisiciones();
+    }
+
+    public void asignarVariasRequisicionesConInventario() {
+        asignarVariasRequisiciones();
+    }
+
+    private void asignarVariasRequisiciones() {
         try {
             Preconditions.checkArgument(!idAnalista.equals("-1"), "Seleccione un analista de compras");
             Preconditions.checkArgument(!requisicionesSeleccionadas.isEmpty(), "Seleccione al menos una requisición.");
@@ -2397,6 +2411,11 @@ F
 
     public void seleccionarTabAsignarRequisicion() {
         requisicionesSeleccionadas = new ArrayList<>();
+        if (indexTab == 0) {
+            mostrarBotonAsignarConContrato = true;
+        } else {
+            mostrarBotonAsignarConContrato = true;
+        }
     }
 
     /**
