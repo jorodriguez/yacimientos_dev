@@ -91,17 +91,17 @@ public class LSWUSGL extends HttpServlet {
                     //System.out.println("Rol: " + sesion.getIdRol());
                     sesion.setRoles(ur);
                     //crea el menu
-                    sesion.crearMenu(idCampoActual);
+                    sesion.crearMenu(sesion.getUsuario().getId(), idCampoActual);
                     sesion.setListCampoByUsusario(apCampoUsuarioRhPuestoImpl.getAllPorUsurio(sesion.getUsuario().getId()));
                     //
                     //
                     //agrga la oficina a RSGyL, Asisitente, y capacitacion
 
-//                    if (sesion.getUsuario().getSgOficina() != null) {
-//                        if (sesion.getUsuario().getSgOficina().getId() > 0) {
-//                            idoficinaActual = sesion.getUsuario().getSgOficina().getId();
-//                        }
-//                    }
+                    if (sesion.getUsuario().getSgOficina() != null) {
+                        if (sesion.getUsuario().getSgOficina().getId() > 0) {
+                            idoficinaActual = sesion.getUsuario().getSgOficina().getId();
+                        }
+                    }
                     // se debe de cargar previo la oficina actual y ya de ser necesaria se actualiza.
                     sesion.setOficinaActual(sgOficinaImpl.buscarPorId(idoficinaActual));
                     switch (sesion.getIdRol()) {

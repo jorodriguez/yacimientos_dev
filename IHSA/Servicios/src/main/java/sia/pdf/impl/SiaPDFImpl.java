@@ -5,7 +5,6 @@
 package sia.pdf.impl;
 
 import com.google.common.base.Strings;
-import com.itextpdf.text.pdf.PdfWriter;
 import com.newrelic.api.agent.Trace;
 import java.io.File;
 import java.io.UnsupportedEncodingException;
@@ -24,11 +23,13 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
 import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JRExporterParameter;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.export.JRPdfExporter;
-import net.sf.jasperreports.engine.export.JRPdfExporterParameter;
+import net.sf.jasperreports.export.PdfExporterConfiguration;
+import net.sf.jasperreports.export.SimpleExporterInput;
+import net.sf.jasperreports.export.SimpleOutputStreamExporterOutput;
+import net.sf.jasperreports.export.SimplePdfExporterConfiguration;
 import sia.archivador.AlmacenDocumentos;
 import sia.archivador.DocumentoAnexo;
 import sia.archivador.ProveedorAlmacenDocumentos;
@@ -238,32 +239,36 @@ public class SiaPDFImpl {
 
     private File generateAndExportJasper(JasperData jasperData) throws JRException {
         // Generate jasper print
-        final JasperPrint jprint
-                = (JasperPrint) JasperFillManager.fillReport(
-                        new StringBuilder()
-                                .append(jasperData.repositoryPath)
-                                .append(jasperData.jasperFilePath)
-                                .append(jasperData.repName)
-                                .append(JASPER_EXTENSION).toString(),
-                        jasperData.params,
-                        jasperData.conn
-                );
+        try {
+            JasperPrint jprint = JasperFillManager.fillReport(jasperData.repositoryPath + jasperData.jasperFilePath + jasperData.repName
+                    + JASPER_EXTENSION, jasperData.params, jasperData.conn);
 
-        // Export pdf file
-        final JRPdfExporter exporter = new JRPdfExporter();
-        exporter.setParameter(JRPdfExporterParameter.IS_ENCRYPTED, Boolean.TRUE);
-        exporter.setParameter(JRPdfExporterParameter.IS_128_BIT_KEY, Boolean.TRUE);
-        exporter.setParameter(JRPdfExporterParameter.PERMISSIONS, PdfWriter.ALLOW_PRINTING);
-        exporter.setParameter(
-                JRExporterParameter.OUTPUT_FILE_NAME,
-                new StringBuilder().append(jasperData.repositoryPath)
-                        .append(jasperData.pdfFilePath)
-                        .append(jasperData.baseFileName)
-                        .append(EXT_PDF).toString()
-        );
-        exporter.setParameter(JRExporterParameter.JASPER_PRINT, jprint);
-        exporter.exportReport();
-
+            // Export pdf file
+            JRPdfExporter exporter = new JRPdfExporter();
+            exporter.setExporterInput(new SimpleExporterInput(jprint));
+            exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(jasperData.repositoryPath + jasperData.pdfFilePath  + jasperData.baseFileName + EXT_PDF));
+            SimplePdfExporterConfiguration configuration = new SimplePdfExporterConfiguration();
+            configuration.setCreatingBatchModeBookmarks(true);
+            configuration.setEncrypted(Boolean.TRUE);
+            configuration.set128BitKey(Boolean.TRUE);
+            configuration.setPermissions(PdfExporterConfiguration.ALL_PERMISSIONS);
+            exporter.setConfiguration(configuration);
+            exporter.exportReport();
+            //exporter.setParameter(JRPdfExporterParameter.IS_ENCRYPTED, Boolean.TRUE);
+            //exporter.setParameter(JRPdfExporterParameter.IS_128_BIT_KEY, Boolean.TRUE);
+//        exporter.setParameter(JRPdfExporterParameter.PERMISSIONS, PdfWriter.ALLOW_PRINTING);
+//        exporter.setParameter(
+//                JRExporterParameter.OUTPUT_FILE_NAME,
+//                new StringBuilder().append(jasperData.repositoryPath)
+//                        .append(jasperData.pdfFilePath)
+//                        .append(jasperData.baseFileName)
+//                        .append(EXT_PDF).toString()
+//        );
+//        exporter.setParameter(JRExporterParameter.JASPER_PRINT, jprint);
+//        exporter.exportReport();
+        } catch (JRException ex) {
+            System.out.println("Exc: expor OCS {}" + ex);
+        }
         return new File(
                 new StringBuilder().append(jasperData.repositoryPath)
                         .append(jasperData.pdfFilePath)
@@ -271,7 +276,6 @@ public class SiaPDFImpl {
                         .append(EXT_PDF).toString()
         );
     }
-
 
     private void guardarOrdenETS(Orden orden, String fileName, String path,
             String content, long size, Usuario usr)

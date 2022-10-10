@@ -108,7 +108,6 @@ public class SolicitudViajeBean implements Serializable {
             UtilLog4j.log.info(this, "goToSolicitudesPorAprobar()");
             solicitudViajeBeanModel.mostrarSolicitudesByAprobar();
         }
-
     }
 
     public void goToSolicitudesJustificar() {

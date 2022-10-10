@@ -540,9 +540,6 @@ public class RequisicionBean implements Serializable {
     @Getter
     @Setter
     private SiAdjunto etsActualAdjunto;
-    @Getter
-    @Setter
-    private boolean mostrarBotonAsignarConContrato;
 
     /**
      * Creates a new instance of ManagedBeanRequisiciones
@@ -581,7 +578,6 @@ public class RequisicionBean implements Serializable {
             requisicionActual = null;
         }
         llenarRequisiciones();
-        mostrarBotonAsignarConContrato = false;
     }
 
     private void llenarRequisiciones() {
@@ -2411,11 +2407,6 @@ F
 
     public void seleccionarTabAsignarRequisicion() {
         requisicionesSeleccionadas = new ArrayList<>();
-        if (indexTab == 0) {
-            mostrarBotonAsignarConContrato = true;
-        } else {
-            mostrarBotonAsignarConContrato = true;
-        }
     }
 
     /**
