@@ -9,8 +9,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.PostConstruct;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ManagedProperty;
 import javax.faces.view.ViewScoped;
 
 
@@ -20,7 +18,6 @@ import lombok.Getter;
 import lombok.Setter;
 import org.primefaces.PrimeFaces;
 import sia.constantes.Constantes;
-import sia.contrato.bean.soporte.FacesUtils;
 import sia.ihsa.contratos.Sesion;
 import sia.modelo.contrato.vo.ContratoFormasNotasVo;
 import sia.modelo.contrato.vo.ContratoFormasVo;

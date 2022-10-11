@@ -284,8 +284,7 @@ public class IncidenciaConvenioBean implements Serializable {
         PrimeFaces.current().executeScript("$(dialogoNuevoTickts).modal('hide');");
     }
 
-    public void inicioCerrarTicket() {
-        int idT = Integer.parseInt(FacesUtils.getRequestParam("idTicket"));
+    public void inicioCerrarTicket(int idT) {
         incidenciaVo = incidenciaImpl.buscarPorId(idT);
         //
         PrimeFaces.current().executeScript("$(dialogoCierreTickt).modal('show');");
@@ -303,15 +302,13 @@ public class IncidenciaConvenioBean implements Serializable {
         PrimeFaces.current().executeScript("$(dialogoCierreTickt).modal('hide');");
     }
 
-    public void inicioReenviarTicket() {
-        int idT = Integer.parseInt(FacesUtils.getRequestParam("idTicket"));
+    public void inicioReenviarTicket(int idT) {
         incidenciaVo = incidenciaImpl.buscarPorId(idT);
         //
         PrimeFaces.current().executeScript("$(dialogoComplementoTickt).modal('show');");
     }
 
-    public void agregarAdjunto() {
-        int idT = Integer.parseInt(FacesUtils.getRequestParam("idTicket"));
+    public void agregarAdjunto(int idT) {
         incidenciaVo = incidenciaImpl.buscarPorId(idT);
         incidenciasAdjunto = incidenciaAdjuntoImpl.traerArchivoPorIncidencia(idT);
         //

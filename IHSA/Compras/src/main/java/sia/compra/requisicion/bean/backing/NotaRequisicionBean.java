@@ -174,6 +174,7 @@ public class NotaRequisicionBean implements Serializable {
         } else {
             FacesUtilsBean.addErrorMessage("Por favor escribe la noticia..");
         }
+        traerNoticiaPorUsuario();
     }
 
     public void eliminarNoticia(int idN) {
@@ -183,6 +184,7 @@ public class NotaRequisicionBean implements Serializable {
         } catch (Exception e) {
             UtilLog4j.log.fatal(this, "Exception en elimnar cmentario " + e.getMessage());
         }
+        traerNoticiaPorUsuario();
     }
 
     public void comentarNoticia(int idN) {
@@ -230,6 +232,7 @@ public class NotaRequisicionBean implements Serializable {
         try {
             UtilLog4j.log.info(this, "idComentario " + idCom);
             coNoticiaImpl.eliminarComentario(idCom, usuarioBean.getUsuarioConectado().getId());
+            traerNoticiaPorUsuario();
             UtilLog4j.log.info(this, "Comentario eliminado");
         } catch (Exception e) {
             UtilLog4j.log.fatal(this, "Exception en elimnar cmentario " + e.getMessage(), e);
@@ -337,6 +340,7 @@ public class NotaRequisicionBean implements Serializable {
 
     /**
      * ***************************************************
+     * @param idCom
      */
     public void mostrarPopupModificarComentario(int idCom) {
         this.setComentarioActual(coNoticiaImpl.buscarComentario(idCom));

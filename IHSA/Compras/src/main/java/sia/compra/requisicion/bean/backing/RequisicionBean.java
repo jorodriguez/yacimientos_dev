@@ -1147,6 +1147,7 @@ public class RequisicionBean implements Serializable {
         } else {
             FacesUtilsBean.addErrorMessage("Por favor escribe el comentario..");
         }
+        traerNoticia();
     }
 
     public boolean quitarArchivo(Integer idNoticia, Integer idArchivo, Integer idRelacion, String idUsuario) {
@@ -1167,6 +1168,7 @@ public class RequisicionBean implements Serializable {
             CoNoticia noti = coNoticiaImpl.find(noticiaActual.getId());
             noti.setMensajeAutomatico(noticiaActual.getMensajeAutomatico());
             coNoticiaImpl.editNoticia(noti, usuarioBean.getUsuarioConectado().getId());
+            traerNoticia();
         } else {
             FacesUtilsBean.addErrorMessage("Por favor escribe la noticia..");
         }
