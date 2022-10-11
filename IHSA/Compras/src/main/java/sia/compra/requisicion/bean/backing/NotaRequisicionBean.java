@@ -11,6 +11,7 @@ package sia.compra.requisicion.bean.backing;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -169,6 +170,7 @@ public class NotaRequisicionBean implements Serializable {
         if (!this.getNoticiaActual().getMensajeAutomatico().equals("")) {
             coNoticiaImpl.editNoticia(noticiaActual, usuarioBean.getUsuarioConectado().getId());
             setMrPopupModificarNoticia(false);
+            PrimeFaces.current().executeScript("PF('dlgNoticiaReq').hide()");
         } else {
             FacesUtilsBean.addErrorMessage("Por favor escribe la noticia..");
         }
@@ -209,6 +211,7 @@ public class NotaRequisicionBean implements Serializable {
         if (isFiltrar()) {
             maxComents = maxComents + 1;
         }
+        traerNoticiaPorUsuario();
         this.setComentar(false);
     }
 
@@ -251,7 +254,9 @@ public class NotaRequisicionBean implements Serializable {
     }
 
     /**
-     * **************************FILE *******************
+     * **************************FILE
+     *
+     *******************
      * @param event
      * @throws javax.naming.NamingException
      */
@@ -272,7 +277,7 @@ public class NotaRequisicionBean implements Serializable {
                 DocumentoAnexo documentoAnexo = new DocumentoAnexo(fileInfo.getContent());
                 documentoAnexo.setNombreBase(fileInfo.getFileName());
                 documentoAnexo.setTipoMime(fileInfo.getContentType());
-                documentoAnexo.setRuta(getDirectorioPath());
+                documentoAnexo.setRuta(traerDirectorio(noticiaActual.getId()));
                 almacenDocumentos.guardarDocumento(documentoAnexo);
 
                 coNoticiaImpl.addArchivo(
@@ -292,14 +297,7 @@ public class NotaRequisicionBean implements Serializable {
             }
 
             fileInfo.delete();
-            v = coNoticiaImpl.addArchivo(fileInfo.getFileName(),
-                    fileInfo.getContentType(),
-                    fileInfo.getSize(), noticiaActual.getId(), usuarioBean.getUsuarioConectado().getId());
-            setMrSubirArchivo(false);
-            if (v == false) {
-                FacesUtilsBean.addErrorMessage("Ocurrio una excepción, favor de comunicar a soportesia@ihsa.mx");
-            }
-            PrimeFaces.current().executeScript("PF(dlgSubArhNotReq).hide();");
+            PrimeFaces.current().executeScript("PF('dlgSubArhNotReq').hide();");
         } catch (IOException | SIAException e) {
             LOGGER.fatal(this, "+ + + ERROR + + +", e);
             FacesUtilsBean.addErrorMessage("Ocurrió un problema al cargar el archivo, por favor contacte al equipo de soporte SIA (soportesia@ihsa.mx)");
@@ -313,30 +311,14 @@ public class NotaRequisicionBean implements Serializable {
             this.dataModel = new ListDataModel(coNoticiaImpl.getAdjuntosNoticia(idN, usuarioBean.getUsuarioConectado().getId()));
             FacesUtilsBean.addErrorMessage("Se eliminó correctamente el archivo...");
         }
+        traerNoticiaPorUsuario();
     }
 
     public boolean quitarArchivo(Integer idNoticia, Integer idArchivo, Integer idRelacion, String idUsuario) {
-        String path = this.siParametroImpl.find(1).getUploadDirectory();
         SiAdjunto adjunto = siAdjuntoImpl.find(idArchivo);
         try {
-            File file = new File(path + adjunto.getUrl());
-            UtilLog4j.log.info(this, "path :" + path);
-            if (file.delete()) {
-                UtilLog4j.log.info(this, "Entro a eliminar");
-                coNoticiaImpl.deleteArchivo(adjunto, idRelacion, idUsuario);
-                UtilLog4j.log.info(this, "Elimino el adjunto de la noticia");
-            }
-            UtilLog4j.log.info(this, "entrando a eliminar el archivo fisico");
-            String dir = "Comunicacion/Noticia" + "/" + idNoticia + "/";
-            UtilLog4j.log.info(this, "Ruta carpeta: " + dir);
-            File sessionfileUploadDirectory = new File(path + dir);
-            if (sessionfileUploadDirectory.isDirectory()) {
-                try {
-                    sessionfileUploadDirectory.delete();
-                } catch (SecurityException e) {
-                    UtilLog4j.log.fatal(this, e.getMessage());
-                }
-            }
+            UtilLog4j.log.info(this, "Entro a eliminar");
+            coNoticiaImpl.deleteArchivo(adjunto, idRelacion, idUsuario);
             return true;
         } catch (Exception e) {
             UtilLog4j.log.info(this, "Excepcion en quitar archivo :" + e.getMessage());
@@ -384,6 +366,7 @@ public class NotaRequisicionBean implements Serializable {
         setDirectorioPath(traerDirectorio(idN));
         UtilLog4j.log.info(this, "idNOticia" + idN);
         this.setMrSubirArchivo(true);
+        PrimeFaces.current().executeScript("PF('dlgSubArhNotReq').hide();");
     }
 
     private String traerDirectorio(int idNoticia) {

@@ -1109,6 +1109,7 @@ public class RequisicionBean implements Serializable {
         try {
             coNoticiaImpl.eliminarNoticia(idN, usuarioBean.getUsuarioConectado().getId());
             UtilLog4j.log.fatal(this, "Noticia eliminado");
+            traerNoticia();
         } catch (Exception e) {
             UtilLog4j.log.fatal(this, "Exception en elimnar cmentario " + e.getMessage());
         }
@@ -1121,6 +1122,7 @@ public class RequisicionBean implements Serializable {
             coNoticiaImpl.getAdjuntosNoticia(idN, usuarioBean.getUsuarioConectado().getId());
             FacesUtilsBean.addErrorMessage("Se eliminó correctamente el archivo...");
         }
+        traerNoticia();
     }
 
     public void eliminarComentario(int idCom) {
@@ -1128,6 +1130,7 @@ public class RequisicionBean implements Serializable {
             UtilLog4j.log.info(this, "idComentario " + idCom);
             coNoticiaImpl.eliminarComentario(idCom, usuarioBean.getUsuarioConectado().getId());
             UtilLog4j.log.info(this, "Comentario eliminado");
+            traerNoticia();
         } catch (Exception e) {
             UtilLog4j.log.fatal(this, "Exception en elimnar cmentario " + e.getMessage(), e);
         }
@@ -1147,27 +1150,11 @@ public class RequisicionBean implements Serializable {
     }
 
     public boolean quitarArchivo(Integer idNoticia, Integer idArchivo, Integer idRelacion, String idUsuario) {
-        String path = parametrosSistema.find(1).getUploadDirectory();
         SiAdjunto adjunto = servicioSiAdjuntoImpl.find(idArchivo);
         try {
-            File file = new File(path + adjunto.getUrl());
-            UtilLog4j.log.info(this, "path :" + path);
-            if (file.delete()) {
-                UtilLog4j.log.info(this, "Entro a eliminar");
-                coNoticiaImpl.deleteArchivo(adjunto, idRelacion, idUsuario);
-                UtilLog4j.log.info(this, "Elimino el adjunto de la noticia");
-            }
+            UtilLog4j.log.info(this, "Entro a eliminar");
+            coNoticiaImpl.deleteArchivo(adjunto, idRelacion, idUsuario);
             UtilLog4j.log.info(this, "entrando a eliminar el archivo fisico");
-            String dir = "Comunicacion/Noticia" + "/" + idNoticia + "/";
-            UtilLog4j.log.info(this, "Ruta carpeta: " + dir);
-            File sessionfileUploadDirectory = new File(path + dir);
-            if (sessionfileUploadDirectory.isDirectory()) {
-                try {
-                    sessionfileUploadDirectory.delete();
-                } catch (SecurityException e) {
-                    UtilLog4j.log.fatal(this, e.getMessage());
-                }
-            }
             return true;
         } catch (Exception e) {
             UtilLog4j.log.info(this, "Excepcion en quitar archivo :" + e.getMessage());
@@ -1231,13 +1218,11 @@ public class RequisicionBean implements Serializable {
             }
 
             fileInfo.delete();
-            v = coNoticiaImpl.addArchivo(fileInfo.getFileName(),
-                    fileInfo.getContentType(),
-                    fileInfo.getSize(), noticiaActual.getId(), usuarioBean.getUsuarioConectado().getId());
             if (v == false) {
                 FacesUtilsBean.addErrorMessage("Ocurrio una excepción, favor de comunicar a soportesia@ihsa.mx");
             }
-            PrimeFaces.current().executeScript("PF(dlgSubArhNotReq).hide();");
+            traerNoticia();
+            PrimeFaces.current().executeScript("PF('dlgSubArhNotReq').hide();");
         } catch (IOException | SIAException e) {
             LOGGER.fatal(this, "+ + + ERROR + + +", e);
             FacesUtilsBean.addErrorMessage("Ocurrió un problema al cargar el archivo, por favor contacte al equipo de soporte SIA (soportesia@ihsa.mx)");
@@ -1261,7 +1246,7 @@ public class RequisicionBean implements Serializable {
             );
             traerNoticia();
         } else {
-            FacesUtilsBean.addInfoMessage("Agregue un comentario a la noticia .  .  .  . ");
+            FacesUtilsBean.addErrorMessage("Agregue un comentario a la noticia .  .  .  . ");
         }
     }
 
@@ -2453,7 +2438,7 @@ F
             asunto.append("Nota de la Requisición: ").append(requisicionActual.getConsecutivo()).append(' ');
 
             if (notificacionRequisicionImpl.envioNotaRequisicion(
-                    castUsuarioInvitados(requisicionActual).toString(),
+                    castUsuarioInvitados(requisicionActual),
                     "", "",
                     new StringBuilder().append("Nota de la Requisición: ").append(requisicionActual.getConsecutivo()).toString(), requisicionActual,
                     usuarioBean.getUsuarioConectado().getId(), textoNoticia,
@@ -2464,6 +2449,7 @@ F
                 //Guarda la nota
                 ocRequisicionCoNoticiaImpl.guardarNoticia(usuarioBean.getUsuarioConectado().getId(), coNoticia, requisicionActual);
             }
+            traerNoticia();
             FacesUtilsBean.addInfoMessage("Se creó correctamente La Nota");
             PrimeFaces.current().executeScript(";cerrarDialogoModal(dialogoNotaReq);");
 
@@ -2474,7 +2460,7 @@ F
 
     private List<ComparteCon> castUsuarioComparteCon(Requisicion requisicion) {
         try {
-            List<ComparteCon> listaCompartidos = new ArrayList<ComparteCon>();
+            List<ComparteCon> listaCompartidos = new ArrayList<>();
             //        hacer una lista de invitados enviar la notificacion y si se envio correctamente guardarlos a todos
             switch (requisicion.getEstatus().getId()) {
                 case Constantes.REQUISICION_SOLICITADA:
@@ -2510,7 +2496,6 @@ F
 
     private String castUsuarioInvitados(Requisicion requisicion) {
         try {
-            //        hacer una lista de invitados enviar la notificacion y si se envio correctamente guardarlos a todos
             StringBuilder invitados = new StringBuilder();
             switch (requisicion.getEstatus().getId()) {
                 case Constantes.REQUISICION_SOLICITADA:
