@@ -8,14 +8,14 @@
     <div class="row">
         <div class="table table-responsive">
             <div scope="colgroup" colspan="8"  style="font-weight: normal;"><label id="" class="iceOutLbl" style="font-weight: normal;">Notas</label></div>
-            <h:dataTable value="#{requisicionBean.traerNoticia}" style="padding-left: 15%" 
+            <h:dataTable id="dtNotasReq" value="#{requisicionBean.notasReq}" style="padding-left: 15%" 
                          var="data" cellpadding="0"  
                          styleClass="table table-striped">                
                 <p:column> 
                     <div class="col-10 bordePanelGrid">                    
                         <div class="col-1" style="padding:  0 3% 0 0;" >
-                            <p:graphicImage url="/sia/resources/img/logo.png" width="50" height="40" 
-                                            />
+                            <img src="/resources/img/logo.png" width="50" height="40" 
+                                 />
                         </div>
                         <div class="col-10" style="border-left: 1px solid #cccccc">
                             <div class="row">
@@ -34,7 +34,8 @@
                                     <div class="container-fluid">
                                         <h:outputLabel  value="#{data['titulo']}" styleClass="f12Negrita"/>
                                         <ui:fragment rendered="#{data['genero'] eq usuarioBean.usuarioConectado.id}">
-                                            <p:commandLink value="#{msgs['sistema.modificar']}" action="#{notaRequisicionBean.mostrarPopupModificarNoticia(data.id)}"
+                                            <p:commandLink value="#{msgs['sistema.modificar']}" 
+                                                           action="#{requisicionBean.mostrarPopupModificarNoticia(data.id)}"
                                                            title="#{msgs['comunicacion.clic.aqui.para']} #{msgs['sistema.modificar']} #{msgs['comunicacion.esta']} #{msgs['comunicacion.publicacion']}"
                                                            process="@this" update="frmNotReq"
                                                            oncomplete="PF('dlgNoticiaReq').show()">
@@ -42,16 +43,13 @@
                                             <h:outputText styleClass="f11gris" value=" - " />  
                                             <p:commandLink value="#{msgs['sistema.eliminar']}" 
                                                            title="#{msgs['comunicacion.clic.aqui.para']} #{msgs['sistema.eliminar']} #{msgs['comunicacion.esta']} #{msgs['comunicacion.publicacion']}"
-                                                           onclick="if (!confirm('Está seguro de eliminar esta noticia ...? '))
-                                                                       return false;"
-                                                           style="color:  blue;"
-                                                           action="#{notaRequisicionBean.eliminarNoticia(data.id)}"
-                                                           process="@this" update="@form">
+                                                           action="#{requisicionBean.eliminarNoticia(data.id)}"
+                                                           process="@this" update="form1:tbRequi:dtNotasReq">
                                             </p:commandLink>
                                             <h:outputText style="color: graytext; font-size: 11px;" value=" - "/>                                                                                                
                                             <p:commandLink title="#{msgs['comunicacion.clic.agregar.archivos']}"                                                             
-                                                           action="#{notaRequisicionBean.mostrarPopupSubirArchivo(data.id)}"
-                                                           value="Adjuntar" style="color:  blue;"
+                                                            action="#{requisicionBean.mostrarPopupSubirArchivo(data.id)}"
+                                                           value="Adjuntar" 
                                                            process="@this" update="frmAdjArchNot"
                                                            oncomplete="PF('dlgSubArhNotReq').show()">
                                             </p:commandLink> 
@@ -59,20 +57,18 @@
                                     </div>                            
                                     <div class="container-fluid">
                                         <h:outputText style=" text-align: justify; font-size: 1.0em; padding-left: 4px;" value="#{data['mensajeAutomatico']}"/>
-                                        <h:inputTextarea id="comentarioText"  
-                                                         title="#{msgs['comunicacion.escribe.tu.comentario']}" 
-                                                         styleClass="form-control" binding="#{notaRequisicionBean.comentario}"/>
+                                        <h:inputTextarea   value="#{data.respuesta}"
+                                                           title="#{msgs['comunicacion.escribe.tu.comentario']}" 
+                                                           styleClass="form-control" />
                                         <p:commandLink value="#{msgs['comunicacion.responder']}" 
-                                                       styleClass="btn btn-info"
+                                                       styleClass="btn btn-info text-white"
                                                        title="#{msgs['comunicacion.clic.para.guardar.respuesta']}" 
-                                                       action="#{requisicionBean.nuevoComentario(data.id, data.idCampo)}"
-                                                       process="@this" update="@form">
+                                                       action="#{requisicionBean.nuevoComentario(data.id, data.idCampo, data.respuesta)}"
+                                                       process="@form" update="form1:tbRequi:dtNotasReq">
                                         </p:commandLink>
                                     </div>
                                 </div>
                                 <div class=" container-fluid">
-                                    
-
                                     <ui:fragment rendered="#{data.adjuntosCount gt 0}">
                                         <div class="container-fluid">
                                             <h:outputLabel value="Archivo(s)"/>
@@ -84,8 +80,8 @@
                                                     </h:outputLink>
                                                 </h:column>
                                                 <h:column rendered="#{data['genero'] eq usuarioBean.usuarioConectado.id}">                                        
-                                                    <p:commandLink value="#{msgs['sistema.eliminar']}" action="#{notaRequisicionBean.eliminarArchivo(arch.id, arch.idNoticiaAdjunto,data.id)}"                                                                 
-                                                                   process="@this" update="@form">
+                                                    <p:commandLink value="#{msgs['sistema.eliminar']}" action="#{requisicionBean.eliminarArchivo(arch.id, arch.idNoticiaAdjunto,data.id)}"                                                                 
+                                                                   process="@this" update="form1:tbRequi:dtNotasReq">
                                                     </p:commandLink>
                                                 </h:column>
                                             </h:dataTable>
@@ -93,7 +89,6 @@
                                     </ui:fragment>
 
                                     <ui:fragment rendered="#{not empty data.listaComentario}">
-                                        
                                         <div class="container-fluid">
                                             <h:outputLabel value="Respuesta(s)"/>
                                             <h:dataTable value="#{data.listaComentario}" var="comentario"  
@@ -119,21 +114,21 @@
                                                                                   style="font-style: italic;"/>
                                                                     <ui:fragment rendered="#{comentario.genero eq usuarioBean.usuarioConectado.id}">
                                                                         <div class="col-4">
-                                                                            <p:commandLink value="#{msgs['sistema.modificar']}" action="#{notaRequisicionBean.mostrarPopupModificarComentario(comentario.id)}"
+                                                                            <p:commandLink value="#{msgs['sistema.modificar']}" 
+                                                                                           action="#{requisicionBean.mostrarPopupModificarComentario(comentario.id)}"
                                                                                            title="#{msgs['comunicacion.clic.aqui.para']} #{msgs['sistema.modificar']} #{msgs['comunicacion.este']} #{msgs['comunicacion.comentario']}" 
-
                                                                                            process="@this" update="frmComReq"
                                                                                            oncomplete="PF('dlgComentar').show()">
                                                                             </p:commandLink>
                                                                             <h:outputText value=" | "/>
                                                                             <p:commandLink value="#{msgs['sistema.eliminar']}" title="#{msgs['comunicacion.clic.aqui.para']} #{msgs['sistema.eliminar']} #{msgs['comunicacion.este']} #{msgs['comunicacion.comentario']}" 
-                                                                                           action="#{notaRequisicionBean.eliminarComentario(comentario.id)}"                                                                                              
-                                                                                           process="@this" update="@form">                                
+                                                                                           action="#{requisicionBean.eliminarComentario(comentario.id)}"                                                                                              
+                                                                                           process="@this" update="form1:tbRequi:dtNotasReq">                                
                                                                             </p:commandLink>
                                                                         </div>
                                                                     </ui:fragment>
                                                                 </div>
-                                                                
+
                                                             </div>                                                                    
                                                         </div>
                                                     </div>
@@ -143,12 +138,12 @@
                                     </ui:fragment>
                                 </div>
                             </div>
-                            
+
                         </div>
                     </div>
                 </p:column>
             </h:dataTable>  
         </div>
     </div>
-    
+
 </ui:composition>

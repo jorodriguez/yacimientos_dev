@@ -12,11 +12,9 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import javax.annotation.PostConstruct;
-import javax.faces.bean.CustomScoped;
-import javax.faces.component.html.HtmlInputHidden;
-import javax.faces.component.html.HtmlInputTextarea;
 
 import javax.faces.model.DataModel;
 import javax.faces.model.ListDataModel;
@@ -55,7 +53,7 @@ import sia.util.ValidadorNombreArchivo;
  * @version 1.0
  * @author-mail new_nick_name@hotmail.com @date 21/01/2010
  */
-@Named(value = NotaRequisicionBean.BEAN_NAME)
+@Named(value = "notaRequisicionBean")
 @ViewScoped
 public class NotaRequisicionBean implements Serializable {
 
@@ -88,8 +86,6 @@ public class NotaRequisicionBean implements Serializable {
     private final static UtilLog4j LOGGER = UtilLog4j.log;
 
     // Atributos
-    private HtmlInputHidden inputHidden = new HtmlInputHidden(); // este componente me ayuda a tomar el valor del comunicado que esta iterando
-    private HtmlInputTextarea comentario; // este componente me sirve para agarrar el comentario escrito.
     private String textoNoticia;
     private String privasidad;
     private String directorioPath;
@@ -105,11 +101,9 @@ public class NotaRequisicionBean implements Serializable {
     private boolean enviarNotificacion = true;
     private int indexPanelTap, indexPanelTap1;
     private int maxComents;
-    private int idComentarioActivo = 0;
-    private int idNoticiaActiva = 0;
-    private int idAdjuntoActivo;
-    private DataModel comparteCon;
-    private DataModel likes;
+    @Getter
+    @Setter
+    private List<NoticiaVO> notas;
     private DataModel dataModel;
     private CoNoticia noticiaActual;
     private CoComentario comentarioActual;
@@ -126,18 +120,15 @@ public class NotaRequisicionBean implements Serializable {
 
     @PostConstruct
     public void iniciar() {
+        notas = new ArrayList<>();
         filtrar = true;
+        maxComents = 12;
+        traerNoticiaPorUsuario();
     }
 
-    /**
-     * @return the operacion
-     */
-    public DataModel traerNoticiaPorRequisicion(int idReq) {
-        return new ListDataModel(ocRequisicionCoNoticiaImpl.traerNoticiaPorRequisicion(idReq, true));
-    }
-
-    public DataModel traerNoticiaPorUsuario(String idUsuario) {
-        return new ListDataModel(ocRequisicionCoNoticiaImpl.traerNoticiaPorUsuario(usuarioBean.getUsuarioConectado().getId(), true, usuarioBean.getUsuarioConectado().getApCampo().getId()));
+    public void traerNoticiaPorUsuario() {
+        notas = ocRequisicionCoNoticiaImpl.traerNoticiaPorUsuario(usuarioBean.getUsuarioConectado().getId(),
+                Boolean.TRUE, usuarioBean.getUsuarioConectado().getApCampo().getId());
     }
 
     public DataModel comentarNoticia(Integer idNoticia, String idUsuario) {
@@ -166,18 +157,16 @@ public class NotaRequisicionBean implements Serializable {
         //<p>Escribe aqu&iacute; lo que deseas compartir...</p>
         if (!this.textoNoticia.equals("")) {
             coNoticiaImpl.nuevaNoticia(usuarioBean.getUsuarioConectado().getId(), "",
-                    this.textoNoticia, "", null, 1, (List<ComparteCon>) this.getComparteCon().getWrappedData());
+                    this.textoNoticia, "", null, 1, Collections.EMPTY_LIST);
         } else {
             FacesUtilsBean.addInfoMessage("Por favor escribe algo..");
         }
 
-        this.comparteCon = null;
         this.setTextoNoticia("");
     }
 
     public void modificarNoticia() {
         if (!this.getNoticiaActual().getMensajeAutomatico().equals("")) {
-            setIdNoticiaActiva(noticiaActual.getId());
             coNoticiaImpl.editNoticia(noticiaActual, usuarioBean.getUsuarioConectado().getId());
             setMrPopupModificarNoticia(false);
         } else {
@@ -187,8 +176,7 @@ public class NotaRequisicionBean implements Serializable {
 
     public void eliminarNoticia(int idN) {
         try {
-            this.setIdNoticiaActiva(idN);
-            coNoticiaImpl.eliminarNoticia(idNoticiaActiva, usuarioBean.getUsuarioConectado().getId());
+            coNoticiaImpl.eliminarNoticia(idN, usuarioBean.getUsuarioConectado().getId());
             UtilLog4j.log.fatal(this, "Noticia eliminado");
         } catch (Exception e) {
             UtilLog4j.log.fatal(this, "Exception en elimnar cmentario " + e.getMessage());
@@ -198,7 +186,6 @@ public class NotaRequisicionBean implements Serializable {
     public void comentarNoticia(int idN) {
         UtilLog4j.log.fatal(this, "comentar noticia");
         try {
-            this.setIdNoticiaActiva(idN);
             setComentar(true);
             //this.noticias = null; // refrescar la lista
 
@@ -208,24 +195,21 @@ public class NotaRequisicionBean implements Serializable {
         }
     }
 
-    public void agregarComentario(int idNoticia, int campo) {
-        if (!this.getComentario().getValue().toString().equals("")) {
-            //tomar id de la noticia actual para buscarla..
-            coNoticiaImpl.nuevoComentario(
-                    idNoticia, usuarioBean.getUsuarioConectado().getId(),
-                    this.getComentario().getValue().toString(),
-                    enviarNotificacion,
-                    false,
-                    campo,
-                    Constantes.MODULO_REQUISICION
-            );
-            //--------
-            this.comentario.setValue("");
-            if (isFiltrar()) {
-                maxComents = maxComents + 1;
-            }
-            this.setComentar(false);
+    public void agregarComentario(int idNoticia, int campo, String coment) {
+        //tomar id de la noticia actual para buscarla..
+        coNoticiaImpl.nuevoComentario(
+                idNoticia, usuarioBean.getUsuarioConectado().getId(),
+                coment,
+                enviarNotificacion,
+                false,
+                campo,
+                Constantes.MODULO_REQUISICION
+        );
+        //--------
+        if (isFiltrar()) {
+            maxComents = maxComents + 1;
         }
+        this.setComentar(false);
     }
 
     //focus
@@ -241,9 +225,8 @@ public class NotaRequisicionBean implements Serializable {
 
     public void eliminarComentario(int idCom) {
         try {
-            this.idComentarioActivo = idCom;
-            UtilLog4j.log.info(this, "idComentario " + idComentarioActivo);
-            coNoticiaImpl.eliminarComentario(idComentarioActivo, usuarioBean.getUsuarioConectado().getId());
+            UtilLog4j.log.info(this, "idComentario " + idCom);
+            coNoticiaImpl.eliminarComentario(idCom, usuarioBean.getUsuarioConectado().getId());
             UtilLog4j.log.info(this, "Comentario eliminado");
         } catch (Exception e) {
             UtilLog4j.log.fatal(this, "Exception en elimnar cmentario " + e.getMessage(), e);
@@ -251,19 +234,17 @@ public class NotaRequisicionBean implements Serializable {
     }
 
     public void meGustaComentario(int idCom) {
-        this.idComentarioActivo = idCom;
-        UtilLog4j.log.info(this, "idComentario " + idComentarioActivo);
-        coNoticiaImpl.meGustaComentario(idComentarioActivo, usuarioBean.getUsuarioConectado().getId());
+        UtilLog4j.log.info(this, "idComentario " + idCom);
+        coNoticiaImpl.meGustaComentario(idCom, usuarioBean.getUsuarioConectado().getId());
     }
 
     public void yaNoMeGustaComentario(int idCom, int idMG) {
         UtilLog4j.log.info(this, "ya no me gusta el comentario...");
         try {
-            this.idComentarioActivo = idCom;
             int idMeGusta = idMG;
-            UtilLog4j.log.info(this, "idcomentario" + idComentarioActivo);
+            UtilLog4j.log.info(this, "idcomentario" + idCom);
             UtilLog4j.log.info(this, "idMeGusta " + idMeGusta);
-            coNoticiaImpl.yaNoMeGustaComentario(idComentarioActivo, idMeGusta, usuarioBean.getUsuarioConectado().getId());
+            coNoticiaImpl.yaNoMeGustaComentario(idCom, idMeGusta, usuarioBean.getUsuarioConectado().getId());
         } catch (Exception e) {
             UtilLog4j.log.fatal(this, "Excepcion al dar en ya no me gusta" + e.getMessage(), e);
         }
@@ -271,6 +252,8 @@ public class NotaRequisicionBean implements Serializable {
 
     /**
      * **************************FILE *******************
+     * @param event
+     * @throws javax.naming.NamingException
      */
     public void subirArchivo(FileUploadEvent event) throws NamingException {
         UtilLog4j.log.info(this, "subirArchivo");
@@ -296,7 +279,7 @@ public class NotaRequisicionBean implements Serializable {
                         documentoAnexo.getNombreBase(),
                         documentoAnexo.getTipoMime(),
                         documentoAnexo.getTamanio(),
-                        idNoticiaActiva,
+                        noticiaActual.getId(),
                         usuarioBean.getUsuarioConectado().getId()
                 );
                 setMrSubirArchivo(false);
@@ -311,7 +294,7 @@ public class NotaRequisicionBean implements Serializable {
             fileInfo.delete();
             v = coNoticiaImpl.addArchivo(fileInfo.getFileName(),
                     fileInfo.getContentType(),
-                    fileInfo.getSize(), idNoticiaActiva, usuarioBean.getUsuarioConectado().getId());
+                    fileInfo.getSize(), noticiaActual.getId(), usuarioBean.getUsuarioConectado().getId());
             setMrSubirArchivo(false);
             if (v == false) {
                 FacesUtilsBean.addErrorMessage("Ocurrio una excepción, favor de comunicar a soportesia@ihsa.mx");
@@ -324,15 +307,10 @@ public class NotaRequisicionBean implements Serializable {
     }
 
     public void eliminarArchivo(int idAr, int idNotAdj, int idN) {
-        idAdjuntoActivo = idAr;
-        int idRelacion = idNotAdj;
-        idNoticiaActiva = idN;
-        //
-
-        if (!quitarArchivo(this.idNoticiaActiva, this.idAdjuntoActivo, idRelacion, usuarioBean.getUsuarioConectado().getId())) {
+        if (!quitarArchivo(idN, idAr, idNotAdj, usuarioBean.getUsuarioConectado().getId())) {
             FacesUtilsBean.addErrorMessage("Existió un error al eliminar el arvhivo..");
         } else {
-            this.dataModel = new ListDataModel(coNoticiaImpl.getAdjuntosNoticia(idNoticiaActiva, usuarioBean.getUsuarioConectado().getId()));
+            this.dataModel = new ListDataModel(coNoticiaImpl.getAdjuntosNoticia(idN, usuarioBean.getUsuarioConectado().getId()));
             FacesUtilsBean.addErrorMessage("Se eliminó correctamente el archivo...");
         }
     }
@@ -372,16 +350,14 @@ public class NotaRequisicionBean implements Serializable {
 
     public void traerAdjuntosNoticia(int idN) {
         //recargar lista de adjuntos
-        setIdNoticiaActiva(idN);
-        this.dataModel = new ListDataModel(coNoticiaImpl.getAdjuntosNoticia(idNoticiaActiva, usuarioBean.getUsuarioConectado().getId()));
+        this.dataModel = new ListDataModel(coNoticiaImpl.getAdjuntosNoticia(idN, usuarioBean.getUsuarioConectado().getId()));
     }
 
     /**
      * ***************************************************
      */
     public void mostrarPopupModificarComentario(int idCom) {
-        idComentarioActivo = idCom;
-        this.setComentarioActual(coNoticiaImpl.buscarComentario(idComentarioActivo));
+        this.setComentarioActual(coNoticiaImpl.buscarComentario(idCom));
         this.setMrPopupModificarComentario(true);
     }
 
@@ -391,8 +367,7 @@ public class NotaRequisicionBean implements Serializable {
     }
 
     public void mostrarPopupModificarNoticia(int idN) {
-        this.setIdNoticiaActiva(idN);
-        setNoticiaActual(coNoticiaImpl.find(idNoticiaActiva));
+        setNoticiaActual(coNoticiaImpl.find(idN));
         this.setMrPopupModificarNoticia(true);
     }
 
@@ -403,13 +378,11 @@ public class NotaRequisicionBean implements Serializable {
 
     public void ocultarPopupUsuariosCompartidos() {
         this.setMrVerCompartidos(false);
-        setLikes(null);
     }
 
     public void mostrarPopupSubirArchivo(int idN) {
-        this.setIdNoticiaActiva(idN);
-        setDirectorioPath(traerDirectorio(idNoticiaActiva));
-        UtilLog4j.log.info(this, "idNOticia" + idNoticiaActiva);
+        setDirectorioPath(traerDirectorio(idN));
+        UtilLog4j.log.info(this, "idNOticia" + idN);
         this.setMrSubirArchivo(true);
     }
 
@@ -419,8 +392,7 @@ public class NotaRequisicionBean implements Serializable {
 
     public String mostrarPaginaSubirArchivo(int idN) {
         UtilLog4j.log.info(this, "mostrarpag");
-        this.setIdNoticiaActiva(idN);
-        UtilLog4j.log.info(this, "idNOticia" + idNoticiaActiva);
+        UtilLog4j.log.info(this, "idNOticia" + idN);
         return "vistas/comunicacion/adjuntarArchivo";
     }
 
@@ -439,31 +411,6 @@ public class NotaRequisicionBean implements Serializable {
 
     public void activarDesactivarCheckBox() {
         this.enviarNotificacion = !this.enviarNotificacion;
-    }
-
-    public Integer getIdNoticiaActiva() {
-        return this.idNoticiaActiva;
-    }
-
-    /**
-     * @param inputHidden the inputHidden to set
-     */
-    public void setInputHidden(HtmlInputHidden inputHidden) {
-        this.inputHidden = inputHidden;
-    }
-
-    /**
-     * @return the comentario
-     */
-    public HtmlInputTextarea getComentario() {
-        return comentario;
-    }
-
-    /**
-     * @param comentario the comentario to set
-     */
-    public void setComentario(HtmlInputTextarea comentario) {
-        this.comentario = comentario;
     }
 
     /**
@@ -551,32 +498,6 @@ public class NotaRequisicionBean implements Serializable {
     }
 
     /**
-     * @return the inputHidden
-     */
-    public HtmlInputHidden getInputHidden() {
-        return inputHidden;
-    }
-
-    /**
-     * @return the comparteCon
-     */
-    public DataModel getComparteCon() {
-        try {
-            return comparteCon;
-        } catch (Exception e) {
-            UtilLog4j.log.info(this, "Error en comparte con: " + e.getMessage());
-            return comparteCon;
-        }
-    }
-
-    /**
-     * @param comparteCon the comparteCon to set
-     */
-    public void setComparteCon(DataModel comparteCon) {
-        this.comparteCon = comparteCon;
-    }
-
-    /**
      * @return the mrPopupModificar
      */
     public boolean isMrPopupModificarComentario() {
@@ -644,20 +565,6 @@ public class NotaRequisicionBean implements Serializable {
      */
     public void setMrPopupLikePerson(boolean mrPopupLikePerson) {
         this.mrPopupLikePerson = mrPopupLikePerson;
-    }
-
-    /**
-     * @return the likes
-     */
-    public DataModel getLikes() {
-        return likes;
-    }
-
-    /**
-     * @param likes the likes to set
-     */
-    public void setLikes(DataModel likes) {
-        this.likes = likes;
     }
 
     public String getDirectorioPath() {
@@ -906,12 +813,5 @@ public class NotaRequisicionBean implements Serializable {
         compateCon.setCorreoUsuario(usuario.getEmail());
         compateCon.setTipo("Usuario");
         return compateCon;
-    }
-
-    /**
-     * @param idNoticiaActiva the idNoticiaActiva to set
-     */
-    public void setIdNoticiaActiva(int idNoticiaActiva) {
-        this.idNoticiaActiva = idNoticiaActiva;
     }
 }

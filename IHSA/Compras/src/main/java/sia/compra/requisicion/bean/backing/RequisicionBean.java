@@ -36,6 +36,7 @@ import javax.faces.model.SelectItem;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.naming.NamingException;
 import javax.servlet.http.HttpServletRequest;
 import lombok.Getter;
 import lombok.Setter;
@@ -54,6 +55,8 @@ import sia.excepciones.SIAException;
 import sia.inventarios.service.ArticuloRemote;
 import sia.inventarios.service.InvArticuloCampoImpl;
 import sia.inventarios.service.InventarioImpl;
+import sia.modelo.CoComentario;
+import sia.modelo.CoNoticia;
 import sia.modelo.Gerencia;
 import sia.modelo.InvArticulo;
 import sia.modelo.OcActividadPetrolera;
@@ -71,6 +74,8 @@ import sia.modelo.Requisicion;
 import sia.modelo.RequisicionDetalle;
 import sia.modelo.SiAdjunto;
 import sia.modelo.Usuario;
+import sia.modelo.comunicacion.ComparteCon;
+import sia.modelo.comunicacion.vo.NoticiaAdjuntoVO;
 import sia.modelo.comunicacion.vo.NoticiaVO;
 import sia.modelo.gerencia.vo.GerenciaVo;
 import sia.modelo.proyectoOT.vo.ProyectoOtVo;
@@ -90,6 +95,7 @@ import sia.notificaciones.requisicion.impl.NotificacionRequisicionImpl;
 import sia.servicios.catalogos.impl.GerenciaImpl;
 import sia.servicios.catalogos.impl.ProyectoOtImpl;
 import sia.servicios.catalogos.impl.UsuarioImpl;
+import sia.servicios.comunicacion.impl.CoNoticiaImpl;
 import sia.servicios.orden.impl.OcUnidadCostoImpl;
 import sia.servicios.requisicion.impl.OcActividadPetroleraImpl;
 import sia.servicios.requisicion.impl.OcGerenciaProyectoImpl;
@@ -183,15 +189,11 @@ public class RequisicionBean implements Serializable {
     private ProveedorAlmacenDocumentos proveedorAlmacenDocumentos;
     @Inject
     private ReRequisicionEtsImpl servicioReRequisicion;
-
     //
     @Inject
-    private MonedaBean monedaBean;
-
+    CoNoticiaImpl coNoticiaImpl;
     @Inject
     private UsuarioBean usuarioBean;
-    @Inject
-    private NotaRequisicionBean notaRequisicionBean;
     @Inject
     private EstatusBean estatusBean;
     @Inject
@@ -204,6 +206,9 @@ public class RequisicionBean implements Serializable {
     private GerenciaBean gerenciaBean;
     @Inject
     private OrdenBean ordenBean;
+    @Getter
+    @Setter
+    private String textoNoticia;
 
     @Getter
     @Setter
@@ -540,6 +545,19 @@ public class RequisicionBean implements Serializable {
     @Getter
     @Setter
     private SiAdjunto etsActualAdjunto;
+    @Getter
+    @Setter
+    private List<NoticiaVO> notasReq;
+    @Getter
+    @Setter
+    private CoComentario comentarioActual;
+    @Getter
+    @Setter
+    private NoticiaVO noticiaActual;
+
+    @Getter
+    @Setter
+    private List<NoticiaAdjuntoVO> noticiaAdjuntos;
 
     /**
      * Creates a new instance of ManagedBeanRequisiciones
@@ -549,6 +567,7 @@ public class RequisicionBean implements Serializable {
 
     @PostConstruct
     public void inicializar() {
+        notasReq = new ArrayList<>();
         requisicionActual = new Requisicion();
         listaAyuda = new ArrayList<>();
         esperaVO = new RequisicionEsperaVO();
@@ -1039,7 +1058,7 @@ public class RequisicionBean implements Serializable {
             requisicionActual = requisicionServicioRemoto.find(id);
             crearItem = true;
             //.println("Selección: " + requisicionActual.getCompania().getNombre());
-            notaRequisicionBean.setFiltrar(true);
+            traerNoticia();
             itemsActualizar();
             rechazosRequisicion();
             if (Constantes.REQUISICION_EN_ESPERA == requisicionActual.getEstatus().getId()) {
@@ -1050,7 +1069,6 @@ public class RequisicionBean implements Serializable {
             }
             listaEts = servicioReRequisicion.traerAdjuntosPorRequisicion(requisicionActual.getId());
             //
-
             String jsMetodo = ";activarTab('tabsRequi',0, 'divDatos', 'divTabla', 'divOperacion', 'divAutoriza');";
             PrimeFaces.current().executeScript(jsMetodo);
         } catch (Exception e) {
@@ -1079,43 +1097,169 @@ public class RequisicionBean implements Serializable {
         PrimeFaces.current().executeScript("$(dialogoMostrarInventario).modal('show');");
     }
 
-    public DataModel getTraerNoticia() {
+    public void traerNoticia() {
         try {
-            if (usuarioBean.getUsuarioConectado() != null) {
-                if (getRequisicionActual() != null) {
-                    if (notaRequisicionBean.isFiltrar()) {
-                        return notaRequisicionBean.traerNoticiaPorRequisicion(getRequisicionActual().getId());
-                    }
-                } else {
-                    if (notaRequisicionBean.isFiltrar()) {
-                        return notaRequisicionBean.traerNoticiaPorUsuario(usuarioBean.getUsuarioConectado().getId());
-                    }
-                }
-            }
-            return null;
+            notasReq = ocRequisicionCoNoticiaImpl.traerNoticiaPorRequisicion(requisicionActual.getId(), Boolean.TRUE);
         } catch (Exception e) {
             LOGGER.fatal(this, "getTraerNoticia  . . ." + e.getMessage(), e);
-            return null;
         }
     }
 
-    public void comentarNoticia() {
-        //
-        int noti = getTraerNoticia().getRowIndex();
-        //
+    public void eliminarNoticia(int idN) {
         try {
-            List<NoticiaVO> ln = (List<NoticiaVO>) getTraerNoticia().getWrappedData();
-            ln.get(noti).setComentar(true);
-            //noticias = null; // refrescar la lista
+            coNoticiaImpl.eliminarNoticia(idN, usuarioBean.getUsuarioConectado().getId());
+            UtilLog4j.log.fatal(this, "Noticia eliminado");
         } catch (Exception e) {
-            LOGGER.fatal(this, "Exception en comentar noticia " + e.getMessage(), e);
+            UtilLog4j.log.fatal(this, "Exception en elimnar cmentario " + e.getMessage());
         }
     }
 
-    public void nuevoComentario(int idN, int campo) {
-        if (!notaRequisicionBean.getComentario().getValue().toString().trim().equals("")) {
-            notaRequisicionBean.setIdNoticiaActiva(idN);
-            notaRequisicionBean.agregarComentario(notaRequisicionBean.getIdNoticiaActiva(), campo);
+    public void eliminarArchivo(int idAr, int idNotAdj, int idN) {
+        if (!quitarArchivo(idN, idAr, idNotAdj, usuarioBean.getUsuarioConectado().getId())) {
+            FacesUtilsBean.addErrorMessage("Existió un error al eliminar el arvhivo..");
+        } else {
+            coNoticiaImpl.getAdjuntosNoticia(idN, usuarioBean.getUsuarioConectado().getId());
+            FacesUtilsBean.addErrorMessage("Se eliminó correctamente el archivo...");
+        }
+    }
+
+    public void eliminarComentario(int idCom) {
+        try {
+            UtilLog4j.log.info(this, "idComentario " + idCom);
+            coNoticiaImpl.eliminarComentario(idCom, usuarioBean.getUsuarioConectado().getId());
+            UtilLog4j.log.info(this, "Comentario eliminado");
+        } catch (Exception e) {
+            UtilLog4j.log.fatal(this, "Exception en elimnar cmentario " + e.getMessage(), e);
+        }
+    }
+
+    public void mostrarPopupModificarComentario(int idCom) {
+        setComentarioActual(coNoticiaImpl.buscarComentario(idCom));
+    }
+
+    public void modificarComentario() {
+        if (!this.getComentarioActual().getMensaje().equals("")) {
+            coNoticiaImpl.editComentario(comentarioActual, usuarioBean.getUsuarioConectado().getId());
+            PrimeFaces.current().executeScript("PF('dlgComentar').hide()");
+        } else {
+            FacesUtilsBean.addErrorMessage("Por favor escribe el comentario..");
+        }
+    }
+
+    public boolean quitarArchivo(Integer idNoticia, Integer idArchivo, Integer idRelacion, String idUsuario) {
+        String path = parametrosSistema.find(1).getUploadDirectory();
+        SiAdjunto adjunto = servicioSiAdjuntoImpl.find(idArchivo);
+        try {
+            File file = new File(path + adjunto.getUrl());
+            UtilLog4j.log.info(this, "path :" + path);
+            if (file.delete()) {
+                UtilLog4j.log.info(this, "Entro a eliminar");
+                coNoticiaImpl.deleteArchivo(adjunto, idRelacion, idUsuario);
+                UtilLog4j.log.info(this, "Elimino el adjunto de la noticia");
+            }
+            UtilLog4j.log.info(this, "entrando a eliminar el archivo fisico");
+            String dir = "Comunicacion/Noticia" + "/" + idNoticia + "/";
+            UtilLog4j.log.info(this, "Ruta carpeta: " + dir);
+            File sessionfileUploadDirectory = new File(path + dir);
+            if (sessionfileUploadDirectory.isDirectory()) {
+                try {
+                    sessionfileUploadDirectory.delete();
+                } catch (SecurityException e) {
+                    UtilLog4j.log.fatal(this, e.getMessage());
+                }
+            }
+            return true;
+        } catch (Exception e) {
+            UtilLog4j.log.info(this, "Excepcion en quitar archivo :" + e.getMessage());
+            return false;
+        }
+    }
+
+    public void modificarNoticia() {
+        if (!this.getNoticiaActual().getMensajeAutomatico().equals("")) {
+            CoNoticia noti = coNoticiaImpl.find(noticiaActual.getId());
+            noti.setMensajeAutomatico(noticiaActual.getMensajeAutomatico());
+            coNoticiaImpl.editNoticia(noti, usuarioBean.getUsuarioConectado().getId());
+        } else {
+            FacesUtilsBean.addErrorMessage("Por favor escribe la noticia..");
+        }
+    }
+
+    public void mostrarPopupSubirArchivo(int idN) {
+        noticiaActual = coNoticiaImpl.traerNoticia(idN);
+        PrimeFaces.current().executeScript("PF('dlgSubArhNotReq').show()");
+        UtilLog4j.log.info(this, "idNOticia" + idN);
+    }
+
+    private String traerDirectorio(int idNoticia) {
+        return "Comunicacion/Noticia/" + idNoticia;
+    }
+
+    public void subirArchivo(FileUploadEvent event) throws NamingException {
+        UtilLog4j.log.info(this, "subirArchivo");
+        boolean v = false;
+
+        ValidadorNombreArchivo validadorNombreArchivo = new ValidadorNombreArchivo();
+        AlmacenDocumentos almacenDocumentos
+                = proveedorAlmacenDocumentos.getAlmacenDocumentos();
+
+        try {
+            fileInfo = event.getFile();
+
+            boolean addArchivo = validadorNombreArchivo.isNombreValido(fileInfo.getFileName());
+
+            if (addArchivo) {
+                DocumentoAnexo documentoAnexo = new DocumentoAnexo(fileInfo.getContent());
+                documentoAnexo.setNombreBase(fileInfo.getFileName());
+                documentoAnexo.setTipoMime(fileInfo.getContentType());
+                documentoAnexo.setRuta(traerDirectorio(noticiaActual.getId()));
+                almacenDocumentos.guardarDocumento(documentoAnexo);
+
+                coNoticiaImpl.addArchivo(
+                        documentoAnexo.getNombreBase(),
+                        documentoAnexo.getTipoMime(),
+                        documentoAnexo.getTamanio(),
+                        noticiaActual.getId(),
+                        usuarioBean.getUsuarioConectado().getId()
+                );
+
+            } else {
+                FacesUtilsBean.addInfoMessage(new StringBuilder()
+                        .append("No se permiten los siguientes caracteres especiales en el nombre del Archivo: ")
+                        .append(validadorNombreArchivo.getCaracteresNoValidos())
+                        .toString());
+            }
+
+            fileInfo.delete();
+            v = coNoticiaImpl.addArchivo(fileInfo.getFileName(),
+                    fileInfo.getContentType(),
+                    fileInfo.getSize(), noticiaActual.getId(), usuarioBean.getUsuarioConectado().getId());
+            if (v == false) {
+                FacesUtilsBean.addErrorMessage("Ocurrio una excepción, favor de comunicar a soportesia@ihsa.mx");
+            }
+            PrimeFaces.current().executeScript("PF(dlgSubArhNotReq).hide();");
+        } catch (IOException | SIAException e) {
+            LOGGER.fatal(this, "+ + + ERROR + + +", e);
+            FacesUtilsBean.addErrorMessage("Ocurrió un problema al cargar el archivo, por favor contacte al equipo de soporte SIA (soportesia@ihsa.mx)");
+        }
+    }
+
+    public void mostrarPopupModificarNoticia(int idN) {
+        setNoticiaActual(coNoticiaImpl.traerNoticia(idN));
+        PrimeFaces.current().executeScript("PF('dlgNoticiaReq').show()");
+    }
+
+    public void nuevoComentario(int idN, int campo, String coment) {
+        if (!coment.trim().equals("")) {
+            coNoticiaImpl.nuevoComentario(
+                    idN, usuarioBean.getUsuarioConectado().getId(),
+                    coment,
+                    false,
+                    false,
+                    campo,
+                    Constantes.MODULO_REQUISICION
+            );
+            traerNoticia();
         } else {
             FacesUtilsBean.addInfoMessage("Agregue un comentario a la noticia .  .  .  . ");
         }
@@ -1952,7 +2096,7 @@ F
      * @param
      */
     public void aprobarVariasRequisiciones() {
-        try {   
+        try {
 
             Preconditions.checkArgument(!requisicionesSeleccionadas.isEmpty(), "Seleccione al menos una requisición");
             requisicionesSeleccionadas.stream().forEach(o -> {
@@ -2303,8 +2447,92 @@ F
     }
 
     public void completarCreacionNota() {
-        notaRequisicionBean.completarCreacionNota(usuarioBean.getUsuarioConectado().getNombre(), requisicionActual);
-        notaRequisicionBean.setTextoNoticia("");
+        try {
+            // -- enviar la notificación - - -
+            StringBuilder asunto = new StringBuilder();
+            asunto.append("Nota de la Requisición: ").append(requisicionActual.getConsecutivo()).append(' ');
+
+            if (notificacionRequisicionImpl.envioNotaRequisicion(
+                    castUsuarioInvitados(requisicionActual).toString(),
+                    "", "",
+                    new StringBuilder().append("Nota de la Requisición: ").append(requisicionActual.getConsecutivo()).toString(), requisicionActual,
+                    usuarioBean.getUsuarioConectado().getId(), textoNoticia,
+                    "solicito")) {
+                //
+                //Noticias nueavas
+                CoNoticia coNoticia = coNoticiaImpl.nuevaNoticia(usuarioBean.getUsuarioConectado().getId(), asunto.toString(), "", textoNoticia, 0, 0, castUsuarioComparteCon(requisicionActual));
+                //Guarda la nota
+                ocRequisicionCoNoticiaImpl.guardarNoticia(usuarioBean.getUsuarioConectado().getId(), coNoticia, requisicionActual);
+            }
+            FacesUtilsBean.addInfoMessage("Se creó correctamente La Nota");
+            PrimeFaces.current().executeScript(";cerrarDialogoModal(dialogoNotaReq);");
+
+        } catch (RuntimeException ex) {
+            UtilLog4j.log.fatal(this, ex.getMessage());
+        }
+    }
+
+    private List<ComparteCon> castUsuarioComparteCon(Requisicion requisicion) {
+        try {
+            List<ComparteCon> listaCompartidos = new ArrayList<ComparteCon>();
+            //        hacer una lista de invitados enviar la notificacion y si se envio correctamente guardarlos a todos
+            switch (requisicion.getEstatus().getId()) {
+                case Constantes.REQUISICION_SOLICITADA:
+                    //solicita
+                    listaCompartidos.add(castComparteCon(requisicion.getSolicita()));
+                    listaCompartidos.add(castComparteCon(usuarioBean.getUsuarioConectado()));
+                    break;
+                case Constantes.REQUISICION_REVISADA:
+                    //solicita
+                    listaCompartidos.add(castComparteCon(requisicion.getSolicita()));
+                    listaCompartidos.add(castComparteCon(requisicion.getRevisa()));
+                    listaCompartidos.add(castComparteCon(usuarioBean.getUsuarioConectado()));
+                    break;
+                default:
+                    listaCompartidos.add(castComparteCon(requisicion.getSolicita()));
+                    listaCompartidos.add(castComparteCon(usuarioBean.getUsuarioConectado()));
+            }
+            return listaCompartidos;
+        } catch (Exception e) {
+            UtilLog4j.log.fatal(this, "Excepcion al castear los usuario  " + e.getMessage());
+            return null;
+        }
+    }
+
+    private ComparteCon castComparteCon(Usuario usuario) {
+        ComparteCon compateCon = new ComparteCon();
+        compateCon.setId(usuario.getId());
+        compateCon.setNombre(usuario.getNombre());
+        compateCon.setCorreoUsuario(usuario.getEmail());
+        compateCon.setTipo("Usuario");
+        return compateCon;
+    }
+
+    private String castUsuarioInvitados(Requisicion requisicion) {
+        try {
+            //        hacer una lista de invitados enviar la notificacion y si se envio correctamente guardarlos a todos
+            StringBuilder invitados = new StringBuilder();
+            switch (requisicion.getEstatus().getId()) {
+                case Constantes.REQUISICION_SOLICITADA:
+                    invitados.append(requisicion.getSolicita().getEmail());
+                    invitados.append(",").append(usuarioBean.getUsuarioConectado().getEmail());
+                    break;
+                case Constantes.REQUISICION_REVISADA:
+                    //solicita
+                    invitados.append(requisicion.getSolicita().getEmail());
+                    invitados.append(",").append(requisicion.getRevisa().getEmail());
+                    invitados.append(",").append(usuarioBean.getUsuarioConectado().getEmail());
+                    break;
+                default:
+                    invitados.append(requisicion.getSolicita().getEmail());
+                    invitados.append(",").append(usuarioBean.getUsuarioConectado().getEmail());
+                    break;
+            }
+            return invitados.toString();
+        } catch (Exception e) {
+            UtilLog4j.log.fatal(this, "Excepcion al castear los usuario  " + e.getMessage());
+            return null;
+        }
     }
 
     /**
@@ -2332,7 +2560,6 @@ F
             if (irInicio && requisicionActual != null && requisicionActual.getId() > 0) {
                 irInicio = false;
                 crearItem = true;
-                notaRequisicionBean.setFiltrar(true);
                 String jsMetodo = ";activarTab('tabOCSProc',0, 'divDatos', 'divTabla', 'divOperacion', 'divAutoriza');";
                 PrimeFaces.current().executeScript(jsMetodo);
             }
