@@ -1,0 +1,148 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      >
+    <body>
+        <ui:composition template="./../../WEB-INF/facelets/templates/templateGrupos.xhtml">
+            <ui:define name="tituloPagina">
+                Cadena de aprobación de requisición
+            </ui:define>
+            <ui:define name="contenido">
+                <h:form id="frmCad"  >
+                    <h:panelGrid columns="1">
+                        <p:commandLink title="Agregar" styleClass="btn btn-primary" 
+                                       action="#{cadenaMandoBean.agregarCadenaMando}" 
+                                       process="@this" update="frmCadAgre"                                               
+                                       onclick="PF('dialogoAgregarCad').show();" >
+                            <i class="fa fa-plus text-white"/>                                    
+                        </p:commandLink>  
+                        <p:selectOneMenu value="#{cadenaMandoBean.idCampo}" >
+                            <f:selectItems value="#{cadenaMandoBean.campos}"/> 
+                            <p:ajax listener="#{cadenaMandoBean.cambiarValorCampo}"
+                                    update="frmCad:dtCad"/>
+                        </p:selectOneMenu> 
+                    </h:panelGrid>
+                    <p:dataTable size="small" stripedRows="true" showGridlines="true" id="dtCad" 
+                                 value="#{cadenaMandoBean.listaCadena}" var="cad" 
+                                 rows="15" paginator="true" paginatorPosition="bottom" >
+                        <f:facet name="header"><h:outputText value="Cadena de aprobación"/></f:facet>
+                        <p:column headerText="Solicita" filterBy="#{cad.solicita}" filterMatchMode="contains">
+                            <h:outputText value="#{cad.solicita}"/>
+                        </p:column>
+                        <p:column headerText="Solicita" filterBy="#{cad.revisa}" filterMatchMode="contains">
+                            <f:facet name="header"><h:outputText value="Revisa"/></f:facet>
+                            <h:outputText value="#{cad.revisa}" id="idcm"/>
+                        </p:column>
+                        <p:column headerText="Solicita" filterBy="#{cad.aprueba}" filterMatchMode="contains">
+                            <f:facet name="header"><h:outputText value="Aprueba"/></f:facet>
+                            <h:outputText value="#{cad.aprueba}"/>
+                        </p:column>
+                        <p:column width="110">
+                            <p:commandLink value="Modificar" 
+                                           onclick="PF('dialogoModificarCad').show();"
+                                           action="#{cadenaMandoBean.modificarCadena(cad.id)}"
+                                           process="@this" update="frmCadMod">
+                            </p:commandLink>
+                        </p:column>
+                        <p:column width="110">
+                            <p:commandLink value="Eliminar" 
+                                           action="#{cadenaMandoBean.eliminarCadena(cad.id)}"
+                                           process="@this" update="frmCad:dtCad"> 
+                            </p:commandLink>
+                        </p:column>
+                    </p:dataTable>                        
+                    <h:panelGrid style="float: right;" rendered="#{cadenaMandoBean.listaCadena.size() gt 0}"
+                                 columns="2">
+                        <p:commandButton value="Exportar">
+                            <p:dataExporter type="xls"  target="dtCad"   fileName="CadenasAprobacion"/>
+                        </p:commandButton>
+                    </h:panelGrid>
+                </h:form>
+                <!--Agregar cadena de aprobacion-->
+                <p:dialog widgetVar="dialogoAgregarCad" header="Agregar cadena de aprobación">
+                    <h:form id="frmCadAgre" >
+                        <h:panelGroup>
+                            <h:panelGrid columns="2" >
+                                <h:outputText value="Campo:"/>
+                                <p:inputText value="#{cadenaMandoBean.campo}" disabled="true"/>
+                                <h:outputText value="Usuario"/>
+                                <p:autoComplete value="#{cadenaMandoBean.usuario}"
+                                                completeMethod="#{cadenaMandoBean.usuarioListener}" 
+                                                scrollHeight="250" size="35" forceSelection="true">
+                                </p:autoComplete>
+                                <h:outputText value="Revisa"/>
+                                <p:autoComplete value="#{cadenaMandoBean.revisa}"
+                                                completeMethod="#{cadenaMandoBean.usuarioListener}" 
+                                                scrollHeight="250" size="35" forceSelection="true">
+                                </p:autoComplete>
+                                <h:outputText value="Aprueba"/>
+                                <p:autoComplete value="#{cadenaMandoBean.aprueba}"
+                                                completeMethod="#{cadenaMandoBean.usuarioListener}" 
+                                                scrollHeight="250" size="35" forceSelection="true">
+                                </p:autoComplete>                                    
+                            </h:panelGrid>
+                            <footer>
+                                <p:commandLink id="btnGuardar"  value="Guardar"  process="@form" update="frmCad"
+                                               action="#{cadenaMandoBean.registroCadenaMando}" styleClass="btn btn-primary text-white"
+                                               />
+                                <p:commandLink id="btnCerrar"  value="Cerrar" immediate="true"  styleClass="btn btn-default"
+                                               action="#{cadenaMandoBean.cancelarRegistroCadenaMando}"/>
+                            </footer>
+                            <h:messages id="messaCrearCad" infoClass="textoMensajeError"/>
+                        </h:panelGroup>
+                        <!-- Termina popup -->                    
+                    </h:form>
+                </p:dialog>
+                <!--Inicia el pop para modificar-->       
+
+                <p:dialog widgetVar="dialogoModificarCad" header="Modificar cadena de aprobación"
+                          >
+                    <h:form id="frmCadMod"  >
+                        <h:panelGroup>
+                            <h:panelGrid columns="1">
+                                <h:panelGrid columns="2">
+                                    <h:outputText value="Campo"/>
+                                    <p:inputText  disabled="true" value="#{cadenaMandoBean.campo}" size="35"/>
+                                </h:panelGrid>
+                                <h:panelGrid columns="2" styleClass="bordePanelGrid">
+                                    <f:facet name="header"><h:outputLabel value="Actual"/></f:facet>
+                                    <h:outputText value="Solicita"/>
+                                    <p:inputText  disabled="true" value="#{cadenaMandoBean.cadenaAprobacionVo.solicita}" size="35"/>
+                                    <h:outputText value="Revisa"/>
+                                    <p:inputText  disabled="true" value="#{cadenaMandoBean.cadenaAprobacionVo.revisa}" size="35"/>
+                                    <h:outputText value="Aprueba"/>
+                                    <p:inputText  disabled="true" value="#{cadenaMandoBean.cadenaAprobacionVo.aprueba}" size="35"/>
+                                </h:panelGrid>
+                                <h:panelGrid columns="2" >
+                                    <f:facet name="header"><h:outputLabel value="Nueva"/></f:facet>
+                                    <h:outputText value="Revisa"/>
+                                    <p:autoComplete value="#{cadenaMandoBean.revisa}"
+                                                    completeMethod="#{cadenaMandoBean.usuarioListener}" 
+                                                    scrollHeight="250" size="35" forceSelection="true">
+                                    </p:autoComplete>  
+                                    <h:outputText value="Aprueba"/>
+                                    <p:autoComplete value="#{cadenaMandoBean.aprueba}"
+                                                    completeMethod="#{cadenaMandoBean.usuarioListener}" 
+                                                    scrollHeight="250" size="35" forceSelection="true">
+                                    </p:autoComplete>  
+                                </h:panelGrid>
+                                <h:messages id="messaCrearCad" infoClass="textoMensajeError"/>
+                            </h:panelGrid>
+                            <footer>
+                                <p:commandButton id="btnGuardar"  value="Actualizar"  styleClass="btn btn-primary text-white"
+                                                 action="#{cadenaMandoBean.completarModificacion}"
+                                                 process="@form" update="frmCad"/>
+                                <p:commandLink id="btnCerrar" value="Cancelar" 
+                                               action="#{cadenaMandoBean.cancelarModificacion}"/>
+                            </footer>
+                        </h:panelGroup>
+                    </h:form>
+                </p:dialog>
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

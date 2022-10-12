@@ -1,0 +1,122 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"    
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"  
+
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <body>
+        <ui:composition template="./../../WEB-INF/facelets/templates/templateGrupos.xhtml">
+            <ui:define name="tituloPagina">
+                Registro nuevo ingreso
+            </ui:define>
+            <ui:define name="contenido">
+                <div class="row">
+                    <ui:include src="./menuRecursos.xhtml"/>
+                </div>
+                <div class="row"> 
+                    <h:form   id="frmUser">                             
+                        <div class="row">
+                            <h:messages id="error" errorClass="errorMessage" infoClass="infoMessage"/>
+                        </div>
+                        <div class="row">
+                            <div class="col-6">
+                                <p:panelGrid columns="1"  >
+                                    <f:facet name="header"><h:outputText value="Datos personales" styleClass="textoListaTabla"/></f:facet>                        
+                                    <p:panelGrid columns="2">
+                                        <h:outputText value="Nombre*"/>
+                                        <p:inputText value="#{usuarioBean.nombre}" id="nombre" required="true" requiredMessage="El nombre es requerido"/>    
+                                        <h:outputText value="Primer apellido*"/>
+                                        <p:inputText value="#{usuarioBean.primerApellido}" id="papp" required="true" requiredMessage="El apellido es requerido"/>
+                                        <h:outputText value="Segundo Apellido*"/>
+                                        <p:inputText value="#{usuarioBean.segundoApellido}"/>
+                                        <h:outputText value="Mail *"/>
+                                        <p:inputText value="#{usuarioBean.usuarioVOAlta.mail}" id="mail" style="width: 200px;"/>
+
+                                        <h:outputText value="Usuario en Directorio"/>
+                                        <p:inputText value="#{usuarioBean.usuarioVOAlta.usuarioDirectorio}"/>
+                                        <h:outputText value="Teléfono"/>
+                                        <p:inputText value="#{usuarioBean.usuarioVOAlta.telefono}" size="20"/>
+                                        <h:outputText value="Celular"/>
+                                        <p:inputText value="#{usuarioBean.usuarioVOAlta.celular}"/>
+                                        <h:outputText value="Extensión"/>
+                                        <p:inputText value="#{usuarioBean.usuarioVOAlta.extension}" size="10"/>
+                                        <h:outputText value="Sexo"/>
+                                        <p:selectOneRadio value="#{usuarioBean.usuarioVOAlta.sexo}">
+                                            <f:selectItem itemLabel="Masculino" itemValue="M"/>
+                                            <f:selectItem itemLabel="Femenino" itemValue="F"/>
+                                        </p:selectOneRadio>
+                                        <h:outputText value="Fecha nacimiento"/>
+                                        <p:datePicker  value="#{usuarioBean.usuarioVOAlta.fechaNacimiento}"
+                                                       pattern="dd/MM/yyyy">
+                                        </p:datePicker>
+                                    </p:panelGrid>
+                                </p:panelGrid>
+                            </div>
+                            <div class="col-6">
+                                <p:panelGrid columns="1"  >
+                                    <f:facet name="header">
+                                        <h:outputText value="Datos profesionales" styleClass="textoListaTabla"/></f:facet>
+                                    <p:panelGrid columns="2">
+                                        <h:outputText value="Campo default*"/>
+                                        <p:selectOneMenu value="#{usuarioBean.usuarioVOAlta.idCampo}" 
+                                                         id="campoUser" >
+                                            <f:selectItem itemLabel="Seleccione . . . " itemValue="-1"/>
+                                            <f:selectItems value="#{usuarioBean.listaCampo}"/>
+                                            <p:ajax listener="#{usuarioBean.cambiarValorCampoNuevoIngreso}"
+                                                    update="frmUser:cmbGer"/>
+                                        </p:selectOneMenu>
+                                        <h:outputText value="Oficina*"/>
+                                        <p:selectOneMenu value="#{usuarioBean.usuarioVOAlta.idOficina}" style="width: 200px;" id="oficina">
+                                            <f:selectItem itemLabel="Seleccione . . . " itemValue="-1"/>
+                                            <f:selectItems value="#{usuarioBean.listaOficina}"/>
+                                        </p:selectOneMenu>
+                                        <h:outputText value="Gerencia *"/>
+                                        <p:selectOneMenu id="cmbGer" value="#{usuarioBean.idGerencia}" style="width: 200px;">
+                                            <f:selectItem itemLabel="Seleccione . . ." itemValue="-1"/>
+                                            <f:selectItems value="#{usuarioBean.gerencias}"/>
+                                        </p:selectOneMenu>       
+                                        <h:outputText value="Puesto*"/>
+                                        <p:autoComplete id="autoInPuesto"
+                                                        value="#{usuarioBean.rhPuestoVo.nombre}"
+                                                        completeMethod="#{usuarioBean.puestoTextChanged}"
+                                                        minQueryLength="4" forceSelection="true" size="40"
+                                                        placeholder="Escriba el puesto">
+                                            <p:ajax listener="#{usuarioBean.seleccionarPuesto()}" />
+                                        </p:autoComplete>                              
+                                        <h:outputText value="Fecha ingreso*"/>
+                                        <p:datePicker  value="#{usuarioBean.usuarioVOAlta.fechaIngreso}" 
+                                                       pattern="dd/MM/yyyy">
+                                        </p:datePicker>
+                                        <h:outputText value="Nomina*"/>          
+                                        <p:selectOneMenu value="#{usuarioBean.usuarioVOAlta.idNomina}" style="width: 200px;">
+                                            <f:selectItem itemLabel="Seleccione . . ." itemValue="-1"/>
+                                            <f:selectItems value="#{usuarioBean.listaEmpresa}"/>
+                                        </p:selectOneMenu>  
+                                        <h:outputText value="Gafete *"/>
+                                        <p:selectOneRadio rendered="true" value="#{usuarioBean.usuarioVOAlta.gafete}">
+                                            <f:selectItem itemLabel="Si" itemValue="si"/>
+                                            <f:selectItem itemLabel="No" itemValue="no"/>
+                                        </p:selectOneRadio>
+                                    </p:panelGrid>  
+                                </p:panelGrid>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-8"></div>
+                            <div class="col-4">
+                                <p:commandLink id="guardar" value="Guardar" 
+                                               action="#{usuarioBean.guardarUsuarioNuevoIngreso('RH')}"
+                                               styleClass="btn btn-info text-white"/>
+                                <p:commandLink value="Cancelar" immediate="true" 
+                                                 action="#{usuarioBean.cancelarNuevoIngreso}" 
+                                                 styleClass="btn btn-default"/>
+                            </div>
+                        </div>
+                    </h:form>
+                </div>
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

@@ -1,0 +1,720 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+      >
+
+    <body>
+
+        <ui:composition template="./../../../WEB-INF/facelets/templates/templateGrupos.xhtml">
+            <ui:define name="tituloPagina" >
+                Paridad
+            </ui:define>
+            <ui:define name="contenido" >
+                <script>
+                    function removeSpecialChars(str) {
+                        return str.replace(/(?!\w|\s|\.)./g, '')
+                                .replace(/\s+/g, ' ')
+                                .replace(/^(\s*)([\W\w]*)(\b\s*$)/g, '$2');
+                    }
+
+                    function validarCajaTextoCantidad(idComponente) {
+                        var patt = /^\d+(\.\d{1,10})?$/;
+                        return patt.test($("#" + idComponente).val());
+                    }
+
+                    function validarDecimal(event, idComponente) {
+                        var x = event.which || event.keyCode;
+                        var xx = String.fromCharCode(x);
+                        if (!validarCajaTextoCantidad(idComponente)) {
+                            var str = $("#" + idComponente).val();
+                            str = removeSpecialChars(str);
+                            var n = str.replace(xx, "");
+                            var n = n.replace(xx.toLowerCase(), "");
+                            $("#" + idComponente).val(n);
+                            return false;
+                        }
+
+                        return true;
+                    }
+
+                </script>
+                <div class="row">   
+                    <h:form id="frmParidad">
+                        <div class="row" >
+                            <strong><h:outputText class="col-1 col-xs-12 control-label" value="Filtro:"/></strong>
+                            <div class="col-11 col-xs-12">                                            
+                                <p:selectOneMenu id="idParidadUsuario" 
+                                                 value="#{paridadBean.companiaSeleccionada}" 
+                                                 >
+                                    <f:selectItems value="#{paridadBean.companias}"/>
+                                    <p:ajax listener="#{paridadBean.cambiarValorCompania}" update="frmParidad:tbParidad"/>
+                                </p:selectOneMenu>
+                            </div>
+                        </div>
+                        <p:tabView id="tbParidad">
+                            <p:tab title="Catálogo de paridad">
+                                <center><h:messages globalOnly="true" errorClass="errorMessage" infoClass="infoMessage"/></center>
+                                <div class="row" >
+                                    <p:commandLink title="#{msgs['sistema.crear']} Paridad" action="#{paridadBean.crearParidad}" 
+                                                   styleClass="btn btn-primary text-white">
+                                        <i class="fa  fa-plus"/>
+                                    </p:commandLink>
+
+                                </div> 
+                                <div class="row">
+                                    <p:dataTable size="small" stripedRows="true" showGridlines="true" id="dgParidad" rows="10" 
+                                                 var="data" 
+                                                 value="#{paridadBean.lstParidad}"   >
+                                        <p:column style="text-align: center;">
+                                            <f:facet name="header"><h:outputText value="Compañia"/></f:facet>
+                                            <h:outputText value="#{data.compania}"/>
+                                        </p:column>
+                                        <p:column style="text-align: center;">
+                                            <f:facet name="header"><h:outputText value="Paridad"/></f:facet>
+                                            <h:outputText value="#{data.monedaOrigenSiglas} ->  #{data.monedaDestinoSiglas}"/>
+                                        </p:column>                                                        
+                                        <p:column style="text-align: center;">
+                                            <f:facet name="header"><h:outputText value="Fecha Valido"/></f:facet>
+                                            <h:outputText value="#{data.fechaValido}">
+                                                <f:convertDateTime dateStyle="default" pattern="dd/MM/yyyy"/>
+                                            </h:outputText>
+                                        </p:column>                                    
+                                        <p:column style="text-align: center;">
+                                            <p:commandLink value="#{msgs['sistema.modificar']}" action="#{paridadBean.editarParidad(data.id)}" 
+                                                           process="@this" update="frmPnlParidad">
+                                            </p:commandLink>
+                                        </p:column>
+                                        <p:column style="text-align: center;">
+                                            <p:commandLink value="#{msgs['sistema.eliminar']}" 
+                                                           action="#{paridadBean.deleteParidad(data.id)}" 
+                                                           process="@this" update="frmParidad:tbParidad">
+                                            </p:commandLink>
+                                        </p:column>
+                                    </p:dataTable>
+                                </div>
+                            </p:tab>
+                            <p:tab title="Paridad Valor">
+                                <p:tabView id="tbMeses">
+                                    <p:tab title="Enero">
+                                        <ui:fragment rendered="#{paridadBean.paridadAnual != null and paridadBean.paridadAnual.meses.get(0).paridades != null}">
+                                            <div class="row">         
+                                                <c:forEach items="#{paridadBean.paridadAnual.meses.get(0).paridades}" var="paridad">
+                                                    <div class="col-3">
+                                                        <strong><h:outputText class="col-8 col-xs-12 control-label" value="#{paridad.monedaOrigenSiglas}"/></strong>
+                                                        <p:commandLink title="#{msgs['sistema.crear']} Valor Paridad"                                                                        
+                                                                       action="#{paridadBean.crearParidadValor(paridad.id)}" 
+                                                                       process="@this" update="frmPnlParidadValor">   
+                                                            <i class="fa fa-plus"/>                                                         
+                                                        </p:commandLink>
+                                                        <p:dataTable size="small" stripedRows="true" showGridlines="true" var="data" 
+                                                                     value="#{paridad.mes}"   >                                                                            
+                                                            <p:column style="text-align: center;">
+                                                                <f:facet name="header"><h:outputText value="Fecha"/></f:facet>
+                                                                <h:outputText value="#{data.fechaValido}">
+                                                                    <f:convertDateTime dateStyle="default" pattern="dd/MM/yyyy"/>
+                                                                </h:outputText>
+                                                            </p:column>                                    
+                                                            <p:column style="text-align: center;">
+                                                                <f:facet name="header"><h:outputText value="Paridad"/></f:facet>
+                                                                <h:outputText value="#{data.valor}"/>
+                                                            </p:column>                                                                                    
+                                                            <p:column>
+                                                                <p:commandLink 
+                                                                    styleClass="btn btn-info text-white"                                                            
+                                                                    action="#{paridadBean.editarParidadValor(data.id)}"
+                                                                    process="@this" update="frmPnlParidadValor"
+                                                                    title="Click aquí para editar valor paridad..." >
+                                                                    <i class="fa fa-edit "></i>
+                                                                </p:commandLink>                                                        
+                                                            </p:column>
+                                                        </p:dataTable>
+                                                    </div>
+                                                </c:forEach>
+                                            </div>
+                                        </ui:fragment>    
+                                    </p:tab>
+                                    <p:tab title="Febrero">
+                                        <ui:fragment rendered="#{paridadBean.paridadAnual != null and paridadBean.paridadAnual.meses.get(1).paridades != null}">
+                                            <div class="row"> 
+                                                <c:forEach items="#{paridadBean.paridadAnual.meses.get(1).paridades}" var="paridad">
+                                                    <div class="col-3">
+                                                        <strong>
+                                                            <h:outputText class="col-8 col-xs-12 control-label" 
+                                                                          value="#{paridad.monedaOrigenSiglas}"/></strong>
+                                                        <p:commandLink title="#{msgs['sistema.crear']} Valor Paridad" 
+                                                                       action="#{paridadBean.crearParidadValor(paridad.id)}" 
+                                                                       process="@this" update="frmPnlParidadValor"
+                                                                       styleClass="btn btn-primary text-white"
+                                                                       > 
+                                                            <i class="fa fa-plus"/>
+                                                        </p:commandLink>
+                                                        <p:dataTable size="small" stripedRows="true" showGridlines="true" var="data" 
+                                                                     value="#{paridad.mes}"   >                                                                            
+                                                            <p:column style="text-align: center;">
+                                                                <f:facet name="header"><h:outputText value="Fecha"/></f:facet>
+                                                                <h:outputText value="#{data.fechaValido}">
+                                                                    <f:convertDateTime dateStyle="default" pattern="dd/MM/yyyy"/>
+                                                                </h:outputText>
+                                                            </p:column>                                    
+                                                            <p:column style="text-align: center;">
+                                                                <f:facet name="header"><h:outputText value="Paridad"/></f:facet>
+                                                                <h:outputText value="#{data.valor}"/>
+                                                            </p:column>
+                                                            <p:column>
+                                                                <p:commandLink 
+                                                                    styleClass="btn btn-info text-white"                                                                 
+                                                                    action="#{paridadBean.editarParidadValor(data.id)}"
+                                                                    process="@this" update="frmPnlParidadValor"
+                                                                    title="Click aquí para editar valor paridad..." >
+                                                                    <i class="fa fa-edit "></i>
+                                                                </p:commandLink>                                                        
+                                                            </p:column>
+                                                        </p:dataTable>
+                                                    </div>
+                                                </c:forEach>
+                                            </div>
+                                        </ui:fragment> 
+                                    </p:tab>
+                                    <p:tab title="Marzo">
+                                        <ui:fragment rendered="#{paridadBean.paridadAnual != null and paridadBean.paridadAnual.meses.get(2).paridades != null}">
+                                            <div class="row">   
+                                                <c:forEach items="#{paridadBean.paridadAnual.meses.get(2).paridades}" var="paridad">
+                                                    <div class="col-3">
+                                                        <strong><h:outputText class="col-8 col-xs-12 control-label" value="#{paridad.monedaOrigenSiglas}"/></strong>
+                                                        <p:commandLink title="#{msgs['sistema.crear']} Valor Paridad"
+                                                                       action="#{paridadBean.crearParidadValor(paridad.id)}" 
+                                                                       process="@this" update="frmPnlParidadValor">
+                                                            <i class="fa fa-plus"/>
+                                                        </p:commandLink>
+                                                        <p:dataTable size="small" stripedRows="true" showGridlines="true" var="data" 
+                                                                     value="#{paridad.mes}"   >                                                                            
+                                                            <p:column style="text-align: center;">
+                                                                <f:facet name="header"><h:outputText value="Fecha"/></f:facet>
+                                                                <h:outputText value="#{data.fechaValido}">
+                                                                    <f:convertDateTime dateStyle="default" pattern="dd/MM/yyyy"/>
+                                                                </h:outputText>
+                                                            </p:column>                                    
+                                                            <p:column style="text-align: center;">
+                                                                <f:facet name="header"><h:outputText value="Paridad"/></f:facet>
+                                                                <h:outputText value="#{data.valor}"/>
+                                                            </p:column>
+                                                            <p:column>
+                                                                <p:commandLink 
+                                                                    styleClass="btn btn-info text-white"                                                            
+                                                                    action="#{paridadBean.editarParidadValor(data.id)}"
+                                                                    process="@this" update="frmPnlParidadValor"
+                                                                    title="Click aquí para editar valor paridad..." >
+                                                                    <i class="fa fa-edit "></i>
+                                                                </p:commandLink>                                                        
+                                                            </p:column>
+                                                        </p:dataTable>
+                                                    </div>
+                                                </c:forEach>
+                                            </div>
+                                        </ui:fragment>  
+                                    </p:tab>
+                                    <p:tab title="Abril">
+                                        <ui:fragment rendered="#{paridadBean.paridadAnual != null and paridadBean.paridadAnual.meses.get(3).paridades != null}">
+                                            <div class="row">                                                                        
+                                                <c:forEach items="#{paridadBean.paridadAnual.meses.get(3).paridades}" var="paridad">
+                                                    <div class="col-3">
+                                                        <strong><h:outputText class="col-8 col-xs-12 control-label" value="#{paridad.monedaOrigenSiglas}"/></strong>
+                                                        <p:commandLink title="#{msgs['sistema.crear']} Valor Paridad" 
+                                                                       action="#{paridadBean.crearParidadValor(paridad.id)}" 
+                                                                       process="@this" update="frmPnlParidadValor">
+                                                            <i class="fa fa-plus"/>
+                                                        </p:commandLink>
+                                                        <p:dataTable size="small" stripedRows="true" showGridlines="true" var="data" 
+                                                                     value="#{paridad.mes}"   >                                                                            
+                                                            <p:column style="text-align: center;">
+                                                                <f:facet name="header"><h:outputText value="Fecha"/></f:facet>
+                                                                <h:outputText value="#{data.fechaValido}">
+                                                                    <f:convertDateTime dateStyle="default" pattern="dd/MM/yyyy"/>
+                                                                </h:outputText>
+                                                            </p:column>                                    
+                                                            <p:column style="text-align: center;">
+                                                                <f:facet name="header"><h:outputText value="Paridad"/></f:facet>
+                                                                <h:outputText value="#{data.valor}"/>
+                                                            </p:column>
+                                                            <p:column>
+                                                                <p:commandLink 
+                                                                    styleClass="btn btn-info text-white"                                                            
+                                                                    action="#{paridadBean.editarParidadValor(data.id)}"
+                                                                    process="@this" update="frmPnlParidadValor"
+                                                                    title="Click aquí para editar valor paridad..." >
+                                                                    <i class="fa fa-edit "></i>
+                                                                </p:commandLink>                                                        
+                                                            </p:column>
+                                                        </p:dataTable>
+                                                    </div>
+                                                </c:forEach>
+                                            </div>
+                                        </ui:fragment> 
+                                    </p:tab>
+                                    <p:tab title="Mayo">
+                                        <ui:fragment rendered="#{paridadBean.paridadAnual != null and paridadBean.paridadAnual.meses.get(4).paridades != null}">
+                                            <div class="row">                                                                        
+                                                <c:forEach items="#{paridadBean.paridadAnual.meses.get(4).paridades}" var="paridad">
+                                                    <div class="col-3">
+                                                        <strong><h:outputText class="col-8 col-xs-12 control-label" value="#{paridad.monedaOrigenSiglas}"/></strong>
+                                                        <p:commandLink title="#{msgs['sistema.crear']} Valor Paridad" 
+                                                                       action="#{paridadBean.crearParidadValor(paridad.id)}" 
+                                                                       process="@this" update="frmPnlParidadValor">
+                                                            <i class="fa fa-plus"/>
+                                                        </p:commandLink>
+                                                        <p:dataTable size="small" stripedRows="true" showGridlines="true" var="data" 
+                                                                     value="#{paridad.mes}"   >                                                                            
+                                                            <p:column style="text-align: center;">
+                                                                <f:facet name="header"><h:outputText value="Fecha"/></f:facet>
+                                                                <h:outputText value="#{data.fechaValido}">
+                                                                    <f:convertDateTime dateStyle="default" pattern="dd/MM/yyyy"/>
+                                                                </h:outputText>
+                                                            </p:column>                                    
+                                                            <p:column style="text-align: center;">
+                                                                <f:facet name="header"><h:outputText value="Paridad"/></f:facet>
+                                                                <h:outputText value="#{data.valor}"/>
+                                                            </p:column>
+                                                            <p:column>
+                                                                <p:commandLink 
+                                                                    styleClass="btn btn-info text-white"                                                            
+                                                                    action="#{paridadBean.editarParidadValor(data.id)}"
+                                                                    process="@this" update="frmPnlParidadValor"
+                                                                    title="Click aquí para editar valor paridad..." >
+                                                                    <i class="fa fa-edit "></i>
+                                                                </p:commandLink>                                                        
+                                                            </p:column>
+                                                        </p:dataTable>
+                                                    </div>
+                                                </c:forEach>
+                                            </div>
+                                        </ui:fragment> 
+                                    </p:tab>
+                                    <p:tab title="Junio">
+                                        <ui:fragment rendered="#{paridadBean.paridadAnual != null and paridadBean.paridadAnual.meses.get(5).paridades != null}">
+                                            <div class="row">                                                                        
+                                                <c:forEach items="#{paridadBean.paridadAnual.meses.get(5).paridades}" var="paridad">
+                                                    <div class="col-3">
+                                                        <strong><h:outputText class="col-8 col-xs-12 control-label" value="#{paridad.monedaOrigenSiglas}"/></strong>
+                                                        <p:commandLink title="#{msgs['sistema.crear']} Valor Paridad" 
+                                                                       action="#{paridadBean.crearParidadValor(paridad.id)}" 
+                                                                       process="@this" update="frmPnlParidadValor">      
+                                                            <i class="fa fa-plus"/>                                                                          
+                                                        </p:commandLink>
+                                                        <p:dataTable size="small" stripedRows="true" showGridlines="true" var="data" 
+                                                                     value="#{paridad.mes}"   >                                                                            
+                                                            <p:column style="text-align: center;">
+                                                                <f:facet name="header"><h:outputText value="Fecha"/></f:facet>
+                                                                <h:outputText value="#{data.fechaValido}">
+                                                                    <f:convertDateTime dateStyle="default" pattern="dd/MM/yyyy"/>
+                                                                </h:outputText>
+                                                            </p:column>                                    
+                                                            <p:column style="text-align: center;">
+                                                                <f:facet name="header"><h:outputText value="Paridad"/></f:facet>
+                                                                <h:outputText value="#{data.valor}"/>
+                                                            </p:column>
+                                                            <p:column>
+                                                                <p:commandLink 
+                                                                    styleClass="btn btn-info text-white"                                                            
+                                                                    action="#{paridadBean.editarParidadValor(data.id)}"
+                                                                    process="@this" update="frmPnlParidadValor"
+                                                                    title="Click aquí para editar valor paridad..." >
+                                                                    <i class="fa fa-edit "></i>
+                                                                </p:commandLink>                                                        
+                                                            </p:column>
+                                                        </p:dataTable>
+                                                    </div>
+                                                </c:forEach>
+                                            </div>
+                                        </ui:fragment>  
+                                    </p:tab>
+                                    <p:tab title="Julio">
+                                        <ui:fragment rendered="#{paridadBean.paridadAnual != null and paridadBean.paridadAnual.meses.get(6).paridades != null}">
+                                            <div class="row">                                                                        
+                                                <c:forEach items="#{paridadBean.paridadAnual.meses.get(6).paridades}" var="paridad">
+                                                    <div class="col-3">
+                                                        <strong><h:outputText class="col-8 col-xs-12 control-label" value="#{paridad.monedaOrigenSiglas}"/></strong>
+                                                        <p:commandLink title="#{msgs['sistema.crear']} Valor Paridad" 
+                                                                       action="#{paridadBean.crearParidadValor(paridad.id)}" 
+                                                                       process="@this" update="frmPnlParidadValor">      
+                                                            <i class="fa fa-plus"/>                                                                              
+                                                        </p:commandLink>
+                                                        <p:dataTable size="small" stripedRows="true" showGridlines="true" var="data" 
+                                                                     value="#{paridad.mes}"   >                                                                            
+                                                            <p:column style="text-align: center;">
+                                                                <f:facet name="header"><h:outputText value="Fecha"/></f:facet>
+                                                                <h:outputText value="#{data.fechaValido}">
+                                                                    <f:convertDateTime dateStyle="default" pattern="dd/MM/yyyy"/>
+                                                                </h:outputText>
+                                                            </p:column>                                    
+                                                            <p:column style="text-align: center;">
+                                                                <f:facet name="header"><h:outputText value="Paridad"/></f:facet>
+                                                                <h:outputText value="#{data.valor}"/>
+                                                            </p:column>
+                                                            <p:column>
+                                                                <p:commandLink 
+                                                                    styleClass="btn btn-info text-white"                                                            
+                                                                    action="#{paridadBean.editarParidadValor(data.id)}"
+                                                                    process="@this" update="frmPnlParidadValor"
+                                                                    title="Click aquí para editar valor paridad..." >
+                                                                    <i class="fa fa-edit "></i>
+                                                                </p:commandLink>                                                        
+                                                            </p:column>
+                                                        </p:dataTable>
+                                                    </div>
+                                                </c:forEach>
+                                            </div>
+                                        </ui:fragment>   
+                                    </p:tab>
+                                    <p:tab title="Agosto">
+                                        <ui:fragment rendered="#{paridadBean.paridadAnual != null and paridadBean.paridadAnual.meses.get(7).paridades != null}">
+                                            <div class="row">                                                                        
+                                                <c:forEach items="#{paridadBean.paridadAnual.meses.get(7).paridades}" var="paridad">
+                                                    <div class="col-3">
+                                                        <strong><h:outputText class="col-8 col-xs-12 control-label" value="#{paridad.monedaOrigenSiglas}"/></strong>
+                                                        <p:commandLink title="#{msgs['sistema.crear']} Valor Paridad" 
+                                                                       action="#{paridadBean.crearParidadValor(paridad.id)}" 
+                                                                       process="@this" update="frmPnlParidadValor">          
+                                                            <i class="fa fa-plus"/>                                                                          
+                                                        </p:commandLink>
+                                                        <p:dataTable size="small" stripedRows="true" showGridlines="true" var="data" 
+                                                                     value="#{paridad.mes}"   >                                                                            
+                                                            <p:column style="text-align: center;">
+                                                                <f:facet name="header"><h:outputText value="Fecha"/></f:facet>
+                                                                <h:outputText value="#{data.fechaValido}">
+                                                                    <f:convertDateTime dateStyle="default" pattern="dd/MM/yyyy"/>
+                                                                </h:outputText>
+                                                            </p:column>                                    
+                                                            <p:column style="text-align: center;">
+                                                                <f:facet name="header"><h:outputText value="Paridad"/></f:facet>
+                                                                <h:outputText value="#{data.valor}"/>
+                                                            </p:column>
+                                                            <p:column>
+                                                                <p:commandLink 
+                                                                    styleClass="btn btn-info text-white"                                                            
+                                                                    action="#{paridadBean.editarParidadValor(data.id)}"
+                                                                    process="@this" update="frmPnlParidadValor"
+                                                                    title="Click aquí para editar valor paridad..." >
+                                                                    <i class="fa fa-edit "></i>
+                                                                </p:commandLink>                                                        
+                                                            </p:column>
+                                                        </p:dataTable>
+                                                    </div>
+                                                </c:forEach>
+                                            </div>
+                                        </ui:fragment> 
+                                    </p:tab>
+                                    <p:tab title="Septiembre">
+                                        <ui:fragment rendered="#{paridadBean.paridadAnual != null and paridadBean.paridadAnual.meses.get(8).paridades != null}">
+                                            <div class="row">                                                                        
+                                                <c:forEach items="#{paridadBean.paridadAnual.meses.get(8).paridades}" var="paridad">
+                                                    <div class="col-3">
+                                                        <strong><h:outputText class="col-8 col-xs-12 control-label" value="#{paridad.monedaOrigenSiglas}"/></strong>
+                                                        <p:commandLink title="#{msgs['sistema.crear']} Valor Paridad" 
+                                                                       action="#{paridadBean.crearParidadValor(paridad.id)}" 
+                                                                       process="@this" update="frmPnlParidadValor">
+                                                            <i class="fa fa-plus"/>
+                                                        </p:commandLink>
+                                                        <p:dataTable size="small" stripedRows="true" showGridlines="true" var="data" 
+                                                                     value="#{paridad.mes}"   >                                                                            
+                                                            <p:column style="text-align: center;">
+                                                                <f:facet name="header"><h:outputText value="Fecha"/></f:facet>
+                                                                <h:outputText value="#{data.fechaValido}">
+                                                                    <f:convertDateTime dateStyle="default" pattern="dd/MM/yyyy"/>
+                                                                </h:outputText>
+                                                            </p:column>                                    
+                                                            <p:column style="text-align: center;">
+                                                                <f:facet name="header"><h:outputText value="Paridad"/></f:facet>
+                                                                <h:outputText value="#{data.valor}"/>
+                                                            </p:column>
+                                                            <p:column>
+                                                                <p:commandLink 
+                                                                    styleClass="btn btn-info text-white"                                                            
+                                                                    action="#{paridadBean.editarParidadValor(data.id)}"
+                                                                    process="@this" update="frmPnlParidadValor"
+                                                                    title="Click aquí para editar valor paridad..." >
+                                                                    <i class="fa fa-edit "></i>
+                                                                </p:commandLink>                                                        
+                                                            </p:column>
+                                                        </p:dataTable>
+                                                    </div>
+                                                </c:forEach>
+                                            </div>
+                                        </ui:fragment> 
+                                    </p:tab>
+                                    <p:tab title="Octubre">
+                                        <ui:fragment rendered="#{paridadBean.paridadAnual != null and paridadBean.paridadAnual.meses.get(9).paridades != null}">
+                                            <div class="row">                                                                        
+                                                <c:forEach items="#{paridadBean.paridadAnual.meses.get(9).paridades}" var="paridad">
+                                                    <div class="col-3">
+                                                        <strong><h:outputText class="col-8 col-xs-12 control-label" value="#{paridad.monedaOrigenSiglas}"/></strong>
+                                                        <p:commandLink title="#{msgs['sistema.crear']} Valor Paridad" 
+                                                                       action="#{paridadBean.crearParidadValor(paridad.id)}" 
+                                                                       process="@this" update="frmPnlParidadValor">
+                                                            <i class="fa fa-plus"/>
+                                                        </p:commandLink>
+                                                        <p:dataTable size="small" stripedRows="true" showGridlines="true" var="data" 
+                                                                     value="#{paridad.mes}"   >                                                                            
+                                                            <p:column style="text-align: center;">
+                                                                <f:facet name="header"><h:outputText value="Fecha"/></f:facet>
+                                                                <h:outputText value="#{data.fechaValido}">
+                                                                    <f:convertDateTime dateStyle="default" pattern="dd/MM/yyyy"/>
+                                                                </h:outputText>
+                                                            </p:column>                                    
+                                                            <p:column style="text-align: center;">
+                                                                <f:facet name="header"><h:outputText value="Paridad"/></f:facet>
+                                                                <h:outputText value="#{data.valor}"/>
+                                                            </p:column>
+                                                            <p:column>
+                                                                <p:commandLink 
+                                                                    styleClass="btn btn-info text-white"                                                            
+                                                                    action="#{paridadBean.editarParidadValor(data.id)}"
+                                                                    process="@this" update="frmPnlParidadValor"
+                                                                    title="Click aquí para editar valor paridad..." >
+                                                                    <i class="fa fa-edit "></i>
+                                                                </p:commandLink>                                                        
+                                                            </p:column>
+                                                        </p:dataTable>
+                                                    </div>
+                                                </c:forEach>
+                                            </div>
+                                        </ui:fragment>
+                                    </p:tab>
+                                    <p:tab title="Noviembre">
+                                        <ui:fragment rendered="#{paridadBean.paridadAnual != null and paridadBean.paridadAnual.meses.get(10).paridades != null}">
+                                            <div class="row">                                                                        
+                                                <c:forEach items="#{paridadBean.paridadAnual.meses.get(10).paridades}" var="paridad">
+                                                    <div class="col-3">
+                                                        <strong><h:outputText class="col-8 col-xs-12 control-label" value="#{paridad.monedaOrigenSiglas}"/></strong>
+                                                        <p:commandLink title="#{msgs['sistema.crear']} Valor Paridad" 
+                                                                       action="#{paridadBean.crearParidadValor(paridad.id)}" 
+                                                                       process="@this" update="frmPnlParidadValor">
+                                                            <i class="fa fa-plus"/>
+                                                        </p:commandLink>
+                                                        <p:dataTable size="small" stripedRows="true" showGridlines="true" var="data" 
+                                                                     value="#{paridad.mes}"   >                                                                            
+                                                            <p:column style="text-align: center;">
+                                                                <f:facet name="header"><h:outputText value="Fecha"/></f:facet>
+                                                                <h:outputText value="#{data.fechaValido}">
+                                                                    <f:convertDateTime dateStyle="default" pattern="dd/MM/yyyy"/>
+                                                                </h:outputText>
+                                                            </p:column>                                    
+                                                            <p:column style="text-align: center;">
+                                                                <f:facet name="header"><h:outputText value="Paridad"/></f:facet>
+                                                                <h:outputText value="#{data.valor}"/>
+                                                            </p:column>
+                                                            <p:column>
+                                                                <p:commandLink 
+                                                                    styleClass="btn btn-info text-white"                                                            
+                                                                    action="#{paridadBean.editarParidadValor(data.id)}"
+                                                                    process="@this" update="frmPnlParidadValor"
+                                                                    title="Click aquí para editar valor paridad..." >
+                                                                    <i class="fa fa-edit "></i>
+                                                                </p:commandLink>                                                        
+                                                            </p:column>
+                                                        </p:dataTable>
+                                                    </div>
+                                                </c:forEach>
+                                            </div>
+                                        </ui:fragment>
+                                    </p:tab>
+                                    <p:tab title="Diciembre">
+                                        <ui:fragment rendered="#{paridadBean.paridadAnual != null and paridadBean.paridadAnual.meses.get(11).paridades != null}">
+                                            <div class="row">                                                                        
+                                                <c:forEach items="#{paridadBean.paridadAnual.meses.get(11).paridades}" var="paridad">
+                                                    <div class="col-3">
+                                                        <strong><h:outputText class="col-8 col-xs-12 control-label" value="#{paridad.monedaOrigenSiglas}"/></strong>
+                                                        <p:commandLink title="#{msgs['sistema.crear']} Valor Paridad" 
+                                                                       action="#{paridadBean.crearParidadValor(paridad.id)}" 
+                                                                       process="@this" update="frmPnlParidadValor">
+                                                            <i class="fa fa-plus"/>
+                                                        </p:commandLink>
+                                                        <p:dataTable size="small" stripedRows="true" showGridlines="true" var="data" 
+                                                                     value="#{paridad.mes}"   >                                                                            
+                                                            <p:column style="text-align: center;">
+                                                                <f:facet name="header"><h:outputText value="Fecha"/></f:facet>
+                                                                <h:outputText value="#{data.fechaValido}">
+                                                                    <f:convertDateTime dateStyle="default" pattern="dd/MM/yyyy"/>
+                                                                </h:outputText>
+                                                            </p:column>                                    
+                                                            <p:column style="text-align: center;">
+                                                                <f:facet name="header"><h:outputText value="Paridad"/></f:facet>
+                                                                <h:outputText value="#{data.valor}"/>
+                                                            </p:column>
+                                                            <p:column>
+                                                                <p:commandLink 
+                                                                    styleClass="btn btn-info text-white"                                                     
+                                                                    action="#{paridadBean.editarParidadValor(data.id)}"
+                                                                    process="@this" update="frmPnlParidadValor"
+                                                                    title="Click aquí para editar valor paridad..." >
+                                                                    <i class="fa fa-edit "></i>
+                                                                </p:commandLink>                                                        
+                                                            </p:column>
+                                                        </p:dataTable>
+                                                    </div>
+                                                </c:forEach>
+                                            </div>
+                                        </ui:fragment>  
+                                    </p:tab>
+                                </p:tabView>
+                            </p:tab>
+                        </p:tabView>
+                    </h:form>
+                </div>
+
+                <div class="modal fade" id="dialogoPopUpParidad" data-backdrop="static" data-keyboard="false" style="color: black;">
+                    <div class="modal-dialog ">
+                        <div class="modal-content">
+                            <div class="modal-header">                    
+                                <h4 class="modal-title">Crear/Editar Paridad</h4>                                                                
+                            </div>
+                            <h:form id="frmPnlParidad" >
+                                <div class="modal-body">                                                                                                        
+                                    <div class="container-fluid">
+                                        <div class="form-group panel">                                          
+                                            <div style="margin-top: 0px;" class="col-12 col-xs-12">                        
+                                                <h:message  for="" style="display: block;" infoClass="alert alert-success" warnClass="alert alert-warning"
+                                                            errorClass="alert alert-danger" fatalClass="alert alert-danger"  />
+                                            </div>
+                                            <div class="form-group col-12 col-xs-12" >                                                
+                                                <div class="row">
+                                                    <strong><h:outputText class="col-3 col-xs-12 control-label" value="Compañia:"/></strong>
+                                                    <div class="col-6 col-xs-12">                                            
+                                                        <h:outputText class="control-label" value="#{paridadBean.companiaSelec.nombre}"/>
+                                                    </div>
+                                                    <div class="visible-lg col-1" ></div>                                                
+                                                </div>                                                
+                                                <div class="row">
+                                                    <strong><h:outputText class="col-3 col-xs-12 control-label" value="Moneda Origen:"/></strong>
+                                                    <div class="col-6 col-xs-12">                                            
+                                                        <p:selectOneMenu id="idParidadeseditMonedaOr" 
+                                                                         value="#{paridadBean.newParidad.monedaOrigen}"
+                                                                         >
+                                                            <f:selectItem itemValue="0" itemLabel="Seleccione . . . "/>
+                                                            <f:selectItems value="#{paridadBean.monedasOrigen}"/>
+                                                            <p:ajax listener="#{paridadBean.cambiarValorMonedaOrigen}" update="frmPnlParidad:idParidadeseditMonedaDes"/>
+                                                        </p:selectOneMenu>
+                                                    </div>
+                                                    <div class="visible-lg col-1" ></div>                                                
+                                                </div>
+                                                <div class="row">
+                                                    <strong><h:outputText class="col-3 col-xs-12 control-label" value="Moneda Destino:"/></strong>
+                                                    <div class="col-6 col-xs-12">                                            
+                                                        <p:selectOneMenu id="idParidadeseditMonedaDes" 
+                                                                         value="#{paridadBean.newParidad.monedaDestino}"                                                                               
+                                                                         >
+                                                            <f:selectItem itemValue="0" itemLabel="Seleccione . . . "/>
+                                                            <f:selectItems value="#{paridadBean.monedasDestino}"/>
+                                                        </p:selectOneMenu>
+                                                    </div>
+                                                    <div class="visible-lg col-1" ></div>                                                
+                                                </div>
+                                            </div>    
+                                        </div>
+                                    </div>
+                                    <div class="col-9"></div>  
+                                </div>
+                                <div class="modal-footer" style="border-top: white;">
+                                    <p:commandButton id="saveParidad"
+                                                     value="Guardar"
+                                                     styleClass="btn btn-info" 
+                                                     action="#{paridadBean.guardarParidad}"
+                                                     process="@form" update="frmParidad:tbParidad"/>
+                                    <p:commandLink
+                                        value="Cerrar" immediate="true"
+                                        onclick="$(dialogoPopUpParidad).modal('hide');"
+                                        title="Cerrar ventana..." 
+                                        />
+                                </div>    
+                            </h:form>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal fade" id="dialogoPopUpParidadValor" data-backdrop="static" data-keyboard="false" style="color: black;">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">                    
+                                <h4 class="modal-title">Crear/Editar Valor de Paridad</h4>                                                                
+                            </div>
+                            <h:form id="frmPnlParidadValor" >
+                                <div class="modal-body">                                                                                                        
+                                    <div class="container-fluid">
+                                        <div class="form-group">                                          
+                                            <div style="margin-top: 0px;" class="col-12 col-xs-12">                        
+                                                <h:message  for="" style="display: block;" infoClass="alert alert-success" warnClass="alert alert-warning"
+                                                            errorClass="alert alert-danger" fatalClass="alert alert-danger"  />
+                                            </div>
+                                            <div class="form-group col-12 col-xs-12" >                                                
+                                                <div class="row">
+                                                    <div class="visible-lg col-2" ></div>
+                                                    <strong><h:outputText class="col-2 col-xs-12 control-label" value="Compañia:"/></strong>
+                                                    <div class="col-6 col-xs-12">                                            
+                                                        <h:outputText class="control-label" value="#{paridadBean.companiaSelec.nombre}"/>
+                                                    </div>
+                                                    <div class="visible-lg col-2" ></div>                                                
+                                                </div>                                                
+                                                <div class="row">
+                                                    <div class="visible-lg col-2" ></div>
+                                                    <strong><h:outputText class="col-2 col-xs-12 control-label" value="Paridad:"/></strong>
+                                                    <div class="col-6 col-xs-12">                                            
+                                                        <h:inputText styleClass="form-control" 
+                                                                     maxlength="15"
+                                                                     id="valorParidadID"
+                                                                     value="#{paridadBean.newParidadValorVO.valor}" 
+                                                                     onkeyup="return validarDecimal(event, 'frmPnlParidadValor\\:valorParidadID');" 
+                                                                     >                                                              
+                                                            <f:converter converterId="javax.faces.Double"/>                                                            
+                                                        </h:inputText>
+                                                    </div>
+                                                    <div class="visible-lg col-2" ></div>                                                
+                                                </div>                                                
+                                                <div class="row">
+                                                    <div class="visible-lg col-2" ></div>
+                                                    <strong><h:outputText class="col-2 col-xs-12 control-label" value="Fecha Valido:"/></strong>
+                                                    <div class="col-6 col-xs-12">                                                                                                    
+                                                        <p:datePicker pattern="dd/MM/yyyy" 
+                                                                      value="#{paridadBean.newParidadValorVO.fechaValido}"
+                                                                      required="true" requiredMessage="Es necesario seleccionar una fecha. "/>
+                                                    </div>
+                                                    <div class="visible-lg col-2" ></div>                                                
+                                                </div>                                                                                                
+                                            </div>            
+
+
+                                        </div>
+                                    </div>
+                                    <div class="col-9"></div>  
+                                </div>
+                                <div class="modal-footer" >
+                                    <p:commandButton id="saveParidadValor"
+                                                     value="Guardar"
+                                                     styleClass="btn btn-info"                                                      
+                                                     action="#{paridadBean.guardarParidadValor}"
+                                                     process="@form" update="frmParidad:tbParidad:tbMeses"/>
+                                    <p:commandLink immediate="true"
+                                                   value="Cerrar"
+                                                   onclick="$(dialogoPopUpParidadValor).modal('hide');"
+                                                   title="Cerrar ventana..." 
+                                                   />
+                                </div>    
+                            </h:form>
+                        </div>
+                    </div>
+                </div>
+                <script>
+                    $(document).ready(function () {
+                        getMesActual();
+                    });
+                </script>
+            </ui:define>
+
+        </ui:composition>
+
+    </body>
+</html>

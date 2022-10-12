@@ -1,0 +1,92 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:my="http://www.mytags.com/schema/mytags">
+    <body>
+        <ui:composition template="./../../WEB-INF/facelets/templates/templateGrupos.xhtml">
+            <ui:define name="menu" rendered="#{not empty sesion.usuario}">
+                <ui:include src="/menuPrincipal.xhtml"/>
+            </ui:define>
+            <ui:define name="contenido">
+                <h:panelGroup rendered="#{not empty sesion.usuario}" styleClass="f11">
+                    <h:form>
+                        <table>
+                            <tr>
+                                <td valign="top"><p:graphicImage value="/resources/imagenes/grupo.png"/></td>
+                                <td width="511px"><h:outputText value="#{msgs['comunicacion.grupo']}#{grupoBean.grupo.nombre}" styleClass="fNegrita18"/></td>
+                                <td align="right" valign="top">
+                                    <p:commandLink value="#{msgs['sistema.modificar']}"  action="#{grupoBean.actualizarGrupoII}" disabled="#{grupoBean.grupo.id eq null}" title="#{msgs['sistema.modificar']}"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td colspan="2" width="551px"><h:outputText value="#{grupoBean.grupo.descripcion}"/> </td>
+                            </tr>
+                        </table>     
+                    </h:form>    
+                    <p:panelGrid styleClass="buttonBorde"/>
+                    <h:form id="agregarMiembro">
+                        <my:dataGrid  id="miembros" value="#{grupoBean.miembros}" rows="10" showPaginator="true" paginator="true"
+                                      textoResultado="#{msgs['sistema.paginador.resultado']}"
+                                      textoPagina="#{msgs['sistema.paginador.pagina']}"
+                                      textoDe="#{msgs['sistema.paginador.de']}">
+                            <p:column>
+                                <f:facet name="header">
+                                    <center><h:messages errorClass="mensaje" infoClass="mensaje"/></center>
+                                    <h:panelGroup style="width: 572px">
+                                        <table align="right">
+                                            <tr>
+                                                <td align="right">
+                                                    Buscar por nombre:
+                                                </td>
+                                                <td align="right"> 
+                                                    <!--listValue="#{soporteSistemaBean.userItems}" textChangeListener="#{soporteSistemaBean.userListener}" -->
+                                                    <p:autoComplete id="usuario" immediate="true" 
+                                                                         disabled="#{grupoBean.grupo.id eq null}" 
+                                                                         value="#{grupoBean.usuario}" 
+                                                                         >
+                                                        <f:facet name="selectInputText">
+                                                            <p:panelGrid columns="3">
+                                                                <h:outputText value="#{usuario.nombre}"/> 
+                                                                | 
+                                                                <h:outputText value="#{usuario.puesto}"/> 
+                                                            </p:panelGrid>
+                                                        </f:facet>
+                                                    </p:autoComplete>                                                    
+                                                </td>
+                                                <td align="right" width="80px"> <p:commandLink value="#{msgs['comunicacion.agregarPersona']}" title="#{msgs['comunicacion.agregarPersona']}" action="#{grupoBean.nuevoMiembro}" disabled="#{grupoBean.grupo.id eq null}"/>  </td>
+                                            </tr>
+                                        </table>                                        
+                                    </h:panelGroup>
+                                </f:facet>  
+                                <table>
+                                    <tr>
+                                        <td width="557px">   
+                                            <table>
+                                                <tr>
+                                                    <td><p:graphicImage styleClass="dimensionFoto" value="#{data['miembro'].foto}"/></td>
+                                                    <td valign="top" align="left">
+                                                        <h:outputLabel styleClass="fNegrita12" value="#{data['miembro'].nombre}"/>
+                                                        <h:outputText styleClass="f9" value="#{data['miembro'].puesto}"/>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                        <td><p:commandLink value="X" title="#{msgs['sistema.eliminar']}" action="#{grupoBean.eliminarMiembro}" onclick="if (!confirm('#{msgs['sistema.confirmacionEliminar']}')) return false;"/></td>
+                                    </tr>
+                                </table>
+                            </p:column>
+                        </my:dataGrid>  
+                    </h:form>
+                </h:panelGroup>   
+                <h:panelGroup  rendered="#{empty sesion.usuario}" styleClass="altura">
+                    <ui:include src="./../../login.xhtml"/>
+                </h:panelGroup>                
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

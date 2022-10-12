@@ -1,0 +1,172 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html mlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"    
+      xmlns:h="http://xmlns.jcp.org/jsf/html"     
+      xmlns:p="http://primefaces.org/ui"  
+
+      xmlns:my="http://www.mytags.com/schema/mytags"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <body>
+
+        <ui:composition template="./../../WEB-INF/facelets/templates/templateGrupos.xhtml">
+            <ui:define name="tituloPagina">
+                #{msgs['sia.rh.titulo.inicio.baja']}
+            </ui:define>
+            <ui:define name="contenido">
+                <div class="row">
+                    <ui:include src="./menuRecursos.xhtml" />
+                </div>
+                <div class="row"> 
+                    <h:form id="formInicioBaja" >
+                        <h:outputLabel value="#{msgs['sia.rh.mensaje.paso.1']}"/>
+                        <div class="col-lg-12" >
+                            <h:outputText value="#{msgs['sistema.usuario']}"/>   
+                            <p:autoComplete value="#{usuarioBean.u}"
+                                            forceSelection="true" minQueryLength="4" placeholder="Usuario"
+                                            completeMethod="#{usuarioBean.completarUsuario}">
+                                <p:ajax listener="#{usuarioBean.buscarUsuarioBaja()}"/>
+                            </p:autoComplete>
+                        </div>
+                        <!-- styleClass="bordePanelGrid" -->
+                        <p:panelGrid columns="2"    >
+                            <h:outputText value="#{msgs['generales.nombre']} :"/>
+                            <p:inputText value="#{usuarioBean.usuarioVOAlta.nombre}" size="40" disabled="true" />
+                            <h:outputText value="#{msgs['sia.rh.gerencia']} :"/>
+                            <p:inputText value="#{usuarioBean.usuarioVOAlta.gerencia}" size="40" disabled="true"/>
+                            <h:outputText value="#{msgs['sia.puesto.nombre']} :"/>   
+                            <p:inputText value="#{usuarioBean.usuarioVOAlta.puesto}" size="40" disabled="true"/>
+                            <h:outputText value="#{msgs['sia.rh.oficina']} :"/>   
+                            <p:inputText value="#{usuarioBean.usuarioVOAlta.oficina}" size="40" disabled="true"/>
+                        </p:panelGrid>
+                        <h:outputLabel value="#{msgs['sia.rh.mensaje.paso2']}" />
+                        <h:panelGroup rendered="#{usuarioBean.usuarioVOAlta != null}">
+                            <p:panelGrid columns="2">
+                                <p:commandLink title="#{msgs['sia.rh.mensaje.title.agregar.gerencia']}"
+                                               value="#{msgs['sia.rh.agregar.nueva.gerencia']}"
+                                               styleClass="link"                                              
+                                               action="#{usuarioBean.abrirPopupAgregarGerencia}"
+                                               process="@this" update="frmAddGer"
+                                               oncomplete="PF('dlgGer').show();"/>
+                            </p:panelGrid>
+                            <div class="col-lg-12 col-xs-12">
+                                <p:selectOneRadio value="#{usuarioBean.idCampo}">
+                                    <f:selectItems value="#{usuarioBean.listaCamposItems}"/> 
+                                    <p:ajax listener="#{usuarioBean.cambiarValorCampo}"
+                                            update="proyectoOTSelect"/>
+                                </p:selectOneRadio>
+                                <h:outputLabel value="#{msgs['sia.rh.gerencia']} :"/>                            
+                                <p:selectOneMenu value="#{usuarioBean.idGerencia}">
+                                    <f:selectItem itemValue="-1" itemLabel="#{msgs['sia.generales.seleccione']} .."/>
+                                    <f:selectItems value="#{usuarioBean.listaGerenciasItems}"/>
+                                    <p:ajax listener="#{usuarioBean.agregarGerenciaAListaGerenciasSelccionadas}"
+                                            update="formInicioBaja:dtBaja"/>
+                                </p:selectOneMenu>
+                            </div>
+                            <p:dataTable id="dtBaja" showGridlines="true" 
+                                         value="#{usuarioBean.usuarioVOAlta != null ?  usuarioBean.listaGerenciasSeleccionadas : null}"
+                                         var="data" size="small" >
+                                <p:column style="width: 80%">
+                                    <f:facet name="header"><h:outputText value="#{msgs['sia.rh.gerencia']}"/></f:facet>
+                                    <h:outputText value="#{data.nombre}"/>
+                                </p:column>                                
+                                <p:column style="width: 80%">
+                                    <f:facet name="header"><h:outputText value="Responsable"/></f:facet>
+                                    <h:outputText value="#{data.nombreResponsable}"/>
+                                </p:column>    
+                                <p:column style="width: 80%">
+                                    <f:facet name="header"><h:outputText value="Campo"/></f:facet>
+                                    <h:outputText value="#{data.nombreApCampo}"/>
+                                </p:column>
+                                <p:column >                                    
+                                    <p:commandLink value="Quitar"
+                                                   action="#{usuarioBean.quitarGerenciaDeListaGerenciasSelccionadas(data)}"
+                                                   styleClass="link"
+                                                   process="@this" update="formInicioBaja:dtBaja"/>
+                                </p:column>
+                            </p:dataTable>                       
+                            <p:panelGrid columns="1">
+                                <h:outputLabel value="#{msgs['sia.rh.mensaje.paso3']}"/>
+                                <p:inputTextarea value="#{usuarioBean.respuesta}" cols="108" rows="6"
+                                                 placeholder="Motivo de baja"/>
+                                <p:panelGrid columns="2">
+                                    <p:commandButton value="#{msgs['sia.rh.iniciar.baja']}" 
+                                                     action="#{usuarioBean.confirmarBaja}"
+                                                     styleClass="btn btn-info text-white"
+                                                     process="@form" update="@form"/>
+                                    <p:commandLink value="#{msgs['sistema.cancelar']}" 
+                                                   action="#{usuarioBean.cancelarInicioBaja}"
+                                                   styleClass="btn btn-default"/>
+                                </p:panelGrid>                  
+                            </p:panelGrid>
+                            <center><h:messages errorClass="errorMessage" infoClass="infoMessage" styleClass="textoMensajeError"/></center>
+                        </h:panelGroup>
+                    </h:form>   
+                    <h:form id="frmBaja">
+                        <p:dialog widgetVar="dlgBaja" header="#{msgs['sia.rh.mensaje.titulo.confirmacion.baja']}">
+                            <center><h:messages errorClass="mensaje" infoClass="mensaje"/></center>  
+                            <h:outputLabel value="#{msgs['sia.rh.mensaje.confirmacion.baja']}"/>
+                            <br/>
+                            <p:panelGrid columns="4" >
+                                <h:outputText value="#{msgs['generales.nombre']}:"/>
+                                <p:inputText value="#{usuarioBean.usuarioVOAlta.nombre}" disabled="true" />
+                                <h:outputText value="#{msgs['sia.rh.gerencia']}:"/>
+                                <p:inputText value="#{usuarioBean.usuarioVOAlta.gerencia}" disabled="true"/>
+                                <h:outputText value="#{msgs['sia.puesto.nombre']}:"/>   
+                                <p:inputText value="#{usuarioBean.usuarioVOAlta.puesto}" disabled="true"/>
+                                <h:outputText value="#{msgs['sia.rh.oficina']}:"/>   
+                                <p:inputText value="#{usuarioBean.usuarioVOAlta.oficina}" disabled="true"/>
+                            </p:panelGrid>                            
+                            <p:panelGrid columns="1"  rendered="false">                            
+                                <h:outputLabel value="Motivo de baja :"/>                            
+                                <p:inputTextarea value="#{usuarioBean.respuesta}" cols="60" rows="6"/>
+                            </p:panelGrid> 
+                            <center>                            
+                                <p:panelGrid columns="2">                                
+                                    <p:commandLink styleClass="btn btn-info text-white"                                                                                               
+                                                   action="#{usuarioBean.iniciarBaja}"                                                 
+                                                   value="#{msgs['sia.rh.boton.confirmar.inicio.baja']}"/>                                                            
+                                    <p:commandLink styleClass="btn btn-default"                                                  
+                                                   action="#{usuarioBean.cerrarConfirmacionBajaEmpleado}"
+                                                   value="#{msgs['sistema.cancelar']}"/>
+                                </p:panelGrid>
+                            </center>
+                        </p:dialog>
+                    </h:form>
+                    <h:form id="frmAddGer">
+                        <p:dialog header="#{msgs['sia.rh.mensaje.titulo.agregar.gerencia.popup']}"
+                                  widgetVar="dlgGer">
+                            <center><h:messages errorClass="mensaje" infoClass="mensaje"/></center>                          
+                            <h:outputLabel value="Por favor seleccione la gerencia y el campo y de clic en agregar"/>                            
+                            <br/>
+                            <p:panelGrid  columns="2" >
+                                <h:outputLabel value="#{msgs['sia.rh.gerencia']} :"/>                            
+                                <p:selectOneMenu value="#{usuarioBean.idGerencia}">
+                                    <f:selectItem itemValue="-1" itemLabel="#{msgs['sia.generales.seleccione']} .."/>
+                                    <f:selectItems value="#{usuarioBean.gerencias}"/>
+                                </p:selectOneMenu>                                                               
+                                <h:outputLabel value="Campo :"/>                            
+                                <p:selectOneMenu value="#{usuarioBean.idPuesto}">
+                                    <f:selectItems value="#{usuarioBean.listaCamposItems}"  />
+                                </p:selectOneMenu>                                                               
+                            </p:panelGrid>
+                            <br/>
+                            <center>               
+                                <p:panelGrid columns="2">
+                                    <p:commandButton styleClass="btn btn-info text-white"                                                             
+                                                     action="#{usuarioBean.agregarGerenciaACampo}"
+                                                     value="Agregar">                            
+                                    </p:commandButton>
+                                    <p:commandLink styleClass="btn btn-default" immediate="true"
+                                                   action="#{usuarioBean.cerrarPopupAgregarGerencia}"
+                                                   value="#{msgs['sistema.cancelar']}"/>
+                                </p:panelGrid>
+                            </center>
+                        </p:dialog>
+                    </h:form>
+                </div>
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

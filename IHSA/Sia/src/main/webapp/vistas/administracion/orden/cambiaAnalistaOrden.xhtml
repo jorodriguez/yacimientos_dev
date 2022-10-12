@@ -1,0 +1,81 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"       
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+    <body>
+        <ui:composition template="./../../../WEB-INF/facelets/templates/templateGrupos.xhtml">
+            <ui:define name="tituloPagina">
+                Cambiar al analista de OC/S
+            </ui:define>
+            <ui:define name="contenido">
+                <div id="page">
+                    <div class="row">  
+                        <h:form id="frmUsuarioSolicita" >
+                            <div class="row">
+                                <center><h:messages globalOnly="true" errorClass="errorMessage" infoClass="infoMessage" style="font-weight: bold; font-size: medium;"/></center>
+                                <h:outputLabel value="Campo" styleClass="tituloEncabezado"/>
+                            </div>
+                            <div class="row">
+                                <p:panel id="pnlAnalistas">
+                                    <p:selectOneMenu id="campo" value="#{cancelarReenviarOrdenBean.idCampo}" >
+                                        <f:selectItems value="#{cancelarReenviarOrdenBean.listaCamposSelect}"/> 
+                                    </p:selectOneMenu>
+                                    <h:outputLabel value="Orden de compra" styleClass="control-label"/>
+                                    <h:panelGrid columns="2">
+                                        <p:panelGrid columns="2">
+                                            <p:inputText id="inpConsecutivo" value="#{cancelarReenviarOrdenBean.consecutivo}" maxlength="12"
+                                                         placeholder="OCXX--xxx"/>
+                                            <p:commandLink value="Buscar" action="#{cancelarReenviarOrdenBean.buscarOrden}"
+                                                           styleClass="btn btn-default"
+                                                           process="@this frmUsuarioSolicita:inpConsecutivo" update="frmUsuarioSolicita:pnlDatos"/>
+                                        </p:panelGrid>
+                                        <h:panelGrid columns="4">
+                                            <h:outputText value="Analista"/>
+                                            <p:selectOneMenu value="#{cancelarReenviarOrdenBean.usuarioSolicita}">
+                                                <f:selectItems value="#{cancelarReenviarOrdenBean.analistas}"/>
+                                            </p:selectOneMenu>
+                                            <p:commandButton value="Cambiar OC/S" styleClass="btn btn-info"  
+                                                             action="#{cancelarReenviarOrdenBean.cambiarAnalistaOCS}"
+                                                             process="@this frmUsuarioSolicita:pnlAnalistas" update="frmUsuarioSolicita"/>
+                                        </h:panelGrid>
+                                    </h:panelGrid>
+                                </p:panel>
+                            </div>
+                            <p:panel id="pnlDatos">
+                                <div class="row">
+                                    <c:if test="#{cancelarReenviarOrdenBean.orden eq null}">
+                                        *Buscar orden de compra
+                                    </c:if>
+                                    <c:if test="#{cancelarReenviarOrdenBean.orden ne null}">
+                                        <p class="tituloEncabezado">Datos de la OCS</p>
+                                    </c:if>
+                                </div>
+                                <div class="row">
+                                    <p:panelGrid columns="2">
+                                        <h:outputLabel value="Analista:"/>
+                                        <h:outputText value="#{cancelarReenviarOrdenBean.orden.analista.nombre}" style="font-style:  italic; font-weight: bold; color: #254109; font-size: medium;"/>
+                                        <h:outputLabel value="Dpto. Solicitante:"/>
+                                        <h:outputText value="#{cancelarReenviarOrdenBean.orden.gerencia.nombre}"/>
+                                        <h:outputLabel value="Responsable:"/>
+                                        <h:outputText value="#{cancelarReenviarOrdenBean.orden.responsableGerencia.nombre}"/>
+                                        <h:outputLabel value="Proyecto OT:"/>
+                                        <h:outputText value="#{cancelarReenviarOrdenBean.orden.proyectoOt.nombre}"/>
+                                        <h:outputLabel value="Proveedor:"/>
+                                        <h:outputText value="#{cancelarReenviarOrdenBean.orden.proveedor.nombre}"/>
+                                        <h:outputLabel value="Destino:"/>
+                                        <h:outputText value="#{cancelarReenviarOrdenBean.orden.destino}"/>
+                                    </p:panelGrid>
+                                </div>
+                            </p:panel>
+                        </h:form>
+                    </div>
+                </div>
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

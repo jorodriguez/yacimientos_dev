@@ -1,0 +1,130 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+
+
+                xmlns:c="http://java.sun.com/jsp/jstl/core">            
+    <div class="container">  
+        <br/>
+        <div class="row-fluid">
+            <ui:fragment  rendered="#{solicitudViajeBean.optionViaje eq 'TERRESTRE'}">
+                <h:outputLabel value="#{msgs['sgl.solicitudViaje.motivo']}: " />
+                <h:outputText value="*" styleClass="textoRojo" />
+                <p:selectOneMenu id="comboMotivoViaje" 
+                                 value="#{solicitudViajeBean.idSgMotivo}"
+                                 >
+                    <f:selectItem itemLabel="#{msgs['sistema.seleccionar']} #{msgs['sgl.solicitudViaje.motivo']}..."
+                                  itemValue="-1"/>
+                    <f:selectItems value="#{solicitudViajeBean.selectItemSgMotivo}" />
+                </p:selectOneMenu> 
+                <p:commandLink type="submit" value="+" title="#{msgs['sistema.crear']} #{msgs['sgl.solicitudViaje.motivo']}" 
+                               action="#{solicitudViajeBean.openPopupCreateSgMotivo(actionEvent)}" styleClass="btn btn-sm btn-default" />
+                <h:outputText id="helpSgMotivo" value="?" title="" styleClass="textoAyuda" />                
+                <p:tooltip id="pnlToolTipHelpSgMotivo"
+                           for="helpSgMotivo"
+                           showEvent="mouseover"
+                           showEffect="slide"
+                           hideEffect="slide"
+                           hideDelay="2300"
+                           >
+                    <h:panelGrid width="190px;" styleClass="textoAyuda">
+                        <h:outputText value="#{msgs['sgl.solicitudViaje.textoAyuda.motivo']}" />
+                    </h:panelGrid>
+                </p:tooltip>                         
+            </ui:fragment>                        
+            <span id="mensajeErrorSeleccionMotivo" class="textoRojo"></span>
+            <h:message for="mensajeErrorSeleccionMotivo" infoClass="infoMessage" errorClass="errorMessage"
+                       rendered="#{solicitudViajeBean.optionViaje eq 'TERRESTRE'}"/>
+        </div>
+        <div class="row-fluid">
+            <h:outputLabel value="#{msgs['sgl.solicitudViaje.fechaSalida']}: " />
+            <h:outputText value="*" styleClass="textoRojo" />
+            <script>
+                $(function () {
+                    $("#frmTerrestreAereo\\:fechaSalida").datepicker({
+                        showOn: "button",
+                        buttonImage: "#{msgs['sgl.ruta.imagen']}cal_button.gif",
+                        buttonImageOnly: true,
+                        dateFormat: "dd/mm/yy",
+                        minDate: new Date(),
+                        onSelect: function (date) {
+                            fechaSeleccinadaSalida = date;
+                        },
+                        onClose: function (selectedDate) {
+                            $("#frmTerrestreAereo\\:fechaRegreso").datepicker("option", "minDate", selectedDate);
+
+                        }
+                    });
+                });
+            </script>
+            <h:inputText value="#{solicitudViajeBean.fechaSalida}" id="fechaSalida"/>
+            <h:message for="fechaSalida" infoClass="infoMessage" errorClass="errorMessage" />
+            <p:selectOneMenu id="horaSalida" 
+                             value="#{solicitudViajeBean.horaSalida}"
+                             styleClass="w70f10">
+                <f:selectItems value="#{solicitudViajeBean.selectItemHoras}" />
+            </p:selectOneMenu>                
+            <p:selectOneMenu id="minutoSalida" 
+                             value="#{solicitudViajeBean.minutoSalida}"
+                             styleClass="w70f10">
+                <f:selectItems value="#{solicitudViajeBean.selectItemMinutos}" />
+            </p:selectOneMenu>  
+            <h:outputText value="mins." styleClass="f10" />
+            <span id="mensajeErrorSeleccionFechaSalida" class="textoRojo"></span>
+            <h:message for="mensajeErrorSeleccionFechaSalida" infoClass="infoMessage" errorClass="errorMessage" />
+            <span id="mensajeErrorSeleccionHoraSalida" class="textoRojo"></span>
+            <h:message for="mensajeErrorSeleccionHoraSalida" infoClass="infoMessage" errorClass="errorMessage" />
+        </div>
+
+        <div class="row-fluid">
+            <!-<!-- selectedPanel="#{solicitudViajeBean.cadena}" -->
+            <p:panel  >
+                <div class="row-fluid">
+                    <h:panelGroup id="redondo">
+                        <h:outputLabel value="#{msgs['sgl.solicitudViaje.fechaRegreso']}: "/>
+                        <h:outputText value="*" styleClass="textoRojo" />                        
+                        <script>
+                            $(function () {
+
+                                $("#frmTerrestreAereo\\:fechaRegreso").datepicker({
+                                    showOn: "button",
+                                    buttonImage: "#{msgs['sgl.ruta.imagen']}cal_button.gif",
+                                    buttonImageOnly: true,
+                                    dateFormat: "dd/mm/yy"
+                                });
+                            });
+                        </script>
+                        <h:inputText value="#{solicitudViajeBean.fechaRegreso}" id="fechaRegreso"/>
+                        <p:selectOneMenu id="horaRegreso" 
+                                         value="#{solicitudViajeBean.horaRegreso}">
+                            <f:selectItems value="#{solicitudViajeBean.selectItemHoras}" />
+                        </p:selectOneMenu>
+                        <p:selectOneMenu id="minutoRegreso" 
+                                         value="#{solicitudViajeBean.minutoRegreso}">
+                            <f:selectItems value="#{solicitudViajeBean.selectItemMinutos}" />
+                        </p:selectOneMenu>    
+                        <h:outputText value="mins." styleClass="f10" />
+                        <h:message for="fechaRegreso" infoClass="infoMessage" errorClass="errorMessage" />
+                        <span id="mensajeErrorSeleccionFechaRegreso" class="textoRojo"></span>
+                        <h:message for="mensajeErrorSeleccionFechaRegreso" infoClass="infoMessage" errorClass="errorMessage" />
+                        <span id="mensajeErrorSeleccionHoraRegreso" class="textoRojo"></span>
+                        <h:message for="mensajeErrorSeleccionHoraRegreso" infoClass="infoMessage" errorClass="errorMessage" />
+                    </h:panelGroup>
+                </div>
+                <h:panelGroup id="sencillo">
+
+                </h:panelGroup>
+            </p:panel>
+        </div>
+        <div class="row-fluid">
+
+            <h:outputLabel value="#{msgs['sgl.generales.observacion']}: " styleClass="text-center" />        
+            <p:inputTextarea id="observacion" value="#{solicitudViajeBean.observacion}" maxlength="256"  cols="65"
+                             rows="3"/>
+        </div>
+    </div>
+
+
+</ui:composition>

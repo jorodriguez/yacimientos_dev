@@ -1,0 +1,299 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"      
+      xmlns:p="http://primefaces.org/ui"       
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+
+    <body>
+
+        <ui:composition template="./../../WEB-INF/facelets/templates/templateGrupos.xhtml">
+            <ui:define name="tituloPagina">
+                Cancelar OC/S
+            </ui:define>
+            <ui:define name="contenido">
+                <div class="row">
+                    <h:form id="frmCancelarOCS" >
+                        <div class="col-12 col-xs-12">
+                            <h:outputLabel styleClass="control-label" value="#{msgs['sistema.filtro']}"/>
+                            <div class="col-12 col-xs-12">
+                                <p:selectOneRadio id="campo" value="#{cancelarReenviarOrdenBean.idCampo}" 
+                                                  valueChangeListener="#{cancelarReenviarOrdenBean.cambiarSeleccionCampo}" 
+                                                  layout="lineDirection" >
+                                    <f:selectItems value="#{cancelarReenviarOrdenBean.listaCamposSelect}"/> 
+                                </p:selectOneRadio>
+                            </div>                                        
+                        </div>
+                        <div class="input-group mt-2" >
+                            <div class="col-2 col-xs-12">
+                                <p:inputText id="inpOcs" styleClass="form-control" value="#{cancelarReenviarOrdenBean.consecutivo}" size="10" 
+                                             placeholder="OC2x-xxxx"/>
+                            </div>
+                            <div class="col-2 col-xs-12">
+                                <p:commandLink value="Buscar" styleClass="btn btn-default"
+                                               action="#{cancelarReenviarOrdenBean.buscarOrden}"
+                                               process="@this frmCancelarOCS:inpOcs" update="pnlDatosOcs"/>
+                            </div>
+                        </div>
+                        <p:panel id="pnlDatosOcs">
+                            <h:outputText styleClass="col-12 col-xs-12 control-label" style="text-align: center;" value="Si la orden esta ya enviada al proveedor se puede cancelar, si está en proceso de autorización solo se puede devolver desde Tareas OC/S."/>
+
+                            <ui:fragment rendered="#{cancelarReenviarOrdenBean.orden == null and cancelarReenviarOrdenBean.mostrar}">
+                                <div class="col-12 col-xs-12">
+                                    <h:outputText styleClass="col-12 col-xs-12 control-label" value="La OC/S #{cancelarReenviarOrdenBean.consecutivo}. No existe o no se ha creado o el sistema no la tiene."/>                                    
+                                </div>                                
+                            </ui:fragment>
+
+                            <ui:fragment rendered="#{cancelarReenviarOrdenBean.orden != null and cancelarReenviarOrdenBean.orden.autorizacionesOrden.estatus.id == 100}">
+                                <div class="col-12 col-xs-12">
+                                    <h:outputText styleClass="col-12 col-xs-12 control-label" value="La OC/S #{cancelarReenviarOrdenBean.consecutivo} tiene un estatus de cancelada."/>                                    
+                                </div>                                
+                            </ui:fragment>
+
+                            <h:messages style="color: maroon; font-size: x-small; font-weight: normal;"/>
+                            <ui:fragment rendered="#{cancelarReenviarOrdenBean.orden != null and cancelarReenviarOrdenBean.orden.autorizacionesOrden.estatus.id != 100}">
+                                <ui:fragment rendered="#{cancelarReenviarOrdenBean.orden.autorizacionesOrden.estatus.id != 100}">                                
+                                    <div class="col-12 col-xs-12 mt-2" >
+                                        <p:commandButton value="Cancelar OC/S y devolver requisición"
+                                                         action="#{cancelarReenviarOrdenBean.cancelarOrdenCompraDR}"
+                                                         rendered="#{cancelarReenviarOrdenBean.orden != null and cancelarReenviarOrdenBean.orden.autorizacionesOrden.estatus.id >= 155}" 
+                                                         styleClass="btn btn-default"
+                                                         process="@this" update="frmCanOcs"
+                                                         oncomplete="PF('dlgCancelar').show()"/>
+                                        <p:commandButton value="Cancelar OC/S y requisición"
+                                                         action="#{cancelarReenviarOrdenBean.cancelarOrdenCompraSDR}"
+                                                         rendered="#{cancelarReenviarOrdenBean.orden != null and cancelarReenviarOrdenBean.orden.autorizacionesOrden.estatus.id >= 155}"
+                                                         styleClass="btn btn-default ml-2" process="@this" update="frmCanOcs"
+                                                         oncomplete="PF('dlgCancelar').show()"/>                                          
+                                    </div>
+                                </ui:fragment>
+
+                                <ui:fragment rendered="#{cancelarReenviarOrdenBean.orden.autorizacionesOrden.estatus.id eq 101}">
+                                    <div class="col-12 col-xs-12">
+                                        <h:outputText styleClass="col-12 col-xs-12 control-label" value="La OC/S #{cancelarReenviarOrdenBean.consecutivo}. Esta en la bandeja del Analista de procura. "/>                                    
+                                    </div>                                
+                                </ui:fragment>
+
+                                <div class="col-12 col-xs-12" > 
+                                    <div class="col-12 col-xs-12" >
+                                        <strong><h:outputText value="Requisición:" styleClass="col-2 col-xs-12 control-label"/></strong>
+                                        <h:outputText value="#{cancelarReenviarOrdenBean.orden.requisicion.consecutivo}" styleClass="col-3 col-xs-12 control-label"/>
+                                        <strong><h:outputText value="Compañia:" styleClass="col-2 col-xs-12 control-label"/></strong>
+                                        <h:outputText value="#{cancelarReenviarOrdenBean.orden.compania.nombre}" styleClass="col-5 col-xs-12 control-label"/>
+                                    </div>
+                                    <div class="col-12 col-xs-12" >
+                                        <strong><h:outputText value="Estatus:"  styleClass="col-2 col-xs-12 control-label"/></strong>
+                                        <h:outputText value="#{cancelarReenviarOrdenBean.orden.autorizacionesOrden.estatus.nombre}" styleClass="col-3 col-xs-12 control-label"/>
+                                        <strong><h:outputText value="Campo:"  styleClass="col-2 col-xs-12 control-label"/></strong>
+                                        <h:outputText value="#{cancelarReenviarOrdenBean.orden.apCampo.nombre}" styleClass="col-5 col-xs-12 control-label"/>
+                                    </div>
+                                    <div class="col-12 col-xs-12" >
+                                        <strong><h:outputText value="Fecha en que se requiere:"  styleClass="col-3 col-xs-12 control-label"/></strong>
+                                        <h:outputText value="#{cancelarReenviarOrdenBean.orden.fechaEntrega}" styleClass="col-2 col-xs-12 control-label">
+                                            <f:convertDateTime dateStyle="default" type="date"/>
+                                        </h:outputText>                                
+                                    </div>
+
+                                </div>
+                                <div class="col-12 col-xs-12 mt-2">
+                                    <div class="col-12 col-xs-12">
+                                        <h:outputText value="Autorizaciones" styleClass="col-12 col-xs-12 control-label" style="color: #4F82DF; font-size: 12px; font-weight: bold;"/>
+                                    </div>
+                                    <div class="col-12 col-xs-12" >
+                                        <strong><h:outputText value="Solicitada el:" styleClass="col-3 col-xs-12 control-label"/></strong>
+                                        <h:outputText styleClass="col-3 col-xs-12 control-label" value="#{cancelarReenviarOrdenBean.orden.autorizacionesOrden.fechaSolicito}">
+                                            <f:convertDateTime dateStyle="default" type="date"/>
+                                        </h:outputText>
+                                        <strong><h:outputText value="Por:" styleClass="col-2 col-xs-12 control-label"/></strong>
+                                        <h:outputText styleClass="col-4 col-xs-12 control-label" value="#{cancelarReenviarOrdenBean.orden.autorizacionesOrden.solicito.nombre}"/>
+                                    </div>
+                                    <div class="col-12 col-xs-12" >
+                                        <strong><h:outputText value="Vo. Bo. el:" styleClass="col-3 col-xs-12 control-label"/></strong>
+                                        <h:outputText styleClass="col-3 col-xs-12 control-label" value="#{cancelarReenviarOrdenBean.orden.autorizacionesOrden.fechaAutorizoGerencia}">
+                                            <f:convertDateTime dateStyle="default" type="date"/>
+                                        </h:outputText>
+                                        <strong><h:outputText value="Por:" styleClass="col-2 col-xs-12 control-label"/></strong>
+                                        <h:outputText styleClass="col-4 col-xs-12 control-label" value="#{cancelarReenviarOrdenBean.orden.autorizacionesOrden.autorizaGerencia.nombre}"/>
+                                    </div>
+                                    <div class="col-12 col-xs-12" >
+                                        <strong><h:outputText value="Revisada el:" styleClass="col-3 col-xs-12 control-label"/></strong>
+                                        <h:outputText styleClass="col-3 col-xs-12 control-label" value="#{cancelarReenviarOrdenBean.orden.autorizacionesOrden.fechaAutorizoMpg}">
+                                            <f:convertDateTime dateStyle="default" type="date"/>
+                                        </h:outputText>
+                                        <strong><h:outputText value="Por:" styleClass="col-2 col-xs-12 control-label"/></strong>
+                                        <h:outputText styleClass="col-4 col-xs-12 control-label" value="#{cancelarReenviarOrdenBean.orden.autorizacionesOrden.autorizaMpg.nombre}"/>
+                                    </div>
+                                    <div class="col-12 col-xs-12" >
+                                        <strong><h:outputText styleClass="col-3 col-xs-12 control-label" value="Aprobada el:"/></strong>
+                                        <h:outputText styleClass="col-3 col-xs-12 control-label" value="#{cancelarReenviarOrdenBean.orden.autorizacionesOrden.fechaAutorizoIhsa}">
+                                            <f:convertDateTime dateStyle="default" type="date"/>
+                                        </h:outputText>
+                                        <strong><h:outputText value="Por:" styleClass="col-2 col-xs-12 control-label"/></strong>
+                                        <h:outputText styleClass="col-4 col-xs-12 control-label" value="#{cancelarReenviarOrdenBean.orden.autorizacionesOrden.autorizaIhsa.nombre}"/>
+                                    </div>
+
+                                    <c:if test="#{cancelarReenviarOrdenBean.orden.compania.rfc eq 'OIL140522MD0' or cancelarReenviarOrdenBean.orden.compania.rfc eq 'PET140522TK8'}">
+                                        <div class="col-12 col-xs-12" >
+                                            <strong><h:outputText styleClass="col-3 col-xs-12 control-label" value="Aprobada el:"/></strong>
+                                            <h:outputText styleClass="col-3 col-xs-12 control-label" value="#{cancelarReenviarOrdenBean.orden.autorizacionesOrden.fechaAutorizoFinanzas}">
+                                                <f:convertDateTime dateStyle="default" type="date"/>
+                                            </h:outputText>                                
+                                            <strong><h:outputText styleClass="col-2 col-xs-12 control-label" value="Por:"/></strong>
+                                            <h:outputText styleClass="col-4 col-xs-12 control-label" value="#{cancelarReenviarOrdenBean.orden.autorizacionesOrden.autorizaFinanzas.nombre}"/>
+                                        </div>
+                                    </c:if>
+
+
+                                    <div class="col-12 col-xs-12" >
+                                        <strong><h:outputText styleClass="col-3 col-xs-12 control-label" value="Autorizada el:"/></strong>
+                                        <h:outputText styleClass="col-3 col-xs-12 control-label" value="#{cancelarReenviarOrdenBean.orden.autorizacionesOrden.fechaAutorizoCompras}">
+                                            <f:convertDateTime dateStyle="default" type="date"/>
+                                        </h:outputText>
+                                        <strong><h:outputText styleClass="col-2 col-xs-12 control-label" value="Por:"/></strong>
+                                        <h:outputText styleClass="col-4 col-xs-12 control-label" value="#{cancelarReenviarOrdenBean.orden.autorizacionesOrden.autorizaCompras.nombre}"/>
+                                    </div>
+                                </div>
+
+                                <div class="col-12 col-xs-12" >
+                                    <div class="col-6 col-xs-12" style="margin-top: 10px;">
+                                        <h:outputText styleClass="col-12 col-xs-12 control-label" value="Datos de la OC/S" style="color: #4F82DF; font-size: 11px; font-weight: bold;"/>
+                                        <div class="col-12 col-xs-12" >                                    
+                                            <strong><h:outputText styleClass="col-4 col-xs-12 control-label" value="Consecutivo"/></strong>
+                                            <h:outputText styleClass="col-8 col-xs-12 control-label" value="#{cancelarReenviarOrdenBean.orden.consecutivo}"/>
+                                        </div>
+                                        <div class="col-12 col-xs-12" >                                    
+                                            <strong><h:outputText styleClass="col-4 col-xs-12 control-label" value="Gerencia"/></strong>
+                                            <h:outputText styleClass="col-8 col-xs-12 control-label" value="#{cancelarReenviarOrdenBean.orden.gerencia.nombre}"/>
+                                        </div>
+                                        <div class="col-12 col-xs-12" >                                    
+                                            <strong><h:outputText styleClass="col-4 col-xs-12 control-label" value="Proyecto OT"/></strong>
+                                            <h:outputText styleClass="col-8 col-xs-12 control-label" value="#{cancelarReenviarOrdenBean.orden.proyectoOt.nombre}"/>
+                                        </div>
+
+                                        <c:if test="${cancelarReenviarOrdenBean.orden.requisicion.ocUnidadCosto != null}" >
+                                            <div class="col-12 col-xs-12" >                                    
+                                                <strong><h:outputText styleClass="col-4 col-xs-12 control-label" value="Tipo tarea"/></strong>
+                                                <h:outputText styleClass="col-8 col-xs-12 control-label" value="#{cancelarReenviarOrdenBean.orden.requisicion.ocUnidadCosto.nombre}"/>                                    
+                                            </div>
+                                        </c:if>
+
+                                        <div class="col-12 col-xs-12" >                                    
+                                            <strong><h:outputText styleClass="col-4 col-xs-12 control-label" value="Proveedor"/></strong>
+                                            <h:outputText styleClass="col-8 col-xs-12 control-label" value="#{cancelarReenviarOrdenBean.orden.proveedor.nombre}"/>
+                                        </div>
+                                        <div class="col-12 col-xs-12" >                                    
+                                            <strong><h:outputText styleClass="col-4 col-xs-12 control-label" value="Analista"/></strong>
+                                            <h:outputText styleClass="col-8 col-xs-12 control-label" value="#{cancelarReenviarOrdenBean.orden.analista.nombre}"/>
+                                        </div>
+                                        <div class="col-12 col-xs-12" >
+                                            <strong><h:outputText styleClass="col-4 col-xs-12 control-label" value="Destino"/></strong>
+                                            <h:outputText styleClass="col-8 col-xs-12 control-label" value="#{cancelarReenviarOrdenBean.orden.destino}"/>                                    
+                                        </div>
+                                        <ui:fragment rendered="#{cancelarReenviarOrdenBean.orden.condicionPago ne null}">
+                                            <div class="col-12 col-xs-12" >
+                                                <strong><h:outputText value="Condición pago" /></strong>
+                                                <h:outputText styleClass="col-8 col-xs-12 control-label" value="#{cancelarReenviarOrdenBean.orden.condicionPago.nombre}" 
+                                                              rendered="#{cancelarReenviarOrdenBean.orden.condicionPago ne null}"/>                                    
+                                            </div>
+                                        </ui:fragment>
+                                        <ui:fragment rendered="#{cancelarReenviarOrdenBean.orden.condicionPago eq null}">
+                                            <div class="col-12 col-xs-12" >
+                                                <strong><h:outputText styleClass="col-4 col-xs-12 control-label" value="Termino pago" /></strong>
+                                                <h:outputText styleClass="col-8 col-xs-12 control-label" value="#{cancelarReenviarOrdenBean.orden.ocTerminoPago.nombre}" 
+                                                              rendered="#{cancelarReenviarOrdenBean.orden.condicionPago eq null}" />                                                                                                                               
+                                            </div>
+                                        </ui:fragment>
+                                        <div class="col-12 col-xs-12" >
+                                            <strong><h:outputText styleClass="col-4 col-xs-12 control-label" value="Total MN"/></strong>                                            
+                                            <h:outputText styleClass="col-8 col-xs-12 control-label" value="#{cancelarReenviarOrdenBean.orden.total}">
+                                                <f:convertNumber currencySymbol="$" maxFractionDigits="2" type="currency" groupingUsed="true" />
+                                            </h:outputText>
+                                        </div>
+                                        <div class="col-12 col-xs-12" >
+                                            <strong><h:outputText styleClass="col-4 col-xs-12 control-label" value="Total USD"/></strong>
+                                            <h:outputText styleClass="col-8 col-xs-12 control-label" value="#{cancelarReenviarOrdenBean.orden.totalUsd}">
+                                                <f:convertNumber currencySymbol="$" maxFractionDigits="2" type="currency" groupingUsed="true" />
+                                            </h:outputText>
+                                        </div>
+
+                                    </div>
+
+                                    <div class="col-6 col-xs-12" style="margin-top: 10px;">                                    
+                                        <h:outputText styleClass="col-12 col-xs-12 control-label" value="Datos de la Requisición" style="color: #4F82DF; font-size: 11px; font-weight: bold;"/>                                        
+
+                                        <div class="col-12 col-xs-12" >
+                                            <strong><h:outputText styleClass="col-4 col-xs-12 control-label" value="Consecutivo"/></strong>
+                                            <h:outputText styleClass="col-8 col-xs-12 control-label" value="#{cancelarReenviarOrdenBean.orden.requisicion.consecutivo}"/>
+                                        </div>
+                                        <div class="col-12 col-xs-12" >
+                                            <strong><h:outputText styleClass="col-4 col-xs-12 control-label" value="Proyecto OT"/></strong>
+                                            <h:outputText styleClass="col-8 col-xs-12 control-label" value="#{cancelarReenviarOrdenBean.orden.requisicion.proyectoOt.nombre}"/>
+                                        </div>
+                                        <c:if test="${cancelarReenviarOrdenBean.orden.requisicion.ocUnidadCosto == null}" >
+                                            <div class="col-12 col-xs-12" >
+                                                <strong><h:outputText styleClass="col-4 col-xs-12 control-label" value="Tipo de obra"/></strong>
+                                                <h:outputText styleClass="col-8 col-xs-12 control-label" value="#{cancelarReenviarOrdenBean.orden.requisicion.tipoObra.nombre}"/>
+                                            </div>
+                                        </c:if>                                                                                
+                                        <c:if test="${cancelarReenviarOrdenBean.orden.requisicion.ocUnidadCosto != null}" >
+                                            <div class="col-12 col-xs-12" >
+                                                <strong><h:outputText styleClass="col-4 col-xs-12 control-label" value="Tipo tarea"/></strong>
+                                                <h:outputText styleClass="col-8 col-xs-12 control-label" value="#{cancelarReenviarOrdenBean.orden.requisicion.ocUnidadCosto.nombre}"/>                                    
+                                            </div>
+                                        </c:if>                                        
+                                        <div class="col-12 col-xs-12" >
+                                            <strong><h:outputText styleClass="col-4 col-xs-12 control-label" value="Proveedor"/></strong>
+                                            <h:outputText styleClass="col-8 col-xs-12 control-label" value="#{cancelarReenviarOrdenBean.orden.requisicion.proveedor}"/>
+                                        </div>
+                                        <div class="col-12 col-xs-12" >
+                                            <strong><h:outputText styleClass="col-4 col-xs-12 control-label" value="Monto MN"/></strong>
+                                            <h:outputText styleClass="col-8 col-xs-12 control-label" value="$ #{cancelarReenviarOrdenBean.orden.requisicion.montoMn}"/>
+                                        </div>
+                                        <div class="col-12 col-xs-12" >
+                                            <strong><h:outputText styleClass="col-4 col-xs-12 control-label" value="Monto USD"/></strong>
+                                            <h:outputText styleClass="col-8 col-xs-12 control-label" value="$ #{cancelarReenviarOrdenBean.orden.requisicion.montoUsd}"/>
+                                        </div>
+                                        <div class="col-12 col-xs-12" >
+                                            <strong><h:outputText styleClass="col-4 col-xs-12 control-label" value="Estatus"/></strong>
+                                            <h:outputText styleClass="col-8 col-xs-12 control-label" value="#{cancelarReenviarOrdenBean.orden.requisicion.estatus.nombre}"/>
+                                        </div>
+
+                                    </div>
+                                </div>
+
+                            </ui:fragment>
+                        </p:panel>
+                    </h:form>
+                    <h:form id="frmCanOcs">
+                        <p:dialog widgetVar="dlgCancelar"
+                                  draggable="false" modal="true"
+                                  header="Cancelación de OC/S">
+                            <p:panelGrid columns="2" >
+                                <h:outputText value="Solicita"/>         
+                                <p:autoComplete id="userSelectCancelar" 
+                                                value="#{cancelarReenviarOrdenBean.usuarioSolicita}"
+                                                completeMethod="#{cancelarReenviarOrdenBean.usuarioListener}">
+                                </p:autoComplete > 
+                                <h:outputText  value="Motivo"/>
+                                <p:inputTextarea value="#{cancelarReenviarOrdenBean.motivo}" cols="65" rows="3"/>
+
+                                <h:messages style="color: maroon; font-size: x-small; font-weight: normal;"/>
+                                <f:facet name="footer">
+                                    <p:commandButton value="Enviar" styleClass="btn btn-default" 
+                                                     action="#{cancelarReenviarOrdenBean.completarCancelacionOrden}" 
+                                                     process="@form" update="frmCancelarOCS" />
+                                    <p:commandLink value="Cancelar" styleClass="btn btn-default"  title="Cerrar ventana..." immediate="true"
+                                                   onclick="PF('dlgCancelar').hide();"/>
+                                </f:facet>
+                            </p:panelGrid>
+                        </p:dialog>
+                        <!-- Termina popup -->
+                    </h:form>                        
+                </div>
+            </ui:define>
+        </ui:composition>
+
+    </body>
+</html>

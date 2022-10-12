@@ -1,0 +1,407 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+
+
+      xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+    <body>
+
+        <ui:composition template="./../../../WEB-INF/facelets/templates/templateServiciosGenerales.xhtml">
+
+            <ui:define name="contenido">
+                <f:event type="preRenderView" listener="#{gastoViajeBean.goToGastoViaje()}" />
+                <h:panelGroup rendered="#{empty sesion.usuario}" styleClass="altura">
+                    <ui:include src="./../../../login.xhtml"/>
+                </h:panelGroup>                
+
+                <h:panelGroup  rendered="#{not empty sesion.usuario}" >
+                    <center><h:messages globalOnly="true" errorClass="errorMessage" infoClass="infoMessage"/></center>
+
+                    <p class="tituloEncabezado">#{msgs['sgl.sgGastoViaje.titulo']}</p>
+
+                    <br/><br/>
+
+                    <h:panelGrid columns="2"  cellspacing="0" columnClasses="c1GastoViaje,c2GastoViaje" styleClass="bordePanelGrid" > 
+
+                        <h:form>
+                            <h:panelGroup id="busqueda" style="border-width: 1px; border-style: dotted; background-color: #edecec;">
+                                <h:panelGrid  columns="3" >
+                                    <h:outputLabel value="#{msgs['sistema.buscar']}" styleClass="f12"/>
+                                    <p:inputText value="#{viajeBean.cadena}" 
+
+                                                 size="10"/>
+                                    <p:commandLink actionListener="#{gastoViajeBean.searchViajeVoByCodigoAndSgViajeros(event)}" styleClass="btn btn-default" >
+                                        <h:graphicImage alt="#{msgs['sistema.buscar']}" title="#{msgs['sistema.buscar']}" url="#{msgs['sgl.ruta.imagen']}search.png" styleClass="imagenSinBorde" />
+                                    </p:commandLink>
+                                </h:panelGrid>
+                                <h:outputText value="#{msgs['sgl.ejemplo.buscar.viaje']}"/>
+                            </h:panelGroup>
+                        </h:form>
+
+                        <h:panelGrid rendered="#{gastoViajeBean.sgViaje != null or gastoViajeBean.sgViajeRegreso != null}"  styleClass="bordePanelGrid">
+                            <f:facet name="header">
+                                <h:outputLabel value="#{msgs['sgl.viaje.datos']}" styleClass="f12"/>
+                            </f:facet>  
+
+                            <h:form>
+                                <p:tabView id="card Set"  rendered="#{gastoViajeBean.sgViaje != null or gastoViajeBean.sgViajeRegreso != null}"  
+                                           activeIndex="0" >
+                                    <p:tab id="sgViajeIda" rendered="#{gastoViajeBean.sgViaje != null}"  >
+                                        <h:panelGrid  columns="2"  styleClass="bordePanelGrid" >
+                                            <f:facet name="header">
+                                                <h:outputLabel value="#{msgs['sgl.viaje.ida']}" styleClass="f12"/>
+                                            </f:facet> 
+                                            <h:panelGrid columns="2" >
+                                                <h:outputLabel value="#{msgs['sgl.solicitudViaje.codigo']}:" styleClass="f12" />
+                                                <h:outputText value="#{gastoViajeBean.sgViaje.codigo}" styleClass="f11" />
+                                                <h:outputLabel value="#{msgs['sgl.vehiculo.estado']}:" styleClass="f12" />
+                                                <h:outputText value="#{gastoViajeBean.sgViaje.estatus.nombre}" styleClass="f11" />
+                                                <h:outputLabel value="#{msgs['sistema.responsable']}:" styleClass="f12" />
+                                                <h:outputText value="#{gastoViajeBean.sgViaje.responsable.nombre}" styleClass="f11" />
+                                                <h:outputLabel value="#{msgs['sgl.solicitudViaje.fechaSalida']}: " styleClass="f12" />
+                                                <h:outputText value="#{gastoViajeBean.sgViaje.fechaSalida}" styleClass="f11">
+                                                    <f:convertDateTime pattern="dd/MM/yyyy" type="date" />
+                                                </h:outputText>                                    
+                                                <h:outputLabel value="#{msgs['sgl.solicitudViaje.fechaRegreso']}: " styleClass="f12" />
+                                                <h:outputText value="#{gastoViajeBean.sgViaje.fechaRegreso}" styleClass="f11">
+                                                    <f:convertDateTime pattern="dd/MM/yyyy" type="date" />
+                                                </h:outputText>  
+
+                                                <h:outputLabel value="#{msgs['sgl.vehiculo']}:" rendered="#{gastoViajeBean.sgViaje.sgTipoEspecifico.id eq 2 and gastoViajeBean.vehiculoVO != null}" styleClass="f12" />
+                                                <p:inputTextarea value="#{gastoViajeBean.vehiculoVO.marca} #{gastoViajeBean.vehiculoVO.modelo} #{gastoViajeBean.sgVehiculo.numeroPlaca}" rendered="#{gastoViajeBean.sgViaje.sgTipoEspecifico.id eq 2 and gastoViajeBean.vehiculoVO != null}" disabled="true" cols="15" rows="3" styleClass="f11" />
+                                            </h:panelGrid>
+                                            <h:panelGrid columns="1"  >
+                                                <h:outputLabel value="#{msgs['sgl.invitado.invitados.mayus']} " styleClass="f12" />
+                                                <h:panelGrid >
+                                                    <p:dataTable showGridlines="true" size="small"  id="dataGridViajerosIda"
+                                                                 value="#{gastoViajeBean.allSgViajeroBySgViaje}"
+                                                                 var="data"
+                                                                 scrollable="true"
+                                                                 scrollHeight="100px;"
+                                                                 >
+                                                        <p:column>
+                                                            <f:facet name="header">
+                                                                <h:outputText value="#{msgs['sgl.generales.nombre']}" styleClass="f12" />
+                                                            </f:facet>
+                                                            <h:outputText value="#{data.usuario ne 'null' ? data.usuario : data.invitado}" styleClass="f11" />
+                                                        </p:column>                                 
+                                                        <p:column style="text-align: center;">
+                                                            <f:facet name="header">
+                                                                <h:outputText value="#{msgs['sgl.generales.observacion']}" styleClass="f12" />
+                                                            </f:facet>
+                                                            <h:outputText value="#{data.observacion}" styleClass="f11" />
+                                                        </p:column> 
+                                                    </p:dataTable>                                        
+                                                </h:panelGrid>
+                                            </h:panelGrid> 
+                                        </h:panelGrid>        
+                                    </p:tab>
+
+                                    <p:tab id="sgViajeRegreso" rendered="#{gastoViajeBean.sgViajeRegreso != null}" 
+                                           title="#{msgs['sgl.viaje.regreso']}" >
+                                        <h:panelGrid columns="2"  styleClass="bordePanelGrid" >
+                                            <f:facet name="header">
+                                                <h:outputLabel value="#{msgs['sgl.viaje.regreso']}" styleClass="f12"/>
+                                            </f:facet> 
+                                            <h:panelGrid columns="2" >
+                                                <h:outputLabel value="#{msgs['sgl.solicitudViaje.codigo']}:" styleClass="f12" />
+                                                <h:outputText value="#{gastoViajeBean.sgViajeRegreso.codigo}" styleClass="f11" />
+                                                <h:outputLabel value="#{msgs['sgl.vehiculo.estado']}:" styleClass="f12" />
+                                                <h:outputText value="#{gastoViajeBean.sgViajeRegreso.estatus.nombre}" styleClass="f11" />
+                                                <h:outputLabel value="#{msgs['sistema.responsable']}:" styleClass="f12" />
+                                                <h:outputText value="#{gastoViajeBean.sgViajeRegreso.responsable.nombre}" styleClass="f11" />
+                                                <h:outputLabel value="#{msgs['sgl.solicitudViaje.fechaSalida']}: " styleClass="f12" />
+                                                <h:outputText value="#{gastoViajeBean.sgViajeRegreso.fechaSalida}" styleClass="f11">
+                                                    <f:convertDateTime pattern="dd/MM/yyyy" type="date" />
+                                                </h:outputText>                                    
+                                                <h:outputLabel value="#{msgs['sgl.solicitudViaje.fechaRegreso']}: " styleClass="f12" />
+                                                <h:outputText value="#{gastoViajeBean.sgViajeRegreso.fechaRegreso}" styleClass="f11">
+                                                    <f:convertDateTime pattern="dd/MM/yyyy" type="date" />
+                                                </h:outputText>                                     
+                                            </h:panelGrid>
+                                            <h:panelGrid columns="1"  >
+                                                <h:outputLabel value="#{msgs['sgl.invitado.invitados.mayus']} " styleClass="f12" />
+                                                <h:panelGrid >
+                                                    <p:dataTable showGridlines="true" size="small"  id="dataGridViajerosVuelta"
+                                                                 value="#{gastoViajeBean.allSgViajeroBySgViajeRegreso}"
+                                                                 var="data"
+                                                                 scrollable="true"
+                                                                 scrollHeight="100px;"
+                                                                 >
+                                                        <p:column>
+                                                            <f:facet name="header">
+                                                                <h:outputText value="#{msgs['sgl.generales.nombre']}" styleClass="f12" />
+                                                            </f:facet>
+                                                            <h:outputText value="#{data.usuario ne 'null' ? data.usuario : data.invitado}" styleClass="f11" />
+                                                        </p:column>                                 
+                                                        <p:column style="text-align: center;">
+                                                            <f:facet name="header">
+                                                                <h:outputText value="#{msgs['sgl.generales.observacion']}" styleClass="f12" />
+                                                            </f:facet>
+                                                            <h:outputText value="#{data.observacion}" styleClass="f11" />
+                                                        </p:column> 
+                                                    </p:dataTable>                                        
+                                                </h:panelGrid>
+                                            </h:panelGrid>                                
+                                        </h:panelGrid>            
+                                    </p:tab>
+                                </p:tabView>
+                            </h:form>
+                        </h:panelGrid>
+                    </h:panelGrid>         
+
+                    <br />
+
+                    <h:form  rendered="#{gastoViajeBean.addGastos}">
+                        <h:panelGrid >
+                            <p:commandLink actionListener="#{gastoViajeBean.openPopupCreateSgGastoViaje(action)}" title="#{msgs['sistema.crear']} #{msgs['sgl.sgGastoViaje']}" styleClass="btn btn-default" >
+                                <h:graphicImage title="#{msgs['sistema.crear']} #{msgs['sgl.sgGastoViaje']}" alt="#{msgs['sistema.crear']} #{msgs['sgl.sgGastoViaje']}" url="#{msgs['sgl.ruta.imagen']}button_create.png" styleClass="imagenSinBorde" />
+                            </p:commandLink>
+                            <p:commandLink value="#{msgs['sistema.crear']} #{msgs['sgl.sgGastoViaje']}" actionListener="#{gastoViajeBean.openPopupCreateSgGastoViaje(action)}" title="#{msgs['sistema.crear']} #{msgs['sgl.sgGastoViaje']}" styleClass="linkPequenio" />
+                        </h:panelGrid>
+                    </h:form>        
+
+                    <br />
+
+                    <h:form rendered="#{gastoViajeBean.addGastos}">
+                        <p:dataTable id="dgSgGastoViaje" value="#{gastoViajeBean.allSgGastoViajeBySgViaje}" rows="10" var="data" 
+                                     >
+                            <p:column>
+                                <f:facet name="header"><h:outputText value="Id"/></f:facet>
+                                <h:outputText value="#{data.id}"/>
+                            </p:column>                            
+                            <p:column>
+                                <f:facet name="header"><h:outputText value="#{msgs['sgl.sgGastoViaje.tipo']}"/></f:facet>
+                                <h:outputText value="#{data.nombreSgTipoEspecifico}"/>
+                            </p:column>                             
+                            <p:column>
+                                <f:facet name="header"><h:outputText value="#{msgs['sgl.mantenimiento.grid.importe']}"/></f:facet>
+                                <h:outputText value="#{data.importe}"/>
+                            </p:column>
+                            <p:column>
+                                <f:facet name="header"><h:outputText value="#{msgs['sistema.moneda']}"/></f:facet>
+                                <h:outputText value="#{data.nombreMoneda}"/>
+                            </p:column>
+                            <!--<p:column>
+                                <f:facet name="header"><h:outputText value="#{msgs['sgl.solicitudViaje.codigo']}"/></f:facet>
+                                <h:outputText value="#{data.codigoSgViaje}"/>
+                            </p:column>-->
+                            <p:column>
+                                <f:facet name="header"><h:outputText value="#{msgs['sgl.solicitudViaje.observacion']}"/></f:facet>
+                                <h:outputText value="#{data.observacion}"/>
+                            </p:column>
+                            <p:column>
+                                <h:outputLink target="_blank" value="/ServiciosGenerales/AbrirArchivo?ZWZ2W=#{data.idSiAdjunto}&amp;ZWZ3W=#{data.uuidSiAdjunto}">
+                                    <center><h:graphicImage url="#{msgs['sgl.ruta.imagen']}icon_attach.gif" alt="#{msgs['sistema.abrir.archivo']}" rendered="#{data.idSiAdjunto != -1}" styleClass="imagenSinBorde"/></center>
+                                </h:outputLink>
+                            </p:column>                            
+                            <p:column>
+                                <p:commandLink value="#{msgs['sistema.modificar']}"  actionListener="#{gastoViajeBean.openPopupUpdateSgGastoViaje(actionEvent)}" styleClass="link"/>
+                            </p:column>                          
+                            <p:column>
+                                <center>
+                                    <p:commandLink value="#{msgs['sistema.eliminar']}" actionListener="#{gastoViajeBean.deleteSgGastoViaje(event)}"  styleClass="link" />
+                                </center>
+                                <p:confirm id="pnlCon1"   message="#{msgs['sgGastoViaje.msg.delete']}"
+                                           />
+                            </p:column>
+                            <p:column>
+                                <center>
+                                    <p:commandLink value="#{msgs['sistema.subir.comprobante']}" actionListener="#{gastoViajeBean.openPopupUploadComprobanteSgGastoViaje(event)}" rendered="#{data.idSiAdjunto == -1}" styleClass="link"/>
+                                    <p:commandLink value="#{msgs['sistema.quitar.comprobante']}" actionListener="#{gastoViajeBean.deleteComprobanteFromSgGastoViaje(event)}" rendered="#{data.idSiAdjunto != -1}" styleClass="link"/>
+                                </center>
+                                <p:confirm id="pnlCon2"   message="#{msgs['sgGastoViaje.msg.deleteComprobante']}"
+                                           />
+                            </p:column>                            
+                        </p:dataTable>   
+                    </h:form>
+
+                </h:panelGroup>  
+
+                <!-- Popup Crear SgGastoViaje -->
+                <h:form id="formPopupCreateSgGastoViaje" >
+                    <p:dialog  header="#{msgs['sistema.crear']} #{msgs['sgl.sgGastoViaje']}" 
+                               >
+                        <h:outputText id="msgsPopupCreateSgGastoViaje" value="" />
+                        <center><h:message for="msgsPopupCreateSgGastoViaje" errorClass="errorMessage" infoClass="infoMessage"/></center>                    
+
+                        <h:panelGrid columns="2">
+                            <h:outputLabel value="#{msgs['sgl.viaje']}:" styleClass="f11" />
+                            <h:outputText value="#{gastoViajeBean.sgViaje.codigo}" styleClass="f10" />
+
+                            <h:panelGrid columns="2">
+                                <h:outputLabel value="#{msgs['sgl.sgGastoViaje.tipo']}:" styleClass="f11" />
+                                <h:outputText value="*" styleClass="textoRojo" />
+                            </h:panelGrid>
+                            <h:panelGrid columns="2">
+                                <p:selectOneMenu id="sgTEspecifico" 
+                                                 value="#{viajeBean.idSiOperacion}"
+                                                 valueChangeListener="#{gastoViajeBean.valueChangeListenerSgTipoEspecifico}"
+
+                                                 styleClass="form-control">
+                                    <f:selectItem itemLabel="#{msgs['sistema.seleccionar']} #{msgs['sgl.sgGastoViaje.tipo']}..." itemValue="-1" />
+                                    <f:selectItems value="#{gastoViajeBean.sgTipoEspecificoBySgTipoSelSectItem}" />
+                                </p:selectOneMenu>
+                                <h:message for="sgTipoEspecifico" infoClass="infoMessage" errorClass="errorMessage" />
+                            </h:panelGrid>  
+
+                            <h:panelGrid columns="2">
+                                <h:outputLabel value="#{msgs['sgl.mantenimiento.grid.importe']}:" styleClass="f11" />
+                                <h:outputText value="*" styleClass="textoRojo" />
+                            </h:panelGrid> 
+                            <h:panelGrid columns="6">
+                                <h:outputText value="$" />
+                                <p:inputText id="import" value="#{gastoViajeBean.bigDecimal}" size="12" title="Ejemplo: 1538.50" styleClass="f10">
+                                    <f:converter converterId="javax.faces.BigDecimal" />
+                                </p:inputText>
+                                <h:message for="importe" infoClass="infoMessage" errorClass="errorMessage" />
+                                <p:selectOneMenu id="moned" value="#{viajeBean.idOficina}" >
+                                    <f:selectItem itemLabel="#{msgs['sistema.seleccionar']} #{msgs['sistema.moneda']}..." itemValue="-1"/>
+                                    <f:selectItems value="#{gastoViajeBean.allMonedaSelectItem}"/>
+                                </p:selectOneMenu>
+                                <h:outputText id="helpImporte" value="?" styleClass="textoAyuda" />     
+                                <h:message for="moneda" infoClass="infoMessage" errorClass="errorMessage" />
+                                <p:tooltip id="pnlToolTipHelpImporte"
+                                           for="helpImporte"
+                                           showEvent="mouseover"
+                                           showEffect="slide"
+                                           hideEffect="slide"
+                                           hideDelay="2300">
+                                    <h:panelGrid width="190px;" styleClass="textoAyuda">
+                                        <h:outputText value="Ejemplo: 1538.50" />
+                                    </h:panelGrid>
+                                </p:tooltip>                                
+                            </h:panelGrid> 
+
+                            <h:outputLabel value="#{msgs['sgl.solicitudViaje.observacion']}:" styleClass="f11" />
+                            <p:inputTextarea id="observ" value="#{viajeBean.motivoCancelacion}" cols="45" maxlength="2048" />
+
+                            <!-- Agregar el Kilometraje -->
+                            <h:panelGrid columns="2" rendered="#{gastoViajeBean.detallePop and gastoViajeBean.vehiculoVO != null}">
+                                <h:outputLabel value="#{msgs['sgl.kilometraje']}:" styleClass="f11" />
+                                <h:outputText value="*" styleClass="textoRojo" />
+                            </h:panelGrid> 
+                            <h:panelGrid columns="5" rendered="#{gastoViajeBean.detallePop and gastoViajeBean.vehiculoVO != null}">
+                                <p:inputText id="kilometraje" value="#{gastoViajeBean.kilometraje}" />
+                                <h:outputLabel value="Km. " />
+                                <h:outputText value="(último: #{gastoViajeBean.sgKilometrajeActual != null ? gastoViajeBean.sgKilometrajeActual.kilometraje : 0} Km.)" />
+                                <h:outputText id="helpKilometraje" value="?" styleClass="textoAyuda" />                 
+                                <h:message for="kilometraje" infoClass="infoMessage" errorClass="errorMessage" />
+                                <p:tooltip id="pnlToolTipHelpKilometraje"
+                                           for="helpKilometraje"
+                                           showEvent="mouseover"
+                                           showEffect="slide"
+                                           hideEffect="slide"
+                                           hideDelay="2300">
+                                    <h:panelGrid width="190px;" styleClass="textoAyuda">
+                                        <h:outputText value="Debe ser un número entero, sin letras. Ejemplo: 300" />
+                                    </h:panelGrid>
+                                </p:tooltip>                                
+                            </h:panelGrid>                            
+
+                        </h:panelGrid>    
+
+                        <br />
+
+                        <center>
+                            <h:panelGrid columns="2">
+                                <p:commandLink value="#{msgs['sistema.guardar']}" actionListener="#{gastoViajeBean.saveSgGastoViaje(event)}" styleClass="btn btn-info" />
+                                <p:commandLink value="#{msgs['sistema.cancelar']}" actionListener="#{gastoViajeBean.closePopupCreateSgGastoViaje(event)}" immediate="true" styleClass="btn btn-default" />
+                            </h:panelGrid>
+                        </center>                        
+                    </p:dialog>
+                </h:form>                
+
+                <!-- Popup Modificar SgGastoViaje -->
+                <h:form id="formPopupUpdateSgGastoViaje" >
+                    <p:dialog  header="#{msgs['sistema.modificar']} #{msgs['sgl.sgGastoViaje']}" 
+                               >
+                        <h:outputText id="msgsPopupUpdateSgGastoViaje" value="" />
+                        <center><h:message for="msgsPopupUpdateSgGastoViaje" errorClass="errorMessage" infoClass="infoMessage"/></center>                    
+
+                        <h:panelGrid columns="2">
+                            <h:outputLabel value="#{msgs['sgl.viaje']}:" styleClass="f11" />
+                            <h:outputText value="#{gastoViajeBean.sgGastoViajeVO.codigoSgViaje}" styleClass="f10" />
+
+                            <h:panelGrid columns="2">
+                                <h:outputLabel value="#{msgs['sgl.sgGastoViaje.tipo']}:" styleClass="f11" />
+                                <h:outputText value="*" styleClass="textoRojo" />
+                            </h:panelGrid>
+                            <h:panelGrid columns="2">
+                                <p:selectOneMenu id="sgTipoEspecifico" 
+                                                 value="#{gastoViajeBean.sgGastoViajeVO.idSgTipoEspecifico}"
+                                                 styleClass="form-control">
+                                    <f:selectItem itemLabel="#{msgs['sistema.seleccionar']} #{msgs['sgl.sgGastoViaje.tipo']}..." itemValue="-1" />
+                                    <f:selectItems value="#{gastoViajeBean.sgTipoEspecificoBySgTipoSelSectItem}" />
+                                </p:selectOneMenu>
+                                <h:message for="sgTipoEspecifico" infoClass="infoMessage" errorClass="errorMessage" />
+                            </h:panelGrid>  
+
+                            <h:panelGrid columns="2">
+                                <h:outputLabel value="#{msgs['sgl.mantenimiento.grid.importe']}:" styleClass="f11" />
+                                <h:outputText value="*" styleClass="textoRojo" />
+                            </h:panelGrid> 
+                            <h:panelGrid columns="5">
+                                <h:outputText value="$" />
+                                <p:inputText id="importe" value="#{gastoViajeBean.sgGastoViajeVO.importe}" size="12" styleClass="f10">
+                                    <f:converter converterId="javax.faces.BigDecimal" />
+                                </p:inputText>
+                                <p:selectOneMenu id="moneda" value="#{gastoViajeBean.sgGastoViajeVO.idMoneda}" >
+                                    <f:selectItem itemLabel="#{msgs['sistema.seleccionar.combo']}. . ." itemValue="-1"/>
+                                    <f:selectItems value="#{gastoViajeBean.allMonedaSelectItem}"/>
+                                </p:selectOneMenu>
+                                <h:message for="importe" infoClass="infoMessage" errorClass="errorMessage" />
+                                <h:message for="moneda" infoClass="infoMessage" errorClass="errorMessage" />
+                            </h:panelGrid> 
+
+                            <h:outputLabel value="#{msgs['sgl.solicitudViaje.observacion']}:" styleClass="f11" />
+                            <p:inputTextarea id="observacion" value="#{gastoViajeBean.sgGastoViajeVO.observacion}" cols="45" maxlength="2048" />                            
+                        </h:panelGrid>    
+
+                        <br />
+
+                        <center>
+                            <h:panelGrid columns="2">
+                                <p:commandLink value="#{msgs['sistema.actualizar']}" actionListener="#{gastoViajeBean.updateSgGastoViaje(event)}" styleClass="btn btn-info" />
+                                <p:commandLink value="#{msgs['sistema.cancelar']}" actionListener="#{gastoViajeBean.closePopupUpdateSgGastoViaje(event)}" immediate="true" styleClass="btn btn-default" />
+                            </h:panelGrid>
+                        </center>                        
+                    </p:dialog>
+                </h:form> 
+
+                <!--Adjuntar archivo Gasto de Viaje-->
+                <h:form id="formUploadComprobanteSgGastoViaje" >
+                    <p:dialog   id="popup1" style="background: #FFFFFF;" visible="#{sesion.controladorPopups['popupUploadComprobanteSgGastoViaje']}" draggable="false" modal="true">
+                        <f:facet name="header">
+                            <h:panelGroup>
+                                <h:outputText value="#{msgs['sistema.subir.comprobante']}" style="float: left; padding: 4px;text-align: center; vertical-align: middle;font: 11px;color: #484848; font-weight: bold;"/>
+                            </h:panelGroup>
+                        </f:facet>
+                        <f:facet name="body">
+                            <h:panelGroup id="card Group1" >
+
+                                <center><h:messages errorClass="errorMessage" infoClass="infoMessage"/></center>
+                                <h:panelGrid id="pnlGrd1" columns="3">
+                                    <!-- TODO : revisar si aun se utiliza -->
+                                    <p:fileUpload  id="fileEntry"
+                                                   listener="#{gastoViajeBean.uploadComprobanteSgGastoViaje}" />
+                                    <input type="hidden" name="cid" 
+                                           value="#{javax.enterprise.context.conversation.id}" /> 
+                                    <p:commandLink id="cmdLnk" value="#{msgs['sistema.cerrar']}" actionListener="#{gastoViajeBean.closePopupUploadComprobanteSgGastoViaje(event)}" immediate="true" styleClass="btn btn-default"/>
+                                </h:panelGrid>
+                            </h:panelGroup>
+                        </f:facet>
+                    </p:dialog >                        
+                </h:form>                
+
+            </ui:define>
+
+        </ui:composition>
+
+    </body>
+</html>
