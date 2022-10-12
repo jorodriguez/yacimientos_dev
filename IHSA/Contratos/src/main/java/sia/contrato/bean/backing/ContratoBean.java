@@ -44,7 +44,7 @@ import sia.archivador.AlmacenDocumentos;
 import sia.archivador.DocumentoAnexo;
 import sia.archivador.ProveedorAlmacenDocumentos;
 import sia.constantes.Constantes;
-import sia.contrato.bean.model.ProveedorModel;
+import sia.contrato.bean.model.ProveedorAdminModel;
 import sia.contrato.bean.soporte.FacesUtils;
 import sia.excepciones.SIAException;
 import sia.ihsa.contratos.Sesion;
@@ -517,7 +517,7 @@ public class ContratoBean implements Serializable {
         //regreso a la table
         getListaConvenios().add(getListaConvenios().size(), contratoVo);
         //borra de las pestanas
-        getLstConveniosTabs().remove(getIndice());
+        getLstConveniosTabs().remove(contratoVo);
     }
 
     public ContratoVO buscarPorId(int idContrato, boolean validarFormalizado) {
@@ -679,17 +679,12 @@ public class ContratoBean implements Serializable {
 
     public void finlizarContratoFormalizado() {
         if (contratoFormalizado()) {	    //
-            getLstConveniosTabs().set(getIndice(),
-                    buscarPorId(contratoVo.getId(), false));
-            llenarDatosContrato(contratoVo.getId());
             FacesUtils.addInfoMessage("Se envío la notificación de contrato formalizado.");
         } else {
             FacesUtils.addErrorMessage("Ocurrio un error al enviar la notificación del contrato formalizado, por favor contacte al equipo de soporte SIA (soportesia@ihsa.mx)");
         }
         PrimeFaces.current().executeScript(
-                ";$(dialogoFormalizarContrato"
-                + contratoVo.getId()
-                + ").modal('hide');"
+                ";$(dialogoFormalizarContrato).modal('hide');"
         );
     }
 
@@ -709,7 +704,7 @@ public class ContratoBean implements Serializable {
 
             return true;
         } catch (Exception e) {
-            notificacionSistemaImpl.enviarExcepcion(sesion.getUsuarioSesion().getId(), correoExcepcion(), getLstConveniosTabs().get(getIndice()), "Error - " + contratoVo.getNumero(), e.toString());
+            notificacionSistemaImpl.enviarExcepcion(sesion.getUsuarioSesion().getId(), correoExcepcion(), contratoVo, "Error - " + contratoVo.getNumero(), e.toString());
             UtilLog4j.log.fatal(this, e);
             return false;
         }
@@ -749,17 +744,13 @@ public class ContratoBean implements Serializable {
     public void finlizarContratoFiniquitado() {
         if (getListaCorreo().get("para").size() > Constantes.CERO) {
             if (contratoFiniquitado()) {	    //
-                getLstConveniosTabs().set(getIndice(),
-                        buscarPorId(contratoVo.getId(), false));
-                llenarDatosContrato(contratoVo.getId());
+                lstConveniosTabs.remove(contratoVo);
                 FacesUtils.addInfoMessage("Se envío la notificación de contrato finiquitado.");
             } else {
                 FacesUtils.addErrorMessage("Ocurrio un error al enviar la notificación del contrato finiquitado, por favor contacte al equipo de soporte SIA (soportesia@ihsa.mx)");
             }
             PrimeFaces.current().executeScript(
-                    ";$(dialogoFiniquitarContrato"
-                    + contratoVo.getId()
-                    + ").modal('hide');"
+                    ";$(dialogoFiniquitarContrato).modal('hide');"
             );
         } else {
             FacesUtils.addInfoMessage("Falta seleccionar el correo para");
@@ -773,7 +764,7 @@ public class ContratoBean implements Serializable {
 
             return true;
         } catch (Exception e) {
-            notificacionSistemaImpl.enviarExcepcion(sesion.getUsuarioSesion().getId(), correoExcepcion(), getLstConveniosTabs().get(getIndice()), "Error - " + contratoVo.getNumero(), e.toString());
+            notificacionSistemaImpl.enviarExcepcion(sesion.getUsuarioSesion().getId(), correoExcepcion(), contratoVo, "Error - " + contratoVo.getNumero(), e.toString());
             UtilLog4j.log.fatal(this, e);
             return false;
         }
@@ -781,7 +772,7 @@ public class ContratoBean implements Serializable {
 
     public void eliminarContrato() {
         convenioServicioRemoto.eliminarContrato(sesion.getUsuarioSesion().getId(), contratoVo.getId());
-        getLstConveniosTabs().remove(getIndice());
+        getLstConveniosTabs().remove(contratoVo);
     }
 
     public void iniciarIncide() {
@@ -965,31 +956,20 @@ public class ContratoBean implements Serializable {
 
     public void actualizarDatosGeneralesContrato() {
         actualizarContratoGenerales();
-        PrimeFaces.current().executeScript(";$(dialogoModificarDatosGenerales"
-                + contratoVo.getId()
-                + ").modal('hide');"
-        );
         setListaGerencia(new ArrayList<>());
-        llenarDatosContrato(contratoVo.getId());
+        PrimeFaces.current().executeScript(";$(dialogoModificarDatosGenerales).modal('hide');");
+        //llenarDatosContrato(contratoVo.getId());
     }
 
     public void actualizarContratoGenerales() {
         //
-        convenioServicioRemoto.actualizarDatosGenerales(sesion.getUsuarioSesion().getId(), getLstConveniosTabs().get(indice), listaGerencia);
+        convenioServicioRemoto.actualizarDatosGenerales(sesion.getUsuarioSesion().getId(), contratoVo, listaGerencia);
         contratoVo.setListaGerencia(cvConvenioGerenciaImpl.convenioPorGerenica(contratoVo.getId()));
         //getLstConveniosTabs().set(indice, convenioServicioRemoto.buscarPorId(contratoVo.getId()));
     }
 
     public void actualizarContrato() {
-        convenioServicioRemoto.actualizar(sesion.getUsuarioSesion().getId(), getLstConveniosTabs().get(getIndice()));
-        llenarDatosContrato(
-                contratoVo.getId()
-        );
-        getLstConveniosTabs().set(
-                getIndice(), buscarPorId(
-                        contratoVo.getId(), true)
-        );
-        llenarDatosContrato(contratoVo.getId());
+        convenioServicioRemoto.actualizar(sesion.getUsuarioSesion().getId(), contratoVo);
     }
 /////////////////////////////////////////////////
 
@@ -1033,7 +1013,7 @@ public class ContratoBean implements Serializable {
         setContratoDocumentoVo(new ContratoDocumentoVo());
         setSubirContrato(false);
         getContratoDocumentoVo().setId(idDoctoConv);
-        PrimeFaces.current().executeScript(";$(adjuntarArchivo).modal('show');;");
+        PrimeFaces.current().executeScript(";$(adjuntarArchivo).modal('show');");
         setContratoDocumentoVo(cvConvenioDocumentoImpl.buscarPorId(contratoDocumentoVo.getId()));
     }
 
@@ -1051,12 +1031,8 @@ public class ContratoBean implements Serializable {
     public void agregarArchivoDocumento(int idDocConv) {
         setContratoDocumentoVo(new ContratoDocumentoVo());
         getContratoDocumentoVo().setId(idDocConv);
-        PrimeFaces.current().executeScript(
-                ";$(dialogoAgregarArchivoDocto"
-                + contratoVo.getId()
-                + ").modal('show');;"
-        );
         setContratoDocumentoVo(cvConvenioDocumentoImpl.buscarPorId(contratoDocumentoVo.getId()));
+        PrimeFaces.current().executeScript(";$(dialogoAgregarArchivoDocto).modal('show');");
 
     }
 
@@ -1179,9 +1155,7 @@ public class ContratoBean implements Serializable {
                 almacenDocumentos.guardarDocumento(documentoAnexo);
                 if (!getLstConveniosTabs().isEmpty()
                         && contratoVo.getId() > 0) {
-                    getLstConveniosTabs()
-                            .get(getIndice())
-                            .setAdjuntoVO(buildAdjuntoVO(documentoAnexo));
+                    contratoVo.setAdjuntoVO(buildAdjuntoVO(documentoAnexo));
                     //
                     contratoVo.getAdjuntoVO().setId(
                             siAdjuntoServicioRemoto.saveSiAdjunto(
@@ -1199,10 +1173,11 @@ public class ContratoBean implements Serializable {
                     );
                     contratoVo.getProveedorVo().setLstDocsProveedor(pvClasificacionArchivoImpl.traerArchivoPorProveedorOid(contratoVo.getProveedorVo().getIdProveedor(), 0));
                 } else {
-                    ProveedorModel proveedorBean = (ProveedorModel) FacesUtils.getManagedBean(FacesContext.getCurrentInstance(), "proveedorBean");
+                    ProveedorAdminModel proveedorBean = (ProveedorAdminModel) FacesUtils.getManagedBean(FacesContext.getCurrentInstance(), "proveedorBean");
                     proveedorBean.subirArchivo(path.toFile());
                 }
 
+                PrimeFaces.current().ajax().update("frmAdmin:tabViewProv");
             } else if (isSubirContrato()) {
                 documentoAnexo.setNombreBase(fileUpload.getFileName());
                 documentoAnexo.setRuta(getSubDirectorioDocumento());
@@ -1226,6 +1201,8 @@ public class ContratoBean implements Serializable {
                         contratoVo.getAdjuntoVO().getId()
                 );
                 contratoVo.setListaArchivoConvenio(cvConvenioAdjuntoImpl.traerPorConvenio(contratoVo.getId()));
+                //
+                PrimeFaces.current().ajax().update("frmAdmin:tabView");
             } else if (isSubirListaPrecio()) {
                 try {
                     //contratoVo.setListaArticulo(new ArrayList<ConvenioArticuloVo>());
@@ -1543,10 +1520,7 @@ public class ContratoBean implements Serializable {
         traerConvenioDoctosRh(contratoVo.getId());
     }
 
-    public void seleccionarContratoRelacionado() {
-        int idC = Integer.parseInt(FacesUtils.getRequestParam("idContrato"));
-        int index = getLstConveniosTabs().size();
-        //
+    public void seleccionarContratoRelacionado(int idC) {
         Iterator<ContratoVO> it = getLstConveniosTabs().iterator();
         int agregar = 0;
         while (it.hasNext()) {
@@ -1559,11 +1533,10 @@ public class ContratoBean implements Serializable {
         if (agregar == 0) {
             ContratoVO c = buscarPorId(idC, false);
             //
-            getLstConveniosTabs().add(index, c);
-            doctosPorConvenio(index, c.getId());
+            doctosPorConvenio(contratoVo.getId(), c.getId());
             evaluacionesPorConvenio(c.getId());
             evaluacionesPendientesPorConvenio(c.getId());
-            condicionesPorConvenio(index, c.getId());
+            condicionesPorConvenio(contratoVo.getId(), c.getId());
             hitosPorConvenio(c.getId());
             traerArchivosConvenio();
             contratoVo.setProveedorVo(new ProveedorVo());

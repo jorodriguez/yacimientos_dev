@@ -126,7 +126,7 @@ public class ReporteContenidoBean implements Serializable {
 
     }
 
-    public void cambiarAnio(AjaxBehaviorEvent event) {
+    public void cambiarAnio() {
         cargarDatos();
         //
         graficaOcs();
@@ -137,13 +137,13 @@ public class ReporteContenidoBean implements Serializable {
 
     }
 
-    public void buscarTotalOcs(AjaxBehaviorEvent event) {
+    public void buscarTotalOcs() {
         getMapaTotales().put("ocs", ordenImpl.traerTotalesPorCompania(sesion.getUsuarioConectado().getApCampo().getCompania().getRfc(), idAnio, idMonOcs));
         //
         graficaOcs();
     }
 
-    public void buscarTotalFac(AjaxBehaviorEvent event) {
+    public void buscarTotalFac() {
         getMapaTotales().put("factura", siFacturaImpl.traerTotalesPorCompania(sesion.getUsuarioConectado().getApCampo().getCompania().getRfc(), idAnio, idMonFac));
         //
         graficaFac();
@@ -223,7 +223,7 @@ public class ReporteContenidoBean implements Serializable {
         }
     }
 
-    public void graficaProveedoresTopMoneda(AjaxBehaviorEvent event) {
+    public void graficaProveedoresTopMoneda() {
         graficaTopProveedores();
     }
 

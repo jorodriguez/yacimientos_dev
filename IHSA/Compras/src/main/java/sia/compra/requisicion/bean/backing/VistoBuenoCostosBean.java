@@ -100,13 +100,12 @@ public class VistoBuenoCostosBean implements Serializable {
             lr.stream().filter((RequisicionVO::isSelected)).forEach(r -> {
                 if (r.getIdCfdi() > Constantes.CERO || r.getCompania().equals(Constantes.RFC_IHSA_CQ)) {
                     vistoBuenoCostoMth(r);
+                    //
+                    FacesUtilsBean.addInfoMessage("Se envió al proceso de aprobación . . . ");
                 } else {
                     FacesUtilsBean.addErrorMessage("Para revisar la requisicion " + r.getConsecutivo() + " es necesario seleccionar el USO CFDI, en la requisición.");
                 }
             });
-
-            //
-            FacesUtilsBean.addInfoMessage("Se envió al proceso de aprobación . . . ");
             cambiarRequisicion(0);
             //
             String jsMetodo = ";limpiarTodos();";
@@ -224,6 +223,7 @@ public class VistoBuenoCostosBean implements Serializable {
             FacesUtilsBean.addErrorMessage("Es necesario seleccionar al menos una requisición");
         }
     }
+
     public void cancelarVariasRequisicion() {
         try {
             for (Object object : listaRequisiciones) {

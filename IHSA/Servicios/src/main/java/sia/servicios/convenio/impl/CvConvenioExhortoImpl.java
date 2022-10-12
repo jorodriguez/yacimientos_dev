@@ -43,13 +43,12 @@ import sia.util.UtilLog4j;
  *
  * @author ihsa
  */
-@Stateless 
+@Stateless
 public class CvConvenioExhortoImpl extends AbstractFacade<CvConvenioExhorto> {
 
     @PersistenceContext(unitName = "Sia-ServiciosPU")
     private EntityManager em;
 
-    
     @Override
     protected EntityManager getEntityManager() {
         return em;
@@ -67,7 +66,7 @@ public class CvConvenioExhortoImpl extends AbstractFacade<CvConvenioExhorto> {
     @Inject
     SiAdjuntoImpl adjuntoRemote;
     @Inject
-    CvConvenioFormasImpl  convenioFormasLocal;
+    CvConvenioFormasImpl convenioFormasLocal;
     @Inject
     CvFormasImpl formasLocal;
     @Inject
@@ -81,7 +80,6 @@ public class CvConvenioExhortoImpl extends AbstractFacade<CvConvenioExhorto> {
         super(CvConvenioExhorto.class);
     }
 
-    
     public List<ContratoVO> traerContratosVencidos(int campoId) {
         List<ContratoVO> lista = null;
         String sb = consultaCompania()
@@ -102,7 +100,6 @@ public class CvConvenioExhortoImpl extends AbstractFacade<CvConvenioExhorto> {
         return lista;
     }
 
-    
     public List<ContratoVO> traerContratosPorVencer(Date fecha, int dias, int campoId) {
         List<ContratoVO> lista = null;
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
@@ -123,12 +120,11 @@ public class CvConvenioExhortoImpl extends AbstractFacade<CvConvenioExhorto> {
         return lista;
     }
 
-    
     public List<ContratoVO> traerContratosConExhortos(int campoId) {
         List<ContratoVO> lista = null;
         String sb = consultaCompania()
                 + " where c.ap_campo = " + campoId
-                + " and c.estatus in ( " + Constantes.ESTADO_CONVENIO_ACTIVO  + ", " + Constantes.ESTADO_CONVENIO_VENCIDO + ")"
+                + " and c.estatus in ( " + Constantes.ESTADO_CONVENIO_ACTIVO + ", " + Constantes.ESTADO_CONVENIO_VENCIDO + ")"
                 + " and c.convenio is null "
                 + " and c.ELIMINADO = false "
                 + " group  by c.id, c.CODIGO, cr.codigo, cr.nombre, c.NOMBRE, p.NOMBRE , c.FECHA_FIRMA, c.FECHA_INICIO, c.FECHA_VENCIMIENTO, c.VIGENCIA, \n"
@@ -146,7 +142,6 @@ public class CvConvenioExhortoImpl extends AbstractFacade<CvConvenioExhorto> {
         return lista;
     }
 
-    
     public List<ContratoVO> traerExhortosPorProveedor(int proveedorId) {
         List<ContratoVO> lista = null;
         String sb = "select c.id, c.CODIGO, c.NOMBRE, p.NOMBRE as proveedor, c.FECHA_FIRMA, c.FECHA_INICIO, c.FECHA_VENCIMIENTO, c.VIGENCIA, \n"
@@ -160,7 +155,7 @@ public class CvConvenioExhortoImpl extends AbstractFacade<CvConvenioExhorto> {
                 + "	left join  CV_CLASIFICACION cc on c.CV_CLASIFICACION = cc.id \n"
                 + "	inner join ESTATUS e on c.ESTATUS = e.ID    \n"
                 + "where c.proveedor = " + proveedorId
-                + "and c.estatus  in ( " + Constantes.ESTADO_CONVENIO_ACTIVO  + ", " + Constantes.ESTADO_CONVENIO_VENCIDO + ")"
+                + "and c.estatus  in ( " + Constantes.ESTADO_CONVENIO_ACTIVO + ", " + Constantes.ESTADO_CONVENIO_VENCIDO + ")"
                 + "and c.id in (select cce.convenio  from cv_convenio_exhorto cce where cce.eliminado = false)\n"
                 + "and c.ELIMINADO = false \n"
                 + "order by c.fecha_vencimiento";
@@ -193,7 +188,6 @@ public class CvConvenioExhortoImpl extends AbstractFacade<CvConvenioExhorto> {
         return lista;
     }
 
-    
     public void eliminar(String sesion, int id) {
         try {
             CvConvenioExhorto cvConvenioExhorto = find(id);
@@ -208,7 +202,6 @@ public class CvConvenioExhortoImpl extends AbstractFacade<CvConvenioExhorto> {
         }
     }
 
-    
     public void guardar(UsuarioVO sesion, ContratoVO contratoVo, ExhortoVo exhortoVo) {
         //
         CvConvenioExhorto cvConvenioExhorto = new CvConvenioExhorto();
@@ -281,7 +274,6 @@ public class CvConvenioExhortoImpl extends AbstractFacade<CvConvenioExhorto> {
         return exVo;
     }
 
-    
     public List<ExhortoVo> traerPorConvenio(int idConvenio) {
         List<ExhortoVo> lista = null;
         String sb = "select ce.id, ce.fecha_exhorto, ce.codigo_exhorto, ce.numero_exhorto, p.nombre, c.codigo, c.nombre,"
@@ -368,7 +360,6 @@ public class CvConvenioExhortoImpl extends AbstractFacade<CvConvenioExhorto> {
         return contratoVO;
     }
 
-    
     public void enviarSolicitudFiniquito(ProveedorVo proveedorSesion, AdjuntoVO buildAdjuntoVO,
             ContratoVO contratoVo) {
         //cambiar el exhorto de estatus
@@ -425,7 +416,6 @@ public class CvConvenioExhortoImpl extends AbstractFacade<CvConvenioExhorto> {
         return usuarioRolRemote.traerCorreosPorCodigoRolList(Constantes.COD_CONVENIO, campoId);
     }
 
-    
     public CvConvenioExhorto buscarUltimoExhorto(int convenioId) {
         String c = "select  cce.* from cv_convenio_exhorto cce \n"
                 + "	inner join convenio c  on cce.convenio  = c.id \n"

@@ -40,10 +40,13 @@ import sia.servicios.sistema.impl.SiOpcionImpl;
 import sia.servicios.sistema.impl.SiRelRolOpcionImpl;
 import sia.servicios.sistema.impl.SiUsuarioRolImpl;
 import sia.servicios.sistema.vo.SiOpcionVo;
+import sia.sgl.sistema.bean.model.PrincipalModel;
 import sia.sgl.sistema.bean.support.FacesUtils;
 import sia.sgl.utils.SessionUtils;
 import sia.sgl.viaje.bean.backing.AdministrarViajeBean;
+import sia.sgl.viaje.bean.model.AdministrarViajeBeanModel;
 import sia.sgl.viaje.solicitud.backing.SolicitudViajeBean;
+import sia.sgl.viaje.solicitud.bean.model.SolicitudViajeBeanModel;
 import sia.util.Env;
 import sia.util.UtilLog4j;
 import sia.util.UtilSia;
@@ -114,13 +117,14 @@ public class Sesion implements Serializable {
     public Sesion() {
     }
 
-    public void crearMenu(int idCampo) {
-        construirMenu();
+    public void crearMenu(String idUsuario, int idCampo) {
+
+        construirMenu(idUsuario, idCampo);
     }
 
-    private void construirMenu() {
+    private void construirMenu(String idUsuario, int idCampo) {
         menu = new DefaultMenuModel();
-        List<SiOpcionVo> opcionesMenu = obtenerOpcionesPrincipalesMenu();
+        List<SiOpcionVo> opcionesMenu = obtenerOpcionesPrincipalesMenu(idUsuario, idCampo);
         DefaultMenuItem opcPrincipal = DefaultMenuItem.builder()
                 .value("Principal")
                 .ajax(Boolean.FALSE)
@@ -167,13 +171,13 @@ public class Sesion implements Serializable {
     public void subirValoresContexto(HttpSession sesion) {
         Env.setContext(ctx, Env.SESSION_ID, sesion.getId());
         Env.setContext(ctx, Env.CLIENT_INFO, sesion.getServletContext().getContextPath());
-        Env.setContext(ctx, Env.PUNTO_ENTRADA, "Sia");
+        Env.setContext(ctx, Env.PUNTO_ENTRADA, "ServiciosGenerales");
         Env.setContext(ctx, Env.PROYECTO_ID, usuario.getApCampo().getId());
         Env.setContext(ctx, Env.CODIGO_COMPANIA, usuario.getApCampo().getCompania().getRfc());
     }
 
-    private List<SiOpcionVo> obtenerOpcionesPrincipalesMenu() {
-        return siOpcionImpl.getAllSiOpcionBySiModulo(Constantes.MODULO_SGYL, getUsuario().getId(), usuario.getApCampo().getId());
+    private List<SiOpcionVo> obtenerOpcionesPrincipalesMenu(String idUsuario, int idCampo) {
+        return siOpcionImpl.getAllSiOpcionBySiModulo(Constantes.MODULO_SGYL, idUsuario, idCampo);
     }
 
     private List<SiOpcionVo> obtenerOpcionesHijoMenu(Integer id) {
@@ -277,7 +281,7 @@ public class Sesion implements Serializable {
 
     public void completarCambioOficina(OficinaVO ofVo) {
         setOficinaActual(ofVo);
-        AdministrarViajeBean administrarViajeBean = (AdministrarViajeBean) FacesUtils.getManagedBean("administrarViajeBean");
+        AdministrarViajeBeanModel administrarViajeBean = (AdministrarViajeBeanModel) FacesUtils.getManagedBean("administrarViajeBean");
         administrarViajeBean.cargarSolicitudesYViajes();
         PrimeFaces.current().executeScript(";$(dialogoCambiarOficina).modal('hide');");
         redireccionar("/ServiciosGenerales/");
@@ -292,43 +296,42 @@ public class Sesion implements Serializable {
             this.setRoles(ur);
             for (UsuarioRolVo usuarioRolVo : ur) {
                 if (usuarioRolVo.isPrincipal()) {
-
                     this.setNombreRol(usuarioRolVo.getNombreRol());
                     this.setIdRol(usuarioRolVo.getIdRol());
                     break;
                 }
             }
+            AdministrarViajeBeanModel administrarViajeBean = (AdministrarViajeBeanModel) FacesUtils.getManagedBean("administrarViajeBean");
+            SolicitudViajeBeanModel solicitudViajeBean = (SolicitudViajeBeanModel) FacesUtils.getManagedBean("solicitudViajeBeanModel");
+            PrincipalModel principalBean = (PrincipalModel) FacesUtils.getManagedBean(("principalBean"));
+
+            crearMenu(usuario.getId(), idCampo);
+            principalBean.opcionesPriciles();
+
+            switch (this.getIdRol()) {
+                case Constantes.SGL_RESPONSABLE:
+                    this.setRol(Constantes.ROL_SGL_RESPONSABLE);
+                    this.setOficinasUsuario((sgOficinaImpl.traerListaOficina()));
+                    administrarViajeBean.cargarSolicitudesYViajes();
+                    solicitudViajeBean.goToSolicitudesPorAprobar();
+                    break;
+                case Constantes.SGL_ANALISTA:
+                    setOficinasUsuario((sgOficinaImpl.traerListaOficina()));
+                    administrarViajeBean.cargarSolicitudesYViajes();
+                    break;
+                case Constantes.SGL_ADMINISTRA:
+                    setOficinasUsuario((sgOficinaImpl.traerListaOficina()));
+                    administrarViajeBean.cargarSolicitudesYViajes();
+                    break;
+                case Constantes.ROL_GERENTE:
+                    solicitudViajeBean.goToSolicitudesPorAprobar();
+                    break;
+                case Constantes.ROL_JUSTIFICA_VIAJES:
+                    solicitudViajeBean.goToSolicitudesPorAprobar();
+                    break;
+            }
+
         }
-        AdministrarViajeBean administrarViajeBean = (AdministrarViajeBean) FacesUtils.getManagedBean("administrarViajeBean");
-        SolicitudViajeBean solicitudViajeBean = (SolicitudViajeBean) FacesUtils.getManagedBean("solicitudViajeBean");
-        PrincipalBean principalBean = (PrincipalBean) FacesUtils.getManagedBean(("principalBean"));
-
-        crearMenu(idCampo);
-        principalBean.opcionesPrincipales();
-
-        switch (this.getIdRol()) {
-            case Constantes.SGL_RESPONSABLE:
-                this.setRol(Constantes.ROL_SGL_RESPONSABLE);
-                this.setOficinasUsuario((sgOficinaImpl.traerListaOficina()));
-                administrarViajeBean.cargarSolicitudesYViajes();
-                solicitudViajeBean.goToSolicitudesPorAprobar();
-                break;
-            case Constantes.SGL_ANALISTA:
-                setOficinasUsuario((sgOficinaImpl.traerListaOficina()));
-                administrarViajeBean.cargarSolicitudesYViajes();
-                break;
-            case Constantes.SGL_ADMINISTRA:
-                setOficinasUsuario((sgOficinaImpl.traerListaOficina()));
-                administrarViajeBean.cargarSolicitudesYViajes();
-                break;
-            case Constantes.ROL_GERENTE:
-                solicitudViajeBean.goToSolicitudesPorAprobar();
-                break;
-            case Constantes.ROL_JUSTIFICA_VIAJES:
-                solicitudViajeBean.goToSolicitudesPorAprobar();
-                break;
-        }
-
         PrimeFaces.current().executeScript(";$(dialogoCambiarCampo).modal('hide');recargar(msg);");
         redireccionar("/ServiciosGenerales/");
     }

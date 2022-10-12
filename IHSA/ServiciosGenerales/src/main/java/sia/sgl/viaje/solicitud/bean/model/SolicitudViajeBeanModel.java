@@ -317,6 +317,13 @@ public class SolicitudViajeBeanModel implements Serializable {
     public SolicitudViajeBeanModel() {
     }
 
+    public void goToSolicitudesPorAprobar() {
+        if (isActualizar()) { //se utiliza la opcion insertar para que el metodo solo se utilice cuando entra por primera vez.
+            UtilLog4j.log.info(this, "goToSolicitudesPorAprobar()");
+            mostrarSolicitudesByAprobar();
+        }
+    }
+
     public String convertirFechaString(Date fecha) {
         return siManejoFechaImpl.convertirFechaStringddMMyyyy(fecha);
     }
@@ -733,7 +740,7 @@ public class SolicitudViajeBeanModel implements Serializable {
     public boolean modificarSolicitudViaje() {
         boolean v = false;
         try {
-           // PrimeFaces.current().executeScript(";limpiarDataListEmpJust();");
+            // PrimeFaces.current().executeScript(";limpiarDataListEmpJust();");
             //PrimeFaces.current().executeScript(";limpiarDataListEmp();");
             //PrimeFaces.current().executeScript(";limpiarDataListVehiculo();");
             setListaEmpleadosActivos(null);
@@ -2486,7 +2493,7 @@ public class SolicitudViajeBeanModel implements Serializable {
     public void setListaCasosIncumplidos(List listaCasosIncumplidos) {
         this.listaCasosIncumplidos = listaCasosIncumplidos;
     }
-    
+
     @PostConstruct
     public void inicializarComponetes() {
         boolean b = false;
@@ -2592,13 +2599,13 @@ public class SolicitudViajeBeanModel implements Serializable {
                             }
                         }
                         if (!enLista) {
-                             Usuario u = usuarioImpl.find(idUsuario);
+                            Usuario u = usuarioImpl.find(idUsuario);
 
-			    newVO.setIdUsuario(idUsuario);
-			    newVO.setUsuario(u.getNombre());
-			    newVO.setEsEmpleado(Constantes.TRUE);
-			    newVO.setGerencia(u.getGerencia().getNombre());
-			    newVO.setEstanciaB(Constantes.TRUE);
+                            newVO.setIdUsuario(idUsuario);
+                            newVO.setUsuario(u.getNombre());
+                            newVO.setEsEmpleado(Constantes.TRUE);
+                            newVO.setGerencia(u.getGerencia().getNombre());
+                            newVO.setEstanciaB(Constantes.TRUE);
                             newVO.setTelefono(u.getTelefono());
                             getListViajeroVO().add(newVO);
                         }
@@ -2625,13 +2632,13 @@ public class SolicitudViajeBeanModel implements Serializable {
                                 count++;
                             }
                             if (!enLista) {
-				SgInvitado nuevoInvitado = sgInvitadoImpl.find(idInvitado);
+                                SgInvitado nuevoInvitado = sgInvitadoImpl.find(idInvitado);
 
-				newVO.setIdInvitado(idInvitado);
-				newVO.setInvitado(nuevoInvitado.getNombre());
-				newVO.setEsEmpleado(Constantes.FALSE);
-				newVO.setEmpresa(nuevoInvitado.getSgEmpresa().getNombre());
-				newVO.setEstanciaB(Constantes.TRUE);
+                                newVO.setIdInvitado(idInvitado);
+                                newVO.setInvitado(nuevoInvitado.getNombre());
+                                newVO.setEsEmpleado(Constantes.FALSE);
+                                newVO.setEmpresa(nuevoInvitado.getSgEmpresa().getNombre());
+                                newVO.setEstanciaB(Constantes.TRUE);
                                 newVO.setTelefono(nuevoInvitado.getTelefono());
 
                                 getListViajeroVO().add(newVO);

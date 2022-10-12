@@ -97,22 +97,27 @@ public class VistoBuenoContabilidad implements Serializable {
     public void vistoBuenoCosto() {
         try {
             if (this.getRequisicionActual() == null) {
+                boolean seleeciono = false;
                 for (Object object : listaRequisiciones) {
                     RequisicionVO o = (RequisicionVO) object;
                     if (o.isSelected()) {
                         if (o.getIdCfdi() > Constantes.CERO || o.getCompania().equals(Constantes.RFC_IHSA_CQ)) {
                             vistoBuenoCostoMth(o);
+                            seleeciono = true;
                         } else {
                             FacesUtilsBean.addErrorMessage("Para revisar la requisicion " + o.getConsecutivo() + " es necesario seleccionar el USO CFDI, en la requisición.");
                         }
                     }
                 }
-                //
-                FacesUtilsBean.addInfoMessage("Se envió al proceso de aprobación . . . ");
-                cambiarRequisicion(0);
-                //
-                String jsMetodo = ";limpiarTodos();";
-                PrimeFaces.current().executeScript(jsMetodo);
+                if (seleeciono) {
+                    //
+                    FacesUtilsBean.addInfoMessage("Se envió al proceso de aprobación . . . ");
+                    cambiarRequisicion(0);
+                    //
+                    String jsMetodo = ";limpiarTodos();";
+                    PrimeFaces.current().executeScript(jsMetodo);
+
+                }
             } else {
                 if (idCfdi > Constantes.CERO || requisicionActual.getCompania().getRfc().equals(Constantes.RFC_IHSA_CQ)) {
                     requisicionVO.setIdCfdi(idCfdi);
