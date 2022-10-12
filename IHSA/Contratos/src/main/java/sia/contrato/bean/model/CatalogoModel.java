@@ -202,9 +202,9 @@ public class CatalogoModel implements Serializable {
         setDescripcion("");
     }
 
-    public boolean eliminarDocto(int id) {
+    public void eliminarDocto(int id) {
         idVo = id;
-        boolean v = pvDocumentoImpl.isUsado(getIdVo());
+        boolean v = pvDocumentoImpl.isUsado(id);
         if (!v) {
             try {
                 pvDocumentoImpl.eliminar(sesion.getUsuarioSesion().getId(), getIdVo());
@@ -214,8 +214,9 @@ public class CatalogoModel implements Serializable {
                 UtilLog4j.log.fatal(e);
             }
             documentos = pvDocumentoImpl.traerDocumento(Constantes.LISTA_TIPO_DOCUMENTO + ", " + Constantes.LISTA_TIPO_IDENTIFICACION);
+        } else {
+            FacesUtils.addInfoMessage("No se puede eliminar el documento, porque ya se uso en el sistema");
         }
-        return v;
     }
 /////////////////////////////////////////////////////////
 
@@ -264,7 +265,7 @@ public class CatalogoModel implements Serializable {
         }
     }
 
-    public boolean eliminarTipo(int id) {
+    public void eliminarTipo(int id) {
         idVo = id;
         boolean v = cvTipoImpl.isUsado(getIdVo());
         if (!v) {
@@ -275,8 +276,9 @@ public class CatalogoModel implements Serializable {
                 v = false;
                 UtilLog4j.log.fatal(e);
             }
+        } else {
+            FacesUtils.addInfoMessage("No se puede eliminar el tipo de contrato, porque ya se uso en el sistema.");
         }
-        return v;
     }
 ////////////////////////////////////////////
 
@@ -327,8 +329,8 @@ public class CatalogoModel implements Serializable {
         PrimeFaces.current().executeScript(";$(dialogoHitoMod).modal('hide');;");
     }
 
-    public boolean eliminarHito(int id) {
-        boolean v = cvHitoImpl.isUsado(getIdVo());
+    public void eliminarHito(int id) {
+        boolean v = cvHitoImpl.isUsado(id);
         if (!v) {
             setIdVo(id);
             cvHitoImpl.eliminar(sesion.getUsuarioSesion().getId(), getIdVo());
@@ -341,14 +343,13 @@ public class CatalogoModel implements Serializable {
         } else {
             FacesUtils.addInfoMessage("No se puede eliminar el hito de contrato, ya se usó para registrar un contrato");
         }
-        return v;
     }
 
     ////////////////////////////////////////////
     public void agregarHijoClasificacion(String desc) {
         setDescripcion(desc);
         setModificar(false);
-        PrimeFaces.current().executeScript(";$(dialogoClasi).modal('show');;");
+        PrimeFaces.current().executeScript(";$(dialogoClasi).modal('show');");
     }
 
     public void traerClasificacion() {
@@ -360,8 +361,7 @@ public class CatalogoModel implements Serializable {
         this.setClasificaciones(this.cvClasificacionImpl.traerClasificacionPrincipal());
     }
 
-    public boolean guardarClasificacion() {
-        boolean v = true;
+    public void guardarClasificacion() {
         try {
             String[] d = descripcion.split("--");
             //
@@ -371,10 +371,8 @@ public class CatalogoModel implements Serializable {
             //
             llenarClasificacion();
         } catch (Exception e) {
-            v = false;
             UtilLog4j.log.fatal(e);
         }
-        return v;
     }
 
     public ClasificacionVo buscarClasificaPorId(int idVo) {

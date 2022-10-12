@@ -1030,7 +1030,7 @@ public class ContratoBean implements Serializable {
         setContratoDocumentoVo(new ContratoDocumentoVo());
         setSubirContrato(false);
         getContratoDocumentoVo().setId(idDoctoConv);
-        PrimeFaces.current().executeScript(";$(adjuntarArchivo).modal('show');;");
+        PrimeFaces.current().executeScript(";$(adjuntarArchivo).modal('show');");
         setContratoDocumentoVo(cvConvenioDocumentoImpl.buscarPorId(contratoDocumentoVo.getId()));
     }
 
@@ -1048,10 +1048,7 @@ public class ContratoBean implements Serializable {
     public void agregarArchivoDocumento(int idDocConv) {
         setContratoDocumentoVo(new ContratoDocumentoVo());
         getContratoDocumentoVo().setId(idDocConv);
-        PrimeFaces.current().executeScript(
-                ";$(dialogoAgregarArchivoDocto"
-                + contratoVo.getId()
-                + ").modal('show');;"
+        PrimeFaces.current().executeScript(";$(dialogoAgregarArchivoDocto).modal('show');"
         );
         setContratoDocumentoVo(cvConvenioDocumentoImpl.buscarPorId(contratoDocumentoVo.getId()));
 

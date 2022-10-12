@@ -178,12 +178,12 @@ public class CatalogoBean implements Serializable {
     }
 
     public void guardarClasificacion() {
-	if (catalogoModel.guardarClasificacion()) {
-	    FacesUtils.addInfoMessage("Se agregó la calsificación de contrato");
-	    limpiar();
-
-	    PrimeFaces.current().executeScript(";$(dialogoClasi).modal('hide');;");
-	}
+//	if (catalogoModel.guardarClasificacion()) {
+//	    FacesUtils.addInfoMessage("Se agregó la calsificación de contrato");
+//	    limpiar();
+//
+//	    PrimeFaces.current().executeScript(";$(dialogoClasi).modal('hide');;");
+//	}
     }
 
     public void modificarClasificacion() {
