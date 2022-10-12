@@ -965,10 +965,7 @@ public class ContratoBean implements Serializable {
 
     public void actualizarDatosGeneralesContrato() {
         actualizarContratoGenerales();
-        PrimeFaces.current().executeScript(";$(dialogoModificarDatosGenerales"
-                + contratoVo.getId()
-                + ").modal('hide');"
-        );
+        PrimeFaces.current().executeScript(";$(dialogoModificarDatosGenerales).modal('hide');");
         setListaGerencia(new ArrayList<>());
         llenarDatosContrato(contratoVo.getId());
     }
@@ -1203,6 +1200,7 @@ public class ContratoBean implements Serializable {
                     proveedorBean.subirArchivo(path.toFile());
                 }
 
+                PrimeFaces.current().ajax().update("frmAdmin:tabViewProv");
             } else if (isSubirContrato()) {
                 documentoAnexo.setNombreBase(fileUpload.getFileName());
                 documentoAnexo.setRuta(getSubDirectorioDocumento());
@@ -1226,6 +1224,8 @@ public class ContratoBean implements Serializable {
                         contratoVo.getAdjuntoVO().getId()
                 );
                 contratoVo.setListaArchivoConvenio(cvConvenioAdjuntoImpl.traerPorConvenio(contratoVo.getId()));
+                //
+                PrimeFaces.current().ajax().update("frmAdmin:tabView");
             } else if (isSubirListaPrecio()) {
                 try {
                     //contratoVo.setListaArticulo(new ArrayList<ConvenioArticuloVo>());
