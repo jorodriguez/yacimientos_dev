@@ -1,9 +1,9 @@
-<?xml version='1.0' encoding='UTF-8' ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:h="http://xmlns.jcp.org/jsf/html"
-      xmlns:f="http://xmlns.jcp.org/jsf/core"
-      xmlns:p="http://primefaces.org/ui">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                template="/WEB-INF/templates/crud.xhtml">
     <p:dialog id="nuevoDialogoSolicitar"
               header="Solicitud de material"
               closable="true"
@@ -13,7 +13,8 @@
               showEffect="fade"
               hideEffect="fade"
               width="900"
-              widgetVar="crearDialogoMaterial">      
+              widgetVar="crearDialogoMaterial"
+              >
         <p:tabView id="tbSol">
             <p:tab title="Solicitar">
                 <h:panelGroup id="panelSolicitud">
@@ -73,35 +74,38 @@
                                                     var="inv" itemLabel="#{inv.articuloNombre}" itemValue="#{inv}"
                                                     converter="#{inventarioConverter}" forceSelection="true" 
                                                     >
-                                        <p:ajax event="itemSelect" listener="#{solicitarMaterialBean.seleccionarArticulo}" update="frmSol:tbSol:tblMat"
-                                                process="@this"/>
+                                        <p:ajax event="itemSelect" listener="#{solicitarMaterialBean.seleccionarArticulo}" 
+                                                update="frmSol:tbSol:tblMat @this"
+                                                process="@this" />
                                     </p:autoComplete>
                                 </td>
                             </tr>
                             <tr>
                                 <td colspan="6">
-                                    <p:dataTable id="tblMat" value="#{solicitarMaterialBean.materiales}" 
-                                                 var="dataM" rowIndexVar="index" showGridlines="true" size="small">
-                                        <p:column style="text-align: left;" >
-                                            <f:facet name="header">Descripción del artículo</f:facet>
-                                            <h:outputText value="#{dataM.articulo}" title="#{dataM.codigoArt}"/>
-                                        </p:column>
-                                        <p:column headerText="Unidad" style="width: 10%;">
-                                            <h:outputText value="#{dataM.unidad}"/>
-                                        </p:column>
-                                        <p:column headerText="Disp." width="60">
-                                            <h:outputText value="#{dataM.disponibles}"/>
-                                        </p:column>
-                                        <p:column headerText="Cant." style="width: 6%">
-                                            <h:inputText value="#{dataM.cantidad}" class="ui-inputfield ui-textentry" size="5"/>
-                                        </p:column>
-                                        <p:column width="35"> 
-                                            <p:commandButton action="#{solicitarMaterialBean.eliminarMaterialSolicitud(dataM.codigoArt)}"
-                                                             process="@this" update="frmSol:tbSol:tblMat">
-                                                <i class="fa fa-trash text-danger"/>
-                                            </p:commandButton>
-                                        </p:column>
-                                    </p:dataTable>
+                                    <p:scrollPanel>
+                                        <p:dataTable id="tblMat" value="#{solicitarMaterialBean.materiales}" 
+                                                     var="dataM" rowIndexVar="index" showGridlines="true" size="small">
+                                            <p:column style="text-align: left;" >
+                                                <f:facet name="header">Descripción del artículo</f:facet>
+                                                <h:outputText value="#{dataM.articulo}" title="#{dataM.codigoArt}"/>
+                                            </p:column>
+                                            <p:column headerText="Unidad" style="width: 10%;">
+                                                <h:outputText value="#{dataM.unidad}"/>
+                                            </p:column>
+                                            <p:column headerText="Disp." width="60">
+                                                <h:outputText value="#{dataM.disponibles}"/>
+                                            </p:column>
+                                            <p:column headerText="Cant." style="width: 6%">
+                                                <h:inputText value="#{dataM.cantidad}" class="form-control" size="5"
+                                                             />
+                                            </p:column>
+                                            <p:column width="35"> 
+                                                <p:commandButton action="#{solicitarMaterialBean.eliminarMaterialSolicitud(dataM.codigoArt)}"
+                                                                 process="@this" update="frmSol:tbSol:tblMat"
+                                                                 icon="fa fa-trash text-danger"/>
+                                            </p:column>
+                                        </p:dataTable>
+                                    </p:scrollPanel>
                                 </td>
                             </tr>
                             <tr style="padding-top: 5%;">
@@ -184,4 +188,4 @@
             </p:tab>
         </p:tabView>
     </p:dialog>
-</html>
+</ui:composition>

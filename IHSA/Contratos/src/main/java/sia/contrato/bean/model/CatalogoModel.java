@@ -115,7 +115,7 @@ public class CatalogoModel implements Serializable {
     }
 
     private void llenarClasificacion() {
-        listaClasificaion = new ArrayList<ClasificacionVo>();
+        listaClasificaion = new ArrayList<>();
         List<ClasificacionVo> c = cvClasificacionImpl.traerClasificaciones();
         for (ClasificacionVo clasificaion1 : c) {
             clasificaion = new ClasificacionVo();

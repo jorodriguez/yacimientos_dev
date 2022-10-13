@@ -179,9 +179,8 @@ public class SolicitarMaterialBean implements Serializable {
 
     public void seleccionarArticulo() {
         try {
-            //articulo = (InventarioVO) autoComplete.getSelectedItem().getValue();
-             InventarioVO invVo = inventarios.stream().filter(inv -> (Objects.equals(inv.getId(), articulo.getId()))).findAny().get();
-            DetalleSolicitudMaterialAlmacenVo ddVo = new DetalleSolicitudMaterialAlmacenVo();            
+            InventarioVO invVo = inventarios.stream().filter(inv -> (Objects.equals(inv.getId(), articulo.getId()))).findAny().get();
+            DetalleSolicitudMaterialAlmacenVo ddVo = new DetalleSolicitudMaterialAlmacenVo();
             ddVo.setArticulo(invVo.getArticuloNombre());
             ddVo.setUnidad(invVo.getArticuloUnidad());
             ddVo.setIdUnidad(invVo.getUnidadId());
@@ -191,6 +190,7 @@ public class SolicitarMaterialBean implements Serializable {
             materiales.add(ddVo);
             //
             limpiarAlmacen(idAlmacen);
+            articulo = new InventarioVO();
         } catch (Exception ex) {
             UtilLog4j.log.error(ex);
         }

@@ -15,7 +15,6 @@ import javax.faces.convert.FacesConverter;
 import javax.inject.Inject;
 import javax.inject.Named;
 import sia.excepciones.SIAException;
-import sia.inventarios.service.ArticuloImpl;
 import sia.inventarios.service.ArticuloRemote;
 import sia.modelo.vo.inventarios.ArticuloVO;
 
@@ -41,7 +40,7 @@ public class ArticuloConverter implements Converter<ArticuloVO> {
                 Logger.getLogger(ArticuloConverter.class.getName()).log(Level.SEVERE, null, ex);
             }
         } else {
-            return null;
+            return new ArticuloVO();
         }
         return null;
     }
