@@ -177,7 +177,7 @@ public class InventarioBean implements Serializable, SaveObserver {
     }
 
     public void buscarInventario() {
-        if (articuloVo.getId() > 0) {
+        if (articuloVo != null && articuloVo.getId() > 0) {
             inventarioVO.setArticuloId(articuloVo.getId());
             inventarioVO.setArticuloNombre(articuloVo.getNombre());
         }
