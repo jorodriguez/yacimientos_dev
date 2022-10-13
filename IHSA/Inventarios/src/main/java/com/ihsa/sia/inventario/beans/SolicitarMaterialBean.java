@@ -158,10 +158,6 @@ public class SolicitarMaterialBean implements Serializable {
         for (AlmacenVO avo : alm) {
             almacenes.add(new SelectItem(avo.getId(), avo.getNombre()));
         }//
-        List<CadenaAprobacionVo> cads = cadenaAprobacionImpl.traerPorSolicita(sesion.getUser().getId(), sesion.getUser().getIdCampo());
-        for (CadenaAprobacionVo avo : cads) {
-            autorizadores.add(new SelectItem(avo.getIdAprueba(), avo.getAprueba()));
-        }
         //
         inventarios = inventarioImpl.inventarioPorCampoYAlmacen(apCampo.getId(), idAlmacen);
 
@@ -253,8 +249,9 @@ public class SolicitarMaterialBean implements Serializable {
                             solicitudMaterialAlmacenVo.setObservacion(observacion);
                             solicitudMaterialAlmacenVo.setMateriales(materiales);
                             invSolicitudMaterialImpl.guardar(solicitudMaterialAlmacenVo, sesion.getUser().getId(), sesion.getUser().getIdCampo());
-                            PrimeFaces.current().executeScript("PF('crearDialogoMaterial').hide()");
                             llenar();
+                            PrimeFaces.current().executeScript("PF('crearDialogoMaterial').hide()");
+
                         } else {
                             FacesMessage facesMessage = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Materiales deben tener cantidad y debe ser menor o igual a lo disponible en almacén.", null);
                             FacesContext.getCurrentInstance().addMessage(null, facesMessage);

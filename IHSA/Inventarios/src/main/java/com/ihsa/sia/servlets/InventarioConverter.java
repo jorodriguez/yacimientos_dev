@@ -31,9 +31,9 @@ public class InventarioConverter implements Converter<InventarioVO> {
 
     @Override
     public InventarioVO getAsObject(FacesContext context, UIComponent component, String value) {
-        if (value != null && value.trim().length() > 0) {
+        if (value != null && value.trim().length() > 0 && !value.trim().equals("null")) {
             try {
-                return articuloImpl.buscar(Integer.parseInt(value));
+                return articuloImpl.buscar(Integer.valueOf(value));
             } catch (NumberFormatException e) {
                 throw new ConverterException(new FacesMessage(FacesMessage.SEVERITY_ERROR, "Conversion Error", "Inventario no encontrado."));
             } catch (SIAException ex) {

@@ -1,12 +1,11 @@
 package com.ihsa.sia.inventario.beans.inventario;
 
-import com.ihsa.sia.commons.AbstractBean;
 import com.ihsa.sia.commons.Messages;
 import com.ihsa.sia.commons.SessionBean;
 import com.ihsa.sia.inventario.beans.FacesUtilsBean;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.MissingResourceException;
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
 import javax.inject.Named;
@@ -15,9 +14,7 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.validator.ValidatorException;
 import javax.inject.Inject;
-import org.primefaces.event.SelectEvent;
 import sia.inventarios.service.AlmacenRemote;
-import sia.inventarios.service.ArticuloImpl;
 import sia.inventarios.service.ArticuloRemote;
 import sia.inventarios.service.InventarioImpl;
 import sia.modelo.vo.inventarios.AlmacenVO;
@@ -63,9 +60,9 @@ public class RevisionBean implements Serializable {
         return articuloImpl.buscarPorPalabras(cadena, principal.getUser().getCampo());
     }
 
-    public void buscarInventario(SelectEvent<String> event) {
+    public void buscarInventario() {
         try {
-         //   event.getObject();
+            //   event.getObject();
             inventario = servicioInventario.invetarioPorArticulo(getArticulo().getId(), getAlmacenId());
             if (inventario != null) {
                 notas = Messages.getString("sia.inventarios.revision.notas");
@@ -73,9 +70,9 @@ public class RevisionBean implements Serializable {
             } else {
                 FacesUtilsBean.addInfoMessage(Messages.getString("sia.inventarios.revision.noEncontrado"));
             }
-        } catch (Exception ex) {
+        } catch (MissingResourceException ex) {
+            FacesUtilsBean.addInfoMessage(Messages.getString("sia.inventarios.revision.noEncontrado"));
             UtilLog4j.log.error(ex);
-            System.out.println("EXc:" + ex);
         }
     }
 

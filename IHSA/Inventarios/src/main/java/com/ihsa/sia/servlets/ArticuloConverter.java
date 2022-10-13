@@ -31,16 +31,16 @@ public class ArticuloConverter implements Converter<ArticuloVO> {
 
     @Override
     public ArticuloVO getAsObject(FacesContext context, UIComponent component, String value) {
-        if (value != null && value.trim().length() > 0) {
+        if (value != null && value.trim().length() > 0 && !value.trim().equals("null")) {
             try {
-                return articuloImpl.buscar(Integer.parseInt(value));
+                return articuloImpl.buscar(Integer.valueOf(value));
             } catch (NumberFormatException e) {
                 throw new ConverterException(new FacesMessage(FacesMessage.SEVERITY_ERROR, "Conversion Error", "Artículo no encontrado."));
             } catch (SIAException ex) {
                 Logger.getLogger(ArticuloConverter.class.getName()).log(Level.SEVERE, null, ex);
             }
         } else {
-            return new ArticuloVO();
+            return null;
         }
         return null;
     }
