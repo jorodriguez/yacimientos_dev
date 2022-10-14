@@ -180,7 +180,7 @@ public class SolicitarMaterialBean implements Serializable {
             ddVo.setArticulo(invVo.getArticuloNombre());
             ddVo.setUnidad(invVo.getArticuloUnidad());
             ddVo.setIdUnidad(invVo.getUnidadId());
-            ddVo.setCodigoArt(invVo.getCodigo());
+            ddVo.setCodigoArt(invVo.getCodigoInt());
             ddVo.setDisponibles(invVo.getTotalUnidades());
             //
             materiales.add(ddVo);
