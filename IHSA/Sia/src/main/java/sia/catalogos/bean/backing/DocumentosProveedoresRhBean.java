@@ -13,9 +13,6 @@ import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-
-
-
 import lombok.Getter;
 import lombok.Setter;
 import org.primefaces.PrimeFaces;
@@ -37,7 +34,7 @@ import sia.sistema.bean.support.FacesUtils;
  */
 @Named(value = "documentosProveedoresRhBean")
 @ViewScoped
-public class DocumentosProveedoresRhBean implements Serializable{
+public class DocumentosProveedoresRhBean implements Serializable {
 
     /**
      * Creates a new instance of DocumentosProveedoresRhBean
@@ -49,7 +46,7 @@ public class DocumentosProveedoresRhBean implements Serializable{
     private Sesion sesion;
 
     @Inject
-    RhConvenioDocumentosImpl  rhConvenioDocumentosLocal;
+    RhConvenioDocumentosImpl rhConvenioDocumentosLocal;
     @Inject
     ContactoProveedorImpl contactoProveedorImpl;
     @Inject
@@ -82,6 +79,9 @@ public class DocumentosProveedoresRhBean implements Serializable{
     @Getter
     @Setter
     private List<ContactoProveedorVO> listaCorreo;
+    @Getter
+    @Setter
+    private ContactoProveedorVO contactosProveedorVo;
 
     @PostConstruct
     public void init() {
@@ -94,12 +94,10 @@ public class DocumentosProveedoresRhBean implements Serializable{
         contactosProveedor = new ArrayList<ContactoProveedorVO>();
         proveedoreVo = new ProveedorVo();
         contratoVo = new ContratoVO();
+        contactosProveedorVo = new ContactoProveedorVO();
     }
 
-    public void verContratos() {
-        int idP = Integer.parseInt(FacesUtils.getRequestParameter("proveedorId"));
-        String rfc = (FacesUtils.getRequestParameter("proveedorRfc"));
-        String prv = (FacesUtils.getRequestParameter("proveedorNombre"));
+    public void verContratos(int idP, String rfc, String prv) {
         proveedoreVo = new ProveedorVo();
         proveedoreVo.setIdProveedor(idP);
         proveedoreVo.setRfc(rfc);
@@ -111,9 +109,8 @@ public class DocumentosProveedoresRhBean implements Serializable{
         //
         PrimeFaces.current().executeScript("$(dialogoContratosProveedor).modal('show');");
     }
-    
-    public void verDoctosPorContrato(){
-        int indice = Integer.parseInt(FacesUtils.getRequestParameter("indice"));
+
+    public void verDoctosPorContrato(int indice) {
         //
         contratoVo = new ContratoVO();
         contratoVo = contratosProveedor.get(indice);
@@ -122,8 +119,7 @@ public class DocumentosProveedoresRhBean implements Serializable{
         PrimeFaces.current().executeScript("$(dialogoDoctosProveedor).modal('show');");
     }
 
-    public void inicioEnviarObservacion() {
-        int idDoctoRh = Integer.parseInt(FacesUtils.getRequestParameter("doctoRhId"));
+    public void inicioEnviarObservacion(int idDoctoRh) {
         doctosRhVo = new RhConvenioDocumentoVo();
         doctosRhVo = rhConvenioDocumentosLocal.buscarPorId(idDoctoRh);
         //        
@@ -151,8 +147,7 @@ public class DocumentosProveedoresRhBean implements Serializable{
         return correo;
     }
 
-    public void quitarUsuarioCorreo() {
-        int ind = Integer.parseInt(FacesUtils.getRequestParameter("indice"));
+    public void quitarUsuarioCorreo(int ind) {
         listaCorreo.remove(ind);
     }
 

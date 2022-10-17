@@ -1865,7 +1865,7 @@ public class UsuarioBean implements Serializable {
             return "";
         } else {
             llenarUsuarioVOAlta(buscarPorNombre(getU()));
-            if (getUsuarioVOAlta() != null) {
+            if (getUsuarioVOAlta() != null) {   
                 if (!rhUsuarioGerenciaImpl.verficiarProcesoBaja(usuarioVOAlta.getId())) {
                     setIdGerencia(getUsuarioVOAlta().getIdGerencia());
                     setIdCampo(getUsuarioVOAlta().getIdCampo());
@@ -2208,9 +2208,10 @@ public class UsuarioBean implements Serializable {
     }
 
     public void llenarDatosUsuario() {
-        setUsuarioVOAlta(servicioUsuario.findById(getU()));
+        setUsuarioVOAlta(servicioUsuario.findByName(getU()));
         llenarUsuarioVOAlta(usuarioVOAlta);
         setIdPuesto(getUsuarioVOAlta().getIdPuesto());
+        cambiarValorCampoNuevoIngreso();
         setU("");
     }
 
@@ -2221,7 +2222,7 @@ public class UsuarioBean implements Serializable {
             setIdCampo(-1);
             setIdPuesto(-1);
             setU("");
-            FacesUtils.addErrorMessage("Se modificaron los datos el usuario");
+            FacesUtils.addInfoMessage("Se modificaron los datos el usuario");
         } else {
             FacesUtils.addErrorMessage("Ocurrio una excepción");
         }
