@@ -595,13 +595,29 @@ public class AdministrarViajeBeanModel implements Serializable {
         }
 
     }
- public void cargarConductoresSGL() {
+
+    public void cargarConductoresSGL() {
         if (isEmpleadosSgl()) {
             llenarListaEmpleadosSGL(Constantes.FALSE);
         } else {
             llenarListaEmpleadosSGL(Constantes.TRUE);
         }
     }
+
+    public void cargarListaVehiculos() {
+        if (getIdOficinaVehiculo() != -1) {
+            tdosLosVehiculosByOficina();
+        }
+
+    }
+
+    public void cargarResponsableVehiculo() {
+        if (getIdVehiculo() != -1) {
+            traerResponsableVehiculo();
+        }
+
+    }
+
     public boolean crearViaje() throws ParseException {
 
         // SimpleDateFormat tiempo = new SimpleDateFormat("h:mma");
@@ -646,14 +662,17 @@ public class AdministrarViajeBeanModel implements Serializable {
                     if (getViajeVO().getIdRuta() < 1) {
                         FacesUtils.addErrorMessage("Favor de selecionar un destino");
                     } else {
+                        UsuarioVO uRes = usuarioImpl.findByName(viajeVO.getIdResponsable());
                         SgViaje v = sgViajeImpl.guardarViajeEmergenteVO(
                                 sesion.getUsuario().getId(), null, getViajeVO().getFechaProgramada(),
-                                Constantes.CERO, Constantes.CERO, getIdVehiculo(), getViajeVO().getIdResponsable(),
+                                Constantes.CERO, Constantes.CERO, getIdVehiculo(), uRes.getId(),
                                 getViajeVO().getIdRuta(), getViajeVO().getIdOficinaOrigen(), tipoViaje, null, isRedondoSencillo(),
                                 Constantes.ESTATUS_VIAJE_CREADO, Constantes.BOOLEAN_TRUE, (getViajeVO().isConInter() ? Constantes.BOOLEAN_TRUE : Constantes.BOOLEAN_FALSE));
                         iniciarConversasionCrearViaje();
                         cerrar = true;
                         FacesUtils.addInfoMessage("El viaje " + v.getCodigo() + " se a creado con exito");
+                        String metodo = ";cerrarDialogoCrearViaje();";
+                        PrimeFaces.current().executeScript(metodo);
 
                     }
 
@@ -1188,8 +1207,8 @@ public class AdministrarViajeBeanModel implements Serializable {
                             Constantes.VEHICULO_EMPRESA, getViajeVO().getIdRuta(), (isRedondoSencillo() ? Constantes.redondo : Constantes.sencillo), getViajeVO().isConInter());
                     iniciarConversasionCrearViaje();
                     FacesUtils.addInfoMessage("El viaje " + getViajeVO().getCodigo() + " se actualizo con exito");
-            String metodo = ";cerrarDialogoCrearViaje();";
-            PrimeFaces.current().executeScript(metodo);
+                    String metodo = ";cerrarDialogoCrearViaje();";
+                    PrimeFaces.current().executeScript(metodo);
                 }
             }
 
