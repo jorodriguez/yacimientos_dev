@@ -5,81 +5,118 @@
                 xmlns:h="http://xmlns.jcp.org/jsf/html"
                 xmlns:f="http://xmlns.jcp.org/jsf/core"
                 xmlns:my="http://www.mytags.com/schema/mytags">
-    <!-- /.row -->    	
-    <h:form id="frmMenuPrincipal"> 
-        <div class="row">			    
-            <ui:repeat value="#{sesion.listaModulos}" var="modulo">
-                <div class="col-3">
-                    <div class="small-box bg-info">
+
+    <script src="#{request.contextPath}/recursos/js/validacionSIA.js"></script>
+    <link href="#{request.contextPath}/recursos/css/nucleo-icons.css" rel="stylesheet" />
+    <link href="#{request.contextPath}/recursos/css/nucleo-svg.css" rel="stylesheet" />
+    <!-- Font Awesome Icons -->
+    <script src="https://kit.fontawesome.com/42d5adcbca.js" crossorigin="anonymous"></script>
+    <!-- Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet"/>
+    <!-- CSS Files -->
+    <link id="pagestyle" href="#{request.contextPath}/recursos/css/material-dashboard.css?v=3.0.4" rel="stylesheet" />
+
+    <!-- /.row -->    
+    <main class="g-sidenav-show  bg-gray-200">
+        <h:form id="frmMenuPrincipal" > 
+            <div class="row mt-6">
+                <ui:repeat value="#{sesion.listaModulos}" var="modulo">
+                    <div class="col-xl-3 col-sm-6">
                         <ui:fragment rendered="#{modulo.ruta == null and modulo.rutaServlet != null}">
                             <h:outputLink value="#{sesion.sustituirArrancarModulo(modulo.rutaServlet)}"
                                           title="#{modulo.toolTip}"  
-                                          onmouseover="window.status = ' ';return true">
-                                <my:infobox nombreIcono ="#{modulo.icono}"
-                                            numPendientes="#{modulo.pendiente}"
-                                            nombreModulo="#{modulo.nombre}"/>
+                                          onmouseover="window.status = ' '; return true">
+                                <div class="card">
+                                    <div class="card-header p-3 pt-2">
+                                        <div class="icon icon-lg icon-shape bg-gradient-info shadow-info text-center border-radius-xl mt-n4 position-absolute">
+                                            <i class="#{modulo.icono} opacity-10"></i>
+                                        </div>
+                                        <div class="text-end pt-1">
+                                            <p class="text-sm mb-0 text-capitalize">#{modulo.nombre}</p>
+                                            <h4 class="mb-0">#{modulo.pendiente}</h4>
+                                        </div>
+                                    </div>
+                                    <hr class="dark horizontal my-0"/>
+                                    <div class="card-footer p-3">
+                                        <p class="mb-0"><span class="text-success text-sm font-weight-bolder">Ir al Módulo</span></p>
+                                    </div>
+                                </div>
                             </h:outputLink>
                         </ui:fragment>
-
                         <ui:fragment rendered="#{modulo.ruta != null and modulo.rutaServlet == null}">
                             <p:commandLink action="#{sesion.sustituirArrancarModulo(modulo.ruta)}"
                                            actionListener="#{usuarioBean.agregarUsuario}"
                                            rendered="#{modulo.ruta != null and modulo.rutaServlet == null}">
-                                <my:infoboxNoModulo nombreIcono ="#{modulo.icono}"
-                                                    numPendientes="#{modulo.pendiente}"
-                                                    nombreModulo="#{modulo.nombre}"/>
+                                <div class="card">
+                                    <div class="card-header p-3 pt-2">
+                                        <div class="icon icon-lg icon-shape bg-gradient-info shadow-info text-center border-radius-xl mt-n4 position-absolute">
+                                            <i class="#{modulo.icono} opacity-10"></i>
+                                        </div>
+                                        <div class="text-end pt-1">
+                                            <p class="text-sm mb-0 text-capitalize">#{modulo.nombre}</p>
+                                            <h4 class="mb-0">#{modulo.pendiente}</h4>
+                                        </div>
+                                    </div>
+                                    <hr class="dark horizontal my-0"/>
+                                    <div class="card-footer p-3">
+                                        <p class="mb-0"><span class="text-success text-sm font-weight-bolder">Ir al Módulo</span></p>
+                                    </div>
+                                </div>
                             </p:commandLink>
                         </ui:fragment>
                     </div>
-                </div>
-            </ui:repeat>
-        </div>
-    </h:form>
-    <div class="col-12 col-sm-12">
-        <div class="card panel-default">
-            <div class="card-header">
-                <h:outputLabel title="#{msgs['comunicacion.clic.aqui.para']} #{msgs['comunicacion.ir.inicio']}" 
-                               class="text-primary">
-                    <h3><i class="fa fa-bullhorn fa-fw"></i> Comunicados</h3>
-                </h:outputLabel>
+                </ui:repeat>
             </div>
-            <div class="card-body">
-                <ul >
-                    <ui:repeat value="#{noticiaBean.listaNoticias}" var="data" varStatus="varStatus">
-                        <li class="nav-item">
-                            <div class="chat-body">
-                                <div class="header">
-                                    <strong class="primary-font">
-                                        <h:outputText class="text-primary" value="#{data['usuarioNombre']}"/>
-                                    </strong>
-                                    <!--<p>-->
-                                    <small class="pull-right text-muted">
-                                        <i class="fa fa-clock-o fa-fw"></i>
-                                        <h:outputText value="#{data['fechaGenero']}">
-                                            <f:convertDateTime dateStyle="medium" type="date"/>
-                                        </h:outputText> - 
-                                        <h:outputText value="#{data['horaGenero']}">
-                                            <f:convertDateTime pattern="h:mm a" 
-                                                               timeStyle="default" 
-                                                               type="time"/>
-                                        </h:outputText>
-                                    </small>
-                                    <!--</p>-->
-                                    <br/>
+        </h:form>
+        <h:form>
+            <div class="row">
+                <h3>Trabajo pendiente</h3>
+            </div>
+        </h:form>
+        <h:form>
+            <div class="row">
+                <ui:repeat value="#{sesion.listaModulos}" var="modulo">
+                    <ui:fragment rendered="${modulo.ruta == null and modulo.rutaServlet != null and modulo.mapOpcion.size() gt 0}">
+                        <div class="col-xl-3 col-sm-6">
+                            <div class="card">
+                                <div class="card-header p-3 pt-2">
+                                    <h6 class="">#{modulo.nombre}</h6>
                                 </div>
-                                <!--<div class="timeline-body">-->
-                                <p>
-                                    <h:outputLabel value="#{data['titulo']}" />
-                                    <h:outputText value="#{data['mensaje']}" escape="false"/>                                       
-                                    <h:outputText value="#{data['mensajeAutomatico']}" escape="false"/>
-                                </p>
-                                <!--</div>-->
+                                <div class="card-body">
+                                    <ui:repeat value="#{modulo.mapOpcion.entrySet().toArray()}" var="entry"
+                                               >
+                                        <lu class="px-2 py-3 ms-sm-n4 ms-n5">
+                                            <h:outputLabel value="#{entry.key}" 
+                                                           style="color: #{sesion.usuario.apCampo.nombre eq entry.key ? '#006666' : ''}" />
+                                            <ui:repeat value="#{modulo.mapOpcion.get(entry.key)}" var="opc">
+                                                <li >
+                                                    <h:outputLink value="#{sesion.sustituirArrancarModuloPorCampo(modulo.rutaServlet, opc.idCampo, opc.pagina )}"
+                                                                  title="#{modulo.toolTip}"  
+                                                                  onmouseover="window.status = ' ';return true"
+                                                                  rendered="#{opc.total gt 0}">
+                                                        <strong> #{opc.nombre} <i class="badge badge-success" >#{opc.total}</i></strong>
+                                                    </h:outputLink>
+                                                </li>
+                                            </ui:repeat>
+                                        </lu>
+                                    </ui:repeat>
+                                </div>
                             </div>
-                        </li>
-                    </ui:repeat>
-                </ul>
+                        </div>
+                    </ui:fragment>
+                </ui:repeat>
             </div>
-        </div>
-    </div>
+        </h:form>
+    </main>
     <!--</div>-->
+
+
+    <!--   Core JS Files   -->
+    <script src="#{request.contextPath}/js/popper.min.js"></script>
+    <!--script src="{request.contextPath}/js/bootstrap.min.js"></script-->
+    <script src="#{request.contextPath}/js/perfect-scrollbar.min.js"></script>
+    <script src="#{request.contextPath}/js/smooth-scrollbar.min.js"></script>
+
+    <!-- Control Center for Material Dashboard: parallax effects, scripts for the example pages etc -->
+    <script src="#{request.contextPath}/js/material-dashboard.min.js?v=3.0.4"></script>
 </ui:composition>
