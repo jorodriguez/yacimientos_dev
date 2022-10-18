@@ -283,6 +283,7 @@ public class EstanciaBeanModel implements Serializable {
             setIdGerencia(Constantes.GERENCIA_ID_SERVICIOS_GENERALES);
             FacesUtils.addErrorMessage("No tiene gerencia registrada, su solicitud se enviará a Servicios Generales");
         }
+        trearSolicitudEstanciaParaRegistro();
     }
 
     public void mostrarPopupDetalleSolicitudEstancia(SgSolicitudEstanciaVo solEst) {

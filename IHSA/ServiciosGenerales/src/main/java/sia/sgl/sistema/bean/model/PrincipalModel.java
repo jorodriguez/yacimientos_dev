@@ -11,7 +11,6 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.faces.bean.ManagedProperty;
 import javax.faces.view.ViewScoped;
 
 import sia.constantes.Constantes;

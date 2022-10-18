@@ -36,6 +36,7 @@ import javax.faces.model.SelectItem;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.naming.NamingException;
 import javax.servlet.http.HttpServletRequest;
 import lombok.Getter;
 import lombok.Setter;
@@ -54,6 +55,8 @@ import sia.excepciones.SIAException;
 import sia.inventarios.service.ArticuloRemote;
 import sia.inventarios.service.InvArticuloCampoImpl;
 import sia.inventarios.service.InventarioImpl;
+import sia.modelo.CoComentario;
+import sia.modelo.CoNoticia;
 import sia.modelo.Gerencia;
 import sia.modelo.InvArticulo;
 import sia.modelo.OcActividadPetrolera;
@@ -71,6 +74,8 @@ import sia.modelo.Requisicion;
 import sia.modelo.RequisicionDetalle;
 import sia.modelo.SiAdjunto;
 import sia.modelo.Usuario;
+import sia.modelo.comunicacion.ComparteCon;
+import sia.modelo.comunicacion.vo.NoticiaAdjuntoVO;
 import sia.modelo.comunicacion.vo.NoticiaVO;
 import sia.modelo.gerencia.vo.GerenciaVo;
 import sia.modelo.proyectoOT.vo.ProyectoOtVo;
@@ -90,6 +95,7 @@ import sia.notificaciones.requisicion.impl.NotificacionRequisicionImpl;
 import sia.servicios.catalogos.impl.GerenciaImpl;
 import sia.servicios.catalogos.impl.ProyectoOtImpl;
 import sia.servicios.catalogos.impl.UsuarioImpl;
+import sia.servicios.comunicacion.impl.CoNoticiaImpl;
 import sia.servicios.orden.impl.OcUnidadCostoImpl;
 import sia.servicios.requisicion.impl.OcActividadPetroleraImpl;
 import sia.servicios.requisicion.impl.OcGerenciaProyectoImpl;
@@ -183,15 +189,11 @@ public class RequisicionBean implements Serializable {
     private ProveedorAlmacenDocumentos proveedorAlmacenDocumentos;
     @Inject
     private ReRequisicionEtsImpl servicioReRequisicion;
-
     //
     @Inject
-    private MonedaBean monedaBean;
-
+    CoNoticiaImpl coNoticiaImpl;
     @Inject
     private UsuarioBean usuarioBean;
-    @Inject
-    private NotaRequisicionBean notaRequisicionBean;
     @Inject
     private EstatusBean estatusBean;
     @Inject
@@ -204,6 +206,9 @@ public class RequisicionBean implements Serializable {
     private GerenciaBean gerenciaBean;
     @Inject
     private OrdenBean ordenBean;
+    @Getter
+    @Setter
+    private String textoNoticia;
 
     @Getter
     @Setter
@@ -534,10 +539,25 @@ public class RequisicionBean implements Serializable {
     @Getter
     @Setter
     private List<ReRequisicionEts> listaEts;
-
+    @Getter
+    @Setter
+    private List<ReRequisicionEts> etsPorRequisicionEspera;
     @Getter
     @Setter
     private SiAdjunto etsActualAdjunto;
+    @Getter
+    @Setter
+    private List<NoticiaVO> notasReq;
+    @Getter
+    @Setter
+    private CoComentario comentarioActual;
+    @Getter
+    @Setter
+    private NoticiaVO noticiaActual;
+
+    @Getter
+    @Setter
+    private List<NoticiaAdjuntoVO> noticiaAdjuntos;
 
     /**
      * Creates a new instance of ManagedBeanRequisiciones
@@ -547,6 +567,7 @@ public class RequisicionBean implements Serializable {
 
     @PostConstruct
     public void inicializar() {
+        notasReq = new ArrayList<>();
         requisicionActual = new Requisicion();
         listaAyuda = new ArrayList<>();
         esperaVO = new RequisicionEsperaVO();
@@ -559,6 +580,7 @@ public class RequisicionBean implements Serializable {
         fechaFin = LocalDate.now();
         fechaInicio = fechaFin.minusDays(30);
         listaEts = new ArrayList<>();
+        etsPorRequisicionEspera = new ArrayList<>();
         // Recibir parametro
         Integer parametro = Env.getContextAsInt(usuarioBean.getCtx(), "REQ_ID");
         if (parametro > 0) {
@@ -1036,11 +1058,14 @@ public class RequisicionBean implements Serializable {
             requisicionActual = requisicionServicioRemoto.find(id);
             crearItem = true;
             //.println("Selección: " + requisicionActual.getCompania().getNombre());
-            notaRequisicionBean.setFiltrar(true);
+            traerNoticia();
             itemsActualizar();
             rechazosRequisicion();
             if (Constantes.REQUISICION_EN_ESPERA == requisicionActual.getEstatus().getId()) {
                 enEsperaDet();
+                etsPorRequisicionEspera = servicioReRequisicion.traerAdjuntosPorRequisicionVisibleTipo(
+                        getRequisicionActual().getId(),
+                        false, "ESPERA");
             }
             listaEts = servicioReRequisicion.traerAdjuntosPorRequisicion(requisicionActual.getId());
             //
@@ -1072,45 +1097,158 @@ public class RequisicionBean implements Serializable {
         PrimeFaces.current().executeScript("$(dialogoMostrarInventario).modal('show');");
     }
 
-    public DataModel getTraerNoticia() {
+    public void traerNoticia() {
         try {
-            if (usuarioBean.getUsuarioConectado() != null) {
-                if (getRequisicionActual() != null) {
-                    if (notaRequisicionBean.isFiltrar()) {
-                        return notaRequisicionBean.traerNoticiaPorRequisicion(getRequisicionActual().getId());
-                    }
-                } else {
-                    if (notaRequisicionBean.isFiltrar()) {
-                        return notaRequisicionBean.traerNoticiaPorUsuario(usuarioBean.getUsuarioConectado().getId());
-                    }
-                }
-            }
-            return null;
+            notasReq = ocRequisicionCoNoticiaImpl.traerNoticiaPorRequisicion(requisicionActual.getId(), Boolean.TRUE);
         } catch (Exception e) {
             LOGGER.fatal(this, "getTraerNoticia  . . ." + e.getMessage(), e);
-            return null;
         }
     }
 
-    public void comentarNoticia() {
-        //
-        int noti = getTraerNoticia().getRowIndex();
-        //
+    public void eliminarNoticia(int idN) {
         try {
-            List<NoticiaVO> ln = (List<NoticiaVO>) getTraerNoticia().getWrappedData();
-            ln.get(noti).setComentar(true);
-            //noticias = null; // refrescar la lista
+            coNoticiaImpl.eliminarNoticia(idN, usuarioBean.getUsuarioConectado().getId());
+            UtilLog4j.log.fatal(this, "Noticia eliminado");
+            traerNoticia();
         } catch (Exception e) {
-            LOGGER.fatal(this, "Exception en comentar noticia " + e.getMessage(), e);
+            UtilLog4j.log.fatal(this, "Exception en elimnar cmentario " + e.getMessage());
         }
     }
 
-    public void nuevoComentario(int idN, int campo) {
-        if (!notaRequisicionBean.getComentario().getValue().toString().trim().equals("")) {
-            notaRequisicionBean.setIdNoticiaActiva(idN);
-            notaRequisicionBean.agregarComentario(notaRequisicionBean.getIdNoticiaActiva(), campo);
+    public void eliminarArchivo(int idAr, int idNotAdj, int idN) {
+        if (!quitarArchivo(idN, idAr, idNotAdj, usuarioBean.getUsuarioConectado().getId())) {
+            FacesUtilsBean.addErrorMessage("Existió un error al eliminar el arvhivo..");
         } else {
-            FacesUtilsBean.addInfoMessage("Agregue un comentario a la noticia .  .  .  . ");
+            coNoticiaImpl.getAdjuntosNoticia(idN, usuarioBean.getUsuarioConectado().getId());
+            FacesUtilsBean.addErrorMessage("Se eliminó correctamente el archivo...");
+        }
+        traerNoticia();
+    }
+
+    public void eliminarComentario(int idCom) {
+        try {
+            UtilLog4j.log.info(this, "idComentario " + idCom);
+            coNoticiaImpl.eliminarComentario(idCom, usuarioBean.getUsuarioConectado().getId());
+            UtilLog4j.log.info(this, "Comentario eliminado");
+            traerNoticia();
+        } catch (Exception e) {
+            UtilLog4j.log.fatal(this, "Exception en elimnar cmentario " + e.getMessage(), e);
+        }
+    }
+
+    public void mostrarPopupModificarComentario(int idCom) {
+        setComentarioActual(coNoticiaImpl.buscarComentario(idCom));
+    }
+
+    public void modificarComentario() {
+        if (!this.getComentarioActual().getMensaje().equals("")) {
+            coNoticiaImpl.editComentario(comentarioActual, usuarioBean.getUsuarioConectado().getId());
+            PrimeFaces.current().executeScript("PF('dlgComentar').hide()");
+        } else {
+            FacesUtilsBean.addErrorMessage("Por favor escribe el comentario..");
+        }
+        traerNoticia();
+    }
+
+    public boolean quitarArchivo(Integer idNoticia, Integer idArchivo, Integer idRelacion, String idUsuario) {
+        SiAdjunto adjunto = servicioSiAdjuntoImpl.find(idArchivo);
+        try {
+            UtilLog4j.log.info(this, "Entro a eliminar");
+            coNoticiaImpl.deleteArchivo(adjunto, idRelacion, idUsuario);
+            UtilLog4j.log.info(this, "entrando a eliminar el archivo fisico");
+            return true;
+        } catch (Exception e) {
+            UtilLog4j.log.info(this, "Excepcion en quitar archivo :" + e.getMessage());
+            return false;
+        }
+    }
+
+    public void modificarNoticia() {
+        if (!this.getNoticiaActual().getMensajeAutomatico().equals("")) {
+            CoNoticia noti = coNoticiaImpl.find(noticiaActual.getId());
+            noti.setMensajeAutomatico(noticiaActual.getMensajeAutomatico());
+            coNoticiaImpl.editNoticia(noti, usuarioBean.getUsuarioConectado().getId());
+            traerNoticia();
+        } else {
+            FacesUtilsBean.addErrorMessage("Por favor escribe la noticia..");
+        }
+    }
+
+    public void mostrarPopupSubirArchivo(int idN) {
+        noticiaActual = coNoticiaImpl.traerNoticia(idN);
+        PrimeFaces.current().executeScript("PF('dlgSubArhNotReq').show()");
+        UtilLog4j.log.info(this, "idNOticia" + idN);
+    }
+
+    private String traerDirectorio(int idNoticia) {
+        return "Comunicacion/Noticia/" + idNoticia;
+    }
+
+    public void subirArchivo(FileUploadEvent event) throws NamingException {
+        UtilLog4j.log.info(this, "subirArchivo");
+        boolean v = false;
+
+        ValidadorNombreArchivo validadorNombreArchivo = new ValidadorNombreArchivo();
+        AlmacenDocumentos almacenDocumentos
+                = proveedorAlmacenDocumentos.getAlmacenDocumentos();
+
+        try {
+            fileInfo = event.getFile();
+
+            boolean addArchivo = validadorNombreArchivo.isNombreValido(fileInfo.getFileName());
+
+            if (addArchivo) {
+                DocumentoAnexo documentoAnexo = new DocumentoAnexo(fileInfo.getContent());
+                documentoAnexo.setNombreBase(fileInfo.getFileName());
+                documentoAnexo.setTipoMime(fileInfo.getContentType());
+                documentoAnexo.setRuta(traerDirectorio(noticiaActual.getId()));
+                almacenDocumentos.guardarDocumento(documentoAnexo);
+
+                coNoticiaImpl.addArchivo(
+                        documentoAnexo.getNombreBase(),
+                        documentoAnexo.getTipoMime(),
+                        documentoAnexo.getTamanio(),
+                        noticiaActual.getId(),
+                        usuarioBean.getUsuarioConectado().getId()
+                );
+
+            } else {
+                FacesUtilsBean.addInfoMessage(new StringBuilder()
+                        .append("No se permiten los siguientes caracteres especiales en el nombre del Archivo: ")
+                        .append(validadorNombreArchivo.getCaracteresNoValidos())
+                        .toString());
+            }
+
+            fileInfo.delete();
+            if (v == false) {
+                FacesUtilsBean.addErrorMessage("Ocurrio una excepción, favor de comunicar a soportesia@ihsa.mx");
+            }
+            traerNoticia();
+            PrimeFaces.current().executeScript("PF('dlgSubArhNotReq').hide();");
+        } catch (IOException | SIAException e) {
+            LOGGER.fatal(this, "+ + + ERROR + + +", e);
+            FacesUtilsBean.addErrorMessage("Ocurrió un problema al cargar el archivo, por favor contacte al equipo de soporte SIA (soportesia@ihsa.mx)");
+        }
+    }
+
+    public void mostrarPopupModificarNoticia(int idN) {
+        setNoticiaActual(coNoticiaImpl.traerNoticia(idN));
+        PrimeFaces.current().executeScript("PF('dlgNoticiaReq').show()");
+    }
+
+    public void nuevoComentario(int idN, int campo, String coment) {
+        if (!coment.trim().equals("")) {
+            coNoticiaImpl.nuevoComentario(
+                    idN, usuarioBean.getUsuarioConectado().getId(),
+                    coment,
+                    false,
+                    false,
+                    campo,
+                    Constantes.MODULO_REQUISICION
+            );
+            traerNoticia();
+        } else {
+            FacesUtilsBean.addErrorMessage("Agregue un comentario a la noticia .  .  .  . ");
         }
     }
 
@@ -1178,7 +1316,8 @@ public class RequisicionBean implements Serializable {
             if (requisicionServicioRemoto.crearRequisicionDesdeOtra(usuarioBean.getUsuarioConectado().getId(), requisicionVO)) {
                 requisicionVO = null;
                 setCodigo("");
-
+                llenarRequisiciones();
+                contarPendiente();
                 PrimeFaces.current().executeScript(";cerrarNRDO();");
             } else {
                 PrimeFaces.current().executeScript(";errorNRDO();");
@@ -1336,8 +1475,74 @@ public class RequisicionBean implements Serializable {
         getListaAprueban();
     }
 
+    /*
+    }
+
+function validaRequisicion(forma) {
+    var e = 0;
+    var tipo = jQuery("input[name$='" + forma + "\\:tipoReq']':checked").val();
+    //bootbox.alert(tipo);
+    var retorno = false;
+    if (this.validarCombo(forma + "\\:idGerencia", 0)) {
+        if (this.validarCombo(forma + "\\:idProyectoOt", 0)) {
+            if (tipo == "PS") {
+                if (this.validarCombo(forma + "\\:unidaCosto", 0)) {
+                    if (this.validarCombo(forma + "\\:userRevisa", 'revisa')) {
+                        if (this.validarCombo(forma + "\\:userAAprueba", 'aprueba')) {
+                            $("#mensajeCombo").text("");
+                        } else {
+                            bootbox.alert("Por favor seleccione quien aprobará la requisición");
+                            $("#mensajeCombo").text("Por favor seleccione quien aprobará la requisición");
+                            e++;
+                        }
+                    } else {
+                        bootbox.alert("Por favor seleccione a quien revisará la requisición");
+                        $("#mensajeCombo").text("Por favor seleccione quien revisará la requisición");
+                        e++;
+                    }
+                } else {
+                    bootbox.alert("Por favor seleccione el tipo de tarea");
+                    $("#mensajeCombo").text("Por favor seleccione el tipo de tarea");
+                    e++;
+                }
+            } else {
+                if (this.validarCombo(forma + "\\:userRevisa", 'revisa')) {
+                    if (this.validarCombo(forma + "\\:userAAprueba", 'aprueba')) {
+                        $("#mensajeCombo").text("");
+                    } else {
+                        bootbox.alert("Por favor seleccione a quien aprobará la requisición");
+                        $("#mensajeCombo").text("Por favor seleccione quien aprobará la requisición");
+                        e++;
+                    }
+                } else {
+                    bootbox.alert("Por favor seleccione a quien revisará la requisición");
+                    $("#mensajeCombo").text("Por favor seleccione quien revisará la requisición");
+                    e++;
+                }
+            }
+        } else {
+            bootbox.alert("Por favor seleccione el proyecto OT");
+            $("#mensajeCombo").text("Por favor seleccione el proyecto OT");
+            e++;
+        }
+    } else {
+        bootbox.alert("Por favor seleccione la gerencia");
+        $("#mensajeCombo").text("Por favor seleccione la gerencia");
+        e++;
+    }
+F
+     */
     public void completarActualizacionRequisicion() {
         try {
+            Preconditions.checkArgument(idGerencia > 0, "Seleccione la gerencia");
+            if (requisicionActual.getApCampo().getTipo().equals("N")) {
+                Preconditions.checkArgument(idProyectoOT > 0, "Seleccione el proyecto OT");
+            }
+            if (tipoRequisicion.equals(TipoRequisicion.PS.toString()) && requisicionActual.getApCampo().getTipo().equals("N")) {
+                Preconditions.checkArgument((tipoRequisicion.equals("PS") && idUnidadCosto > 0), "Seleccione el tipo de requisición");
+            }
+            Preconditions.checkArgument(!idRevisa.equals("revisa"), "Seleccione al revisor");
+            Preconditions.checkArgument(!idAprueba.equals("aprueba"), "Seleccione al aprobador");
             if (operacionRequisicion.equals(UPDATE_OPERATION)) {
                 List<RequisicionDetalleVO> rd = requisicionServicioRemoto.getItemsAnalistaNativa(requisicionActual.getId(), false);
                 //Verifica cambios
@@ -1345,7 +1550,7 @@ public class RequisicionBean implements Serializable {
                 if (getTipoRequisicion().equals(TipoRequisicion.PS.name())) {
                     if (requisicionActual.getApCampo() != null && "N".equals(requisicionActual.getApCampo().getTipo())) {
                         requisicionActual.setTipo(TipoRequisicion.PS);
-                        if (rd != null && rd.size() > 0) {
+                        if (rd != null && !rd.isEmpty()) {
                             if (requisicionActual.getGerencia().getId() != getIdGerencia()
                                     || requisicionActual.getProyectoOt().getId() != getIdProyectoOT()
                                     || (requisicionActual.getOcUnidadCosto() != null && requisicionActual.getOcUnidadCosto().getId() != getIdUnidadCosto())
@@ -1424,17 +1629,12 @@ public class RequisicionBean implements Serializable {
             setIdUnidadCosto(0);
             setIdNombreTarea(0);
             requisicionActual = null;
-//
-
+            //
+            llenarRequisiciones();
             //toggleModal();
             PrimeFaces.current().executeScript(";cerrarDialogoModal(dialogoCrearNewReq);");
-        } catch (Exception ex) {
-            LOGGER.fatal(this, ex.getMessage(), ex);
-            FacesUtilsBean.addInfoMessage(
-                    "No se pudo " + operacionRequisicion.toLowerCase()
-                    + " la requisición.  Error inesperado: por favor notifique el problema a: soportesia@ihsa.mx  "
-                    + ex.toString()
-            );
+        } catch (IllegalArgumentException ex) {
+            FacesUtilsBean.addErrorMessage(ex.getMessage());
         }
     }
 
@@ -1831,12 +2031,12 @@ public class RequisicionBean implements Serializable {
                 cambiarRequisicion(0);
                 String jsMetodo = ";regresar('divTabla', 'divDatos', 'divOperacion', 'divAutoriza');";
                 PrimeFaces.current().executeScript(jsMetodo);
-                ContarBean contarBean = (ContarBean) FacesUtilsBean.getManagedBean("contarBean");
-                contarBean.llenarReqSinRevisar();
             } catch (Exception ex) {
                 LOGGER.fatal(this, "Ex : : : : " + ex.getMessage(), ex);
             }
         }
+        ContarBean contarBean = (ContarBean) FacesUtilsBean.getManagedBean("contarBean");
+        contarBean.llenarReqSinRevisar();
         llenarRequisiciones();
     }
 
@@ -1892,6 +2092,8 @@ public class RequisicionBean implements Serializable {
             });
             FacesUtilsBean.addInfoMessage(FacesUtilsBean.getKeyResourceBundle("requisiciones.correos.APRenviado"));
             llenarRequisiciones();
+            ContarBean contarBean = (ContarBean) FacesUtilsBean.getManagedBean("contarBean");
+            contarBean.llenarReqSinAprobar();
             requisicionActual = null;
             String jsMetodo = ";limpiarTodos();";
             PrimeFaces.current().executeScript(jsMetodo);
@@ -2064,14 +2266,21 @@ public class RequisicionBean implements Serializable {
         }
     }
 
-    public void asignarVariasRequisiciones() {
+    public void asignarVariasRequisicionesSinInventario() {
+        asignarVariasRequisiciones();
+    }
+
+    public void asignarVariasRequisicionesConInventario() {
+        asignarVariasRequisiciones();
+    }
+
+    private void asignarVariasRequisiciones() {
         try {
             Preconditions.checkArgument(!idAnalista.equals("-1"), "Seleccione un analista de compras");
             Preconditions.checkArgument(!requisicionesSeleccionadas.isEmpty(), "Seleccione al menos una requisición.");
 
             StringBuilder requiOK = new StringBuilder();
             StringBuilder requiError = new StringBuilder();
-            boolean entro = false;
             for (RequisicionVO o : requisicionesSeleccionadas) {
                 setRequisicionActual(requisicionServicioRemoto.find(o.getId()));
                 if (asignarRequisicionProceso(requisicionActual)) {
@@ -2087,19 +2296,15 @@ public class RequisicionBean implements Serializable {
                         requiError.append(", ").append(requisicionActual.getConsecutivo());
                     }
                 }
-                if (!entro) {
-                    entro = true;
-                }
             }
-            if (entro) {
-
+            if (requiOK.length() > 0) {
                 FacesUtilsBean.addInfoMessage(
                         new StringBuilder().append("La(s) requisicion(es) ")
                                 .append(requiOK.toString())
                                 .append(" se asignaron correctamente...").toString());
                 cambiarRequisicion(0);
             }
-            if (requiError.toString().isEmpty()) {
+            if (requiError.length() > 0) {
                 FacesUtilsBean.addErrorMessage(
                         new StringBuilder().append("No se pudo asignar la(s) requisicion(es): ")
                                 .append(requiError.toString()).append(". Por favor notifique el problema a: soportesia@ihsa.mx").toString());
@@ -2114,27 +2319,31 @@ public class RequisicionBean implements Serializable {
 
     public void asignarRequisicion() {
         try {
-            if (asignarRequisicionProceso(requisicionActual)) {
-                FacesUtilsBean.addInfoMessage(
-                        new StringBuilder().append("La(s) requisicion(es) ")
-                                .append(requisicionActual.getConsecutivo())
-                                .append(" se asignaron correctamente...").toString());
+            if (!idAnalista.equals("-1")) {
+                if (asignarRequisicionProceso(requisicionActual)) {
+                    FacesUtilsBean.addInfoMessage(
+                            new StringBuilder().append("La(s) requisicion(es) ")
+                                    .append(requisicionActual.getConsecutivo())
+                                    .append(" se asignaron correctamente...").toString());
+                    cambiarRequisicion(0);
+                    String jsMetodo = ";regresar('divTabla', 'divDatos', 'divOperacion', 'divAutoriza');";
+                    PrimeFaces.current().executeScript(jsMetodo);
+                    PrimeFaces.current().ajax().update("form1:tbAsig frmMenu");
+                } else {
+                    FacesUtilsBean.addErrorMessage(
+                            new StringBuilder().append("No se pudo asignar la(s) requisicion(es): ")
+                                    .append(requisicionActual.getConsecutivo()).append(". Por favor notifique el problema a: soportesia@ihsa.mx").toString());
+                }
                 cambiarRequisicion(0);
-                String jsMetodo = ";regresar('divTabla', 'divDatos', 'divOperacion', 'divAutoriza');";
-                PrimeFaces.current().executeScript(jsMetodo);
+                //
+                llenarRequisiciones();
+                ContarBean contarBean = (ContarBean) FacesUtilsBean.getManagedBean("contarBean");
+                contarBean.llenarReqSinAsignar();
             } else {
-                FacesUtilsBean.addErrorMessage(
-                        new StringBuilder().append("No se pudo asignar la(s) requisicion(es): ")
-                                .append(requisicionActual.getConsecutivo()).append(". Por favor notifique el problema a: soportesia@ihsa.mx").toString());
+                FacesUtilsBean.addErrorMessage("Seleccione el analista de compras");
             }
-            cambiarRequisicion(0);
-            //
-            llenarRequisiciones();
-            ContarBean contarBean = (ContarBean) FacesUtilsBean.getManagedBean("contarBean");
-            contarBean.llenarReqSinAsignar();
         } catch (Exception ex) {
             LOGGER.fatal(this, "", ex);
-            System.out.println(ex);
             FacesUtilsBean.addErrorMessage("Por favor pongase en contacto con el equipo de desarrollo al correo soportesia@ihsa.mx");
         }
     }
@@ -2225,8 +2434,92 @@ public class RequisicionBean implements Serializable {
     }
 
     public void completarCreacionNota() {
-        notaRequisicionBean.completarCreacionNota(usuarioBean.getUsuarioConectado().getNombre(), requisicionActual);
-        notaRequisicionBean.setTextoNoticia("");
+        try {
+            // -- enviar la notificación - - -
+            StringBuilder asunto = new StringBuilder();
+            asunto.append("Nota de la Requisición: ").append(requisicionActual.getConsecutivo()).append(' ');
+
+            if (notificacionRequisicionImpl.envioNotaRequisicion(
+                    castUsuarioInvitados(requisicionActual),
+                    "", "",
+                    new StringBuilder().append("Nota de la Requisición: ").append(requisicionActual.getConsecutivo()).toString(), requisicionActual,
+                    usuarioBean.getUsuarioConectado().getId(), textoNoticia,
+                    "solicito")) {
+                //
+                //Noticias nueavas
+                CoNoticia coNoticia = coNoticiaImpl.nuevaNoticia(usuarioBean.getUsuarioConectado().getId(), asunto.toString(), "", textoNoticia, 0, 0, castUsuarioComparteCon(requisicionActual));
+                //Guarda la nota
+                ocRequisicionCoNoticiaImpl.guardarNoticia(usuarioBean.getUsuarioConectado().getId(), coNoticia, requisicionActual);
+            }
+            traerNoticia();
+            FacesUtilsBean.addInfoMessage("Se creó correctamente La Nota");
+            PrimeFaces.current().executeScript(";cerrarDialogoModal(dialogoNotaReq);");
+
+        } catch (RuntimeException ex) {
+            UtilLog4j.log.fatal(this, ex.getMessage());
+        }
+    }
+
+    private List<ComparteCon> castUsuarioComparteCon(Requisicion requisicion) {
+        try {
+            List<ComparteCon> listaCompartidos = new ArrayList<>();
+            //        hacer una lista de invitados enviar la notificacion y si se envio correctamente guardarlos a todos
+            switch (requisicion.getEstatus().getId()) {
+                case Constantes.REQUISICION_SOLICITADA:
+                    //solicita
+                    listaCompartidos.add(castComparteCon(requisicion.getSolicita()));
+                    listaCompartidos.add(castComparteCon(usuarioBean.getUsuarioConectado()));
+                    break;
+                case Constantes.REQUISICION_REVISADA:
+                    //solicita
+                    listaCompartidos.add(castComparteCon(requisicion.getSolicita()));
+                    listaCompartidos.add(castComparteCon(requisicion.getRevisa()));
+                    listaCompartidos.add(castComparteCon(usuarioBean.getUsuarioConectado()));
+                    break;
+                default:
+                    listaCompartidos.add(castComparteCon(requisicion.getSolicita()));
+                    listaCompartidos.add(castComparteCon(usuarioBean.getUsuarioConectado()));
+            }
+            return listaCompartidos;
+        } catch (Exception e) {
+            UtilLog4j.log.fatal(this, "Excepcion al castear los usuario  " + e.getMessage());
+            return null;
+        }
+    }
+
+    private ComparteCon castComparteCon(Usuario usuario) {
+        ComparteCon compateCon = new ComparteCon();
+        compateCon.setId(usuario.getId());
+        compateCon.setNombre(usuario.getNombre());
+        compateCon.setCorreoUsuario(usuario.getEmail());
+        compateCon.setTipo("Usuario");
+        return compateCon;
+    }
+
+    private String castUsuarioInvitados(Requisicion requisicion) {
+        try {
+            StringBuilder invitados = new StringBuilder();
+            switch (requisicion.getEstatus().getId()) {
+                case Constantes.REQUISICION_SOLICITADA:
+                    invitados.append(requisicion.getSolicita().getEmail());
+                    invitados.append(",").append(usuarioBean.getUsuarioConectado().getEmail());
+                    break;
+                case Constantes.REQUISICION_REVISADA:
+                    //solicita
+                    invitados.append(requisicion.getSolicita().getEmail());
+                    invitados.append(",").append(requisicion.getRevisa().getEmail());
+                    invitados.append(",").append(usuarioBean.getUsuarioConectado().getEmail());
+                    break;
+                default:
+                    invitados.append(requisicion.getSolicita().getEmail());
+                    invitados.append(",").append(usuarioBean.getUsuarioConectado().getEmail());
+                    break;
+            }
+            return invitados.toString();
+        } catch (Exception e) {
+            UtilLog4j.log.fatal(this, "Excepcion al castear los usuario  " + e.getMessage());
+            return null;
+        }
     }
 
     /**
@@ -2254,7 +2547,6 @@ public class RequisicionBean implements Serializable {
             if (irInicio && requisicionActual != null && requisicionActual.getId() > 0) {
                 irInicio = false;
                 crearItem = true;
-                notaRequisicionBean.setFiltrar(true);
                 String jsMetodo = ";activarTab('tabOCSProc',0, 'divDatos', 'divTabla', 'divOperacion', 'divAutoriza');";
                 PrimeFaces.current().executeScript(jsMetodo);
             }
@@ -3472,6 +3764,69 @@ public class RequisicionBean implements Serializable {
         }
     }
 
+    public void uploadFileEspera(FileUploadEvent uploadEvent) {
+        ValidadorNombreArchivo validadorNombreArchivo = new ValidadorNombreArchivo();
+        try {
+            fileInfo = uploadEvent.getFile();
+
+            AlmacenDocumentos almacenDocumentos
+                    = proveedorAlmacenDocumentos.getAlmacenDocumentos();
+
+            boolean addArchivo = validadorNombreArchivo.isNombreValido(fileInfo.getFileName());
+
+            if (addArchivo) {
+                DocumentoAnexo documentoAnexo = new DocumentoAnexo(fileInfo.getContent());
+                documentoAnexo.setTipoMime(fileInfo.getContentType());
+                documentoAnexo.setNombreBase(fileInfo.getFileName());
+                documentoAnexo.setRuta(uploadDirectoryRequi());
+                almacenDocumentos.guardarDocumento(documentoAnexo);
+
+                SiAdjunto adj
+                        = servicioSiAdjuntoImpl.save(
+                                documentoAnexo.getNombreBase(),
+                                new StringBuilder()
+                                        .append(documentoAnexo.getRuta())
+                                        .append(File.separator).append(documentoAnexo.getNombreBase()).toString(),
+                                fileInfo.getContentType(),
+                                "ESPERA",
+                                fileInfo.getSize(),
+                                usuarioBean.getUsuarioConectado().getId()
+                        );
+
+                if (adj != null) {
+                    servicioReRequisicion.crear(
+                            getRequisicionActual(),
+                            adj,
+                            usuarioBean.getUsuarioConectado(),
+                            false
+                    );
+                }
+                requisicionSiMovimientoImpl.saveRequestMove(this.usuarioBean.getUsuarioConectado().getId(), "ADJUNTAR ARCHIVO " + documentoAnexo.getNombreBase(), getRequisicionActual().getId(), Constantes.ID_SI_OPERACION_ESPERAADJ);
+                FacesUtilsBean.addInfoMessage("El archivo fue agregado correctamente.");
+                enEsperaDet();
+
+                etsPorRequisicionEspera = servicioReRequisicion.traerAdjuntosPorRequisicionVisibleTipo(
+                        getRequisicionActual().getId(),
+                        false, "ESPERA");
+                PrimeFaces.current().executeScript(";cerrarDialogoModal(dialogoAdjuntoEsperaReq);");
+            } else {
+                FacesUtilsBean.addErrorMessage(new StringBuilder()
+                        .append("No se permiten los siguientes caracteres especiales en el nombre del Archivo: ")
+                        .append(validadorNombreArchivo.getCaracteresNoValidos())
+                        .toString());
+            }
+
+            fileInfo.delete();
+
+        } catch (IOException e) {
+            LOGGER.fatal(this, "+ + + ERROR + + +", e);
+            FacesUtilsBean.addInfoMessage("Ocurrió un problema al cargar el archivo, por favor contacte al equipo de soporte SIA (soportesia@ihsa.mx)");
+        } catch (SIAException e) {
+            LOGGER.fatal(this, "+ + + ERROR + + +", e);
+            FacesUtilsBean.addInfoMessage("Ocurrió un problema al cargar el archivo, por favor contacte al equipo de soporte SIA (soportesia@ihsa.mx)");
+        }
+    }
+
     public void actualizarEts(SiAdjunto requisicionEts) {
         etsActualAdjunto = new SiAdjunto();
         etsActualAdjunto = requisicionEts;
@@ -3926,7 +4281,7 @@ public class RequisicionBean implements Serializable {
 
     public void actualizaProyectoOT() {
 //        idProyectoOt = (Integer) event.getNewValue();
-        if (idProyectoOt > 0 && idActPetrolera > 0 && idPresupuesto > 0) {
+        if (idProyectoOT > 0 && idActPetrolera > 0 && idPresupuesto > 0) {
             setMultiProyecto(false);
             setListaUnidadCosto(ocPresupuestoDetalleImpl.getUnidadCostosItems(
                     getIdPresupuesto(),
@@ -3936,7 +4291,7 @@ public class RequisicionBean implements Serializable {
                     getAnioPresupuesto(),
                     getMesPresupuesto(),
                     false));
-        } else if (idProyectoOt == -2) {
+        } else if (idProyectoOT == -2) {
             setMultiProyecto(true);
             setListaUnidadCosto(ocPresupuestoDetalleImpl.getUnidadCostosItems(
                     getIdPresupuesto(),
@@ -3958,7 +4313,7 @@ public class RequisicionBean implements Serializable {
 
     public void actualizaTipoTarea() {
 //        idTipoTarea = (Integer) event.getNewValue();
-        if (idProyectoOt > 0 && idActPetrolera > 0 && idTipoTarea > 0) {
+        if (idProyectoOT > 0 && idActPetrolera > 0 && idTipoTarea > 0) {
             setListaTO(ocPresupuestoDetalleImpl.getTareasItems(
                     getIdPresupuesto(),
                     getIdActPetrolera(),
@@ -3988,7 +4343,7 @@ public class RequisicionBean implements Serializable {
 
     public void actualizaTarea() {
 //	idTarea= (Integer) event.getNewValue();
-        if (idProyectoOt > 0 && idActPetrolera > 0 && idTipoTarea > 0 && idTarea > 0) {
+        if (idProyectoOT > 0 && idActPetrolera > 0 && idTipoTarea > 0 && idTarea > 0) {
             setLstCentroCosto(ocPresupuestoDetalleImpl.getSubTareasItems(
                     getIdPresupuesto(),
                     getIdActPetrolera(),

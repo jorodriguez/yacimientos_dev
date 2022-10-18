@@ -13,8 +13,10 @@
               showEffect="fade"
               hideEffect="fade"
               width="900"
-              widgetVar="crearDialogoMaterial">      
-        <p:tabView id="tbSol">
+              widgetVar="crearDialogoMaterial"
+              style="overflow: auto;" height="550"
+              >
+        <p:tabView id="tbSol" >
             <p:tab title="Solicitar">
                 <h:panelGroup id="panelSolicitud">
                     <h:panelGroup id="panelInformacion">
@@ -71,17 +73,20 @@
                                     <p:autoComplete id="autoComplete" value="#{solicitarMaterialBean.articulo}" 
                                                     completeMethod="#{solicitarMaterialBean.completarArticulo}" size="80"
                                                     var="inv" itemLabel="#{inv.articuloNombre}" itemValue="#{inv}"
-                                                    converter="#{inventarioConverter}" forceSelection="true" 
-                                                    >
-                                        <p:ajax event="itemSelect" listener="#{solicitarMaterialBean.seleccionarArticulo}" update="frmSol:tbSol:tblMat"
-                                                process="@this"/>
+                                                    converter="#{inventarioConverter}" 
+                                                    minQueryLength="4">
+                                        <p:ajax event="itemSelect" 
+                                                listener="#{solicitarMaterialBean.seleccionarArticulo}" 
+                                                update="frmSol:tbSol:tblMat @this"
+                                                process="@this frmSol:tbSol:tblMat"/>
                                     </p:autoComplete>
                                 </td>
                             </tr>
                             <tr>
                                 <td colspan="6">
                                     <p:dataTable id="tblMat" value="#{solicitarMaterialBean.materiales}" 
-                                                 var="dataM" rowIndexVar="index" showGridlines="true" size="small">
+                                                 var="dataM" rowIndexVar="index" 
+                                                 showGridlines="true" size="small">
                                         <p:column style="text-align: left;" >
                                             <f:facet name="header">Descripción del artículo</f:facet>
                                             <h:outputText value="#{dataM.articulo}" title="#{dataM.codigoArt}"/>
@@ -93,13 +98,14 @@
                                             <h:outputText value="#{dataM.disponibles}"/>
                                         </p:column>
                                         <p:column headerText="Cant." style="width: 6%">
-                                            <h:inputText value="#{dataM.cantidad}" class="ui-inputfield ui-textentry" size="5"/>
+                                            <h:inputText value="#{dataM.cantidad}" class="form-control" size="5"/>
                                         </p:column>
                                         <p:column width="35"> 
-                                            <p:commandButton action="#{solicitarMaterialBean.eliminarMaterialSolicitud(dataM.codigoArt)}"
-                                                             process="@this" update="frmSol:tbSol:tblMat">
-                                                <i class="fa fa-trash text-danger"/>
-                                            </p:commandButton>
+                                            <p:commandLink action="#{solicitarMaterialBean.eliminarMaterialSolicitud(dataM.codigoArt)}"
+                                                           process="@this" update="frmSol:tbSol:tblMat"
+                                                           >
+                                                <span class="fa fa-trash text-danger"/>
+                                            </p:commandLink>
                                         </p:column>
                                     </p:dataTable>
                                 </td>
@@ -136,20 +142,20 @@
                         <table class="table-form">
                             <tr>
                                 <td>
-                                    <h:messages id="mensajeSol" showDetail="false" globalOnly="true" styleClass="mensajes-ul"
-                                                infoClass="ui-widget ui-corner-all ui-state-highlight input-msg"
-                                                errorClass=" ui-widget ui-corner-all ui-state-error input-msg"/>
+                                    <h:messages id="mensajeSol" showDetail="false" globalOnly="true" 
+                                                errorClass="text text-danger"/>
                                 </td>
                             </tr>
 
                             <tr>
                                 <td>
                                     <p:commandLink value="Guardar"  action="#{solicitarMaterialBean.guardar}" 
-                                                   process="@form" update="frmSolMat" styleClass="btn btn-primary" style="color: white; font-weight: bold;">
+                                                   process="@form" update="frmSolMat frmSol:tbSol:mensajeSol" 
+                                                   styleClass="btn btn-primary" style="color: white; font-weight: bold;">
                                     </p:commandLink>
                                     <p:commandLink value="Guardar y solicitar" styleClass="btn btn-success"  style="color: white; font-weight: bold;"
                                                    action="#{solicitarMaterialBean.guardarSolicitarMaterial}"
-                                                   process="@form" update="frmSolMat" >
+                                                   process="@form" update="frmSolMat frmSol:tbSol:mensajeSol" >
                                     </p:commandLink>
                                     <p:commandLink value="Cerrar"  styleClass="hbutton cancelar" 
                                                    action="#{solicitarMaterialBean.cerrarSolicitudMaterial}"

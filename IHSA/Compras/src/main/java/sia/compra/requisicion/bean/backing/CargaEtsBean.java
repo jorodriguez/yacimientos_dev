@@ -156,26 +156,26 @@ public class CargaEtsBean implements Serializable {
 //        return getListaEts();
 //    }
 //
-    public DataModel getEtsPorRequisicionEspera() {
-        if (requisicionBean.getRequisicionActual() == null) {
-            listaEts = null;
-        } else {
-            try {
-
-                if (requisicionBean.getRequisicionActual() != null && requisicionBean.getRequisicionActual().getId() != null) {
-
-                    listaEtsEspera
-                            = new ListDataModel(servicioReRequisicion.traerAdjuntosPorRequisicionVisibleTipo(
-                                    requisicionBean.getRequisicionActual().getId(),
-                                    false, "ESPERA"));
-                }
-            } catch (Exception ex) {
-                listaEts = null;
-                LOGGER.fatal(this, null, ex);
-            }
-        }
-        return getListaEtsEspera();
-    }
+//    public DataModel getEtsPorRequisicionEspera() {
+//        if (requisicionBean.getRequisicionActual() == null) {
+//            listaEts = null;
+//        } else {
+//            try {
+//
+//                if (requisicionBean.getRequisicionActual() != null && requisicionBean.getRequisicionActual().getId() != null) {
+//
+//                    listaEtsEspera
+//                            = new ListDataModel(servicioReRequisicion.traerAdjuntosPorRequisicionVisibleTipo(
+//                                    requisicionBean.getRequisicionActual().getId(),
+//                                    false, "ESPERA"));
+//                }
+//            } catch (Exception ex) {
+//                listaEts = null;
+//                LOGGER.fatal(this, null, ex);
+//            }
+//        }
+//        return getListaEtsEspera();
+//    }
 
     public void eliminarEts(Object adjReq) {
         try {
@@ -267,7 +267,7 @@ public class CargaEtsBean implements Serializable {
 //	 return new StringBuilder().append(getUploadDirectory()).append(getPreDirectorio()).toString();*/
 //
 //        return new StringBuilder().append("ETS/Requisicion/")
-//                .append();requisicionBean.getRequisicionActual().getId()).toString();
+//                .append(requisicionBean.getRequisicionActual().getId()).toString();
 //    }
 
     /*
@@ -616,35 +616,35 @@ public class CargaEtsBean implements Serializable {
     /**
      * @param uploadEvent
      */
-    public void uploadFileEspera(FileUploadEvent uploadEvent) {
-        ValidadorNombreArchivo validadorNombreArchivo = new ValidadorNombreArchivo();
-        try {
-            fileInfo = uploadEvent.getFile();
-
-            AlmacenDocumentos almacenDocumentos
-                    = proveedorAlmacenDocumentos.getAlmacenDocumentos();
-
-            boolean addArchivo = validadorNombreArchivo.isNombreValido(fileInfo.getFileName());
-
-            if (addArchivo) {
-                DocumentoAnexo documentoAnexo = new DocumentoAnexo(fileInfo.getContent());
-                documentoAnexo.setTipoMime(fileInfo.getContentType());
-                documentoAnexo.setNombreBase(fileInfo.getFileName());
-          //      documentoAnexo.setRuta(getUploadDirectoryRequi());
-                almacenDocumentos.guardarDocumento(documentoAnexo);
-
-                SiAdjunto adj
-                        = servicioSiAdjuntoImpl.save(
-                                documentoAnexo.getNombreBase(),
-                                new StringBuilder()
-                                        .append(documentoAnexo.getRuta())
-                                        .append(File.separator).append(documentoAnexo.getNombreBase()).toString(),
-                                fileInfo.getContentType(),
-                                "ESPERA",
-                                fileInfo.getSize(),
-                                usuarioBean.getUsuarioConectado().getId()
-                        );
-
+//    public void uploadFileEspera(FileUploadEvent uploadEvent) {
+//        ValidadorNombreArchivo validadorNombreArchivo = new ValidadorNombreArchivo();
+//        try {
+//            fileInfo = uploadEvent.getFile();
+//
+//            AlmacenDocumentos almacenDocumentos
+//                    = proveedorAlmacenDocumentos.getAlmacenDocumentos();
+//
+//            boolean addArchivo = validadorNombreArchivo.isNombreValido(fileInfo.getFileName());
+//
+//            if (addArchivo) {
+//                DocumentoAnexo documentoAnexo = new DocumentoAnexo(fileInfo.getContent());
+//                documentoAnexo.setTipoMime(fileInfo.getContentType());
+//                documentoAnexo.setNombreBase(fileInfo.getFileName());
+//                documentoAnexo.setRuta(getUploadDirectoryRequi());
+//                almacenDocumentos.guardarDocumento(documentoAnexo);
+//
+//                SiAdjunto adj
+//                        = servicioSiAdjuntoImpl.save(
+//                                documentoAnexo.getNombreBase(),
+//                                new StringBuilder()
+//                                        .append(documentoAnexo.getRuta())
+//                                        .append(File.separator).append(documentoAnexo.getNombreBase()).toString(),
+//                                fileInfo.getContentType(),
+//                                "ESPERA",
+//                                fileInfo.getSize(),
+//                                usuarioBean.getUsuarioConectado().getId()
+//                        );
+//
 //                if (adj != null) {
 //                    servicioReRequisicion.crear(
 //                            requisicionBean.getRequisicionActual(),
@@ -657,23 +657,23 @@ public class CargaEtsBean implements Serializable {
 //                FacesUtilsBean.addInfoMessage("El archivo fue agregado correctamente.");
 //                PrimeFaces.current().executeScript(";cerrarDialogoModal(dialogoAdjuntoEsperaReq);");
 //                requisicionBean.enEsperaDet();
-            } else {
-                FacesUtilsBean.addErrorMessage(new StringBuilder()
-                        .append("No se permiten los siguientes caracteres especiales en el nombre del Archivo: ")
-                        .append(validadorNombreArchivo.getCaracteresNoValidos())
-                        .toString());
-            }
-
-            fileInfo.delete();
-
-        } catch (IOException e) {
-            LOGGER.fatal(this, "+ + + ERROR + + +", e);
-            FacesUtilsBean.addInfoMessage("Ocurrió un problema al cargar el archivo, por favor contacte al equipo de soporte SIA (soportesia@ihsa.mx)");
-        } catch (SIAException e) {
-            LOGGER.fatal(this, "+ + + ERROR + + +", e);
-            FacesUtilsBean.addInfoMessage("Ocurrió un problema al cargar el archivo, por favor contacte al equipo de soporte SIA (soportesia@ihsa.mx)");
-        }
-    }
+//            } else {
+//                FacesUtilsBean.addErrorMessage(new StringBuilder()
+//                        .append("No se permiten los siguientes caracteres especiales en el nombre del Archivo: ")
+//                        .append(validadorNombreArchivo.getCaracteresNoValidos())
+//                        .toString());
+//            }
+//
+//            fileInfo.delete();
+//
+//        } catch (IOException e) {
+//            LOGGER.fatal(this, "+ + + ERROR + + +", e);
+//            FacesUtilsBean.addInfoMessage("Ocurrió un problema al cargar el archivo, por favor contacte al equipo de soporte SIA (soportesia@ihsa.mx)");
+//        } catch (SIAException e) {
+//            LOGGER.fatal(this, "+ + + ERROR + + +", e);
+//            FacesUtilsBean.addInfoMessage("Ocurrió un problema al cargar el archivo, por favor contacte al equipo de soporte SIA (soportesia@ihsa.mx)");
+//        }
+//    }
 
     public void etsPorOrdenCategoria() {
         if (getIdCategoriaSelccionada() == -1) {

@@ -704,7 +704,7 @@ public class OrdenDetalleImpl extends AbstractFacade<OrdenDetalle>{
                 ordenDetalle.setMultiproyectoId(requisicionDetalleVO.getMultiproyectoId());
 
                 ordenDetalle.setCantidad(requisicionDetalleVO.getCantidadAutorizada());
-                if (TipoRequisicion.PS.equals(orOrigen.getTipo()) || ("C".equals(orOrigen.getApCampo().getTipo()))) {
+                if (TipoRequisicion.PS.toString().equals(orOrigen.getTipo()) || ("C".equals(orOrigen.getApCampo().getTipo()))) {
                     ordenDetalle.setOcTarea(requisicionDetalleVO.getOcTarea());
                     ordenDetalle.setOcUnidadCosto(requisicionDetalleVO.getOcUnidadCosto() != null ? requisicionDetalleVO.getOcUnidadCosto() : orOrigen.getOcUnidadCosto());
                 }

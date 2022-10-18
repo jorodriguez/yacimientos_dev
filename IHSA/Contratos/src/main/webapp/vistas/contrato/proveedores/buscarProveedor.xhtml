@@ -1,49 +1,48 @@
 <ui:composition xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-
-
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:h="http://xmlns.jcp.org/jsf/html"
                 xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
                 xmlns:f="http://xmlns.jcp.org/jsf/core">  
     <h:form id="frmRevisaProveedor">  
         <div class="row">
-            <div class="row">
-                <div class="col-6 col-xs-6">
-                    <div class="col-12 col-xs-10">
-                        <h:outputText value="Plantilla proveedor: " class="control-label"/> 
-                    </div>
-                    <p:fileUpload id="fileEntryInci"
-                                  listener="#{proveedorBean.cargarDatosProveedor}" />
+            <div class="col-7">
+                <div class="col-12">
+                    <h:outputText value="Plantilla proveedor: " class="control-label"/> 
                 </div>
-                <div class="col-6 col-xs-6">
-                    <div class="col-12 col-xs-10">
-                        <h:outputText value="Proveedor: " class="control-label"/> 
-                    </div>
-                    <div class="col-12 col-xs-10">
-                        <p:autoComplete size="250">
-                            <p:ajax event="itemSelect" listener="#{proveedorBean.buscarProveedor}"/>
-                        </p:autoComplete>	
-                    </div>
+                <p:fileUpload id="fileEntryInci"
+                              listener="#{proveedorAdminBean.cargarDatosProveedor}" />
+            </div>
+            <div class="col-5">
+                <div class="col-12">
+                    <h:outputText value="Proveedor: " class="control-label"/> 
+                </div>
+                <div class="col-12">
+                    <p:autoComplete value="#{proveedorAdminBean.proveedorSeleccionado}" 
+                                    completeMethod="#{proveedorAdminBean.completarProveedor}"
+                                    size="40" forceSelection="true" minQueryLength="4">
+                        <p:ajax event="itemSelect" listener="#{proveedorAdminBean.buscarProveedor}"
+                                process="@this" ignoreAutoUpdate="true"  update="@form"/>
+                    </p:autoComplete>	
                 </div>
             </div>
         </div>
         <div class="row" >
-            <div class="card card-default">
+            <div class="input-group">
                 <div class="col-2">
-                    <h:outputText value="Carta Contenido Nacional:" rendered="#{proveedorBean.proveedor.status eq 910}"/>
-                    <h:selectBooleanCheckbox value="#{proveedorBean.proveedor.carta}" styleClass="form-control"/>
+                    <h:outputText value="Carta Contenido Nacional:" rendered="#{proveedorAdminBean.proveedor.status eq 910}"/>
+                    <p:selectBooleanCheckbox value="#{proveedorAdminBean.proveedor.carta}" styleClass="form-control"
+                                             rendered="#{proveedorAdminBean.proveedor.status eq 910}"/>
                 </div>
-                <p:commandLink  styleClass="btn btn-success"
-                                action="#{proveedorBean.procesarProveedor}"
+                <p:commandLink  styleClass="btn btn-success text-white"
+                                action="#{proveedorAdminBean.procesarProveedor}"
                                 process="@form" update="@form">
                     <i class="fa fa-senf">Enviar proveedor</i>
                 </p:commandLink>
             </div>
         </div>
-    </h:form>
-    <ui:include src="../admin/fragmento/datosProveedor.xhtml"/>    
+        <ui:include src="../proveedores/adminDatosProveedor.xhtml"/>  
+    </h:form>  
     <ui:include src="../proveedores/popUpProveedor.xhtml"/>
-    <ui:include src="../admin/fragmento/subirArchivo.xhtml"/>
-</div>
+    <!--ui:include src="../admin/fragmento/subirArchivo.xhtml"/-->
 
 </ui:composition>

@@ -29,6 +29,9 @@
             .ui-datepicker {
                 z-index: 1000004 !important;
             }
+            .ui-dialog{
+                z-index: 100000044 !important;
+            }
 
             .filaConSombra{
                 background-color: #EEE;
@@ -37,19 +40,22 @@
             .filaSinSombra{
                 background-color: #f8f8f8;
             }
+            .ui-selectonemenu-panel {
+                z-index: 100000033 !important;
+            }
         </style>
     </h:head>
     <h:body  class="hold-transition sidebar-mini layout-fixed">
         <div class="wrapper">
             <!--f:loadBundle basename="messages" var="msg" /-->
             <c:if test="#{not empty usuarioBean.usuarioConectado}">
-
-                <p:ajaxStatus onstart="PF('statusDialog').show()"
+                <p:ajaxStatus onstart="PF('statusDialog').show()" 
                               onsuccess="PF('statusDialog').hide()" />
 
-                <p:dialog widgetVar="statusDialog" modal="true" draggable="false"
-                          closable="false" resizable="false" showHeader="false" style="z-index: 100000045;">
-                    <img src="/resources/img/wait.gif" width="150px"  alt="Procesando . . . "/>
+                <p:dialog id="dlgProcesando" widgetVar="statusDialog" modal="true" draggable="false"
+                          closable="false" resizable="false" showHeader="false" style="z-index: 100000045;"
+                           >
+                    <img src="/resources/img/wait.gif" width="140px"  alt="Procesando . . . "/>
                 </p:dialog>
                 <!-- Navbar -->
                 <nav class="main-header navbar navbar-expand navbar-white navbar-light">                  
@@ -61,12 +67,13 @@
                     </h:form>
                 </nav>
                 <!-- Main Sidebar Container -->
-                <aside class="main-sidebar sidebar-light-primary elevation-4">
+                <aside class="main-sidebar sidebar-light-primary elevation-1">
                     <!-- Brand Logo -->
-                    <h:graphicImage value="/Compras/MostraImagen?ZWZ2W=#{usuarioBean.compania.rfc}" 
-                                    style="width: 97px; height: 49px;" alt="SIA" 
-                                    class="brand-image img-circle elevation-3" />
-                    <span class="brand-text font-weight-light">SIA</span>
+                    <div class="col-10 " style="text-align: center;">
+                    <img src="/Compras/MostraImagen?ZWZ2W=#{usuarioBean.compania.rfc}" 
+                         style="width: 97px; height: 49px;" alt="SIA"  />
+                        
+                    </div>
                     <!-- Sidebar -->
                     <div class="sidebar">
                         <div class="user-panel mt-3 pb-3 mb-3 d-flex">
@@ -113,6 +120,7 @@
                             </li>
                             <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
                                 <h:form id="frmMenu"  class="nav-item">
+                                    <p:growl id="growl-sticky" for="sticky-key" showDetail="true" sticky="true" />
                                     <ui:include src="menuLateral.xhtml" />
                                 </h:form>
                             </ul>
@@ -124,7 +132,9 @@
                 <div class="content-wrapper">
                     <!-- Main content -->
                     <section class="content">
-                        <h1 class="center">     <ui:insert name="tituloPagina"/></h1>
+                        <h3 style="text-align: center; font-weight: bold; color: #213c76" >    
+                            <ui:insert name="tituloPagina"/>
+                        </h3>
                         <div  class="row">
                             <p:messages id="messages" showDetail="false" closable="true" 
                                         class="col-12">
@@ -139,25 +149,15 @@
                             <ui:insert name="contenido"/>                    
                         </div>
                     </section>
-                    <div id="areaBlock" style="display: none;position: fixed;top: 0;left: 0;z-index: 250006;width: 100%;height: 100%;
-                         background: #dddddd;opacity: 0.6;">
-                        <div style="position:absolute;top:50%;left: 50%;">
-                            <img  src="/resources/img/wait.gif" alt="Procesando"/>
-                            <font style="font-weight: bold; font-style: italic; font-size: 11px;">Procesando . . .</font>
-                        </div>                            
-                    </div> 
                 </div>
                 <!-- /.content-wrapper -->
                 <footer class="main-footer">
-
-
                     <div class="pull-right hidden-xs">
                         <b>Version</b> 1.0
                     </div>
-                    <strong>Copyright &#xA9; 2020 <a
-                            href="http://www.ihsa.mx" target="_blank"
-                            rel="noopener noreferrer">Iberoamericana de Hidrocarburos S.A.</a>
-                    </strong> All rights reserved.
+                    <strong><a href="http://www.ihsa.mx" target="_blank"
+                               rel="noopener noreferrer">Iberoamericana de Hidrocarburos S.A.</a>
+                    </strong>
                 </footer>
 
                 <!-- Control Sidebar -->
@@ -180,21 +180,21 @@
                                         $.noConflict(true);
                                         // Code that uses other library's $ can follow here.
         </script>
-        <script src="/resources/js/jquery-ui.min.js"></script>
+        <script src="/resources/js/jquery-ui.min.js" type="text/javascript"></script>
         <!-- Resolve conflict in jQuery UI tooltip with Bootstrap tooltip -->
         <script>
                                         $.widget.bridge('uibutton', $.ui.button)
         </script>
         <!-- Bootstrap 4 -->
-        <script src="/resources/js/bootstrap.bundle.min.js"></script>
+        <script src="/resources/js/bootstrap.bundle.min.js" type="text/javascript"></script>
         <!-- overlayScrollbars -->
-        <script src="/resources/js/jquery.overlayScrollbars.min.js"></script>
+        <script src="/resources/js/jquery.overlayScrollbars.min.js" type="text/javascript"></script>
         <!-- AdminLTE App -->
-        <script src="/resources/js/adminlte.js"></script>
+        <script src="/resources/js/adminlte.js" type="text/javascript"></script>
         <!--Grafica-->
-        <script src="#{request.contextPath}/recursos/js/highcharts.js"></script>
-        <script src="#{request.contextPath}/recursos/js/exporting.js"></script>
-        <script src="#{request.contextPath}/recursos/js/validaFormaROCS.js"></script>
+        <script src="#{request.contextPath}/recursos/js/highcharts.js" type="text/javascript"></script>
+        <script src="#{request.contextPath}/recursos/js/exporting.js" type="text/javascript"></script>
+        <script src="#{request.contextPath}/recursos/js/validaFormaROCS.js" type="text/javascript"></script>
         <!-- bootbox -->
         <script type="text/javascript" src="#{request.contextPath}/recursos/js/bootbox.js"></script>
     </h:body>

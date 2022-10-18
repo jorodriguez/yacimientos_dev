@@ -16,7 +16,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import javax.annotation.PostConstruct;
-import javax.faces.bean.CustomScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 import javax.faces.view.ViewScoped;
@@ -72,7 +71,7 @@ import sia.util.ValidadorNombreArchivo;
  */
 @Named(value = "proveedorBean")
 @ViewScoped
-public class ProveedorModel implements Serializable {
+public class ProveedorBean implements Serializable {
 
     static final long serialVersionUID = 1;
     /**
@@ -128,32 +127,44 @@ public class ProveedorModel implements Serializable {
     private List<DocumentoVO> lstDocsFaltantes;
     private ProveedorDocumentoVO docProveedor;
     private String dir = "";
-    private List<ContratoVO> lstConveniosTabs;
-    private ContratoVO contr;
     @Getter
     @Setter
     private UploadedFile fileInfo;
+    @Getter
+    @Setter
+    private String proveedorSeleccionado;
+    @Getter
+    @Setter
+    private ContratoVO contr;
+    @Getter
+    @Setter
+    private List<ContratoVO> lstConveniosTabs;
 
-    public ProveedorModel() {
+    public ProveedorBean() {
     }
 
     @PostConstruct
     public void iniciar() {
-        if (lstConveniosTabs == null) {
-            lstConveniosTabs = new ArrayList<ContratoVO>();
-            contr = new ContratoVO();
-            getContr().setId(-999);
-            lstConveniosTabs.add(getContr());
-        }
+        lstConveniosTabs = new ArrayList<>();
+        contr = new ContratoVO();
+        getContr().setId(-999);
+    }
+
+    public List<String> completarProveedor(String cadena) {
+        List<String> proveedores = new ArrayList<>();
+        List<ProveedorVo> pvrs = proveedorImpl.traerProveedorPorParteNombre(cadena, sesion.getUsuarioSesion().getId(), ProveedorEnum.ACTIVO.getId());
+        pvrs.stream().forEach(p -> {
+            proveedores.add(p.getNombre());
+        });
+        return proveedores;
     }
 
     public void buscarProveedor() {
-        if (getIdProveedor() > 0) {
-            setEditarProveedor(true);
-            traerDatosProveedor();
-            getLstConveniosTabs().get(0).getProveedorVo().setIdProveedor(getIdProveedor());
-            getLstConveniosTabs().get(0).setProveedorVo(getProveedor());
-        }
+        proveedor = proveedorImpl.traerProveedorPorNombre(proveedorSeleccionado);// contratoBean.getContratoVo().setProveedorVo(getProveedor());
+        idProveedor = proveedor.getIdProveedor();
+        setEditarProveedor(true);
+        //traerDatosProveedor();
+        contratoBean.getContratoVo().getProveedorVo().setIdProveedor(getIdProveedor());
     }
 
     public void procesarProveedor() {
@@ -168,8 +179,8 @@ public class ProveedorModel implements Serializable {
             if (continuar) {
                 procesarProv();
                 getProveedor().setStatus(ProveedorEnum.EN_PROCESO.getId());
-                getLstConveniosTabs().get(0).getProveedorVo().setIdProveedor(getIdProveedor());
-                getLstConveniosTabs().get(0).setProveedorVo(getProveedor());
+                contratoBean.getContratoVo().getProveedorVo().setIdProveedor(getIdProveedor());
+                contratoBean.getContratoVo().setProveedorVo(getProveedor());
                 FacesUtils.addInfoMessage("Se envío el proveedor. ");
             } else {
                 FacesUtils.addErrorMessage("Hace falta agregar la documentación física. ");
@@ -194,11 +205,11 @@ public class ProveedorModel implements Serializable {
                             throw new Exception("Proveedor vetado por Grupo Cobra ");
                         }
 
-                        if (getLstConveniosTabs().get(0).getProveedorVo() == null) {
-                            getLstConveniosTabs().get(0).setProveedorVo(getProveedor());
+                        if (contratoBean.getContratoVo().getProveedorVo() == null) {
+                            contratoBean.getContratoVo().setProveedorVo(getProveedor());
                         }
-                        getLstConveniosTabs().get(0).getProveedorVo().setIdProveedor(getIdProveedor());
-                        getLstConveniosTabs().get(0).setProveedorVo(getProveedor());
+                        contratoBean.getContratoVo().getProveedorVo().setIdProveedor(getIdProveedor());
+                        contratoBean.getContratoVo().setProveedorVo(getProveedor());
                         //
                     } catch (Exception ex) {
                         UtilLog4j.log.fatal(this, "Ocurrio un error al guardar el archivo . . . . . " + ex.getMessage());
@@ -229,11 +240,9 @@ public class ProveedorModel implements Serializable {
     public void guardarProveedorDG() {
         try {
             boolean guardar = saveProveedorDG();
-            if (guardar && getContr() != null && getContr().getId() == -999) {
-                this.traerDatosProveedor();
-                getLstConveniosTabs().get(0).setProveedorVo(this.getProveedor());
-            } else if (guardar) {
+            if (guardar) {
                 traerDatosProveedor();
+                contratoBean.getContratoVo().setProveedorVo(getProveedor());
             }
             //PrimeFaces.current().ajax().update("frmAdmin:tabView:tabViewProv");
             PrimeFaces.current().executeScript(";cerrarDialogoModal(dialogoDGP);");
@@ -246,11 +255,9 @@ public class ProveedorModel implements Serializable {
     public void guardarProveedorDF() {
         try {
             boolean guardar = saveProveedorDF();
-            if (guardar && getContr() != null && getContr().getId() == -999) {
-                this.traerDatosProveedor();
-                getLstConveniosTabs().get(0).setProveedorVo(this.getProveedor());
-            } else if (guardar) {
+            if (guardar) {
                 traerDatosProveedor();
+                contratoBean.getContratoVo().setProveedorVo(this.getProveedor());
             }
             PrimeFaces.current().executeScript(";cerrarDialogoModal(dialogoDF);");
         } catch (Exception e) {
@@ -262,11 +269,9 @@ public class ProveedorModel implements Serializable {
     public void guardarProveedorREG() {
         try {
             boolean guardar = saveProveedorREG();
-            if (guardar && getContr() != null && getContr().getId() == -999) {
+            if (guardar) {
                 this.traerDatosProveedor();
-                getLstConveniosTabs().get(0).setProveedorVo(this.getProveedor());
-            } else if (guardar) {
-                traerDatosProveedor();
+                contratoBean.getContratoVo().setProveedorVo(this.getProveedor());
             }
             PrimeFaces.current().executeScript(";cerrarDialogoModal(dialogoREG);");
         } catch (Exception e) {
@@ -306,9 +311,7 @@ public class ProveedorModel implements Serializable {
             setNuevaCta(false);
             setCuentaVOEdit(idCuenta);
             boolean guardar = eliminarCuenta();
-            if (guardar && getContr() != null && getContr().getId() == -999) {
-                actualizarCuentas();
-            } else if (guardar) {
+            if (guardar) {
                 contratoBean.actualizarCtasProveedor();
             }
 
@@ -321,9 +324,7 @@ public class ProveedorModel implements Serializable {
     public void guardarNuevaCuenta() {
         try {
             boolean guardar = saveNuevaCuenta();
-            if (guardar && getContr() != null && getContr().getId() == -999) {
-                actualizarCuentas();
-            } else if (guardar) {
+            if (guardar) {
                 contratoBean.actualizarCtasProveedor();
             }
             PrimeFaces.current().executeScript(";cerrarDialogoModal(dialogoDB);");
@@ -361,9 +362,7 @@ public class ProveedorModel implements Serializable {
     public void borrarContacto(int idContacto) {
         try {
             boolean guardar = eliminarContacto(idContacto);
-            if (guardar && getContr() != null && getContr().getId() == -999) {
-                actualizarContactos();
-            } else if (guardar) {
+            if (guardar) {
                 contratoBean.actualizarContactosProveedor();
             }
         } catch (Exception e) {
@@ -375,9 +374,7 @@ public class ProveedorModel implements Serializable {
     public void borrarContactoRL(int idContacto) {
         try {
             boolean guardar = eliminarContacto(idContacto);
-            if (guardar && getContr() != null && getContr().getId() == -999) {
-                actualizarRepLegal();
-            } else if (guardar) {
+            if (guardar) {
                 contratoBean.actualizarRepLegalProveedor();
             }
         } catch (Exception e) {
@@ -389,9 +386,7 @@ public class ProveedorModel implements Serializable {
     public void borrarContactoRT(int idContacto) {
         try {
             boolean guardar = eliminarContacto(idContacto);
-            if (guardar && getContr() != null && getContr().getId() == -999) {
-                actualizarRepTecnico();
-            } else if (guardar) {
+            if (guardar) {
                 contratoBean.actualizarRepTecnicoProveedor();
             }
         } catch (Exception e) {
@@ -424,9 +419,7 @@ public class ProveedorModel implements Serializable {
         try {
 
             boolean guardar = guardarNuevoRL();
-            if (guardar && getContr() != null && getContr().getId() == -999) {
-                actualizarRepLegal();
-            } else if (guardar) {
+            if (guardar) {
                 contratoBean.actualizarRepLegalProveedor();
             }
             PrimeFaces.current().executeScript(";cerrarDialogoModal(dialogoRL);");
@@ -454,9 +447,7 @@ public class ProveedorModel implements Serializable {
     public void guardarTecnico() {
         try {
             boolean guardar = guardarNuevoRT();
-            if (guardar && getContr() != null && getContr().getId() == -999) {
-                actualizarRepTecnico();
-            } else if (guardar) {
+            if (guardar) {
                 contratoBean.actualizarRepTecnicoProveedor();
             }
             PrimeFaces.current().executeScript(";cerrarDialogoModal(dialogoRT);");
@@ -500,9 +491,7 @@ public class ProveedorModel implements Serializable {
     public void guardarDocumento() {
         try {
             boolean guardar = guardarNuevoDOC();
-            if (guardar && getContr() != null && getContr().getId() == -999) {
-                actualizarDocumentos();
-            } else if (guardar) {
+            if (guardar) {
                 contratoBean.actualizarContactosProveedor();
             }
             PrimeFaces.current().executeScript(";cerrarDialogoModal(dialogoCO);");
@@ -515,9 +504,7 @@ public class ProveedorModel implements Serializable {
     public void guardarContacto() {
         try {
             boolean guardar = guardarNuevoCO();
-            if (guardar && getContr() != null && getContr().getId() == -999) {
-                actualizarContactos();
-            } else if (guardar) {
+            if (guardar) {
                 contratoBean.actualizarContactosProveedor();
             }
             PrimeFaces.current().executeScript(";cerrarDialogoModal(dialogoCO);");
@@ -580,9 +567,7 @@ public class ProveedorModel implements Serializable {
         try {
             if (idProv > 0) {
                 boolean guardo = addDocumentos(idProv);
-                if (guardo && getContr() != null && getContr().getId() == -999) {
-                    actualizarDocumentos();
-                } else if (guardo) {
+                if (guardo) {
                     contratoBean.actualizarDocumentosProveedor();
                 }
             }
@@ -592,7 +577,6 @@ public class ProveedorModel implements Serializable {
             FacesUtils.addErrorMessage("Ocurrió una excepción, favor de comunicar a sia@ihsa.mx");
         }
     }
-    
 
     public void agregarArchivoDocumento(int idDocProv) {
         try {
@@ -758,7 +742,7 @@ public class ProveedorModel implements Serializable {
         proveedor.setIdPago(Constantes.ID_60_DIAS);
         proveedor.setTipoProveedor(Constantes.CERO);
         proveedorImpl.procesarProveedor(sesion.getUsuarioSesion(), proveedor);
-        lstConveniosTabs.get(0).setProveedorVo(proveedorImpl.traerProveedor(idProveedor, sesion.getRfcEmpresa()));
+        proveedor = (proveedorImpl.traerProveedor(idProveedor, sesion.getRfcEmpresa()));
     }
 
     public boolean saveProveedorDG() {
@@ -1087,27 +1071,6 @@ public class ProveedorModel implements Serializable {
             guardar = false;
         }
         return guardar;
-    }
-
-    public void actualizarCuentas() {
-        getProveedor().setCuentas(cuentaBancoProveedorImpl.traerCuentas(getProveedor().getIdProveedor(), sesion.getRfcEmpresa()));
-    }
-
-    public void actualizarRepLegal() {
-        getProveedor().setLstRL(contactoProveedorImpl.traerContactoPorProveedor(getProveedor().getIdProveedor(), Constantes.CONTACTO_REP_LEGAL));
-    }
-
-    public void actualizarRepTecnico() {
-        getProveedor().setLstRT(contactoProveedorImpl.traerContactoPorProveedor(getProveedor().getIdProveedor(), Constantes.CONTACTO_REP_TECNICO));
-    }
-
-    public void actualizarContactos() {
-        getProveedor().setContactos(contactoProveedorImpl.traerContactoPorProveedor(getProveedor().getIdProveedor(), Constantes.CONTACTO_REP_COMPRAS));
-        //getProveedor().getContactos().addAll(contactoProveedorImpl.traerContactoPorProveedor(getProveedor().getIdProveedor(), 0));
-    }
-
-    public void actualizarDocumentos() {
-        getProveedor().setLstDocsProveedor(pvClasificacionArchivoImpl.traerArchivoPorProveedorOid(getProveedor().getIdProveedor(), 0));
     }
 
     public List<SelectItem> getListaMonedas() {
@@ -1644,34 +1607,6 @@ public class ProveedorModel implements Serializable {
      */
     public void setEditarProveedor(boolean editarProveedor) {
         this.editarProveedor = editarProveedor;
-    }
-
-    /**
-     * @return the lstConveniosTabs
-     */
-    public List<ContratoVO> getLstConveniosTabs() {
-        return lstConveniosTabs;
-    }
-
-    /**
-     * @param lstConveniosTabs the lstConveniosTabs to set
-     */
-    public void setLstConveniosTabs(List<ContratoVO> lstConveniosTabs) {
-        this.lstConveniosTabs = lstConveniosTabs;
-    }
-
-    /**
-     * @return the contr
-     */
-    public ContratoVO getContr() {
-        return contr;
-    }
-
-    /**
-     * @param contr the contr to set
-     */
-    public void setContr(ContratoVO contr) {
-        this.contr = contr;
     }
 
     /**

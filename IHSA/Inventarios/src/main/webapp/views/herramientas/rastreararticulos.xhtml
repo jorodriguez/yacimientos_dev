@@ -16,62 +16,64 @@
     </ui:define>
 
     <ui:define name="contenido">
-        <h:messages id="mensajesPagina" showDetail="false" globalOnly="true" styleClass="mensajes-ul"
-                    infoClass="ui-widget ui-corner-all ui-state-highlight input-msg"
-                    errorClass=" ui-widget ui-corner-all ui-state-error input-msg"/>
+        <h:form id="frmRastrearArt">
+            <h:messages id="mensajesPagina" showDetail="false" globalOnly="true" styleClass="mensajes-ul"
+                        infoClass="ui-widget ui-corner-all ui-state-highlight input-msg"
+                        errorClass=" ui-widget ui-corner-all ui-state-error input-msg"/>
 
-        <h:panelGrid id="panelFiltro" columns="2" style="margin-bottom: 30px">
-            <h:outputText value="#{msg['sia.inventarios.herramientas.rastrear.filtro']}:"/>
-            <h:inputText value="#{rastrearArticulo.filtro}"
-                         styleClass="ui-inputfield ui-textentry ui-widget ui-state-optional ui-corner-all"/>
-            <h:commandLink value="#{msg['sia.inventarios.herramientas.rastrear.buscar']}"
-                           action="#{rastrearArticulo.buscar}"
-                           styleClass="hbutton-bu">
-                <f:ajax execute="panelFiltro" render="@all"/>
-            </h:commandLink>
-        </h:panelGrid>
+            <h:panelGrid id="panelFiltro" columns="2" style="margin-bottom: 30px">
+                <h:outputText value="#{msg['sia.inventarios.herramientas.rastrear.filtro']}:"/>
+                <h:inputText value="#{rastrearArticulo.filtro}"
+                             styleClass="ui-inputfield ui-textentry ui-widget ui-state-optional ui-corner-all"/>
+                <h:commandLink value="#{msg['sia.inventarios.herramientas.rastrear.buscar']}"
+                               action="#{rastrearArticulo.buscar}"
+                               styleClass="hbutton-bu">
+                    <f:ajax execute="panelFiltro" render="@form"/>
+                </h:commandLink>
+            </h:panelGrid>
 
-        <p:dataTable id="tablaMovimientos"
-                       value="#{rastrearArticulo.lista}"
-                       var="m"
-                       paginator="true"
-                       paginatorPosition="bottom"
-                       rows="#{rastrearArticulo.tamanioPagina}"
-                       style="width: 1200px"
-                       rendered="#{not rastrearArticulo.lista.isEmpty()}">
-            <p:column id="id" headerText="#{msg['sia.inventarios.herramientas.rastrear.identificador']}"
-                        style="width: 100px">
-                <h:outputText value="#{m.id}"/>
-            </p:column>
-            <p:column id="fecha" headerText="#{msg['sia.inventarios.herramientas.rastrear.fecha']}"
-                        style="width: 250px">
-                <h:outputText value="#{rastrearArticulo.fechaConFormato(m.fecha)}"/>
-            </p:column>
-            <p:column id="nombre" headerText="#{msg['sia.inventarios.herramientas.rastrear.tipoMovimiento']}"
-                        style="width: 150px">
-                <h:outputText value="#{tipoMovimiento.getNombre(m.tipoMovimiento)}"/>
-            </p:column>
-            <p:column id="almacen" headerText="#{msg['sia.inventarios.herramientas.rastrear.almacenOrigen']}"
-                        style="width: 200px">
-                <h:outputText value="#{m.almacenNombre}"/>
-            </p:column>
-            <p:column id="usuario" headerText="#{msg['sia.inventarios.herramientas.rastrear.usuarioResponsable']}"
-                        style="width: 150px">
-                <h:outputText value="#{m.generoNombre}"/>
-            </p:column>
-            <p:column id="folioOrdenCompra"
-                        headerText="#{msg['sia.inventarios.herramientas.rastrear.folioOrdenCompra']}"
-                        style="width: 150px">
-                <h:outputText value="#{m.folioOrdenCompra}"/>
-            </p:column>
-            <p:column styleClass="icon-column" style="width: 100px">
-                <h:link styleClass="link" value="#{msg['sia.inventarios.herramientas.rastrear.verDetalle']}"
-                        outcome="/views/inventarios/movimiento">
-                    <f:param name="transaccionId" value="#{m.id}"/>
-                    <f:param name="lista" value="true"/>
-                </h:link>
-            </p:column>
-            <p:ajax event="page"/>
-        </p:dataTable>
+            <p:dataTable id="tablaMovimientos"
+                         value="#{rastrearArticulo.lista}"
+                         var="m"
+                         paginator="true"
+                         paginatorPosition="bottom"
+                         rows="#{rastrearArticulo.tamanioPagina}"
+                         style="width: 1200px"
+                         rendered="#{not rastrearArticulo.lista.isEmpty()}">
+                <p:column id="id" headerText="#{msg['sia.inventarios.herramientas.rastrear.identificador']}"
+                          style="width: 100px">
+                    <h:outputText value="#{m.id}"/>
+                </p:column>
+                <p:column id="fecha" headerText="#{msg['sia.inventarios.herramientas.rastrear.fecha']}"
+                          style="width: 250px">
+                    <h:outputText value="#{rastrearArticulo.fechaConFormato(m.fecha)}"/>
+                </p:column>
+                <p:column id="nombre" headerText="#{msg['sia.inventarios.herramientas.rastrear.tipoMovimiento']}"
+                          style="width: 150px">
+                    <h:outputText value="#{tipoMovimiento.getNombre(m.tipoMovimiento)}"/>
+                </p:column>
+                <p:column id="almacen" headerText="#{msg['sia.inventarios.herramientas.rastrear.almacenOrigen']}"
+                          style="width: 200px">
+                    <h:outputText value="#{m.almacenNombre}"/>
+                </p:column>
+                <p:column id="usuario" headerText="#{msg['sia.inventarios.herramientas.rastrear.usuarioResponsable']}"
+                          style="width: 150px">
+                    <h:outputText value="#{m.generoNombre}"/>
+                </p:column>
+                <p:column id="folioOrdenCompra"
+                          headerText="#{msg['sia.inventarios.herramientas.rastrear.folioOrdenCompra']}"
+                          style="width: 150px">
+                    <h:outputText value="#{m.folioOrdenCompra}"/>
+                </p:column>
+                <p:column styleClass="icon-column" style="width: 100px">
+                    <h:link styleClass="link" value="#{msg['sia.inventarios.herramientas.rastrear.verDetalle']}"
+                            outcome="/views/inventarios/movimiento">
+                        <f:param name="transaccionId" value="#{m.id}"/>
+                        <f:param name="lista" value="true"/>
+                    </h:link>
+                </p:column>
+                <p:ajax event="page"/>
+            </p:dataTable>
+        </h:form>
     </ui:define>
 </ui:composition>

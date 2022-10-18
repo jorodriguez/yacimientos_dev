@@ -16,17 +16,17 @@
 
             <ui:define name="contenido">
                 <h:form id="frmTickets">
-                    <div class="container">
-                        <p:commandLink action="#{incidenciaBean.crearIncidecnia}" styleClass="btn btn-primary"
+                    <div class="row">
+                        <p:commandLink action="#{incidenciaBean.crearIncidecnia}" styleClass="btn btn-primary text-white"
                                        title="Registrar nuevo ticket" immediate="true" update="frmNuevoTick">
                             <i class="fa fa-plus"/>
                         </p:commandLink>
                         <p:commandLink action="#{incidenciaBean.refrescarTickets}" styleClass="btn btn-primary"
                                        title="Refrescar tickets" immediate="true">
-                            <i class="fa fa-refresh"/>
+                            <i class="fa fa-sync  text-white"/>
                         </p:commandLink>
                     </div>
-                    <div class="container">
+                    <div class="row">
                         <p:dataTable value="#{incidenciaBean.incidencias}" var="dataInc">
                             <p:column headerText="Código" style="width: 5%">
                                 <h:outputText value="#{dataInc.codigo}"/>
@@ -40,35 +40,32 @@
                             <p:column headerText="Descripción" styleClass="text-left" style="text-align: left; ">
                                 <h:outputText value="#{dataInc.descripcion}"/>
                             </p:column>
-                            <p:column headerText="Fecha" styleClass="text-left">
+                            <p:column headerText="Fecha" styleClass="text-left" width="5%">
                                 <h:outputText value="#{dataInc.fechaGenero}"/>
                             </p:column>
-                            <p:column headerText="Hora" styleClass="text-left">
+                            <p:column headerText="Hora" styleClass="text-left" width="5%">
                                 <h:outputText value="#{dataInc.horaGenero}"/>
                             </p:column>
-                            <p:column headerText="Estado" styleClass="text-left">
+                            <p:column headerText="Estado" styleClass="text-left" width="8%">
                                 <h:outputText value="#{dataInc.estado}"/>
                             </p:column>
                             <p:column width="40">
-                                <p:commandLink action="#{incidenciaBean.agregarAdjunto(e)}"
-                                               title="Agregar archivo">
+                                <p:commandLink action="#{incidenciaBean.agregarAdjunto(dataInc.idIncidencia)}"
+                                               title="Agregar archivo" process="@this" update="frmAdjTick">
                                     <i class="fa fa-paperclip text-primary"></i>
-                                    <f:param name="idTicket" value="#{dataInc.idIncidencia}"/>
                                 </p:commandLink>					
                             </p:column>
                             <p:column width="40"> 
-                                <p:commandLink action="#{incidenciaBean.inicioReenviarTicket(e)}"
-                                               title="Agregar complemento">
+                                <p:commandLink action="#{incidenciaBean.inicioReenviarTicket(dataInc.idIncidencia)}"
+                                               title="Agregar complemento"  process="@this" update="frmCompTick">
                                     <i class="fa fa-edit text-primary"></i>
-                                    <f:param name="idTicket" value="#{dataInc.idIncidencia}"/>
                                 </p:commandLink>					
                             </p:column>
                             <p:column width="40">
-                                <p:commandLink action="#{incidenciaBean.inicioCerrarTicket(e)}"
+                                <p:commandLink action="#{incidenciaBean.inicioCerrarTicket(dataInc.idIncidencia)}"
                                                rendered="#{dataInc.idEstado eq 1210 }"
-                                               title="Finalizar el ticket">
+                                               title="Finalizar el ticket" process="@this" update="frmCierreTick">
                                     <i class="fa fa-close text-warning"></i>
-                                    <f:param name="idTicket" value="#{dataInc.idIncidencia}"/>
                                 </p:commandLink>					
                             </p:column>
                         </p:dataTable>
@@ -83,14 +80,14 @@
                             <h:form id="frmAdjTick">
                                 <div class="modal-body">
                                     <p:fileUpload id="adjArch"
-                                                   styleClass="btn btn-default"
-                                                   label="Archivo"
-                                                   listener="#{incidenciaBean.subirAdjunto}"
-                                                   immediate="false" />
-                                    <h:commandButton  styleClass="btn btn-default" id="uploadFile" value="Subir y Enviar"/>
+                                                  styleClass="btn btn-default"
+                                                  label="Archivo"
+                                                  listener="#{incidenciaBean.subirAdjunto}"
+                                                  immediate="false" 
+                                                  update="frmAdjTick:dtArchivo"/>
                                     <div class="form-row">
                                         <p:dataTable id="dtArchivo" value="#{incidenciaBean.incidenciasAdjunto}" var="dataAdj"
-                                                       rowIndexVar="index">
+                                                     rowIndexVar="index">
                                             <p:column headerText="Evidencia">
                                                 <h:outputLink target="_blank"  
                                                               value="/Sia/AbrirArchivo?ZWZ2W=#{dataAdj.id}&amp;ZWZ3W=#{dataAdj.uuid}">
@@ -99,7 +96,8 @@
                                             </p:column>
                                             <p:column >
                                                 <p:commandLink action="#{incidenciaBean.eliminarArchivo(dataAdj.idTabla)}"
-                                                               immediate="true" rendered="#{incidenciaBean.incidenciaVo.idEstado eq 1210}">
+                                                               rendered="#{incidenciaBean.incidenciaVo.idEstado eq 1210}"
+                                                               process="@this" update="frmAdjTick:dtArchivo">
                                                     <i class="fa fa-trash text-danger"/>
                                                     <f:ajax execute="@this" render="@form"/>
                                                 </p:commandLink> 
@@ -108,8 +106,8 @@
                                     </div>
                                 </div>
                                 <div class="modal-footer">
-                                    <h:commandButton value="Cerrar" styleClass="btn btn-default"
-                                                     onclick="$(dialogoAdjuntaarTickt).modal('hide');"/>
+                                    <p:commandLink immediate="true" value="Cerrar" styleClass="btn btn-default"
+                                                   onclick="$(dialogoAdjuntaarTickt).modal('hide');"/>
                                 </div>
                             </h:form>
                         </div>
@@ -187,14 +185,15 @@
                                     </div>
                                 </div> 
                                 <div class="modal-footer">
-                                    <h:commandButton value="Cancelar" immediate="true"
-                                                     styleClass="btn btn-default"
-                                                     onclick="$(dialogoNuevoTickts).modal('hide');"
-                                                     title="Cerrar ventana de crear tickets...">
-                                    </h:commandButton>
-                                    <h:commandButton value="Guardar y enviar"
+                                    <p:commandLink value="Cancelar" immediate="true"
+                                                   styleClass="btn btn-default"
+                                                   onclick="$(dialogoNuevoTickts).modal('hide');"
+                                                   title="Cerrar ventana de crear tickets...">
+                                    </p:commandLink>
+                                    <p:commandButton value="Guardar y enviar"
                                                      styleClass="btn btn-primary"
-                                                     action="#{incidenciaBean.guardarEnviarIncidencia(e)}"
+                                                     action="#{incidenciaBean.guardarEnviarIncidencia}"
+                                                     process="@form" update="frmTickets"
                                                      title="Guardar y solicitar tickets..."/>
                                 </div>
                             </h:form>
@@ -222,10 +221,11 @@
                                                    styleClass="btn btn-default"
                                                    onclick="$(dialogoComplementoTickt).modal('hide');"
                                                    title="Cerrar ventana de complemento de tickets..."/>
-                                    <p:commandLink value="Guardar y enviar"
-                                                   styleClass="btn btn-primary"
-                                                   action="#{incidenciaBean.reenviarTicket(e)}"
-                                                   title="Complemento de tickets..."/>
+                                    <p:commandButton value="Guardar y enviar"
+                                                     styleClass="btn btn-primary"
+                                                     action="#{incidenciaBean.reenviarTicket}"
+                                                     process="@form" update="frmTickets"
+                                                     title="Complemento de tickets..."/>
                                 </div>
                             </h:form>
                         </div>
@@ -253,10 +253,11 @@
                                                    styleClass="btn btn-default"
                                                    onclick="$(dialogoCierreTickt).modal('hide');"
                                                    title="Cerrar ventana de cierre de tickets..."/>
-                                    <p:commandLink value="Guardar y enviar"
-                                                   styleClass="btn btn-primary"
-                                                   action="#{incidenciaBean.cerrarTicket(e)}"
-                                                   title="Cierre de tickets..."/>
+                                    <p:commandButton value="Guardar y enviar"
+                                                     styleClass="btn btn-primary"
+                                                     action="#{incidenciaBean.cerrarTicket}"
+                                                     process="@form" update="frmTickets"
+                                                     title="Cierre de tickets..."/>
                                 </div>
                             </h:form>
                         </div>

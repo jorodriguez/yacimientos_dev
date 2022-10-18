@@ -103,9 +103,9 @@ public class ServiciosCompras implements Serializable {
 
     private enum OperacionRequisicion {
         REVISAR, APROBAR, DEVOLVER, CANCELAR, VISTO_BUENO_CONTABILIDAD, ASIGNAR
-    };
+    }
 
-    private final static UtilLog4j LOGGER = UtilLog4j.log;
+    private static final  UtilLog4j LOGGER = UtilLog4j.log;
 
     @GET
     @Path("/buscarUsuario/{user}/{clave}")

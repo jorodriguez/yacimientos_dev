@@ -58,7 +58,7 @@ public class GrMapaImpl extends AbstractFacade<GrMapa> {
             sb.append(" FROM GR_MAPA ");
             //sb.append(" where ELIMINADO = 'False' ");
             if(codigo != null && !codigo.isEmpty()){
-                sb.append(" where upper(CODIGO) = upper('").append(codigo).append("')");
+                sb.append(" where upper(CODIGO) = upper(trim('").append(codigo).append("'))");
             }
             sb.append(" order by CODIGO ");
             UtilLog4j.log.info(this, "Q: : : : : : : : : : " + sb.toString());

@@ -39,8 +39,8 @@ public class NoticiaVO extends Vo implements Serializable {
 
     //Usado para controlar el cuadro de texto al dar clic en la opc. comentar
     private boolean comentar = false;
-    private List<ComentarioVO> listaComentario = new ArrayList<ComentarioVO>();
-    List<NoticiaAdjuntoVO> listaAdjunto = new ArrayList<NoticiaAdjuntoVO>();
+    private List<ComentarioVO> listaComentario = new ArrayList<>();
+    List<NoticiaAdjuntoVO> listaAdjunto = new ArrayList<>();
     private boolean mostrarComentarios = false;
     private int idCampo;
     private String respuesta;

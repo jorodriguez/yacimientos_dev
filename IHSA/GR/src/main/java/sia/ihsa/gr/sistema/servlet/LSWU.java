@@ -18,6 +18,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
 import sia.constantes.Constantes;
 import sia.util.UtilLog4j;
@@ -33,7 +34,7 @@ import sia.ihsa.gr.sistema.soporte.Sesion;
 public class LSWU extends HttpServlet {
     
     @Inject
-    private Sesion sesion;
+    Sesion sesion;
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -56,7 +57,10 @@ public class LSWU extends HttpServlet {
             getLogger().info(this, "sesion != null");            
             sesion.setUser(request.getParameter("Z4BX2").toString());
             sesion.setPass(request.getParameter("ZWZ4W").toString());
-            response.sendRedirect(sesion.accederSistema());
+            String liga = sesion.accederSistema();
+            HttpSession session = request.getSession();
+            sesion.subirValoresContexto(session);
+            response.sendRedirect(liga);
         } catch (Exception ex) {
             getLogger().error(this, "El usuario no cuenta con permisos asignados para ingresar al módulo.", ex);
         }

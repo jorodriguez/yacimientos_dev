@@ -253,20 +253,20 @@ public class GrRutasZonasImpl extends AbstractFacade<GrRutasZonas> {
         boolean guarda = false;
         try {
             nuevo = find(vo.getId());
-            if ((!vo.isActiva() && nuevo.isEliminado())
-                    || (vo.isActiva() && nuevo.isEliminado())) {
+            if ((nuevo.isEliminado() && vo.isActiva())
+                    || (!nuevo.isEliminado() && !vo.isActiva())) {
                 nuevo.setEliminado(vo.isActiva() ? Constantes.BOOLEAN_FALSE : Constantes.BOOLEAN_TRUE);
                 guarda = true;
             }
 
-            if ((nuevo.isCancelasr()) || (!vo.isCancelasr() && nuevo.isCancelasr())
-                    || (vo.isCancelasr() && nuevo.isCancelasr())) {
+            if ((nuevo.isCancelasr() && !vo.isCancelasr())
+                    || (!nuevo.isCancelasr() && vo.isCancelasr())) {
                 nuevo.setCancelasr(vo.isCancelasr() ? Constantes.BOOLEAN_TRUE : Constantes.BOOLEAN_FALSE);
                 guarda = true;
             }
 
-            if ((nuevo.isCancelasn()) || (!vo.isCancelasn() && nuevo.isCancelasn())
-                    || (vo.isCancelasn() && !nuevo.isCancelasn())) {
+            if ((nuevo.isCancelasn() && !vo.isCancelasn())
+                    || (!nuevo.isCancelasn() && vo.isCancelasn())) {
                 nuevo.setCancelasn(vo.isCancelasn() ? Constantes.BOOLEAN_TRUE : Constantes.BOOLEAN_FALSE);
                 guarda = true;
             }

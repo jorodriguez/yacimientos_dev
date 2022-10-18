@@ -145,7 +145,7 @@ public class SolicitarMaterialBean implements Serializable {
                     FacesUtils.addInfoMessage("frmUser:error", "Se enviaron las solicitudes");
                     if (!isSolicitaEstancia()) {
                         setSolicitaEstancia(false);
-                        this.getFilaSeleccionada().clear();
+                        getFilaSeleccionada().clear();
                         traerListaMateriales();
                         return "solicitudMaterialEmpleado";
                     } else {

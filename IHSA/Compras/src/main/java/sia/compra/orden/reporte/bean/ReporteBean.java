@@ -24,10 +24,12 @@ import org.primefaces.PrimeFaces;
 import org.primefaces.event.TabChangeEvent;
 import org.primefaces.shaded.json.JSONException;
 import org.primefaces.shaded.json.JSONObject;
+import sia.compra.requisicion.bean.backing.FacesUtilsBean;
 import sia.compra.requisicion.bean.backing.UsuarioBean;
 import sia.constantes.Constantes;
 import sia.metabase.impl.SiaMetabaseImpl;
 import sia.modelo.gerencia.vo.GerenciaVo;
+import sia.modelo.proveedor.Vo.ProveedorVo;
 import sia.modelo.sgl.vo.OrdenVO;
 import sia.modelo.sgl.vo.RequisicionVO;
 import sia.modelo.usuario.vo.UsuarioResponsableGerenciaVo;
@@ -97,11 +99,13 @@ public class ReporteBean implements Serializable {
     private int idStatus;
     private int idGerencia;
     private int idProveedor;
+    @Getter
+    @Setter
+    private String proveedorSeleccionado;
     private String idUsuario;
     private String nombreUsuario;
     private String panelSeleccion = "TODO";
     private String conContrato = "Si";
-    private String jsonProveedores = "";
     private int diasAnticipados = 0;
     private int idMoneda = 1;
     private int idGerenciaCompra;
@@ -139,8 +143,8 @@ public class ReporteBean implements Serializable {
     }
 
     private void llenarGerencias() {
+        listaGerencias = new ArrayList<>();
         List<GerenciaVo> geres = gerenciaImpl.getAllGerenciaByApCompaniaAndApCampo(usuarioBean.getCompania().getRfc(), usuarioBean.getUsuarioConectado().getApCampo().getId(), "nombre", true, true, false);
-        //gerenciaImpl.traerGerenciaAbreviatura(usuarioBean.getUsuarioConectado().getApCampo().getId());
         geres.stream().forEach(ger -> {
             listaGerencias.add(new SelectItem(ger.getId(), ger.getNombre()));
         });
@@ -322,10 +326,17 @@ public class ReporteBean implements Serializable {
         if (getPanelSeleccion().equals("TODOS")) {
             lo = autorizacionesOrdenImpl.traerOrdenPorProveedor(getInicio().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")), getFin().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")), usuarioBean.getUsuarioConectado().getApCampo().getId(), Constantes.ESTATUS_AUTORIZADA);
         } else {
-            if (getEstadoOrden().equals(Constantes.ENVIADA_PROVEEDOR)) {
-                lo = autorizacionesOrdenImpl.traerOrdenPorProveedor(getInicio().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")), getFin().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")), usuarioBean.getUsuarioConectado().getApCampo().getId(), Constantes.ESTATUS_AUTORIZADA, getIdProveedor(), getEstadoOrden());
+            ProveedorVo pvVo = proveedorImpl.traerProveedorPorNombre(proveedorSeleccionado);
+            if (pvVo != null) {
+
+                idProveedor = pvVo.getIdProveedor();
+                if (getEstadoOrden().equals(Constantes.ENVIADA_PROVEEDOR)) {
+                    lo = autorizacionesOrdenImpl.traerOrdenPorProveedor(getInicio().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")), getFin().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")), usuarioBean.getUsuarioConectado().getApCampo().getId(), Constantes.ESTATUS_AUTORIZADA, getIdProveedor(), getEstadoOrden());
+                } else {
+                    lo = autorizacionesOrdenImpl.traerOrdenPorProveedor(getInicio().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")), getFin().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")), usuarioBean.getUsuarioConectado().getApCampo().getId(), Constantes.ORDENES_SIN_APROBAR, getIdProveedor(), getEstadoOrden());
+                }
             } else {
-                lo = autorizacionesOrdenImpl.traerOrdenPorProveedor(getInicio().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")), getFin().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")), usuarioBean.getUsuarioConectado().getApCampo().getId(), Constantes.ORDENES_SIN_APROBAR, getIdProveedor(), getEstadoOrden());
+                FacesUtilsBean.addErrorMessage("Proveedor no encontrado");
             }
         }
         lista = lo;
@@ -433,7 +444,7 @@ public class ReporteBean implements Serializable {
                 }
                 break;
             default:
-                 listaRevisan.add(new SelectItem("", "No hay usuario"));
+                listaRevisan.add(new SelectItem("", "No hay usuario"));
                 break;
         }
     }
@@ -443,9 +454,13 @@ public class ReporteBean implements Serializable {
         lista = lo;
     }
 
-    public void llenarProveedor() {
-        jsonProveedores = this.proveedorImpl.getProveedorJson(usuarioBean.getCompania().getRfc(), ProveedorEnum.ACTIVO.getId());
-        PrimeFaces.current().executeScript(";llenarProveedor(" + "'frmReporteOCSPorProveedor'," + jsonProveedores + ");");
+    public List<String> llenarProveedor(String cadena) {
+        List<String> proveedores = new ArrayList<>();
+        List<ProveedorVo> pvdrs = proveedorImpl.traerProveedorPorParteNombre(cadena, usuarioBean.getUsuarioConectado().getId(), ProveedorEnum.ACTIVO.getId());
+        pvdrs.stream().forEach(pv -> {
+            proveedores.add(pv.getNombre());
+        });
+        return proveedores;
     }
 
     public void traerRequisicionesProceso() {

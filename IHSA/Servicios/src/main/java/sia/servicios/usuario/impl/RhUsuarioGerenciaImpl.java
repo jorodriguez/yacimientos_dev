@@ -378,7 +378,7 @@ public class RhUsuarioGerenciaImpl extends AbstractFacade<RhUsuarioGerencia> {
 	List<UsuarioGerenciaVo> ltemp = null;
 	UsuarioGerenciaVo o;
 	String porUsuario = "";
-	if (!idUsuario.isEmpty()) {
+	if (idUsuario != null && !idUsuario.isEmpty()) {
 	    porUsuario = " and ug.USUARIO = '" + idUsuario + "'";
 	}
 	try {
@@ -398,13 +398,13 @@ public class RhUsuarioGerenciaImpl extends AbstractFacade<RhUsuarioGerencia> {
 
 	    l = em.createNativeQuery(bodyQuery.toString()).getResultList();
 	    if (l != null && !l.isEmpty()) {
-		lv = new ArrayList<UsuarioGerenciaVo>();
+		lv = new ArrayList<>();
 		for (Object[] objects : l) {
 		    lv.add(castUsuarioGerenciaVO(objects));
 		}
 
 		// nueva lista
-		TreeSet<String> nombre = new TreeSet<String>();
+		TreeSet<String> nombre = new TreeSet<>();
 		for (UsuarioGerenciaVo usuarioGerenciaVo : lv) {
 		    nombre.add(usuarioGerenciaVo.getNombre());
 		}
@@ -412,7 +412,7 @@ public class RhUsuarioGerenciaImpl extends AbstractFacade<RhUsuarioGerencia> {
 		int i = 0;
 		ltemp = new ArrayList<UsuarioGerenciaVo>();
 		for (String string : nombre) {
-		    List<UsuarioGerenciaVo> lt = new ArrayList<UsuarioGerenciaVo>();
+		    List<UsuarioGerenciaVo> lt = new ArrayList<>();
 		    o = new UsuarioGerenciaVo();
 		    o.setNombre(string);
 		    for (UsuarioGerenciaVo usuarioGerenciaVo : lv) {
@@ -442,7 +442,6 @@ public class RhUsuarioGerenciaImpl extends AbstractFacade<RhUsuarioGerencia> {
 	} catch (Exception e) {
 	    e.getStackTrace();
 	    log("Error al traer usuario  gerenciad " + e.getMessage());
-	    e.printStackTrace();
 	    return null;
 	}
 	return ltemp;
