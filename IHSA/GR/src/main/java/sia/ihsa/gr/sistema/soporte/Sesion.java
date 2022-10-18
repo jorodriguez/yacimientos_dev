@@ -247,19 +247,23 @@ public class Sesion implements Serializable {
         switch (tabTitle) {
             case "Viajes Pendientes":
                 setRutasViajesPenMtd();
-                PrimeFaces.current().ajax().update("frmViajesPen:tbViajes:pnlRutas");
+                //PrimeFaces.current().ajax().update("frmViajesPen:tbViajes:pnlRutas");
+                PrimeFaces.current().ajax().update("frmViajesPen");
                 break;
             case "Viajes en Proceso":
                 setRutasViajesProMtd();
-                PrimeFaces.current().ajax().update("frmViajesPen:tbViajes:pnlViaProc");
+                //PrimeFaces.current().ajax().update("frmViajesPen:tbViajes:pnlViaProc");
+                PrimeFaces.current().ajax().update("frmViajesPro");
                 break;
             case "Viajes por autorizar":
                 setRutasViajesPauMtd();
-                PrimeFaces.current().ajax().update("frmViajesPen:tbViajes:pnlViaPausa");
+                //PrimeFaces.current().ajax().update("frmViajesPen:tbViajes:pnlViaPausa");
+                PrimeFaces.current().ajax().update("frmViajesAut");
                 break;
             default:
                 setRutasViajesIntMtd();
-                PrimeFaces.current().ajax().update("frmViajesPen:tbViajes:pnlViajesInter");
+                //PrimeFaces.current().ajax().update("frmViajesPen:tbViajes:pnlViajesInter");
+                PrimeFaces.current().ajax().update("frmViajesInt");
         }
     }
 
