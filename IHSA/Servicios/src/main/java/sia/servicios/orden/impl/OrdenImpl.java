@@ -1020,15 +1020,23 @@ public class OrdenImpl extends AbstractFacade<Orden> {
             orden.setSuperaMonto(Constantes.BOOLEAN_FALSE);
             //
             orden.setFecha(new Date());
+            
             if (orden.getConsecutivo() == null) {
                 if (tipoOrden.equals("Orden de Compra")) {
                     orden.setEsOc(true);
                     orden.setConsecutivo(folioServicioImpl.getFolio("ORDEN_CONSECUTIVO", orden.getApCampo().getId()));
-                } else {
+                } 
+                else if(tipoOrden.equals("Orden de Servicio")){
                     orden.setEsOc(false);
                     orden.setConsecutivo(folioServicioImpl.getFolio("ORDEN_SERVICIO_CONSECUTIVO", orden.getApCampo().getId()));
                 }
+                else{
+                    orden.setEsOc(false);
+                    orden.setConsecutivo(folioServicioImpl.getFolio("ORDEN_SUBCONTRATO", orden.getApCampo().getId()));
+                }
             }
+            
+                       
             if (iva > 0) {
                 Impuesto impuesto = impuestoRemote.find(iva);
                 orden.setConIva(Constantes.BOOLEAN_TRUE);

@@ -29,7 +29,7 @@
                                          value="Guardar"
                                          styleClass="btn btn-info" 
                                          action="#{sesion.agregarComentario()}"
-                                         process="@form" update="@form"/>
+                                         process="@form" update="frmPnlViajeDet"/>
                         <p:commandLink
                             value="Cerrar"
                             styleClass="btn btn-default"
@@ -253,7 +253,7 @@
 
 
     <div class="modal fade" id="dialogoPopUpViajeDet" data-backdrop="static" data-keyboard="false">
-        <div class="modal-dialog modal-lg">
+        <div class="modal-dialog modal-lg" style="max-width: 70%;">
             <div class="modal-content" >
                 <div class="modal-header">                    
                     <h4 class="modal-title">Detalle del viaje</h4>
@@ -263,7 +263,7 @@
                         <div class="row" style="margin-top: 5px;">
 
                             <div class="input-group card">
-                                <div class="card-header">
+                                <div class="card-header" id="tituloViajeDet">
                                     <h3 class="card-title">                                                                                                                                                                        
                                         <strong>#{sesion.viajeD.codigo} (#{sesion.viajeD.responsable} / #{sesion.viajeD.responsableTel}) (#{sesion.viajeD.vehiculoVO.modelo}/#{sesion.viajeD.vehiculoVO.numeroPlaca}) (Viajeros:#{sesion.viajeD.listaViajeros.size()})(F.Prog: #{sesion.viajeD.fechaProgramadaTxt} #{sesion.viajeD.horaProgramadaTxt})</strong>
                                     </h3>                                                                
@@ -323,7 +323,7 @@
                                                     </div>
                                                 </ui:fragment>                                                            
                                                 <ui:fragment rendered="#{viajero.idSolicitudViaje gt 0}">
-                                                    <div class="col-3">
+                                                    <div class="col-2">
                                                         <div class="col-12">
                                                             <h:outputText styleClass="control-label" value="Código"/>  
                                                         </div>
@@ -341,8 +341,8 @@
                                                     </div>
                                                 </div>
                                                 <ui:fragment rendered="#{sesion.viajeD.idEstatus eq 515}">
-                                                    <div class="col-3">
-                                                        <p:commandLink styleClass="btn btn-default"                                                                                                                                                                                      
+                                                    <div class="col-1">
+                                                        <p:commandLink styleClass="btn btn-default btn-sm"                                                                                                                                                                                      
                                                                        action="#{sesion.bajarViajero(viajero.id)}" 
                                                                        title="Bajar viajero"
                                                                        process="@this" update="@form">
@@ -374,27 +374,31 @@
                                                         </p:commandLink>
                                                     </div>
                                                 </ui:fragment>
-                                                <c:forEach items="#{sesion.viajeD.noticia.listaComentario}" var="comentario">
-                                                    <div class="col-12 input-group card card-default" style="border: white; border-style: none; border-width: 1px; margin-bottom: 0px;">
-                                                        <div class="form-group col-12" style="border: white; border-bottom: #eee; border-top: white;  border-style: solid; border-width: 2px;">                                                            
-                                                            <div class="row" style="margin-top: 5px;">
-                                                                <h:outputLabel styleClass="control-label" value="#{comentario.usuarioNombre}"/>
-                                                                <h:outputText styleClass="control-label" value=" - "/>  
-                                                                <h:outputText styleClass="control-label" value="#{comentario.fechaGenero}">
-                                                                    <f:convertDateTime pattern="dd/MM/yyyy"/>
-                                                                </h:outputText>
-                                                                <h:outputText styleClass="control-label" value=" - "/>  
-                                                                <h:outputText styleClass="control-label" value="#{comentario.horaGenero}">
-                                                                    <f:convertDateTime pattern="h:mm a" timeStyle="default" type="time"/>
-                                                                </h:outputText>
-                                                            </div>
-                                                            <div class="row" style="margin-top: 5px;">
-                                                                <strong><h:outputText styleClass="control-label" value="Comentario: "/></strong>
-                                                                <h:outputText styleClass="control-label" value="#{comentario.mensaje}"/>
-                                                            </div>                                                                                                                                                                        
-                                                        </div>    
-                                                    </div>                                            
-                                                </c:forEach>    
+                                                <div class="card">    
+                                                    <p:scrollPanel mode="native" style="width:100%; max-height: 250px;">
+                                                        <c:forEach items="#{sesion.viajeD.noticia.listaComentario}" var="comentario" id="lstComentariosViaje">
+                                                            <div class="col-12 input-group card card-default" style="border: white; border-style: none; border-width: 1px; margin-bottom: 0px;">
+                                                                <div class="form-group col-12" style="border: white; border-bottom: #eee; border-top: white;  border-style: solid; border-width: 2px;">                                                            
+                                                                    <div class="row" style="margin-top: 5px;">
+                                                                        <h:outputLabel styleClass="control-label" value="#{comentario.usuarioNombre}"/>
+                                                                        <h:outputText styleClass="control-label" value=" - "/>  
+                                                                        <h:outputText styleClass="control-label" value="#{comentario.fechaGenero}">
+                                                                            <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                                                        </h:outputText>
+                                                                        <h:outputText styleClass="control-label" value=" - "/>  
+                                                                        <h:outputText styleClass="control-label" value="#{comentario.horaGenero}">
+                                                                            <f:convertDateTime pattern="h:mm a" timeStyle="default" type="time"/>
+                                                                        </h:outputText>
+                                                                    </div>
+                                                                    <div class="row" style="margin-top: 5px;">
+                                                                        <strong><h:outputText styleClass="control-label" value="Comentario: "/></strong>
+                                                                        <h:outputText styleClass="control-label" value="#{comentario.mensaje}"/>
+                                                                    </div>                                                                                                                                                                        
+                                                                </div>    
+                                                            </div>                                            
+                                                        </c:forEach>    
+                                                    </p:scrollPanel>
+                                                </div>
                                             </div>                                       
                                         </div>
                                     </ui:fragment>
@@ -424,7 +428,7 @@
                                                 styleClass="btn btn-default"
                                                 action="#{sesion.finalizarViaje(sesion.viajeD.id, 0)}"
                                                 title="Click aquí para finalizar el viaje..." 
-                                                process="@this" update="viajesProID">                                                                                        
+                                                process="@this" update="frmViajesPen:tbViajes:pnlViaProc">                                                                                        
                                             </p:commandLink>        
                                             <ui:fragment rendered="#{sesion.viajeD.idIntercambio eq 0 and sesion.viajeD.idEstatus eq 510}"><div class="visible-lg col-1"></div></ui:fragment>
                                             <p:commandLink 
@@ -471,7 +475,7 @@
                                                 styleClass="btn btn-default"
                                                 action="#{sesion.finalizarViaje(sesion.viajeD.id, sesion.viajeD.idIntercambio)}"
                                                 title="Click aquí para editar mapa..." 
-                                                process="@this" update="viajesProID">
+                                                process="@this" update="frmViajesPen:tbViajes:pnlViaProc">
                                             </p:commandLink>        
                                             <ui:fragment rendered="#{sesion.viajeD.idIntercambio gt 0 and sesion.viajeD.idEstatus eq 510 and ((sesion.viajeD.idOpercion gt 0 and sesion.viajeD.idOpercionRetomarViaje gt 0) or sesion.viajeD.idOpercion eq 0)}"><div class="visible-lg col-1"></div></ui:fragment>
                                             <p:commandLink 

@@ -1,4 +1,4 @@
-/**
+|/**
  * UsuarioBean.java
  *
  * Creada el 9/06/2009, 05:36:48 PM
