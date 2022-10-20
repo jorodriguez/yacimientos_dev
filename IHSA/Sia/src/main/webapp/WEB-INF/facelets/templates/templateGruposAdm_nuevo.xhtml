@@ -19,6 +19,9 @@
 
         <title>Sistema Integral de Administración</title>
 
+
+
+
         <!-- Font Awesome -->
         <link rel="stylesheet" href="/resources/css/all.min.css" />
         <!-- Theme style -->
@@ -32,13 +35,14 @@
 
 
     </h:head>
-    <h:body class="hold-transition sidebar-mini">
+    <h:body class="g-sidenav-show bg-gray-100 hold-transition sidebar-mini">
         <div class="wrapper">
             <c:if test="#{not empty sesion.usuario}">
-                <div id="wrapper">
+                <div id="wrapper">                    
                     
-                    <ui:include src="headerAdm.xhtml"/>
-                    <aside class="main-sidebar sidebar-ligth-primary elevation-1">
+                    <!--<ui:include src="headerAdm.xhtml"/>-->
+                    
+                    <aside class="main-sidebar sidebar-dark-primary elevation-4">
                         <!-- Brand Logo -->
                         <a href="/principal.xhtml" class="brand-link">
                             <img src="/resources/imagenes/logo.png" alt="SIA" 
@@ -65,6 +69,44 @@
                             </div>
                             <!-- Sidebar Menu -->
                             <nav class="mt-2">
+                                <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+                                    <ui:repeat value="#{sesion.listaModulos}" var="modulo">
+                                        <ui:fragment rendered="${modulo.ruta == null and modulo.rutaServlet != null and modulo.mapOpcion.size() gt 0}">
+                                            <div id="accordion">
+                                                <div class="card card-info">
+                                                    <div class="card-header">
+                                                        <a data-toggle="collapse"   href="#collapseOne#{modulo.id}" >
+                                                            <h4 >
+                                                                <b><small>#{modulo.nombre}</small></b>
+                                                            </h4>
+                                                        </a>
+                                                    </div>
+                                                    <div id="collapseOne#{modulo.id}" class="collapse show" data-parent="#accordion">
+                                                        <div class="card-body">
+                                                            <ui:repeat value="#{modulo.mapOpcion.entrySet().toArray()}" var="entry"
+                                                                       >
+                                                                <lu>
+                                                                    <h:outputLabel value="#{entry.key}" 
+                                                                                   style="color: #{sesion.usuario.apCampo.nombre eq entry.key ? '#006666' : ''}" />
+                                                                    <ui:repeat value="#{modulo.mapOpcion.get(entry.key)}" var="opc">
+                                                                        <li >
+                                                                            <h:outputLink value="#{sesion.sustituirArrancarModuloPorCampo(modulo.rutaServlet, opc.idCampo, opc.pagina )}"
+                                                                                          title="#{modulo.toolTip}"  
+                                                                                          onmouseover="window.status = ' ';return true"
+                                                                                          rendered="#{opc.total gt 0}">
+                                                                                <strong> #{opc.nombre} <i class="badge badge-success" >#{opc.total}</i></strong>
+                                                                            </h:outputLink>
+                                                                        </li>
+                                                                    </ui:repeat>
+                                                                </lu>
+                                                            </ui:repeat>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </ui:fragment>
+                                    </ui:repeat>
+                                </ul>
                             </nav>
                         </div>
                         <!-- /.sidebar -->
@@ -98,13 +140,13 @@
         <script src="/resources/js/jquery.min.js"></script>
         <!-- jQuery UI 1.11.4 -->
         <script>
-                                                                                                  $.noConflict(true);
+                $.noConflict(true);
                                                                                                   // Code that uses other library's $ can follow here.
         </script>
         <script src="/resources/js/jquery-ui.min.js"></script>
         <!-- Resolve conflict in jQuery UI tooltip with Bootstrap tooltip -->
         <script>
-                                                                                                  $.widget.bridge('uibutton', $.ui.button)
+            $.widget.bridge('uibutton', $.ui.button)
         </script>
         <!-- Bootstrap 4 -->
         <script src="/resources/js/bootstrap.bundle.min.js"></script>
