@@ -366,6 +366,9 @@ public class SolicitarOrdenBean implements Serializable {
 
             SelectItem item2 = new SelectItem("Orden de Servicio");
             resultList.add(item2);
+            
+            SelectItem item3 = new SelectItem("Con Subcontrato");
+            resultList.add(item3);
 
             return resultList;
         } catch (Exception ex) {
