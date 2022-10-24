@@ -1873,11 +1873,11 @@ F
                 finalizarNotas();
                 motivo = "";
                 //---- Mostrar mensaje  ----
-
                 FacesUtilsBean.addInfoMessage("Requisición(es) devuelta(s) correctamente...");
                 //Esto es para Quitar las lineas seleccionadas
                 cambiarRequisicion(0);
                 requisicionActual = null;
+                requisicionesSinAsignar();
                 //Esto es para cerrar el panel emergente de cancelar requisicion
                 PrimeFaces.current().executeScript(";cerrarDevolver();");
             } else {
