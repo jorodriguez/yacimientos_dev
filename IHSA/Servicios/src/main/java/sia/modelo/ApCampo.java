@@ -85,6 +85,9 @@ public class ApCampo implements Serializable {
     
     @Column(name = "CARTA_INTENCION")
     private boolean cartaIntencion;
+    
+    @Column(name = "FOTO")
+    private String foto;
 
     public ApCampo() {
     }
@@ -117,6 +120,14 @@ public class ApCampo implements Serializable {
     
     public String toString() {
         return "sia.modelo.ApCampo[ id=" + id + " ]";
+    }
+
+    public String getFoto() {
+        return foto;
+    }
+
+    public void setFoto(String foto) {
+        this.foto = foto;
     }
 
 }

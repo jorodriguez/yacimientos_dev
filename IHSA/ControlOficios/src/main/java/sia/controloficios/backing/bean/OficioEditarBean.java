@@ -88,6 +88,8 @@ public class OficioEditarBean extends OficioOpcionesBloquesUIBean {
      *
      */
     private DataTable tablaUsuariosRestringido;
+    
+    private DataModel resultadoOficiosAsociados;
 
     // para identificar si es alta o cambio
     private boolean modificacion;
@@ -499,7 +501,9 @@ public class OficioEditarBean extends OficioOpcionesBloquesUIBean {
                 .buscarOficiosAsociacion(
                         asociadoVo,
                         getVo().getBloqueId()));
-
+       
+        this.resultadoOficiosAsociados = new ListDataModel(getOficios());
+         
     }
 
     /**
@@ -842,6 +846,14 @@ public class OficioEditarBean extends OficioOpcionesBloquesUIBean {
 
     public void setTablaResultados(DataTable tablaResultados) {
         this.tablaResultados = tablaResultados;
+    }
+
+    public DataModel getResultadoOficiosAsociados() {
+        return resultadoOficiosAsociados;
+    }
+
+    public void setResultadoOficiosAsociados(ListDataModel resultadoOficiosAsociados) {
+        this.resultadoOficiosAsociados = resultadoOficiosAsociados;
     }
 
 }

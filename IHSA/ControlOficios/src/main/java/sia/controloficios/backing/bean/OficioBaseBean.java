@@ -419,6 +419,10 @@ public abstract class OficioBaseBean implements Serializable {
     protected void setOficios(List<OficioPromovibleVo> oficios) {
         this.oficios = oficios;
     }
+    
+    public List<OficioPromovibleVo> getOficios(){
+        return this.oficios;
+    }
 
     /**
      * Para acceso desde un elemento DataTable en la vista (*.xhtml).
@@ -431,6 +435,8 @@ public abstract class OficioBaseBean implements Serializable {
 
         return resultados;
     }
+    
+    
 
     /**
      * Acceso al servicio remoto del módulo de Oficios.

@@ -20,6 +20,8 @@ public class SiModuloVo extends Vo {
     private String rutaServlet;
     private String toolTip;
     private String extraLinkRender;
+    private String bgIcono;
+    private String bgCuerpo;   
     private long pendiente;
     private List<CampoVo> listaCampo;
     private Map<String, List<SiOpcionVo>> mapOpcion;
@@ -142,6 +144,22 @@ public class SiModuloVo extends Vo {
      */
     public void setMapOpcion(Map<String, List<SiOpcionVo>> mapOpcion) {
         this.mapOpcion = mapOpcion;
+    }
+
+    public String getBgCuerpo() {
+        return bgCuerpo;
+    }
+
+    public void setBgCuerpo(String bgCuerpo) {
+        this.bgCuerpo = bgCuerpo;
+    }
+
+    public String getBgIcono() {
+        return bgIcono;
+    }
+
+    public void setBgIcono(String bgIcono) {
+        this.bgIcono = bgIcono;
     }
 
 }
