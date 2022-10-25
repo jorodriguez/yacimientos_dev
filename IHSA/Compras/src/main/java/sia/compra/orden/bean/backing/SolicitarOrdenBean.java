@@ -183,7 +183,6 @@ public class SolicitarOrdenBean implements Serializable {
 
     public List<String> completaProveedor(String query) {
         return proveedorImpl.traerRfcNombreLikeProveedorQueryNativo(query, sesion.getUsuarioConectado().getApCampo().getCompania().getRfc(), ProveedorEnum.ACTIVO.getId());
-
     }
 
     public void llenarDatosProveedor() {

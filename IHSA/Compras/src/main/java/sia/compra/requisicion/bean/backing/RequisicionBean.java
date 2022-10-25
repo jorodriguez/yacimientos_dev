@@ -105,6 +105,7 @@ import sia.servicios.requisicion.impl.OcPresupuestoImpl;
 import sia.servicios.requisicion.impl.OcRequisicionCoNoticiaImpl;
 import sia.servicios.requisicion.impl.OcSubTareaImpl;
 import sia.servicios.requisicion.impl.OcTareaImpl;
+import sia.servicios.requisicion.impl.OcUsuarioNavisionFacade;
 import sia.servicios.requisicion.impl.ReRequisicionEtsImpl;
 import sia.servicios.requisicion.impl.RequisicionDetalleImpl;
 import sia.servicios.requisicion.impl.RequisicionImpl;
@@ -206,6 +207,10 @@ public class RequisicionBean implements Serializable {
     private GerenciaBean gerenciaBean;
     @Inject
     private OrdenBean ordenBean;
+    @Inject
+    private OcUsuarioNavisionFacade ocUsuarioNavisionFacade;
+    
+    
     @Getter
     @Setter
     private String textoNoticia;
@@ -558,6 +563,10 @@ public class RequisicionBean implements Serializable {
     @Getter
     @Setter
     private List<NoticiaAdjuntoVO> noticiaAdjuntos;
+    
+    @Getter
+    @Setter
+    private String usuarioBeneficiado;
 
     /**
      * Creates a new instance of ManagedBeanRequisiciones
@@ -3243,12 +3252,16 @@ F
                 setRequisicionActual(requisicionServicioRemoto.find(getRequisicionActual().getId()));
             }
             getItemActual().setRequisicion(requisicionActual);
+            itemActual.setUsuarioBeneficiado(usuarioBeneficiado);
             if (getItemActual() != null && getItemActual().getId() != null && getItemActual().getId() > 0) {
                 requisicionServicioRemoto.actualizarItemCrearRequisicion(getItemActual(), 0);
             } else {
                 requisicionServicioRemoto.crearItem(getItemActual(), 0, usuarioBean.getUsuarioConectado().getId());
             }
         }
+        
+        usuarioBeneficiado = "";
+        
 //        else if (TipoRequisicion.AF.name().equals(tipo) && requisicionActual != null && itemActual != null
 //                && idActPetrolera > 0 && idProyectoOt > 0) {
 //            getItemActual().setOcPresupuesto(new OcPresupuesto(getIdPresupuesto()));
@@ -4440,5 +4453,9 @@ F
     public String uploadDirectoryRequi() {
         return new StringBuilder().append("ETS/Requisicion/")
                 .append(getRequisicionActual().getId()).toString();
+    }
+    
+    public List<String> completarUsuarioBeneficiado(String query){
+        return ocUsuarioNavisionFacade.traerUsuarios(query);
     }
 }

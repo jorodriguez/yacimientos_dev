@@ -2,14 +2,14 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package mx.modelo;
+package sia.modelo;
 
 import java.io.Serializable;
 import java.util.Date;
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import mx.constantes.Constantes;
+import sia.constantes.Constantes;
 
 /**
  *
@@ -134,10 +134,10 @@ public class OcUsuarioNavision implements Serializable {
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof mx.modelo.OcUsuarioNavision)) {
+        if (!(object instanceof sia.modelo.OcUsuarioNavision)) {
             return false;
         }
-        mx.modelo.OcUsuarioNavision other = (mx.modelo.OcUsuarioNavision) object;
+        sia.modelo.OcUsuarioNavision other = (sia.modelo.OcUsuarioNavision) object;
         if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }

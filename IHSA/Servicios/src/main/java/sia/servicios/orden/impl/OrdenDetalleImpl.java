@@ -749,6 +749,7 @@ public class OrdenDetalleImpl extends AbstractFacade<OrdenDetalle>{
                 } else {
                     orOrigen.setContrato(Constantes.OCS_SIN_CONTRATO);
                 }
+                ordenDetalle.setUsuarioBeneficiado(requisicionDetalleVO.getUsuarioBeneficiado());
                 create(ordenDetalle);
                 //
                 requisicionDetalleRemote.cambiarDisgregadoItemRequisicion(rdVO, idSesion, Constantes.BOOLEAN_TRUE);

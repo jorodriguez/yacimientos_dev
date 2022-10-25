@@ -152,6 +152,10 @@ public class RequisicionDetalle implements Serializable {
     @Column(name = "anio_presupuesto")
     private Integer anioPresupuesto;
     
+    @Column(name = "USUARIO_BENEFICIADO")
+    private String usuarioBeneficiado;  
+    
+    
     public RequisicionDetalle() {
     }
 

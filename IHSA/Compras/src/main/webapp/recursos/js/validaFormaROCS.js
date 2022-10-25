@@ -752,6 +752,17 @@ function seleccionarGeneral(todos, seleccion, divAuto, divOperacion) {
     }
 }
 
+function mostrarUsuarioNoNavision(){
+    if($(".inputUsuarioCustom").css("display") = "none"){
+        $(".inputUsuarioNoNavision").css("display", "none");
+        $(".autoUsuarioBeneficiado").prop("disabled", "true");
+    }
+    else{
+        $(".inputUsuarioNoNavision").css("display", "block");
+        $(".autoUsuarioBeneficiado").prop("disabled", "");
+    }
+}
+
 function seleccionarGeneralConConvenio(todos, seleccion) {
     if ($("." + todos).is(":checked")) {
         $("." + seleccion).prop("checked", "checked");
