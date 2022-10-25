@@ -28,11 +28,11 @@ public class OcUsuarioNavisionFacade extends AbstractFacade<OcUsuarioNavision> {
     public OcUsuarioNavisionFacade() {
         super(OcUsuarioNavision.class);
     }
-    
-    public List<String> traerUsuarios(String nombre){
-        return em.createNativeQuery("select NOMBRE from C_USUARIO_NAVISION"
-        + "where upper(NOMBRE) like '%"+ nombre.toUpperCase() + "%'"
-        + "and ELIMINADO = false").getResultList();
+
+    public List<String> traerUsuarios(String nombre) {
+        return em.createNativeQuery("select NOMBRE from OC_USUARIO_NAVISION"
+                + " where upper(NOMBRE) like '%" + nombre.toUpperCase() + "%'"
+                + " and ELIMINADO = false").getResultList();
     }
-     
+
 }

@@ -752,14 +752,13 @@ function seleccionarGeneral(todos, seleccion, divAuto, divOperacion) {
     }
 }
 
-function mostrarUsuarioNoNavision(){
-    if($(".inputUsuarioCustom").css("display") = "none"){
-        $(".inputUsuarioNoNavision").css("display", "none");
-        $(".autoUsuarioBeneficiado").prop("disabled", "true");
-    }
-    else{
+function mostrarUsuarioNoNavision() {
+    if ($(".usuariocustom").is(":checked")) {
         $(".inputUsuarioNoNavision").css("display", "block");
-        $(".autoUsuarioBeneficiado").prop("disabled", "");
+        $("#frmItemReq\\:" + "autoUsuerNav").prop("disabled", true);
+    } else {
+        $(".inputUsuarioNoNavision").css("display", "none");
+        $("#frmItemReq\\:" + "autoUsuerNav").prop("disabled", false);
     }
 }
 

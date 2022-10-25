@@ -607,7 +607,7 @@ public class RequisicionDetalleImpl {
                 + "									inner join inv_articulo a on inv.articulo = a.id\n"
                 + "									inner join inv_almacen al on inv.almacen = al.id and al.eliminado = false \n"
                 + "								where inv.eliminado = false and r.inv_articulo = a.id and al.id = apc.inv_almacen order by inv.numero_unidades desc limit 1 )"
-                + " r.USUARIO_BENEFICIADO"
+                + " , r.USUARIO_BENEFICIADO "
                 + " FROM Requisicion q "
                 + "   inner join ap_campo apc on apc.id = q.ap_campo "
                 + "   inner join Requisicion_Detalle r on r.REQUISICION = q.ID "
@@ -621,8 +621,7 @@ public class RequisicionDetalleImpl {
                 + "   left join oc_subtarea st on st.id = r.oc_subtarea"
                 + "   left join oc_codigo_subtarea cst on cst.id = st.oc_codigo_subtarea "
                 + "   left join OC_ACTIVIDADPETROLERA ap on ap.id = r.OC_ACTIVIDADPETROLERA"
-                + "   left join oc_presupuesto pres on pres.id = r.oc_presupuesto "
-                + "   inner join OC_USUARIO_NAVISION un on ";
+                + "   left join oc_presupuesto pres on pres.id = r.oc_presupuesto ";
         return s;
     }
 
