@@ -63,21 +63,20 @@ import sia.util.UtilLog4j;
  * @author ihsa
  * @version 1.0
  */
-@Stateless 
+@Stateless
 public class RequisicionImpl extends AbstractFacade<Requisicion> {
-    
+
     @PersistenceContext(unitName = "Sia-ServiciosPU")
     private EntityManager em;
-    
+
     @Inject
     DSLContext dbCtx;
-    
-    
+
     @Override
     protected EntityManager getEntityManager() {
         return em;
     }
-    
+
     public RequisicionImpl() {
         super(Requisicion.class);
     }
@@ -118,14 +117,13 @@ public class RequisicionImpl extends AbstractFacade<Requisicion> {
     private NotificacionMovilUsuarioImpl notificacionMovilRemote;
     @Inject
     private OcRequisicionCoNoticiaImpl ocRequisicionCoNoticiaRemote;
-    
-    
+
     public Prioridad calcularPrioridad(Date fecha1, Date fecha2) {
-        
+
         int dias = siManejoFechaLocal.dias(fecha1, fecha2);
-        
+
         Prioridad prioridad = new Prioridad();
-        
+
         if (dias <= 2) {
             prioridad = prioridadServicioRemoto.find(1);
         } else if (dias > 2 && dias <= 10) {
@@ -133,7 +131,7 @@ public class RequisicionImpl extends AbstractFacade<Requisicion> {
         } else {
             prioridad = prioridadServicioRemoto.find(3);
         }
-        
+
         return prioridad;
     }
 
@@ -142,7 +140,6 @@ public class RequisicionImpl extends AbstractFacade<Requisicion> {
      * @param id
      * @return
      */
-    
     public Requisicion buscarLazyPorId(int id) {
         try {
             return (Requisicion) em.createQuery("SELECT r FROM Requisicion r WHERE r.id = :id", Requisicion.class).setParameter("id", id).getSingleResult();
@@ -151,8 +148,7 @@ public class RequisicionImpl extends AbstractFacade<Requisicion> {
             return null;
         }
     }
-    
-    
+
     public Requisicion buscarPorConsecutivo(Object consecutivo) {
         try {
             return (Requisicion) em.createQuery(
@@ -162,65 +158,62 @@ public class RequisicionImpl extends AbstractFacade<Requisicion> {
             return null;
         }
     }
-    
-    
+
     public RequisicionVO buscarPorConsecutivoConDetalle(final String consecutivo) {
         try {
             final boolean conDetalle = true;
             final boolean seleccionado = false;
-            
+
             final StringBuilder sb = new StringBuilder("")
                     .append(consultaRequisicion())
                     .append(" WHERE r.CONSECUTIVO = '").append(consecutivo).append("'");
-            
+
             final Object[] requisicion = (Object[]) em.createNativeQuery(sb.toString()).getSingleResult();
-            
+
             RequisicionVO requisicionVo = null;
-            
+
             if (requisicion != null) {
                 requisicionVo = castRequisicionConDetalle(requisicion, conDetalle, seleccionado);
             }
-            
+
             return requisicionVo;
-            
+
         } catch (Exception e) {
             System.out.println("Error " + e);
             UtilLog4j.log.fatal(this, e);
             return null;
         }
     }
-    
-    
+
     public Requisicion buscarPorConsecutivoEmpresa(String consecutivo, String rfcEmpresa) {
-        
+
         Requisicion r = null;
-        
+
         try {
-            
+
             StringBuilder sb = new StringBuilder();
             sb.append("select * from requisicion r where r.consecutivo = '").append(consecutivo).append("'");
             sb.append(" and r.compania = (select c.RFC from compania c where c.RFC = '").append(rfcEmpresa).append("'");
             sb.append(" )");
             UtilLog4j.log.info(this, "Consulta: " + sb.toString());
             Object[] obj = (Object[]) em.createNativeQuery(sb.toString()).getSingleResult();
-            
+
             if (obj != null) {
                 r = find((Integer) obj[0]);
             }
-            
+
         } catch (Exception e) {
             UtilLog4j.log.info(this, "Error al buscar la requision por consecutivo: " + e.getMessage(), e);
         }
-        
+
         return r;
     }
-    
-    
+
     public Requisicion buscarPorConsecutivoBloque(String consecutivo, int idCampo, String usuario) {
         Requisicion r = null;
         try {
             boolean v = siUsuarioRolRemote.buscarRolPorUsuarioModulo(usuario, Constantes.MODULO_REQUISICION, Constantes.CODIGO_ROL_CONS_REQ, idCampo);
-            
+
             StringBuilder sb = new StringBuilder();
             sb.append("select * from requisicion r where r.consecutivo = '").append(consecutivo).append("'");
             sb.append(" and r.ap_campo = ").append(idCampo);
@@ -229,24 +222,23 @@ public class RequisicionImpl extends AbstractFacade<Requisicion> {
             }
             UtilLog4j.log.info(this, "Consulta por id usuario: " + sb.toString());
             Object[] obj = (Object[]) em.createNativeQuery(sb.toString()).getSingleResult();
-            
+
             if (obj != null) {
                 r = find((Integer) obj[0]);
             }
-            
+
         } catch (Exception e) {
             UtilLog4j.log.info(this, "Error al buscar la requision por consecutivo: " + e.getMessage(), e);
         }
-        
+
         return r;
     }
-    
-    
+
     public RequisicionVO buscarPorConsecutivoBloque(String consecutivo, int idBloque, boolean conDetalle, boolean seleccionado) {
         RequisicionVO r = null;
-        
+
         try {
-            
+
             StringBuilder sb = new StringBuilder();
             sb.append(consultaRequisicion());
             sb.append(" where r.CONSECUTIVO = '").append(consecutivo).append("'");
@@ -255,11 +247,11 @@ public class RequisicionImpl extends AbstractFacade<Requisicion> {
             if (obj != null) {
                 r = castRequisicionConDetalle(obj, conDetalle, seleccionado);
             }
-            
+
         } catch (Exception e) {
             UtilLog4j.log.info(this, "Error al buscar la requision por consecutivo: " + e.getMessage());
         }
-        
+
         return r;
     }
 
@@ -268,7 +260,6 @@ public class RequisicionImpl extends AbstractFacade<Requisicion> {
      * @param apCampo
      * @return La lista de requisiciones creadas pero que no se han solicitado
      */
-    
     public List getRequisicionesSinSolicitar(Object idUsuario, int apCampo) {
         StringBuilder sb = new StringBuilder();
         sb.append(
@@ -294,7 +285,6 @@ public class RequisicionImpl extends AbstractFacade<Requisicion> {
     /**
      * @return La lista de requisiciones sin revisar
      */
-    
     public List getRequisicionesSinRevisar(Object idUsuario, int apCampo) {
         clearQuery();
         query.append("SELECT r.ID,"); //0
@@ -318,8 +308,7 @@ public class RequisicionImpl extends AbstractFacade<Requisicion> {
         //UtilLog4j.log.info(this,"Q Revisa requisiciones estatus 10: " + q.toString());
         return em.createNativeQuery(query.toString()).getResultList();
     }
-    
-    
+
     public List getRequisicionesSinAprobar(Object idUsuario, int apCampo) {
         clearQuery();
         query.append("SELECT r.ID,"); //0
@@ -343,20 +332,83 @@ public class RequisicionImpl extends AbstractFacade<Requisicion> {
         //UtilLog4j.log.info(this,"Q Aprobar requisiciones estatus 15: " + q.toString());
         return em.createNativeQuery(query.toString()).getResultList();
     }
-    
-    
+
+    //--Para obtener una lista descendente 
+    /*public List getUltimasRequisicionesModificas(Object idUsuario, int apCampo) {
+        clearQuery();
+        query.append("               SELECT r.ID,")
+                .append( "        		r.CONSECUTIVO,\n")
+                .append( "        		r.REFERENCIA,         		  \n")
+                .append( "        		r.FECHA_REQUERIDA,\n")
+                .append( "        		p.nombre as prioridad, \n")
+                .append( "        		c.siglas as siglas_compania, \n")
+                .append( "        		g.nombre as gerencia,\n")
+                .append( "                      r.MONTO_MN,\n")
+                .append( "        		r.MONTO_USD,\n")
+                .append( "        	       r.MONTOTOTAL_USD,\n")
+                .append( "        	       r.url,\n")
+                .append( "        	       e.id as id_estatus,        	       \n")
+                .append( "        	       e.nombre as estatus,")
+                .append( "        	       u_solicita.nombre as solicita,\n")
+                .append( "        	       to_char(r.fecha_solicito + r.hora_solicito,'YYYY-mm-dd HH24:MI') as fecha_solicito,\n")
+                .append( "        	       u_revisa.nombre as revisa,        	       \n")
+                .append( "        	       to_char(r.fecha_reviso + r.hora_reviso,'YYYY-mm-dd HH24:MI') as fecha_revisa,        	               	       \n")
+                .append( "        	       u_aprueba.nombre as aprueba,\n")
+                .append( "        	       to_char(r.fecha_aprobo + r.hora_aprobo,'YYYY-mm-dd HH24:MI') as fecha_aprueba,        	       \n")
+                .append( "        	       u_visto_bueno.nombre as visto_bueno,\n")
+                .append( "        	       to_char(r.fecha_visto_bueno + r.hora_visto_bueno,'YYYY-mm-dd HH24:MI') as fecha_visto_bueno,\n")
+                .append( "        	       u_cancelo.nombre as cancelo,\n")
+                .append( "        	       to_char(r.fecha_cancelo + r.hora_cancelo,'YYYY-mm-dd HH24:MI') as fecha_cancelo,\n")
+                .append( "        	       u_asigna.nombre as asigno,\n")
+                .append( "        	       to_char(r.fecha_asigno + r.hora_asigno,'YYYY-mm-dd HH24:MI') as fecha_asigno,\n")
+                .append( "        	       u_finalizo.nombre as finalizo,\n")
+                .append( "        	       to_char(r.fecha_finalizo + r.hora_finalizo,'YYYY-mm-dd HH24:MI') as fecha_finalizo,\n")
+                .append( "        	       u_comprador.nombre as comprador        	       \n")
+                .append( "         FROM Requisicion r inner join compania c on c.rfc = r.compania\n)
+                .append( "         				   inner join prioridad p on p.id = r.prioridad\n")
+                .append( "         				   inner join estatus e on e.id = r.estatus\n")
+                .append( "         				   inner join gerencia g on g.id = r.gerencia\n")
+                .append( "         				   inner join usuario u_solicita on u_solicita.id = r.solicita\n")
+                .append( "         				   inner join usuario u_revisa on u_revisa.id = r.revisa\n")
+                .append( "         				   inner join usuario u_aprueba on u_aprueba.id = r.aprueba\n")
+                .append( "         				   left join usuario u_visto_bueno on u_visto_bueno.id = r.visto_bueno\n")
+                .append( "         				   left join usuario u_asigna on u_asigna.id = r.asigna\n")
+                .append( "         				   left join usuario u_finalizo on u_finalizo.id = r.finalizo\n")
+                .append( "         				   left join usuario u_comprador on u_comprador.id = r.compra\n")
+                .append( "         				   left join usuario u_cancelo on u_cancelo.id = r.cancelo\n")
+                .append( "         WHERE (\n")
+                .append( "         			r.solicita = ? ")
+                .append( "         			OR r.revisa = ? ")
+                .append( "         			OR r.aprueba = ? ")
+                .append( "         			OR r.aprueba = ? ")
+                .append( "         			OR r.visto_bueno = ? ")
+                .append( "         			OR r.cancelo = ? ")
+                .append( "         			OR r.finalizo = ? ")
+                .append( "         			OR r.asigna = ? ")
+                .append( "         		)         		 ")
+                .append( "         		AND r.ESTATUS NOT IN  (1) ")
+                .append( "         		AND r.AP_CAMPO = ? ")
+                .append( "         		AND r.eliminado = false ")
+                .append( "         		AND r.fecha_modifico is not null ")
+                .append( "         		and r.hora_modifico is not null ")
+                .append( "         ORDER BY (r.fecha_modifico+r.hora_modifico)::timestamp desc ")
+                .append( "         LIMIT 3")
+          return dbCtx.
+                   fetch(query.toStroing()),idUsuario,idUsuario,idUsuario,idUsuario,idUsuario,idUsuario,idUsuario,idUsuario,idUsuario,idUsuario,apCampo)
+                   .into(Integer.class);
+        //return em.createNativeQuery(query.toString()).getResultList();
+    }*/
+
     public List<Requisicion> getRequisicionesSinAutorizar(Object idUsuario) {
         return em.createQuery(
                 "SELECT r FROM Requisicion r WHERE r.estatus.id = 20 AND r.autoriza.id = :autoriza").setParameter("autoriza", idUsuario).getResultList();
     }
-    
-    
+
     public List<Requisicion> getRequisicionesSinVistoBueno(Object idUsuario) {
         return em.createQuery(
                 "SELECT r FROM Requisicion r WHERE r.estatus.id = 30 AND r.vistoBueno.id = :vistoBueno").setParameter("vistoBueno", idUsuario).getResultList();
     }
-    
-    
+
     public List<RequisicionVO> getRequisicionesSinAsignar(String idUsuario, int apCampo, int idRol, int status) {
         clearQuery();
         query.append("SELECT r.ID, r.CONSECUTIVO, r.REFERENCIA,  r.FECHA_SOLICITO,  r.FECHA_REQUERIDA,  p.nombre,  r.MONTO_MN,  ")
@@ -378,7 +430,7 @@ public class RequisicionImpl extends AbstractFacade<Requisicion> {
             query.append(" and '").append(idUsuario).append("' in (select ur.USUARIO from SI_USUARIO_ROL ur, AP_CAMPO_USUARIO_RH_PUESTO cap where ur.SI_ROL = ").append(idRol).append(" and ur.ELIMINADO = false");
             query.append(" and cap.AP_CAMPO = r.AP_CAMPO and ur.USUARIO = cap.usuario").append(")");
         }
-        
+
         query.append(" order by g.nombre asc, r.consecutivo asc ");
         List<Object[]> lo = em.createNativeQuery(query.toString()).getResultList();
         List<RequisicionVO> lr = null;
@@ -390,8 +442,7 @@ public class RequisicionImpl extends AbstractFacade<Requisicion> {
         }
         return lr;
     }
-    
-    
+
     public List<RequisicionVO> getRequisicionesEnEspera(String idUsuario, int apCampo, int idRol, int status, int gerenciaID, boolean isAdmin) {
         clearQuery();
         query.append("SELECT r.ID, r.CONSECUTIVO, r.REFERENCIA,  r.FECHA_SOLICITO,  r.FECHA_REQUERIDA,  p.nombre,  r.MONTO_MN,  ")
@@ -409,17 +460,17 @@ public class RequisicionImpl extends AbstractFacade<Requisicion> {
         if (!isAdmin) {
             query.append(" and m.genero = '").append(idUsuario).append("' ");
         }
-        
+
         query.append(" where r.ESTATUS = ").append(status)
                 .append(" and r.ap_campo = ").append(apCampo);
-        
+
         if (gerenciaID > 0) {
             query.append(" and g.id = ").append(gerenciaID);
         }
-        
+
         query.append(" and '").append(idUsuario).append("' in (select ur.USUARIO from SI_USUARIO_ROL ur, AP_CAMPO_USUARIO_RH_PUESTO cap where ur.SI_ROL = ").append(idRol).append(" and ur.ELIMINADO = false");
         query.append(" and cap.AP_CAMPO = r.AP_CAMPO and ur.USUARIO = cap.usuario").append(")");
-        
+
         query.append(" order by g.nombre asc, r.consecutivo asc ");
         List<Object[]> lo = em.createNativeQuery(query.toString()).getResultList();
         List<RequisicionVO> lr = null;
@@ -431,7 +482,7 @@ public class RequisicionImpl extends AbstractFacade<Requisicion> {
         }
         return lr;
     }
-    
+
     private RequisicionVO castReqSinAsignar(Object[] objects) {
         RequisicionVO o = new RequisicionVO();
         o.setId((Integer) objects[0]);
@@ -446,9 +497,9 @@ public class RequisicionImpl extends AbstractFacade<Requisicion> {
         o.setGerencia((String) objects[9]);
         o.setTotal((Long) objects[10]);
         o.setSelected(false);
-        
+
         return o;
-        
+
     }
 
     /**
@@ -457,7 +508,6 @@ public class RequisicionImpl extends AbstractFacade<Requisicion> {
      * @return La lista de requisiciones sin disgregar por un analista
      */
     //Modificacion ṕara recibir Requisiciones
-    
     public List<RequisicionVO> getRequisicionesSinDisgregar(String idUsuario, int apCampo) {
         StringBuilder sb = new StringBuilder();
         sb.append(consultaRequisicion())
@@ -482,7 +532,6 @@ public class RequisicionImpl extends AbstractFacade<Requisicion> {
      * @param agrupadorID
      * @return La lista de items por JPA
      */
-    
     public List<RequisicionDetalle> getItems(Object idRequisicion, int agrupadorID) {
         return requisicionDetalleServicioRemoto.getItemsPorRequisicion(idRequisicion, agrupadorID);
     }
@@ -493,12 +542,10 @@ public class RequisicionImpl extends AbstractFacade<Requisicion> {
      * @param seleccionado
      * @return La lista de items consulta nativa
      */
-    
     public List<RequisicionDetalleVO> getItemsPorRequisicion(int idRequisicion, boolean autorizdo, boolean seleccionado) {
         return requisicionDetalleServicioRemoto.getItemsPorRequisicionConsultaNativa(idRequisicion, autorizdo, seleccionado);
     }
-    
-    
+
     public List<RequisicionDetalleVO> getItemsPorRequisicionMulti(Object idRequisicion, boolean autorizdo, boolean seleccionado) {
         return requisicionDetalleServicioRemoto.getItemsPorRequisicionConsultaNativaMulti(idRequisicion, autorizdo, seleccionado);
     }
@@ -506,7 +553,6 @@ public class RequisicionImpl extends AbstractFacade<Requisicion> {
     /**
      * @return La lista de items para modulo analista
      */
-    
     public List<RequisicionDetalle> getItemsAnalista(Object idRequisicion) {
         return requisicionDetalleServicioRemoto.getItemsAnalista(idRequisicion);
     }
@@ -516,7 +562,6 @@ public class RequisicionImpl extends AbstractFacade<Requisicion> {
      * @param seleccionado
      * @return La lista de items con consulta nativa
      */
-    
     public List<RequisicionDetalleVO> getItemsAnalistaNativa(int idRequisicion, boolean seleccionado) {
         return requisicionDetalleServicioRemoto.getItemsAnalistaNativa(idRequisicion, seleccionado);
     }
@@ -524,24 +569,20 @@ public class RequisicionImpl extends AbstractFacade<Requisicion> {
     /**
      * @return La lista de items con consulta nativa
      */
-    
     public List<RequisicionDetalleVO> getItemsAnalistaNativaMulti(Object idRequisicion, boolean seleccionado) {
         return requisicionDetalleServicioRemoto.getItemsAnalistaNativaMulti(idRequisicion, seleccionado);
     }
-    
-    
+
     public RequisicionDetalle buscarItemPorId(Object id) {
         return em.find(RequisicionDetalle.class, id);
     }
-    
-    
+
     public void actualizarItem(RequisicionDetalle item) {
 //	item.setImporte(item.getCantidadAutorizada() * item.getPrecioUnitario());
         requisicionDetalleServicioRemoto.edit(item);
 //	editMontos(item.getRequisicion().getId());
     }
-    
-    
+
     public void actualizarItemCrearRequisicion(RequisicionDetalle item, int idTarea) {
 //	item.setSiUnidad(ocUnidadRemote.find(idUnidad));
         if (idTarea > 0 && TipoRequisicion.PS.equals(item.getRequisicion().getTipo())) {
@@ -553,20 +594,17 @@ public class RequisicionImpl extends AbstractFacade<Requisicion> {
         requisicionDetalleServicioRemoto.edit(item);
 //	editMontos(item.getRequisicion().getId());
     }
-    
-    
+
     public void eliminarItem(RequisicionDetalle item) {
         requisicionDetalleServicioRemoto.remove(item);
     }
-    
-    
+
     public void eliminarItems(Requisicion requisicion, int agrupadorID) {
         for (RequisicionDetalle item : this.getItems(requisicion.getId(), agrupadorID)) {
             requisicionDetalleServicioRemoto.remove(item);
         }
     }
-    
-    
+
     public void crearItem(RequisicionDetalle item, int idNombreTarea, String sesion) {
         //	item.setSiUnidad(ocUnidadRemote.find(idUnidad));
         if (idNombreTarea > 0 && TipoRequisicion.PS.equals(item.getRequisicion().getTipo())) {
@@ -580,31 +618,26 @@ public class RequisicionImpl extends AbstractFacade<Requisicion> {
         item.setHoraGenero(new Date());
         item.setEliminado(Constantes.FALSE);
         requisicionDetalleServicioRemoto.create(item);
-        
+
     }
 
     // implementación de Rechazos ---
-    
     public List<Rechazo> getRechazosPorRequisicion(int idRequisicion) {
         return rechazoServicioRemoto.getRechazosPorRequisicion(idRequisicion);
     }
-    
-    
+
     public List<Rechazo> getRechazosIncumplidos(int idRequisicion) {
         return rechazoServicioRemoto.getRechazosIncumplidos(idRequisicion);
     }
-    
-    
+
     public void crearRechazo(Rechazo rechazo) {
         rechazoServicioRemoto.create(rechazo);
     }
-    
-    
+
     public void actualizarRechazo(Rechazo rechazo) {
         rechazoServicioRemoto.edit(rechazo);
     }
-    
-    
+
     public long getTotalRequisicionesSinSolicitar(Object idUsuario, int apCampo) {
         StringBuilder sb = new StringBuilder();
         sb.append(" select count(*) from Requisicion r ");
@@ -614,10 +647,9 @@ public class RequisicionImpl extends AbstractFacade<Requisicion> {
         sb.append(" and r.eliminado = '").append(Constantes.NO_ELIMINADO).append("'");
         //
         return ((Long) em.createNativeQuery(sb.toString()).getSingleResult());
-        
+
     }
-    
-    
+
     public long getTotalRequisicionesSinRevisar(Object idUsuario, int apCampo) {
         StringBuilder sb = new StringBuilder();
         sb.append(" select count(*) from Requisicion r ");
@@ -628,8 +660,7 @@ public class RequisicionImpl extends AbstractFacade<Requisicion> {
         //
         return ((Long) em.createNativeQuery(sb.toString()).getSingleResult());
     }
-    
-    
+
     public long getTotalRequisicionesSinAprobar(Object idUsuario, int apCampo) {
         StringBuilder sb = new StringBuilder();
         sb.append(" select count(*) from Requisicion r ");
@@ -640,8 +671,7 @@ public class RequisicionImpl extends AbstractFacade<Requisicion> {
         //
         return ((Long) em.createNativeQuery(sb.toString()).getSingleResult());
     }
-    
-    
+
     public long getTotalRequisicionesSinVistoBueno(String idSesion, int idCampo, String tipoRequisicion, int idRol) {
         clearQuery();
         query.append("SELECT count(r.id) ");
@@ -660,18 +690,17 @@ public class RequisicionImpl extends AbstractFacade<Requisicion> {
         query.append(" )");
         query.append(" and r.AP_CAMPO = ").append(idCampo);
         query.append(" and r.TIPO = '").append(tipoRequisicion).append("'");
-        
+
         return ((Long) em.createNativeQuery(query.toString()).getSingleResult());
-        
+
     }
-    
-    
+
     public long getTotalRequisicionesSinAsignar(String idUsuario, int apCampo, int estatus, int idRol) {
         long retVal = 0;
-        
+
         StringBuilder sb = new StringBuilder();
         StringBuilder sbP = new StringBuilder();
-        
+
         if (idUsuario.equals("PRUEBA")) {
             sbP.append(" AND r.SOLICITA = '").append(idUsuario).append("'");
         } else {
@@ -681,26 +710,25 @@ public class RequisicionImpl extends AbstractFacade<Requisicion> {
                     .append(" and ur.AP_CAMPO = ")
                     .append(apCampo).append(" and ur.eliminado = '").append(Constantes.NO_ELIMINADO).append("')");
         }
-        
+
         sb.append("select count(*) from Requisicion r WHERE r.estatus = ").append(estatus)
                 .append(" AND r.ap_Campo = ").append(apCampo).append(" AND r.eliminado = '").append(Constantes.NO_ELIMINADO).append("'")
                 .append(sbP.toString());
-        
+
         UtilLog4j.log.info(this, "con sin asignar : " + sb.toString());
-        
+
         try {
             retVal = ((Long) em.createNativeQuery(sb.toString()).getSingleResult());
         } catch (Exception e) {
             UtilLog4j.log.error("****", e);
         }
-        
+
         return retVal;
     }
-    
-    
+
     public long getTotalRequisicionesEnEspera(String idUsuario, int apCampo, int estatus, int idRol) {
         long retVal = 0;
-        
+
         String sb = " SELECT count(r.id) "
                 + " from requisicion r "
                 + " inner join requisicion_si_movimiento rm on rm.requisicion = r.id and rm.eliminado = false "
@@ -715,19 +743,18 @@ public class RequisicionImpl extends AbstractFacade<Requisicion> {
                 + " 	and ur.ap_campo =  " + apCampo
                 + " 	and ur.eliminado = false "
                 + " ) ";
-        
+
         UtilLog4j.log.info(this, "con sin asignar : " + sb);
-        
+
         try {
             retVal = ((Long) em.createNativeQuery(sb).getSingleResult());
         } catch (Exception e) {
             UtilLog4j.log.error("****", e);
         }
-        
+
         return retVal;
     }
-    
-    
+
     public long getTotalRequisicionesSinDisgregar(Object idUsuario, int apCampo) {
         StringBuilder sb = new StringBuilder();
         sb.append(" select count(*) from Requisicion r ");
@@ -748,7 +775,6 @@ public class RequisicionImpl extends AbstractFacade<Requisicion> {
     /**
      * ************* NUEVO HISTORIAL ****************
      */
-    
     public List listaRequisicionesSolicitadas(Usuario usuario) {
         try {
             Query q = em.createNativeQuery("SELECT r.id, " //0
@@ -771,8 +797,7 @@ public class RequisicionImpl extends AbstractFacade<Requisicion> {
             return null;
         }
     }
-    
-    
+
     public List listaRequisicionesRevisadas(Usuario usuario) {
         try {
             Query q = em.createNativeQuery("SELECT r.id, "
@@ -790,15 +815,14 @@ public class RequisicionImpl extends AbstractFacade<Requisicion> {
                     + " AND p.id = r.PRIORIDAD"
                     + " AND (e.id = r.estatus AND r.estatus >= 15)  "
                     + " ORDER BY r.FECHA_REVISO DESC");
-            
+
             return q.getResultList();
         } catch (Exception e) {
             UtilLog4j.log.fatal(this, e);
             return null;
         }
     }
-    
-    
+
     public List listaRequisicionesAprobadas(Usuario usuario) {
         try {
             Query q = em.createNativeQuery("SELECT r.id, "
@@ -822,8 +846,7 @@ public class RequisicionImpl extends AbstractFacade<Requisicion> {
             return null;
         }
     }
-    
-    
+
     public List listaRequisicionesAsignadas(Usuario usuario) {
         try {
             Query q = em.createNativeQuery("SELECT r.id, "
@@ -850,11 +873,10 @@ public class RequisicionImpl extends AbstractFacade<Requisicion> {
     }
 //Devolver req
 
-    
     public boolean devolverSIARequisicion(String idSesion, int idRequisicion, String motivo, String idAnalista) throws Exception {
         //NoOtificar devolucion
         Requisicion requisicion = find(idRequisicion);
-        
+
         requisicion.setModifico(usuarioRemote.find(idSesion));
         requisicion.setFechaModifico(new Date());
         requisicion.setHoraModifico(new Date());
@@ -862,7 +884,7 @@ public class RequisicionImpl extends AbstractFacade<Requisicion> {
         //
         Usuario analista = usuarioRemote.find(idAnalista);
         boolean v;
-        
+
         v = notificacionRequisicionRemote.envioReasignarRequisicion(usuarioSesion.getEmail(), requisicion.getCompra().getEmail(),
                 "", new StringBuilder().append("Reasignó la requisición - ").append(requisicion.getConsecutivo()).toString(),
                 requisicion);
@@ -871,7 +893,7 @@ public class RequisicionImpl extends AbstractFacade<Requisicion> {
                     usuarioRemote.find("SIA").getEmail(),
                     new StringBuilder().append("REQUISICIÓN: ").append(requisicion.getConsecutivo()).append(" POR FAVOR COLOCAR LA ORDEN DE COMPRA.").toString(),
                     requisicion, usuarioSesion, "solicito", "revisar", "aprobar");
-            
+
             requisicion.setCompra(analista);
             if (v) {
                 v = notificacionRequisicionRemote.envioAutorizadaRequisicion(requisicion.getSolicita().getDestinatarios(),
@@ -881,13 +903,13 @@ public class RequisicionImpl extends AbstractFacade<Requisicion> {
                         "solicito", "revisar", "aprobar");
                 if (v) {
                     requisicionSiMovimientoRemote.saveRequestMove(idSesion, motivo, idRequisicion, Constantes.ID_SI_OPERACION_DEVOLVER);
-                    
+
                     edit(requisicion);
-                    
+
                 } else {
                     return false;
                 }
-                
+
             } else {
                 return false;
             }
@@ -896,13 +918,11 @@ public class RequisicionImpl extends AbstractFacade<Requisicion> {
         }
         return v;
     }
-    
-    
+
     public int obtieneTotalRequisiciones(Object idUsuario) {
         return ((int) em.createQuery("select count(r) from Requisicion r WHERE r.estatus.id IN(40,1,10,15,20,30,35)  AND r.asigna.id = :asigna AND r.eliminado = :eli").setParameter("eli", Constantes.NO_ELIMINADO).setParameter("asigna", idUsuario).getSingleResult());
     }
-    
-    
+
     public void edit(Requisicion requisicion) {
         try {
             super.edit(requisicion);
@@ -925,7 +945,6 @@ public class RequisicionImpl extends AbstractFacade<Requisicion> {
      * @param idBloque
      * @return
      */
-    
     public List<RequisicionVO> listaRequisicionAsignadas(String idComprador, int status, int dias, int idBloque) {
         List<RequisicionVO> lr = null;
         try {
@@ -958,7 +977,7 @@ public class RequisicionImpl extends AbstractFacade<Requisicion> {
         }
         return lr;
     }
-    
+
     private RequisicionVO castRequisicionVO(Object[] objects) {
         RequisicionVO requisicionVO = new RequisicionVO();
         requisicionVO.setId((Integer) objects[0]);
@@ -974,8 +993,7 @@ public class RequisicionImpl extends AbstractFacade<Requisicion> {
         requisicionVO.setTotalItemSinOrden((Long) objects[10]);
         return requisicionVO;
     }
-    
-    
+
     public boolean crearRequisicionDesdeOtra(String idSesion, RequisicionVO requisicionVO) {
         boolean v = false;
         try {
@@ -1027,7 +1045,7 @@ public class RequisicionImpl extends AbstractFacade<Requisicion> {
             //List<RequisicionDetalleVO> lr = requisicionDetalleServicioRemoto.getItemsPorRequisicionConsultaNativa(requisicion.getId());
             for (RequisicionDetalleVO requisicionDetalleVO : listaReqDetSel) {
                 requisicionDetalleServicioRemoto.crearDetalleRequisicion(idSesion, requisicionDetalleVO, r.getId());
-                
+
             }
             // Edita los montos
 //	    editMontos(r.getId());
@@ -1037,8 +1055,7 @@ public class RequisicionImpl extends AbstractFacade<Requisicion> {
         }
         return v;
     }
-    
-    
+
     public List<RequisicionVO> buscarRequisicionPorFiltro(String idSesion, int idBloque, int idStatus, String fechaInicio, String fechaFin) {
         StringBuilder sb = new StringBuilder();
         List<Object[]> lo;
@@ -1056,7 +1073,7 @@ public class RequisicionImpl extends AbstractFacade<Requisicion> {
         sb.append(" and r.ESTATUS <> ").append(Constantes.REQUISICION_CANCELADA);
         sb.append(" and r.fecha_solicito between cast('").append(fechaInicio).append("' as date)").append(" and cast('").append(fechaFin).append("' as date)");
         sb.append(" and  '").append(idSesion).append("' in (r.solicita, r.revisa, r.aprueba, r.asigna, r.visto_bueno) ");
-        
+
         sb.append(" order by r.consecutivo asc");
         lo = em.createNativeQuery(sb.toString()).getResultList();
         if (lo != null) {
@@ -1067,7 +1084,7 @@ public class RequisicionImpl extends AbstractFacade<Requisicion> {
         }
         return lr;
     }
-    
+
     private RequisicionVO castRequisicion(Object[] objects) {
         RequisicionVO requisicionVO = new RequisicionVO();
         requisicionVO.setId((Integer) objects[0]);
@@ -1088,7 +1105,6 @@ public class RequisicionImpl extends AbstractFacade<Requisicion> {
     }
     //Consultas para historial de requisiciones
 
-    
     public List<RequisicionVO> buscarRequisicionFiltroPorPalabra(String idSesion, int idBloque, String referencia) {
         List<Object[]> lo;
         List<RequisicionVO> lr = null;
@@ -1121,7 +1137,7 @@ public class RequisicionImpl extends AbstractFacade<Requisicion> {
         }
         return lr;
     }
-    
+
     private RequisicionVO castRequisicionConDetalle(Object[] obj, boolean conDetalle, boolean seleccionado) {
         try {
             RequisicionVO requisicionVO = new RequisicionVO();
@@ -1137,7 +1153,7 @@ public class RequisicionImpl extends AbstractFacade<Requisicion> {
             requisicionVO.setGerencia((String) obj[9]);
             requisicionVO.setIdProyectoOT((Integer) obj[10]);
             requisicionVO.setProyectoOT((String) obj[11]);
-            
+
             requisicionVO.setIdTipoObra((Integer) obj[12] != null ? (Integer) obj[12] : 0);
             requisicionVO.setTipoObra((String) obj[13] != null ? (String) obj[13] : "");
             requisicionVO.setProveedor((String) obj[14]);
@@ -1175,7 +1191,7 @@ public class RequisicionImpl extends AbstractFacade<Requisicion> {
             requisicionVO.setMontoPesos((Double) obj[37]);
             requisicionVO.setMontoDolares((Double) obj[38]);
             requisicionVO.setMontoTotalDolares((Double) obj[39]);
-            
+
             requisicionVO.setIdPrioridad((Integer) obj[40]);
             requisicionVO.setPrioridad((String) obj[41]);
             //
@@ -1199,7 +1215,7 @@ public class RequisicionImpl extends AbstractFacade<Requisicion> {
 
             //nueva
             requisicionVO.setNueva(obj[54] != null ? (Boolean) obj[54] : false);
-            
+
             List<RequisicionDetalleVO> lrd = null;
             List<AdjuntoVO> lra = null;
             List<NotaVO> lrn = null;
@@ -1210,17 +1226,16 @@ public class RequisicionImpl extends AbstractFacade<Requisicion> {
             }
             requisicionVO.setListaDetalleRequision(lrd);
             return requisicionVO;
-            
+
         } catch (Exception e) {
             UtilLog4j.log.fatal(this, e);
             return null;
         }
     }
-    
-    
+
     public long totalRequisionesPendienteDesdeAniosAnterior(String idUsuario, int idBloque, int anio, int DIAS_ANTICIPADOS, int ESTATUS_ASIGNADA) {
         StringBuilder sb = new StringBuilder();
-        
+
         sb.append("select count(*) "); //7
         sb.append(" FROM Requisicion r");
         sb.append(" where r.FECHA_ASIGNO <= (SELECT CURRENT_DATE - ").append(DIAS_ANTICIPADOS).append(")");
@@ -1230,8 +1245,7 @@ public class RequisicionImpl extends AbstractFacade<Requisicion> {
         sb.append(" and r.ESTATUS = ").append(ESTATUS_ASIGNADA);
         return (Long) em.createNativeQuery(sb.toString()).getSingleResult();
     }
-    
-    
+
     public long totalRequisionesPorMes(String idUsuario, int idBloque, int numMes, int DIAS_ANTICIPADOS, int ESTATUS_ASIGNADA, int anio) {
         StringBuilder sb = new StringBuilder();
         sb.append(
@@ -1246,15 +1260,14 @@ public class RequisicionImpl extends AbstractFacade<Requisicion> {
         //
         return (Long) em.createNativeQuery(sb.toString()).getSingleResult();
     }
-    
-    
+
     public boolean pasarRequisiciones(List<RequisicionVO> lo, int idStatus, String usuarioTiene, String usuarioAprobara, String idSesion,
             String rfcEmpresa, String mailSesion) {
-        
+
         Usuario para = usuarioRemote.find(usuarioAprobara);
         Usuario cc = usuarioRemote.find(usuarioTiene);
         String status = traduccionStatus(idStatus);
-        
+
         boolean v
                 = notificacionRequisicionRemote.enviarCorreoCambioRequisiciones(
                         para.getEmail(),
@@ -1266,7 +1279,7 @@ public class RequisicionImpl extends AbstractFacade<Requisicion> {
                         rfcEmpresa,
                         status
                 );
-        
+
         if (v) {
             for (RequisicionVO requisicionVO : lo) {
                 Requisicion requisicion = find(requisicionVO.getId());
@@ -1292,10 +1305,10 @@ public class RequisicionImpl extends AbstractFacade<Requisicion> {
         }
         return v;
     }
-    
+
     private String traduccionStatus(int idStatus) {
         String retVal;
-        
+
         switch (idStatus) {
             case Constantes.REQUISICION_SOLICITADA: //10
                 retVal = " Revisar";
@@ -1309,8 +1322,7 @@ public class RequisicionImpl extends AbstractFacade<Requisicion> {
         }
         return retVal;
     }
-    
-    
+
     public List<RequisicionVO> requisicionesSinVistoBueno(String idSesion, int idCampo, String tipo, int rolUsuario) {
         List<RequisicionVO> lr = null;
         try {
@@ -1340,7 +1352,7 @@ public class RequisicionImpl extends AbstractFacade<Requisicion> {
                     .append(" and r.AP_CAMPO = ").append(idCampo)
                     .append(" and r.TIPO = '").append(tipo).append("'")
                     .append(" ORDER BY g.nombre ASC, r.FECHA_SOLICITO DESC ");
-            
+
             RequisicionVO o;
             //
             List<Object[]> l = em.createNativeQuery(query.toString()).getResultList();
@@ -1366,19 +1378,18 @@ public class RequisicionImpl extends AbstractFacade<Requisicion> {
                     lr.add(o);
                 }
             }
-            
+
         } catch (Exception e) {
             UtilLog4j.log.fatal(this, e);
             lr = null;
         }
-        
+
         return lr;
     }
-    
-    
+
     public List<RequisicionVO> requisicionesPorEstatus(String idSesion, int idCampo, String tipo, int status) {
         List<RequisicionVO> lr = null;
-        
+
         try {
             clearQuery();
             query.append(
@@ -1394,9 +1405,9 @@ public class RequisicionImpl extends AbstractFacade<Requisicion> {
                     .append(" and r.TIPO = '").append(tipo)
                     .append("' and r.solicita <> '").append(Constantes.USUARIO_PRUEBA)
                     .append("' ORDER BY r.ID ASC");
-            
+
             RequisicionVO o;
-            
+
             List<Object[]> l = em.createNativeQuery(query.toString()).getResultList();
             if (!l.isEmpty()) {
                 lr = new ArrayList<RequisicionVO>();
@@ -1413,23 +1424,22 @@ public class RequisicionImpl extends AbstractFacade<Requisicion> {
                     lr.add(o);
                 }
             }
-            
+
         } catch (Exception e) {
             UtilLog4j.log.fatal(this, e);
             lr = null;
         }
-        
+
         return lr;
     }
-    
-    
+
     public List<RequisicionVO> traerRequisicionSinSolicitar(int idCampo, int diasAnticipados) {
         clearQuery();
-        
+
         Date fecha = siManejoFechaLocal.fechaRestarDias(new Date(), diasAnticipados);
         String fCad = Constantes.FMT_yyyyMMdd.format(fecha);
         List<RequisicionVO> lr = null;
-        
+
         try {
             query.append(
                     "SELECT u.NOMBRE, count(r.ID)"
@@ -1446,11 +1456,11 @@ public class RequisicionImpl extends AbstractFacade<Requisicion> {
                             + " having count(r.id) > 0"
                             + " order by u.NOMBRE asc"
                     );
-            
+
             RequisicionVO o;
-            
+
             List<Object[]> l = em.createNativeQuery(query.toString()).getResultList();
-            
+
             if (!l.isEmpty()) {
                 lr = new ArrayList<RequisicionVO>();
                 for (Object[] objects : l) {
@@ -1460,15 +1470,14 @@ public class RequisicionImpl extends AbstractFacade<Requisicion> {
                     lr.add(o);
                 }
             }
-            
+
         } catch (Exception e) {
             UtilLog4j.log.fatal(this, e);
             lr = null;
         }
         return lr;
     }
-    
-    
+
     public List<RequisicionVO> traerRequisicionSinSolicitarPorUsuaario(int idCampo, int diasAnticipados, String comprador) {
         clearQuery();
         Date fecha = siManejoFechaLocal.fechaRestarDias(new Date(), diasAnticipados);
@@ -1491,15 +1500,14 @@ public class RequisicionImpl extends AbstractFacade<Requisicion> {
                     lr.add(castRequisicionConDetalle(objects, Constantes.FALSE, Constantes.FALSE));
                 }
             }
-            
+
         } catch (Exception e) {
             UtilLog4j.log.fatal(this, e);
             lr = null;
         }
         return lr;
     }
-    
-    
+
     public List<RequisicionVO> traerPorRangoEstado(int idCampo, int solicitada, int vistoBueno) {
         clearQuery();
         query.append("select r.CONSECUTIVO, g.nombre, r.REFERENCIA, r.LUGAR_ENTREGA, u.nombre as Solicita, e.NOMBRE, r.FECHA_SOLICITO, r.monto_mn, r.monto_usd");
@@ -1517,11 +1525,11 @@ public class RequisicionImpl extends AbstractFacade<Requisicion> {
             for (Object[] objects : l) {
                 lr.add(castRequisicionProceso(objects));
             }
-            
+
         }
         return lr;
     }
-    
+
     private RequisicionVO castRequisicionProceso(Object[] objects) {
         RequisicionVO requisicionVO = new RequisicionVO();
         requisicionVO.setConsecutivo((String) objects[0]);
@@ -1535,8 +1543,7 @@ public class RequisicionImpl extends AbstractFacade<Requisicion> {
         requisicionVO.setMontoDolares((Double) objects[8]);
         return requisicionVO;
     }
-    
-    
+
     public RequisicionVO buscarRequisicionPorUsuario(String consecutivo, int idCampo, String usuario, boolean detalle, boolean seleccionado) {
         RequisicionVO r = null;
         try {
@@ -1559,7 +1566,7 @@ public class RequisicionImpl extends AbstractFacade<Requisicion> {
         }
         return r;
     }
-    
+
     private String consultaRequisicion() {
 //	StringBuilder sb = new StringBuilder(1200);
 //	sb.append(
@@ -1591,8 +1598,7 @@ public class RequisicionImpl extends AbstractFacade<Requisicion> {
 //        );
 //	return sb.toString();
     }
-    
-    
+
     public List<RequisicionVO> traerRequisicionPorGerencia(int status, int campo, int gerencia, String inicio, String fin) {
         StringBuilder sb = new StringBuilder(700);
         List<Object[]> lo;
@@ -1624,8 +1630,7 @@ public class RequisicionImpl extends AbstractFacade<Requisicion> {
         }
         return lr;
     }
-    
-    
+
     public void cambiarAnalistaRequisicion(String sesion, int idRequisicion, String compra) {
         Requisicion r = find(idRequisicion);
         r.setCompra(usuarioRemote.find(compra));
@@ -1634,8 +1639,7 @@ public class RequisicionImpl extends AbstractFacade<Requisicion> {
         r.setHoraModifico(new Date());
         edit(r);
     }
-    
-    
+
     public long totalRequisicionesPendientes(String idUsuarioSesion, int status) {
         int total = 0;
         // requisiciones sin solicitar
@@ -1645,7 +1649,7 @@ public class RequisicionImpl extends AbstractFacade<Requisicion> {
                 + "WHERE r.estatus = ?\n"
                 + "   AND r.solicita = ?\n"
                 + "   AND r.eliminado = false";
-        
+
         total += dbCtx
                 .fetchOne(sql, Constantes.REQUISICION_PENDIENTE, idUsuarioSesion)
                 .into(Integer.class);
@@ -1662,7 +1666,7 @@ public class RequisicionImpl extends AbstractFacade<Requisicion> {
                 + "   INNER JOIN usuario u ON ur.usuario = u.id AND u.eliminado = false\n"
                 + "WHERE req.ESTATUS = ?\n"
                 + "   and req.tipo = ?";
-        
+
         total += dbCtx
                 .fetchOne(sql,
                         idUsuarioSesion,
@@ -1691,7 +1695,7 @@ public class RequisicionImpl extends AbstractFacade<Requisicion> {
                 + "WHERE r.estatus = ?\n"
                 + "   AND r.revisa = ?\n"
                 + "   AND r.eliminado = false";
-        
+
         total += dbCtx
                 .fetchOne(sql, Constantes.REQUISICION_SOLICITADA, idUsuarioSesion)
                 .into(Integer.class);
@@ -1703,7 +1707,7 @@ public class RequisicionImpl extends AbstractFacade<Requisicion> {
                 + "WHERE r.estatus = ?\n"
                 + "   AND r.aprueba = ?\n"
                 + "   AND r.eliminado = false";
-        
+
         total += dbCtx
                 .fetchOne(sql, Constantes.REQUISICION_REVISADA, idUsuarioSesion)
                 .into(Integer.class);
@@ -1720,7 +1724,7 @@ public class RequisicionImpl extends AbstractFacade<Requisicion> {
                 + "   AND r.estatus = ?\n"
                 + "   AND r.eliminado = false\n"
                 + "   AND r.solicita <> 'PRUEBA'\n";
-        
+
         total += dbCtx
                 .fetchOne(sql,
                         idUsuarioSesion,
@@ -1737,17 +1741,16 @@ public class RequisicionImpl extends AbstractFacade<Requisicion> {
                 + "WHERE r.estatus =  ?\n"
                 + "   AND r.compra = ?\n"
                 + "   AND r.eliminado = false";
-        
+
         total += dbCtx
                 .fetchOne(sql, Constantes.REQUISICION_ASIGNADA, idUsuarioSesion)
                 .into(Integer.class);
-        
+
         return total;
     }
-    
-    
+
     public long totalRequisicionesPorCampo(String sesion, int campo) {
-        
+
         int total = 0;
         try {
             total += getTotalRequisicionesSinRevisar(sesion, campo);
@@ -1758,8 +1761,7 @@ public class RequisicionImpl extends AbstractFacade<Requisicion> {
         }
         return total;
     }
-    
-    
+
     public List<RequisicionVO> totalReqOcsSinProcesar(int idCampo, int diasAnticipados) {
         Date fecha = siManejoFechaLocal.fechaRestarDias(new Date(), diasAnticipados);
         String fCad = Constantes.FMT_yyyyMMdd.format(fecha);
@@ -1785,7 +1787,7 @@ public class RequisicionImpl extends AbstractFacade<Requisicion> {
                     + ")\n"
                     + "select * from Compradores c \n"
                     + "	where c.totalReq > 0 or c.totalOcs > 0";
-            
+
             Query q
                     = em.createNativeQuery(c)
                             .setParameter(1, Constantes.REQUISICION_ASIGNADA)
@@ -1795,7 +1797,7 @@ public class RequisicionImpl extends AbstractFacade<Requisicion> {
                             .setParameter(5, Constantes.ORDENES_SIN_SOLICITAR)
                             .setParameter(6, idCampo)
                             .setParameter(7, Constantes.ROL_COMPRADOR);
-            
+
             RequisicionVO o;
             List<Object[]> l = q.getResultList();
             if (l != null) {
@@ -1813,11 +1815,10 @@ public class RequisicionImpl extends AbstractFacade<Requisicion> {
         }
         return lr;
     }
-    
-    
+
     public SiOpcionVo totalRevPagina(String usuario, int campo, int status) {
-        String s = " SELECT o.nombre, o.pagina, count(r.id) AS total " 
-        		+ "FROM si_opcion o \n"
+        String s = " SELECT o.nombre, o.pagina, count(r.id) AS total "
+                + "FROM si_opcion o \n"
                 + "\tinner join REQUISICION r on r.ESTATUS = o.ESTATUS_CONTAR \n"
                 + " where     o.ELIMINADO =false \n"
                 + "\tand o.SI_MODULO =  " + Constantes.MODULO_REQUISICION + " \n"
@@ -1825,26 +1826,26 @@ public class RequisicionImpl extends AbstractFacade<Requisicion> {
                 + "\tand r.ap_campo =  " + campo + " \n"
                 + "GROUP by o.nombre, o.pagina "
                 + "HAVING count(r.id) > 0";
-        
+
         SiOpcionVo opcionVo = new SiOpcionVo();
-        
+
         try {
-        	
-        	Record result = dbCtx.fetchOne(s);
-        	
-        	if(result != null) {
-        		opcionVo = result.into(SiOpcionVo.class);
-        	}
-        	
+
+            Record result = dbCtx.fetchOne(s);
+
+            if (result != null) {
+                opcionVo = result.into(SiOpcionVo.class);
+            }
+
         } catch (Exception e) {
-        	UtilLog4j.log.warn(e);
-        	
-        	opcionVo = null;
+            UtilLog4j.log.warn(e);
+
+            opcionVo = null;
         }
-        
+
         return opcionVo;
     }
-    
+
     private String condicionStatus(int status, String sesion, int campo) {
         String con = " and r.estatus = " + status;
         switch (status) {
@@ -1875,25 +1876,23 @@ public class RequisicionImpl extends AbstractFacade<Requisicion> {
         }
         return con;
     }
-    
-    
+
     public List<SiOpcionVo> totalRevPagina(String id, int idCampo, List<RequisicionEstadoEnum> estadosReq) {
         List<SiOpcionVo> lo = new ArrayList<>();
         for (RequisicionEstadoEnum requisicionEstadoEnum : estadosReq) {
             SiOpcionVo so = totalRevPagina(id, idCampo, requisicionEstadoEnum.getId());
-            if (so != null && so.getTotal()> 0) {
+            if (so != null && so.getTotal() > 0) {
                 so.setIdCampo(idCampo);
                 lo.add(so);
             }
         }
         return lo;
     }
-    
-    
+
     public Requisicion buscarPorConsecutivoBloque(String consecutivo, String usuario) {
         Requisicion r = null;
         try {
-            
+
             StringBuilder sb = new StringBuilder();
             sb.append("select * from requisicion r where r.eliminado = false and r.consecutivo = '").append(consecutivo).append("'");
             UtilLog4j.log.info(this, "Consulta por id usuario: " + sb.toString());
@@ -1911,11 +1910,10 @@ public class RequisicionImpl extends AbstractFacade<Requisicion> {
             r = null;
             UtilLog4j.log.info(this, "Requision no encontrada por consecutivo: " + e.getMessage(), e);
         }
-        
+
         return r;
     }
-    
-    
+
     public List<RequisicionVO> traerRequisicionesArticuloContrato(String sesion, int estatus, int campo) {
         List<RequisicionVO> lr = null;
         String sb = consultaRequisicion()
@@ -1925,7 +1923,7 @@ public class RequisicionImpl extends AbstractFacade<Requisicion> {
                 + "     AND r.AP_CAMPO = " + campo
                 + "     AND r.eliminado = false \n"
                 + "     ORDER BY r.CONSECUTIVO ASC ";
-        
+
         List<Object[]> l = em.createNativeQuery(sb).getResultList();
         if (l != null) {
             lr = new ArrayList<RequisicionVO>();
@@ -1935,8 +1933,7 @@ public class RequisicionImpl extends AbstractFacade<Requisicion> {
         }
         return lr;
     }
-    
-    
+
     public List<RequisicionVO> traerRequisicionesSinContrato(String sesion, int estatus, int campo) {
         List<RequisicionVO> lr = null;
         String sb = consultaRequisicion()
@@ -1946,7 +1943,7 @@ public class RequisicionImpl extends AbstractFacade<Requisicion> {
                 + "     AND r.AP_CAMPO = " + campo
                 + "     AND r.eliminado = false \n"
                 + "     ORDER BY r.CONSECUTIVO ASC ";
-        
+
         List<Object[]> l = em.createNativeQuery(sb).getResultList();
         if (l != null) {
             lr = new ArrayList<RequisicionVO>();
@@ -1956,8 +1953,7 @@ public class RequisicionImpl extends AbstractFacade<Requisicion> {
         }
         return lr;
     }
-    
-    
+
     public void verificaArticuloItemTieneContrato(Requisicion requisicionActual, String sesion, int campo) {
         List<RequisicionDetalleVO> listaItem = requisicionDetalleServicioRemoto.getItemsAnalistaNativa(requisicionActual.getId(), false);
         String arts = "";
@@ -1980,8 +1976,7 @@ public class RequisicionImpl extends AbstractFacade<Requisicion> {
         requisicionActual.setHoraModifico(new Date());
         edit(requisicionActual);
     }
-    
-    
+
     public void finalizaRequisicion(String sesion, int req) {
         Requisicion requisicion = find(req);
         requisicion.setEstatus(estatusRemote.find(Constantes.REQUISICION_FINALIZADA)); // 60 = Finalizada
@@ -1990,8 +1985,7 @@ public class RequisicionImpl extends AbstractFacade<Requisicion> {
         requisicion.setHoraModifico(new Date());
         edit(requisicion);
     }
-    
-    
+
     public RespuestaVo rechazar(Usuario sesion, RequisicionVO requisicionActual, String motivo) {
         // se toma la requisición y motivo de rechazo del panel emergente rechazar requisición
         final Requisicion requisicion = find(requisicionActual.getId());
@@ -2004,13 +1998,13 @@ public class RequisicionImpl extends AbstractFacade<Requisicion> {
         rechazo.setHora(new Date());
         rechazo.setCumplido(Constantes.BOOLEAN_FALSE);
         rechazo.setRechazo(usuarioRemote.find(sesion.getId()));
-        
+
         UsuarioVO uvo
                 = usuarioRemote.traerResponsableGerencia(
                         requisicion.getApCampo().getId(),
                         Constantes.GERENCIA_ID_COMPRAS,
                         requisicion.getCompania().getRfc());
-        
+
         System.out.println("mail: " + uvo.getMail());
         final boolean correoEnviado = notificacionRequisicionRemote.envioRechazoRequisicion(
                 getDestinatarios(requisicion, sesion),
@@ -2018,7 +2012,7 @@ public class RequisicionImpl extends AbstractFacade<Requisicion> {
                 new StringBuilder().append("REQUISICIÓN: ").append(requisicion.getConsecutivo()).append(" DEVUELTA").toString(),
                 requisicion,
                 rechazo);
-        
+
         if (correoEnviado) {
             //-- Marcar la requisicion como rechazada y regresarla al solicitante
             requisicion.setRechazada(Constantes.BOOLEAN_TRUE);
@@ -2037,11 +2031,11 @@ public class RequisicionImpl extends AbstractFacade<Requisicion> {
             //actualizar rechazo
             crearRechazo(rechazo);
         }
-        
+
         return RespuestaVo.builder().realizado(correoEnviado).build();
-        
+
     }
-    
+
     private String getDestinatarios(Requisicion requisicion, Usuario sesion) {
         StringBuilder destinatariosSB = new StringBuilder();
         //Verifica si la req es de costos o contabilidad
@@ -2054,7 +2048,7 @@ public class RequisicionImpl extends AbstractFacade<Requisicion> {
                         Constantes.MODULO_REQUISICION,
                         requisicion.getApCampo().getId()
                 );
-        
+
         switch (requisicion.getEstatus().getId()) {
             case Constantes.REQUISICION_SOLICITADA:
                 destinatariosSB.append(requisicion.getSolicita().getDestinatarios());
@@ -2094,7 +2088,7 @@ public class RequisicionImpl extends AbstractFacade<Requisicion> {
         }
         return destinatariosSB.toString();
     }
-    
+
     private String traerCorreoAsigna(int rol, int modulo, int campo) {
         StringBuilder sb = new StringBuilder();
         try {
@@ -2113,12 +2107,11 @@ public class RequisicionImpl extends AbstractFacade<Requisicion> {
         }
         return sb.toString();
     }
-    
-    
+
     public RespuestaVo cancelar(Usuario sesion, RequisicionVO requisicionVO, String motivo) {
-        
+
         RespuestaVo.RespuestaVoBuilder respuesta = RespuestaVo.builder();
-        
+
         try {
             final Requisicion requisicionActual = find(requisicionVO.getId());
             // se toma la requisición del panel emergente Cancelar requisición
@@ -2145,16 +2138,15 @@ public class RequisicionImpl extends AbstractFacade<Requisicion> {
             UtilLog4j.log.error(ex);
             respuesta.realizado(false);
         }
-        
+
         return respuesta.build();
     }
-    
-    
+
     public void vistoBuenoRequisicion(Usuario sesion, RequisicionVO requisicionVO) {
         Requisicion requiActual = find(requisicionVO.getId());
         //
         try {
-            
+
             requiActual.setOcUsoCFDI(ocUsoCFDILocal.find(requisicionVO.getIdCfdi()));
             requiActual.setVistoBueno(usuarioRemote.find(sesion.getId()));
             requiActual.setHoraVistoBueno(new Date());
@@ -2174,14 +2166,13 @@ public class RequisicionImpl extends AbstractFacade<Requisicion> {
                             requiActual.getRevisa(),
                             asunto
                     );
-            
+
             edit(requiActual);
         } catch (Exception e) {
             UtilLog4j.log.error(e);
         }
     }
-    
-    
+
     public Map<Integer, List<SiOpcionVo>> totalPendienteCampos(String sesion) {
         String sql = "SELECT r.ap_campo AS id_campo, o.nombre, o.pagina, count(r.id) AS total \n"
                 + "                FROM si_opcion o\n"
@@ -2203,34 +2194,33 @@ public class RequisicionImpl extends AbstractFacade<Requisicion> {
                 + "                ORDER BY r.ap_campo";
         Map<Integer, List<SiOpcionVo>> retVal = null;
         try {
-            
+
             List<SiOpcionVo> lo
                     = dbCtx.fetch(sql, sesion, Constantes.MODULO_REQUISICION)
                             .into(SiOpcionVo.class);
-            
+
             if (!lo.isEmpty()) {
                 retVal = new HashMap<>();
-                
+
                 for (SiOpcionVo opcion : lo) {
                     if (retVal.get(opcion.getIdCampo()) == null) {
                         retVal.put(opcion.getIdCampo(), new ArrayList<>());
                     }
-                    
+
                     retVal.get(opcion.getIdCampo()).add(opcion);
                 }
             }
-            
+
         } catch (DataAccessException e) {
             UtilLog4j.log.fatal(this, "Error: ", e);
             retVal = Collections.emptyMap();
         }
-        
+
         return retVal;
     }
-    
-    
+
     public RespuestaVo revisarRequisicion(Requisicion requisicion, Usuario usuario) {
-        
+
         requisicion.setFechaReviso(new Date());
         requisicion.setHoraReviso(new Date());
         requisicion.setRevisa(usuario);
@@ -2238,57 +2228,56 @@ public class RequisicionImpl extends AbstractFacade<Requisicion> {
         requisicion.setEstatus(estatusRemote.find(Constantes.REQUISICION_REVISADA)); // 15 = Revisada              
 
         boolean sinItemsAutorizados = (getItemsPorRequisicion(requisicion.getId(), Constantes.AUTORIZADO, Constantes.NO_SELECCION) == null);
-        
+
         RespuestaVo.RespuestaVoBuilder respuesta = RespuestaVo.builder().realizado(true);
-        
+
         if (sinItemsAutorizados) {
-            
+
             respuesta.realizado(false);
-            
+
             respuesta.mensaje("requisiciones.revision.sin.items.autorizados");
-            
+
         } else {
-            
+
             final String asunto = new StringBuilder().append("APROBAR LA REQUISICIÓN: ").append(requisicion.getConsecutivo()).toString();
-            
+
             if (notificacionRequisicionRemote.envioNotificacionRequisicion(
                     requisicion.getAprueba().getEmail(),
                     "",
                     "",
                     asunto,
                     requisicion, "solicito", "revisar")) {
-                
+
                 edit(requisicion);
-                
+
                 ocRequisicionCoNoticiaRemote.finalizarNotas(usuario.getId(), requisicion.getId());
-                
+
                 notificacionMovilRemote
                         .enviarNotificacionRequisicion(
                                 requisicion,
                                 requisicion.getAprueba(),
                                 asunto
                         );
-                
+
             } else {
                 //---- Mostrar mensaje  ----                
                 respuesta.realizado(false);
                 respuesta.mensaje("requisiciones.correo.REVnoenviado");
             }
         }
-        
+
         return respuesta.build();
     }
-    
-    
+
     public RespuestaVo aprobarRequisicion(Requisicion requisicion, Usuario usuario) {
         requisicion.setFechaAprobo(new Date());
         requisicion.setHoraAprobo(new Date());
         requisicion.setAprueba(usuario);
-        
+
         boolean sinItemsAutorizados = (getItemsPorRequisicion(requisicion.getId(), Constantes.AUTORIZADO, Constantes.NO_SELECCION) == null);
-        
+
         RespuestaVo respuesta;
-        
+
         if (sinItemsAutorizados) {
             respuesta = RespuestaVo.builder()
                     .realizado(false)
@@ -2303,27 +2292,27 @@ public class RequisicionImpl extends AbstractFacade<Requisicion> {
         }
         return respuesta;
     }
-    
+
     private RespuestaVo aprobarNuevaRequision(Requisicion requisicion, Usuario usuario) {
-        
+
         final String asunto = "ASIGNAR LA REQUISICIÓN: " + requisicion.getConsecutivo();
-        
+
         final RespuestaVo.RespuestaVoBuilder respuesta = RespuestaVo.builder().realizado(true);
-        
+
         final String correoAsigna = traerCorreoAsigna(
                 Constantes.ROL_ASIGNA_REQUISICION,
                 Constantes.MODULO_REQUISICION,
                 requisicion.getApCampo().getId()
         );
-        
+
         requisicion.setEstatus(estatusRemote.find(Constantes.REQUISICION_APROBADA));
-        
+
         if (!correoAsigna.isEmpty() && notificacionRequisicionRemote.envioNotificacionRequisicion(
                 correoAsigna, "", "", asunto,
                 requisicion, "solicito", "revisar", "aprobar")) {
-            
+
             edit(requisicion);
-            
+
             ocRequisicionCoNoticiaRemote.finalizarNotas(usuario.getId(), requisicion.getId());
 
             /*notificacionMovilRemote
@@ -2336,44 +2325,43 @@ public class RequisicionImpl extends AbstractFacade<Requisicion> {
             respuesta.realizado(false);
             respuesta.mensaje("requisiciones.correos.APRnoenviado");
         }
-        
+
         return respuesta.build();
     }
-    
+
     private RespuestaVo enviarRequisicionFinanzas(Requisicion requisicion, Usuario usuario) {
-        
+
         final String asunto = "REVISAR LA REQUISICIÓN: " + requisicion.getConsecutivo();
-        
+
         final RespuestaVo.RespuestaVoBuilder respuesta = RespuestaVo.builder().realizado(true);
 
         //requisicion.setEstatus(new Estatus(Constantes.REQUISICION_VISTO_BUENO_C));
         requisicion.setEstatus(estatusRemote.find(Constantes.REQUISICION_VISTO_BUENO_C));
-        
+
         String correoRevisa = traerCorreoAsigna(
                 Constantes.ROL_VISTO_BUENO_COSTO,
                 Constantes.MODULO_REQUISICION,
                 requisicion.getApCampo().getId()
         );
-        
+
         if (notificacionRequisicionRemote.envioNotificacionRequisicion(
                 correoRevisa, "", "", asunto,
                 requisicion, "solicito", "revisar", "aprobar")) {
-            
+
             edit(requisicion);
-            
+
             ocRequisicionCoNoticiaRemote.finalizarNotas(usuario.getId(), requisicion.getId());
         } else {
             respuesta.realizado(false);
             respuesta.mensaje("requisiciones.correos.APRnoenviado");
         }
-        
+
         return respuesta.build();
     }
-    
-    
+
     public List<RequisicionTiemposVO> requisicionTiempos(int idCampo, String consecutivo, int status, int gerencia, String fecha1, String fecha2) {
         List<RequisicionTiemposVO> lr = null;
-        
+
         try {
             clearQuery();
             query.append(
@@ -2394,31 +2382,31 @@ public class RequisicionImpl extends AbstractFacade<Requisicion> {
                     + " where r.eliminado = false "
                     + " and r.estatus > 1 "
             );
-            
+
             if (idCampo > 0) {
                 query.append(" and r.AP_CAMPO = ").append(idCampo);
             }
-            
+
             if (consecutivo != null && !consecutivo.isEmpty()) {
                 query.append(" and r.consecutivo = '").append(consecutivo).append("' ");
             }
-            
+
             if (status > 0) {
                 query.append(" and r.estatus = ").append(status);
             }
-            
+
             if (gerencia > 0) {
                 query.append(" and r.gerencia = ").append(gerencia);
             }
-            
+
             if (fecha1 != null && fecha2 != null && !fecha1.isEmpty() && !fecha2.isEmpty()) {
                 query.append(" AND r.fecha_solicito >= '").append(fecha1).append("' AND r.fecha_solicito <= '").append(fecha2).append("' ");
             }
-            
+
             query.append(" ORDER BY r.ID DESC");
-            
+
             RequisicionTiemposVO o;
-            
+
             List<Object[]> l = em.createNativeQuery(query.toString()).getResultList();
             if (!l.isEmpty()) {
                 lr = new ArrayList<>();
@@ -2429,36 +2417,36 @@ public class RequisicionImpl extends AbstractFacade<Requisicion> {
                     o.setReferencia(String.valueOf(objects[2]));
                     o.setGerencia(String.valueOf(objects[3]));
                     o.setTipo(String.valueOf(objects[4]));
-                    
+
                     o.setNombreSolicita(String.valueOf(objects[5]));
                     o.setFechaSolicita((Date) objects[6]);
-                    
+
                     o.setNombreVistoBueno(objects[7] != null ? String.valueOf(objects[7]) : ("AF".equals(o.getTipo()) ? "Contabilidad" : "Costos"));
                     o.setFechaVistoBueno((Date) objects[8]);
                     o.setDiasVistoBueno(objects[9] != null ? ((Integer) objects[9]) : 0);
-                    
+
                     o.setNombreRevisa(objects[10] != null ? String.valueOf(objects[10]) : "");
                     o.setFechaRevisa((Date) objects[11]);
                     o.setDiasRevisa(objects[12] != null ? ((Integer) objects[12]) : 0);
-                    
+
                     o.setNombreAprueba(objects[13] != null ? String.valueOf(objects[13]) : "");
                     o.setFechaAprueba((Date) objects[14]);
                     o.setDiasAprueba(objects[15] != null ? ((Integer) objects[15]) : 0);
-                    
+
                     o.setNombreAsigna(objects[16] != null ? String.valueOf(objects[16]) : "");
                     o.setFechaAsigna((Date) objects[17]);
-                    o.setDiasAsigna(objects[18] != null ? ((Integer) objects[18]) : 0);                    
-                    
+                    o.setDiasAsigna(objects[18] != null ? ((Integer) objects[18]) : 0);
+
                     lr.add(o);
                 }
             }
-            
+
         } catch (Exception e) {
             UtilLog4j.log.fatal(this, e);
             lr = null;
         }
-        
+
         return lr;
     }
-    
+
 }
