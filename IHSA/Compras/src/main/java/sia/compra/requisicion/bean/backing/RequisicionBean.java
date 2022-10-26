@@ -566,9 +566,6 @@ public class RequisicionBean implements Serializable {
     @Getter
     @Setter
     private String usuarioBeneficiado;
-    @Getter
-    @Setter
-    private String usuarioBeneficiadoNuevo;
 
     /**
      * Creates a new instance of ManagedBeanRequisiciones
@@ -3101,10 +3098,8 @@ F
     public void completarActualizacionItemCrearRequisicion() {
         try {
             // se toma la linea de requisición      
-            if (!usuarioBeneficiadoNuevo.trim().isEmpty()) {
-                itemActual.setUsuarioBeneficiado(usuarioBeneficiadoNuevo);
-            } else {
-                itemActual.setUsuarioBeneficiado(usuarioBeneficiado);
+            if (!usuarioBeneficiado.trim().isEmpty()) {
+                itemActual.setUsuarioBeneficiado(usuarioBeneficiado.trim());
             }
             if (requisicionActual != null && operacionItem.equals(UPDATE_OPERATION)) {
                 if (requisicionActual.getApCampo() != null && "N".equals(requisicionActual.getApCampo().getTipo())) {
@@ -3153,8 +3148,8 @@ F
             }
 
             // Agregar usuario beneficiado a tabla vista
-            if (!itemActual.getUsuarioBeneficiado().trim().isEmpty()) {
-                ocUsuarioNavisionFacade.agregarUsuario(usuarioBean.getUsuarioConectado().getId(), itemActual.getUsuarioBeneficiado());
+            if (!usuarioBeneficiado.trim().isEmpty()) {
+                ocUsuarioNavisionFacade.agregarUsuario(usuarioBean.getUsuarioConectado().getId(), usuarioBeneficiado);
             }
             PrimeFaces.current().executeScript(";cerrarDialogoModal(dialogoItemsRequi);");
 

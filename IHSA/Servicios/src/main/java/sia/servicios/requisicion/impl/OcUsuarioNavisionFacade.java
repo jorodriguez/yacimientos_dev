@@ -42,9 +42,9 @@ public class OcUsuarioNavisionFacade extends AbstractFacade<OcUsuarioNavision> {
 
     public OcUsuarioNavision buscarPorNombre(String usuarioBeneficiado) {
         try {
-            return (OcUsuarioNavision) em.createNativeQuery("select *  from OC_USUARIO_NAVISION "
-                    + " where upper(NOMBRE) = '" + usuarioBeneficiado.toUpperCase() + "'"
-                    + " and ELIMINADO = false ").getSingleResult();
+            return (OcUsuarioNavision) em.createNativeQuery("select un.*  from OC_USUARIO_NAVISION un "
+                    + " where upper(un.NOMBRE) = '" + usuarioBeneficiado.toUpperCase() + "'"
+                    + " and un.ELIMINADO = false ", OcUsuarioNavision.class).getSingleResult();
         } catch (Exception e) {
             return null;
         }
