@@ -32,13 +32,27 @@
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet" />
 
         <!--<link id="pagestyle" href="https://demos.creative-tim.com/argon-dashboard-pro/assets/css/argon-dashboard.min.css?v=2.0.5" rel="stylesheet" />-->
-        
+
 
         <link  href="/resources/css/argonTemplate.css" rel="stylesheet" />
 
         <style>
             .hand-pointer {
                 cursor: pointer;
+            }
+            .text-overflow-height {
+                height: 50px;
+                word-break: break-all;
+                display: -webkit-box;
+                -webkit-box-orient: vertical;
+                -moz-box-orient: vertical;
+                -ms-box-orient: vertical;
+                box-orient: vertical;
+                -webkit-line-clamp: 5;
+                -moz-line-clamp: 5;
+                -ms-line-clamp: 5;
+                line-clamp: 5;
+                overflow: hidden;
             }
         </style>
 
@@ -69,9 +83,9 @@
                                         <h6 class="ps-3 ms-1 text-uppercase text-xs font-weight-bolder text-white ">#{modulo.nombre}   </h6>
                                     </li>  
 
-                                    <ui:repeat value="#{modulo.mapOpcion.entrySet().toArray()}" var="entry" varStatus="iterator" >
+                                    <ui:repeat value="#{modulo.mapOpcion.entrySet().toArray()}" var="entry" varStatus="iterator" >                                        
                                         <li class="nav-item mt-0 ps-2">                                         
-                                            <a data-bs-toggle="collapse" href="#item_#{iterator.index}"
+                                            <a data-bs-toggle="collapse" href="#item_#{iterator.index}_#{modulo.id}"
                                                class="nav-link text-white pt-2 pb-2 opacity-7" 
                                                aria-controls="item_#{iterator.index}" 
                                                role="button"                                                
@@ -84,7 +98,7 @@
                                                     #{entry.key}  
                                                 </span>
                                             </a>    
-                                            <div class="collapse " id="item_#{iterator.index}">
+                                            <div class="collapse " id="item_#{iterator.index}_#{modulo.id}">
                                                 <ul class="list-group ms-4">
                                                     <ui:repeat value="#{modulo.mapOpcion.get(entry.key)}" var="opc">                                                        
                                                         <h:outputLink                                                                 
@@ -111,7 +125,7 @@
                                                 </ul>
                                             </div>
                                         </li>      
-                                     
+
                                     </ui:repeat>                                        
 
                                 </ui:fragment>
@@ -280,8 +294,6 @@
                                         </h:outputLink>
                                     </div>
                                 </ui:fragment>                                                              
-
-                 
                             </ui:repeat>
 
                             <ui:repeat value="#{sesion.listaModulos}" var="modulo">                                
@@ -320,7 +332,6 @@
                                     </div>
                                 </ui:fragment>                                     
                             </ui:repeat>
-
                         </div>                        
                     </h:form>
                 </div>
@@ -328,7 +339,7 @@
 
 
                 <!-- modulos -->
-                <div class="container-fluid py-2">                    
+                <div class="container-fluid">                    
                     <ui:repeat value="#{sesion.listaModulos}" var="modulo">
                         <div class="row mt-3">
                             <ui:fragment rendered="${modulo.ruta == null and modulo.rutaServlet != null and modulo.mapOpcion.size() gt 0}">                                
@@ -340,12 +351,17 @@
                                         <div class="row">
                                             <ui:repeat value="#{modulo.mapOpcion.entrySet().toArray()}" var="entry">                                                
                                                 <div class="col-12 col-md-6 col-xl-4 mt-2 ">
-                                                    <div class="card h-100 border border-1 shadow-lg" >
+                                                    <div class="card h-100 border border-1 shadow-lg #{sesion.usuario.apCampo.nombre eq entry.key ? 'border-warning ':''}" >
                                                         <div class="card-header pb-0 p-3">
-                                                            <h5 class="mb-0">
-                                                                <h:outputLabel value="#{entry.key}" 
-                                                                               style="color: #{sesion.usuario.apCampo.nombre eq entry.key ? '#006666' : ''}"
-                                                                               />                                                 
+                                                            <h5 class="mb-0">                                                                
+                                                                <span class="text-sm">                   
+                                                                    #{entry.key}
+                                                                    <ui:fragment rendered="#{sesion.usuario.apCampo.nombre eq entry.key}">
+                                                                        <sup  class="text-white bg-warning ps-1 pe-1 rounded-pill opacity-7">
+                                                                            Campo seleccionado
+                                                                        </sup>                                                                    
+                                                                    </ui:fragment>
+                                                                </span>
                                                             </h5>
                                                         </div>
                                                         <div class="card-body   p-3"> 
@@ -359,7 +375,7 @@
                                                                                           styleClass="fw-normal"
                                                                                           rendered="#{opc.total gt 0}">
                                                                                 <!-- opcion -->
-                                                                                #{opc.nombre} 
+                                                                                #{opc.nombre}                                                                                                                                                                    
                                                                             </h:outputLink>
                                                                         </p>
                                                                         <span class="badge badge-secondary ms-auto">
@@ -391,35 +407,135 @@
 
                 </div>
 
-                <!-- últimas 3 requisiciones  -->
-                <div class="container-fluid py-4">
-                    <div class="row mt-3">
-                        <div class="col-12 col-md-6 col-xl-4">
-                            <div class="card h-100">
-                                <div class="card-header pb-0 p-3">
-                                    <h6 class="mb-0">Platform Settings</h6>
-                                </div>
-                                <div class="card-body p-3">
-                                    <h6 class="text-uppercase text-body text-xs font-weight-bolder">Account</h6>
-                                    <ul class="list-group">
-                                        <li class="list-group-item border-0 px-0">
-                                            <div class="form-check form-switch ps-0">
-                                                <input class="form-check-input ms-0" type="checkbox" id="flexSwitchCheckDefault" checked="true" />
-                                                <label class="form-check-label text-body ms-3 text-truncate w-80 mb-0" for="flexSwitchCheckDefault">Email me when someone follows me</label>
+                <!-- últimas 3 requisiciones  -->               
+
+                <div class="container-fluid ">
+                    <div class="row pb-2">
+                        <h5>Histórico de requisiciones</h5>
+                        <span class="text-sm mt-0 pt-0">últimos 3 registros</span>
+                    </div>
+                    <h:form>
+
+                        <div class="row mt-1">  
+                            <ui:repeat value="#{principalViewBean.listaRequisiciones}" var="item">
+                                <div class="col-12 col-md-3 col-xl-3">
+                                    <div class="card h-100 border border-1 border-secondary  ">
+                                        <div class="card-header ps-3 pt-3 pb-0 d-flex justify-content-between align-content-center align-items-center">                                        
+                                            <h6 >#{item.consecutivo} </h6>                                         
+                                            <!--<span class="text-muted text-xs badge badge-success badge-xs">#{item.estatus}</span>                                                                                -->                                                                                         
+                                            <c:set var="estatus" value="#{item.idEstatus}"/>
+                                            <c:choose>
+                                                <c:when test="${(estatus == 40)}" > <!-- asignada -->
+                                                    <p:chip 
+                                                        label="#{item.estatus} #{item.idEstatus}" 
+                                                        styleClass="text-xs bg-info opacity-8" 
+                                                        icon="pi pi-user"/>                                                    
+                                                </c:when>
+                                                <c:when test="${estatus eq 50}"> <!-- cancelada -->
+                                                    <p:chip 
+                                                        label="#{item.estatus} #{item.idEstatus}" 
+                                                        styleClass="text-xs bg-danger opacity-8" 
+                                                        icon="pi pi-times"/>                                                    
+                                                </c:when>
+                                                <c:when test="${estatus eq 60}"> <!-- finalizada -->
+                                                    <p:chip 
+                                                        label="#{item.estatus} #{item.idEstatus}" 
+                                                        styleClass="text-xs bg-secondary opacity-8" 
+                                                        icon="pi pi-check"/>                                                    
+                                                </c:when>                                                
+                                                <c:otherwise>                                                    
+                                                    <p:chip 
+                                                        label="#{item.estatus} " 
+                                                        styleClass="text-xs bg-success opacity-8" 
+                                                        />                                                    
+                                                </c:otherwise>
+                                            </c:choose>                                          
+                                            <!--<p:chip 
+                                                label="#{item.estatus} #{item.idEstatus}" 
+                                                styleClass="text-xs ${bg} opacity-8" 
+                                                icon="${icon}"/>-->
+
+                                        </div>
+
+                                        <hr class="horizontal dark m-0 "/>
+                                        <div class="card-body text-sm ps-3 p-1 ">
+                                            <span class="text-xs text-dark">#{item.referencia}</span>
+                                        </div>                                    
+                                        <div class="card-body pt-1  p-3">
+
+                                            <h6 class="text-xs ">Gerencia</h6>
+                                            <h6 class="text-xs text-muted text-normal ps-2">#{item.gerencia}</h6>
+                                            <h6 class="text-xs ">Proveedor</h6>
+                                            <h6 class="text-xs text-muted text-normal ps-2 ">#{item.proveedor}</h6>
+                                            <h6 class="text-xs ">Lugar de entrega</h6>
+                                            <h6 class="text-xs text-muted text-normal ps-2">#{item.lugarEntrega}</h6>                                        
+
+                                            <h6 class="text-xs ">Observaciones</h6>
+                                            <span class="text-xs text-muted text-normal text-overflow-height">                                            
+                                                #{item.observaciones}
+                                            </span>                                              
+                                            <!--<h6 class="text-uppercase text-body text-xs font-weight-bolder mt-4">Application</h6>-->
+                                        </div>
+                                        <div class="card-footer pt-1 pb-1 d-flex justify-content-between align-content-center align-items-center">
+                                            <span class="text-muted text-xs"
+                                                  data-bs-toggle="collapse" 
+                                                  href="#collap_" 
+                                                  role="button" 
+                                                  aria-expanded="false" 
+                                                  aria-controls="collap_"
+                                                  >Solicitada </span>
+                                            <span class="text-muted text-xs">#{item.fechaSolicito} </span>                                            
+                                        </div>                                    
+                                        <div class="card-footer p-0 d-flex justify-content-center align-content-center align-items-center">                                            
+                                            <div class="collapse multi-collapse" id="collap_">
+                                                <div class="d-flex justify-content-between align-content-center align-items-center">
+                                                    <span class="text-sm">#{item.revisa}</span>
+                                                    <span class="text-sm">#{item.fechaRevisa}</span>
+                                                </div>
                                             </div>
-                                        </li>
+                                        </div>
 
-                                    </ul>
-                                    <h6 class="text-uppercase text-body text-xs font-weight-bolder mt-4">Application</h6>
-
+                                    </div>
                                 </div>
+                            </ui:repeat>
+
+                            <div class="col-12 col-md-3 col-xl-3 " >
+                                <h:outputLink value="#{sesion.sustituirArrancarModuloPorCampo(principalViewBean.rutaModuloComprasDeRequ,sesion.usuarioVo.idCampo,principalViewBean.urlSolicitarRequisicion)}"
+                                              title="Crear una requisición para #{sesion.usuarioVo.campo}"  
+                                              onmouseover="window.status = ' ';return true"
+                                              styleClass="text-dark">
+                                    <div class="card h-100  border border-3 border-primary p-2 mb-2 opacity-10" style="border-style: dotted  !important;">                                    
+                                        <div class="card-body d-flex justify-content-center flex-fill align-self-center align-content-center align-items-center">                                                                                
+                                            <div class="row justify-content-md-center text-center  ">
+                                                <div class="col-12">
+                                                    <i class="fa fa-plus fa-2x"/>                                                                                                                               
+                                                </div>
+                                                <div class="col-12">
+                                                    Crear una requisición para <span class="text-bold">#{sesion.usuarioVo.campo}</span>
+                                                </div>
+                                            </div>                                           
+                                        </div>                                    
+                                    </div>
+                                </h:outputLink>   
                             </div>
                         </div>
+                    </h:form>
+                </div>
+
+                
+                <div class="container-fluid py-5">
+                    <div class="row pb-2">
+                        <h5>Histórico de ordenes de C/S</h5>
+                        <span class="text-sm mt-0 pt-0">últimos 3 registros</span>
                     </div>
+                    <h:form>
+
+                        <div class="row mt-1">  
+                            contenido
+                        </div>
+                    </h:form>
                 </div>
                 <!-- últimas 3 requisiciones  -->
-
-
 
             </div>
 
@@ -491,6 +607,36 @@
                     </div>
                 </div>
             </div>
+
+            <!-- modal historial requisicion -->
+            <div class="modal fade" id="modal-historial-requisicion" tabindex="-1" role="dialog" aria-labelledby="modal-default" aria-hidden="true">
+                <div class="modal-dialog modal- modal-dialog-centered modal-" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h6 class="modal-title" id="modal-title-default">Type your modal title</h6>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">×</span>
+                            </button>
+                        </div>
+
+                        <div class="modal-body">
+
+                            <p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts. Separated they live in Bookmarksgrove right at the coast of the Semantics, a large language ocean.</p>
+                            <p>A small river named Duden flows by their place and supplies it with the necessary regelialia. It is a paradisematic country, in which roasted parts of sentences fly into your mouth.</p>
+
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-primary">Save changes</button>
+                            <button type="button" class="btn btn-link  ml-auto" data-dismiss="modal">Close</button>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <!-- modal historial requisicion -->
+
+
 
 
 

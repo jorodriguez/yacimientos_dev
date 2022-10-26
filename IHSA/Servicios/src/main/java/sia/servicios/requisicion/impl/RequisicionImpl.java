@@ -38,6 +38,7 @@ import sia.modelo.Usuario;
 import sia.modelo.contrato.vo.ConvenioArticuloVo;
 import sia.modelo.requisicion.vo.NotaVO;
 import sia.modelo.requisicion.vo.RequisicionDetalleVO;
+import sia.modelo.requisicion.vo.RequisicionView;
 import sia.modelo.sgl.vo.AdjuntoVO;
 import sia.modelo.sgl.vo.RequisicionVO;
 import sia.modelo.sistema.AbstractFacade;
@@ -334,70 +335,86 @@ public class RequisicionImpl extends AbstractFacade<Requisicion> {
     }
 
     //--Para obtener una lista descendente 
-    /*public List getUltimasRequisicionesModificas(Object idUsuario, int apCampo) {
+    public List<RequisicionView> getUltimasRequisicionesModificadas(Object idUsuario, int apCampo) {
         clearQuery();
         query.append("               SELECT r.ID,")
-                .append( "        		r.CONSECUTIVO,\n")
-                .append( "        		r.REFERENCIA,         		  \n")
-                .append( "        		r.FECHA_REQUERIDA,\n")
-                .append( "        		p.nombre as prioridad, \n")
-                .append( "        		c.siglas as siglas_compania, \n")
-                .append( "        		g.nombre as gerencia,\n")
-                .append( "                      r.MONTO_MN,\n")
-                .append( "        		r.MONTO_USD,\n")
-                .append( "        	       r.MONTOTOTAL_USD,\n")
-                .append( "        	       r.url,\n")
-                .append( "        	       e.id as id_estatus,        	       \n")
-                .append( "        	       e.nombre as estatus,")
-                .append( "        	       u_solicita.nombre as solicita,\n")
-                .append( "        	       to_char(r.fecha_solicito + r.hora_solicito,'YYYY-mm-dd HH24:MI') as fecha_solicito,\n")
-                .append( "        	       u_revisa.nombre as revisa,        	       \n")
-                .append( "        	       to_char(r.fecha_reviso + r.hora_reviso,'YYYY-mm-dd HH24:MI') as fecha_revisa,        	               	       \n")
-                .append( "        	       u_aprueba.nombre as aprueba,\n")
-                .append( "        	       to_char(r.fecha_aprobo + r.hora_aprobo,'YYYY-mm-dd HH24:MI') as fecha_aprueba,        	       \n")
-                .append( "        	       u_visto_bueno.nombre as visto_bueno,\n")
-                .append( "        	       to_char(r.fecha_visto_bueno + r.hora_visto_bueno,'YYYY-mm-dd HH24:MI') as fecha_visto_bueno,\n")
-                .append( "        	       u_cancelo.nombre as cancelo,\n")
-                .append( "        	       to_char(r.fecha_cancelo + r.hora_cancelo,'YYYY-mm-dd HH24:MI') as fecha_cancelo,\n")
-                .append( "        	       u_asigna.nombre as asigno,\n")
-                .append( "        	       to_char(r.fecha_asigno + r.hora_asigno,'YYYY-mm-dd HH24:MI') as fecha_asigno,\n")
-                .append( "        	       u_finalizo.nombre as finalizo,\n")
-                .append( "        	       to_char(r.fecha_finalizo + r.hora_finalizo,'YYYY-mm-dd HH24:MI') as fecha_finalizo,\n")
-                .append( "        	       u_comprador.nombre as comprador        	       \n")
-                .append( "         FROM Requisicion r inner join compania c on c.rfc = r.compania\n)
-                .append( "         				   inner join prioridad p on p.id = r.prioridad\n")
-                .append( "         				   inner join estatus e on e.id = r.estatus\n")
-                .append( "         				   inner join gerencia g on g.id = r.gerencia\n")
-                .append( "         				   inner join usuario u_solicita on u_solicita.id = r.solicita\n")
-                .append( "         				   inner join usuario u_revisa on u_revisa.id = r.revisa\n")
-                .append( "         				   inner join usuario u_aprueba on u_aprueba.id = r.aprueba\n")
-                .append( "         				   left join usuario u_visto_bueno on u_visto_bueno.id = r.visto_bueno\n")
-                .append( "         				   left join usuario u_asigna on u_asigna.id = r.asigna\n")
-                .append( "         				   left join usuario u_finalizo on u_finalizo.id = r.finalizo\n")
-                .append( "         				   left join usuario u_comprador on u_comprador.id = r.compra\n")
-                .append( "         				   left join usuario u_cancelo on u_cancelo.id = r.cancelo\n")
-                .append( "         WHERE (\n")
-                .append( "         			r.solicita = ? ")
-                .append( "         			OR r.revisa = ? ")
-                .append( "         			OR r.aprueba = ? ")
-                .append( "         			OR r.aprueba = ? ")
-                .append( "         			OR r.visto_bueno = ? ")
-                .append( "         			OR r.cancelo = ? ")
-                .append( "         			OR r.finalizo = ? ")
-                .append( "         			OR r.asigna = ? ")
-                .append( "         		)         		 ")
-                .append( "         		AND r.ESTATUS NOT IN  (1) ")
-                .append( "         		AND r.AP_CAMPO = ? ")
-                .append( "         		AND r.eliminado = false ")
-                .append( "         		AND r.fecha_modifico is not null ")
-                .append( "         		and r.hora_modifico is not null ")
-                .append( "         ORDER BY (r.fecha_modifico+r.hora_modifico)::timestamp desc ")
-                .append( "         LIMIT 3")
-          return dbCtx.
-                   fetch(query.toStroing()),idUsuario,idUsuario,idUsuario,idUsuario,idUsuario,idUsuario,idUsuario,idUsuario,idUsuario,idUsuario,apCampo)
-                   .into(Integer.class);
-        //return em.createNativeQuery(query.toString()).getResultList();
-    }*/
+                .append("        		r.CONSECUTIVO,")
+                .append("        		r.REFERENCIA,")
+                .append("        	        r.observaciones,\n")
+                .append("        		to_char(r.FECHA_REQUERIDA,'YYYY-mm-dd') as fecha_requerida,")
+                .append("        	        r.lugar_entrega,\n")
+                .append("        		p.nombre as prioridad,")
+                .append("        		c.siglas as siglas_compania, ")
+                .append("        		g.nombre as gerencia,")
+                .append("                      r.MONTO_MN,")
+                .append("        		r.MONTO_USD,")
+                .append("        	       r.MONTOTOTAL_USD,")
+                .append("        	       r.url,")
+                .append("        	       e.id as id_estatus,")
+                .append("        	       e.nombre as estatus,")
+                .append("        	       u_solicita.nombre as solicita,")
+                .append("        	       to_char(r.fecha_solicito + r.hora_solicito,'YYYY-mm-dd HH24:MI') as fecha_solicito,")
+                .append("        	       u_revisa.nombre as revisa,")
+                .append("        	       to_char(r.fecha_reviso + r.hora_reviso,'YYYY-mm-dd HH24:MI') as fecha_revisa,")
+                .append("        	       u_aprueba.nombre as aprueba,")
+                .append("        	       to_char(r.fecha_aprobo + r.hora_aprobo,'YYYY-mm-dd HH24:MI') as fecha_aprueba,")
+                .append("        	       u_visto_bueno.nombre as visto_bueno,")
+                .append("        	       to_char(r.fecha_visto_bueno + r.hora_visto_bueno,'YYYY-mm-dd HH24:MI') as fecha_visto_bueno,")
+                .append("        	       u_cancelo.nombre as cancelo,")
+                .append("        	       to_char(r.fecha_cancelo + r.hora_cancelo,'YYYY-mm-dd HH24:MI') as fecha_cancelo,")
+                .append("        	       u_asigna.nombre as asigno,")
+                .append("        	       to_char(r.fecha_asigno + r.hora_asigno,'YYYY-mm-dd HH24:MI') as fecha_asigno,")
+                .append("        	       u_finalizo.nombre as finalizo,")
+                .append("        	       to_char(r.fecha_finalizo + r.hora_finalizo,'YYYY-mm-dd HH24:MI') as fecha_finalizo,")
+                .append("        	       u_comprador.nombre as comprador, ")
+                .append("                      r.tipo,\n")                
+                .append("        	       r.proveedor,\n")                
+                .append("        	       r.motivo_cancelo,\n")
+                .append("        	       r.motivo_finalizo  ")
+                .append("         FROM Requisicion r inner join compania c on c.rfc = r.compania ")
+                .append("         				   inner join prioridad p on p.id = r.prioridad")
+                .append("         				   inner join estatus e on e.id = r.estatus")
+                .append("         				   inner join gerencia g on g.id = r.gerencia")
+                .append("         				   inner join usuario u_solicita on u_solicita.id = r.solicita")
+                .append("         				   inner join usuario u_revisa on u_revisa.id = r.revisa")
+                .append("         				   inner join usuario u_aprueba on u_aprueba.id = r.aprueba")
+                .append("         				   left join usuario u_visto_bueno on u_visto_bueno.id = r.visto_bueno")
+                .append("         				   left join usuario u_asigna on u_asigna.id = r.asigna")
+                .append("         				   left join usuario u_finalizo on u_finalizo.id = r.finalizo")
+                .append("         				   left join usuario u_comprador on u_comprador.id = r.compra")
+                .append("         				   left join usuario u_cancelo on u_cancelo.id = r.cancelo")
+                .append("            WHERE ( ")
+                .append("         			r.solicita = ? ")
+                .append("         			OR r.revisa = ? ")
+                .append("         			OR r.aprueba = ? ")
+                .append("         			OR r.aprueba = ? ")
+                .append("         			OR r.visto_bueno = ? ")
+                .append("         			OR r.cancelo = ? ")
+                .append("         			OR r.finalizo = ? ")
+                .append("         			OR r.asigna = ? ")
+                .append("         		)         		 ")
+                .append("         		AND r.ESTATUS NOT IN  (1) ")
+                .append("         		AND r.AP_CAMPO = ? ")
+                .append("         		AND r.eliminado = false ")
+                .append("         		AND r.fecha_modifico is not null ")
+                .append("         		and r.hora_modifico is not null ")
+                .append("         ORDER BY (r.fecha_modifico+r.hora_modifico)::timestamp desc ")
+                .append("         LIMIT 3");
+        return dbCtx
+                .fetch(
+                        query.toString(),
+                        idUsuario,
+                        idUsuario,
+                        idUsuario,
+                        idUsuario,
+                        idUsuario,
+                        idUsuario,
+                        idUsuario,
+                        idUsuario,
+                        apCampo
+                ).into(RequisicionView.class);
+
+    }
 
     public List<Requisicion> getRequisicionesSinAutorizar(Object idUsuario) {
         return em.createQuery(

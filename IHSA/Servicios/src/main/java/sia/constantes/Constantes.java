@@ -1489,4 +1489,6 @@ public class Constantes {
      * Formato para fecha - yyyy-MM-dd Ejemplo: 2012-08-19
      */
     public static final SimpleDateFormat FMT_dd_MM_yyyy = new SimpleDateFormat("dd-MM-yyyy");    
+    
+    public static final String RUTA_COMPRAS_DESDE_REQ =  "/Compras/LSWU?Z4BX2=@@AM@@&origenPeticion=requ";
 }

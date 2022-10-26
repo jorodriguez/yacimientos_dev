@@ -362,7 +362,7 @@ public class Sesion implements Serializable {
                 + "&ZWZPA=" + pagina;
     }
 
-    public String sustituirArrancarModuloPorCampo(String url, int campo, String pagina) {
+    public String sustituirArrancarModuloPorCampo(String url, int campo, String pagina) {   
         String resultado;
         if (url == null) {
             resultado = Constantes.VACIO;
