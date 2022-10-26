@@ -175,13 +175,14 @@ public class SolicitarOrdenBean implements Serializable {
             //
             ordenActual.setOcTipoCompra(new OcTipoCompra());
             ordenActual.setOcFormaPago(new OcFormaPago());
+            //
+            mostrarTipoOrden = getOrdenActual() == null ? false : getOrdenActual().getConsecutivo() == null;
         }
 
     }
 
     public List<String> completaProveedor(String query) {
         return proveedorImpl.traerRfcNombreLikeProveedorQueryNativo(query, sesion.getUsuarioConectado().getApCampo().getCompania().getRfc(), ProveedorEnum.ACTIVO.getId());
-
     }
 
     public void llenarDatosProveedor() {
@@ -256,6 +257,9 @@ public class SolicitarOrdenBean implements Serializable {
         if (this.getOrdenActual().getProveedor() != null) {
             if (proveedorCompaniaImpl.buscarRelacionProveedorCompania(getOrdenActual().getProveedor().getId(), getOrdenActual().getCompania().getRfc())) {
                 //
+                proveedorVo = new ProveedorVo();
+                proveedorVo = proveedorImpl.traerProveedor(ordenActual.getProveedor().getId(), ordenActual.getCompania().getRfc());
+                //
                 setIdProveedorr((int) getOrdenActual().getProveedor().getId());
                 setListaContactos(contactoProveedorServicioImpl.traerContactoPorProveedor(getIdProveedorr(), Constantes.CONTACTO_REP_COMPRAS));
                 List<ContactoOrdenVo> lco = ordenImpl.getContactosVo(getOrdenActual().getId());
@@ -267,6 +271,7 @@ public class SolicitarOrdenBean implements Serializable {
                         }
                     }
                 }
+
                 setProveedorSeleccionado(getOrdenActual().getProveedor().getNombre());
             } else {
                 getOrdenActual().setProveedor(null);
@@ -366,6 +371,9 @@ public class SolicitarOrdenBean implements Serializable {
 
             SelectItem item2 = new SelectItem("Orden de Servicio");
             resultList.add(item2);
+            
+            SelectItem item3 = new SelectItem("Con Subcontrato");
+            resultList.add(item3);
 
             return resultList;
         } catch (Exception ex) {
@@ -795,7 +803,6 @@ public class SolicitarOrdenBean implements Serializable {
      * @return the mostrarTipoOrden
      */
     public boolean isMostrarTipoOrden() {
-        mostrarTipoOrden = getOrdenActual() == null ? false : getOrdenActual().getConsecutivo() == null;
         return mostrarTipoOrden;
     }
 

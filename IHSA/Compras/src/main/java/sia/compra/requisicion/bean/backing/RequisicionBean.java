@@ -105,6 +105,7 @@ import sia.servicios.requisicion.impl.OcPresupuestoImpl;
 import sia.servicios.requisicion.impl.OcRequisicionCoNoticiaImpl;
 import sia.servicios.requisicion.impl.OcSubTareaImpl;
 import sia.servicios.requisicion.impl.OcTareaImpl;
+import sia.servicios.requisicion.impl.OcUsuarioNavisionFacade;
 import sia.servicios.requisicion.impl.ReRequisicionEtsImpl;
 import sia.servicios.requisicion.impl.RequisicionDetalleImpl;
 import sia.servicios.requisicion.impl.RequisicionImpl;
@@ -206,6 +207,9 @@ public class RequisicionBean implements Serializable {
     private GerenciaBean gerenciaBean;
     @Inject
     private OrdenBean ordenBean;
+    @Inject
+    private OcUsuarioNavisionFacade ocUsuarioNavisionFacade;
+
     @Getter
     @Setter
     private String textoNoticia;
@@ -558,6 +562,10 @@ public class RequisicionBean implements Serializable {
     @Getter
     @Setter
     private List<NoticiaAdjuntoVO> noticiaAdjuntos;
+
+    @Getter
+    @Setter
+    private String usuarioBeneficiado;
 
     /**
      * Creates a new instance of ManagedBeanRequisiciones
@@ -1873,11 +1881,11 @@ F
                 finalizarNotas();
                 motivo = "";
                 //---- Mostrar mensaje  ----
-
                 FacesUtilsBean.addInfoMessage("Requisición(es) devuelta(s) correctamente...");
                 //Esto es para Quitar las lineas seleccionadas
                 cambiarRequisicion(0);
                 requisicionActual = null;
+                requisicionesSinAsignar();
                 //Esto es para cerrar el panel emergente de cancelar requisicion
                 PrimeFaces.current().executeScript(";cerrarDevolver();");
             } else {
@@ -3089,7 +3097,10 @@ F
      */
     public void completarActualizacionItemCrearRequisicion() {
         try {
-            // se toma la linea de requisición            
+            // se toma la linea de requisición      
+            if (!usuarioBeneficiado.trim().isEmpty()) {
+                itemActual.setUsuarioBeneficiado(usuarioBeneficiado.trim());
+            }
             if (requisicionActual != null && operacionItem.equals(UPDATE_OPERATION)) {
                 if (requisicionActual.getApCampo() != null && "N".equals(requisicionActual.getApCampo().getTipo())) {
                     if (getItemActual().getProyectoOt() == null || itemActual.getProyectoOt().getId() <= 0) {
@@ -3134,6 +3145,11 @@ F
                 itemsProcesoAprobarMulti();
             } else {
                 itemsProcesoAprobar();
+            }
+
+            // Agregar usuario beneficiado a tabla vista
+            if (!usuarioBeneficiado.trim().isEmpty()) {
+                ocUsuarioNavisionFacade.agregarUsuario(usuarioBean.getUsuarioConectado().getId(), usuarioBeneficiado);
             }
             PrimeFaces.current().executeScript(";cerrarDialogoModal(dialogoItemsRequi);");
 
@@ -3249,34 +3265,9 @@ F
                 requisicionServicioRemoto.crearItem(getItemActual(), 0, usuarioBean.getUsuarioConectado().getId());
             }
         }
-//        else if (TipoRequisicion.AF.name().equals(tipo) && requisicionActual != null && itemActual != null
-//                && idActPetrolera > 0 && idProyectoOt > 0) {
-//            getItemActual().setOcPresupuesto(new OcPresupuesto(getIdPresupuesto()));
-//            getItemActual().setMesPresupuesto(getMesPresupuesto());
-//            getItemActual().setAnioPresupuesto(getAnioPresupuesto());
-//            getItemActual().setOcActividadpetrolera(new OcActividadPetrolera(getIdActPetrolera()));
-//            getItemActual().setProyectoOt(new ProyectoOt(getIdProyectoOT()));
-//
-//            boolean guardar = false;
-//            if (requisicionActual.getProyectoOt() == null) {
-//                requisicionActual.setProyectoOt(new ProyectoOt(getIdProyectoOT()));
-//                guardar = true;
-//            }
-//
-//            if (guardar) {
-//                requisicionServicioRemoto.edit(requisicionActual);
-//                setRequisicionActual(requisicionServicioRemoto.find(getRequisicionActual().getId()));
-//            }
-//            getItemActual().setRequisicion(requisicionActual);
-//            if (getItemActual() != null && getItemActual().getId() != null && getItemActual().getId() > 0) {
-//                requisicionServicioRemoto.actualizarItemCrearRequisicion(getItemActual(), 0);
-//            } else {
-//                getItemActual().setGenero(new Usuario(usuarioBean.getUsuarioConectado().getId()));
-//                getItemActual().setFechaGenero(new Date());
-//                getItemActual().setHoraGenero(new Date());
-//                requisicionServicioRemoto.crearItem(getItemActual(), 0, usuarioBean.getUsuarioConectado().getId());
-//            }
-//        }
+
+        usuarioBeneficiado = "";
+
     }
 
     private void guardarReqDetalleContractualMulti(String tipo) {
@@ -4440,5 +4431,9 @@ F
     public String uploadDirectoryRequi() {
         return new StringBuilder().append("ETS/Requisicion/")
                 .append(getRequisicionActual().getId()).toString();
+    }
+
+    public List<String> completarUsuarioBeneficiado(String query) {
+        return ocUsuarioNavisionFacade.traerUsuarios(query);
     }
 }

@@ -752,6 +752,26 @@ function seleccionarGeneral(todos, seleccion, divAuto, divOperacion) {
     }
 }
 
+function mostrarUsuarioNoNavision() {     
+  const auto = document.querySelectorAll("#usuarioBeneficiado input");
+  const input = auto[0];
+  const NoNavi = document.getElementById("inputUsuarioNoNavision");
+  const inpNoNav = document.querySelector("#inputUsuarioNoNavision input");
+  input.value = "";
+  inpNoNav.value = "";
+
+  if(NoNavi.style.display == "none"){
+    NoNavi.style.display = "inline";
+    input.disabled = true;
+  }
+  else{    
+    NoNavi.style.display = "none";
+    input.disabled = false;
+  }
+  
+  
+}
+
 function seleccionarGeneralConConvenio(todos, seleccion) {
     if ($("." + todos).is(":checked")) {
         $("." + seleccion).prop("checked", "checked");

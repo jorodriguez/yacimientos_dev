@@ -71,6 +71,7 @@ public class RequisicionDetalleVO {
     private String presupuestoCodigo;
     private int anioPresupuesto;
     private double totalInventario;
+    private String usuarioBeneficiado;
 
     public String getArtDescripcion() {
         String ret = "";

@@ -192,6 +192,9 @@ public class OrdenDetalle implements Serializable {
     @Column(name = "FECHA_CANCELO")
     private Date fechaCancelo;
     
+    @Column(name = "USUARIO_BENEFICIADO")
+    private String usuarioBeneficiado; 
+    
     public OrdenDetalle() {
     }
 

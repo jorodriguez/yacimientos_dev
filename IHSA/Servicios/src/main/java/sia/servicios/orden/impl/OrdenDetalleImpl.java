@@ -704,7 +704,8 @@ public class OrdenDetalleImpl extends AbstractFacade<OrdenDetalle>{
                 ordenDetalle.setMultiproyectoId(requisicionDetalleVO.getMultiproyectoId());
 
                 ordenDetalle.setCantidad(requisicionDetalleVO.getCantidadAutorizada());
-                if (TipoRequisicion.PS.toString().equals(orOrigen.getTipo()) || ("C".equals(orOrigen.getApCampo().getTipo()))) {
+                if (TipoRequisicion.PS.toString().equals(orOrigen.getTipo()) 
+                        || ("C".equals(orOrigen.getApCampo().getTipo()))) {
                     ordenDetalle.setOcTarea(requisicionDetalleVO.getOcTarea());
                     ordenDetalle.setOcUnidadCosto(requisicionDetalleVO.getOcUnidadCosto() != null ? requisicionDetalleVO.getOcUnidadCosto() : orOrigen.getOcUnidadCosto());
                 }
@@ -748,6 +749,7 @@ public class OrdenDetalleImpl extends AbstractFacade<OrdenDetalle>{
                 } else {
                     orOrigen.setContrato(Constantes.OCS_SIN_CONTRATO);
                 }
+                ordenDetalle.setUsuarioBeneficiado(requisicionDetalleVO.getUsuarioBeneficiado());
                 create(ordenDetalle);
                 //
                 requisicionDetalleRemote.cambiarDisgregadoItemRequisicion(rdVO, idSesion, Constantes.BOOLEAN_TRUE);
