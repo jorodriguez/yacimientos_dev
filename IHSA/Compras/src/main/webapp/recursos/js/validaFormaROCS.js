@@ -752,14 +752,23 @@ function seleccionarGeneral(todos, seleccion, divAuto, divOperacion) {
     }
 }
 
-function mostrarUsuarioNoNavision() {
-    if ($(".usuariocustom").is(":checked")) {
-        $(".inputUsuarioNoNavision").css("display", "block");
-        $("#frmItemReq\\:" + "autoUsuerNav").prop("disabled", true);
-    } else {
-        $(".inputUsuarioNoNavision").css("display", "none");
-        $("#frmItemReq\\:" + "autoUsuerNav").prop("disabled", false);
-    }
+function mostrarUsuarioNoNavision() {     
+  const auto = document.querySelectorAll("#usuarioBeneficiado input");
+  const input = auto[0];
+  const NoNavi = document.getElementById("inputUsuarioNoNavision");
+  input.value = "";
+  NoNavi.value = "";
+
+  if(NoNavi.style.display == "none"){
+    NoNavi.style.display = "inline";
+    input.disabled = true;
+  }
+  else{    
+    NoNavi.style.display = "none";
+    input.disabled = false;
+  }
+  
+  
 }
 
 function seleccionarGeneralConConvenio(todos, seleccion) {
