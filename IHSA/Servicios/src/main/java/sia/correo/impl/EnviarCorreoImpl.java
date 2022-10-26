@@ -43,8 +43,7 @@ public class EnviarCorreoImpl {
 
     @Resource(name = "mail/gmail")
     private Session sesionGmail;
-   // @Resource(name = "mail/ihsa")
-    @Resource(name = "mail/Butterfly")
+    @Resource(name = "mail/ihsa")
     private Session sesionIhsa;
     @Resource(name = "mail/ihsaAvz")
     private Session sesionIhsaAvz;

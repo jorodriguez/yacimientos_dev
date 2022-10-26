@@ -756,8 +756,9 @@ function mostrarUsuarioNoNavision() {
   const auto = document.querySelectorAll("#usuarioBeneficiado input");
   const input = auto[0];
   const NoNavi = document.getElementById("inputUsuarioNoNavision");
+  const inpNoNav = document.querySelector("#inputUsuarioNoNavision input");
   input.value = "";
-  NoNavi.value = "";
+  inpNoNav.value = "";
 
   if(NoNavi.style.display == "none"){
     NoNavi.style.display = "inline";

@@ -151,7 +151,7 @@ public class OcUsuarioNavision implements Serializable {
         sb.append("{");
         sb.append("id=").append(this.id);
         sb.append(", genero=").append(this.genero != null ? this.genero.getId() : null);
-        sb.append(", rfc=").append(this.rfc);
+        sb.append(", rfc=").append(this.getRfc());
         sb.append(", fechaGenero=").append(this.fechaGenero != null ? (Constantes.FMT_ddMMyyy.format(this.fechaGenero)) : null);
         sb.append(", horaGenero=").append(this.horaGenero != null ? (Constantes.FMT_HHmmss.format(this.horaGenero)) : null);
         sb.append(", modifico=").append(this.modifico != null ? this.modifico.getId() : null);
@@ -192,6 +192,20 @@ public class OcUsuarioNavision implements Serializable {
      */
     public void setNavision(boolean navision) {
         this.navision = navision;
+    }
+
+    /**
+     * @return the rfc
+     */
+    public String getRfc() {
+        return rfc;
+    }
+
+    /**
+     * @param rfc the rfc to set
+     */
+    public void setRfc(String rfc) {
+        this.rfc = rfc;
     }
 
 }
