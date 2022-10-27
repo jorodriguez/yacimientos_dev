@@ -96,8 +96,6 @@ public class ApCampo implements Serializable {
         this.id = id;
     }
 
-
-    
     public int hashCode() {
         int hash = 0;
         hash += (id != null ? id.hashCode() : 0);
@@ -122,12 +120,5 @@ public class ApCampo implements Serializable {
         return "sia.modelo.ApCampo[ id=" + id + " ]";
     }
 
-    public String getFoto() {
-        return foto;
-    }
-
-    public void setFoto(String foto) {
-        this.foto = foto;
-    }
 
 }
