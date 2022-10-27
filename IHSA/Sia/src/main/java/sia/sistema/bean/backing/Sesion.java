@@ -246,7 +246,7 @@ public class Sesion implements Serializable {
         //
         usuarioVo.setIdCampo(u.getApCampo().getId());
         usuarioVo.setCampo(u.getApCampo().getNombre());
-        usuarioVo.setFotoCampo(u.getApCampo().getFoto());
+        usuarioVo.setUrlImagen(u.getApCampo().getUrlImagen());
         //Se agrega a la sesion de SIA el RFC de la empresa a la que pertenece el empleado
         usuarioVo.setRfcEmpresa(u.getApCampo().getCompania().getRfc());
         //
@@ -426,7 +426,7 @@ public class Sesion implements Serializable {
             //
             usuarioVo.setIdCampo(campo.getId());
             usuarioVo.setCampo(campo.getNombre());
-            usuarioVo.setFotoCampo(campo.getFoto());
+            usuarioVo.setUrlImagen(campo.getUrlImagen());
             setRfcCompania(usuarioVo.getRfcEmpresa());
             usuarioVo.setGerencia(con.getGerencia());
             usuarioVo.setPuesto(con.getPuesto());

@@ -86,8 +86,8 @@ public class ApCampo implements Serializable {
     @Column(name = "CARTA_INTENCION")
     private boolean cartaIntencion;
     
-    @Column(name = "FOTO")
-    private String foto;
+    @Column(name = "URL_IMAGEN")
+    private String urlImagen;
 
     public ApCampo() {
     }

@@ -22,16 +22,17 @@ import sia.constantes.Constantes;
 @NamedQueries({
     @NamedQuery(name = "SiModulo.findAll", query = "SELECT s FROM SiModulo s")})
 public class SiModulo implements Serializable {
-    @Column(name =     "HORA_GENERO")
+
+    @Column(name = "HORA_GENERO")
     @Temporal(TemporalType.TIME)
     private Date horaGenero;
-    @Column(name =     "FECHA_GENERO")
+    @Column(name = "FECHA_GENERO")
     @Temporal(TemporalType.DATE)
     private Date fechaGenero;
-    @Column(name =     "FECHA_MODIFICO")
+    @Column(name = "FECHA_MODIFICO")
     @Temporal(TemporalType.DATE)
     private Date fechaModifico;
-    @Column(name =     "HORA_MODIFICO")
+    @Column(name = "HORA_MODIFICO")
     @Temporal(TemporalType.TIME)
     private Date horaModifico;
     @OneToMany(mappedBy = "siModulo")
@@ -43,9 +44,9 @@ public class SiModulo implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
-@GeneratedValue(generator =  "si_modulo_seq", strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(generator = "si_modulo_seq", strategy = GenerationType.SEQUENCE)
     @Basic(optional = false)
-    
+
     @Column(name = "ID")
     private Integer id;
     @Size(max = 32)
@@ -61,23 +62,21 @@ public class SiModulo implements Serializable {
     @JoinColumn(name = "MODIFICO", referencedColumnName = "ID")
     @ManyToOne
     private Usuario modifico;
-    
+
     @Column(name = "ELIMINADO")
-    private boolean eliminado;    
+    private boolean eliminado;
     @Size(max = 128)
     @Column(name = "ICONO")
-    private String icono;    
+    private String icono;
     @Size(max = 128)
     @Column(name = "RUTASERVLET")
-    private String rutaServlet;    
+    private String rutaServlet;
     @Size(max = 128)
     @Column(name = "TOOLTIP")
-    private String toolTip;        
+    private String toolTip;
     @Size(max = 128)
     @Column(name = "EXTRALINKRENDER")
-    private String extraLinkRender;    
-     @Column(name = "FOTO")
-    private String foto;
+    private String extraLinkRender;
 
     public SiModulo() {
     }
@@ -222,32 +221,29 @@ public class SiModulo implements Serializable {
         this.eliminado = eliminado;
     }
 
-    
     public int hashCode() {
         int hash = 0;
         hash += (getId() != null ? getId().hashCode() : 0);
         return hash;
     }
 
-    
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append(this.getClass().getName())
-            .append("{")
-            .append("id=").append(getId())
-            .append(", nombre=").append(getNombre())
-            .append(", ruta=").append(getRuta())
-            .append(", genero=").append(getGenero() != null ? getGenero().getId() : null)
-            .append(", fechaGenero=").append(getFechaGenero() != null ? (Constantes.FMT_ddMMyyy.format(getFechaGenero())) : null)
-            .append(", horaGenero=").append(getHoraGenero() != null ? (Constantes.FMT_HHmmss.format(getHoraGenero())) : null)
-            .append(", modifico=").append(getModifico() != null ? getModifico().getId() : null)
-            .append(", fechaModifico=").append(getFechaModifico() != null ? (Constantes.FMT_ddMMyyy.format(getFechaModifico())) : null)
-            .append(", horaModifico=").append(getHoraModifico() != null ? (Constantes.FMT_HHmmss.format(getHoraModifico())) : null)
-            .append(", eliminado=").append(isEliminado())
-            .append("}");
+                .append("{")
+                .append("id=").append(getId())
+                .append(", nombre=").append(getNombre())
+                .append(", ruta=").append(getRuta())
+                .append(", genero=").append(getGenero() != null ? getGenero().getId() : null)
+                .append(", fechaGenero=").append(getFechaGenero() != null ? (Constantes.FMT_ddMMyyy.format(getFechaGenero())) : null)
+                .append(", horaGenero=").append(getHoraGenero() != null ? (Constantes.FMT_HHmmss.format(getHoraGenero())) : null)
+                .append(", modifico=").append(getModifico() != null ? getModifico().getId() : null)
+                .append(", fechaModifico=").append(getFechaModifico() != null ? (Constantes.FMT_ddMMyyy.format(getFechaModifico())) : null)
+                .append(", horaModifico=").append(getHoraModifico() != null ? (Constantes.FMT_HHmmss.format(getHoraModifico())) : null)
+                .append(", eliminado=").append(isEliminado())
+                .append("}");
         return sb.toString();
     }
-
 
     public Collection<SiOpcion> getSiOpcionCollection() {
         return siOpcionCollection;
@@ -264,7 +260,6 @@ public class SiModulo implements Serializable {
     public void setSiAdjuntoCollection(Collection<SiAdjunto> siAdjuntoCollection) {
         this.siAdjuntoCollection = siAdjuntoCollection;
     }
-
 
     public Collection<SiRol> getSiRolCollection() {
         return siRolCollection;
@@ -328,14 +323,6 @@ public class SiModulo implements Serializable {
      */
     public void setExtraLinkRender(String extraLinkRender) {
         this.extraLinkRender = extraLinkRender;
-    }
-
-    public String getFoto() {
-        return foto;
-    }
-
-    public void setFoto(String foto) {
-        this.foto = foto;
     }
 
 }

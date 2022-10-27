@@ -27,7 +27,7 @@ public class UsuarioVO implements Serializable {
     private String extension;
     private String rfc;
     private String campo;
-    private String fotoCampo;
+    private String urlImagen;
     private String sexo;
     private Date fechaNacimiento;
     private boolean selected;
