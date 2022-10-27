@@ -76,6 +76,8 @@ public class SiModulo implements Serializable {
     @Size(max = 128)
     @Column(name = "EXTRALINKRENDER")
     private String extraLinkRender;    
+     @Column(name = "FOTO")
+    private String foto;
 
     public SiModulo() {
     }
@@ -326,6 +328,14 @@ public class SiModulo implements Serializable {
      */
     public void setExtraLinkRender(String extraLinkRender) {
         this.extraLinkRender = extraLinkRender;
+    }
+
+    public String getFoto() {
+        return foto;
+    }
+
+    public void setFoto(String foto) {
+        this.foto = foto;
     }
 
 }

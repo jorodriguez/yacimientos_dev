@@ -59,7 +59,7 @@ public class PrincipalViewBean implements Serializable {
     }
     
     public String getUrlSolicitarRequisicion(){
-        return "/vistas/SiaWeb/Orden/solicitarRequisicion";
+        return "vistas/SiaWeb/Requisiciones/CrearRequisicion";
     }
     
 }
