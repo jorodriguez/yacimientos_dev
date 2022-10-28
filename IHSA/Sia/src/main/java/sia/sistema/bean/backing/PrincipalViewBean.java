@@ -8,6 +8,7 @@ package sia.sistema.bean.backing;
 import java.io.Serializable;
 import java.util.List;
 import javax.annotation.PostConstruct;
+import javax.faces.event.ActionListener;
 import javax.inject.Inject;
 
 
@@ -16,9 +17,14 @@ import javax.inject.Inject;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 import lombok.Getter;
+import lombok.Setter;
+import org.primefaces.PrimeFaces;
+import org.primefaces.context.PrimeFacesContext;
 import sia.modelo.requisicion.vo.RequisicionView;
 import sia.servicios.requisicion.impl.RequisicionImpl;
 import static sia.constantes.Constantes.RUTA_COMPRAS_DESDE_REQ;
+import sia.sistema.bean.support.FacesUtils;
+import sia.util.UtilSia;
 /**
  *
  * @author jorodriguez
@@ -36,6 +42,8 @@ public class PrincipalViewBean implements Serializable {
     @Getter
     private List<RequisicionView> listaRequisiciones;
     
+    @Getter @Setter
+    private RequisicionView requisicion;
     
             
     public PrincipalViewBean() { }
@@ -53,6 +61,29 @@ public class PrincipalViewBean implements Serializable {
         
     }
     
+     public void seleccionarRequisicion(ActionListener actionListener){
+         System.out.println("@seleccionarRequisicion");
+        
+        String param = FacesUtils.getRequestParameter("indexRequisicion");
+        
+         System.out.println("param index "+param);        
+                        
+        int paramInx = Integer.parseInt(param);
+        
+        System.out.println("param index INT "+paramInx);
+               
+        this.requisicion = this.listaRequisiciones.get(paramInx);                      
+        
+    }
+     
+
+     public void seleccionarRequisicionRow(RequisicionView row){
+         System.out.println("@seleccionarRequisicionRow "+ (row == null));
+        
+        this.requisicion = row;
+                         
+    }
+          
       
     public String getRutaModuloComprasDeRequ(){
         return RUTA_COMPRAS_DESDE_REQ;
