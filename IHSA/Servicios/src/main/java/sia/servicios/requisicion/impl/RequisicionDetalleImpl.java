@@ -135,7 +135,7 @@ public class RequisicionDetalleImpl {
                 + "									inner join inv_almacen al on inv.almacen = al.id and al.eliminado = false \n"
                 + "								where r.inv_articulo = a.id and al.id = apc.inv_almacen and inv.eliminado = false), " //27
                 + "   apc.id" //28
-                + "   r.USUARIO_BENEFICIADO" //29
+                + " ,  r.USUARIO_BENEFICIADO" //29
                 + " FROM Requisicion q "
                 + " inner join ap_campo apc on apc.id = q.ap_campo "
                 + " inner join Requisicion_Detalle r on r.REQUISICION = q.ID "
@@ -157,7 +157,7 @@ public class RequisicionDetalleImpl {
                 + " left join oc_presupuesto pres on pres.id = r.oc_presupuesto "
                 + " WHERE r.requisicion = " + idRequisicion
                 + " group BY "
-                + " reqID,numParte,artDesc,autorizado,disgregado,ocUniCostID,ocUniCostNombre,artUnidadID,tareaNombre,tareaCodigo,artNombre,artID,textNav,subTareaNombre,actPetrolera,actPetroleraCodigo,actPetroleraID,subTareaCodigo,artUnidad,MULTIPROYECTO_ID,r.oc_presupuesto,r.mes_presupuesto,pres.nombre,pres.codigo,r.anio_presupuesto,r.observaciones,apc.id ";
+                + " reqID,numParte,artDesc,autorizado,disgregado,ocUniCostID,ocUniCostNombre,artUnidadID,tareaNombre,tareaCodigo,artNombre,artID,textNav,subTareaNombre,actPetrolera,actPetroleraCodigo,actPetroleraID,subTareaCodigo,artUnidad,MULTIPROYECTO_ID,r.oc_presupuesto,r.mes_presupuesto,pres.nombre,pres.codigo,r.anio_presupuesto,r.observaciones,apc.id, r.USUARIO_BENEFICIADO ";
         //
         List<RequisicionDetalleVO> lo = null;
         List<Object[]> l = em.createNativeQuery(s).getResultList();
