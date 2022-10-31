@@ -835,7 +835,7 @@ public class Sesion implements Serializable {
         try {
             setIdViajeroGRAut(idViajero);
             ViajeroVO vo = sgViajeroImpl.buscarViajeroPorId(idViajero);
-            setGrAutTxtMotivo(vo.getGrAutorizoMotivo());
+            setGrAutTxtMotivo(vo.getGrAutorizoMotivo() == null ? "" : vo.getGrAutorizoMotivo());
             String metodo = ";cerrarDialogoGRViajeDet();abrirDialogoGRAutoriza();";
             PrimeFaces.current().executeScript(metodo);
         } catch (Exception e) {
