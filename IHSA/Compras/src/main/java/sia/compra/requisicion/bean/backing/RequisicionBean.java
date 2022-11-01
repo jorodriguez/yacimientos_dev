@@ -1669,9 +1669,6 @@ F
 
     public void eliminarRequisicion() {
         try {
-//            RequisicionVO r = (RequisicionVO) listaRequisiciones.getRowData();
-//            setRequisicionActual(requisicionServicioRemoto.find(requiVO.getId()));
-
             if (requisicionActual.getConsecutivo() == null) {
                 //Si no tiene Consecutivo asignado Eliminarla
 
@@ -1704,6 +1701,7 @@ F
             FacesUtilsBean.addInfoMessage("La requisición fue eliminada correctamente...");
             //Esto es para Quitar las lineas seleccionadas
             cambiarRequisicion(0);
+            requisicionesSinSolicitar();
             PrimeFaces.current().executeScript(";regresar('divTabla', 'divDatos', 'divOperacion', 'divAutoriza');");
         } catch (Exception ex) {
             FacesUtilsBean.addInfoMessage("No se pudo eliminar la requisición.  Error: por favor notifique el problema a: soportesia@ihsa.mx" + ex.toString());
