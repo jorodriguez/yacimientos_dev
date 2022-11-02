@@ -39,6 +39,7 @@ import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFFormulaEvaluator;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.jooq.DSLContext;
 import sia.archivador.AlmacenDocumentos;
 import sia.archivador.DocumentoAnexo;
 import sia.archivador.ProveedorAlmacenDocumentos;
@@ -70,6 +71,7 @@ import sia.modelo.orden.vo.ContactoOrdenVo;
 import sia.modelo.orden.vo.OcActivoFijoVO;
 import sia.modelo.orden.vo.OcRequisicionCheckcodeVO;
 import sia.modelo.orden.vo.OrdenEtsVo;
+import sia.modelo.orden.vo.OrdenView;
 import sia.modelo.proveedor.Vo.ContactoProveedorVO;
 import sia.modelo.sgl.vo.OrdenDetalleVO;
 import sia.modelo.sgl.vo.OrdenVO;
@@ -193,6 +195,9 @@ public class OrdenImpl extends AbstractFacade<Orden> {
     private ApCampoGerenciaImpl apCampoGerenciaRemote;
     @Inject
     private PvProveedorSinCartaIntencionImpl proveedorSinCartaIntencionLocal;
+
+    @Inject
+    private DSLContext dbCtx;
 
     // 
     @PersistenceContext(unitName = "Sia-ServiciosPU")
@@ -1020,23 +1025,20 @@ public class OrdenImpl extends AbstractFacade<Orden> {
             orden.setSuperaMonto(Constantes.BOOLEAN_FALSE);
             //
             orden.setFecha(new Date());
-            
+
             if (orden.getConsecutivo() == null) {
                 if (tipoOrden.equals("Orden de Compra")) {
                     orden.setEsOc(true);
                     orden.setConsecutivo(folioServicioImpl.getFolio("ORDEN_CONSECUTIVO", orden.getApCampo().getId()));
-                } 
-                else if(tipoOrden.equals("Orden de Servicio")){
+                } else if (tipoOrden.equals("Orden de Servicio")) {
                     orden.setEsOc(false);
                     orden.setConsecutivo(folioServicioImpl.getFolio("ORDEN_SERVICIO_CONSECUTIVO", orden.getApCampo().getId()));
-                }
-                else{
+                } else {
                     orden.setEsOc(false);
                     orden.setConsecutivo(folioServicioImpl.getFolio("ORDEN_SUBCONTRATO", orden.getApCampo().getId()));
                 }
             }
-            
-                       
+
             if (iva > 0) {
                 Impuesto impuesto = impuestoRemote.find(iva);
                 orden.setConIva(Constantes.BOOLEAN_TRUE);
@@ -2369,6 +2371,87 @@ public class OrdenImpl extends AbstractFacade<Orden> {
         return o;
     }
 
+    /*
+    *  Historial de ultimas ordenes modificadas 
+     */
+    public List<OrdenView> getUltimasOrdenesModificadas(String idUsuario, int idCampo) {
+
+        final StringBuilder sb = new StringBuilder();
+        sb.append("SELECT ord.id, ")
+                .append("               ord.consecutivo as consecutivo, ")
+                .append("   		ord.referencia, ")
+                .append("   		ord.destino, ")
+                .append("   		ord.contrato, ")
+                .append("   		a.rechazada as devuelta, ")
+                .append("             	ge.nombre as gerencia, ")
+                .append("             	re.consecutivo as consecutivo_requisicion,")
+                .append("             	com.siglas as siglas_compania, ")
+                .append("             	ord.subtotal,")
+                .append("             	ord.total,   ")
+                .append("             	est.nombre as estatus, ")
+                .append("             	to_char( (a.fecha_solicito + a.hora_solicito)::timestamp,'YYYY-MM-DD HH24:MI') as fecha_solicito,")
+                .append("             	mo.nombre as moneda, ")
+                .append("             	pro.nombre as proveedor,")
+                .append("             	ord.url,")
+                .append("             	pot.NOMBRE as cuenta_contable,")
+                .append("             	analista.nombre as comprador,\n")
+                .append("               solicita.nombre as solicita, \n")
+                .append("             	to_char((a.fecha_solicito + a.hora_solicito)::timestamp,'YYYY-MM-DD HH24:MI') as fecha_solicita,\n")
+                .append("             	visto_bueno.nombre as visto_bueno, \n")
+                .append("             	to_char((a.fecha_autorizo_gerencia + a.hora_autorizo_gerencia)::timestamp,'YYYY-MM-DD HH24:MI') as fecha_visto_bueno,\n")
+                .append("		revisa.nombre as revisa,\n")
+                .append("		to_char((a.fecha_autorizo_mpg + a.hora_autorizo_mpg)::timestamp,'YYYY-MM-DD HH24:MI') as fecha_revisa,\n")
+                .append("		aprueba.nombre as aprueba,\n")
+                .append("		to_char((a.fecha_autorizo_ihsa + a.hora_autorizo_ihsa)::timestamp,'YYYY-MM-DD HH24:MI') as fecha_aprueba,				  \n")
+                .append("		autoriza.nombre as autoriza,\n")
+                .append("		to_char((a.fecha_autorizo_compras + a.hora_autorizo_compras)::timestamp,'YYYY-MM-DD HH24:MI') as fecha_autoriza,				  				  				  \n")
+                .append("		campo.carta_intencion as campo_con_carta_intencion,				  		  \n")
+                .append("		psin_carta.id is null es_proveedor_sin_carta,\n")
+                .append("		pro.nombre as acepta_carta_intencion,\n")
+                .append("		to_char((a.fecha_aceptacion_carta + a.hora_aceptacion_carta)::timestamp,'YYYY-MM-DD HH24:MI') as fecha_acepta_carta_intencion,				  				  				  \n")
+                .append("		revisa_juridico.nombre as revisa_juridico,\n")
+                .append("		to_char((a.fecha_revisa_repse + a.hora_revisa_repse)::timestamp,'YYYY-MM-DD HH24:MI') as fecha_revisa_juridico,	\n")
+                .append("		enviarpdf.nombre as envia_proveedor,\n")
+                .append("		to_char((a.fecha_envio_proveedor + a.hora_envio_proveedor)::timestamp,'YYYY-MM-DD HH24:MI') as fecha_envia_proveedor	")
+                .append("             FROM ORDEN ord ")
+                .append("                 inner join AUTORIZACIONES_ORDEN  a on a.ORDEN = ord.ID ")
+                .append("                 left join ESTATUS est on a.ESTATUS = est.ID")
+                .append("                 inner join REQUISICION re on ord.REQUISICION = re.id")
+                .append("                 inner join COMPANIA com on ord.COMPANIA = com.RFC")
+                .append("                 inner join MONEDA mo on ord.MONEDA = mo.ID")
+                .append("                 inner join GERENCIA ge on ord.GERENCIA = ge.ID")
+                .append("                 inner join PROVEEDOR pro on ord.PROVEEDOR = pro.ID")
+                .append("                 inner join PROYECTO_OT pot on ord.PROYECTO_OT = pot.ID")
+                .append("                 inner join ap_campo campo on campo.id = ord.ap_campo")
+                .append("                 left join usuario analista on analista.id = ord.analista\n")
+                .append("                 left join usuario solicita on solicita.id = a.solicito\n")
+                .append("                 left join usuario visto_bueno on visto_bueno.id = a.autoriza_gerencia\n")
+                .append("                 left join usuario revisa on revisa.id = a.autoriza_mpg                 \n")
+                .append("                 left join usuario aprueba on aprueba.id = a.autoriza_ihsa\n")
+                .append("                 left join usuario autoriza on autoriza.id = a.autoriza_compras\n")
+                .append("                 left join usuario revisa_juridico on revisa_juridico.id = a.usuario_revisa_juridico\n")
+                .append("                 left join usuario enviarpdf on enviarpdf.id = a.enviarpdf\n")
+                .append("                 left join pv_proveedor_sin_carta_intencion psin_carta on psin_carta.id = pro.id")
+                .append("		WHERE ord.eliminado = false")
+                .append("			and ? in (a.SOLICITO, a.AUTORIZA_GERENCIA, a.AUTORIZA_MPG, a.AUTORIZA_IHSA, a.AUTORIZA_FINANZAS, a.AUTORIZA_COMPRAS )")
+                .append("			and a.estatus >= ").append(Constantes.ORDENES_SIN_APROBAR)
+                //.append("			--and a.estatus <> 100 			")
+                .append("			and ord.AP_CAMPO = ?")
+                .append("			and to_char(a.fecha_modifico,'YYYY') =  to_char(current_date,'YYYY')")
+                .append("			order by a.fecha_modifico desc\n")
+                .append("		LIMIT 4 ");
+
+        LOGGER.info(this, "historial ultimas ordenes modificadas: " + sb.toString());
+
+        return dbCtx
+                .fetch(
+                        sb.toString(),
+                        idUsuario,
+                        idCampo
+                ).into(OrdenView.class);
+
+    }
+
     public List<CampoOrden> buscarTrabajoPendienteCampo(String idUsuario, int idCampo) {
 
         //List<CampoVo> lc = apCampoRemote.getAllFieldExceptCurrent(idCampo);
@@ -2630,7 +2713,7 @@ public class OrdenImpl extends AbstractFacade<Orden> {
     private void copiarArchivo(String pathOrigen, String pathDestino) throws Exception {
         File copied = new File(pathDestino);
         File original = new File(pathOrigen);
-        try ( InputStream in = new BufferedInputStream(new FileInputStream(original));  OutputStream out = new BufferedOutputStream(new FileOutputStream(copied))) {
+        try (InputStream in = new BufferedInputStream(new FileInputStream(original)); OutputStream out = new BufferedOutputStream(new FileOutputStream(copied))) {
             byte[] buffer = new byte[1024];
             int lengthRead;
             while ((lengthRead = in.read(buffer)) > 0) {
@@ -2678,7 +2761,7 @@ public class OrdenImpl extends AbstractFacade<Orden> {
     @Trace(dispatcher = true)
     public File generarExcel(Orden orden, File fileTemp) throws Exception {
 
-        try ( InputStream inputDocument = new FileInputStream(fileTemp);) {
+        try (InputStream inputDocument = new FileInputStream(fileTemp);) {
             if (orden != null
                     && orden.getCompania() != null
                     && !Strings.isNullOrEmpty(orden.getCompania().getRfc())) {
@@ -2715,7 +2798,7 @@ public class OrdenImpl extends AbstractFacade<Orden> {
         copiarArchivo(pathOrigen, pathDestino);
         fileTemp = new File(pathDestino);
         if (fileTemp.exists()) {
-            try ( InputStream inputDocument = new FileInputStream(fileTemp);) {
+            try (InputStream inputDocument = new FileInputStream(fileTemp);) {
                 int i = 22;
                 OPCPackage pkg = OPCPackage.open(inputDocument);
                 XSSFWorkbook wb = new XSSFWorkbook(pkg);
@@ -2726,7 +2809,7 @@ public class OrdenImpl extends AbstractFacade<Orden> {
                 } else {
                     cargarExcelPS(myWorksheet, wb, orden, i);
                 }
-                try ( OutputStream outputFile = new FileOutputStream(fileTemp);) {
+                try (OutputStream outputFile = new FileOutputStream(fileTemp);) {
                     wb.write(outputFile);
                     outputFile.close();
                     pkg.close();

@@ -237,10 +237,10 @@ public class SolicitarEstanciaBean implements Serializable {
                     FacesUtils.addErrorMessage("Seleccione la fecha fin");
                 }
             } else {
-                FacesUtils.addErrorMessage("Selecciene una fecha de inicio");
+                FacesUtils.addErrorMessage("Seleccione una fecha de inicio");
             }
         } else {
-            FacesUtils.addErrorMessage("Selecciene la oficina");
+            FacesUtils.addErrorMessage("Seleccione la oficina");
         }
         return "";
     }
