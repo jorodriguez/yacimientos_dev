@@ -102,10 +102,11 @@ public class HistorialFacturaBean implements Serializable {
         consultarListaFacturas();
     }
 
-    public void regresarFactura() {
+    public String regresarFactura() {
         this.setMostrarLiga(false);
         consultarListaFacturas();
         PrimeFaces.current().executeScript("ocultarDiv('divHistFacturasDesc');mostrarDiv('divHistFacturas');limpiarTodos();");
+        return "/vistas/SiaWeb/factura/historiarFacturas.xhtml?faces-redirect=true";
     }
 
     private void consultarListaFacturas() {

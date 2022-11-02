@@ -52,10 +52,10 @@ public class RequisicionView {
 
        public boolean isAprobada(){ return this.fechaAprueba != null; }
        public boolean isRevisada(){ return this.fechaRevisa != null; }
-       public boolean isVistoBueno(){ return this.fechaVistoBueno != null; }
+       public boolean isVistoBuenoOk(){ return this.fechaVistoBueno != null; }
        public boolean isCancelada(){ return this.fechaCancelo != null; }
        public boolean isAsignada(){ return this.fechaAsigno != null; }
-       public boolean isFinalidada(){ return this.fechaFinalizo != null; }
+       public boolean isFinalizada(){ return this.fechaFinalizo != null; }
        
            
 }

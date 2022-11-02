@@ -4,6 +4,8 @@
       xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
       xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
       xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core"            
+      xmlns:my="http://www.mytags.com/schema/mytags"
       xmlns:h="http://xmlns.jcp.org/jsf/html">
     <h:head>
         <meta charset="utf-8" />
@@ -53,6 +55,43 @@
                 -ms-line-clamp: 5;
                 line-clamp: 5;
                 overflow: hidden;
+            }
+            ul.timeline-3 {
+                list-style-type: none;
+                position: relative;
+            }
+            ul.timeline-3:before {
+                /* fondo de raya*/
+                content: " ";
+                background: #d4d9df;
+                display: inline-block;
+                position: absolute;
+                left: 29px;
+                width: 2px;
+                height: 100%;
+                z-index: 400;
+            }
+            ul.timeline-3 > li {
+                /*fondo de item*/
+                margin: 20px 0;
+                padding-left: 20px;
+
+            }
+            ul.timeline-3 > li:before {
+                /*fondo de circulo*/
+                content: " ";
+                background: white;
+                display: inline-block;
+                position: absolute;
+                border-radius: 50%;
+                border: 3px solid #22c0e8;
+                left: 20px;
+                width: 20px;
+                height: 20px;
+                z-index: 400;
+            }
+            .evento-realizado{
+                border: 3px solid #22c0e8;
             }
         </style>
 
@@ -407,135 +446,24 @@
                 </div>
 
                 <!-- últimas 3 requisiciones  -->               
-
-                <div class="container-fluid ">
+                <div class="container-fluid ">       
                     <div class="row pb-2">
                         <h5>Histórico de requisiciones</h5>
                         <span class="text-sm mt-0 pt-0">últimos 3 registros</span>
                     </div>
-                    <h:form>
-
-                        <div class="row mt-1">  
-                            <ui:repeat value="#{principalViewBean.listaRequisiciones}" var="item">
-                                <div class="col-12 col-md-3 col-xl-3">
-                                    <div class="card h-100 border border-1 border-secondary  ">
-                                        <div class="card-header ps-3 pt-3 pb-0 d-flex justify-content-between align-content-center align-items-center">                                        
-                                            <h6 >#{item.consecutivo} </h6>                                         
-                                            <!--<span class="text-muted text-xs badge badge-success badge-xs">#{item.estatus}</span>                                                                                -->                                                                                         
-                                            <c:set var="estatus" value="#{item.idEstatus}"/>
-                                            <c:choose>
-                                                <c:when test="${(estatus == 40)}" > <!-- asignada -->
-                                                    <p:chip 
-                                                        label="#{item.estatus} #{item.idEstatus}" 
-                                                        styleClass="text-xs bg-info opacity-8" 
-                                                        icon="pi pi-user"/>                                                    
-                                                </c:when>
-                                                <c:when test="${estatus eq 50}"> <!-- cancelada -->
-                                                    <p:chip 
-                                                        label="#{item.estatus} #{item.idEstatus}" 
-                                                        styleClass="text-xs bg-danger opacity-8" 
-                                                        icon="pi pi-times"/>                                                    
-                                                </c:when>
-                                                <c:when test="${estatus eq 60}"> <!-- finalizada -->
-                                                    <p:chip 
-                                                        label="#{item.estatus} #{item.idEstatus}" 
-                                                        styleClass="text-xs bg-secondary opacity-8" 
-                                                        icon="pi pi-check"/>                                                    
-                                                </c:when>                                                
-                                                <c:otherwise>                                                    
-                                                    <p:chip 
-                                                        label="#{item.estatus} " 
-                                                        styleClass="text-xs bg-success opacity-8" 
-                                                        />                                                    
-                                                </c:otherwise>
-                                            </c:choose>                                          
-                                            <!--<p:chip 
-                                                label="#{item.estatus} #{item.idEstatus}" 
-                                                styleClass="text-xs ${bg} opacity-8" 
-                                                icon="${icon}"/>-->
-
-                                        </div>
-
-                                        <hr class="horizontal dark m-0 "/>
-                                        <div class="card-body text-sm ps-3 p-1 ">
-                                            <span class="text-xs text-dark">#{item.referencia}</span>
-                                        </div>                                    
-                                        <div class="card-body pt-1  p-3">
-
-                                            <h6 class="text-xs ">Gerencia</h6>
-                                            <h6 class="text-xs text-muted text-normal ps-2">#{item.gerencia}</h6>
-                                            <h6 class="text-xs ">Proveedor</h6>
-                                            <h6 class="text-xs text-muted text-normal ps-2 ">#{item.proveedor}</h6>
-                                            <h6 class="text-xs ">Lugar de entrega</h6>
-                                            <h6 class="text-xs text-muted text-normal ps-2">#{item.lugarEntrega}</h6>                                        
-
-                                            <h6 class="text-xs ">Observaciones</h6>
-                                            <span class="text-xs text-muted text-normal text-overflow-height">                                            
-                                                #{item.observaciones}
-                                            </span>                                              
-                                            <!--<h6 class="text-uppercase text-body text-xs font-weight-bolder mt-4">Application</h6>-->
-                                        </div>
-                                        <div class="card-footer pt-1 pb-1 d-flex justify-content-between align-content-center align-items-center">
-                                            <span class="text-muted text-xs"
-                                                  data-bs-toggle="collapse" 
-                                                  href="#collap_" 
-                                                  role="button" 
-                                                  aria-expanded="false" 
-                                                  aria-controls="collap_"
-                                                  >Solicitada </span>
-                                            <span class="text-muted text-xs">#{item.fechaSolicito} </span>                                            
-                                        </div>                                    
-                                        <div class="card-footer p-0 d-flex justify-content-center align-content-center align-items-center">                                            
-                                            <div class="collapse multi-collapse" id="collap_">
-                                                <div class="d-flex justify-content-between align-content-center align-items-center">
-                                                    <span class="text-sm">#{item.revisa}</span>
-                                                    <span class="text-sm">#{item.fechaRevisa}</span>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                    </div>
-                                </div>
-                            </ui:repeat>
-
-                            <div class="col-12 col-md-3 col-xl-3 " >
-                                <h:outputLink value="#{sesion.sustituirArrancarModuloPorCampo(principalViewBean.rutaModuloComprasDeRequ,sesion.usuarioVo.idCampo,principalViewBean.urlSolicitarRequisicion)}"
-                                              title="Crear una requisición para #{sesion.usuarioVo.campo}"  
-                                              onmouseover="window.status = ' ';return true"
-                                              styleClass="text-dark">
-                                    <div class="card h-100  border border-3 border-primary p-2 mb-2 opacity-10" style="border-style: dotted  !important;">                                    
-                                        <div class="card-body d-flex justify-content-center flex-fill align-self-center align-content-center align-items-center">                                                                                
-                                            <div class="row justify-content-md-center text-center  ">
-                                                <div class="col-12">
-                                                    <i class="fa fa-plus fa-2x"/>                                                                                                                               
-                                                </div>
-                                                <div class="col-12">
-                                                    Crear una requisición para <span class="text-bold">#{sesion.usuarioVo.campo}</span>
-                                                </div>
-                                            </div>                                           
-                                        </div>                                    
-                                    </div>
-                                </h:outputLink>   
-                            </div>
-                        </div>
-                    </h:form>
                 </div>
+                <ui:include src="/vistas/administracion/pantallaPrincipal/historialRequisicion.xhtml"/>
 
-                
-                <div class="container-fluid py-5">
-                    <div class="row pb-2">
+                <!-- últimas 3 ordenes -->               
+                <div class="container-fluid ">       
+                    <div class="row pb-2 pt-4">
                         <h5>Histórico de ordenes de C/S</h5>
                         <span class="text-sm mt-0 pt-0">últimos 3 registros</span>
                     </div>
-                    <h:form>
-
-                        <div class="row mt-1">  
-                            contenido
-                        </div>
-                    </h:form>
                 </div>
-                <!-- últimas 3 requisiciones  -->
+                <ui:include src="/vistas/administracion/pantallaPrincipal/historialOrden.xhtml"/>
 
+                
             </div>
 
 
@@ -608,36 +536,8 @@
             </div>
 
             <!-- modal historial requisicion -->
-            <div class="modal fade" id="modal-historial-requisicion" tabindex="-1" role="dialog" aria-labelledby="modal-default" aria-hidden="true">
-                <div class="modal-dialog modal- modal-dialog-centered modal-" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h6 class="modal-title" id="modal-title-default">Type your modal title</h6>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">×</span>
-                            </button>
-                        </div>
 
-                        <div class="modal-body">
-
-                            <p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts. Separated they live in Bookmarksgrove right at the coast of the Semantics, a large language ocean.</p>
-                            <p>A small river named Duden flows by their place and supplies it with the necessary regelialia. It is a paradisematic country, in which roasted parts of sentences fly into your mouth.</p>
-
-                        </div>
-
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-primary">Save changes</button>
-                            <button type="button" class="btn btn-link  ml-auto" data-dismiss="modal">Close</button>
-                        </div>
-
-                    </div>
-                </div>
-            </div>
             <!-- modal historial requisicion -->
-
-
-
-
 
         </c:if>
 
