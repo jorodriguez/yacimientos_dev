@@ -82,7 +82,7 @@ public class CargaEtsBean implements Serializable {
     @Inject
     UsuarioBean usuarioBean;
 
-    private final RequisicionBean requisicionBean = (RequisicionBean) FacesUtilsBean.getManagedBean("requisicionBean");
+//    private final RequisicionBean requisicionBean = (RequisicionBean) FacesUtilsBean.getManagedBean("requisicionBean");
 
     private DataModel<ReRequisicionEts> listaEts; //almacena la lista Especificacion tecnica de suministro
     private DataModel<OcCategoriaEts> listaOcCategoriaEts;

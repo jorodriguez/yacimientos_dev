@@ -926,6 +926,7 @@ public class GrViaje implements Serializable {
             newViajero.setAgregado(false);
             newViajero.setViajo(Constantes.BOOLEAN_TRUE);
             newViajero.setId(getListaViajeros().size());
+            newViajero.setIdUsuario(newInvitado.getNombre());
             setEmpleado("");
             setInvitado("");
             if (!getListaViajeros().contains(newViajero)) {
