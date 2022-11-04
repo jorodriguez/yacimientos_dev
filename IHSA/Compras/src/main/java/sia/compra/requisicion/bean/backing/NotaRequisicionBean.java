@@ -31,6 +31,7 @@ import org.primefaces.model.file.UploadedFile;
 import sia.archivador.AlmacenDocumentos;
 import sia.archivador.DocumentoAnexo;
 import sia.archivador.ProveedorAlmacenDocumentos;
+import sia.compra.sistema.bean.backing.ContarBean;
 import sia.constantes.Constantes;
 import sia.excepciones.SIAException;
 import sia.modelo.CoComentario;
@@ -180,6 +181,10 @@ public class NotaRequisicionBean implements Serializable {
     public void eliminarNoticia(int idN) {
         try {
             coNoticiaImpl.eliminarNoticia(idN, usuarioBean.getUsuarioConectado().getId());
+            //
+            ContarBean contarBean = (ContarBean) FacesUtilsBean.getManagedBean("contarBean");
+            contarBean.llenarNotasRequisicion();
+
             UtilLog4j.log.fatal(this, "Noticia eliminado");
         } catch (Exception e) {
             UtilLog4j.log.fatal(this, "Exception en elimnar cmentario " + e.getMessage());
@@ -298,7 +303,7 @@ public class NotaRequisicionBean implements Serializable {
                         .append(validadorNombreArchivo.getCaracteresNoValidos())
                         .toString());
             }
-
+            traerNoticiaPorUsuario();
             fileInfo.delete();
             PrimeFaces.current().executeScript("PF('dlgSubArhNotReq').hide();");
         } catch (IOException | SIAException e) {
@@ -370,6 +375,7 @@ public class NotaRequisicionBean implements Serializable {
         setDirectorioPath(traerDirectorio(idN));
         UtilLog4j.log.info(this, "idNOticia" + idN);
         this.setMrSubirArchivo(true);
+        noticiaActual = coNoticiaImpl.find(idN);
         PrimeFaces.current().executeScript("PF('dlgSubArhNotReq').hide();");
     }
 

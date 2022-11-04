@@ -145,6 +145,7 @@ public class ContarBean implements Serializable {
             mapaTotal.put("notasInvitado", ocOrdenCoNoticiaImpl.totalNoticiaPorUsuario(
                     usuarioBean.getUsuarioConectado().getId(),
                     usuarioBean.getUsuarioConectado().getApCampo().getId()));
+
             mapaTotal.put("notaReqInv", ocRequisicionCoNoticiaImpl.totalNoticiaPorUsuario(
                     usuarioBean.getUsuarioConectado().getId(),
                     usuarioBean.getUsuarioConectado().getApCampo().getId()));
@@ -332,6 +333,18 @@ public class ContarBean implements Serializable {
     public void llenarHistoEval() {
         mapaTotal.put("totalHistEvaluaciones", cvEvaluacionImpl.getTotalEvaluaciones(null,
                 usuarioBean.getUsuarioConectado().getApCampo().getId(), true));
+    }
+
+    public void llenarNotasRequisicion() {
+        mapaTotal.put("notaReqInv", ocRequisicionCoNoticiaImpl.totalNoticiaPorUsuario(
+                usuarioBean.getUsuarioConectado().getId(),
+                usuarioBean.getUsuarioConectado().getApCampo().getId()));
+    }
+
+    public void llenarNotasOrden() {
+        mapaTotal.put("notasInvitado", ocOrdenCoNoticiaImpl.totalNoticiaPorUsuario(
+                usuarioBean.getUsuarioConectado().getId(),
+                usuarioBean.getUsuarioConectado().getApCampo().getId()));
     }
 
     public void llenarOCSDevueltas() {
