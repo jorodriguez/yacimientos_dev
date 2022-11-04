@@ -235,6 +235,89 @@ public class RequisicionImpl extends AbstractFacade<Requisicion> {
         return r;
     }
 
+    public RequisicionView buscarConsecutivo(String consecutivo, String usuario) {
+        try {
+
+            final StringBuilder query = new StringBuilder();
+            
+            query.append("SELECT r.ID,")
+                    .append("                        	       r.CONSECUTIVO,")
+                    .append("                        	       r.REFERENCIA,")
+                    .append("                        	       r.observaciones,")
+                    .append("                        	       to_char(r.FECHA_REQUERIDA,'YYYY-mm-dd') as fecha_requerida,")
+                    .append("                        	       r.lugar_entrega,")
+                    .append("                        	       p.nombre as prioridad,")
+                    .append("                        	       c.siglas as siglas_compania, ")
+                    .append("                        	       g.nombre as gerencia,")
+                    .append("                                  r.MONTO_MN,")
+                    .append("                        	       r.MONTO_USD,")
+                    .append("                        	       r.MONTOTOTAL_USD,")
+                    .append("                        	       r.url,")
+                    .append("                        	       e.id as id_estatus,")
+                    .append("                        	       e.nombre as estatus,")
+                    .append("                        	       u_solicita.nombre as solicita,")
+                    .append("                        	       to_char(r.fecha_solicito + r.hora_solicito,'YYYY-mm-dd HH24:MI') as fecha_solicito,")
+                    .append("                        	       u_revisa.nombre as revisa,")
+                    .append("                        	       to_char(r.fecha_reviso + r.hora_reviso,'YYYY-mm-dd HH24:MI') as fecha_revisa,")
+                    .append("                        	       u_aprueba.nombre as aprueba,")
+                    .append("                        	       to_char(r.fecha_aprobo + r.hora_aprobo,'YYYY-mm-dd HH24:MI') as fecha_aprueba,")
+                    .append("                        	       u_visto_bueno.nombre as visto_bueno,")
+                    .append("                        	       to_char(r.fecha_visto_bueno + r.hora_visto_bueno,'YYYY-mm-dd HH24:MI') as fecha_visto_bueno,")
+                    .append("                        	       u_cancelo.nombre as cancelo,")
+                    .append("                        	       to_char(r.fecha_cancelo + r.hora_cancelo,'YYYY-mm-dd HH24:MI') as fecha_cancelo,")
+                    .append("                        	       u_asigna.nombre as asigno,")
+                    .append("                        	       to_char(r.fecha_asigno + r.hora_asigno,'YYYY-mm-dd HH24:MI') as fecha_asigno,")
+                    .append("                        	       u_finalizo.nombre as finalizo,")
+                    .append("                        	       to_char(r.fecha_finalizo + r.hora_finalizo,'YYYY-mm-dd HH24:MI') as fecha_finalizo,")
+                    .append("                        	       u_comprador.nombre as comprador, ")
+                    .append("                                  r.tipo,               ")
+                    .append("                        	       r.proveedor,             ")
+                    .append("                        	       r.motivo_cancelo,")
+                    .append("                        	       r.motivo_finalizo,")
+                    .append("                        	       (select EXISTS( ")
+                    .append("                        				select ")
+                    .append("                         			from si_usuario_rol urol inner join si_rol rol on rol.id = urol.si_rol")
+                    .append("                         					inner join usuario u on u.id = urol.usuario")
+                    .append("                         			where u.id = ? ")                    // 1- para usuario
+                    .append("                         				and urol.ap_campo = r.ap_campo")
+                    .append("                         				and rol.si_modulo = ? ")    //  2- PARAM Modulo para buscar el rol
+                    .append("                         				and rol.codigo = ? ")        // 3- PARAM codigo de la requi
+                    .append("                         				and u.eliminado = false")
+                    .append("                         				and urol.eliminado = false                         	")
+                    .append("                        		 )) as tiene_rol_consulta")
+                    .append("                         FROM Requisicion r inner join compania c on c.rfc = r.compania ")
+                    .append("                         				   inner join prioridad p on p.id = r.prioridad")
+                    .append("                         				   inner join estatus e on e.id = r.estatus")
+                    .append("                         				   inner join gerencia g on g.id = r.gerencia")
+                    .append("                         				   inner join usuario u_solicita on u_solicita.id = r.solicita")
+                    .append("                         				   inner join usuario u_revisa on u_revisa.id = r.revisa")
+                    .append("                         				   inner join usuario u_aprueba on u_aprueba.id = r.aprueba")
+                    .append("                         				   left join usuario u_visto_bueno on u_visto_bueno.id = r.visto_bueno")
+                    .append("                         				   left join usuario u_asigna on u_asigna.id = r.asigna")
+                    .append("                         				   left join usuario u_finalizo on u_finalizo.id = r.finalizo")
+                    .append("                         				   left join usuario u_comprador on u_comprador.id = r.compra")
+                    .append("                         				   left join usuario u_cancelo on u_cancelo.id = r.cancelo")
+                    .append("                            WHERE r.consecutivo = TRIM(?) ") // 4- consecutivo de requisición
+                    .append("                         		AND r.ESTATUS NOT IN  (1)                          		")
+                    .append("                         		AND r.eliminado = false ");
+            
+            
+             return dbCtx
+                .fetchOne(
+                        query.toString(),
+                        usuario,
+                        Constantes.MODULO_REQUISICION,
+                        Constantes.CODIGO_ROL_CONS_REQ,
+                        consecutivo
+                ).into(RequisicionView.class);
+            
+
+        } catch (Exception e) {
+            UtilLog4j.log.info(this, "buscar la requision por consecutivo : " + e.getMessage(), e);
+            return null;
+        }        
+    }
+
     public RequisicionVO buscarPorConsecutivoBloque(String consecutivo, int idBloque, boolean conDetalle, boolean seleccionado) {
         RequisicionVO r = null;
 
@@ -367,8 +450,8 @@ public class RequisicionImpl extends AbstractFacade<Requisicion> {
                 .append("        	       u_finalizo.nombre as finalizo,")
                 .append("        	       to_char(r.fecha_finalizo + r.hora_finalizo,'YYYY-mm-dd HH24:MI') as fecha_finalizo,")
                 .append("        	       u_comprador.nombre as comprador, ")
-                .append("                      r.tipo,\n")                
-                .append("        	       r.proveedor,\n")                
+                .append("                      r.tipo,\n")
+                .append("        	       r.proveedor,\n")
                 .append("        	       r.motivo_cancelo,\n")
                 .append("        	       r.motivo_finalizo  ")
                 .append("         FROM Requisicion r inner join compania c on c.rfc = r.compania ")
