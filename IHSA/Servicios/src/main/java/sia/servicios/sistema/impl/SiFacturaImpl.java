@@ -537,7 +537,8 @@ public class SiFacturaImpl extends AbstractFacade<SiFactura>{
             for (int i = 0; i < listaComplemento.getLength(); i++) {
                 Node nodoCompl = listaComplemento.item(i);
                 Element element = (Element) nodoCompl;
-                facturaVo.setFolioFiscal(element.getAttribute("UUID"));
+                String ffUUID = element.getAttribute("UUID");
+                facturaVo.setFolioFiscal(ffUUID != null ? ffUUID.toUpperCase() : null);
             }
             //
             SiFactura siFactura = guardarFactura(facturaVo, sesion, partidas, tipoCompra);
@@ -857,7 +858,7 @@ public class SiFacturaImpl extends AbstractFacade<SiFactura>{
             Transformer t = tf.newTransformer();
             StringWriter sw = new StringWriter();
             t.transform(new DOMSource(document), new StreamResult(sw));
-            if (sw.toString().contains(folioFiscal)) {
+            if (sw.toString().toUpperCase().contains(folioFiscal.toUpperCase())) {
                 encontrado = true;
 
             } else {
@@ -1029,7 +1030,7 @@ public class SiFacturaImpl extends AbstractFacade<SiFactura>{
         } catch (IOException | SAXException e) {
             LOGGER.error(e);
         }
-        return uuid;
+        return uuid.toUpperCase();
     }
 
     private String revisarVersionFactura(File file) {
@@ -1053,7 +1054,7 @@ public class SiFacturaImpl extends AbstractFacade<SiFactura>{
 
     private SiFactura buscarPorFolioFiscal(String uuid) {
         SiFactura retVal = null;
-        String c = "SELECT * FROM si_factura f  WHERE f.folio_fiscal = ? AND f.eliminado = false ";
+        String c = "SELECT * FROM si_factura f  WHERE upper(f.folio_fiscal) = upper(?) AND f.eliminado = false ";
 
         try {
             retVal
