@@ -225,12 +225,16 @@
                         <f:facet name="header">
                             #{msg['sia.inventarios.movimiento.articulo']}
                         </f:facet>
-                        <h:inputText value="#{ta.articuloNombre}" id="txtArticulo"
-                                     readonly="#{param['transaccionId'] != null}"
-                                     styleClass="articuloAutoComplete ui-inputfield ui-textentry ui-widget ui-state-optional ui-corner-all ui-autocomplete-input">
-                        </h:inputText>
-                        <h:inputHidden value="#{ta.articuloId}" id="hdArticuloId" required="true"
-                                       requiredMessage="#{msg['sia.validaciones.required']}"/>
+                        <h:outputText value="#{ta.articuloNombre}" id="txtArticulo"
+                                     >
+                        </h:outputText>
+                        <p:autoComplete value="#{movimiento.articuloVo}" 
+                                        completeMethod="#{movimiento.completarArticulo}" size="70"
+                                        var="art" itemLabel="#{art.nombre}" itemValue="#{art}"
+                                        converter="#{articuloConverter}" forceSelection="true" 
+                                        readonly="#{ta.transaccionId eq null}">
+                            <p:ajax event="itemSelect" listener="#{movimiento.actualizarArticulo(ta)}"  />
+                        </p:autoComplete>
                         <h:message for="hdArticuloId" id="msjArticulo"
                                    styleClass="ui-widget ui-corner-all ui-state-error input-msg"/>
                     </h:column>

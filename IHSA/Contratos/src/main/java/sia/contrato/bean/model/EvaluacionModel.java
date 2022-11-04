@@ -96,7 +96,7 @@ public class EvaluacionModel implements Serializable {
         this.setGerencias(cvConvenioGerenciaImpl.convenioPorGerenica(this.getContratoId()));
     }
 
-    private void cargarTemplates() {
+        private void cargarTemplates() {
         this.setTemplates(cvEvaluacionTemplateImpl.traerTemplatePorTipo(this.getContratoVO().getIdClasificacion(), this.getContratoVO().getCompania()));
     }
 

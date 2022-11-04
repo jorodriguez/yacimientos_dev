@@ -15,6 +15,7 @@ import javax.faces.context.FacesContext;
 
 import javax.faces.model.DataModel;
 import javax.inject.Inject;
+import org.primefaces.PrimeFaces;
 import org.primefaces.model.LazyDataModel;
 import sia.excepciones.SIAException;
 import sia.inventarios.service.LocalServiceInterface;
@@ -142,6 +143,7 @@ public abstract class LocalAbstractBean<ClaseVO, TipoID> extends AbstractBean im
                 addInfoMessage(obtenerCadenaDeRecurso(mensajeEditarKey()));
             }
             cargarListaConFiltros();
+            PrimeFaces.current().executeScript("$(dialogoAlmacen).modal('hide');");
         } catch (SIAException ex) {
             ManejarExcepcion(ex);
         }

@@ -773,6 +773,8 @@ public class ContratoBean implements Serializable {
     public void eliminarContrato() {
         convenioServicioRemoto.eliminarContrato(sesion.getUsuarioSesion().getId(), contratoVo.getId());
         getLstConveniosTabs().remove(contratoVo);
+        contratoVo = new ContratoVO();
+        llenarListaConveniosInicio();
     }
 
     public void iniciarIncide() {

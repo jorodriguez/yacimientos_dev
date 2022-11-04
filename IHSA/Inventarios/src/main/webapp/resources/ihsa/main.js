@@ -203,16 +203,16 @@ jsf.ajax.addOnEvent(function (data) {
     }
 });
 //Cargar widgets y manejadores de eventos al cargar la pagina
-$(document).ready(function () {
-    crearBotones();
-    crearWidgets();
-    cargarBuscar();
-    $('div[id$=nuevoDialogo] input:not(input[type=submit])').bind('keyup', function (e) {
-        if (e.keyCode !== 13)
-            return;
-        $(this).parents('div[id$=nuevoDialogo]').find('input[type=submit]').trigger('click');
-    });
-});
+//$(document).ready(function () {
+//    crearBotones();
+//    crearWidgets();
+//    cargarBuscar();
+//    $('div[id$=nuevoDialogo] input:not(input[type=submit])').bind('keyup', function (e) {
+//        if (e.keyCode !== 13)
+//            return;
+//        $(this).parents('div[id$=nuevoDialogo]').find('input[type=submit]').trigger('click');
+//    });
+//});
 function crearWidgets() {
     $('.articuloAutoComplete')
             .unbind('blur').bind('blur', function () {

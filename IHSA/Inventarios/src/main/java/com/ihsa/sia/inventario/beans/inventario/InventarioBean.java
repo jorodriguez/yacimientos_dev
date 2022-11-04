@@ -117,6 +117,10 @@ public class InventarioBean implements Serializable, SaveObserver {
         return articuloRemote.buscarPorPalabras(cadena, principal.getUser().getCampo());
     }
 
+    public void actualizarArticulo() {
+        inventarioVO.setArticuloId(articuloVo.getId());
+    }
+
     public void seleccionarAlmacen(AjaxBehaviorEvent event) {
         racks = invCeldaImpl.racksPorAlmacen(inventarioVO.getAlmacenId());
     }
