@@ -19,6 +19,7 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import org.jooq.DSLContext;
 import sia.constantes.Constantes;
 import sia.excepciones.SIAException;
 import sia.modelo.ApCampo;
@@ -45,6 +46,7 @@ import sia.modelo.sgl.viaje.vo.ViajeVO;
 import sia.modelo.sgl.viaje.vo.ViajeroVO;
 import sia.modelo.sgl.vo.SgDetalleRutaTerrestreVo;
 import sia.modelo.sgl.vo.SiCiudadVO;
+import sia.modelo.sgl.vo.SolicitudViajeView;
 import sia.modelo.sistema.AbstractFacade;
 import sia.modelo.usuario.vo.UsuarioRolVo;
 import sia.servicios.campo.nuevo.impl.ApCampoImpl;
@@ -77,6 +79,10 @@ public class SgSolicitudViajeImpl extends AbstractFacade<SgSolicitudViaje> {
 
     @PersistenceContext(unitName = "Sia-ServiciosPU")
     private EntityManager em;
+    
+    @Inject
+    private DSLContext dbCtx;
+    
     //
     @Inject
     private UsuarioImpl usuarioRemote;
@@ -1758,6 +1764,60 @@ public class SgSolicitudViajeImpl extends AbstractFacade<SgSolicitudViaje> {
         }
     }
 
+    public List<SolicitudViajeView> getUltimasSolicitudesViaje(String usuario, int idCampo) {
+        try {
+
+            final StringBuilder query = new StringBuilder("");
+               query.append("SELECT sv.ID,  ")
+                    .append("       sv.CODIGO, ")
+                    .append("       sv.OBSERVACION,       ")
+                    .append("       to_char((sv.fecha_salida + sv.hora_salida)::timestamp,'DD-MM-YYYY HH24:MI') as fecha_salida,")
+                    .append("    to_char((sv.FECHA_REGRESO + sv.HORA_REGRESO)::timestamp,'DD-MM-YYYY HH24:MI') as fecha_regreso,")
+                    .append("    sv.OFICINA_ORIGEN AS ID_OFICINA_ORIGEN,        ")
+                    .append("    (SELECT oo.NOMBRE FROM SG_OFICINA oo WHERE oo.ID=sv.OFICINA_ORIGEN) AS origen,        ")
+                    .append("    CASE ")
+                    .append("    	WHEN te.id  = 21 THEN       	")
+                    .append("    		(SELECT od.NOMBRE FROM SG_OFICINA od WHERE od.ID=sv.OFICINA_DESTINO)")
+                    .append("    	WHEN te.id =  22 THEN")
+                    .append("    		(SELECT c.NOMBRE FROM SI_CIUDAD c WHERE c.ID=(SELECT vc.SI_CIUDAD FROM SG_VIAJE_CIUDAD vc WHERE vc.SG_SOLICITUD_VIAJE=sv.ID and vc.eliminado = 'False')) ")
+                    .append("    	WHEN te.id = 3 THEN ")
+                    .append("    		(SELECT c.NOMBRE FROM SI_CIUDAD c WHERE c.ID=(SELECT i.SI_CIUDAD_DESTINO FROM SG_ITINERARIO i WHERE i.SG_SOLICITUD_VIAJE=sv.ID AND i.IDA='True'))       	")
+                    .append("    end as destino,       ")
+                    .append("    tsv.NOMBRE AS tipo,        ")
+                    .append("    e.NOMBRE AS estatus,        ")
+                    .append("    g.NOMBRE AS gerencia,        ")
+                    .append("    m.NOMBRE AS motivo,               ")
+                    .append("    (SELECT COUNT(v.id) FROM SG_VIAJERO v WHERE SG_SOLICITUD_VIAJE = sv.ID AND v.eliminado = 'False') AS numero_viajeros,               ")
+                    .append("    sv.REDONDO,        ")
+                    .append("    case when sv.sg_motivo_retraso is null then 0 when sv.sg_motivo_retraso is not null then sv.sg_motivo_retraso end as motivo_retraso       ")
+                    .append("    FROM SG_SOLICITUD_VIAJE sv inner join SG_TIPO_SOLICITUD_VIAJE tsv on tsv.id = sv.sg_tipo_solicitud_viaje")
+                    .append("    						inner join SG_TIPO_ESPECIFICO te on te.id = sv.sg_tipo_especifico")
+                    .append("    						inner join ESTATUS e on e.id = sv.estatus")
+                    .append("    						inner join GERENCIA g on g.id = sv.gerencia_responsable")
+                    .append("    						inner join SG_MOTIVO m on m.id = sv.sg_motivo")
+                    .append("    						--inner join SG_OFICINA o on o.id = sv.oficina_origen")
+                    .append("    WHERE sv.ESTATUS between 410 and 450")
+                    .append("    	  AND sv.genero = ? OR  sv.modifico ? ")
+                    .append("    	  and sv.ap_campo = ?")
+                    .append("    	  AND sv.eliminado = false")
+                    .append("   ORDER  BY (sv.fecha_modifico + sv.hora_modifico) DESC")
+                    .append("      limit 3");               
+              
+                 return dbCtx
+                .fetch(
+                        query.toString(),
+                        usuario,
+                        usuario,
+                        idCampo
+                ).into(SolicitudViajeView.class);
+               
+
+        } catch (Exception e) {
+            UtilLog4j.log.info(this, " getUltimasSolicitudesViaje " + e.getMessage());
+            return Collections.emptyList();
+        }
+    }
+    
     
     public List<SolicitudViajeVO> buscarPorCodigo(String codigo, boolean eliminado) {
         try {
