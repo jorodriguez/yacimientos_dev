@@ -74,6 +74,8 @@ public class LSWUSGL extends HttpServlet {
             String url = UtilSia.getUrl(request);
             sesion.setUsuario(usuarioImpl.find(request.getParameter("Z4BX2")));
             if (sesion.getUsuario() != null && sesion.getUsuario().getClave().equals(request.getParameter("ZWZ4W"))) {
+                
+                 final String rutaPag = request.getParameter("ZWZPA");
 
                 sesion.setRfcEmpresa(sesion.getUsuario().getApCampo().getCompania().getRfc());
                 int idCampoActual = sesion.getUsuario().getApCampo().getId();
@@ -165,7 +167,7 @@ public class LSWUSGL extends HttpServlet {
 
                     HttpSession session = request.getSession();
                     sesion.subirValoresContexto(session);
-                    response.sendRedirect(url + Constantes.URL_REL_SERVICIOS_GENERALES);
+                    response.sendRedirect(url + Constantes.URL_REL_SERVICIOS_GENERALES + (rutaPag != null ? rutaPag: ""));
                 } else { // si no tiene roles lo regresa al sia
                     response.sendRedirect(url + Constantes.URL_REL_SIA_PRINCIPAL);
                 }

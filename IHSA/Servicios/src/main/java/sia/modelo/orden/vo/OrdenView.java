@@ -19,6 +19,7 @@ public class OrdenView {
        private String devuelta;              
        private String gerencia;
        private String consecutivoRequisicion;
+       private String observaciones;
        private String siglasCompania;
        private double subtotal;
        private double total;                    

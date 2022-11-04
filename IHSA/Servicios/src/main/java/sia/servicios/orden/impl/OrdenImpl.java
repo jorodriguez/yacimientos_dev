@@ -2385,6 +2385,7 @@ public class OrdenImpl extends AbstractFacade<Orden> {
                 .append("   		a.rechazada as devuelta, ")
                 .append("             	ge.nombre as gerencia, ")
                 .append("             	re.consecutivo as consecutivo_requisicion,")
+                .append("             	ord.observaciones,")
                 .append("             	com.siglas as siglas_compania, ")
                 .append("             	ord.subtotal,")
                 .append("             	ord.total,   ")

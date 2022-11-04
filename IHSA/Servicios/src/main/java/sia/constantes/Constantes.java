@@ -1491,4 +1491,8 @@ public class Constantes {
     public static final SimpleDateFormat FMT_dd_MM_yyyy = new SimpleDateFormat("dd-MM-yyyy");    
     
     public static final String RUTA_COMPRAS_DESDE_REQ =  "/Compras/LSWU?Z4BX2=@@AM@@&origenPeticion=requ";
+    
+    public static final String RUTA_SGL_MODULO =  "/ServiciosGenerales/LSWUSGL?Z4BX2=@@AM@@&origenPeticion=requ";
+    
+    //public static final String RUTA_SGL_DESDE_REQ =  "/ServiciosGenerales/LSWUSGL?Z4BX2=CBUZON&ZWZ4W=264c34ca1d5e413dc23e5f77c9319f468ded71b1&ZWZCA=0&ZWZPA=%3Ffaces-redirect=true";
 }
