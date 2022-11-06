@@ -439,7 +439,7 @@ public class PopUpGRBean implements Serializable {
                     FacesUtilsBean.addInfoMessage("Se registró el mapa correctamente. ");
                     break;
                 case 2:
-                    jsFuncion = ";cerrarDialogoPopUpFEedit();";
+                    jsFuncion = ";cerrarDialogoRecomendaciones();";
                     confBean.cargarRecomendacionesDt();
                     FacesUtilsBean.addInfoMessage("Se registró la recomendación correctamente. ");
                     break;
@@ -449,7 +449,7 @@ public class PopUpGRBean implements Serializable {
                     FacesUtilsBean.addInfoMessage("Se registró el sitio correctamente. ");
                     break;
                 case 4:
-                    jsFuncion = ";cerrarDialogoPopUpFEedit();";
+                    jsFuncion = ";cerrarDialogoSituacionRiesgo();";
                     confBean.cargarSituacionesDt();
                     FacesUtilsBean.addInfoMessage("Se registró la situación de riesgo correctamente. ");
                     break;
@@ -661,7 +661,7 @@ public class PopUpGRBean implements Serializable {
             setArchivo(newRec);
             setDirectorioArchivos("GR/Recomendacion");
             setTituloPopUp("Registrar Recomendaciones de Seguridad");
-            PrimeFaces.current().executeScript(";abrirDialogoPopUpFE();");
+            PrimeFaces.current().executeScript(";abrirDialogoRecomendaciones();");
         } catch (Exception e) {
             UtilLog4j.log.fatal(this, e);
             FacesUtilsBean.addErrorMessage("Ocurrió una excepción, favor de comunicar a sia@ihsa.mx");
@@ -673,7 +673,7 @@ public class PopUpGRBean implements Serializable {
             setArchivo(grArchivoImpl.getArchivoById(idArchivo));
             setDirectorioArchivos("GR/Recomendacion");
             setTituloPopUp("Editar recomendación");
-            PrimeFaces.current().executeScript(";abrirDialogoPopUpFEedit();");
+            PrimeFaces.current().executeScript(";abrirDialogoRecomendaciones();");
         } catch (Exception e) {
             UtilLog4j.log.fatal(this, e);
             FacesUtilsBean.addErrorMessage("Ocurrió una excepción, favor de comunicar a sia@ihsa.mx");
@@ -726,7 +726,7 @@ public class PopUpGRBean implements Serializable {
             getArchivo().setTitulo("");
             setDirectorioArchivos("GR/Situacion");
             setTituloPopUp("Registrar Situaciones de Riesgo");
-            PrimeFaces.current().executeScript(";abrirDialogoPopUpFE();");
+            PrimeFaces.current().executeScript(";abrirDialogoSituacionRiesgo();");
         } catch (Exception e) {
             UtilLog4j.log.fatal(this, e);
             FacesUtilsBean.addErrorMessage("Ocurrió una excepción, favor de comunicar a sia@ihsa.mx");
@@ -738,7 +738,7 @@ public class PopUpGRBean implements Serializable {
             setArchivo(grArchivoImpl.getArchivoById(idArchivo));
             setDirectorioArchivos("GR/Situacion");
             setTituloPopUp("Editar Situaciones de Riesgo");
-            PrimeFaces.current().executeScript(";abrirDialogoPopUpFEedit();");
+            PrimeFaces.current().executeScript(";abrirDialogoSituacionRiesgo();");
         } catch (Exception e) {
             UtilLog4j.log.fatal(this, e);
             FacesUtilsBean.addErrorMessage("Ocurrió una excepción, favor de comunicar a sia@ihsa.mx");

@@ -10,19 +10,19 @@
     <h:body>
         <ui:composition template="/vistas/template/template.xhtml">
             <ui:define name="content">
-                <h:form id="form1">   
+                <h:form id="frmLstSR">   
                     <div class="container">
                         <div class="row" style="margin-bottom: 10px;">
                             <p:commandLink value="Registrar Situación"                                                                     
                                            action="#{popupGrBean.goPopupSituacionRiesgo}"
                                            title="Click aquí para generar una nueva Situación de Riesgo..."                                               
-                                           styleClass="btn btn-primary col-lg-4 col-xs-10"
-                                           process="@this" update="frmPopUpFE"/>                    
+                                           styleClass="btn btn-primary text-white"
+                                           process="@this" update="frmPopUpFEedit"/>                    
                         </div>
                         <div class="table table-responsive">
                             <p:dataTable id="SituacionOP" rows="10" 
                                          value="#{configuracionBean.situaciones}" var="currentRow" 
-                                             size="small" showGridlines="true" paginator="true" paginatorPosition="bottom">                              
+                                         size="small" showGridlines="true" paginator="true" paginatorPosition="bottom">                              
                                 <p:column>
                                     <h:outputText value="#{currentRow.titulo}"/>
                                     <f:facet name="header">
@@ -58,11 +58,10 @@
                                     <h:selectBooleanCheckbox value="#{currentRow.activo}" disabled="true" />
                                 </p:column>
                                 <p:column width="3%">
-                                    <p:commandLink 
-                                        styleClass="btn btn-info btn-sm"                                                     
+                                    <p:commandLink                                         
                                         actionListener="#{popupGrBean.goEditSituacionRiesgo(currentRow.id)}"
                                         title="Click aquí para editar la situación..." 
-                                        process="@this" update="frmPopUpFE">
+                                        process="@this" update="frmPopUpFEedit">
                                         <i class="fa fa-edit"></i>
                                     </p:commandLink>
                                 </p:column>
@@ -76,11 +75,11 @@
                         startDate();
                     });
                 </script>
-                <div class="modal fade" id="dialogoPopUpFEedit" data-backdrop="static" data-keyboard="false" style="color: black;">
-                    <div class="modal-dialog">
+                <div class="modal fade" id="dialogoSituacionRiesgo" data-backdrop="static" data-keyboard="false" style="color: black;">
+                    <div class="modal-dialog" style="max-width: 80%;">
                         <div class="modal-content">
                             <div class="modal-header">                    
-                                <h4 class="modal-title">#{popupGrBean.tituloPopUp}</h4>
+                                <h4 class="modal-title">Registrar Situaciones de Riesgo</h4>
                             </div>
                             <h:form id="frmPopUpFEedit">
                                 <div class="modal-body">
@@ -99,7 +98,21 @@
                                                                          styleClass="form-control"                                                    
                                                                          value="#{popupGrBean.archivo.titulo}"/>  
                                                         </div>
-                                                    </div>                                        
+                                                    </div> 
+                                                    <div class="form-group col-lg-12 col-xs-12" >
+                                                        <strong><h:outputText class="col-lg-2 col-xs-12 control-label" value="Archivo:"/></strong>
+                                                        <div class="col-12"> 
+                                                            <div class="table table-responsive">
+                                                                <p:fileUpload id="fileEntryComp" 
+                                                                              label="Archivo "
+                                                                              listener="#{popupGrBean.uploadFile}"                                                                                                              
+                                                                              required="true"
+                                                                              update="frmPopUpFEedit:fileEntryComp"
+                                                                              />                                              
+                                                            </div>
+                                                        </div>
+                                                    </div>   
+
                                                     <div class="form-group col-lg-12 col-xs-12" >
                                                         <strong><h:outputText class="col-lg-2 col-xs-12 control-label" value="Activa:"/></strong>
                                                         <div class="col-lg-10 col-xs-12">                                            
@@ -109,27 +122,8 @@
                                                         </div>
                                                     </div>                               
                                                 </ui:fragment>                                     
-                                                <ui:fragment rendered="#{popupGrBean.archivo.grTipoArchivo eq 1}">
-                                                    <div class="form-group col-lg-12 col-xs-12" style="margin-top: 15px;" >
-                                                        <strong><h:outputText class="col-lg-2 col-xs-12 control-label" value="Mapa:"/></strong>
-                                                        <div class="col-lg-10 col-xs-12">                                            
-                                                            <p:selectOneMenu id="idMapaEdit" styleClass="form-control"
-                                                                             value="#{popupGrBean.archivo.grMapa}"                                                               
-                                                                             >
-                                                                <f:selectItem itemValue="0" itemLabel="Seleccione . . . "/>
-                                                                <f:selectItems value="#{popupGrBean.lstMapas}"/>
-                                                            </p:selectOneMenu>
-                                                        </div>
-                                                    </div>
-                                                </ui:fragment>
-                                                <ui:fragment rendered="#{popupGrBean.archivo.grTipoArchivo eq 1}">
-                                                    <div class="form-group col-lg-12 col-xs-12" >
-                                                        <strong><h:outputText class="col-lg-2 col-xs-12 control-label" value="Semáforo:"/></strong>
-                                                        <div class="col-lg-10 col-xs-12">                                            
-                                                            <h:outputText class="col-lg-2 col-xs-12 control-label" value="#{popupGrBean.archivo.sgSemaforoVO.color}"/>
-                                                        </div>
-                                                    </div> 
-                                                </ui:fragment>                            
+
+
                                             </div>
                                         </div>
                                     </div>                        
@@ -138,11 +132,11 @@
                                     <p:commandButton value="Aceptar"
                                                      styleClass="btn btn-info"   
                                                      action="#{popupGrBean.editFile}"
-                                                     process="@form" update="form1"/>                        
-                                    <p:commandLink 
+                                                     process="@form" update="frmLstSR"/>                        
+                                    <p:commandButton 
                                         value="Cancelar"
                                         styleClass="btn btn-default"
-                                        onclick="$(dialogoPopUpFEedit).modal('hide');"
+                                        onclick="$(dialogoSituacionRiesgo).modal('hide');"
                                         title="Cerrar ventana..."  immediate="true"
                                         />
                                 </div>
@@ -150,99 +144,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="modal fade" id="dialogoPopUpFE" data-backdrop="static" data-keyboard="false" style="color: black;">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="modal-header">                    
-                                <h4 class="modal-title">#{popupGrBean.tituloPopUp}</h4>
-                            </div>
-                            <h:form id="frmPopUpFE">
-                                <div class="modal-body">
-                                    <div style="margin-top: 10px;" class="col-lg-12 col-xs-12">
-                                        <h:message  for="" style="display: block;" infoClass="alert alert-success" warnClass="alert alert-warning"
-                                                    errorClass="alert alert-danger" fatalClass="alert alert-danger"  />
-                                    </div>   
-                                    <div class="row">
-                                        <div class="col-lg-12 col-xs-12">
-                                            <div class="col-lg-12 col-xs-12 card card-default" >                                    
-                                                <ui:fragment rendered="#{popupGrBean.archivo.grTipoArchivo ne 1}">
-                                                    <div class="form-group col-lg-12 col-xs-12" style="margin-top: 15px;">
-                                                        <strong><h:outputText class="col-lg-2 col-xs-12 control-label" value="Titulo:"/></strong>
-                                                        <div class="col-lg-10 col-xs-12">                                            
-                                                            <p:inputText 
-                                                                id="tituloRecomendacionID"
-                                                                styleClass="form-control"                                                    
-                                                                value="#{popupGrBean.archivo.titulo}"
-                                                                required="true" requiredMessage="Agregue el título"/>  
-                                                        </div>
-                                                    </div>
-                                                </ui:fragment>
-                                                <ui:fragment rendered="#{popupGrBean.archivo.grTipoArchivo eq 1}">
-                                                    <div class="form-group col-lg-12 col-xs-12" style="margin-top: 15px;" >
-                                                        <strong><h:outputText class="col-lg-2 col-xs-12 control-label" value="Mapa:"/></strong>
-                                                        <div class="col-lg-10 col-xs-12">                                            
-                                                            <p:selectOneMenu id="idMapa" styleClass="form-control"
-                                                                             value="#{popupGrBean.archivo.grMapa}"
-                                                                             >
-                                                                <f:selectItem itemValue="0" itemLabel="Seleccione . . . "/>
-                                                                <f:selectItems value="#{popupGrBean.lstMapas}"/>
-                                                                <p:ajax listener="#{popupGrBean.cambiarMapa}" update="frmPopUpFE:lblColor frmPopUpFE:fileEntryComp"/>
-                                                            </p:selectOneMenu>
-                                                        </div>
-                                                    </div>
-                                                </ui:fragment>
-                                                <ui:fragment rendered="#{popupGrBean.archivo.grTipoArchivo eq 1}">
-                                                    <div class="input-group col-lg-12 col-xs-12" >
-                                                        <strong><h:outputText class="col-lg-2 col-xs-12 control-label" value="Semáforo:"/></strong>
-                                                        <div class="col-12">
-                                                            <p:outputLabel id="lblColor" class="col-lg-2 col-xs-12 control-label" 
-                                                                           value="#{popupGrBean.archivo.sgSemaforoVO.color}"/>                                                
-                                                        </div>
-                                                    </div> 
-                                                </ui:fragment>                            
-
-                                                <div class="form-group col-lg-12 col-xs-12" >
-                                                    <strong><h:outputText class="col-lg-2 col-xs-12 control-label" value="Archivo:"/></strong>
-                                                    <div class="col-12"> 
-                                                        <div class="table table-responsive">
-                                                            <p:fileUpload id="fileEntryComp" 
-                                                                          label="Archivo "
-                                                                          listener="#{popupGrBean.uploadFile}"                                                                                                              
-                                                                          required="true"
-                                                                          update="frmPopUpFE:fileEntryComp"
-                                                                          />                                              
-                                                        </div>
-                                                    </div>
-                                                </div>   
-
-                                            </div>
-                                        </div>
-                                    </div>                        
-                                </div>
-                                <div class="modal-footer">
-                                    <ui:fragment rendered="#{popupGrBean.archivo.grTipoArchivo ne 1}">
-                                        <p:commandButton id="uploadFileTitulo"
-                                                         value="Aceptar"
-                                                         styleClass="btn btn-info"   
-                                                         process="@form" update="@form"/>
-                                    </ui:fragment>
-                                    <ui:fragment rendered="#{popupGrBean.archivo.grTipoArchivo eq 1}">
-                                        <p:commandButton id="uploadFileMapa"
-                                                         value="Aceptar"
-                                                         styleClass="btn btn-info"
-                                                         process="@form" update="@form"
-                                                         />
-                                    </ui:fragment>
-                                    <p:commandLink value="Cancelar"
-                                                   styleClass="btn btn-default"
-                                                   onclick="$(dialogoPopUpFE).modal('hide');"
-                                                   title="Cerrar ventana..."  immediate="true"
-                                                   />
-                                </div>
-                            </h:form>
-                        </div>
-                    </div>
-                </div>
+                
             </ui:define>
         </ui:composition>
     </h:body>
