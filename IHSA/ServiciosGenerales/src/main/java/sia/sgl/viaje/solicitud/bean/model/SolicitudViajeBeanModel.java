@@ -2532,7 +2532,8 @@ public class SolicitudViajeBeanModel implements Serializable {
             if (sv.getSgMotivo() != null) {
                 setIdSgMotivo(sv.getSgMotivo().getId());
             }
-            setObservacion(sv.getObservacion());
+            //setObservacion(sv.getObservacion());
+            setObservacion("");
 
             setOperacion(Constantes.modificar);
             setSolicitudViajeVO(sgSolicitudViajeImpl.buscarPorId(sv.getId(), Constantes.NO_ELIMINADO, Constantes.CERO));
