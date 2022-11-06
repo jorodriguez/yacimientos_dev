@@ -19,6 +19,8 @@ import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 import lombok.Getter;
 import lombok.Setter;
+import org.primefaces.context.PrimeFacesContext;
+import sia.constantes.Constantes;
 import sia.modelo.requisicion.vo.RequisicionView;
 import sia.servicios.requisicion.impl.RequisicionImpl;
 import static sia.constantes.Constantes.RUTA_COMPRAS_DESDE_REQ;
@@ -29,6 +31,7 @@ import sia.modelo.sgl.vo.SolicitudViajeView;
 import sia.servicios.orden.impl.OrdenImpl;
 import sia.servicios.sgl.viaje.impl.SgSolicitudViajeImpl;
 import sia.sistema.bean.support.FacesUtils;
+import sia.sistema.bean.support.PrimeUtils;
 
 /**
  *
@@ -65,6 +68,13 @@ public class PrincipalViewBean implements Serializable {
     @Getter @Setter
     private RequisicionView requisicion;
     
+    @Getter @Setter
+    private String consecutivo;
+        
+    @Getter @Setter
+    private BusquedaEnum tipoBusqueda;
+    
+    enum BusquedaEnum {REQUISICION,ORDEN,PEDIDO,VIAJE};
             
     public PrincipalViewBean() { }
 
@@ -76,7 +86,6 @@ public class PrincipalViewBean implements Serializable {
     }
 
     private void cargarListas() {
-        System.out.println("@cargarListas");
         this.listaRequisiciones = requisicionImpl.getUltimasRequisicionesModificadas(sesion.getUsuarioVo().getId(), sesion.getUsuarioVo().getIdCampo());
         this.listaOrdenes = ordenImpl.getUltimasOrdenesModificadas(sesion.getUsuarioVo().getId(), sesion.getUsuarioVo().getIdCampo());
         //this.listaSolicitudesViaje = solicitudViajeImpl.getUltimasSolicitudesViaje(sesion.getUsuarioVo().getId(),sesion.getUsuarioVo().getIdCampo());
@@ -98,26 +107,39 @@ public class PrincipalViewBean implements Serializable {
                 
         );
     }
-    
-
-    
+        
+    public void buscar(ActionListener actionListener){
+        
+        if(this.consecutivo.isBlank() || this.consecutivo.isEmpty()){
+            FacesUtils.addErrorMessage("Es requerido escribir el código");
+            return;
+        }
+        
+        tipoBusqueda = BusquedaEnum.REQUISICION;
+        
+        this.requisicion = requisicionImpl.buscarConsecutivo(this.consecutivo,sesion.getUsuarioVo().getId());                
+                
+        if(this.requisicion != null){            
+            //PrimeUtils.executeScript("$('#modal_busqueda_requi').modal('show')");            
+            return;            
+        }
+        
+    }
+        
      public void seleccionarRequisicion(ActionListener actionListener){
-         System.out.println("@seleccionarRequisicion");
+        
         
         String param = FacesUtils.getRequestParameter("indexRequisicion");
         
-         System.out.println("param index "+param);        
                         
         int paramInx = Integer.parseInt(param);
         
-        System.out.println("param index INT "+paramInx);
                
         this.requisicion = this.listaRequisiciones.get(paramInx);                              
     }
      
 
      public void seleccionarRequisicionRow(RequisicionView row){
-         System.out.println("@seleccionarRequisicionRow "+ (row == null));
         
         this.requisicion = row;
                          

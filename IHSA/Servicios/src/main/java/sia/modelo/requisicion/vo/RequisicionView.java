@@ -49,6 +49,7 @@ public class RequisicionView {
        private String proveedor;
        private String motivoCancelo;
        private String motivoFinalizo;
+       private Boolean tieneRolConsulta;
 
        public boolean isAprobada(){ return this.fechaAprueba != null; }
        public boolean isRevisada(){ return this.fechaRevisa != null; }

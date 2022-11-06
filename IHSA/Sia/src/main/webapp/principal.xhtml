@@ -38,6 +38,14 @@
 
         <link  href="/resources/css/argonTemplate.css" rel="stylesheet" />
 
+        <script type="text/javascript">
+            const iniciarBusqueda = () => {
+
+                $('#modal_busqueda_requi').modal('show');
+            };
+
+        </script>
+
         <style>
             .hand-pointer {
                 cursor: pointer;
@@ -143,7 +151,8 @@
                                                         <h:outputLink                                                                 
                                                             value="#{sesion.sustituirArrancarModuloPorCampo(modulo.rutaServlet, opc.idCampo, opc.pagina )}"
                                                             title="#{modulo.toolTip}"  
-                                                            onmouseover="window.status = ' ';return true"
+                                                            onmouseover="window.status = ' ';
+                                                                    return true"
                                                             rendered="#{opc.total gt 0}">    
                                                             <li class="list-group-item-dark bg-dark border-0 d-flex justify-content-between  mb-0 ">                                                            
                                                                 <div class="d-flex align-items-center ms-1 ">                                                                
@@ -202,28 +211,71 @@
                                 </a>
                             </div>
                         </nav>
-                        <div class="collapse navbar-collapse me-md-0 me-sm-4 mt-sm-0 mt-2" id="navbar">
-                            <div class="ms-md-auto pe-md-3 d-flex align-items-center">
-                                <div class="input-group">
-                                    <span class="input-group-text text-body"><i class="fas fa-search" aria-hidden="true"></i></span>
-                                    <input type="text" class="form-control " placeholder="Requisición / Orden / Pedido"/>
-                                </div>
-                            </div>
-                            <ul class="navbar-nav justify-content-end">
-                                <li class="nav-item d-flex align-items-center">
-                                    <a href="javascript:;" class="nav-link text-white font-weight-bold px-0">
-                                        <i class="fa fa-search me-sm-1"></i>
-                                        <!--<span class="d-sm-inline d-none">Buscar</span>-->
-                                    </a>
-                                </li>                     
-                                <!--<li class="nav-item px-3 d-flex align-items-center">
-                                    <a href="javascript:;" class="nav-link text-white p-0">
-                                        <i class="fa fa-cog fixed-plugin-button-nav cursor-pointer"></i>
-                                    </a>
-                                </li>-->
+                        <h:form>
+                            <div class="collapse navbar-collapse me-md-0 me-sm-4 mt-sm-0 mt-2" id="navbar">
+                                <div class="ms-md-auto pe-md-3 d-flex align-items-center">
 
-                            </ul>
-                        </div>
+                                    <div class="input-group">
+                                        <span class="input-group-text text-body"><i class="fas fa-search" aria-hidden="true"></i></span>                                        
+                                        <p:inputText   id="txt_consecutivo" styleClass="form-control" 
+                                                       placeholder="Requisición / Orden / Pedido"
+                                                       value="#{principalViewBean.consecutivo}"                                                                                                              
+                                                       />                                    
+                                        #{principalViewBean.requisicion.consecutivo}
+                                    </div>                                
+                                </div>
+                                <ul class="navbar-nav justify-content-end">
+                                    <li class="nav-item d-flex align-items-center">                                        
+                                        <p:commandButton onclick="PF('modal_busqueda_requi').show()"                                                        
+                                                         actionListener="#{principalViewBean.buscar(actionListener)}"
+                                                         value="buscar"
+                                                       />
+
+                                        <p:remoteCommand action="#{principalViewBean.buscar()}"
+                                                         process="@this,txt_consecutivo"
+                                                         name="remoteBuscar"
+
+                                                         />
+
+
+
+                                    </li>                     
+                                    <!--<li class="nav-item px-3 d-flex align-items-center">
+                                        <a href="javascript:;" class="nav-link text-white p-0">
+                                            <i class="fa fa-cog fixed-plugin-button-nav cursor-pointer"></i>
+                                        </a>
+                                    </li>-->
+
+                                </ul>
+                            </div>
+
+                            <p:dialog widgetVar="modal_busqueda_requi" modal="true" draggable="false" closable="false" resizable="false" showHeader="false">
+                                <div class="text-center">
+                                    <i class="pi pi-spin pi-spinner loading-icon" aria-hidden="true"></i>
+                                    
+                                     prov 
+                                     <!--    <ui:include src="/vistas/administracion/pantallaPrincipal/requisicionPreview.xhtml" />-->
+                                    
+                                </div>
+                            </p:dialog>
+
+                            <!--<div class="modal fade" id="modal_busqueda_requi" tabindex="-1" role="dialog" aria-labelledby="modal-default" aria-hidden="true">
+                                <div class="modal-dialog modal-lg  modal-dialog-centered " role="document">
+                                    <div class="modal-content">                                               
+                                        <div class="modal-body">                                                            
+                                            <ui:fragment id="panel">
+                                                profe #{principalViewBean.requisicion.proveedor}
+                                                
+                                            </ui:fragment>
+                                        </div>
+                                        <div class="modal-footer p-1 m-1 mx-auto">                                                    
+                                            <button type="button" class="btn btn-link  ml-auto" data-bs-dismiss="modal">Cerrar</button>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>-->
+                        </h:form>
                     </div>
                 </nav>
 
@@ -279,13 +331,9 @@
                                                     campo    
                                                 </span>
                                             </p:commandLink>
-                                            <!--<a href="#" class="btn btn-light btn-block shadow-none  ">                                                                                                                                
-                                                <i class="fa fa-cog"></i>
-                                                
-                                                <span class="position-absolute top-0 start-70 translate-middle badge rounded-pill bg-secondary ">
-                                                                campo    
-                                                </span>
-                                            </a>                                        -->
+
+
+
                                         </h:form>
                                     </div>
 
@@ -373,8 +421,8 @@
                         </div>                        
                     </h:form>
                 </div>
-                
-                
+
+
                 <ui:include src="/vistas/administracion/pantallaPrincipal/accesos.xhtml.xhtml"/>
 
                 <!-- modulos -->
@@ -445,8 +493,8 @@
                     </ui:repeat>
 
                 </div>
-                
-                
+
+
 
                 <!-- últimas 3 requisiciones  -->               
                 <div class="container-fluid ">       
@@ -455,7 +503,9 @@
                         <span class="text-sm mt-0 pt-0">últimos 3 registros</span>
                     </div>
                 </div>
-                <ui:include src="/vistas/administracion/pantallaPrincipal/historialRequisicion.xhtml"/>
+                <ui:include src="/vistas/administracion/pantallaPrincipal/historialRequisicion.xhtml"  >
+                    <!--<ui:param name="listaRequisiciones" value="#{principalViewBean.listaRequisiciones}" />-->
+                </ui:include>
 
                 <!-- últimas 3 ordenes -->               
                 <div class="container-fluid ">       
@@ -466,7 +516,6 @@
                 </div>
                 <ui:include src="/vistas/administracion/pantallaPrincipal/historialOrden.xhtml"/>
 
-                
             </div>
 
 
@@ -538,9 +587,23 @@
                 </div>
             </div>
 
-            <!-- modal historial requisicion -->
+            <!-- modal resultado de busquea requisicion -->
 
-            <!-- modal historial requisicion -->
+
+
+            <!-- modal resultado de busquea requisicion -->
+
+
+            <!--<p:ajaxStatus onstart="PF('statusDialog').show()" onsuccess="PF('statusDialog').hide()"/>-->
+
+            <!--<p:dialog widgetVar="statusDialog" modal="true" draggable="false" closable="false" resizable="false" showHeader="false">
+                <div class="text-center">
+                    <i class="pi pi-spin pi-spinner loading-icon" aria-hidden="true"></i>
+                </div>
+            </p:dialog>
+            -->
+
+
 
         </c:if>
 
