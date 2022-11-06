@@ -35,12 +35,14 @@ import static sia.constantes.Constantes.INV_MOVIMIENTO_TIPO_ENTRADA;
 import static sia.constantes.Constantes.INV_TRANSACCION_STATUS_PREPARACION;
 import sia.excepciones.SIAException;
 import sia.inventarios.service.AlmacenRemote;
+import sia.inventarios.service.ArticuloRemote;
 import sia.inventarios.service.InvOrdenFormatoImpl;
 import sia.inventarios.service.TransaccionRemote;
 import sia.inventarios.service.Utilitarios;
 import sia.modelo.SiAdjunto;
 import sia.modelo.vo.inventarios.AlmacenVO;
 import sia.modelo.vo.inventarios.ArticuloCompraVO;
+import sia.modelo.vo.inventarios.ArticuloVO;
 import sia.modelo.vo.inventarios.OrdenFormatoVo;
 import sia.modelo.vo.inventarios.TransaccionArticuloVO;
 import sia.modelo.vo.inventarios.TransaccionVO;
@@ -80,7 +82,7 @@ public class MovimientoBean extends AbstractBean implements Serializable {
     @Inject
     InvOrdenFormatoImpl invOrdenFormatoImpl;
     @Inject
-    SiParametroImpl siParametroImpl;
+    ArticuloRemote articuloRemote;
     @Inject
     ProveedorAlmacenDocumentos proveedorAlmacenDocumentos;
     @Inject
@@ -95,6 +97,9 @@ public class MovimientoBean extends AbstractBean implements Serializable {
     @Getter
     @Setter
     private UploadedFile fileInfo;
+    @Getter
+    @Setter
+    private ArticuloVO articuloVo;
 
     @PostConstruct
     public void inicializar() {
@@ -109,6 +114,7 @@ public class MovimientoBean extends AbstractBean implements Serializable {
         for (MonedaVO monedaVO : lmon) {
             monedas.add(new SelectItem(monedaVO.getId(), monedaVO.getSiglas()));
         }
+        articuloVo = new ArticuloVO();
     }
 
     public void cargarEditar() {
@@ -142,6 +148,15 @@ public class MovimientoBean extends AbstractBean implements Serializable {
     public void agregarFila() {
         elementos.add(new TransaccionArticuloVO());
         model = new ListDataModel(elementos);
+    }
+
+    public List<ArticuloVO> completarArticulo(String cadena) {
+        return articuloRemote.buscarPorPalabras(cadena, principal.getUser().getCampo());
+    }
+
+    public void actualizarArticulo(TransaccionArticuloVO traArtVo) {
+        traArtVo.setArticuloId(articuloVo.getId());
+        traArtVo.setArticuloNombre(articuloVo.getNombre());
     }
 
     public void validarFolio(FacesContext context, UIComponent component, Object value) throws ValidatorException {
