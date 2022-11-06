@@ -10,11 +10,13 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 import javax.faces.event.ActionEvent;
 import javax.inject.Inject;
@@ -169,6 +171,8 @@ public class EstanciaBeanModel implements Serializable {
     private List<SelectItem> listaSelectItemInvitado;
     private List<SelectItem> listaUsuariosAlta;
     private List<SelectItem> staffListSelectItem;
+    private List<SelectItem> listaHoteles;
+
     //private List<SelectItem> gerenciaSelectItem;
     //private List<SelectItem> sgOficinaSelectItem;
     //private List<SelectItem> sgMotivoSelectItem;
@@ -185,6 +189,8 @@ public class EstanciaBeanModel implements Serializable {
     private List<SgHuespedHotelServicioVo> lista;
     private List<SgHotelTipoEspecificoVo> serviciosHotelFacturaEmpresa;
     private DataModel listaEstancia;
+    @Getter
+    private DataModel listaHospedadosHotel;
 
     //Clases
     private DetalleSolicitudVO detalleSolicitudVO;
@@ -284,6 +290,7 @@ public class EstanciaBeanModel implements Serializable {
             FacesUtils.addErrorMessage("No tiene gerencia registrada, su solicitud se enviará a Servicios Generales");
         }
         trearSolicitudEstanciaParaRegistro();
+        this.listaHospedadosHotel = traerRegistroHospedadosHotel();
     }
 
     public void mostrarPopupDetalleSolicitudEstancia(SgSolicitudEstanciaVo solEst) {
@@ -808,17 +815,28 @@ public class EstanciaBeanModel implements Serializable {
         this.sgSolicitudEstanciaVo = (this.sgSolicitudEstanciaVo != null ? sgSolicitudEstanciaImpl.buscarEstanciaPorId(this.sgSolicitudEstanciaVo.getId()) : null);
     }
 
-    public List<SelectItem> listaHotel() {
-        List<SelectItem> l = new ArrayList<SelectItem>();
+    public List<SelectItem> getListaHotel() {
+        //List<SelectItem> l = new ArrayList<SelectIte m>();
         try {
-            List<SgHotel> lh = sgHotelImpl.getAllHotel(sesion.getOficinaActual().getId());
-            for (SgHotel sgH : lh) {
-                SelectItem item = new SelectItem(sgH.getId(), sgH.getProveedor().getNombre());
-                l.add(item);
+
+            if (this.listaHoteles == null) {
+                
+                this.listaHoteles = Collections.emptyList();
+
+                List<SgHotel> lh = sgHotelImpl.getAllHotel(sesion.getOficinaActual().getId());
+                
+                this.listaHoteles = lh.stream().map(item -> new SelectItem(item.getId(), item.getProveedor().getNombre())).collect(Collectors.toList());
+                
+                /*for (SgHotel sgH : lh) {
+                    SelectItem item = new SelectItem(sgH.getId(), sgH.getProveedor().getNombre());
+                    l.add(item);
+                }*/                
             }
         } catch (Exception e) {
+            
+            this.listaHoteles = Collections.emptyList();
         }
-        return l;
+        return this.listaHoteles;
     }
 
     public void buscarHotel() {
@@ -1057,8 +1075,6 @@ public class EstanciaBeanModel implements Serializable {
      * Salida de huespedes en hotel y staff-house
      *
      */
-   
-
     public void marcarSalidaHuesped() {
         log("Fecha real salida: " + this.sgHuespedHotel.getFechaRealSalida());
         sgHuespedHotelImpl.marcarSalidaHuesped(sesion.getUsuario(), getSgHuespedHotel());
@@ -1167,7 +1183,6 @@ public class EstanciaBeanModel implements Serializable {
      *
      * @return
      */
-
 //    public DataModel getHabitacionesByStaffCambioHuesped() {
 //        try {
 //            setLista((habitacionStaffService.getAllHabitacionesByStaffAndOcupadoList(getHabitacion().getSgStaff(), false, false)));
@@ -1176,7 +1191,6 @@ public class EstanciaBeanModel implements Serializable {
 //            return null;
 //        }
 //    }
-
     /**
      * Cambia a un Huésped de un Hotel a un Staff
      *
@@ -1268,7 +1282,7 @@ public class EstanciaBeanModel implements Serializable {
         return siUsuarioCopiadoImpl.getListUser(15, sesion.getOficinaActual().getId());
     }
 
-    public DataModel traerAprobacionCarta() {
+    public DataModel getListaAprobacionCarta() {
         try {
             List<UsuarioTipoVo> l = siUsuarioCopiadoImpl.getListUser(15, sesion.getOficinaActual().getId());
             setDataModel(new ListDataModel(l));

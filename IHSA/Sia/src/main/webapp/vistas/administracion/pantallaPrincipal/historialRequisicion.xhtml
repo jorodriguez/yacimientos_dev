@@ -12,179 +12,15 @@
             <div class="row mt-1">  
                 <ui:repeat value="#{principalViewBean.listaRequisiciones}" var="item" varStatus="varStatus" >
                     <div class="col-12 col-md-3 col-xl-3">
-                        <div class="card h-100 border border-1 border-secondary " style="">
-                            <div  class="card-header ps-3 pt-3 pb-0 d-flex justify-content-between align-content-center align-items-center">                                                                                    
-                                <h6 data-bs-toggle="modal"                                                     
-                                    data-bs-target="#modal_histo_#{item.id}">#{item.consecutivo}</h6>                                            
-
-                                <c:set var="estatus" value="#{item.idEstatus}"/>
-                                <span 
-                                    class="border-0 bg-transparent"
-                                    data-bs-toggle="modal"                                                     
-                                    data-bs-target="#modal_histo_#{item.id}">
-                                    <c:choose>
-                                        <c:when test="${(estatus == 40)}" > <!-- asignada -->
-                                            <p:chip 
-                                                label="#{item.estatus}" 
-                                                styleClass="text-xs bg-info opacity-8" 
-                                                icon="pi pi-user"/>                                                    
-                                        </c:when>
-                                        <c:when test="${estatus eq 50}"> <!-- cancelada -->
-                                            <p:chip 
-                                                label="#{item.estatus}" 
-                                                styleClass="text-xs bg-danger opacity-8" 
-                                                icon="pi pi-times"/>                                                    
-                                        </c:when>
-                                        <c:when test="${estatus eq 60}"> <!-- finalizada -->
-                                            <p:chip 
-                                                label="#{item.estatus}" 
-                                                styleClass="text-xs bg-ligth opacity-8" 
-                                                icon="pi pi-check"/>                                                    
-                                        </c:when>                                                
-                                        <c:otherwise>                                                    
-                                            <p:chip 
-                                                label="#{item.estatus} " 
-                                                styleClass="text-xs bg-success opacity-8" 
-                                                />                                                    
-                                        </c:otherwise>
-                                    </c:choose>                                          
-                                    <!--<p:chip 
-                                        label="#{item.estatus} #{item.idEstatus}" 
-                                        styleClass="text-xs ${bg} opacity-8" 
-                                        icon="${icon}"/>-->
-                                </span>
-
-                            </div>
-
-                            <hr class="horizontal dark m-0 "/>
-                            <div class="card-body text-sm ps-3 p-1 ">
-                                <span class="text-xs text-dark" data-bs-toggle="modal"                                                     
-                                      data-bs-target="#modal_histo_#{item.id}">#{item.referencia}</span>
-                            </div>                                    
-                            <div class="card-body pt-1"
-                                 data-bs-toggle="modal"                                                     
-                                 data-bs-target="#modal_histo_#{item.id}">
-
-                                <h6 class="text-xs ">Gerencia</h6>
-                                <h6 class="text-xs text-muted text-normal ps-2">#{item.gerencia}</h6>
-                                <h6 class="text-xs ">Proveedor</h6>
-                                <h6 class="text-xs text-muted text-normal ps-2 ">#{item.proveedor}</h6>
-                                <h6 class="text-xs ">Lugar de entrega</h6>
-                                <h6 class="text-xs text-muted text-normal ps-2">#{item.lugarEntrega}</h6>                                        
-
-                                <h6 class="text-xs ">Observaciones</h6>
-                                <span class="text-xs text-muted text-normal text-overflow-height">                                            
-                                    #{item.observaciones}
-                                </span>                                              
-                                <!--<h6 class="text-uppercase text-body text-xs font-weight-bolder mt-4">Application</h6>-->
-                            </div>
-                            <!--<div class="card-footer pt-1 pb-1 d-flex justify-content-between align-content-center align-items-center">
-                                <span class="text-muted text-xs"
-                                      data-bs-toggle="collapse" 
-                                      href="#collap_" 
-                                      role="button" 
-                                      aria-expanded="false" 
-                                      aria-controls="collap_"
-                                      >Solicitada </span>
-                                <span class="text-muted text-xs">#{item.fechaSolicito} </span>                                            
-                            </div>                                    
-                            <div class="card-footer p-0 d-flex justify-content-center align-content-center align-items-center">                                            
-                                <div class="collapse multi-collapse" id="collap_">
-                                    <div class="d-flex justify-content-between align-content-center align-items-center">
-                                        <span class="text-sm">#{item.revisa}</span>
-                                        <span class="text-sm">#{item.fechaRevisa}</span>
-                                    </div>
-                                </div>
-                            </div>
-                            -->
-
-                        </div>
-
+                            <ui:include src="fragmentos/infoRequisicion.xhtml" />                              
                         <!-- modal historial -->
                         <div class="modal fade" id="modal_histo_#{item.id}" tabindex="-1" role="dialog" aria-labelledby="modal-default" aria-hidden="true">
                             <div class="modal-dialog modal- modal-dialog-centered modal-" role="document">
                                 <div class="modal-content">                                               
                                     <div class="modal-body p-4">
-                                        <div class="row">
-                                            <div class="col-md-12">
-                                                <div class="d-flex justify-content-md-between  ">
-                                                    <h5 ><span class="text-muted">Req.</span> #{item.consecutivo}  </h5>                                                            
-                                                    <h5 class="text-muted">#{item.estatus} </h5>
-                                                </div>
-                                                <ul class="timeline-3 ">
-                                                    <my:itemListHistorial
-                                                        estatus="Solicita"
-                                                        fecha="#{item.fechaSolicito}"
-                                                        usuario="#{item.solicita}"
-                                                        realizado="#{true}"                                                                    
-                                                        />                                                                        
-                                                    <my:itemListHistorial
-                                                        estatus="VB Costos"
-                                                        fecha="#{item.fechaVistoBueno}"
-                                                        usuario="#{item.vistoBueno}"
-                                                        color="#{item.idEstatus == 25 ? 'text-warning':'text-muted'}"
-                                                        realizado="#{item.vistoBuenoOk}"
-                                                        icono="#{item.vistoBuenoOk ? 'fa fa-check':'fa fa-clock'}"
-                                                        />                                                                        
-                                                    <my:itemListHistorial
-                                                        estatus="Revisada"
-                                                        fecha="#{item.fechaRevisa}"
-                                                        usuario="#{item.revisa}"
-                                                        color="#{item.revisada ? '':'text-muted'}"
-                                                        realizado="#{item.revisada}"
-                                                        icono="#{item.revisada ? 'fa fa-check':'fa fa-clock'}"
-                                                        />                                                                        
-                                                    <my:itemListHistorial
-                                                        estatus="Aprueba"
-                                                        fecha="#{item.fechaAprueba}"
-                                                        usuario="#{item.aprueba}"
-                                                        realizado="#{item.aprobada}"
-                                                        icono="#{item.aprobada ? 'fa fa-check':'fa fa-clock'}"
-                                                        />                                                                                                                                     
-                                                    <ui:fragment rendered="#{item.asignada}">
-                                                        <my:itemListHistorial
-                                                            estatus="Asignacíon"
-                                                            fecha="#{item.fechaAsigno}"
-                                                            usuario="#{item.asigno}"
-                                                            color="#{item.asignada ? '':'text-muted'}"
-                                                            realizado="#{item.asignada}"
-                                                            icono="#{item.asignada ? 'fa fa-check':'fa fa-clock'}"
-                                                            />                                   
-                                                    </ui:fragment>
-                                                    <ui:fragment rendered="#{item.asignada}">
-                                                        <my:itemListHistorial
-                                                            estatus="Comprador"
-                                                            fecha="#{item.fechaAsigno}"
-                                                            usuario="#{item.comprador}"
-                                                            color="#{item.fechaAsigno != null ? '':'text-muted'}"
-                                                            realizado="#{item.asignada}"
-                                                            icono="#{item.asignada ? 'fa fa-check':'fa fa-clock'}"
-                                                            />      
-                                                    </ui:fragment>
-                                                    <ui:fragment rendered="#{item.cancelada}">
-                                                        <my:itemListHistorial                                                                                                                                        
-                                                            estatus="Cancelada"
-                                                            fecha="#{item.fechaCancelo}"
-                                                            usuario="#{item.cancelo}"
-                                                            color="#{item.cancelada ? 'text-danger':'text-muted'}"
-                                                            realizado="#{item.cancelada}"
-                                                            icon="fa fa-times"
-                                                            />                                    
-                                                    </ui:fragment>
-                                                    <ui:fragment rendered="#{item.finalizada}">
-                                                        <my:itemListHistorial                                                                    
-                                                            rendered="#{item.finalizada}"
-                                                            estatus="Finalizada"
-                                                            fecha="#{item.fechaFinalizo}"
-                                                            usuario="#{item.finalizo}"
-                                                            color="#{item.finalizada? 'text-secondary':'text-muted'}"
-                                                            realizado="#{item.finalizada}"
-                                                            icono="#{item.finalizada ? 'fa fa-check':'fa fa-clock'}"
-                                                            />                                    
-                                                    </ui:fragment>
-                                                </ul>
-                                            </div>
-                                        </div>                                                     
+                                        
+                                            <ui:include src="fragmentos/historialRequisicion.xhtml" />
+                                        
                                     </div>
                                     <div class="modal-footer p-1 m-1 mx-auto">                                                    
                                         <button type="button" class="btn btn-link  ml-auto" data-bs-dismiss="modal">Cerrar</button>
@@ -193,7 +29,6 @@
                                 </div>
                             </div>
                         </div>
-
 
                     </div>
                 </ui:repeat>

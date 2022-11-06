@@ -144,12 +144,13 @@
                                         <td class="bold">#{msg['sia.inventarios.inventarios.articulo']}:<span class="required">*</span></td>
                                         <td>
                                             <div>
-                                                <h:inputText value="#{inventario.inventarioVO.articuloNombre}" id="txtArticulo"
-                                                             styleClass="articuloAutoComplete ui-inputfield ui-textentry ui-widget ui-state-optional ui-corner-all ui-autocomplete-input" style="width: 93%">
-                                                    <f:ajax event="change" render="msjArticulo" execute="@this hdArticuloId"/>
-                                                </h:inputText>
-                                                <h:inputHidden value="#{inventario.inventarioVO.articuloId}" id="hdArticuloId" required="true" 
-                                                               requiredMessage="#{msg['sia.validaciones.required']}"/>
+                                                <p:autoComplete value="#{inventario.articuloVo}" 
+                                                                completeMethod="#{inventario.completarArticulo}" size="70"
+                                                                var="art" itemLabel="#{art.nombre}" itemValue="#{art}"
+                                                                converter="#{articuloConverter}" forceSelection="true" 
+                                                                >
+                                                    <p:ajax event="itemSelect" listener="#{inventario.actualizarArticulo}"  />
+                                                </p:autoComplete>
                                                 <!--p:commandLink styleClass="crear-foraneo" action="#{inventario.nuevoArticulo}" immediate="true">
                                                     <h:graphicImage library="images" name="icon-catalog-link.png"/>
                                                     <f:ajax onevent="fijarTituloDialogo" render="@all" />
