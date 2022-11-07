@@ -12,6 +12,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Named;
 import javax.faces.bean.ManagedProperty;
@@ -69,6 +70,8 @@ public class SolicitudViajeBean implements Serializable {
 
     private UIData lisTerrestre;
     private UIData listAerea;
+    
+    private String spliterInvitado = " - ";
 
     /*
      * @Inject private Sesion sesion; @Inject private SolicitudViajeBeanModel
@@ -1370,13 +1373,20 @@ public class SolicitudViajeBean implements Serializable {
         return nombres;
     }
 
+    //Cambio de joel 1 nov 22 - optimización de código
     public List<String> invitadoListener(String cadena) {
         solicitudViajeBeanModel.setInvitado("");
-        List<String> nombres = new ArrayList<>();
+        /*List<String> nombres = new ArrayList<>();
         List<InvitadoVO> invs = solicitudViajeBeanModel.traerInvitados(cadena);
         invs.stream().forEach(us -> {
             nombres.add(us.getNombre() + " // " + us.getEmpresa());
-        });
+        });*/
+        
+        final List<String> nombres = 
+                solicitudViajeBeanModel.traerInvitados(cadena)
+                                       .stream().map(item -> (item.getNombre()+ this.spliterInvitado +item.getEmpresa()))
+                                       .collect(Collectors.toList());      
+        
         return nombres;
     }
 
@@ -1398,13 +1408,26 @@ public class SolicitudViajeBean implements Serializable {
 
     public void addInvitado() {
         setEmpleadoAdd("");
-        InvitadoVO inVo = solicitudViajeBeanModel.buscarInvitado();
+        
+        final String[] splitters = solicitudViajeBeanModel.getInvitado().split(spliterInvitado);
+        
+        final String criteria = (splitters != null && splitters.length > 0) ? splitters[0] : "";
+        
+        if(criteria.equals("")){
+            FacesUtils.addInfoMessage("Escribe un nombre de invitado");
+            return;
+        }
+        
+        final InvitadoVO inVo = solicitudViajeBeanModel.buscarInvitado(criteria);
+                              
         if (inVo != null) {
+            
             setInvitadoAdd(inVo.getIdInvitado());
 
             if (getInvitadoAdd() > 0) {
                 solicitudViajeBeanModel.addOrRemoveViajeros("", Constantes.TRUE, inVo.getIdInvitado());
-                solicitudViajeBeanModel.confirmarUsuarioYTelefono(getInvitadoAdd(), "");
+                //solicitudViajeBeanModel.confirmarUsuarioYTelefono(getInvitadoAdd(), "");
+                solicitudViajeBeanModel.confirmarUsuarioYTelefono(inVo.getIdInvitado(), "");
             } else {
                 setNewInvitado(inVo.getNombre());
                 //solicitudViajeBeanModel.empresas();

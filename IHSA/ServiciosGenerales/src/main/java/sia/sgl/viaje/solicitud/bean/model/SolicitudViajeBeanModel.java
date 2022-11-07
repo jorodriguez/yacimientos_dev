@@ -2600,8 +2600,8 @@ public class SolicitudViajeBeanModel implements Serializable {
                             }
                         }
                         if (!enLista) {
-                            Usuario u = usuarioImpl.find(idUsuario);
-
+                            Usuario u = usuarioImpl.find(idUsuario);                                                       
+                          //  newVO = new ViajeroVO(); 
                             newVO.setIdUsuario(idUsuario);
                             newVO.setUsuario(u.getNombre());
                             newVO.setEsEmpleado(Constantes.TRUE);
@@ -2634,7 +2634,8 @@ public class SolicitudViajeBeanModel implements Serializable {
                             }
                             if (!enLista) {
                                 SgInvitado nuevoInvitado = sgInvitadoImpl.find(idInvitado);
-
+                                
+                                newVO = new ViajeroVO();
                                 newVO.setIdInvitado(idInvitado);
                                 newVO.setInvitado(nuevoInvitado.getNombre());
                                 newVO.setEsEmpleado(Constantes.FALSE);
@@ -4299,8 +4300,8 @@ public class SolicitudViajeBeanModel implements Serializable {
         return usuarioImpl.findByName(empleado);
     }
 
-    public InvitadoVO buscarInvitado() {
-        return sgInvitadoImpl.buscarInvitado(getInvitado());
+    public InvitadoVO buscarInvitado(String criteria) {
+        return sgInvitadoImpl.buscarInvitado(criteria);
     }
 
     /**
