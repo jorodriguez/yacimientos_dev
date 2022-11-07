@@ -226,14 +226,14 @@
                             #{msg['sia.inventarios.movimiento.articulo']}
                         </f:facet>
                         <h:outputText value="#{ta.articuloNombre}" id="txtArticulo"
-                                     >
+                                      >
                         </h:outputText>
                         <p:autoComplete value="#{movimiento.articuloVo}" 
                                         completeMethod="#{movimiento.completarArticulo}" size="70"
                                         var="art" itemLabel="#{art.nombre}" itemValue="#{art}"
                                         converter="#{articuloConverter}" forceSelection="true" 
-                                        readonly="#{ta.transaccionId eq null}">
-                            <p:ajax event="itemSelect" listener="#{movimiento.actualizarArticulo(ta)}"  />
+                                        rendered="#{empty ta.articuloNombre }">
+                            <p:ajax event="itemSelect" listener="#{movimiento.actualizarArticulo(ta)}"  update="frmMovimiento:tablaArticulos"/>
                         </p:autoComplete>
                         <h:message for="hdArticuloId" id="msjArticulo"
                                    styleClass="ui-widget ui-corner-all ui-state-error input-msg"/>
@@ -295,32 +295,33 @@
             <div class="botones-seccion clearfix">
                 <h:panelGroup id="pnBotones">
                     <div style="display:#{param['lista'] != null and estatusMovimiento.esPendienteRevision(movimiento.elemento.status) ? 'inline-block' : 'none'}">
-                        <h:commandLink styleClass="hbutton" value="#{msg['sia.inventarios.movimientos.confirmar']}"
+                        <p:commandLink styleClass="hbutton" value="#{msg['sia.inventarios.movimientos.confirmar']}"
                                        rendered="#{not roles.esEmpleadoDeAlmacen()}"
-                                       action="#{movimiento.confirmar}" immediate="true">
-                            <f:ajax execute="@this" render="@all"/>
+                                       action="#{movimiento.confirmar}" immediate="true"
+                                       process="@this" update="@form">
                             <f:param name="lista" value="#{param.lista}"/>
-                        </h:commandLink>
-                        <h:commandLink styleClass="hbutton" value="#{msg['sia.inventarios.movimientos.rechazar']}"
-                                       rendered="#{not roles.esEmpleadoDeAlmacen()}"
-                                       onclick="mostrarConfirmar(this, rechazarDialogo);
-                                               return false"></h:commandLink>
-                        <h:commandButton action="#{movimiento.rechazar()}" immediate="true" style="display: none">
-                            <f:ajax execute="@this" render="@all"/>
+                        </p:commandLink>
+                        <p:commandButton styleClass="hbutton" value="#{msg['sia.inventarios.movimientos.rechazar']}"
+                                         rendered="#{not roles.esEmpleadoDeAlmacen()}"
+                                         onclick="mostrarConfirmar(this, rechazarDialogo);
+                                                 return false">
+                        </p:commandButton>
+                        <p:commandButton action="#{movimiento.rechazar()}" immediate="true" style="display: none"
+                                         process="@this" update="@form">
                             <f:param name="lista" value="#{param.lista}"/>
-                        </h:commandButton>
+                        </p:commandButton>
                     </div>
 
                     <h:panelGroup rendered="#{param['lista'] == null}">
-                        <h:commandLink id="btnGuardar" styleClass="hbutton-guardar"
-                                       value="#{msg['sia.inventarios.comun.guardar']}" action="#{movimiento.guardar()}">
-                            <f:ajax execute="@form" render="@all"/>
-                        </h:commandLink>
-                        <h:commandLink id="btnProcesar" styleClass="hbutton-pro"
+                        <p:commandLink id="btnGuardar" styleClass="hbutton-guardar"
+                                       value="#{msg['sia.inventarios.comun.guardar']}" action="#{movimiento.guardar()}"
+                                       process="@form" update="@form">
+                        </p:commandLink>
+                        <p:commandLink id="btnProcesar" styleClass="hbutton-pro"
                                        value="#{msg['sia.inventarios.comun.procesar']}" action="#{movimiento.procesar()}"
                                        onclick='return confirm("#{msg["sia.inventarios.movimientos.confirmarProcesar"]}");'
                                        style="display:#{param['transaccionId'] == null? 'none' : 'inline-block'}">
-                        </h:commandLink>
+                        </p:commandLink>
                     </h:panelGroup>
                 </h:panelGroup>
                 <h:link outcome="movimientos" styleClass="hbutton-reg"

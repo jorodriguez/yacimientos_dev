@@ -47,10 +47,6 @@ public class ReporteFormatosSalidaBean implements Serializable {
     InvEstadoAprobacionSolicitudImpl estadoAprobacionSolicitudImpl;
     @Inject
     InvSolicitudMaterialImpl solicitudMaterialImpl;
-    @Inject
-    InvDetalleSolicitudMaterialImpl detalleSolicitudMaterialImpl;
-    @Inject
-    EstatusImpl estatusImpl;
 
     final protected SessionBean sesion = (SessionBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("principal");
 
@@ -109,8 +105,8 @@ public class ReporteFormatosSalidaBean implements Serializable {
     }
 
     public void reestablecerFormatos() {
-        inicio = null;
-        fin = null;
+        fin = LocalDate.now();
+        inicio = fin.minusDays(30);
         idStatus = Constantes.CERO;
         llenar();
     }

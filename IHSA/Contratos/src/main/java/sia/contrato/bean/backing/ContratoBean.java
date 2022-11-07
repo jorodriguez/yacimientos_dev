@@ -775,6 +775,7 @@ public class ContratoBean implements Serializable {
         getLstConveniosTabs().remove(contratoVo);
         contratoVo = new ContratoVO();
         llenarListaConveniosInicio();
+        tabView.setActiveIndex(0);
     }
 
     public void iniciarIncide() {

@@ -685,7 +685,7 @@ public class InventarioImpl extends AbstractFacade<InvInventario> {
     }
 
     public List<InventarioVO> inventarioPorArticuloCampo(int articuloId, int campo) {
-        String c = "select al.nombre, a.nombre, a.codigo , a.codigo_int, sum(ii.numero_unidades), u.nombre, u.id from inv_inventario ii \n"
+        String c = "select al.nombre, a.nombre, a.codigo , a.codigo_int, sum(ii.numero_unidades), u.nombre, u.id, ii.id from inv_inventario ii \n"
                 + "	inner join inv_articulo  a on ii.articulo = a.id \n"
                 + "	inner join si_unidad u on a.unidad = u.id \n"
                 + "	inner join inv_almacen  al on ii.almacen = al.id \n"
@@ -694,7 +694,7 @@ public class InventarioImpl extends AbstractFacade<InvInventario> {
                 + " and ii.articulo = " + articuloId
                 + " and ii.eliminado  = false \n";
 
-        c += " group  by al.nombre, a.nombre, a.codigo , a.codigo_int, u.nombre, u.id"
+        c += " group  by al.nombre, a.nombre, a.codigo , a.codigo_int, u.nombre, u.id, ii.id"
                 + " having  sum(ii.numero_unidades) is not null "
                 + " order by a.nombre";
 
@@ -710,6 +710,7 @@ public class InventarioImpl extends AbstractFacade<InvInventario> {
             invVo.setTotalUnidades((objects[4] == null ? 0.0 : ((BigDecimal) objects[4]).doubleValue()));
             invVo.setArticuloUnidad((String) objects[5]);
             invVo.setUnidadId((Integer) objects[6]);
+            invVo.setId(objects[7] != null ? (Integer) objects[7] : 0);
             inventarios.add(invVo);
         }
         return inventarios;
