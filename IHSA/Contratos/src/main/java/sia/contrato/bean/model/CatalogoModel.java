@@ -159,6 +159,7 @@ public class CatalogoModel implements Serializable {
         try {
             pvDocumentoImpl.guardar(sesion.getUsuarioSesion().getId(), getNombre(), getDescripcion(), getTipoDoc());
             documentos = pvDocumentoImpl.traerDocumento(Constantes.LISTA_TIPO_DOCUMENTO + ", " + Constantes.LISTA_TIPO_IDENTIFICACION);
+            PrimeFaces.current().executeScript(";$(dialogoDocumento).modal('hide');;");
         } catch (Exception e) {
             v = false;
             UtilLog4j.log.fatal(e);
@@ -225,6 +226,7 @@ public class CatalogoModel implements Serializable {
         try {
             cvTipoImpl.guardar(sesion.getUsuarioSesion().getId(), getNombre(), getDescripcion());
             tipos = cvTipoImpl.traerTodo();
+            PrimeFaces.current().executeScript(";$(dialogoTipo).modal('hide');;");
         } catch (Exception e) {
             v = false;
             UtilLog4j.log.fatal(e);
@@ -258,6 +260,7 @@ public class CatalogoModel implements Serializable {
             try {
                 cvTipoImpl.modificar(sesion.getUsuarioSesion().getId(), getIdVo(), getNombre(), getDescripcion());
                 tipos = cvTipoImpl.traerTodo();
+                PrimeFaces.current().executeScript("$(dialogoTipoMod).modal('hide');");
             } catch (Exception e) {
                 v = false;
                 UtilLog4j.log.fatal(e);
@@ -287,6 +290,7 @@ public class CatalogoModel implements Serializable {
         try {
             cvHitoImpl.guardar(sesion.getUsuarioSesion().getId(), getNombre(), getDescripcion());
             hitos = cvHitoImpl.traerTodo();
+	    PrimeFaces.current().executeScript(";$(dialogoHito).modal('hide');;");
         } catch (Exception e) {
             v = false;
             UtilLog4j.log.fatal(e);
@@ -429,6 +433,7 @@ public class CatalogoModel implements Serializable {
         try {
             cvCondicionPagoImpl.guardar(sesion.getUsuarioSesion().getId(), getNombre(), getDescripcion());
             condiciones = cvCondicionPagoImpl.traerTodo();
+	    PrimeFaces.current().executeScript(";$(dialogoCondicion).modal('hide');;");
         } catch (Exception e) {
             v = false;
             UtilLog4j.log.fatal(e);
@@ -994,6 +999,7 @@ public class CatalogoModel implements Serializable {
             }
 
             this.setSecciones(cvEvaluacionSeccionImpl.traerSecciones(this.getIdFormato()));
+            PrimeFaces.current().executeScript(";$(dialogoSeccion).modal('hide');;");
         } catch (Exception e) {
             v = false;
             UtilLog4j.log.fatal(e);
