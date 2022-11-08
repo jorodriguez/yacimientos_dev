@@ -41,7 +41,7 @@ import sia.servicios.sistema.impl.SiFacturaStatusImpl;
  *
  * @author jcarranza
  */
-@Named (value = "exportarFacturaBean")
+@Named(value = "exportarFacturaBean")
 @ViewScoped
 public class ExportarFacturaBean implements Serializable {
 
@@ -51,7 +51,6 @@ public class ExportarFacturaBean implements Serializable {
     public ExportarFacturaBean() {
     }
 
-   
     @Inject
     private UsuarioBean usuarioBean;
 //
@@ -140,6 +139,10 @@ public class ExportarFacturaBean implements Serializable {
         listaFiltro.add(filtroVo.getId(), filtroVo);
         //        
         buscarFacturaDet();
+    }
+
+    public void agregarOperadorLogicoCondiciones(int index, String opLogSel) {
+        listaFiltro.get(index).setOperadorLogicoSeleccionado(opLogSel);
     }
 
     public void agregarOperadorLogicoCondiciones(ValueChangeEvent event) {

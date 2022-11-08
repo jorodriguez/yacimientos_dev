@@ -19,18 +19,17 @@
         <div class="col-1 col-xs-1" >
             <p:commandLink styleClass="btn btn-success text-white" action="#{exportarFacturaBean.buscarFactura}"
                            style="text-align: right; margin-left: 0px;"
-                           title="Buscar facturas">
+                           title="Buscar facturas"
+                           process="@this frmExpFact:tblFiltro" update="frmExpFact:tblFacturas">
                 <i class="fa fa-search"/>
             </p:commandLink>
         </div>
         <div class="col-1 col-xs-1" >
             <p:commandButton action="#{exportarFacturaBean.exportarFactura}" 
-                           class="btn btn-primary text-white" 
-                           title="Exportar Facturas"
-                           onclick="return validaExportarZip('frmExpFact', 'seleccionEx');"
-                           update="@form">
-                <i class="fa fa-file"/>                                        
-            </p:commandButton>
+                             class="btn btn-primary text-white" 
+                             title="Exportar Facturas"
+                             onclick="return validaExportarZip('frmExpFact', 'seleccionEx');"
+                             update="@form" icon="fa fa-file"/>
         </div>
     </div>
     <div class="table-responsive">
@@ -43,13 +42,15 @@
                                      styleClass="form-control"
                                      rendered="#{data.id gt 0}">
                         <f:selectItems value="#{data.operadorLogico}"/>
+                        <p:ajax event="change" process="@this" update="frmExpFact:tblFiltro"
+                                listener="#{exportarFacturaBean.agregarOperadorLogicoCondiciones(index, data.operadorLogicoSeleccionado)}"/>
                     </h:selectOneMenu>
                 </p:column>
                 <p:column headerText="Campo" style="width: 20%;" >
                     <p:selectOneMenu value="#{data.campoSeleccionado}"
                                      styleClass="form-control">
                         <f:selectItems value="#{data.campos}"/>
-                        <p:ajax event="change" listener="#{consultaFacturaBean.mostrarCondiciones(index,data.campoSeleccionado)}"
+                        <p:ajax event="change" listener="#{exportarFacturaBean.mostrarCondiciones(index,data.campoSeleccionado)}"
                                 update="frmExpFact:tblFiltro"/>
                     </p:selectOneMenu>
                 </p:column>
@@ -63,18 +64,16 @@
                 <p:column headerText="Valor" style="width: 50%; text-align: left;">
                     <div class="form-inline" style="display: #{data.filtroFechaRango ? 'block;' : 'none;'} ">
                         <p:datePicker value="#{data.fechaInicio}" 
-                                      pattern="dd/MM/yyyy" style="width: 60px"
+                                      pattern="dd/MM/yyyy"
                                       mindate="#{exportarFacturaBean.fechaMinina}"
-                                      maxdate="#{exportarFacturaBean.fechaMaxima}"
-                                      readonly="true">
+                                      maxdate="#{exportarFacturaBean.fechaMaxima}">
 
                         </p:datePicker>
                         <h:outputText value="a" styleClass="control-label" style="margin: 15px;"/>
-                        <p:datePicker value="#{data.fechaFin}" style="width: 60px"
-                                      pattern="dd/MM/yyyy"
-                                      readonly="true"
-                                      mindate="#{exportarFacturaBean.fechaMinina}"
-                                      maxdate="#{exportarFacturaBean.fechaMaxima}">
+                        <p:datePicker  value="#{data.fechaFin}"
+                                       pattern="dd/MM/yyyy"
+                                       mindate="#{exportarFacturaBean.fechaMinina}"
+                                       maxdate="#{exportarFacturaBean.fechaMaxima}">
                         </p:datePicker>
                     </div>
                     <h:inputText value="#{data.alcance}" rendered="#{data.filtroCaja}"
@@ -96,14 +95,14 @@
                 <p:column style="width: 2%;">
                     <p:commandLink action="#{exportarFacturaBean.agregarNuevoFiltro}"
                                    rendered="#{data.id eq exportarFacturaBean.listaFiltro.size()-1}"
-                                   process="@form" update="@form">
+                                   process="frmExpFact:tblFiltro" update="frmExpFact:tblFiltro">
                         <i class="fa fa-plus text-primary"/>
                     </p:commandLink>
                 </p:column>
                 <p:column rendered="#{exportarFacturaBean.listaFiltro.size() gt 1}" style="width: 2%;">
                     <p:commandLink action="#{exportarFacturaBean.quitarFiltro(data.id)}"
                                    rendered="#{data.id gt 0}"
-                                   process="@form" update="@form">
+                                   process="frmExpFact:tblFiltro" update="frmExpFact:tblFiltro">
                         <i class="fa fa-minus text-danger"/>
                     </p:commandLink>
                 </p:column>
