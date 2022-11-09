@@ -17,13 +17,13 @@
                 <ui:include src="../Requisiciones/SolicitarRequisicion.xhtml"/>                
                 <h:form id="form1" >
                     <!--   Ponga todo su codigo aqui... -->                    
-                    <div class="row">
+                    <div class="row pb-2">
                         <div id="divAutoriza" class="btn-group" style="text-align: left;" >                                                                
                             <p:commandLink value="#{msgs['requisicion.nueva']}"  
                                            action="#{requisicionBean.crearNuevaRequisicion}"
-                                           onclick="$(dialogoCrearNewReq).modal('show');"
+                                           onclick="$(dialogoCrearNewReq).modal('show');"                                           
                                            title="Click aqui para generar una nueva requisición..."                                               
-                                           styleClass="btn btn-default" process="@this" update="frmCrearRequisicion"
+                                           styleClass="btn btn-info text-white" process="@this" update="frmCrearRequisicion"
                                            />                                            
                             <p:commandLink value="Nueva requisición a partir de Otra." 
                                            title="#{msgs['sistema.tooltip.genera.nueva.requision']} "
@@ -71,32 +71,41 @@
                     </div>
 
                     <div id="divTabla" class="container-fluid"> 
-                        <div class="col-pull-11">                            
-                            <div class="col-12 col-xs-12" style="text-align: right;padding-bottom: 10px;">
-                                <h:outputText value="*PS: requisiciones para productos y servicios." style="font-size: 10px" styleClass="col-12 col-xs-12 f11gris"/>
-                                <h:outputText value="*AF: requsiciones para activos fijos." style="font-size: 10px"  styleClass="col-12 col-xs-12 f11gris"/>
-                                <h:outputText value="*AI: requisiciones para modificar." style="font-size: 10px"  styleClass="col-12 col-xs-12 f11gris"/>
-                            </div>
-                        </div>
+                        
                         <div class="table table-responsive">
                             <p:dataTable size="small" stripedRows="true" showGridlines="true"  id="dataTable1" rows="10"   
                                          value="#{requisicionBean.listaRequisiciones}"
                                          var="currentRow" styleClass="table table-striped">
-                                <f:facet name="header"><h:outputText value="Requisiciones sin solicitar"/></f:facet>
-                                <p:column style="text-align: center;">
-                                    <h:outputText value="#{currentRow['id']}"/>
+                                <f:facet name="header">
+                                    <div class="d-flex justify-content-between ">
+                                        <h:outputText value="Requisiciones sin solicitar"/>                                    
+                                        <span>
+                                        <h:outputText value="*PS: requisiciones para productos y servicios." style="font-size: 10px" styleClass="col-12 col-xs-12 f11gris"/>
+                                        <h:outputText value="*AF: requsiciones para activos fijos." style="font-size: 10px"  styleClass="col-12 col-xs-12 f11gris"/>
+                                        <h:outputText value="*AI: requisiciones para modificar." style="font-size: 10px"  styleClass="col-12 col-xs-12 f11gris"/>
+                                        </span>
+                                    </div>
+                                    
+                                </f:facet>
+                                <p:column style="text-align: center;">                                    
+                                     <p:commandLink value="#{currentRow['id']}"                                                   
+                                                   action="#{requisicionBean.seleccionarRequisicion(currentRow.id)}"
+                                                   styleClass="text-dark"
+                                                   title="Click aqui para ver y agregar Items..." 
+                                                   update="form1:tbRequi form1:lblReq" process="@this">
+                                    </p:commandLink>
                                     <f:facet name="header">
                                         <h:outputText value="#{msgs['sistema.id']}"/>
                                     </f:facet>
                                 </p:column>
                                 <p:column style="text-align: center;">                                    
-                                        <h:outputText   value="#{currentRow['rechazada'] ? 'Si' : 'No'}"/>                                    
+                                    <h:outputText   value="#{currentRow['rechazada'] ? 'Si' : 'No'}"/>                                    
                                     <f:facet name="header">
                                         <h:outputText value="#{msgs['sistema.devuelta']}"/>
                                     </f:facet>
                                 </p:column>
                                 <p:column style="text-align: center;">                                    
-                                        <h:outputText value="#{currentRow['compania']}"/>                                    
+                                    <h:outputText value="#{currentRow['compania']}"/>                                    
                                     <f:facet name="header">
                                         <h:outputText value="#{msgs['sistema.compania.abreviatura']}"/>
                                     </f:facet>

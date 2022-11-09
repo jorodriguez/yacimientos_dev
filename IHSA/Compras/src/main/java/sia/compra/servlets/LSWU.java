@@ -91,6 +91,7 @@ public class LSWU extends HttpServlet {
                     int t = Integer.parseInt(request.getParameter("ZWZCA"));
                     
                     String rutaPag = request.getParameter("ZWZPA");
+                                                          
                     
                     CampoUsuarioPuestoVo campoUsuarioPuestoVo = apCampoUsuarioRhPuestoImpl.findByUsuarioCampo(t > 0 ? t : usuario.getApCampo().getId(), usuario.getId());
                     

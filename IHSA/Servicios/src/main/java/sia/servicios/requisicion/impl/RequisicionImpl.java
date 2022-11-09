@@ -274,6 +274,7 @@ public class RequisicionImpl extends AbstractFacade<Requisicion> {
                     .append("                        	       r.proveedor,             ")
                     .append("                        	       r.motivo_cancelo,")
                     .append("                        	       r.motivo_finalizo,")
+                    .append("                        	       r.ap_campo,")
                     .append("                        	       (select EXISTS( ")
                     .append("                        				select ")
                     .append("                         			from si_usuario_rol urol inner join si_rol rol on rol.id = urol.si_rol")

@@ -22,9 +22,11 @@ import sia.compra.orden.bean.backing.OrdenBean;
 import sia.modelo.Orden;
 import sia.modelo.Requisicion;
 import sia.modelo.sgl.vo.RequisicionVO;
+import sia.modelo.sistema.vo.Sesion;
 import sia.servicios.orden.impl.OrdenImpl;
 import sia.servicios.proveedor.impl.PvProveedorSinCartaIntencionImpl;
 import sia.servicios.requisicion.impl.RequisicionImpl;
+import sia.util.Env;
 import sia.util.UtilLog4j;
 
 /**
@@ -37,6 +39,7 @@ import sia.util.UtilLog4j;
 @ViewScoped
 public class EstiloBean implements Serializable {
 
+    
     //------------------------------------------------------
     public static final String BEAN_NAME = "estiloBean";
     //
@@ -58,6 +61,18 @@ public class EstiloBean implements Serializable {
      */
     public EstiloBean() {
     }
+    
+    /*
+    FIXME: aun falta trabajar en esta parte, obtener el valor del ENV y setearlo al codigo y ejecutar la busqueda
+    */
+    /*public void init(){
+        System.out.println(" @@@init consulta");        
+        
+        //Integer parametro = Env.getContext(usuarioBean.getCtx(), "");          
+        //Env.setContext(usuarioBean.getCtx(), "ORDEN_ID", 0);
+        //Env.removeContext(usuarioBean.getCtx(), "ORDEN_ID");        
+    }*/
+    
 //Campos
 
     public List getListaOpciones() {

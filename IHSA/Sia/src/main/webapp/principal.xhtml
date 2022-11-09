@@ -195,6 +195,7 @@
                     </h:form>
                 </div>
             </aside>
+
             <div class="main-content position-relative max-height-vh-100 h-100 ">                
                 <!-- header  -->                               
 
@@ -211,71 +212,11 @@
                                 </a>
                             </div>
                         </nav>
-                        <h:form>
-                            <div class="collapse navbar-collapse me-md-0 me-sm-4 mt-sm-0 mt-2" id="navbar">
-                                <div class="ms-md-auto pe-md-3 d-flex align-items-center">
 
-                                    <div class="input-group">
-                                        <span class="input-group-text text-body"><i class="fas fa-search" aria-hidden="true"></i></span>                                        
-                                        <p:inputText   id="txt_consecutivo" styleClass="form-control" 
-                                                       placeholder="Requisición / Orden / Pedido"
-                                                       value="#{principalViewBean.consecutivo}"                                                                                                              
-                                                       />                                    
-                                        #{principalViewBean.requisicion.consecutivo}
-                                    </div>                                
-                                </div>
-                                <ul class="navbar-nav justify-content-end">
-                                    <li class="nav-item d-flex align-items-center">                                        
-                                        <p:commandButton onclick="PF('modal_busqueda_requi').show()"                                                        
-                                                         actionListener="#{principalViewBean.buscar(actionListener)}"
-                                                         value="buscar"
-                                                       />
+                        <!--
+                        FIXME : PENDOENTE
+                        <ui:include src="/vistas/administracion/pantallaPrincipal/busqueda.xhtml"/>-->
 
-                                        <p:remoteCommand action="#{principalViewBean.buscar()}"
-                                                         process="@this,txt_consecutivo"
-                                                         name="remoteBuscar"
-
-                                                         />
-
-
-
-                                    </li>                     
-                                    <!--<li class="nav-item px-3 d-flex align-items-center">
-                                        <a href="javascript:;" class="nav-link text-white p-0">
-                                            <i class="fa fa-cog fixed-plugin-button-nav cursor-pointer"></i>
-                                        </a>
-                                    </li>-->
-
-                                </ul>
-                            </div>
-
-                            <p:dialog widgetVar="modal_busqueda_requi" modal="true" draggable="false" closable="false" resizable="false" showHeader="false">
-                                <div class="text-center">
-                                    <i class="pi pi-spin pi-spinner loading-icon" aria-hidden="true"></i>
-                                    
-                                     prov 
-                                     <!--    <ui:include src="/vistas/administracion/pantallaPrincipal/requisicionPreview.xhtml" />-->
-                                    
-                                </div>
-                            </p:dialog>
-
-                            <!--<div class="modal fade" id="modal_busqueda_requi" tabindex="-1" role="dialog" aria-labelledby="modal-default" aria-hidden="true">
-                                <div class="modal-dialog modal-lg  modal-dialog-centered " role="document">
-                                    <div class="modal-content">                                               
-                                        <div class="modal-body">                                                            
-                                            <ui:fragment id="panel">
-                                                profe #{principalViewBean.requisicion.proveedor}
-                                                
-                                            </ui:fragment>
-                                        </div>
-                                        <div class="modal-footer p-1 m-1 mx-auto">                                                    
-                                            <button type="button" class="btn btn-link  ml-auto" data-bs-dismiss="modal">Cerrar</button>
-                                        </div>
-
-                                    </div>
-                                </div>
-                            </div>-->
-                        </h:form>
                     </div>
                 </nav>
 
@@ -426,9 +367,9 @@
                 <ui:include src="/vistas/administracion/pantallaPrincipal/accesos.xhtml.xhtml"/>
 
                 <!-- modulos -->
-                <div class="container-fluid">                    
+                <div class="container-fluid pt-3 pb-3">                    
                     <ui:repeat value="#{sesion.listaModulos}" var="modulo">
-                        <div class="row mt-3">
+                        <div class="row ">
                             <ui:fragment rendered="${modulo.ruta == null and modulo.rutaServlet != null and modulo.mapOpcion.size() gt 0}">                                
                                 <div class="card h-100 ">
                                     <div class="card-header pb-0 p-3">
@@ -497,7 +438,7 @@
 
 
                 <!-- últimas 3 requisiciones  -->               
-                <div class="container-fluid ">       
+                <div class="container-fluid " style="visibility: #{principalViewBean.listaRequisiciones.size() == 0 ? 'hidden':'visible'} ">       
                     <div class="row pb-2">
                         <h5>Histórico de requisiciones</h5>
                         <span class="text-sm mt-0 pt-0">últimos 3 registros</span>
@@ -507,8 +448,8 @@
                     <!--<ui:param name="listaRequisiciones" value="#{principalViewBean.listaRequisiciones}" />-->
                 </ui:include>
 
-                <!-- últimas 3 ordenes -->               
-                <div class="container-fluid ">       
+                <!-- últimas 3 ordenes -->                               
+                <div class="container-fluid" style="visibility: #{principalViewBean.listaOrdenes.size() == 0 ? 'hidden':'visible'} ">       
                     <div class="row pb-2 pt-4">
                         <h5>Histórico de ordenes de C/S</h5>
                         <span class="text-sm mt-0 pt-0">últimos 3 registros</span>
@@ -516,40 +457,10 @@
                 </div>
                 <ui:include src="/vistas/administracion/pantallaPrincipal/historialOrden.xhtml"/>
 
+                <!-- footer -->
+                <ui:include src="/vistas/administracion/pantallaPrincipal/footer.xhtml"/>
+                <!-- footer -->
             </div>
-
-
-            <!-- footer -->
-            <!--<footer class="footer pt-3  ">
-                <div class="container-fluid">
-                    <div class="row align-items-center justify-content-lg-between">
-                        <div class="col-lg-6 mb-lg-0 mb-4">
-                            <div class="copyright text-center text-sm text-muted text-lg-start">
-                                © Iberoamericana de hidrocarburos S.A de C.V. <i class="fa fa-heart"></i> by
-                                <a href="https://www.creative-tim.com" class="font-weight-bold" target="_blank">Creative Tim</a>
-                                for a better web.
-                            </div>
-                        </div>
-                        <div class="col-lg-6">
-                            <ul class="nav nav-footer justify-content-center justify-content-lg-end">
-                                <li class="nav-item">
-                                    <a href="https://www.creative-tim.com" class="nav-link text-muted" target="_blank">Creative Tim</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="https://www.creative-tim.com/presentation" class="nav-link text-muted" target="_blank">About Us</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="https://www.creative-tim.com/blog" class="nav-link text-muted" target="_blank">Blog</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="https://www.creative-tim.com/license" class="nav-link pe-0 text-muted" target="_blank">License</a>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </footer>-->
-            <!-- footer -->
 
 
             <!-- Cambiar de bloque -->
@@ -608,10 +519,10 @@
         </c:if>
 
 
-        <script src="/resources/js/jquery.min.js"></script>
+        <!--<script src="/resources/js/jquery.min.js"></script>-->
         <script>
-                                                   $.noConflict(true);
-                                                   // Code that uses other library's $ can follow here.
+            $.noConflict(true);
+            // Code that uses other library's $ can follow here.
         </script>               
         <script src="/resources/js/jquery.overlayScrollbars.min.js"></script>
         <!--<script src="https://demos.creative-tim.com/argon-dashboard-pro/assets/js/core/bootstrap.min.js"></script>-->
