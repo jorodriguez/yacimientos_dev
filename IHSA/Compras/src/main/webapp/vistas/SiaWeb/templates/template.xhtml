@@ -46,9 +46,12 @@
             .ui-autocomplete-panel {
                 z-index: 100000033 !important;
             }
+            .ui-datatable-header{
+                padding: 5px  !important;
+            }
         </style>
     </h:head>
-    <h:body  class="hold-transition sidebar-mini layout-fixed">
+    <h:body  class="hold-transition  sidebar-mini layout-fixed">
         <div class="wrapper">
             <!--f:loadBundle basename="messages" var="msg" /-->
             <c:if test="#{not empty usuarioBean.usuarioConectado}">
@@ -58,10 +61,10 @@
                 <p:dialog id="dlgProcesando" widgetVar="statusDialog" modal="true" draggable="false"                          
                           closable="false" resizable="false" showHeader="false" style="z-index: 100000045;"
                            >
-                    <img src="/resources/img/wait.gif" width="140px"  alt="Procesando . . . "/>
+                    <img src="/resources/img/wait.gif"  width="140px"  alt="Procesando . . . "/>
                 </p:dialog>
                 <!-- Navbar -->
-                <nav class="main-header navbar navbar-expand navbar-white navbar-light">                  
+                <nav class="main-header navbar navbar-expand navbar-whit navbar-ligh navbar-info">                  
                     <!-- Right navbar links -->
                     <h:form class="navbar-nav ml-auto">
                         <ul class="navbar-nav ml-auto">
@@ -69,34 +72,39 @@
                         </ul>
                     </h:form>
                 </nav>
-                <!-- Main Sidebar Container -->
-                <aside class="main-sidebar sidebar-light-primary elevation-1">
+                <!-- Main Sidebar Container sidebar-light-dark sidebar-light-dark -->
+                <aside class="main-sidebar sidebar-light-dark  elevation-1 ">
                     <!-- Brand Logo -->
-                    <div class="col-10 " style="text-align: center;">
+                    <div class="col-10 d-flex justify-content-center" >
                     <img src="/Compras/MostraImagen?ZWZ2W=#{usuarioBean.compania.rfc}" 
-                         style="width: 97px; height: 49px;" alt="SIA"  />
-                        
+                         style="width: 97px; height: 40px;" alt="SIA"  />                        
                     </div>
+                    
                     <!-- Sidebar -->
+                    <!---->
                     <div class="sidebar">
-                        <div class="user-panel mt-3 pb-3 mb-3 d-flex">
-                            <div class="image">
-                                <span class="fa fa-user img-circle elevation-2"/>                                     
+                        <div class="user-panel">                                                                            
+                            <div class="media d-flex justify-content-start ">
+                                <p:avatar label="#{usuarioBean.usuarioConectado.nombre}"                                                                                                                                            
+                                          styleClass="ml-2  bg-info w-80 h-80 border-radius d-flex justify-content-top align-items-center align-self-center align-content-center"                                              
+                                          />
+                                <div class="media-body mt-3 ml-1 mb-3 mr-1">
+                                    <p class="m-0 p-0 ">#{usuarioBean.usuarioConectado.nombre}</p>
+                                    <span class="text-xs text-muted">#{usuarioBean.puesto}</span>
+                                </div>
                             </div>
-                            <div class="info">
-                                <ui:include src="datosUsuario.xhtml"/>
-                            </div>
+                            <!--<ui:include src="datosUsuario.xhtml"/>-->                            
                         </div>
                         <!-- SidebarSearch Form -->
                         <h:form id="frmBuscar">
-                            <div class="container">
-                                <div class="input-group" data-widget="sidebar-search">
-                                    <p:selectOneRadio  value="#{usuarioBean.seleccion}" styleClass="custom-form" 
+                            <div class="container mt-2 ">
+                                <div class="input-group d-flex justify-content-center" data-widget="sidebar-search">
+                                    <p:selectOneRadio  value="#{usuarioBean.seleccion}" styleClass="custom-form"                                                                                                               
                                                        >
                                         <f:selectItem itemLabel="Req." itemValue="REQUISICIÓN."/>
                                         <f:selectItem itemLabel="OC/S" itemValue="OCS"/>
                                     </p:selectOneRadio>
-                                    <div class="input-group">
+                                    <div class="input-group mt-1">
                                         <p:inputText id="inpCodigo"  value="#{usuarioBean.codigo}" class="form-control"
                                                      placeholder="22-0001" />
                                         <p:commandLink id="btnBuscar" class="btn btn-sidebar"
@@ -107,19 +115,22 @@
                                         </p:commandLink>
                                     </div>
                                 </div>
-                                <div class="input-group-append">
-                                    <p:commandLink  action="/vistas/SiaWeb/Orden/buscarAvanzada.xhtml?faces-redirect=true" 
-                                                    ajax="false"  value="Busqueda avanzada"/>
+                                <div class="input-group-append d-flex justify-content-end">                                    
+                                    <p:commandLink styleClass="text-xs p-2" action="/vistas/SiaWeb/Orden/buscarAvanzada.xhtml?faces-redirect=true"                                                    
+                                                    ajax="false" >                                            
+                                            <span>Hacer una busqueda avanzada</span>
+                                            <span class="fa fa-arrow-right text-secondary shadow" style="font-weight: bold; color: #303030; "></span>
+                                    </p:commandLink>
                                 </div>
                             </div>
                         </h:form>
 
                         <!-- Sidebar Menu -->
-                        <nav class="mt-2">
-                            <li class="nav-link">
-                                <h4 style="color: #337ab7; cursor: pointer; font-weight: bold;" 
+                        <nav >
+                            <li class="nav-link bg-light p-0 pr-1 ">
+                                <h5 style="color: #337ab7; cursor: pointer; font-weight: bold;" 
                                     onclick="$(modalBloqueActivo).modal('show');">
-                                    #{usuarioBean.usuarioConectado.apCampo.nombre}</h4>
+                                    <i class="fa fa-"/> #{usuarioBean.usuarioConectado.apCampo.nombre}</h5>                                    
                             </li>
                             <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
                                 <h:form id="frmMenu"  class="nav-item">
@@ -135,9 +146,10 @@
                 <div class="content-wrapper">
                     <!-- Main content -->
                     <section class="content">
-                        <h3 style="text-align: center; font-weight: bold; color: #213c76" >    
+                        <!-- style="text-align: center; font-weight: bold; color: #213c76"-->
+                        <h4 class="text-center pt-2  font-weight-bold " style="color: #2B416F" >    
                             <ui:insert name="tituloPagina"/>
-                        </h3>
+                        </h4>
                         <div  class="row">
                             <p:messages id="messages" showDetail="false" closable="true" 
                                         class="col-12">
@@ -148,21 +160,15 @@
                             <h:outputText id="mensajeError"/>
                             Por favor pongase en contacto con el equipo de desarrollo al correo soportesia@ihsa.mx
                         </div>
-                        <div  class="col-12">
+                        <div  class="col-12 ">
                             <ui:insert name="contenido"/>                    
                         </div>
                     </section>
                 </div>
+                
                 <!-- /.content-wrapper -->
-                <footer class="main-footer">
-                    <div class="pull-right hidden-xs">
-                        <b>Version</b> 1.0
-                    </div>
-                    <strong><a href="http://www.ihsa.mx" target="_blank"
-                               rel="noopener noreferrer">Iberoamericana de Hidrocarburos S.A.</a>
-                    </strong>
-                </footer>
-
+                <ui:include src="pie.xhtml"/>
+        
                 <!-- Control Sidebar -->
                 <aside class="control-sidebar control-sidebar-dark">
                     <!-- Control sidebar content goes here -->

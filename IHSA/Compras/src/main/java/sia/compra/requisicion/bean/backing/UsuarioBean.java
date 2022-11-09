@@ -96,9 +96,9 @@ public class UsuarioBean implements Serializable {
     @Setter
     private String paginaInicial;
     //
-    @Getter
+  /*  @Getter
     @Setter
-    private String paramExtra;
+    private String paramExtra;*/
     //
     private String puesto;
     @Getter
