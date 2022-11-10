@@ -1585,8 +1585,15 @@ public class SolicitudViajeBean implements Serializable {
         setFechaRegreso(new Date());
 
         solicitudViajeBeanModel.setPanelSV(Constantes.TRUE);
-
+             
         // return "/vistas/sgl/viaje/solicitud/solicitudViaje";
+    }
+    
+        public String cancelarCapturaSolicitudViaje() throws SIAException{
+            
+            reiniciarComponentes();
+            
+            return "/principal.xhtml?faces-redirect=true;";
     }
 
     public void visitoAEmpleado() {

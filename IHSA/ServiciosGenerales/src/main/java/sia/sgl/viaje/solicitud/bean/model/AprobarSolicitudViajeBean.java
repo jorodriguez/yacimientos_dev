@@ -11,6 +11,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 import javax.inject.Named;
 import javax.faces.view.ViewScoped;
@@ -184,9 +185,9 @@ public class AprobarSolicitudViajeBean implements Serializable {
         ArrayList<String> cod = new ArrayList<>();
         boolean aprobada = false;
         ArrayList<String> jusCod = new ArrayList<>();
-
+        
         for (SolicitudViajeVO vo : listSolicitudesVo) {
-            if (vo.isSelect()) {
+            if (vo.isSelect()) {                
                 if (siManejoFechaImpl.validaFechaSalidaViaje(vo.getFechaSalida(), vo.getHoraSalida())) {
                     if (vo.getViajeros().size() > 0) {
                         if (vo.getIdSgTipoEspecifico() == Constantes.TIPO_ESPECIFICO_SOLICITUD_TERRESTRE) {
@@ -223,9 +224,10 @@ public class AprobarSolicitudViajeBean implements Serializable {
 
             }
         }
-        codigos += ", " + codigos;
-        if (aprobada) {
-            FacesUtils.addInfoMessage("Se Aprobo la(s) Solicitud(es) siguiente(s): " + codigos);
+        codigos += ", " + codigos;        
+        //if (aprobada) {
+        if(cod.size() > 0){
+            FacesUtils.addInfoMessage("Se Aprobo la(s) Solicitud(es) siguiente(s): " +  cod.stream().collect(Collectors.joining(",")));
             mostrarSolicitudesByAprobar();
         } else {
             FacesUtils.addErrorMessage("ocurrio un error inesperado favor de comunicarse con el equipo del SIA al correo soportesia@ihsa.mx");
