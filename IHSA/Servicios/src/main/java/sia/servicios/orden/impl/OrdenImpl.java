@@ -2714,7 +2714,7 @@ public class OrdenImpl extends AbstractFacade<Orden> {
     private void copiarArchivo(String pathOrigen, String pathDestino) throws Exception {
         File copied = new File(pathDestino);
         File original = new File(pathOrigen);
-        try (InputStream in = new BufferedInputStream(new FileInputStream(original)); OutputStream out = new BufferedOutputStream(new FileOutputStream(copied))) {
+        try ( InputStream in = new BufferedInputStream(new FileInputStream(original));  OutputStream out = new BufferedOutputStream(new FileOutputStream(copied))) {
             byte[] buffer = new byte[1024];
             int lengthRead;
             while ((lengthRead = in.read(buffer)) > 0) {
@@ -2762,7 +2762,7 @@ public class OrdenImpl extends AbstractFacade<Orden> {
     @Trace(dispatcher = true)
     public File generarExcel(Orden orden, File fileTemp) throws Exception {
 
-        try (InputStream inputDocument = new FileInputStream(fileTemp);) {
+        try ( InputStream inputDocument = new FileInputStream(fileTemp);) {
             if (orden != null
                     && orden.getCompania() != null
                     && !Strings.isNullOrEmpty(orden.getCompania().getRfc())) {
@@ -2799,7 +2799,7 @@ public class OrdenImpl extends AbstractFacade<Orden> {
         copiarArchivo(pathOrigen, pathDestino);
         fileTemp = new File(pathDestino);
         if (fileTemp.exists()) {
-            try (InputStream inputDocument = new FileInputStream(fileTemp);) {
+            try ( InputStream inputDocument = new FileInputStream(fileTemp);) {
                 int i = 22;
                 OPCPackage pkg = OPCPackage.open(inputDocument);
                 XSSFWorkbook wb = new XSSFWorkbook(pkg);
@@ -2810,7 +2810,7 @@ public class OrdenImpl extends AbstractFacade<Orden> {
                 } else {
                     cargarExcelPS(myWorksheet, wb, orden, i);
                 }
-                try (OutputStream outputFile = new FileOutputStream(fileTemp);) {
+                try ( OutputStream outputFile = new FileOutputStream(fileTemp);) {
                     wb.write(outputFile);
                     outputFile.close();
                     pkg.close();
@@ -3006,6 +3006,8 @@ public class OrdenImpl extends AbstractFacade<Orden> {
             setValueExcelFormulas(fileExcel, wb, 0, i, 12);
             setValueExcelFormulas(fileExcel, wb, 0, i, 13);
         }
+        //Agregar el usuario beneficiado
+        setValueExcel(fileExcel, linea.getUsuarioBeneficiado(), 0, i, 17);//usuario beneficiado
 
         if (linea.getArtDescripcion().length() <= 250) {
             setValueExcel(fileExcel, linea.getArtDescripcion(), 0, i, 3);//Descripción
@@ -3116,9 +3118,9 @@ public class OrdenImpl extends AbstractFacade<Orden> {
             if (orden.getApCampo().getCodeproy() != null && !orden.getApCampo().getCodeproy().isEmpty()) {
                 setValueExcel(fileExcel, orden.getApCampo().getCodeproy(), 0, i, 16);//ProyCode
             }
-
         }
-
+        //Agregar el usuario beneficiado
+        setValueExcel(fileExcel, linea.getUsuarioBeneficiado(), 0, i, 17);//usuario beneficiado
         if (linea.getArtDescripcion().length() <= 250) {
             setValueExcel(fileExcel, linea.getArtDescripcion(), 0, i, 3);//Descripción
         } else {

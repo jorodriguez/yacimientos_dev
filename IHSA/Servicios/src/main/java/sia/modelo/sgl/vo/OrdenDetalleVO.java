@@ -92,6 +92,9 @@ public class OrdenDetalleVO implements Serializable {
     private int idRequisicionDetalle;
     
     private String detDescripcion;
+    @Getter
+    @Setter
+    private String usuarioBeneficiado;
 
     public String getArtDescripcion() {
         

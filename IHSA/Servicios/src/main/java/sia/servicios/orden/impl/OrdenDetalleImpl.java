@@ -48,8 +48,8 @@ import sia.util.UtilLog4j;
  * @version 1.0
  * @author-mail new_nick_name@hotmail.com @date 13/10/2009
  */
-@Stateless 
-public class OrdenDetalleImpl extends AbstractFacade<OrdenDetalle>{
+@Stateless
+public class OrdenDetalleImpl extends AbstractFacade<OrdenDetalle> {
 
     @PersistenceContext(unitName = "Sia-ServiciosPU")
     private EntityManager em;
@@ -57,7 +57,6 @@ public class OrdenDetalleImpl extends AbstractFacade<OrdenDetalle>{
     @Inject
     DSLContext dslCtx;
 
-    
     @Override
     protected EntityManager getEntityManager() {
         return em;
@@ -79,34 +78,28 @@ public class OrdenDetalleImpl extends AbstractFacade<OrdenDetalle>{
     @Inject
     private CvConvenioArticuloImpl cvConvenioArticuloLocal;
 
-    
     public void crear(OrdenDetalle ordenDetalle) {
         create(ordenDetalle);
     }
 
-    
     public void editar(OrdenDetalle ordenDetalle) {
         edit(ordenDetalle);
     }
 
-    
     public OrdenDetalle findLazy(int id) {
         return (OrdenDetalle) em.createQuery("SELECT o FROM OrdenDetalle o WHERE o.id = :id ", OrdenDetalle.class).setParameter("id", id).getSingleResult();
     }
 
-    
     public List<OrdenDetalle> getItemsPorOrden(Object idOrden) {
         return em.createQuery("SELECT o FROM OrdenDetalle o WHERE o.orden.id = :orden ORDER BY o.id ASC").setParameter("orden", idOrden).getResultList();
     }
 
-    
     public List<OrdenDetalle> getItemsPorOrden(Object idOrden, int agrupadorID) {
         return em.createQuery("SELECT o FROM OrdenDetalle o WHERE o.orden.id = :orden and o.multiproyectoId = :multiproyectoID ORDER BY o.id ASC")
                 .setParameter("orden", idOrden)
                 .setParameter("multiproyectoID", agrupadorID).getResultList();
     }
 
-    
     @Trace
     public List<OrdenDetalleVO> itemsPorOrden(int idOrden) {
         StringBuilder sb = new StringBuilder();
@@ -146,15 +139,15 @@ public class OrdenDetalleImpl extends AbstractFacade<OrdenDetalle>{
                     o.setOcProductoCode((String) objects[18]);
                     o.setArtNombre((String) objects[19]);
                     o.setArtID((Integer) objects[20] != null ? (Integer) objects[20] : 0);
-                    
-                    if(o.getArtID() == 0){
+
+                    if (o.getArtID() == 0) {
                         o.setArtNumeroParte((String) objects[49]);
-                        
-                        if(o.getArtUnidad() == null || o.getArtUnidad().isEmpty()){
+
+                        if (o.getArtUnidad() == null || o.getArtUnidad().isEmpty()) {
                             o.setArtUnidad((String) objects[50]);
                         }
                     }
-                    
+
                     o.setSelected(true);
                     o.setObservaciones((String) objects[21]);
                     o.setTextNav(objects[22] != null ? (String) objects[22] : Constantes.VACIO);
@@ -186,8 +179,10 @@ public class OrdenDetalleImpl extends AbstractFacade<OrdenDetalle>{
                     o.setIdRequisicionDetalle(objects[45] != null ? (Integer) objects[45] : Constantes.CERO);
                     o.setConvenio((String) objects[46]);
                     o.setIdConvenio((Integer) objects[47]);
-                    
+
                     o.setDetDescripcion((String) objects[48]);
+                    //
+                    o.setUsuarioBeneficiado((String) objects[51]);
 
                     lrd.add(o);
                 }
@@ -197,8 +192,7 @@ public class OrdenDetalleImpl extends AbstractFacade<OrdenDetalle>{
         }
         return lrd;
     }
-    
-    
+
     @Trace
     public List<OrdenDetalleVO> itemsPorOrdenEliminar(int idOrden) {
         StringBuilder sb = new StringBuilder();
@@ -239,15 +233,15 @@ public class OrdenDetalleImpl extends AbstractFacade<OrdenDetalle>{
                     o.setOcProductoCode((String) objects[18]);
                     o.setArtNombre((String) objects[19]);
                     o.setArtID((Integer) objects[20] != null ? (Integer) objects[20] : 0);
-                    
-                    if(o.getArtID() == 0){
+
+                    if (o.getArtID() == 0) {
                         o.setArtNumeroParte((String) objects[49]);
-                        
-                        if(o.getArtUnidad() == null || o.getArtUnidad().isEmpty()){
+
+                        if (o.getArtUnidad() == null || o.getArtUnidad().isEmpty()) {
                             o.setArtUnidad((String) objects[50]);
                         }
                     }
-                    
+
                     o.setSelected(true);
                     o.setObservaciones((String) objects[21]);
                     o.setTextNav(objects[22] != null ? (String) objects[22] : Constantes.VACIO);
@@ -279,9 +273,10 @@ public class OrdenDetalleImpl extends AbstractFacade<OrdenDetalle>{
                     o.setIdRequisicionDetalle(objects[45] != null ? (Integer) objects[45] : Constantes.CERO);
                     o.setConvenio((String) objects[46]);
                     o.setIdConvenio((Integer) objects[47]);
-                    
-                    o.setDetDescripcion((String) objects[48]);
 
+                    o.setDetDescripcion((String) objects[48]);
+                    //
+                    o.setUsuarioBeneficiado((String) objects[51]);
                     lrd.add(o);
                 }
             }
@@ -291,7 +286,6 @@ public class OrdenDetalleImpl extends AbstractFacade<OrdenDetalle>{
         return lrd;
     }
 
-    
     public List<OrdenDetalleVO> itemsPorOrdenMulti(Object idOrden) {
         StringBuilder sb = new StringBuilder();
         List<OrdenDetalleVO> lrd = null;
@@ -336,7 +330,8 @@ public class OrdenDetalleImpl extends AbstractFacade<OrdenDetalle>{
                     + " o.anio_presupuesto, "
                     + " coalesce(sum(o.descuento), 0),"
                     + " o.convenio_codigo, "
-                    + " COALESCE(o.convenio, 0) "
+                    + " COALESCE(o.convenio, 0), "
+                    + " o.usuario_beneficiado "
                     + " FROM Orden r "
                     + " inner join Orden_Detalle o ON o.ORDEN = r.ID "
                     + " left join oc_unidad_costo uc on uc.ID = o.OC_unidad_costo"
@@ -393,7 +388,8 @@ public class OrdenDetalleImpl extends AbstractFacade<OrdenDetalle>{
                     + " o.oc_codigo_subtarea, "
                     + " o.convenio_codigo, "
                     + " COALESCE(o.convenio, 0), "
-                    + " o.OBSERVACIONES  ");
+                    + " o.OBSERVACIONES , "
+                    + " o.usuario_beneficiado ");
 
             //
             List<Object[]> lo = em.createNativeQuery(sb.toString()).getResultList();
@@ -461,7 +457,6 @@ public class OrdenDetalleImpl extends AbstractFacade<OrdenDetalle>{
         return lrd;
     }
 
-    
     public int itemsPorOrdenMultiID(Object idOrden, int agrupadorID) {
         int ret = 0;
         StringBuilder sb = new StringBuilder();
@@ -505,7 +500,6 @@ public class OrdenDetalleImpl extends AbstractFacade<OrdenDetalle>{
         return ret;
     }
 
-    
     public List<OrdenDetalleVO> traerDetalleOrdenCompra(String cadena, String idUsuario, int idCampo) {
         try {
             List<OrdenDetalleVO> lod = null;
@@ -542,11 +536,10 @@ public class OrdenDetalleImpl extends AbstractFacade<OrdenDetalle>{
         }
 
     }
-    
-    
+
     public List<OrdenVO> historicoDetalleOrden(int idInv, int idCampo) {
         List<OrdenVO> lod = null;
-        try {            
+        try {
             String s = " select o.fecha, o.consecutivo, p.nombre, u.nombre, d.precio_unitario, m.nombre "
                     + " , cast(substring(o.consecutivo from position('-' in o.consecutivo)+1 for (char_length(o.consecutivo)-position('-' in o.consecutivo))) as integer) as xx "
                     + " from orden_detalle d "
@@ -566,7 +559,7 @@ public class OrdenDetalleImpl extends AbstractFacade<OrdenDetalle>{
 
             UtilLog4j.log.fatal(this, "Q: ref pal: " + s);
             List<Object[]> lo = em.createNativeQuery(s).getResultList();
-            if (lo != null) {                
+            if (lo != null) {
                 lod = new ArrayList<OrdenVO>();
                 for (Object[] objects : lo) {
                     lod.add(castHistoricoDetalleOrden(objects));
@@ -576,7 +569,7 @@ public class OrdenDetalleImpl extends AbstractFacade<OrdenDetalle>{
             UtilLog4j.log.info(this, "Ocurrio un error al recuperar los items por cadena " + e.getMessage());
             lod = null;
         }
-        
+
         return lod;
 
     }
@@ -618,16 +611,15 @@ public class OrdenDetalleImpl extends AbstractFacade<OrdenDetalle>{
             o.setEnCatalogo((Boolean) objects[14]);
             o.setArtNombre((String) objects[15]);
             o.setArtUnidad((String) objects[16]);
-            o.setTextNav((String) objects[17]);            
+            o.setTextNav((String) objects[17]);
 
         } catch (Exception e) {
             UtilLog4j.log.fatal(this, "Ocurrio un error + + + + + ++ " + e.getMessage());
-            o =  null;
+            o = null;
         }
         return o;
     }
 
-    
     public void guardarItem(OrdenDetalleVO ordenDetalleVO, int idOrden, String idSesion) {
         OrdenDetalle od = new OrdenDetalle();
         Orden orOrigen = ordenRemote.find(idOrden);
@@ -661,7 +653,6 @@ public class OrdenDetalleImpl extends AbstractFacade<OrdenDetalle>{
         create(od);
     }
 
-    
     @Trace
     public boolean guardarListaItems(List<RequisicionDetalleVO> listaAuto, int idOrden, String idSesion, String convenio) {
         double total = 0.0;
@@ -704,7 +695,7 @@ public class OrdenDetalleImpl extends AbstractFacade<OrdenDetalle>{
                 ordenDetalle.setMultiproyectoId(requisicionDetalleVO.getMultiproyectoId());
 
                 ordenDetalle.setCantidad(requisicionDetalleVO.getCantidadAutorizada());
-                if (TipoRequisicion.PS.toString().equals(orOrigen.getTipo()) 
+                if (TipoRequisicion.PS.toString().equals(orOrigen.getTipo())
                         || ("C".equals(orOrigen.getApCampo().getTipo()))) {
                     ordenDetalle.setOcTarea(requisicionDetalleVO.getOcTarea());
                     ordenDetalle.setOcUnidadCosto(requisicionDetalleVO.getOcUnidadCosto() != null ? requisicionDetalleVO.getOcUnidadCosto() : orOrigen.getOcUnidadCosto());
@@ -767,7 +758,6 @@ public class OrdenDetalleImpl extends AbstractFacade<OrdenDetalle>{
         return total;
     }
 
-    
     public boolean tieneInvArticulo(int idOrden, boolean onlyInvArticulo) {
         boolean tiene = false;
         try {
@@ -801,6 +791,7 @@ public class OrdenDetalleImpl extends AbstractFacade<OrdenDetalle>{
                 + " COALESCE(o.oc_presupuesto, 0), pres.codigo, pres.nombre, COALESCE(o.mes_presupuesto, 0), COALESCE(o.oc_codigo_tarea, 0),"
                 + " COALESCE(o.oc_codigo_subtarea, 0), COALESCE(o.anio_presupuesto, 0), "
                 + " o.requisicion_detalle, o.convenio_codigo, COALESCE(o.convenio, 0), o.descripcion, o.codigo, (select x.nombre from si_unidad x where x.id = o.si_unidad) "
+                + " , o.usuario_beneficiado"
                 + " FROM Orden r "
                 + "   inner join Orden_Detalle o ON o.ORDEN = r.ID  and o.eliminado = 'False' "
                 + "   left join oc_unidad_costo uc on uc.ID = o.OC_unidad_costo"
@@ -820,7 +811,6 @@ public class OrdenDetalleImpl extends AbstractFacade<OrdenDetalle>{
         return sb.toString();
     }
 
-    
     public void actualizarItem(OrdenDetalleVO ordenDetalleVO, String idSesion, int fromOrdenID, int toOrdenID) {
         OrdenDetalle od;
         try {
@@ -876,19 +866,16 @@ public class OrdenDetalleImpl extends AbstractFacade<OrdenDetalle>{
         edit(od);
     }
 
-    
     public double traerTotalOrden(int orden) {
         String s = "select coalesce(sum(importe) - SUM(DESCUENTO), 0) from orden_detalle where orden = " + orden + " and eliminado = false ";
         return (Double) em.createNativeQuery(s).getSingleResult();
     }
 
-    
     public double traerTotalDescuentoOrden(int orden) {
         String s = "select coalesce(SUM(DESCUENTO), 0) from orden_detalle where orden = " + orden + " and eliminado = false ";
         return (Double) em.createNativeQuery(s).getSingleResult();
     }
 
-    
     public void agragarMonedaItems(List<OrdenDetalleVO> items, int moneda, String sesion) {
         for (OrdenDetalleVO item : items) {
             OrdenDetalle od = find(item.getId());
@@ -900,7 +887,6 @@ public class OrdenDetalleImpl extends AbstractFacade<OrdenDetalle>{
         }
     }
 
-    
     public List<OrdenDetalleVO> traerDetalleOrdenAgrupadoMultiProyecto(int idOrden) {
         List<OrdenDetalleVO> lista = null;
         String sql
@@ -934,10 +920,10 @@ public class OrdenDetalleImpl extends AbstractFacade<OrdenDetalle>{
     private OrdenDetalleVO castMultiProyecto(Object[] obj) {
         OrdenDetalleVO odvo = new OrdenDetalleVO();
         odvo.setArtNombre((String) obj[0]);
-        odvo.setTextNav(obj[1] != null ? (String) obj[1] : "");        
+        odvo.setTextNav(obj[1] != null ? (String) obj[1] : "");
         odvo.setCantidad((Double) obj[2]);
-        odvo.setCantidadFacturada(((BigDecimal) obj[3]));        
-        odvo.setPrecioUnitario((Double) obj[4]);        
+        odvo.setCantidadFacturada(((BigDecimal) obj[3]));
+        odvo.setPrecioUnitario((Double) obj[4]);
         odvo.setImporte((Double) obj[5]);
         odvo.setIdAgrupador((Integer) obj[6]);
         odvo.setSelected((Boolean) obj[7]);
@@ -946,7 +932,6 @@ public class OrdenDetalleImpl extends AbstractFacade<OrdenDetalle>{
         return odvo;
     }
 
-    
     public List<OrdenDetalleVO> traerPartidasNoFacturadaMultiProyecto(int idOrden) {
         String c = " select  articuloId, nombre, cantidad, precio, importe, multiproyecto from ( \n"
                 + " select art.id as articuloId, COALESCE(art.nombre, od.descripcion) as nombre, sum(od.cantidad) as cantidad, od.precio_unitario as precio, sum(od.importe) as importe, od.multiproyecto_id as multiproyecto \n"
@@ -979,7 +964,6 @@ public class OrdenDetalleImpl extends AbstractFacade<OrdenDetalle>{
         return lista;
     }
 
-    
     public OrdenDetalle itemsPorOrdenMultiID(int idOrden, int agrupadorID) {
         StringBuilder sb = new StringBuilder();
         try {
@@ -993,8 +977,7 @@ public class OrdenDetalleImpl extends AbstractFacade<OrdenDetalle>{
         }
         return null;
     }
-            
-    
+
     public String validarPresupuesto(int idOrden) {
         String msg = null;
         try {
@@ -1058,21 +1041,20 @@ public class OrdenDetalleImpl extends AbstractFacade<OrdenDetalle>{
         }
         return msg;
     }
-    
-    
+
     public void eliminarItem(int idPartida, int orderID, String idSesion, String motivo) {
         OrdenDetalle od;
         try {
             if (idPartida > Constantes.CERO) {
-                od = find(idPartida);                
-                if(od.getOrden().getId() == orderID){
+                od = find(idPartida);
+                if (od.getOrden().getId() == orderID) {
                     od.setEliminado(true);
                     od.setCancelo(new Usuario(idSesion));
                     od.setMotivoCancelar(motivo);
-                    od.setFechaCancelo(new Date());                                    
+                    od.setFechaCancelo(new Date());
                     edit(od);
-                }                                
-            } 
+                }
+            }
         } catch (Exception e) {
             UtilLog4j.log.error(e);
         }
