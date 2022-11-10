@@ -290,6 +290,7 @@ public class Sesion implements Serializable {
     public void completarCambioCampo(int idCampo) {
         ApCampo a = campoImpl.find(idCampo);
         this.getUsuario().setApCampo(a);
+        
         List<UsuarioRolVo> ur = siUsuarioRolImpl.traerRolPorUsuarioModulo(this.getUsuario().getId(), Constantes.MODULO_SGYL, idCampo);
 
         if (ur != null) {
@@ -332,6 +333,7 @@ public class Sesion implements Serializable {
             }
 
         }
+        System.out.println("setting to usuario "+getUsuario().getApCampo().getNombre());
         PrimeFaces.current().executeScript(";$(dialogoCambiarCampo).modal('hide');recargar(msg);");
         redireccionar("/ServiciosGenerales/");
     }
