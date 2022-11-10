@@ -16,6 +16,9 @@
         <link rel="stylesheet" href="/resources/css/adminlte.min.css" />
         <!-- overlayScrollbars -->
         <link rel="stylesheet" href="/resources/css/OverlayScrollbars.min.css"/>
+        <!-- general -->
+        <link rel="stylesheet" href="/resources/css/general.css" />
+        
 
         <!-- Google Font -->
         <link rel="stylesheet"
@@ -49,6 +52,8 @@
             .ui-datatable-header{
                 padding: 5px  !important;
             }
+            
+            
         </style>
     </h:head>
     <h:body  class="hold-transition  sidebar-mini layout-fixed">
@@ -56,15 +61,21 @@
             <!--f:loadBundle basename="messages" var="msg" /-->
             <c:if test="#{not empty usuarioBean.usuarioConectado}">
                 <p:ajaxStatus onstart="PF('statusDialog').show()" 
+                              delay="300"
                               onsuccess="PF('statusDialog').hide()" />
 
                 <p:dialog id="dlgProcesando" widgetVar="statusDialog" modal="true" draggable="false"                          
-                          closable="false" resizable="false" showHeader="false" style="z-index: 100000045;"
+                          closable="false" resizable="false" showHeader="false" style="z-index: 100000045; opacity: 0.8 !important;"
                            >
-                    <img src="/resources/img/wait.gif"  width="140px"  alt="Procesando . . . "/>
+                    <img  src="/resources/img/loader.svg"  width="140px"  alt="Procesando . . . "  />
                 </p:dialog>
                 <!-- Navbar -->
-                <nav class="main-header navbar navbar-expand navbar-whit navbar-ligh navbar-info">                  
+                <nav class="main-header navbar navbar-expand " style="background-color: #3CA0CC !important;">                  
+                    <ul class="navbar-nav  d-xl-none d-lg-none">
+                        <li class="nav-item">
+                            <a class="nav-link text-white " data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
+                        </li>
+                    </ul>
                     <!-- Right navbar links -->
                     <h:form class="navbar-nav ml-auto">
                         <ul class="navbar-nav ml-auto">
@@ -73,7 +84,7 @@
                     </h:form>
                 </nav>
                 <!-- Main Sidebar Container sidebar-light-dark sidebar-light-dark -->
-                <aside class="main-sidebar sidebar-light-dark  elevation-1 ">
+                <aside class="main-sidebar sidebar-light-dark text-white bg-menu-lateral  elevation-1 ">
                     <!-- Brand Logo -->
                     <div class="col-10 d-flex justify-content-center" >
                     <img src="/Compras/MostraImagen?ZWZ2W=#{usuarioBean.compania.rfc}" 
@@ -90,19 +101,20 @@
                                           />
                                 <div class="media-body mt-3 ml-1 mb-3 mr-1">
                                     <p class="m-0 p-0 ">#{usuarioBean.usuarioConectado.nombre}</p>
-                                    <span class="text-xs text-muted">#{usuarioBean.puesto}</span>
+                                    <span class="text-xs">#{usuarioBean.puesto}</span>
                                 </div>
                             </div>
                             <!--<ui:include src="datosUsuario.xhtml"/>-->                            
                         </div>
+                        
                         <!-- SidebarSearch Form -->
                         <h:form id="frmBuscar">
                             <div class="container mt-2 ">
                                 <div class="input-group d-flex justify-content-center" data-widget="sidebar-search">
-                                    <p:selectOneRadio  value="#{usuarioBean.seleccion}" styleClass="custom-form"                                                                                                               
+                                    <p:selectOneRadio  value="#{usuarioBean.seleccion}" styleClass="custom-form radios-busqueda"                                                                                                               
                                                        >
-                                        <f:selectItem itemLabel="Req." itemValue="REQUISICIÓN."/>
-                                        <f:selectItem itemLabel="OC/S" itemValue="OCS"/>
+                                        <f:selectItem itemLabel="Req." itemValue="REQUISICIÓN."  />
+                                        <f:selectItem itemLabel="OC/S" itemValue="OCS" />
                                     </p:selectOneRadio>
                                     <div class="input-group mt-1">
                                         <p:inputText id="inpCodigo"  value="#{usuarioBean.codigo}" class="form-control"
@@ -127,12 +139,12 @@
 
                         <!-- Sidebar Menu -->
                         <nav >
-                            <li class="nav-link bg-light p-0 pr-1 ">
-                                <h5 style="color: #337ab7; cursor: pointer; font-weight: bold;" 
+                            <li class="nav-link p-0  ">
+                                <h5 style="cursor: pointer; font-weight: bold;" 
                                     onclick="$(modalBloqueActivo).modal('show');">
                                     <i class="fa fa-"/> #{usuarioBean.usuarioConectado.apCampo.nombre}</h5>                                    
                             </li>
-                            <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+                            <ul class="nav nav-pills nav-sidebar flex-column"  data-widget="treeview" role="menu" data-accordion="false">
                                 <h:form id="frmMenu"  class="nav-item">
                                     <p:growl id="growl-sticky" for="sticky-key" showDetail="true" sticky="true" />
                                     <ui:include src="menuLateral.xhtml" />
