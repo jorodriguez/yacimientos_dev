@@ -35,9 +35,34 @@ public class PvProveedorEmpleado implements Serializable {
     @JoinColumn(name = "PROVEEDOR", referencedColumnName = "ID")
     @ManyToOne
     private Proveedor proveedor;
-    @Column(name = "REFERENCIA")
-    private String referencia;
-    //actualizacion 19/Marzo/2013
+    @JoinColumn(name = "SI_ADJUNTO", referencedColumnName = "ID")
+    @ManyToOne
+    private SiAdjunto siAdjunto;
+    @Column(name = "NUMERO_EMPLEADO")
+    private String numeroEmpleado;
+    @Column(name = "NSS")
+    private String nss;
+    @Column(name = "NOMBRE")
+    private String nombre;
+    @Column(name = "PUESTO")
+    private String puesto;
+    @Column(name = "FECHA_INGRESO")
+    @Temporal(TemporalType.DATE)
+    private Date fechaIngreso;
+    @Column(name = "FECHA_BAJA")
+    @Temporal(TemporalType.DATE)
+    private Date fechaBaja;
+    @Column(name = "SALARIO_DIARIO")
+    private Double salarioDiario;
+    @Column(name = "SALARIO_DIARIO_INTEGRADO")
+    private Double salarioDiarioIntegrado;
+    @Column(name = "FINIQUITO_FIRMADO")
+    private boolean finiquitoFirmado;
+    @Column(name = "PERSONAL_SINDICALIZADO")
+    private boolean personalSindicalizado;
+    @JoinColumn(name = "GENERO", referencedColumnName = "ID")
+    @ManyToOne
+    private Usuario genero;
     @Column(name = "FECHA_GENERO")
     @Temporal(TemporalType.DATE)
     private Date fechaGenero;
@@ -47,9 +72,6 @@ public class PvProveedorEmpleado implements Serializable {
 
     @Column(name = "ELIMINADO")
     private boolean eliminado;
-    @JoinColumn(name = "GENERO", referencedColumnName = "ID")
-    @ManyToOne
-    private Usuario genero;
     @JoinColumn(name = "MODIFICO", referencedColumnName = "ID")
     @ManyToOne
     private Usuario modifico;
@@ -63,14 +85,15 @@ public class PvProveedorEmpleado implements Serializable {
     public PvProveedorEmpleado() {
     }
 
+    @Override
     public int hashCode() {
         int hash = 0;
         hash += (id != null ? id.hashCode() : 0);
         return hash;
     }
 
+    @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof PvProveedorEmpleado)) {
             return false;
         }
