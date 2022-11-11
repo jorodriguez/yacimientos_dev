@@ -112,9 +112,11 @@ public class UsuarioBean implements Serializable {
     private static final int HSE = 47;
 
     //@ManagedProperty(value = "#{soporteProveedor}")
+    @Inject
     private SoporteProveedor soporteProveedor;
     //@ManagedProperty(value = "#{soporteListas}")
-    private SoporteListas soporteListas;
+  //  @Inject
+//    private SoporteListas soporteListas;
     //
     @Inject
     SiOpcionImpl siOpcionImpl;
@@ -1067,6 +1069,7 @@ public class UsuarioBean implements Serializable {
             getUsuarioVOAlta().setRespuesta(u.getRespuesta());
             //Otros 5
             getUsuarioVOAlta().setFechaIngreso(u.getFechaIngreso());
+            getUsuarioVOAlta().setFechaNacimiento(u.getFechaNacimiento());
             if (u.getIdOficina() > 0) {
                 getUsuarioVOAlta().setOficina(u.getOficina());
                 getUsuarioVOAlta().setIdOficina(u.getIdOficina());
@@ -1241,7 +1244,8 @@ public class UsuarioBean implements Serializable {
     //Autocompletar jefe inmediato
 
     public List<String> puestoListener(String texto) {
-        List<String> puestos = new ArrayList<>();
+        System.out.println("@puestoListener");
+        //List<String> puestos = new ArrayList<>();
         setListaPuestos(regresaPuesto(texto));
                
         /*getListaPuestos().stream().forEach(listaPuesto -> {
@@ -2238,6 +2242,9 @@ public class UsuarioBean implements Serializable {
 
     public boolean modificarUsuarioRH() {
         boolean v = false;
+            
+        System.out.println("@@fech nac"+usuarioVOAlta.getFechaNacimiento());
+        System.out.println("f@@ech ing"+usuarioVOAlta.getFechaIngreso());
 
         try {
             servicioUsuario.modificarDatosUsuario(sesion.getUsuarioVo().getId(), getUsuarioVOAlta(), getIdPuesto());
@@ -2249,11 +2256,13 @@ public class UsuarioBean implements Serializable {
         return v;
     }
 
-    public void cancelarModificacion() {
+    public String cancelarModificacion() {
         setUsuarioVOAlta(null);
         setIdGerencia(-1);
         setIdCampo(-1);
         setIdPuesto(-1);
+        return "/vistas/recursos/principalRecursosHumanos.xhtml";
+        
     }
 
 }
