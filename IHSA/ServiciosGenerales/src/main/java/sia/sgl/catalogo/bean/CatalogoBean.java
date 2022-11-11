@@ -6,6 +6,7 @@ package sia.sgl.catalogo.bean;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -18,7 +19,9 @@ import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
 import javax.faces.event.ValueChangeEvent;
 import javax.faces.model.DataModel;
+import javax.faces.model.ListDataModel;
 import javax.faces.model.SelectItem;
+import javax.inject.Inject;
 import org.primefaces.PrimeFaces;
 import sia.constantes.Constantes;
 import sia.excepciones.ExistingItemException;
@@ -59,7 +62,8 @@ import sia.util.UtilLog4j;
 @RequestScoped
 public class CatalogoBean implements Serializable {
 
-    @ManagedProperty(value = "#{catalogoBeanModel}")
+    //@ManagedProperty(value = "#{catalogoBeanModel}")
+    @Inject
     private CatalogoBeanModel catalogoBeanModel;
 
     /**
@@ -1082,16 +1086,17 @@ public class CatalogoBean implements Serializable {
     public DataModel getAllAerolineas() {
 	try {
 	    this.catalogoBeanModel.getAllAerolineas();
+            return this.catalogoBeanModel.getDataModelGeneric();
 	} catch (SIAException siae) {
 	    FacesUtils.addErrorMessage(siae.getMessage());
 	    UtilLog4j.log.fatal(this, siae.getMensajeParaProgramador());
+            return new ListDataModel(Collections.emptyList());
 	} catch (Exception e) {
 	    FacesUtils.addErrorMessage(new SIAException().getMessage());
 	    UtilLog4j.log.fatal(this, e.getMessage());
 	    e.printStackTrace();
-	} finally {
-	    return this.catalogoBeanModel.getDataModelGeneric();
-	}
+            return new ListDataModel(Collections.emptyList());
+	} 
     }
 
     public void createAerolinea(ActionEvent actionEvent) {

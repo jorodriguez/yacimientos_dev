@@ -6,13 +6,9 @@
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:f="http://java.sun.com/jsf/core"
      >
-
     <body>
-
         <ui:composition template="./../../../WEB-INF/facelets/templates/templateServiciosGenerales.xhtml">
-
             <ui:define name="contenido">
-
                 <h:panelGroup  rendered="#{empty sesion.usuario}" styleClass="altura">
                     <ui:include src="./../../../login.xhtml"/>
                 </h:panelGroup> 
@@ -20,36 +16,39 @@
                 <h:panelGroup  rendered="#{not empty sesion.usuario}" >
                     <center><h:messages globalOnly="true" errorClass="errorMessage" infoClass="infoMessage"/></center>
                     <p class="tituloEncabezado">#{msgs['sistema.titulo.catalogo']} #{msgs['sistema.proposicion.de']} #{msgs['sgl.aerolinea']}s</p>
-                    <h:form  >
+                  
+                    <h:form>
                         <h:panelGrid >
-                            <p:commandLink actionListener="#{catalogoBean.openPopupCreateAerolinea(actionEvent)}" title="#{msgs['sistema.crear']} #{msgs['sgl.aerolinea']}" styleClass="btn btn-default" >
+                            <p:commandLink actionListener="#{catalogoBean.openPopupCreateAerolinea(actionEvent)}" title="#{msgs['sistema.crear']} #{msgs['sgl.aerolinea']}" styleClass="btn btn-default" 
+                                           onclick="PF('popupCreateAerolinea').show()">
                                 <h:graphicImage title="#{msgs['sistema.crear']} #{msgs['sistema.titulo.solicitud']} #{msgs['sistema.proposicion.de']} #{msgs['sgl.viaje']}" alt="#{msgs['sistema.crear']} #{msgs['sgl.aerolinea']}" url="#{msgs['sgl.ruta.imagen']}button_create.png" styleClass="imagenSinBorde" />
                             </p:commandLink>
-                            <p:commandLink action="#{catalogoBean.openPopupCreateAerolinea(actionEvent)}" value="#{msgs['sistema.crear']} #{msgs['sgl.aerolinea']}" title="#{msgs['sistema.crear']} #{msgs['sgl.aerolinea']}" styleClass="linkPequenio" />
+                            <!--<p:commandLink action="#{catalogoBean.openPopupCreateAerolinea(actionEvent)}" value="#{msgs['sistema.crear']} #{msgs['sgl.aerolinea']}" title="#{msgs['sistema.crear']} #{msgs['sgl.aerolinea']}" styleClass="linkPequenio" />
+                            -->
                         </h:panelGrid>
                     </h:form>
 
-                    <h:form>
-                        <p:dataTable id="dgAerolineas" rows="10" value="#{catalogoBean.allAerolineas}" 
-                                     var="data">
+                    <h:form>                         
+                        <p:dataTable id="dgAerolineas" rows="10" value="#{catalogoBean.allAerolineas}" var="data">
                             <p:column>
                                 <f:facet name="header"><h:outputText value="#{msgs['sgl.generales.nombre']}"/></f:facet>
                                 <h:outputText value="#{data.nombre}"/>
                             </p:column>                            
                             <p:column>
-                                <p:commandLink value="#{msgs['sistema.modificar']}" actionListener="#{catalogoBean.openPopupUpdateAerolinea(actionEvent)}" styleClass="link"/>
+                                <p:commandLink value="#{msgs['sistema.modificar']}" actionListener="#{catalogoBean.openPopupUpdateAerolinea(actionEvent)}"                                                
+                                               styleClass="link"/>
                             </p:column>                          
                             <p:column>
                                 <p:commandLink value="#{msgs['sistema.eliminar']}" actionListener="#{catalogoBean.openPopupDeleteAerolinea(actionEvent)}" styleClass="link"/>
                             </p:column>
                         </p:dataTable>   
                     </h:form>
-
+                    
                 </h:panelGroup>                
 
                 <!-- Popup Crear Aerolínea -->
                 <h:form id="formPopupCreateAerolinea">
-                    <p:dialog  header="#{msgs['sistema.crear']} #{msgs['sgl.aerolinea']}" >
+                    <p:dialog widgetVar="popupCreateAerolinea" header="#{msgs['sistema.crear']} #{msgs['sgl.aerolinea']}" >
                         <h:outputText id="msgsPopupCreateAerolinea" value="" />
                         <center><h:message for="msgsPopupCreateAerolinea" errorClass="errorMessage" infoClass="infoMessage"/></center>
                         <h:panelGrid columns="2" >
@@ -65,8 +64,14 @@
                         </h:panelGrid>
                         <center>
                             <h:panelGrid columns="2">
-                                <p:commandButton value="#{msgs['sistema.crear']}" actionListener="#{catalogoBean.createAerolinea(actionEvent)}" styleClass="btn btn-info"/>
-                                <p:commandButton value="#{msgs['sistema.cancelar']}" actionListener="#{catalogoBean.closePopupCreateAerolinea(actionEvent)}" styleClass="btn btn-default" immediate="true" />        
+                                <p:commandButton value="#{msgs['sistema.crear']}" 
+                                                 actionListener="#{catalogoBean.createAerolinea(actionEvent)}" styleClass="btn btn-info"
+                                                 onclick="PF('popupCreateAerolinea').hide()"/>
+                                <p:commandButton value="#{msgs['sistema.cancelar']}" 
+                                                 actionListener="#{catalogoBean.closePopupCreateAerolinea(actionEvent)}" 
+                                                 styleClass="btn btn-default" 
+                                                 immediate="true" 
+                                                 onclick="PF('popupCreateAerolinea').hide()"/>        
                             </h:panelGrid>                        
                         </center>
                     </p:dialog>

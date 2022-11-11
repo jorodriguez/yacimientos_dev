@@ -8,6 +8,7 @@ import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -246,8 +247,10 @@ public class SolicitarMaterialBean implements Serializable {
         );
     }
 
-    public void cancelarUsuario() {
-        setUsuarioVo(null);
+    public String cancelarUsuario() {
+       setUsuarioVo(new UsuarioVO());
+       this.listaMaterial = Collections.emptyList();    
+       return "/vistas/recursos/principalRecursosHumanos.xhtml?faces-redirect=true;";
     }
 
     //Genera solicitud de estancia
@@ -261,7 +264,7 @@ public class SolicitarMaterialBean implements Serializable {
                 convertToDateViaInstant(getFechaSalida())
         );
 
-        setUsuarioVo(null);
+        setUsuarioVo(new UsuarioVO());
         setFechaSalida(null);
         FacesUtils.addErrorMessage("frmUser", FacesUtils.getKeyResourceBundle("sia.solicitud.enviada"));
         return "";
@@ -274,7 +277,7 @@ public class SolicitarMaterialBean implements Serializable {
     }
 
     public void cancelarSolicitarEstancia() {
-        setUsuarioVo(null);
+        setUsuarioVo(new UsuarioVO());
         setFechaSalida(null);
 
     }

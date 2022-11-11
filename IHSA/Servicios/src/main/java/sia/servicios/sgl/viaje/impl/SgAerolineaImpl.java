@@ -39,6 +39,7 @@ public class SgAerolineaImpl extends AbstractFacade<SgAerolinea> {
     
     public void save(SgAerolinea sgAerolinea, String idUsuario) throws ExistingItemException {
         UtilLog4j.log.info(this,"SgAerolineaImpl.save()");
+        System.out.println("@save aerolinea");
 
         SgAerolinea existente = findByName(sgAerolinea.getNombre(), false);
 

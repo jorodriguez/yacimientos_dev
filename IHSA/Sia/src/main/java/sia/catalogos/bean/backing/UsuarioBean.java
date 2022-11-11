@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 
 import javax.faces.component.UIComponent;
@@ -1242,10 +1243,17 @@ public class UsuarioBean implements Serializable {
     public List<String> puestoListener(String texto) {
         List<String> puestos = new ArrayList<>();
         setListaPuestos(regresaPuesto(texto));
-        getListaPuestos().stream().forEach(listaPuesto -> {
+               
+        /*getListaPuestos().stream().forEach(listaPuesto -> {
             puestos.add(listaPuesto.getLabel());
-        });
-        return puestos;
+        });*/
+        
+        //usuarioFiltrados.stream().filter(t -> t.toLowerCase().startsWith(texto.toLowerCase())).collect(Collectors.toList());
+        return getListaPuestos()
+                .stream()
+                .map(SelectItem::getLabel)
+                .filter(crit -> crit.toLowerCase().startsWith(texto.toLowerCase()))
+                .collect(Collectors.toList()); 
 
     }
 
