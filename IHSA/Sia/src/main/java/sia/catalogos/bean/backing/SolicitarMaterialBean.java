@@ -20,6 +20,7 @@ import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import lombok.Getter;
 import lombok.Setter;
+import org.primefaces.PrimeFaces;
 import sia.modelo.sgl.oficina.vo.OficinaVO;
 import sia.modelo.usuario.vo.EmpleadoMaterialVO;
 import sia.modelo.usuario.vo.UsuarioVO;
@@ -201,15 +202,14 @@ public class SolicitarMaterialBean implements Serializable {
     }
 
     public List<EmpleadoMaterialVO> verificaLista() {
-
         List<EmpleadoMaterialVO> lstEmpMaterial = new ArrayList<>();
 
         for (EmpleadoMaterialVO sgV : listaMaterial) {
             if (filaSeleccionada.get(sgV.getId())) {
-
                 if (sgV.getId() == STAFF_HOUSE) {
                     setIdSgOficina(usuarioVo.getIdOficina());
                     sumarDias();
+                    PrimeFaces.current().executeScript("PF('dlgSolEstancia').show();");
                     setSolicitaEstancia(true);
                 }
 
@@ -228,7 +228,14 @@ public class SolicitarMaterialBean implements Serializable {
     }
 
     public LocalDate sumarDias() {
-        setFechaSalida(convertToLocalDateViaInstant(siManejoFechaLocal.fechaSumarDias(getUsuarioVo().getFechaIngreso(), 60)));
+        ZoneId defaultZoneId = ZoneId.systemDefault();
+
+        //creating the instance of LocalDate using the day, month, year info
+        LocalDate localDate = LocalDate.now();
+        //local date + atStartOfDay() + default time zone + toInstant() = Date
+        Date date = Date.from(localDate.atStartOfDay(defaultZoneId).toInstant());
+
+        setFechaSalida(convertToLocalDateViaInstant(siManejoFechaLocal.fechaSumarDias((getUsuarioVo().getFechaIngreso() != null ? getUsuarioVo().getFechaIngreso() : date), 60)));
         return getFechaSalida();
     }
 
@@ -280,6 +287,7 @@ public class SolicitarMaterialBean implements Serializable {
         setUsuarioVo(new UsuarioVO());
         setFechaSalida(null);
 
+        PrimeFaces.current().executeScript("PF('dlgSolEstancia').hide();");
     }
 
 }
