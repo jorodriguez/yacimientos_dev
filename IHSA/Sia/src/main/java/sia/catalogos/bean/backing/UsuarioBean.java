@@ -1070,10 +1070,10 @@ public class UsuarioBean implements Serializable {
             //Otros 5
             getUsuarioVOAlta().setFechaIngreso(u.getFechaIngreso());
             getUsuarioVOAlta().setFechaNacimiento(u.getFechaNacimiento());
-            if (u.getIdOficina() > 0) {
+            //if (u.getIdOficina() > 0) {
                 getUsuarioVOAlta().setOficina(u.getOficina());
                 getUsuarioVOAlta().setIdOficina(u.getIdOficina());
-            }
+            //}
 
             if (u.getGerencia() == null) {
                 setIdGerencia(-1);
@@ -1082,8 +1082,8 @@ public class UsuarioBean implements Serializable {
                 getUsuarioVOAlta().setGerencia(u.getGerencia());
             }
 
-            if (u.getRfcEmpresa() != null) {
-                getUsuarioVOAlta().setIdNomina(u.getIdCampo());
+            if (u.getIdNomina() != 0) {
+                getUsuarioVOAlta().setIdNomina(u.getIdNomina());
             }
 
             if (sesion.getUsuarioVo() != null) {
@@ -2250,6 +2250,7 @@ public class UsuarioBean implements Serializable {
             servicioUsuario.modificarDatosUsuario(sesion.getUsuarioVo().getId(), getUsuarioVOAlta(), getIdPuesto());
             v = true;
         } catch (Exception e) {
+            System.out.println("Ex "+e.getMessage());
             LOGGER.fatal(this, "Modificando usuario {0}", new Object[]{sesion.getUsuarioVo().getId()}, e);
         }
 
