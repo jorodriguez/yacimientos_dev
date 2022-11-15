@@ -37,6 +37,8 @@ public class GenerarExcel extends HttpServlet {
     private SiParametroImpl parametrosSistemaServicioRemoto;
     @Inject
     private OrdenImpl ordenServicioRemoto;
+    @Inject 
+    UsuarioBean sesion;
     static Logger log = Logger.getLogger(sia.compra.servlets.GenerarExcel.class.getName());
 
     private File creatTempFile(Orden orden) {
@@ -90,7 +92,6 @@ public class GenerarExcel extends HttpServlet {
             throws ServletException, IOException {
         File fileExcelNavision = null;
         try {
-            UsuarioBean sesion = (UsuarioBean) request.getSession().getAttribute("usuarioBean");
             if (sesion != null) {
                 if (sesion.getUsuarioConectado() != null) {
                     String ordID = request.getParameter("ZWZ2W");

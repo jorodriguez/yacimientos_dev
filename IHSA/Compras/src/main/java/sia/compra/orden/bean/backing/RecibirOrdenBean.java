@@ -173,7 +173,7 @@ public class RecibirOrdenBean implements Serializable {
             UtilLog4j.log.error(e);
             FacesUtilsBean.addErrorMessage("Ocurrio un error al eliminar la partida de la orden de compra");
         }        
-        PrimeFaces.current().executeScript( ";cerrarDialogoModal(dialogoRecibirOCSEliminar);abrirDialogoModal(dialogoMotivoEliminar);");
+        PrimeFaces.current().executeScript( "abrirDialogoModal(dialogoMotivoEliminar);");
     }
 
     public void cerrarRecibirOrdenCompras() {
@@ -192,7 +192,7 @@ public class RecibirOrdenBean implements Serializable {
     public void cerrarMotivoEliminarPartidaOrdenCompras() {    
         this.setIdPartidaCancelar(0);
         msgError = null;
-        PrimeFaces.current().executeScript( ";cerrarDialogoModal(dialogoMotivoEliminar);abrirDialogoModal(dialogoRecibirOCSEliminar);");
+        PrimeFaces.current().executeScript( ";cerrarDialogoModal(dialogoMotivoEliminar);");
     }
 
     /**
