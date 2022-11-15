@@ -30,7 +30,10 @@
                         </p:selectOneRadio>
                         <h:outputText value="Fecha nacimiento"/>
                         <p:datePicker value="#{usuarioBean.usuarioVOAlta.fechaNacimiento}"
+                                        yearNavigator="true"                                      
+                                      monthNavigator="true"
                                       pattern="dd/MM/yyyy">
+                            <p:ajax update="frmModDatosUsr"/>
                         </p:datePicker>
                     </p:panelGrid>
                 </p:panelGrid>
@@ -39,7 +42,7 @@
                 <p:panelGrid columns="1" >                    
                     <f:facet name="header"><h:outputText value="Datos profesionales" styleClass="textoListaTabla"/></f:facet>                                               
                     <p:panelGrid columns="2">
-                        <h:outputText value="Campo default*"/>
+                        <h:outputText value="Campo default *"/>
                         <p:selectOneMenu value="#{usuarioBean.usuarioVOAlta.idCampo}" id="cmbCampo" >
                             <f:selectItem itemLabel="Seleccione . . . " itemValue="-1"/>
                             <f:selectItems value="#{usuarioBean.listaCampoPorUsuario}"/>
@@ -64,20 +67,22 @@
                                         forceSelection="true" placeholder="Puesto">
                             <p:ajax listener="#{usuarioBean.seleccionarPuesto}"/>
                         </p:autoComplete>
-                        <h:outputText value="Fecha ingreso*"/>
+                        <h:outputText value="Fecha ingreso * "/>
                         <p:datePicker value="#{usuarioBean.usuarioVOAlta.fechaIngreso}" 
                                       required="true" requiredMessage="Es necesario seleccionar la fecha de ingreso"
                                       pattern="dd/MM/yyyy"
-                                      yearNavigator="true"
+                                      yearNavigator="true"                                      
+                                      monthNavigator="true"
+                                      
                                       >
-                            
-                        </p:datePicker>
-                        <h:outputLabel id="fecha"  value="#{usuarioBean.usuarioVOAlta.fechaIngreso}"/>
-                        <h:outputText value="Nomina*"/>
+                              <p:ajax update="@form"/>
+                        </p:datePicker>                        
+                        <h:outputText value="Nomina* "/>
                         <p:selectOneMenu id="cmbNomina" value="#{usuarioBean.usuarioVOAlta.idNomina}" style="width: 200px;">
                             <f:selectItem itemLabel="Seleccione . . ." itemValue="-1"/>
                             <f:selectItems value="#{usuarioBean.listaEmpresa}"/>
-                        </p:selectOneMenu>  
+                            <p:ajax update="@form"/>
+                        </p:selectOneMenu>                          
                     </p:panelGrid>    
                 </p:panelGrid>
             </td>
@@ -87,7 +92,7 @@
                 <p:panelGrid columns="2" >   
                     <p:commandButton id="guardar" value="Guardar" 
                                      onclick="return validaModificarUsuario('frmModDatosUsr', 'cmbCampo', 'cmbOficina', 'cmbGerencia', 'cmbNomina');"
-                                     action="#{usuarioBean.modificarDatos}"
+                                     action="#{usuarioBean.modificarDatos()}"                                     
                                      />
                     
                     <p:commandLink value="Cancelar"   style="margin-left: 30px;"

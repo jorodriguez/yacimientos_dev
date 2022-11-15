@@ -82,7 +82,9 @@ public class UsuarioImpl extends AbstractFacade<Usuario> {
             + "  u.respuesta_pregunta_secreta, u.activo, u.genero,"
             + "  (select c.nombre from ap_campo c where u.ap_campo = c.id), "
             + "  (select g.nombre from gerencia g where u.gerencia is not null and u.gerencia = g.id),"
-            + "  u.gerencia, u.ap_campo,u.sg_oficina"
+            + "  u.gerencia, u.ap_campo,u.sg_oficina,"
+            + "  u.fecha_ingreso,u.sg_empresa,"
+            + "  (select o.nombre from sg_oficina o where o.id = u.sg_oficina)"
             + " FROM usuario u ";
 
     @PersistenceContext(unitName = "Sia-ServiciosPU")
@@ -763,6 +765,11 @@ public class UsuarioImpl extends AbstractFacade<Usuario> {
             v.setRespuesta((String) objects[14]);
             v.setActivo((Boolean) objects[15]);
             v.setGenero((String) objects[16]);
+            v.setFechaIngreso(objects[22] != null ? (Date) objects[22] : null );            
+            //--el cmapo sg_empresa define la nomina en la vista
+            v.setIdNomina(objects[23] != null ? (Integer) objects[23] : null );
+            
+            v.setOficina(objects[24] != null ? (String) objects[24] : null );
 
             CampoUsuarioPuestoVo acmCampoUsuarioPuestoVo
                     = apCampoUsuarioRhPuestoRemote.traerPuestoPorUsuarioCampo(
@@ -2155,9 +2162,9 @@ public class UsuarioImpl extends AbstractFacade<Usuario> {
 
     public void modificarDatosUsuario(String sesion, UsuarioVO usuarioVO, int idPuesto) {
         try {
+            
             var usuario = find(usuarioVO.getId());
 
-            var us = usuario.toString();
             usuario.setNombre(usuarioVO.getNombre());
             usuario.setEmail(usuarioVO.getMail());
             usuario.setDestinatarios(usuarioVO.getMail());
