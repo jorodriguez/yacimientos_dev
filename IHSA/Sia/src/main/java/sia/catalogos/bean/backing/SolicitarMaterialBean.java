@@ -94,7 +94,7 @@ public class SolicitarMaterialBean implements Serializable {
     private int idSgOficina;
     @Getter
     @Setter
-    private LocalDate fechaSalida;
+    private Date fechaSalida;
     @Getter
     @Setter
     private boolean solicitaEstancia;
@@ -210,6 +210,9 @@ public class SolicitarMaterialBean implements Serializable {
                     setIdSgOficina(usuarioVo.getIdOficina());
                     sumarDias();
                     PrimeFaces.current().executeScript("PF('dlgSolEstancia').show();");
+                    PrimeFaces.current().ajax().update("frmSolicitudEstancia");
+                    listaOficina.clear();
+                    traerListaOficinasItems();
                     setSolicitaEstancia(true);
                 }
 
@@ -227,7 +230,7 @@ public class SolicitarMaterialBean implements Serializable {
         return getListaFilasSeleccionadas();
     }
 
-    public LocalDate sumarDias() {
+    public Date sumarDias() {
         ZoneId defaultZoneId = ZoneId.systemDefault();
 
         //creating the instance of LocalDate using the day, month, year info
@@ -235,7 +238,7 @@ public class SolicitarMaterialBean implements Serializable {
         //local date + atStartOfDay() + default time zone + toInstant() = Date
         Date date = Date.from(localDate.atStartOfDay(defaultZoneId).toInstant());
 
-        setFechaSalida(convertToLocalDateViaInstant(siManejoFechaLocal.fechaSumarDias((getUsuarioVo().getFechaIngreso() != null ? getUsuarioVo().getFechaIngreso() : date), 60)));
+        setFechaSalida((siManejoFechaLocal.fechaSumarDias((getUsuarioVo().getFechaIngreso() != null ? getUsuarioVo().getFechaIngreso() : date), 60)));
         return getFechaSalida();
     }
 
@@ -255,9 +258,9 @@ public class SolicitarMaterialBean implements Serializable {
     }
 
     public String cancelarUsuario() {
-       setUsuarioVo(new UsuarioVO());
-       this.listaMaterial = Collections.emptyList();    
-       return "/vistas/recursos/principalRecursosHumanos.xhtml?faces-redirect=true;";
+        setUsuarioVo(new UsuarioVO());
+        this.listaMaterial = Collections.emptyList();
+        return "/vistas/recursos/principalRecursosHumanos.xhtml?faces-redirect=true;";
     }
 
     //Genera solicitud de estancia
@@ -268,12 +271,14 @@ public class SolicitarMaterialBean implements Serializable {
                 getUsuarioVo().getIdGerencia(),
                 getIdSgOficina(),
                 getUsuarioVo().getFechaIngreso(),
-                convertToDateViaInstant(getFechaSalida())
+                getFechaSalida()
         );
 
         setUsuarioVo(new UsuarioVO());
         setFechaSalida(null);
+        //
         FacesUtils.addErrorMessage("frmUser", FacesUtils.getKeyResourceBundle("sia.solicitud.enviada"));
+        PrimeFaces.current().executeScript("PF('dlgSolEstancia').hide();");
         return "";
     }
 

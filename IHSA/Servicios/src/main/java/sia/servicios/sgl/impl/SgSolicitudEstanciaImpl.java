@@ -59,7 +59,7 @@ import sia.util.notificacion.FCMSender;
  *
  * @author mluis
  */
-@Stateless 
+@Stateless
 public class SgSolicitudEstanciaImpl extends AbstractFacade<SgSolicitudEstancia> {
 
     @PersistenceContext(unitName = "Sia-ServiciosPU")
@@ -103,16 +103,15 @@ public class SgSolicitudEstanciaImpl extends AbstractFacade<SgSolicitudEstancia>
     @Inject
     private SgItinerarioImpl sgItinerarioRemote;
     @Inject
-    private SgSolicitudEstanciaSiMovimientoImpl sgSolicitudEstanciaSiMovimientoRemote;    
+    private SgSolicitudEstanciaSiMovimientoImpl sgSolicitudEstanciaSiMovimientoRemote;
     @Inject
     private SiUsuarioCodigoImpl siUsuarioCodigoLocal;
     @Inject
     private ApCampoGerenciaImpl apCampoGerenciaRemote;
-    @Inject 
+    @Inject
     private SgUbicacionImpl ubicacionRemote;
     //
 
-    
     @Override
     protected EntityManager getEntityManager() {
         return em;
@@ -122,9 +121,8 @@ public class SgSolicitudEstanciaImpl extends AbstractFacade<SgSolicitudEstancia>
         super(SgSolicitudEstancia.class);
     }
 
-    
     public SgSolicitudEstancia guardarSolicitud(Usuario usuario, Date inicio, Date fin, int status, int idOficina,
-            boolean eliminado, int idMotivo, int idGerencia,int idubicacion, ApCampo a) {
+            boolean eliminado, int idMotivo, int idGerencia, int idubicacion, ApCampo a) {
         UtilLog4j.log.debug(this, "SgSolicitudEstanciaImpl.guardarSolicitud()");
         SgSolicitudEstancia solicitudEstancia = new SgSolicitudEstancia();
 
@@ -162,7 +160,6 @@ public class SgSolicitudEstanciaImpl extends AbstractFacade<SgSolicitudEstancia>
         return idUsuario;
     }
 
-    
     public SgSolicitudEstancia guardarSolicitud(String idUsuario, String idUsuarioHospeda, int status, int idOficina, boolean eliminado, int idMotivo, int idGerencia, Date fechaInicio, Date fechaFin) {
         UtilLog4j.log.info(this, "SgSolicitudEstanciaImpl.guardarSolicitud()");
         SgSolicitudEstancia sgSolicitudEstancia = new SgSolicitudEstancia();
@@ -190,7 +187,6 @@ public class SgSolicitudEstanciaImpl extends AbstractFacade<SgSolicitudEstancia>
         return r;
     }
 
-    
     public List<SgSolicitudEstancia> trearSolicitudEstanciaPorUsuario(Usuario usuario, int status, boolean eliminado) {
         try {
             return em.createQuery("SELECT se FROM SgSolicitudEstancia se WHERE se.genero.id = :idGenero"
@@ -203,7 +199,6 @@ public class SgSolicitudEstanciaImpl extends AbstractFacade<SgSolicitudEstancia>
         }
     }
 
-    
     public void modificacionSolicitud(Usuario usuario, int idSilicitudEstancia, Date inicio, Date fin, int idOficina, boolean eliminado, int idMotivo) {
         SgSolicitudEstancia sgSolicitudEstancia = find(idSilicitudEstancia);
         sgSolicitudEstancia.setInicioEstancia(inicio);
@@ -218,7 +213,6 @@ public class SgSolicitudEstanciaImpl extends AbstractFacade<SgSolicitudEstancia>
         edit(sgSolicitudEstancia);
     }
 
-    
     public int totalSgSolicitudEstancia(String idUsuario, int idSgOficina, int idEstatus, Boolean fromTravel) {
 
         try {
@@ -254,7 +248,6 @@ public class SgSolicitudEstanciaImpl extends AbstractFacade<SgSolicitudEstancia>
         }
     }
 
-    
     public boolean solicitarEstancia(SgSolicitudEstanciaVo sgSolicitudEstancia, String sesion, List<DetalleEstanciaVO> detalle) {
         boolean v;
         int status = 0;
@@ -279,7 +272,6 @@ public class SgSolicitudEstanciaImpl extends AbstractFacade<SgSolicitudEstancia>
         return v;
     }
 
-    
     @Trace
     public boolean solicitarEstanciaDeSolicituViaje(int idSolicitudViaje, String idUsuarioHospeda, String idUsuario) {
         UtilLog4j.log.info(this, "solicitarEstancia para un viaje " + idSolicitudViaje);
@@ -304,7 +296,7 @@ public class SgSolicitudEstanciaImpl extends AbstractFacade<SgSolicitudEstancia>
                     sgSolicitudEstancia.setModifico(new Usuario(idUsuario));
                     sgSolicitudEstancia.setFechaModifico(new Date());
                     sgSolicitudEstancia.setHoraModifico(new Date());
-                    edit(sgSolicitudEstancia);                    
+                    edit(sgSolicitudEstancia);
                 }
             } else {
                 UtilLog4j.log.info(this, "//no existen viajeros marcados con estancia, Checar si hay solicitud de estancia creada");
@@ -336,7 +328,6 @@ public class SgSolicitudEstanciaImpl extends AbstractFacade<SgSolicitudEstancia>
         }
     }
 
-    
     public List<SgSolicitudEstanciaVo> trearSolicitudEstanciaPorOficina(int oficina, int status, String idSesion, boolean eliminado) {
         try {
             clearQuery();
@@ -370,17 +361,16 @@ public class SgSolicitudEstanciaImpl extends AbstractFacade<SgSolicitudEstancia>
         }
     }
 
-    
     public boolean cancelarSolicitudEstancia(Usuario usuario, SgSolicitudEstanciaVo sgSolicitudEstancia, String mensaje, boolean notificar, boolean enviarCorreo) {
         //Envia correo de cancelacion de solicitud
         boolean v;
         try {
-            if(enviarCorreo){
+            if (enviarCorreo) {
                 v = notificacionServiciosGeneralesRemote.enviaCorreoCancelaSolicitudEstancia(usuario, sgSolicitudEstancia, mensaje, notificar);
             } else {
                 v = Constantes.TRUE;
             }
-            
+
             if (v) {
                 //Marcar como Cancelados a los Integrantes de la Solicitud de Estancia
                 //Se registra el cambio
@@ -410,7 +400,6 @@ public class SgSolicitudEstanciaImpl extends AbstractFacade<SgSolicitudEstancia>
         return v;
     }
 
-    
     public SgSolicitudEstancia buscarEstanciaPorcodigo(String codigo) {
         try {
             return (SgSolicitudEstancia) em.createQuery("SELECT e FROM SgSolicitudEstancia  e WHERE e.codigo = :codigo").setParameter("codigo", codigo).getSingleResult();
@@ -419,7 +408,6 @@ public class SgSolicitudEstanciaImpl extends AbstractFacade<SgSolicitudEstancia>
         }
     }
 
-    
     public boolean buscarMotivoUsado(SgMotivo sgMotivo) {
         try {
             List<SgSolicitudEstancia> l = em.createQuery("SELECT e FROM SgSolicitudEstancia  e WHERE e.sgMotivo.id = :idMotivo").setParameter("idMotivo", sgMotivo.getId()).getResultList();
@@ -434,10 +422,16 @@ public class SgSolicitudEstanciaImpl extends AbstractFacade<SgSolicitudEstancia>
         }
     }
 
-    
     public void guardarSolicitudEstancia(String sesion, String idUsuarioAlta, int idGerencia, int idOficina, Date fechaIngreso, Date fechaSalida) {
         SgSolicitudEstancia sgSolicitudEstancia = new SgSolicitudEstancia();
         //
+        int status = 0;
+        if (usuarioRemote.isGerente(Constantes.AP_CAMPO_DEFAULT, sesion)) {
+            status = Constantes.REQUISICION_SOLICITADA;
+        } else {
+            status = Constantes.REQUISICION_VISTO_BUENO;
+        }
+        sgSolicitudEstancia.setEstatus(new Estatus(status));
         sgSolicitudEstancia.setCodigo("SE" + getDigitosAño(new Date()) + "-" + Integer.toString(this.folioRemote.getFolio("SOLICITUD_ESTANCIA_CONSECUTIVO")));
         sgSolicitudEstancia.setInicioEstancia(fechaIngreso);
         sgSolicitudEstancia.setFinEstancia(fechaSalida);
@@ -455,7 +449,7 @@ public class SgSolicitudEstanciaImpl extends AbstractFacade<SgSolicitudEstancia>
         //
         //Agregar detalle a la solicitud
         SgDetalleSolicitudEstancia sgDetalleSolicitudEstancia = new SgDetalleSolicitudEstancia();
-        sgDetalleSolicitudEstancia.setUsuario(new Usuario(idUsuarioAlta));
+        sgDetalleSolicitudEstancia.setUsuario(usuarioRemote.buscarPorId(idUsuarioAlta));
         sgDetalleSolicitudEstancia.setSgInvitado(null);
         sgDetalleSolicitudEstancia.setSgTipoEspecifico(sgTipoEspecificoRemote.find(19));
 
@@ -471,11 +465,40 @@ public class SgSolicitudEstanciaImpl extends AbstractFacade<SgSolicitudEstancia>
         sgDetalleSolicitudEstancia.setCancelado(Constantes.BOOLEAN_FALSE);
         sgDetalleSolicitudEstanciaRemote.create(sgDetalleSolicitudEstancia);
         //envia la solicitud de estancia
-
-        solicitarEstancia(buscarEstanciaPorId(sgSolicitudEstancia.getId()), sesion, sgDetalleSolicitudEstanciaRemote.traerDetallePorSolicitud(sgSolicitudEstancia.getId(), Constantes.NO_ELIMINADO));
+        if (usuarioRemote.isGerente(Constantes.AP_CAMPO_DEFAULT, sesion)) {
+            notificacionServiciosGeneralesRemote.enviarCorreoSolicitaEstancia(Constantes.AP_CAMPO_DEFAULT, llenarDatos(sgSolicitudEstancia), llenarDetalleEstabcia(sgDetalleSolicitudEstancia));
+        } else {
+            notificacionServiciosGeneralesRemote.enviarCorreoAprobarEstancia(llenarDatos(sgSolicitudEstancia), llenarDetalleEstabcia(sgDetalleSolicitudEstancia));
+        }
     }
 
-    
+    private SgSolicitudEstanciaVo llenarDatos(SgSolicitudEstancia solicitudEstancia) {
+        SgSolicitudEstanciaVo estanciaVo = new SgSolicitudEstanciaVo();
+        estanciaVo.setCodigo(solicitudEstancia.getCodigo());
+        estanciaVo.setInicioEstancia(solicitudEstancia.getInicioEstancia());
+        estanciaVo.setFinEstancia(solicitudEstancia.getFinEstancia());
+        estanciaVo.setDiasEstancia(solicitudEstancia.getDiasEstancia());
+        estanciaVo.setNombreSgOficina(solicitudEstancia.getSgOficina().getNombre());
+        estanciaVo.setNombreGerencia(solicitudEstancia.getGerencia().getNombre());
+        estanciaVo.setIdGerencia(solicitudEstancia.getGerencia().getId());
+        estanciaVo.setCorreoGenero(usuarioRemote.findById(solicitudEstancia.getGenero().getId()).getMail());
+        estanciaVo.setCancelado(Constantes.BOOLEAN_FALSE);
+
+        estanciaVo.setNombreSgMotivo(solicitudEstancia.getSgMotivo().getNombre());
+        estanciaVo.setObservacion(solicitudEstancia.getObservacion());        
+        return estanciaVo;
+    }
+
+    private List<DetalleEstanciaVO> llenarDetalleEstabcia(SgDetalleSolicitudEstancia solicitudEstancia) {
+        List<DetalleEstanciaVO> lista = new ArrayList<>();
+        DetalleEstanciaVO dtEstVo = new DetalleEstanciaVO();
+        dtEstVo.setUsuario(solicitudEstancia.getUsuario().getNombre());
+        dtEstVo.setTipoDetalle(solicitudEstancia.getSgTipo().getNombre());
+        dtEstVo.setDescripcion(solicitudEstancia.getDescripcion());
+        lista.add(dtEstVo);
+        return lista;
+    }
+
     public List<SgSolicitudEstanciaVo> findAll(String idUsuario, int idSgOficina, int idEstatus, Boolean fromTravel, String orderByField, boolean sortAscending, boolean eliminado) {
 
         clearQuery();
@@ -523,7 +546,7 @@ public class SgSolicitudEstanciaImpl extends AbstractFacade<SgSolicitudEstancia>
         UtilLog4j.log.debug(this, new StringBuilder().append("Query: ").append(getStringQuery()).toString());
 
         List<Object[]> result = em.createNativeQuery(getStringQuery()).getResultList();
-        List<SgSolicitudEstanciaVo> list = new ArrayList<SgSolicitudEstanciaVo>();
+        List<SgSolicitudEstanciaVo> list = new ArrayList<>();
         SgSolicitudEstanciaVo vo;
 
         for (Object[] objects : result) {
@@ -561,7 +584,6 @@ public class SgSolicitudEstanciaImpl extends AbstractFacade<SgSolicitudEstancia>
         return (list.isEmpty() ? Collections.EMPTY_LIST : list);
     }
 
-    
     @Trace
     public boolean solicitarSolicitudEstanciaCreadaPorSolcicitudViajePendienteDeSolicitar(SgSolicitudViaje sgSolicitudViaje, String idUsuario) {
         log("SgSolicitudEstanciaImpl.enviarSolicitudEstanciaCreadaPorSolcicitudViajePendienteDeSolicitar()");
@@ -650,7 +672,6 @@ public class SgSolicitudEstanciaImpl extends AbstractFacade<SgSolicitudEstancia>
         return idUsuarioHospeda;
     }
 
-    
     public List<SgSolicitudEstanciaVo> traerTodasSolicitudesEstanciasCreadasPorSolicitudViajePendienteSolicitar(int idSgSolicitudViaje) {
 
         clearQuery();
@@ -696,7 +717,7 @@ public class SgSolicitudEstanciaImpl extends AbstractFacade<SgSolicitudEstancia>
         UtilLog4j.log.debug(this, new StringBuilder().append("Query: ").append(query.toString()).toString());
 
         List<Object[]> result = em.createNativeQuery(query.toString()).getResultList();
-        List<SgSolicitudEstanciaVo> list = new ArrayList<SgSolicitudEstanciaVo>();
+        List<SgSolicitudEstanciaVo> list = new ArrayList<>();
         SgSolicitudEstanciaVo vo;
 
         for (Object[] objects : result) {
@@ -724,7 +745,6 @@ public class SgSolicitudEstanciaImpl extends AbstractFacade<SgSolicitudEstancia>
         return (list.isEmpty() ? Collections.EMPTY_LIST : list);
     }
 
-    
     public List<SgSolicitudEstanciaVo> traerSolicitudesEstanciaGeneradasDeSolicutdViajePorOficinaYRuta(int idOficina, int idRuta) {
         UtilLog4j.log.info(this, "traerSolicitudesEstanciaGeneradasDeSolicutdViajePorOficinaYRuta " + idOficina + " " + idRuta);
         List<SgSolicitudEstanciaVo> list = null;
@@ -808,7 +828,6 @@ public class SgSolicitudEstanciaImpl extends AbstractFacade<SgSolicitudEstancia>
         return vo;
     }
 
-    
     public SemaforoVo traerSemaforoActualSolicitudViajeApartirDeSolicitudEstancia(int idSolicitudEstancia) {
         SemaforoVo vo = null;
         try {
@@ -865,7 +884,6 @@ public class SgSolicitudEstanciaImpl extends AbstractFacade<SgSolicitudEstancia>
         return solicitudEstanciaVo;
     }
 
-    
     public SgSolicitudEstanciaVo buscarEstanciaPorId(int idSolEstancia) {
 
         StringBuilder sb = new StringBuilder();
@@ -939,7 +957,6 @@ public class SgSolicitudEstanciaImpl extends AbstractFacade<SgSolicitudEstancia>
         }
     }
 
-    
     public void finalizaSolicitud(int idSolEstancia, String idUsuario) {
         SgSolicitudEstancia solicitudEstancia = find(idSolEstancia);
         solicitudEstancia.setModifico(new Usuario(idUsuario));
@@ -961,7 +978,6 @@ public class SgSolicitudEstanciaImpl extends AbstractFacade<SgSolicitudEstancia>
      * @param idSgSolicitudEstancia
      * @param motivo
      */
-    
     public void cancelarSolicitudEstanciaAntesSolicitar(String idUsuarioRealizo, int idSgSolicitudEstancia, String motivo) {
         //Se registra el cambio
         SgSolicitudEstancia solicitudEstancia = find(idSgSolicitudEstancia);
@@ -980,7 +996,6 @@ public class SgSolicitudEstanciaImpl extends AbstractFacade<SgSolicitudEstancia>
         }
     }
 
-    
     public List<SgSolicitudEstanciaVo> solicituesPorAprobar(String id) {
         String q = "select se.ID, se.INICIO_ESTANCIA, se.FIN_ESTANCIA, se.DIAS_ESTANCIA,"
                 + " se.CODIGO, o.NOMBRE, m.NOMBRE, g.NOMBRE, u.nombre as genero  "
@@ -1020,7 +1035,6 @@ public class SgSolicitudEstanciaImpl extends AbstractFacade<SgSolicitudEstancia>
         return les;
     }
 
-    
     public long totalSolicituesPorAprobar(String sesion) {
         String q = "select count(se.ID) from SG_SOLICITUD_ESTANCIA se"
                 + "	inner join GERENCIA g on se.GERENCIA = g.ID"
@@ -1035,7 +1049,6 @@ public class SgSolicitudEstanciaImpl extends AbstractFacade<SgSolicitudEstancia>
         return (Long) qr.getSingleResult();
     }
 
-    
     public boolean aprobarEstancia(String sesion, int solicitudEstanciaVo) {
         boolean regresa = false;
         SgSolicitudEstancia sgSolicitudEstancia = find(solicitudEstanciaVo);
@@ -1065,7 +1078,6 @@ public class SgSolicitudEstanciaImpl extends AbstractFacade<SgSolicitudEstancia>
         }
     }
 
-    
     public SgSolicitudEstancia guardarEnviarSolicitud(String idUsuario, int idOficina, int idMotivo, int idGerencia,
             Date fechaInicio, Date fechaFin, List<DetalleEstanciaVO> detalle, String observacion) {
         UtilLog4j.log.info(this, "SgSolicitudEstanciaImpl.guardarSolicitud()");
@@ -1103,7 +1115,6 @@ public class SgSolicitudEstanciaImpl extends AbstractFacade<SgSolicitudEstancia>
         //
         UsuarioResponsableGerenciaVo urgv = apCampoGerenciaRemote.buscarResponsablePorGerencia(sgSolicitudEstancia.getGerencia().getId(), Constantes.AP_CAMPO_DEFAULT);
 
-        
         if (usuarioRemote.isGerente(Constantes.AP_CAMPO_DEFAULT, idUsuario)) {
             v = notificacionServiciosGeneralesRemote.enviarCorreoSolicitaEstancia(Constantes.AP_CAMPO_DEFAULT, solicitudEstanciaVo, detalle);
             status = Constantes.REQUISICION_SOLICITADA;
@@ -1121,9 +1132,9 @@ public class SgSolicitudEstanciaImpl extends AbstractFacade<SgSolicitudEstancia>
         }
         //
         for (DetalleEstanciaVO detalleEstanciaVO : detalle) {
-            sgDetalleSolicitudEstanciaRemote.guardarHuespededSolicitudEstancia(idUsuario, sgSolicitudEstancia.getId(), detalleEstanciaVO.getIdInvitado() < 1, detalleEstanciaVO.getIdUsuario(), detalleEstanciaVO.getIdInvitado(),null );
+            sgDetalleSolicitudEstanciaRemote.guardarHuespededSolicitudEstancia(idUsuario, sgSolicitudEstancia.getId(), detalleEstanciaVO.getIdInvitado() < 1, detalleEstanciaVO.getIdUsuario(), detalleEstanciaVO.getIdInvitado(), null);
         }
-        
+
         return sgSolicitudEstancia;
     }
 
