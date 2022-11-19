@@ -282,6 +282,9 @@ public class Orden implements Serializable {
     @ManyToOne
     private OcMetodoPago ocMetodoPago;
     
+    @Column(name = "CONFIRMING")
+    private boolean confirming;
+    
     public Orden() {
     }
 

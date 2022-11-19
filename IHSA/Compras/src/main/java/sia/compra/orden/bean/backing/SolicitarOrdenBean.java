@@ -133,6 +133,7 @@ public class SolicitarOrdenBean implements Serializable {
     private ContratoVO contratoVOO;
     private List<MovimientoVO> rechazosCarta = null;
     private String archivoRepse;
+    private String confirming;
     @Getter
     @Setter
     private ProveedorVo proveedorVo;
@@ -141,6 +142,7 @@ public class SolicitarOrdenBean implements Serializable {
     public void iniciar() {
         int idOrden = 0;
         archivoRepse = "";
+        confirming = "No";
         Integer parametro = Env.getContextAsInt(sesion.getCtx(), "ORDEN_ID");
         if (parametro > 0) {
             idOrden = parametro;
@@ -371,7 +373,7 @@ public class SolicitarOrdenBean implements Serializable {
 
             SelectItem item2 = new SelectItem("Orden de Servicio");
             resultList.add(item2);
-            
+
             SelectItem item3 = new SelectItem("Con Subcontrato");
             resultList.add(item3);
 
@@ -426,6 +428,8 @@ public class SolicitarOrdenBean implements Serializable {
                                 FacesUtilsBean.addErrorMessage("El convenio " + ordenActual.getContrato() + " no cuenta con saldo suficiente para realizar la compra.");
                             } else if (archivoRepse == null) {
                                 FacesUtilsBean.addErrorMessage("Para solicitar la oc/s debe especificar si la compra requiere mano de obra en sitio ..");
+                            } else if (confirming == null) {
+                                FacesUtilsBean.addErrorMessage("Para solicitar la oc/s debe especificar si la compra se pagara por confirming ..");
                             } else {
                                 if (getOrdenActual().getConsecutivo() == null || getOrdenActual().getConsecutivo().isEmpty()) {
                                     // si no tiene consecutivo verificar si selecciono el tipo de orden
@@ -434,7 +438,9 @@ public class SolicitarOrdenBean implements Serializable {
                                     } else {
                                         // Solicitar la orden
                                         try {
-                                            ordenActual.setRepse(archivoRepse.equals("Si") ? Constantes.BOOLEAN_TRUE : Constantes.BOOLEAN_FALSE);
+                                            ordenActual.setRepse("Si".equals(archivoRepse) ? Constantes.BOOLEAN_TRUE : Constantes.BOOLEAN_FALSE);
+                                            ordenActual.setConfirming("Si".equals(confirming) ? Constantes.BOOLEAN_TRUE : Constantes.BOOLEAN_FALSE);
+
                                             boolean solicitada = ordenImpl.solicitarOrden(getIdProveedorr(), getRevisa(), aprueba,
                                                     getCondicionSeleccionada(), monedaSeleccionada,
                                                     getOrdenActual().getFechaEntrega(),
@@ -471,7 +477,9 @@ public class SolicitarOrdenBean implements Serializable {
                                     // si tiene consecutivo asignado solicitar la orden
                                     try {
                                         //, getIdFormaPago()
-                                        ordenActual.setRepse(archivoRepse.equals("Si") ? Constantes.BOOLEAN_TRUE : Constantes.BOOLEAN_FALSE);
+                                        ordenActual.setRepse("Si".equals(archivoRepse) ? Constantes.BOOLEAN_TRUE : Constantes.BOOLEAN_FALSE);
+                                        ordenActual.setConfirming("Si".equals(confirming) ? Constantes.BOOLEAN_TRUE : Constantes.BOOLEAN_FALSE);
+
                                         boolean solicitada
                                                 = ordenImpl.solicitarOrden(getIdProveedorr(), getRevisa(),
                                                         aprueba, getCondicionSeleccionada(),
@@ -916,6 +924,20 @@ public class SolicitarOrdenBean implements Serializable {
      */
     public void setArchivoRepse(String archivoRepse) {
         this.archivoRepse = archivoRepse;
+    }
+
+    /**
+     * @return the confirming
+     */
+    public String getConfirming() {
+        return confirming;
+    }
+
+    /**
+     * @param confirming the confirming to set
+     */
+    public void setConfirming(String confirming) {
+        this.confirming = confirming;
     }
 
 }
