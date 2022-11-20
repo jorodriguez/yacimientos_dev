@@ -685,6 +685,7 @@ public class ProveedorBean implements Serializable {
             DocumentoAnexo documentoAnexo = new DocumentoAnexo(fileInfo.getContent());
             documentoAnexo.setRuta(uploadDirectory());
             documentoAnexo.setNombreBase(fileInfo.getFileName());
+            documentoAnexo.setTipoMime(fileInfo.getContentType());
             almacenDocumentos.guardarDocumento(documentoAnexo);
             return siAdjuntoImpl.save(
                     documentoAnexo.getNombreBase(),
