@@ -195,7 +195,8 @@ public class SolicitarOrdenBean implements Serializable {
         if (proveedorVo != null) {
             listaContactos = contactoProveedorImpl.traerTodosContactoPorProveedor(proveedorVo.getIdProveedor());
         }
-        traerConvenios((Constantes.OCS_SIN_CONTRATO.equals(ordenActual.getContrato()) ? "": ordenActual.getContrato()));
+        ordenActual.setContrato(Constantes.OCS_SIN_CONTRATO);
+        traerConvenios((Constantes.OCS_SIN_CONTRATO.equals(ordenActual.getContrato()) ? "" : ordenActual.getContrato()));
         proveedorSeleccionado = "";
     }
 
@@ -317,7 +318,7 @@ public class SolicitarOrdenBean implements Serializable {
         if (!ordenActual.isConConvenio()) {
             traerConvenios(null);
         } else {
-            traerConvenios((Constantes.OCS_SIN_CONTRATO.equals(ordenActual.getContrato()) ? "": ordenActual.getContrato()));
+            traerConvenios((Constantes.OCS_SIN_CONTRATO.equals(ordenActual.getContrato()) ? "" : ordenActual.getContrato()));
         }
 
         if (getListaContactos() == null || getListaContactos().isEmpty()) {
@@ -351,8 +352,8 @@ public class SolicitarOrdenBean implements Serializable {
     }
 
     private void traerConvenios(String codigoConvenio) {
+        listConvenio = new ArrayList<>();
         if (getIdProveedorr() > 0) {
-            listConvenio = new ArrayList<>();
             if (codigoConvenio == null || codigoConvenio.isEmpty()) {
                 listConvenio.add(new SelectItem(Constantes.OCS_SIN_CONTRATO, "Orden sin contrato"));
             }

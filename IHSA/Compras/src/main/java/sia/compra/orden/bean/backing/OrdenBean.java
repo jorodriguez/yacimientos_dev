@@ -437,7 +437,9 @@ public class OrdenBean implements Serializable {
         //
         cargaEtsBean.ordenEtsPorCategoria();
         cargaEtsBean.traerEspecificacionTecnica();
-        setProveedorCI(PvProveedorSinCartaIntencionImpl.existeProveedorCI(getOrdenActual().getApCampo().getId(), getOrdenActual().getProveedor().getId()));
+        if (ordenActual.getProveedor() != null) {
+            setProveedorCI(PvProveedorSinCartaIntencionImpl.existeProveedorCI(getOrdenActual().getApCampo().getId(), getOrdenActual().getProveedor().getId()));
+        }
         //
         rechazos();
         //
