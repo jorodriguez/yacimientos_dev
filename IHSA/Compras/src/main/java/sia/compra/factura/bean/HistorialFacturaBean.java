@@ -310,6 +310,8 @@ public class HistorialFacturaBean implements Serializable {
             if (cadena != null && !cadena.isEmpty() && cadena.length() > 2) {
                 List<SelectItem> lp = siFacturaImpl.traerProveedorPorStatusFacturas(cadena, FacturaEstadoEnum.PROCESO_INTERNO_CLIENTE.getId(),
                         usuarioBean.getUsuarioConectado().getApCampo().getId());
+                lp.addAll(siFacturaImpl.traerProveedorPorStatusFacturas(cadena, FacturaEstadoEnum.CORREO_FACTURA_AVANZIA.getId(),
+                        usuarioBean.getUsuarioConectado().getApCampo().getId()));
                 lp.stream().forEach(p -> {
                     proveedores.add(p.getLabel());
                 });
