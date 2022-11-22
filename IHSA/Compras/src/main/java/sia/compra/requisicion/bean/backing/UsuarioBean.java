@@ -264,7 +264,7 @@ public class UsuarioBean implements Serializable {
         setCompania(getUsuarioConectado().getApCampo().getCompania());
         //
 
-        return (pagina.contains(".xthml") ? pagina : pagina + ".xhtml?faces-redirect=true");
+        return (pagina.contains(".xhtml") ? pagina : pagina + ".xhtml?faces-redirect=true");
     }
 
     private void log(String mensaje) {
