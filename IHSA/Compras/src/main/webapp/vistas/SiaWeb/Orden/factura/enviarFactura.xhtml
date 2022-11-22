@@ -1,0 +1,297 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      >
+    <body>
+        <ui:composition template="./../../templates/template.xhtml">
+            <ui:define name="tituloPagina">
+                Enviar facturas a CNH
+            </ui:define>
+            <ui:define name="contenido">
+                <h:form id="form1">
+                    <div class="row">
+                        <div id="divAutoriza" class="btn-group" style="text-align: left;">                                
+
+                        </div>
+                        <div id="divOperacion" class="btn-group" style="text-align: left; display: none;">
+                            <p:commandLink value="Regresar" 
+                                           onclick="resetTabs();regresar('divTabla', 'divDatos', 'divOperacion', 'divAutoriza')"
+                                           styleClass="btn btn-default"/>                     
+                            <p:commandLink 
+                                styleClass="btn btn-default"
+                                style="font-weight: bold;"
+                                value="Enviar Factura"
+                                action="#{facturaBean.enviarFacturaCNH}"/>                                
+
+                        </div>
+                    </div>
+                    
+                    <div id="divTabla" class="row">                         
+                        <div scope="colgroup" colspan="7"  style="font-weight: normal;">
+                            <span>Facturas pendientes por enviar a CNH</span></div>
+                        <div class="table table-responsive">                            
+                            <!<!-- rowSelectListener="#{facturaBean.seleccionarFacturaPago}" -->
+                            <p:dataTable size="small" stripedRows="true" showGridlines="true" id="facturas" value="#{facturaBean.listaFacturaCNH}" var="dataFac" 
+                                         rows="15" paginatorAlwaysVisible="true"
+                                         paginatorPosition="bottom" paginator="true"                                            
+                                         styleClass="table-striped"
+                                         selectionMode="single"
+                                         >                                                                
+                                <p:column headerText="Pedido" >
+                                    <h:outputText value="#{dataFac.pedidoNav}" style="#{dataFac.leida ? '' : 'font-weight: bold;'}"/>
+                                </p:column>
+                                <p:column headerText="Oc/s" >
+                                    <h:outputText value="#{dataFac.codigoOrden}" style="#{dataFac.leida ? '' : 'font-weight: bold;'}"/>
+                                </p:column>
+                                <p:column headerText="Proveedor" >
+                                    <h:outputText value="#{dataFac.proveedor}" style="#{dataFac.leida ? '' : 'font-weight: bold;'}"/>
+                                </p:column>
+                                <p:column headerText="Factura">
+                                    <h:outputText value="#{dataFac.folio}" style="#{dataFac.leida ? '' : 'font-weight: bold;'}"/>
+                                </p:column>
+                                <p:column headerText="Monto">
+                                    <h:outputText value="#{dataFac.monto}" style="#{dataFac.leida ? '' : 'font-weight: bold;'}">
+                                        <f:convertNumber maxFractionDigits="2"/>
+                                    </h:outputText>
+                                </p:column>                        
+                                <p:column headerText="Moneda" >
+                                    <h:outputText value="#{dataFac.moneda}" style="#{dataFac.leida ? '' : 'font-weight: bold;'}"/>
+                                </p:column>                                  
+                            </p:dataTable>
+
+                        </div>
+                    </div>
+
+                    
+                    <div id="divDatos" style="display: none;" class="row">
+                        <div class="col-5">
+                            <h:outputText value="Datos de la factura"/>                            
+                        </div>
+                        <p:tabView id="tbOcs"  activeIndex="0">
+                            <p:tab title="Datos Generales">
+                                <div class="row">
+                                    <div class="col-6">
+                                        <div class="form-group">
+                                            <h:outputLabel value="Folio" class="control-label col-12"/>
+                                            <div class="col-10">
+                                                <h:outputText value="#{facturaBean.facturaVo.folio}"/>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <h:outputLabel value="Concepto" class="control-label col-12"/>
+                                            <div class="col-10">
+                                                <h:outputText value="#{facturaBean.facturaVo.concepto}"/>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <h:outputLabel value="Monto" class="control-label col-12"/>
+                                            <div class="col-10">
+                                                <h:outputText value="#{facturaBean.facturaVo.monto}">
+                                                    <f:convertNumber maxFractionDigits="2"/>
+                                                </h:outputText>
+                                                #{facturaBean.facturaVo.moneda}
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <h:outputLabel value="Póliza Registro Contable" class="control-label col-12"/>
+
+                                            <div id="dvPoliza#{facturaBean.facturaVo.id}" class="col-12">
+                                                <h:outputText styleClass="control-label col-6" value="#{facturaBean.facturaVo.poliza}">                                                        
+                                                </h:outputText>
+                                                <div class="col-4">
+                                                    <p:commandLink styleClass="btn btn-default" 
+                                                                   onclick="mostrarDiv('dvPolizaMod#{facturaBean.facturaVo.id}'); ocultarDiv('dvPoliza#{facturaBean.facturaVo.id}')" 
+                                                                   >
+                                                        <i class="fa fa-pencil"/>
+                                                    </p:commandLink>
+                                                </div>
+                                            </div>
+                                            <div id="dvPolizaMod#{facturaBean.facturaVo.id}" class="col-12" style="display: none;">
+                                                <h:inputText styleClass="col-6 control-label"  value="#{facturaBean.facturaVo.poliza}"/>                                                    
+                                                <p:commandLink action="#{facturaBean.agregarPoliza}" 
+                                                               styleClass="btn btn-info text-white" update="@form">
+                                                    <i class="fa fa-ok-circle text-primary"/>                                                        
+                                                </p:commandLink>
+                                            </div>
+                                        </div>                                            
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="form-group">
+                                            <h:outputLabel value="Proveedor" class="control-label col-12"/>
+                                            <div class="col-12">
+                                                <h:outputText value="#{facturaBean.facturaVo.proveedor}"/>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <h:outputLabel value="Emisión" class="control-label col-10"/>
+                                            <div class="col-12">
+                                                <h:outputText value="#{facturaBean.facturaVo.fechaEmision}">
+                                                    <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                                </h:outputText>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <h:outputLabel value="Carta CN" class="control-label col-12"/>
+                                            <div class="col-12">
+                                                <h:outputLabel value="No CN" style="font-style: italic;" 
+                                                               rendered="#{facturaBean.facturaVo.idAdjunto eq 0}"/>
+                                                <h:outputLink   
+                                                    rendered="#{facturaBean.facturaVo.uuId ne null}"
+                                                    target="_blank"  
+                                                    id="abrirReq"
+                                                    title="Click aqui para abrir el archivo..." 
+                                                    value="/Compras/AbrirArchivo?ZWZ2W=#{facturaBean.facturaVo.idAdjunto}&amp;ZWZ3W=#{facturaBean.facturaVo.uuId}">
+                                                    <h:outputText value=" Abrir"/>
+                                                </h:outputLink>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <h:outputLabel value="Póliza Registro del Pago" class="control-label col-12"/>
+
+                                            <div id="dvPolizaPago#{facturaBean.facturaVo.id}" class="col-12">
+                                                <h:outputText styleClass="control-label col-6" value="#{facturaBean.facturaVo.polizaPago}">                                                        
+                                                </h:outputText>
+                                                <div class="col-4">
+                                                    <p:commandLink styleClass="btn btn-default" 
+                                                                   onclick="mostrarDiv('dvPolizaModPago#{facturaBean.facturaVo.id}'); ocultarDiv('dvPolizaPago#{facturaBean.facturaVo.id}')" 
+                                                                   >
+                                                        <i class="fa fa-pencil"/>
+                                                    </p:commandLink>
+                                                </div>
+                                            </div>
+                                            <div id="dvPolizaModPago#{facturaBean.facturaVo.id}" class="col-12" style="display: none;">
+                                                <h:inputText styleClass="col-6 control-label"  value="#{facturaBean.facturaVo.polizaPago}"/>                                                    
+                                                <p:commandLink action="#{facturaBean.agregarPolizaPago}" 
+                                                               styleClass="btn btn-info text-white" update="@form">
+                                                    <i class="fa fa-ok-circle text-primary"/>                                                        
+                                                </p:commandLink>
+                                            </div>
+                                        </div>                                            
+                                    </div>
+                                </div>
+                            </p:tab>
+                            <p:tab title="Partidas">
+                                <p:dataTable size="small" stripedRows="true" showGridlines="true" 
+                                             value="#{facturaBean.facturaVo.detalleFactura}" 
+                                             var="dataDetFac"
+                                             paginator="true"
+                                             paginatorPosition="bottom"
+                                             rows="10"
+                                             >
+                                    <f:facet name="header">Partidas facturadas</f:facet>
+                                    <p:column headerText="Descripción" style="text-align: justify">
+                                        #{dataDetFac.descripcion}
+                                    </p:column>
+                                    <p:column headerText="Cantidad">
+                                        #{dataDetFac.cantidad}
+                                    </p:column>
+                                    <p:column headerText="Precio">
+                                        <h:outputText value="#{dataDetFac.precio}">
+                                            <f:convertNumber maxFractionDigits="2"/>
+                                        </h:outputText>
+                                    </p:column>
+                                    <p:column headerText="Importe">
+                                        <h:outputText value="#{dataDetFac.importe}" style="#{empty dataDetFac.descripcion ? 'font-size: 1.2em; font-weight: bold;' :''}">
+                                            <f:convertNumber maxFractionDigits="2"/>
+                                        </h:outputText>
+                                    </p:column>
+                                </p:dataTable>
+                            </p:tab>
+                            <p:tab title="Evidencias / Soportes">
+                                <div class="container-fluid" style="margin-top: 10px;">
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <div class="col-8">
+                                                <p:commandLink  class="btn btn-info col-12" 
+                                                                action="#{facturaBean.inicioCargaComplemento}"
+                                                                process="@this" update="frmArchivoFact">
+                                                    <i class="fa fa-file"/> <b>Cargar Complemento de Pago</b>
+                                                </p:commandLink>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="col-8">
+                                                <p:commandLink  class="btn btn-info col-12" 
+                                                                action="#{facturaBean.inicioCargaPago}"
+                                                                process="@this" update="frmArchivoFact">
+                                                    <i class="fa fa-file"/> <b>Cargar Pago</b>
+                                                </p:commandLink>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="container-fluid" style="margin-top: 10px;">
+                                    <p:dataTable id="dtArc" size="small" stripedRows="true" showGridlines="true" 
+                                                 value="#{facturaBean.listaArchivosFactura}" var="dataFac">
+                                        <p:column headerText="Tipo">
+                                            #{dataFac.tipo}
+                                        </p:column>
+                                        <p:column headerText="Nombre">
+                                            #{dataFac.adjuntoVo.nombre}
+                                        </p:column>
+                                        <p:column >
+                                            <h:outputLink   
+                                                target="_blank"  
+                                                id="abrirReq"
+                                                title="Click aqui para abrir el archivo..." 
+                                                value="/Compras/AbrirArchivo?ZWZ2W=#{dataFac.adjuntoVo.id}&amp;ZWZ3W=#{dataFac.adjuntoVo.uuid}">
+                                                <h:outputText value=" Abrir"/>
+                                            </h:outputLink>
+                                        </p:column>
+                                        <p:column >
+                                            <p:commandLink 
+                                                rendered="#{dataFac.tipo eq 'COMPLEMENTO' or dataFac.tipo eq 'PAGO'}"
+                                                value="Eliminar"                   
+                                                action="#{facturaBean.eliminarComplementoPago(dataFac.id)}"
+                                                process="@this" update="dtArc">
+                                            </p:commandLink>
+                                        </p:column>
+                                    </p:dataTable>
+                                </div>
+                            </p:tab>
+                            <p:tab title="Contenido Nacional">
+                                <p:dataTable size="small" stripedRows="true" showGridlines="true" value="#{facturaBean.contenidoNacional}" var="dataCN">
+                                    <p:column headerText="Código">
+                                        #{dataCN.codigoCatalogoHidro}
+                                    </p:column>
+                                    <p:column headerText="Descripción de bienes y/o servicios">
+                                        #{dataCN.nombreCatalogoHidro}
+                                    </p:column>
+                                    <p:column headerText="Cont. Nac.">                                            
+                                        #{dataCN.proporcionContenido}
+                                    </p:column>
+                                    <p:column headerText="Monto Facturado Acumulado por año">                                            
+                                        #{dataCN.montoFacturado}
+                                    </p:column>
+                                </p:dataTable>
+                            </p:tab>
+                            <p:tab title="Notas de Crédito">
+                                <p:dataTable size="small" stripedRows="true" showGridlines="true" value="#{facturaBean.listaNotaCredito}" var="dataNota">
+                                    <p:column headerText="Folio">
+                                        #{dataNota.folio}
+                                    </p:column>
+                                    <p:column headerText="Concepto">
+                                        #{dataNota.concepto}
+                                    </p:column>
+                                    <p:column headerText="Monto CN">
+                                        <h:outputText value="#{dataNota.monto}">
+                                            <f:convertNumber maxFractionDigits="2"/>                                                
+                                        </h:outputText>
+                                    </p:column>
+                                </p:dataTable>
+                            </p:tab>
+                        </p:tabView>
+                    </div>
+                </h:form>   
+                <ui:include src="popFacturaPago.xhtml"/>
+            </ui:define>
+        </ui:composition>
+
+    </body>
+</html>

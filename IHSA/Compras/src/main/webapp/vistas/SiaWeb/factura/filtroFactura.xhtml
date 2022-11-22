@@ -1,0 +1,106 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                >
+    <div class="table-responsive">
+        <div class="input-group" >
+            <div class="col-10 col-xs-10"></div>
+            <div class="col-1 col-xs-1" style="text-align: right; padding-top: 20px;">
+                <p:commandLink  action="#{consultaFacturaBean.limpiarBusqueda}"
+                                styleClass="btn btn-warning"
+                                title="Limpiar filtros"
+                                style="text-align: right; margin-left: 0px;"
+                                process="@this" update="@form">
+                    <i class="fa fa-trash" aria-hidden="true"></i>
+                </p:commandLink>
+            </div>
+            <div class="col-1 col-xs-1" style="text-align: right; padding-top: 20px;">
+                <p:commandLink styleClass="btn btn-success " action="#{consultaFacturaBean.buscarFactura}"
+                               style="text-align: right; margin-left: 0px;"
+                               title="Buscar facturas" process="@this frmConsFact:tblFiltro" update="frmConsFact:tblFacturas">
+                    <span class="fa fa-search text-white"/>
+                </p:commandLink>
+            </div>
+        </div>
+    </div>
+    <div class="table-responsive">
+        <div class="col-12 col-xs-12">
+            <p:dataTable size="small" stripedRows="true" showGridlines="true" id="tblFiltro" 
+                         value="#{consultaFacturaBean.listaFiltro}" var="data" rowIndexVar="index">	    
+                <p:column headerText="Nexo" style="width: 6%;">
+                    <h:selectOneMenu value="#{data.operadorLogicoSeleccionado}"
+                                     styleClass="form-control"
+                                     rendered="#{data.id gt 0}">
+                        <f:selectItems value="#{data.operadorLogico}"/>
+                    </h:selectOneMenu>
+                </p:column>
+                <p:column headerText="Campo" style="width: 20%;" >
+                    <p:selectOneMenu value="#{data.campoSeleccionado}"
+                                     styleClass="form-control">
+                        <f:selectItems value="#{data.campos}"/>
+                        <p:ajax event="change" listener="#{consultaFacturaBean.mostrarCondiciones(index,data.campoSeleccionado)}"
+                                update="frmConsFact:tblFiltro"/>
+                    </p:selectOneMenu>
+                </p:column>
+                <p:column headerText="Operador" style="width: 20%;">
+                    <h:selectOneMenu value="#{data.operadorRelacionalSeleccionado}"
+                                     styleClass="form-control">
+                        <f:selectItems value="#{data.operadorRelacional}"/>
+                    </h:selectOneMenu>
+
+                </p:column>
+                <p:column headerText="Valor" style="width: 50%; text-align: left;">
+                    <div class="input-group" style="display: #{data.filtroFechaRango ? 'block;' : 'none;'} ">
+                        <p:datePicker value="#{data.fechaInicio}" 
+                                      pattern="dd/MM/yyyy" 
+                                      mindate="#{consultaFacturaBean.fechaMinina}"
+                                      maxdate="#{consultaFacturaBean.fechaMaxima}">
+
+                        </p:datePicker>
+                        <h:outputText value="a" styleClass="control-label" style="margin: 15px;"/>
+                        <p:datePicker value="#{data.fechaFin}" 
+                                      pattern="dd/MM/yyyy"
+                                      mindate="#{consultaFacturaBean.fechaMinina}"
+                                      maxdate="#{consultaFacturaBean.fechaMaxima}">
+                        </p:datePicker>
+                    </div>
+                    <h:inputText value="#{data.alcance}" rendered="#{data.filtroCaja}"
+                                 style="width: 150px;"
+                                 styleClass="form-control"/>
+                    <h:selectOneMenu value="#{data.idGerencia}" rendered="#{data.filtroCombo  and data.campoSeleccionado eq 'Gerencia'}"
+                                     class="form-control">
+                        <f:selectItems value="#{data.listaGerencia}"/>
+                    </h:selectOneMenu>		
+                    <h:selectOneMenu value="#{data.idEstado}" rendered="#{data.filtroCombo  and data.campoSeleccionado eq 'Estatus'}"
+                                     class="form-control">
+                        <f:selectItems value="#{data.listaEstatus}"/>
+                    </h:selectOneMenu>		
+                    <h:selectOneMenu value="#{data.idProveedor}" rendered="#{data.filtroCombo  and data.campoSeleccionado eq 'Proveedor'}"
+                                     class="form-control" style="width: 80%;">
+                        <f:selectItems value="#{data.listaProveedores}"/>
+                    </h:selectOneMenu>		
+                </p:column>	    
+                <p:column style="width: 2%;">
+                    <p:commandLink action="#{consultaFacturaBean.agregarNuevoFiltro}"
+                                   rendered="#{data.id eq consultaFacturaBean.listaFiltro.size()-1}"
+                                   process="@this" update="@form">
+                        <i class="fa fa-plus text-primary"/>
+                    </p:commandLink>
+                </p:column>
+                <p:column rendered="#{consultaFacturaBean.listaFiltro.size() gt 1}" style="width: 2%;">
+                    <p:commandLink action="#{consultaFacturaBean.quitarFiltro(data.id)}"
+                                   rendered="#{data.id gt 0}" 
+                                   process="@this" update="@form">
+                        <i class="fa fa-minus text-warning"/>
+                    </p:commandLink>
+                </p:column>
+            </p:dataTable>
+        </div>
+    </div>
+
+
+</ui:composition>    
+

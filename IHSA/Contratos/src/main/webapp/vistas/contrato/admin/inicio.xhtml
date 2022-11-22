@@ -1,0 +1,81 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"      
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <body>
+        <ui:composition template="../../../WEB-INF/template/template.xhtml">
+            <ui:define name="tituloPagina">
+                <h2 class="page-header">Administrar contratos</h2>
+            </ui:define>
+
+            <ui:define name="contenido">
+                <h:form id="frmAdmin">
+                    <p:tabView id="tabView" dynamic="true" cache="false" activeIndex="#{contratoBean.activeTab}"
+                               binding="#{contratoBean.tabView}">
+                        <p:ajax event="tabChange" listener="#{contratoBean.onTabChange}"  />
+                        <p:ajax event="tabClose" listener="#{contratoBean.onTabClose}" />	
+                        <p:tab title="Buscar">
+                            <ui:include  src="fragmento/filtroBuscar.xhtml"/>
+                            <!-- Tab panes -->
+                            <p:dataTable id="dtConvenio" value="#{contratoBean.listaConvenios}" 
+                                         var="data" showGridlines="true" size="small"
+                                         rows="10" paginator="true" 
+                                         paginatorPosition="bottom" selectionMode="single"
+                                         selection="#{contratoBean.contratoVo}" 
+                                         rowKey="#{data.id}">
+                                <p:ajax event="rowSelect" listener="#{contratoBean.administrarContrato}" 
+                                        update="frmAdmin:tabView" />
+                                <p:column headerText="Número"  style="text-align: left;">
+                                    <h:outputText value="#{data.numero}"/>
+                                </p:column>
+                                <p:column headerText="Proveedor" style="text-align: left;">
+                                    <h:outputText value="#{data.nombreProveedor}"/>
+                                </p:column>
+                                <p:column headerText="Descripción" style="text-align: left;">
+                                    <h:outputText value="#{data.nombre}"/>
+                                </p:column>
+                                <p:column headerText="Inicio" width="90">
+                                    <h:outputText value="#{data.fechaInicio}">
+                                        <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                    </h:outputText>
+                                </p:column>
+                                <p:column headerText="Fin" width="90">
+                                    <h:outputText value="#{data.fechaVencimiento}">
+                                        <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                    </h:outputText>
+                                </p:column>
+                                <p:column headerText="Vigencia" width="80">
+                                    <h:outputText value="#{data.vigencia}"/>
+                                </p:column>
+                                <p:column headerText="Monto" style="text-align: right;" width="90">
+                                    <h:outputText value="#{data.monto}" >
+                                        <f:convertNumber type="currency"/>
+                                    </h:outputText>
+                                </p:column>
+                                <p:column headerText="Móneda" width="70">
+                                    <h:outputText value="#{data.moneda}"/>
+                                </p:column>
+                                <p:column headerText="Estado" width="80">
+                                    <h:outputText value="#{data.estado}"/>
+                                </p:column>
+                            </p:dataTable>
+                        </p:tab>
+                        <c:forEach var="contr" items="#{contratoBean.lstConveniosTabs}" varStatus="loop" >
+                            <p:tab title="#{contr.codigo}" closable="true">
+                                <ui:include src="../admin/administrarContrato.xhtml"/>
+                            </p:tab>
+                        </c:forEach>
+                    </p:tabView>
+                </h:form>
+                <ui:include src="../admin/popup/popAdmin.xhtml"/>
+                <ui:include src="fragmento/subirArchivo.xhtml"/>
+                <ui:include src="fragmento/popUpEvaluacion.xhtml"/>
+                <ui:include src="../admin/popup/popUpProveedorAdmin.xhtml"/>                
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

@@ -1,0 +1,180 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"  
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://java.sun.com/jsf/html"
+
+      xmlns:f="http://java.sun.com/jsf/core">
+
+    <body>
+        <ui:composition template="./../../../WEB-INF/facelets/templates/templateServiciosGenerales.xhtml">
+            <ui:define name="contenido">
+                <script type="text/javascript">
+                    $(document).ready(function () {
+                        ejecutarBoton('frmPagos', 'btnInicial');
+                    });</script>
+                <p class="tituloEncabezado">Reporte de Servicios Generales y Logística</p>
+                <h:form id="frmPagos" >
+                    <h:commandLink value="iniciar"  style="display: none;"
+                                   id="btnInicial" actionListener="#{consultaBean.traerTotal(event)}"
+                                   >
+                        <f:ajax render="@this"></f:ajax>
+                    </h:commandLink>
+                </h:form>
+                <ul class="nav nav-tabs" role="tablist">		    
+                    <li role="presentation" class="active" >
+                        <a href="#reporteGasto" aria-controls="gasto" role="tab" data-toggle="tab"
+                           onclick="ejecutarBoton('frmPagos', 'btnInicial');">
+                            <font style="color: black;"> 
+                                <i class="fa fa-money text-primary">
+                                    <b>Gastos</b>
+                                </i>
+                            </font>
+                        </a>
+                    </li>
+                    <li role="presentation"  >
+                        <a href="#reporteHospedados" aria-controls="hospedados" role="tab" data-toggle="tab"
+                           onclick="ejecutarBoton('frmPagos', 'btnInicial');">
+                            <i class="fa fa-suitcase text-primary"> Huéspedes</i></a>
+                    </li>
+                    <li role="presentation"  >
+                        <a href="#reporteViajes" aria-controls="viajes" role="tab" data-toggle="tab"
+                           onclick="ejecutarBoton('frmPagos', 'btnInicial');">
+                            <i class="fa fa-car text-primary"> Viajes </i></a>
+                    </li>
+                </ul>
+                <div class="tab-content">
+                    <div role="tabpanel" class="tab-pane active" id="reporteGasto">
+                        <ui:include src="pago/reporteGastos.xhtml"/>
+                    </div>
+                    <div role="tabpanel" class="tab-pane" id="reporteHospedados">
+                        <ui:include src="pago/reporteHuesped.xhtml"/>
+                    </div>
+                    <div role="tabpanel" class="tab-pane" id="reporteViajes">
+                        <ui:include src="pago/reporteViaje.xhtml"/>
+                    </div>
+                </div>
+                <!-- Modal Panel Huespedes en hotel -->
+                <div class="modal fade" id="dialogoHuespedesHotel" data-backdrop="static" data-keyboard="false">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="card  panel-default">
+                                <div class="card -heading">
+                                    <h4 class="modal-title"> Hospedados</h4>
+                                </div>
+                                <h:form>
+                                    <div class="card-body modal-footer">
+                                        <div class="table table-responsive">
+                                            <p:dataTable id="dtHuespedHotel" value="#{consultaBean.mapaConsulta.get('huespedHotel')}" var="data"
+                                                         rows="10" styleClass="dataPaginatorDataTable" 
+                                                         paginator="true"  showGridlines="true" size="small"
+                                                         paginatorPosition="bottom"  
+                                                         style="font-size: 1em; width: 100%	" >
+                                                <f:facet name="header"><h:outputLabel value="#{consultaBean.servicioHotel}"/></f:facet>
+                                                <p:column headerText="Gerencia" style="text-align: left;">
+                                                    <h:outputText value="#{data.nombreGerencia}"/>
+                                                </p:column>
+                                                <p:column headerText="Huesped" >
+                                                    <h:outputText value="#{data.nombreHuesped}" style="text-align: left;" />
+                                                </p:column>
+                                                <p:column headerText="Ingreso" style="text-align: center;">
+                                                    <h:outputText value="#{data.fechaIngreso}">
+                                                        <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                                    </h:outputText>
+                                                </p:column>
+                                                <p:column headerText="Salida" style="text-align: right;">
+                                                    <h:outputText value="#{data.fechaSalida}">
+                                                        <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                                    </h:outputText>
+                                                </p:column>
+                                                <p:column headerText="Reservación" style="text-align: center;">
+                                                    <h:outputText value="#{data.numeroHabitacionHotel}"/>
+                                                </p:column>
+                                                <p:column headerText="Carta" style="text-align: left;">
+                                                    <h:outputText value="#{data.adjuntoUUID}"/>
+
+                                                </p:column>
+                                            </p:dataTable>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer panel-footer">
+                                        <p:commandButton value="Exportar">
+                                            <p:dataExporter fileName="HospedadosHotel" type="xls" target="dtHuespedHotel" />    
+                                        </p:commandButton>
+                                        <h:commandLink value="Cerrar" onclick="$(dialogoHuespedesHotel).modal('hide');"
+                                                       styleClass="btn btn-default"/>
+                                    </div>
+
+                                </h:form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Modal Panel viajeros-->
+                <div class="modal fade" id="dialogoViajeros" data-backdrop="static" data-keyboard="false">
+                    <div class="modal-dialog"  style="width: 70%">
+                        <div class="modal-content">
+                            <div class="card  panel-default">
+                                <div class="card -heading">
+                                    <h4 class="modal-title"> Viajeros</h4>
+                                </div>
+                                <h:form>
+                                    <div class="card-body modal-footer">
+                                        <div class="table table-responsive">
+                                            <p:dataTable id="dtViaje" value="#{consultaBean.listaViaje}" var="data"
+                                                         rows="10" styleClass="dataPaginatorDataTable" 
+                                                         paginator="true"  showGridlines="true" size="small"
+                                                         paginatorPosition="bottom"  
+                                                         style="font-size: 1em; width: 100%	" >
+                                                <p:column headerText="Viaje" style="text-align: left;">
+                                                    <h:outputText value="#{data.codigo}"/>
+                                                </p:column>
+                                                <p:column headerText="Salida" >
+                                                    <h:outputText value="#{data.fechaSalida}" >
+                                                        <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                                    </h:outputText>
+                                                </p:column>
+                                                <p:column headerText="Hora">
+                                                    <h:outputText value="#{data.horaSalida}">
+                                                        <f:convertDateTime pattern="HH:mm"/>
+                                                    </h:outputText>
+                                                </p:column>
+                                                <p:column headerText="Chofer">
+                                                    <h:outputText value="#{data.responsable}"/>
+                                                </p:column>
+                                                <p:column headerText="Marca">
+                                                    <h:outputText value="#{data.vehiculoVO.marca}"/>
+                                                </p:column>
+                                                <p:column headerText="Modelo">
+                                                    <h:outputText value="#{data.vehiculoVO.modelo}"/>
+                                                </p:column>
+                                                <p:column headerText="Placa">
+                                                    <h:outputText value="#{data.vehiculoVO.numeroPlaca}"/>
+                                                </p:column>
+                                                <p:column headerText="Viajero">
+                                                    <h:outputText value="#{data.viajero}"/>
+                                                </p:column>
+                                                <p:column headerText="Solicitud" >
+                                                    <h:outputText value="#{data.solicitud}"/>
+                                                </p:column>
+                                            </p:dataTable>
+                                        </div>
+                                        <div class="card -footer">
+                                            <p:commandButton value="Exportar">
+                                                <p:dataExporter type="xls" fileName="viajeros" target="dtViaje"/>
+                                            </p:commandButton>
+                                            <h:commandLink onclick="$(dialogoViajeros).modal('hide');">
+                                                <i class="fa fa-remove"/>Cerrar
+                                            </h:commandLink>
+                                        </div>
+                                    </div>
+                                </h:form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

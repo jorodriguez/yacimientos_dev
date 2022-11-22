@@ -1,0 +1,57 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:p="http://primefaces.org/ui">
+    <div id="graficaOCSConvenio#{contr.id}" style="min-width: 950px; height: 400px; margin: 0 auto;" ></div>
+    <hr/>
+    <p:commandLink id="btnBuscar#{contr.id}" value="Buscar" 
+                   action="#{contratoBean.buscarContratoPorGrafica}"
+                   style="display: none"/>
+    <div class="row-fluid">
+        <p:commandLink action="#{contratoBean.traerOcsPorconvenio}"
+                       styleClass="btn btn-success  text-white"
+                       title="Traer ordenes pr contrato"
+                       style="float: right;" process="@this" update="frmAdmin:tabView">
+            <i class="fa fa-sync"/>
+        </p:commandLink> 
+        <p:commandButton value="Exportar">
+            <p:dataExporter type="xls" fileName="ocsContrato" target="dtlOcsConvenio#{contratoBean.contratoVo.id}"
+                            >
+            </p:dataExporter>
+        </p:commandButton>
+    </div>
+    <div class="table table-responsive">
+        <p:dataTable id="dtlOcsConvenio#{contr.id}" value="#{contratoBean.contratoVo.listaOrdenConvenio}" var="data"
+                     rowStyleClass="table table-bordered table-striped"
+                     paginator="true"  
+                     paginatorPosition="bottom" 
+                     rows="15">
+            <p:column headerText="OC/S">
+                <h:outputText value="#{data.consecutivo}"/>	    
+            </p:column>
+            <p:column headerText="Solicitó">
+                <h:outputText value="#{data.analista}"/>	    
+            </p:column>
+            <p:column headerText="Gerencia">
+                <h:outputText value="#{data.gerencia}"/>	    
+            </p:column>
+            <p:column headerText="Referencia">
+                <h:outputText value="#{data.referencia}"/>	    
+            </p:column>
+            <p:column headerText="Estado">
+                <h:outputText value="#{data.estatus}"/>	    
+            </p:column>
+            <p:column headerText="Subtotal">
+                <h:outputText value="#{data.subTotal}">
+                    <f:convertNumber maxFractionDigits="4"/>
+                </h:outputText>	    
+            </p:column>
+            <p:column headerText="Moneda">
+                <h:outputText value="#{data.moneda}"/>
+            </p:column>
+        </p:dataTable>
+    </div>
+</ui:composition>

@@ -1,0 +1,243 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <body>
+        <ui:composition template="../../../WEB-INF/template/template.xhtml">
+            <ui:define name="tituloPagina">
+                <h2 class="page-header">Registro de categorías</h2>
+            </ui:define>
+            <ui:define name="contenido">	
+                <h:form id="frmCategoria" rendered="#{not empty sesion.usuarioSesion}">
+                    <div class="row">
+                        <div class="col-2">
+                            <p:commandLink title="Agregar a categoría" styleClass="btn btn-primary btn-md"
+                                           action="#{registroCategoriaBean.iniciarAgregarCategoria}"
+                                           process="@this frmCategoria:dtArt" update="frmCambiarArticulo">
+                                <i class="fa fa-plus text-white"> <b>Agregar categoría</b></i>
+                            </p:commandLink>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <p:dataTable id="dtArt" var="data" value="#{registroCategoriaBean.mapaArticulo.get('articulo')}"
+                                     size="small" showGridlines="true">
+                            <f:facet name="header"><b>Lista de articulos</b></f:facet>
+                            <p:column width="35">
+                                <h:selectBooleanCheckbox value="#{data.selected}"/>
+                            </p:column>
+                            <p:column headerText="Ítem" style="text-align: left;" width="35">
+                                <h:outputText value="#{data.codigo}"/>
+                            </p:column>
+                            <p:column headerText="Nombre" style="text-align: left;">
+                                <h:outputText value="#{data.nombre}"/>
+                            </p:column>
+                            <p:column headerText="Unidad" width="80">
+                                <h:outputText value="#{data.unidadNombre}"/>
+                            </p:column>
+                        </p:dataTable>
+                    </div>                    
+                </h:form>
+                <div class="modal fade" id="dialogoAgregarCategoria" data-backdrop="static" data-keyboard="false">
+                    <div class="modal-dialog modal-xl">
+                        <div class="modal-content">
+                            <h:form id="frmCambiarArticulo">
+                                <div class="modal-header">
+                                    <h4 class="modal-title">Categoría donde se moverán los artículos</h4>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="card card-heading">
+                                        <div class="form-group">
+                                            <div class="col-10">
+                                                <p:repeat id="rpCab" value="#{registroCategoriaBean.mapaCategria.get('categoriaSeleccionada')}" var="data"
+                                                          varStatus="indice">
+                                                    <p:commandLink  action="#{registroCategoriaBean.seleccionarCategoriaCabecera(indice.index)}"
+                                                                    styleClass="text text-primary" process="@this" 
+                                                                    update="frmCambiarArticulo:dtCats frmCambiarArticulo:rpCab">
+                                                        <i class="#{data.nombre eq 'Pricipales' ? 'fa fa-circle' : 'fa fa-arrow-right' }" ></i>
+                                                        #{data.nombre} 
+                                                    </p:commandLink>
+                                                </p:repeat>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="card card-info">
+                                        <div class="card-header">
+                                            <div class="input-group col-12">
+                                                <div class="col-10">
+                                                    #{registroCategoriaBean.mapaCategria.get('categoriaSeleccionada').size()  eq 1 ? 'Pricipales' : registroCategoriaBean.categoriaVo.nombre}
+                                                </div>
+                                                <div class="col-2">
+                                                    <p:commandLink id="btnLink" styleClass="btn btn-primary" 
+                                                                   disabled="#{registroCategoriaBean.mapaCategria.get('categoriaSeleccionada').size()  lt 1}"
+                                                                   action="#{registroCategoriaBean.iniciarEnlaceCategoria}"
+                                                                   title="Enlazar categorías" process="@this" update="frmCambiarArticulo:dtCatRel frmCambiarArticulo:dtCatTem">
+                                                        <i class="fa fa-link text-white"></i>
+                                                    </p:commandLink>
+                                                    <p:commandLink styleClass="btn btn-primary" 
+                                                                   disabled="#{registroCategoriaBean.mapaCategria.get('categoriaSeleccionada').size()  ne 1}"
+                                                                   action="#{registroCategoriaBean.iniciarRegistroCategoria}"
+                                                                   title="Registrar categoría" process="@this" update="frmAgregarCategoria">
+                                                        <i class="fa fa-plus-circle text-white"></i>
+                                                    </p:commandLink>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="card-body">
+                                            <p:dataTable id="dtCats" value="#{registroCategoriaBean.mapaCategria.get('categoria')}" var="data"
+                                                         rows="7" paginator="true"  showGridlines="true" size="small"
+                                                         paginatorPosition="bottom" 
+                                                         rowIndexVar="indice" selection="#{registroCategoriaBean.categoriaVo}"
+                                                         rowKey="#{data.id}" selectionMode="single">
+                                                <p:ajax event="rowSelect" listener="#{registroCategoriaBean.seleccionarCategoria}" 
+                                                        update="frmCambiarArticulo:dtCats frmCambiarArticulo:dtCatRel frmCambiarArticulo:btnLink"/>
+                                                <p:column headerText="Nombre" style="text-align: left;">
+                                                    <h:outputText value="#{data.nombre}"/>
+                                                </p:column>
+                                                <p:column headerText="Código">
+                                                    <h:outputText value="#{data.codigo}"/>
+                                                </p:column>
+                                                <p:column rendered="#{registroCategoriaBean.mapaCategria.get('categoriaSeleccionada').size() gt 1}">
+                                                    <p:commandLink
+                                                        action="#{registroCategoriaBean.eliminarCategoria(indice)}"
+                                                        process="@this" update="frmCambiarArticulo:dtCats">
+                                                        <i class="fa fa-trash text-danger"></i>
+                                                    </p:commandLink>
+                                                </p:column>
+                                            </p:dataTable>
+                                        </div>
+                                    </div>  
+                                    <div class="row">
+                                        <p:dataTable var="data" value="#{registroCategoriaBean.mapaArticulo.get('artAgregarCat')}"
+                                                     styleClass="col col-12" lazy="true">
+                                            <f:facet name="header"><b>Listade articulos</b></f:facet>
+                                            <p:column headerText="Ítem" style="text-align: left;" width="15">
+                                                <h:outputText value="#{data.codigo}"/>
+                                            </p:column>
+                                            <p:column headerText="Nombre" style="text-align: left;">
+                                                <h:outputText value="#{data.nombre}"/>
+                                            </p:column>
+                                            <p:column headerText="Unidad" width="60">
+                                                <h:outputText value="#{data.unidadNombre}"/>
+                                            </p:column>
+                                        </p:dataTable>
+                                    </div>
+                                    <div class="card card-info">
+                                        <div class="card-header">
+                                            <div class="input-group" >
+                                                <div align="left" class="col-8">
+                                                    <h:outputText class="card-title" value="Relacionar categorías ( #{registroCategoriaBean.categoriaVo.nombre} )"/>
+                                                </div>
+                                                <div align="right" class="col-4">
+                                                    <p:commandLink action="#{registroCategoriaBean.cancelarGuardarCategoria}"
+                                                                   styleClass="btn btn-default" process="@this" update="frmCambiarArticulo:dtCatRel">
+                                                        <i class="fa fa-trash text-danger"></i>
+                                                    </p:commandLink>
+                                                    <p:commandLink action="#{registroCategoriaBean.terminarGuardarCategoria}"
+                                                                   styleClass="btn btn-primary"
+                                                                   style="margin-left: 20px;" process="@this" update="frmCambiarArticulo:dtCatTem">
+                                                        <i class="fa fa-save"></i>
+                                                    </p:commandLink>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-6 col-xs-6">
+                                                <p:dataTable id="dtCatRel" value="#{registroCategoriaBean.mapaCategria.get('categoriaRelacion')}" var="data"
+                                                             showGridlines="true" size="small"
+                                                             rows="10" paginator="true"  lazy="true"
+                                                             paginatorPosition="bottom" rowKey="#{data.id}"
+                                                             selection="#{registroCategoriaBean.categoriaVo}" selectionMode="single" >
+                                                    <p:ajax event="rowSelect" listener="#{registroCategoriaBean.seleccionarCategoriaAgregar}"
+                                                            update="frmCambiarArticulo:dtCatTem frmCambiarArticulo:dtCatRel"/>
+                                                    <p:column headerText="Nombre" filterBy="#{data.nombre}" filterMatchMode="contains">
+                                                        <h:outputText value="#{data.nombre}"/>
+                                                    </p:column>
+                                                    <p:column headerText="Código" filterBy="#{data.codigo}" filterMatchMode="contains">
+                                                        <h:outputText value="#{data.codigo}"/>
+                                                    </p:column>
+                                                </p:dataTable>
+                                            </div>
+                                            <div class="col-6 col-xs-6">					
+                                                <p:dataTable id="dtCatTem" value="#{registroCategoriaBean.mapaCategria.get('categoriaTemporal')}" 
+                                                             var="data"
+                                                             size="small" showGridlines="true"
+                                                             rows="10" paginator="true"  lazy="true"
+                                                             paginatorPosition="bottom" 
+                                                             rowIndexVar="indice" >
+                                                    <f:facet name="header" >Categorías a guardar</f:facet>
+                                                    <p:column headerText="Nombre">
+                                                        <h:outputText value="#{data.nombre}"/>
+                                                    </p:column>
+                                                    <p:column>
+                                                        <p:commandLink
+                                                            action="#{registroCategoriaBean.eliminarCategoriaTemporal(indice)}"
+                                                            process="@this" update="frmCambiarArticulo:dtCatTem">
+                                                            <i class="fa fa-trash text-danger"></i>
+                                                        </p:commandLink>
+                                                    </p:column>
+                                                </p:dataTable>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <p:commandLink value="Cerrar" styleClass="btn btn-default" 
+                                                   onclick="$(dialogoAgregarCategoria).modal('hide');" immediate="true"/>
+                                    <p:commandLink value="Guardar" styleClass="btn btn-primary" 
+                                                   action="#{registroCategoriaBean.agregarCategoria}" process="@form" update="frmCategoria"/>
+                                </div>
+                            </h:form>
+                        </div>
+                    </div>
+                </div>
+                <!-- Registro de categoría -->
+                <div class="modal fade" id="registrarCategoria" data-backdrop="static" data-keyboard="false">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h4 class="modal-title">Categoría</h4>
+                            </div>
+                            <h:form id="frmAgregarCategoria">
+                                <div class="modal-body card card-body">				    
+                                    <div class="input-group col-12" >
+                                        <div class="form-group col-12">
+                                            <div class="col-2">
+                                                <h:outputLabel value="Categoría: " styleClass="control-label"/>
+                                            </div>					    
+                                            <div class="col-8">
+                                                <h:inputText id="txtCategoria" value="#{registroCategoriaBean.nombre}" styleClass="form-control"
+                                                             required="true" requiredMessage="Es necesario agregar el nombre"/>
+                                                <h:message for="txtCategoria" styleClass="text-danger"/>
+                                            </div>
+                                        </div>
+                                        <div class="form-group col-12">
+                                            <div class="col-2">
+                                                <h:outputLabel value="Código:" styleClass="control-label"/>
+                                            </div>
+                                            <div class="col-8">
+                                                <h:inputText id="txtCodCat" value="#{registroCategoriaBean.codigo}" styleClass="form-control"
+                                                             maxlength="3"/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <p:commandLink value="Cerrar" styleClass="btn btn-default"  
+                                                   action="#{registroCategoriaBean.cerrarRegistrarCategoria}"
+                                                   immediate="true"/>
+                                    <p:commandLink value="Guardar" styleClass="btn btn-primary" 
+                                                   action="#{registroCategoriaBean.registrarCategoria}"						     
+                                                   process="@form" update="frmCambiarArticulo"/>
+                                </div>
+                            </h:form>
+                        </div>
+                    </div>
+                </div>
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

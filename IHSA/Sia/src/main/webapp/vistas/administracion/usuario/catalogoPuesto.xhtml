@@ -1,0 +1,138 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+
+    <body>
+        <ui:composition template="./../../../WEB-INF/facelets/templates/templateGrupos.xhtml">
+            <ui:define name="contenido">
+                <div class="row">
+                    <ui:include src="/vistas/recursos/menuRecursos.xhtml" />
+                </div>
+                <div class="row"> 
+                    <h:form id="formPrincipal" >
+                        <div class="col-lg-12">
+                            <div class="col-lg-4"></div>
+                            <div class="col-lg-6">
+                                <h2 class="page-header">#{msgs['rhPuesto.catalogo']}</h2>
+                            </div>
+                        </div> 
+                        <!-- <center><h:messages globalOnly="true" errorClass="errorMessage" infoClass="infoMessage"/></center>  -->
+                        <div class="col-lg-12">
+                            <p:panelGrid columns="1">
+                                <f:facet name="header"><h:outputLabel value="#{msgs['cabecera.buscar']} #{msgs['rhPuesto']}"/></f:facet>
+                                <p:selectOneRadio value="#{puestosBean.opcionSeleccionada}">
+                                    <f:selectItem itemLabel="Todos" itemValue="todo"/>
+                                    <f:selectItem itemLabel="Filtro" itemValue="filtro"/>
+                                    <p:ajax listener="#{puestosBean.traerPorFiltro}" 
+                                            update="formPrincipal:dataGridModulo"/>
+                                </p:selectOneRadio>
+                                <p:panelGrid  columns="2">
+                                    <p:inputText value="#{puestosBean.cadenaBuscar}" size="20" id="buscarPuesto"/>
+                                    <p:commandLink styleClass="btn btn-default" action="#{puestosBean.buscarPuesto}">
+                                        <span class="fa fa-search"></span>
+                                    </p:commandLink>
+                                </p:panelGrid>
+                            </p:panelGrid>
+                            <p:commandLink type="submit" title="#{msgs['sistema.crear']} #{msgs['rhPuesto']}" 
+                                           action="#{puestosBean.openPopupCreateRhPuesto}" styleClass="btn btn-default"                                                
+                                           process="@this" update="popupCreateRhPuesto"
+                                           oncomplete="PF('dlgCrearP').show()">
+                                <span class="fa fa-plus"/>
+                            </p:commandLink>
+                        </div>
+                        <div class="col-lg-12">
+                            <p:dataTable id="dataGridModulo" rows="10"  value="#{puestosBean.allRhPuestoDataModel}"
+                                         size="small" showGridlines="true" paginator="true" paginatorPosition="bottom"
+                                         var="data">
+                                <p:column>
+                                    <f:facet name="header">
+                                        <h:outputText value="#{msgs['rhPuesto']}"/>
+                                    </f:facet>
+                                    <h:outputText value="#{data.nombre}" />
+                                </p:column>
+                                <p:column>
+                                    <f:facet name="header">
+                                        <h:outputText value="#{msgs['presupuesto.nuevos.campoDescripcion']}"/>
+                                    </f:facet>
+                                    <h:outputText value="#{(data.descripcion!='null') ? data.descripcion : ''}" />
+                                </p:column>
+                                <p:column width="10%">
+                                    <p:commandLink title="#{msgs['presupuesto.nuevos.modificar']} #{msgs['rhPuesto']}" 
+                                                   value="#{msgs['presupuesto.nuevos.modificar']}" 
+                                                   action="#{puestosBean.openPopupUpdateRhPuesto}"
+                                                   process="@this" update="popupUpdateRhPuesto"
+                                                   oncomplete="PF('dlgModP').show()"/>
+                                </p:column>
+                                <p:column width="10%">
+                                    <p:commandLink title="#{msgs['sistema.eliminar']} #{msgs['rhPuesto']}" value="#{msgs['sistema.eliminar']}" 
+                                                   action="#{puestosBean.deleteRhPuesto(data.id)}"
+                                                   process="@this" update="formPrincipal:dataGridModulo"/>
+                                </p:column>          
+                            </p:dataTable>
+                        </div>
+                    </h:form>
+                    <h:form id="popupCreateRhPuesto">
+                        <p:dialog header="#{msgs['sistema.crear']} #{msgs['rhPuesto']}" 
+                                  widgetVar="dlgCrearP">
+                            <h:outputText id="msgsPopupCreateRhPuesto" value="" />
+                            <center><h:messages for="msgsPopupCreateRhPuesto" errorClass="errorMessage" infoClass="infoMessage"/></center>  
+
+                            <table width="300px" cellpadding="0" cellspacing="0">
+                                <tr>
+                                    <td align="right"><h:outputLabel value="#{msgs['generales.nombre']}: "/><h:outputText value="*" styleClass="textoRojo" /></td>
+                                    <td><p:inputText id="inpTxtNombre"  value="#{puestosBean.nombrePuesto}" style="width: 200px" styleClass="f11" maxlength="100"/></td> 
+                                </tr>
+                                <tr>
+                                    <td align="right"><h:outputLabel value="#{msgs['presupuesto.nuevos.campoDescripcion']}: "/></td>
+                                    <td><p:inputText id="inpTxtDescripcion" value="#{puestosBean.descripcionPuesto}" style="width: 200px" styleClass="f11" maxlength="256" /></td>
+                                </tr>
+                            </table>    
+                            <center>
+                                <p:panelGrid columns="2">
+                                    <p:commandButton value="#{msgs['sistema.crear']}" action="#{puestosBean.saveRhPuesto}" styleClass="btn btn-info"
+                                                     process="@form" update="formPrincipal"
+                                                     oncomplete="PF('dlgCrearP').hide()"
+                                                     />
+                                    <p:commandLink value="#{msgs['sistema.cancelar']}" action="#{puestosBean.closePopupCreateRhPuesto}" 
+                                                   styleClass="btn btn-default" immediate="true" 
+                                                   onclick="PF('dlgCrearP').hide()"/>        
+                                </p:panelGrid>                        
+                            </center>
+                        </p:dialog>
+                    </h:form>
+                    <h:form id="popupUpdateRhPuesto">
+                        <p:dialog  header="#{msgs['sistema.actualizar']} #{msgs['rhPuesto']}" 
+                                   widgetVar="dlgModP">
+                            <center><h:messages errorClass="errorMessage" infoClass="infoMessage"/></center>  
+                            <table width="300px" cellpadding="0" cellspacing="0">
+                                <tr>
+                                    <td align="right"><h:outputLabel value="#{msgs['generales.nombre']}: "/> <h:outputText value="*" styleClass="textoRojo" /></td>
+                                    <td><p:inputText  id="inpTxtNombre" required="true" requiredMessage="#{msgs['generales.nombre']} #{msgs['sistema.mensaje.error.esRequerido']}" value="#{puestosBean.nombrePuesto}" style="width: 200px" styleClass="f11" maxlength="32"/></td>
+                                </tr>
+                                <tr>
+                                    <td align="right"><h:outputLabel value="#{msgs['presupuesto.nuevos.campoDescripcion']}: "/> </td>
+                                    <td><p:inputText  id="inpTxtDescripcion" value="#{puestosBean.descripcionPuesto}" style="width: 200px" styleClass="f11" maxlength="256" /></td>
+                                </tr>
+                            </table>
+                            <center>
+                                <p:panelGrid columns="2">
+                                    <p:commandButton value="#{msgs['sistema.actualizar']}" action="#{puestosBean.updateRhPuesto}" styleClass="btn btn-info"
+                                                     process="@form" update="formPrincipal"
+                                                     oncomplete="PF('dlgModP').hide()"/>
+                                    <p:commandLink value="#{msgs['sistema.cancelar']}" action="#{puestosBean.closePopupUpdateRhPuesto}" 
+                                                   styleClass="btn btn-default" immediate="true"
+                                                   onclick="PF('dlgModP').hide()"/>        
+                                </p:panelGrid>                        
+                            </center>
+                        </p:dialog>
+                    </h:form>  
+                </div>
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

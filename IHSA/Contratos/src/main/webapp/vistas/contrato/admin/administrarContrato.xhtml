@@ -1,0 +1,56 @@
+<ui:composition xmlns:ui="http://xmlns.jcp.org/jsf/facelets"               
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns="http://www.w3.org/1999/xhtml">
+    <!-- Nav tabs -->
+    <p:tabView id="tbAdminCont#{contr.id}" activeIndex="0" dynamic="true" cache="false" >
+        <p:tab title="Datos Generales">
+            <div class="col-12 input-group">
+                <p:commandLink id="btnEliminar#{contr.id}"
+                               action="#{contratoBean.eliminarContrato}"
+                               class="btn btn-success text-danger"
+                               title="Eliminar contrato"  process="@this" update="frmAdmin"
+                               rendered="#{contr.editar and !contr.formalizado}">
+                    <span class="fa fa-trash text-danger"></span>
+                    <span>Eliminar</span>
+                </p:commandLink>
+                <p:commandLink id="btnFiniquitar#{contr.id}"
+                               action="#{contratoBean.inicioContratoFiniquitado}"
+                               class="btn btn-success text-white"
+                               title="Finiquitar contrato"
+                               rendered="#{contr.editar and !contr.formalizado}"
+                               process="@this" update="frmFinquitar">
+                    <i class="fa fa-edit text-white"></i>
+                    <span>Finiquitar</span>
+                </p:commandLink>
+                <p:commandLink action="#{contratoBean.inicioContratoFormalizado}" 
+                               id="btnFormalizar#{contr.id}"
+                               class="btn btn-success text-white "
+                               title="Formalizar contrato"
+                               rendered="#{contr.editar and !contr.formalizado}"
+                               process="@this" update="frmFormalizar">
+                    <i class="fa fa-upload"></i>
+                    <span>Formalizar</span>
+                </p:commandLink>
+                <h:outputLabel value="Contrato Formalizado" rendered="#{contr.editar and contr.formalizado}" class="text text-danger"/>
+            </div>
+            <ui:include src="../admin/fragmento/panelDatosContrato.xhtml"/>
+        </p:tab>
+        <p:tab title="Lista Precio">
+            <ui:include src="../admin/fragmento/listaPrecio.xhtml"/>
+        </p:tab>
+        <p:tab title="Datos del proveedor">
+            <ui:include src="../admin/fragmento/datosProveedor.xhtml"/>
+        </p:tab>
+        <p:tab title="Contratos Relacionados">
+            <ui:include src="../admin/fragmento/contratosRelacionados.xhtml"/>
+        </p:tab>
+        <p:tab title="Evaluación Proveedor ">                  
+            <ui:include src="../admin/fragmento/evaProveedor.xhtml"/>  
+        </p:tab>
+        <p:tab title="Ordenes de c/s">
+            <ui:include src="../consulta/datosContrato/fragmento/reporteOCS.xhtml"/>
+        </p:tab>
+    </p:tabView>
+</ui:composition>

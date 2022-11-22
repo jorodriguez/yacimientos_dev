@@ -1,0 +1,54 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+                xmlns:ihsa="http://java.sun.com/jsf/composite/widgets"
+                template="/WEB-INF/templates/crud.xhtml">
+
+    <ui:define name="tituloPagina">
+        #{msg['sia.inventarios.catalogo.unidades.modulo']}
+    </ui:define>
+
+    <ui:define name="titulo">
+        #{msg['sia.inventarios.catalogo.unidades.titulo']}
+    </ui:define>
+
+    <ui:define name="contenido">
+        <h:form id="frmUni">
+            <p:dataTable id="tablaDatos" showGridlines="true" size="small"
+                         value="#{unidad.lista}"
+                         var="u"
+                         lazy="true"
+                         paginator="true"
+                         paginatorPosition="bottom"
+                         rows="#{unidad.tamanioPagina}"
+                         style="width: 750px"
+                         allowUnsorting="true" sortMode="single">
+                <p:column id="id" headerText="#{msg['sia.inventarios.catalogo.unidades.id']}" sortBy="#{u.id}" style="width: 100px">
+                    <h:outputText value="#{u.id}"/>
+                </p:column>
+                <p:column id="nombre" headerText="#{msg['sia.inventarios.comun.nombre']}" sortBy="#{u.nombre}" style="width: 300px">
+                    <h:outputText value="#{u.nombre}"/>
+                </p:column>
+                <p:column id="descripcion" headerText="#{msg['sia.inventarios.comun.descripcion']}" sortBy="#{u.descripcion}" style="width: 300px">
+                    <h:outputText value="#{u.descripcion}"/>
+                </p:column>
+                <p:column style="width: 65px" styleClass="icon-column" rendered="#{not roles.esEmpleadoDeAlmacen()}">
+                    <p:commandLink title="#{msg['sia.inventarios.comun.eliminar']}" 
+                                   rendered="#{roles.esAdministradorDeInventarios()}"
+                                   action="#{unidad.eliminarElemento(u.id)}" 
+                                   process="@this" update="@form">
+                        <i class="fa fa-times fa-large text-danger"></i>
+                    </p:commandLink>
+                </p:column>
+            </p:dataTable>
+        </h:form>
+    </ui:define>
+
+    <ui:param name="confirmarEliminar" value="#{msg['sia.inventarios.catalogo.unidades.confirmarEliminar']}"/>
+    <ui:param name="mensajePaginacion" value="#{unidad.mensajePaginacion}" />
+</ui:composition>

@@ -1,0 +1,1292 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:h="http://xmlns.jcp.org/jsf/html">
+    <body>
+        <ui:composition template="./../templates/template.xhtml">
+            <ui:define name="tituloPagina">
+                Requisiciones recibidas
+            </ui:define>
+            <ui:define name="contenido">
+                <!-- Modal Panel Popup Rechazo -->
+                <div class="modal fade" id="dialogoDevRecepReq" data-backdrop="static" data-keyboard="false">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h4 class="modal-title">Devolver requisición</h4>
+                            </div>
+
+                            <h:form id="frmDevRecep">
+                                <div class="modal-body">
+                                    <div class="row">
+                                        <div class="input-group" >
+                                            <div class="form-group col-12" >
+                                                <h:outputLabel class="col-3 control-label" value="Requisición:" /> 
+                                                <div class="col-9">
+                                                    <h:outputText  value="#{recepcionRequisicionBean.requisicionActual.consecutivo}"/>
+                                                </div>
+                                            </div>
+                                            <div class="form-group col-12" >
+                                                <h:outputLabel class="col-3 control-label" value="ProyectoOT:"/>
+                                                <div class="col-9">
+                                                    <h:outputText  value="#{recepcionRequisicionBean.requisicionActual.proyectoOt.nombre}"/>
+                                                </div>
+                                            </div>
+                                            <div class="form-group col-12">
+                                                <h:outputLabel class="col-3 control-label" value="Fecha Solicita:" />
+                                                <div class="col-9"><h:outputText  value="#{recepcionRequisicionBean.requisicionActual.fechaSolicito}" >
+                                                        <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                                    </h:outputText>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="form-group">
+                                            <h:outputLabel class="col-12 control-label" value="Introduzca el motivo:*"/>
+                                            <div class="col-12">
+                                                <h:inputTextarea  id="motivoCancelo"  value="#{recepcionRequisicionBean.motivoDevolucion}" 
+                                                                  required="true" styleClass="form-control"/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <p:commandButton id="buttonAceptar"
+                                                     value="Aceptar"
+                                                     styleClass="btn btn-info"
+                                                     action="#{recepcionRequisicionBean.terminarDevolverRequisicion}"
+                                                     process="@form" update="form1 frmMenu"/>
+                                    <p:commandLink id="buttonCancelar"
+                                                   value="Cancelar"
+                                                   styleClass="btn btn-default"
+                                                   onclick="cerrarDialogoModal(dialogoDevRecepReq);"
+                                                   title="Cerrar ventana..." 
+                                                   immediate="true"/>
+                                </div>
+                            </h:form>
+                        </div>
+                    </div>
+                </div>
+                <!--FINALIZAR REQ-->
+                <div class="modal fade" id="dialogoFinRecepReq" data-backdrop="static" data-keyboard="false">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h4 class="modal-title">Finalizar requisición</h4>
+                            </div>
+
+                            <h:form id="frmFinRecep">
+                                <div class="modal-body">
+                                    <div class="row">
+                                        <div class="input-group" >
+                                            <div class="form-group col-12" >
+                                                <h:outputLabel class="col-3 control-label" value="Requisición:" /> 
+                                                <div class="col-9">
+                                                    <h:outputText  value="#{recepcionRequisicionBean.requisicionActual.consecutivo}"/>
+                                                </div>
+                                            </div>
+                                            <div class="form-group col-12" >
+                                                <h:outputLabel class="col-3 control-label" value="ProyectoOT:"/>
+                                                <div class="col-9">
+                                                    <h:outputText  value="#{recepcionRequisicionBean.requisicionActual.proyectoOt.nombre}"/>
+                                                </div>
+                                            </div>
+                                            <div class="form-group col-12">
+                                                <h:outputLabel class="col-12 control-label" value="Fecha Solicita:" />
+                                                <div class="col-12">
+                                                    <h:outputText  value="#{recepcionRequisicionBean.requisicionActual.fechaSolicito}"  >
+                                                        <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                                    </h:outputText>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="form-group">
+                                            <h:outputLabel class="col-12 control-label" value="Introduzca el motivo:*"/>
+                                            <div class="col-12">
+                                                <h:inputTextarea  id="motivoCancelo"  
+                                                                  value="#{recepcionRequisicionBean.motivoFinalizacion}" 
+                                                                  styleClass="form-control" required="true" requiredMessage="Agregue el motivo"/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <p:commandButton id="buttonAceptar"
+                                                     value="Aceptar"
+                                                     styleClass="btn btn-info"
+                                                     action="#{recepcionRequisicionBean.terminarFinalizarRequisicion}"
+                                                     process="@form" update="form1:tbReq"/>
+                                    <p:commandLink id="buttonCancelar"
+                                                   value="Cancelar"
+                                                   styleClass="btn btn-default"
+                                                   onclick="cerrarDialogoModal(dialogoFinRecepReq);"                                                           
+                                                   title="Cerrar ventana..."
+                                                   immediate="true"/>
+
+                                </div>
+                            </h:form>
+                        </div>
+                    </div>
+                </div>
+
+                <!--PONER EN ESPERA REQ-->
+                <div class="modal fade" id="dialogoEsperaReq" data-backdrop="static" data-keyboard="false">
+                    <div class="modal-dialog" style="width: 70%;">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h4 class="modal-title">Poner en espera la requisición</h4>
+                            </div>
+
+                            <h:form id="frmEsperaRecep">
+                                <div class="modal-body">
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <div class="input-group card" >
+                                                <div class="form-group col-12" >
+                                                    <h:outputLabel class="col-3 control-label" value="Requisición:" /> 
+                                                    <div class="col-9">
+                                                        <h:outputText  value="#{recepcionRequisicionBean.requisicionActual.consecutivo}"/>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group col-12" >
+                                                    <h:outputLabel class="col-3 control-label" value="Gerencia:" /> 
+                                                    <div class="col-9">
+                                                        <h:outputText  value="#{recepcionRequisicionBean.requisicionActual.gerencia.nombre}"/>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group col-12" >
+                                                    <h:outputLabel class="col-3 control-label" value="ProyectoOT:"/>
+                                                    <div class="col-9">
+                                                        <h:outputText  value="#{recepcionRequisicionBean.requisicionActual.proyectoOt.nombre}"/>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group col-12">
+                                                    <h:outputLabel class="col-3 control-label" value="Fecha Solicita:" />
+                                                    <div class="col-9"><h:outputText  value="#{recepcionRequisicionBean.requisicionActual.fechaSolicito}" >
+                                                            <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                                        </h:outputText>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <div class="form-group panel">
+                                                <div class="form-group col-12" >
+                                                    <h:outputLabel class="col-3 control-label" value="Motivo:"/>
+                                                    <div class="col-9">
+                                                        <h:inputTextarea  id="motivoEspera" cols="70"  
+                                                                          value="#{recepcionRequisicionBean.motivoFinalizacion}" 
+                                                                          styleClass="form-control" required="true" requiredMessage="Agregue el motivo"/>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <p:commandButton id="buttonAceptarEspera"
+                                                     value="Aceptar"
+                                                     styleClass="btn btn-info"
+                                                     action="#{recepcionRequisicionBean.esperaRequisicion}"
+                                                     process="@form" update="form1:tbReq"/>
+                                    <p:commandLink id="buttonCancelarEspera"
+                                                   value="Cancelar"
+                                                   styleClass="btn btn-default"
+                                                   onclick="cerrarDialogoModal(dialogoEsperaReq);"
+                                                   title="Cerrar ventana..." 
+                                                   immediate="true"/>
+
+                                </div>
+                            </h:form>
+                        </div>
+                    </div>
+                </div>
+
+                <!--HISTORIAL COMPRA REQ-->
+
+                <div class="modal fade" id="dialogoHistorialCompraReq" data-backdrop="static" data-keyboard="false">
+                    <div class="modal-dialog"  style="width: 80%;">
+                        <h:form id="frmHistorialCompraReq">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h4 class="modal-title">Historial Compras</h4>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="row">
+                                        <div class="row">
+                                            <small> ** Se mostrarán sólo las últimas 5 compras.</small>
+                                        </div>
+                                        <p:dataTable  size="small" stripedRows="true" showGridlines="true" 
+                                                      value="#{recepcionRequisicionBean.historicoVentas}" var="data" >
+                                            <p:column headerText="Fecha" style="text-align: justify;">
+                                                <h:outputText value="#{data.fecha}">
+                                                    <f:convertDateTime dateStyle="default" pattern="dd/MM/yyyy"/>
+                                                </h:outputText>
+                                            </p:column>
+                                            <p:column headerText="OCs" style="text-align: justify;">
+                                                <h:outputText value="#{data.consecutivo}"/>
+                                            </p:column>
+                                            <p:column headerText="Proveedor" style="text-align: justify;">
+                                                <h:outputText value="#{data.proveedor}"/>
+                                            </p:column>
+                                            <p:column headerText="Unidad" style="text-align: justify;">
+                                                <h:outputText value="#{data.unidad}"/>
+                                            </p:column>
+                                            <p:column headerText="Precio Unitario" style="text-align: justify;">
+                                                <h:outputText value="#{data.precioU}"/>
+                                            </p:column>
+                                            <p:column headerText="Moneda" style="text-align: justify;">
+                                                <h:outputText value="#{data.moneda}"/>
+                                            </p:column>
+                                        </p:dataTable>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">                                                            
+                                    <p:commandButton id="buttonCerrarHistorico"
+                                                     value="Cerrar"
+                                                     styleClass="btn btn-default"
+                                                     onclick="cerrarDialogoModal(dialogoHistorialCompraReq);"                                                           
+                                                     title="Cerrar ventana..." immediate="true"/>
+
+                                </div>
+                            </div>
+                        </h:form>
+                    </div>
+                </div>
+
+                <h:form id="form1">
+                    <div class="row">                        
+                        <div id="divOperacion" class="col-12 btn-group" style="text-align: left; display: none;">                            
+                            <p:commandLink value="Regresar" 
+                                           action="#{recepcionRequisicionBean.limpiarSeleccionAnterior}"
+                                           onclick="regresar('divTabla', 'divDatos', 'divOperacion', 'divAutoriza')"
+                                           styleClass="btn btn-default" update="@form" process="@this"/>
+                            <p:commandLink value="Devolver" title="Clic aquí para devolver la orden de compra..."                                            
+                                           action="#{recepcionRequisicionBean.devolverRequisicion}"
+                                           styleClass="btn btn-default" process="@this" update="frmDevRecep"/>
+
+                            <p:commandLink value="Finalizar" title="Clic aquí para finalizar la requisicion..." 
+                                           onclick="$(dialogoFinRecepReq).modal('show');"
+                                           styleClass="btn btn-default" process="@this" update="frmFinRecep"/>                            
+                            <p:commandLink value="En Espera" title="Clic aquí par poner en espera la requisicion..." 
+                                           onclick="$(dialogoEsperaReq).modal('show');"
+                                           styleClass="btn btn-default" process="@this" update="frmEsperaRecep"/>                            
+                            <p:commandLink id="btnGeneNoCont"
+                                value="Generar OC/S" title="Clic aquí para generar la orden de compra..." 
+                                           action="#{recepcionRequisicionBean.generarOrdenCompra}"
+                                           style="max-width: 129px; display: #{recepcionRequisicionBean.requisicionActual.contrato eq false ? 'block' : 'none'}"
+                                           styleClass="btn btn-default" process="@this"
+                                           update="form1:tbRecpReq"/>
+                        </div>
+                    </div>
+                    <div id="divTabla" class="row">   
+                        <div id="tipoRequisiciones">
+                            <p:tabView id="tbRecpReq" activeIndex="0" >
+                                <p:tab title="Requisiciones sin contrato ( #{recepcionRequisicionBean.listaRequisiciones.size()} )">
+                                    <div id="divAutoriza" class="btn-group" style="text-align: left;">
+                                        <p:commandButton id="btnGenerarOcs" value="Generar OC/S" styleClass="btn btn-default" 
+                                                         action="#{recepcionRequisicionBean.generarOCS}"
+                                                         process="@this  form1:tbRecpReq:ReqSinDisgregar" update="form1:tbRecpReq"/>
+                                    </div>
+                                    <div class="table table-responsive">
+                                        <p:dataTable size="small" stripedRows="true" showGridlines="true" id="ReqSinDisgregar" rows="15"
+                                                     value="#{recepcionRequisicionBean.listaRequisiciones}"
+                                                     var="currentRow"  paginator="true" paginatorPosition="bottom"
+                                                     rowKey="#{currentRow.id}" selection="#{recepcionRequisicionBean.requisicionesSeleccionadas}">
+                                            <f:facet name="header"><h:outputLabel value="Requisiciones asignadas"/></f:facet>
+                                            <ui:include src="../Orden/fragmento/columanRecepcionRequisicion.xhtml"/>
+                                            <p:column width="50">
+                                                <p:commandLink action="#{recepcionRequisicionBean.seleccionarRequisicion(currentRow.id)}"
+                                                               title="Clic aquí para ver los ítems de la requisición..."
+                                                               onclick="activarTab('tabsRecepReq', 0, 'divDatos', 'divTabla', 'divOperacion', 'divAutoriza');"
+                                                               process="@this" update="form1:tbReq form1:lblReq form1:btnGeneNoCont">
+                                                    <i class="fa fa-eye fa-2x text-primary"/>
+                                                </p:commandLink>
+                                            </p:column>
+                                        </p:dataTable>
+                                    </div>
+                                    <div style="float: right;">
+                                        <p:commandButton value="Exportar">
+                                            <p:dataExporter fileName="requisicionesAsignadaSinContrato"
+                                                            target="ReqSinDisgregar" type="xls"  pageOnly="false"
+                                                            />
+                                        </p:commandButton>
+                                    </div>
+                                </p:tab>
+                                <p:tab title="Requisiciones con contrato ( #{recepcionRequisicionBean.listaRequisicionContrato.size()} )">
+                                    <div id="divAutoriza" class="btn-group" style="text-align: left;">
+                                        <p:commandButton id="btnGenerarOcsConv" value="Generar OC/S" styleClass="btn btn-default" 
+                                                         action="#{recepcionRequisicionBean.generarOCSConvenio}"
+                                                         process="@this form1:tbRecpReq:reqSinDisgregarConConv" update="form1:tbRecpReq:reqSinDisgregarConConv"/>
+                                    </div>
+                                    <p:dataTable size="small" stripedRows="true" showGridlines="true" id="reqSinDisgregarConConv"  rows="15"
+                                                 value="#{recepcionRequisicionBean.listaRequisicionContrato}" 
+                                                 var="currentRow"  paginator="true" paginatorPosition="bottom"
+                                                 rowKey="#{currentRow.id}" selection="#{recepcionRequisicionBean.requisicionesConContratoSeleccionadas}">
+                                        <f:facet name="header"><h:outputLabel value="Requisiciones asignadas"/></f:facet>
+                                        <p:column width="25" selectionMode="multiple">
+                                        </p:column>
+                                        <p:column headerText="Código" width="120">
+                                            <h:outputText  value="#{currentRow['consecutivo']}"/>
+                                        </p:column>
+                                        <p:column headerText="Gerencia">
+                                            <h:outputText value="#{currentRow.gerencia}"/>
+                                        </p:column>
+                                        <p:column>
+                                            <h:outputText value="#{currentRow['referencia']}"/>
+                                            <f:facet name="header">
+                                                <h:outputText value="Referencia"/>
+                                            </f:facet>
+                                        </p:column>
+                                        <p:column >
+                                            <h:outputText value="#{currentRow['proveedor']}"/>
+                                            <f:facet name="header">
+                                                <h:outputText value="Proveedor"/>
+                                            </f:facet>
+                                        </p:column>
+                                        <p:column>
+                                            <h:outputText value="#{currentRow['fechaSolicitada']}">
+                                                <f:convertDateTime dateStyle="default" pattern="dd/MM/yyyy"/>
+                                            </h:outputText>
+                                            <f:facet name="header">
+                                                <h:outputText value="Solicitada"/>
+                                            </f:facet>
+                                        </p:column>
+                                        <p:column>
+                                            <h:outputText value="#{currentRow['fechaRequerida']}">
+                                                <f:convertDateTime dateStyle="default" pattern="dd/MM/yyyy"/>
+                                            </h:outputText>
+                                            <f:facet name="header">
+                                                <h:outputText value="Requerida"/>
+                                            </f:facet>
+                                        </p:column>
+                                        <p:column width="50" styleClass="text-center">
+                                            <p:commandLink action="#{recepcionRequisicionBean.seleccionarRequisicionConvenio(currentRow.id)}"
+                                                           title="Clic aquí para ver los ítems de la requisición..."
+                                                           onclick="activarTab('tabsRecepReq', 0, 'divDatos', 'divTabla', 'divOperacion', 'divAutoriza');"
+                                                           process="@this" update="form1:tbReq form1:lblReq form1:btnGeneNoCont">
+                                                <i class="fa fa-eye fa-2x text-primary"/>
+                                            </p:commandLink>
+                                        </p:column>
+                                    </p:dataTable>
+                                    <div style="float: right;">
+                                        <p:commandButton value="XLS" styleClass="p-mr-2 p-mb-2">
+                                            <p:dataExporter type="xls" target="reqSinDisgregarConConv" fileName="reqConConvenio"/>
+                                        </p:commandButton>
+                                    </div>
+                                </p:tab>
+                            </p:tabView>
+                        </div>
+                    </div>
+                    <div id="divDatos" class="row" style="display: none;">
+                        <div class="container-fluid">
+                            <h:outputText value="Requisición: "/>
+                            <h:outputLabel id="lblReq" value="#{recepcionRequisicionBean.requisicionActual.consecutivo}"/>
+                        </div>
+                        <div id="tabsRecepReq">
+                            <p:tabView id="tbReq" activeIndex="0">
+                                <p:tab title="Datos requisición">
+                                    <div class="row" >
+                                        <div class="col-4">
+                                            <div class="input-group" >                    
+                                                <h:outputLabel class="col-12 control-label" style="text-align: left;" value="Prioridad:"/>
+                                                <div class="col-12">
+                                                    <h:outputText    value="#{recepcionRequisicionBean.requisicionActual.prioridad.nombre}"/>                    
+                                                </div>
+                                            </div>
+                                            <div class="input-group " > 
+                                                <h:outputLabel class="col-12 control-label" value="Proveedor:"/>
+                                                <div class="col-12">
+                                                    <h:outputText    value="#{recepcionRequisicionBean.requisicionActual.proveedor}"/>
+                                                </div>
+                                            </div>
+                                            <div class="input-group " >                                                                  
+                                                <h:outputLabel class="col-12 control-label"  value="ProyectoOT:"/>
+                                                <div class="col-12">
+                                                    <ui:fragment rendered="#{recepcionRequisicionBean.requisicionActual.multiproyecto eq 'False'}">
+                                                        <h:outputText    value="#{recepcionRequisicionBean.requisicionActual.proyectoOt.nombre}"/>
+                                                    </ui:fragment>
+                                                    <ui:fragment rendered="#{recepcionRequisicionBean.requisicionActual.multiproyecto eq 'True'}">
+                                                        <h:outputText value="Multiproyecto OT"/>
+                                                    </ui:fragment>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-4">
+                                            <div class="input-group" >                    
+                                                <h:outputLabel class="col-12 control-label" value="Requerida:"/>                    
+                                                <div class="col-12">
+                                                    <h:outputText   value="#{recepcionRequisicionBean.requisicionActual.fechaRequerida}">
+                                                        <f:convertDateTime dateStyle="default" pattern="dd/MM/yyyy"/>
+                                                    </h:outputText>
+                                                </div>    
+                                            </div>
+                                            <div class="input-group" >  
+                                                <h:outputLabel class="col-12 control-label" value="Contrato:"/>
+                                                <div class="col-12">
+                                                    <h:outputText   value="#{recepcionRequisicionBean.requisicionActual.contrato ? 'CON CONTRATO' : 'SIN CONTRATO'}"/>
+                                                </div>
+                                            </div>
+                                            <div class="input-group" >                    
+                                                <h:outputLabel class="col-12 control-label"  value="Tipo requisición:"/>
+                                                <div class="col-12">
+                                                    <h:outputText    value="#{recepcionRequisicionBean.requisicionActual.tipo eq 'AF' ? 'Activo Fijo' : 'Producto/Servicio'}" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-4">
+                                            <div class="input-group" >                    
+                                                <h:outputLabel class="col-12 control-label"  value="Depto. Sol:"/>
+                                                <div class="col-12">
+                                                    <h:outputText    value="#{recepcionRequisicionBean.requisicionActual.gerencia.nombre}"/>
+                                                </div>        
+                                            </div>
+                                            <div class="input-group" >                                       
+                                                <h:outputLabel class="col-12 control-label" value="Elaboró:"/>
+                                                <div class="col-12">
+                                                    <h:outputText    value="#{recepcionRequisicionBean.requisicionActual.solicita.nombre}"/>
+                                                </div>
+                                            </div>
+                                            <div class="input-group" > 
+                                                <h:outputLabel class="col-12 control-label"  value="Destino:"/>
+                                                <div class="col-12">
+                                                    <h:outputText    value="#{recepcionRequisicionBean.requisicionActual.lugarEntrega}"/>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="input-group border" >
+                                        <div class="form-group col-12" >
+                                            <strong><h:outputText styleClass="control-label"    value="Observación:"/></strong>
+                                            <div class="col-12">
+                                                <h:outputText styleClass="control-label" rendered="#{recepcionRequisicionBean.requisicionActual.observaciones != null}" value="#{recepcionRequisicionBean.requisicionActual.observaciones}"/>
+                                                <h:outputText styleClass="control-label" rendered="#{recepcionRequisicionBean.requisicionActual.observaciones == null}" value=" "/>
+                                            </div>  
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <h:outputText value="Ítems de la requisición:" />
+                                        <h:outputLabel value="#{recepcionRequisicionBean.requisicionActual.consecutivo}" class="ml-2"/> 
+                                        <p:commandLink value="Generar Orden con los Ítems seleccionados" 
+                                                       action="#{recepcionRequisicionBean.generarOrdenCompraDeSeleccion}"                                                       
+                                                       title="Clic aqui para generar una Orden de Compra o Servicio sin contrato con los Ítems seleccionados..."
+                                                       process="@this form1:tbReq:itemsOrden" update="form1:tbReq:itemsOrden frmMenu" 
+                                                       styleClass="ml-2">
+                                        </p:commandLink>
+                                        <!--p:commandLink value="Generar Orden con los Ítems seleccionados" styleClass="btn-link" 
+                                                       action="{recepcionRequisicionBean.generarOrdenCompraDeSeleccion}"
+                                                       onclick=" return validaGenerarOrden('form1', 'seleccion', 'Se generará una orden con los Ítems seleccionados.');"
+                                                       title="Clic aqui para generar una Orden de Compra o Servicio con los Ítems seleccionados..."
+                                                       rendered="{recepcionRequisicionBean.requisicionActual.contrato eq false}"
+                                                       process="form1:itemsOrden" update="form1:itemsOrden">
+                                        </p:commandLink-->
+                                    </div>
+                                    <div class="row">
+                                        <p:dataTable size="small" stripedRows="true" showGridlines="true" 
+                                                     id="itemsOrden" 
+                                                     value="#{recepcionRequisicionBean.listaItems}"                                                       
+                                                     var="currentRow" rowKey="#{currentRow.idRequisicionDetalle}"
+                                                     selection="#{recepcionRequisicionBean.itemsSeleccionados}">
+                                            <p:column width="25" selectionMode="multiple">
+                                            </p:column>
+                                            <p:column>
+                                                <p:commandLink value="#{currentRow['artNumeroParte']}" 
+                                                               action="#{recepcionRequisicionBean.historyItem(currentRow.artID, recepcionRequisicionBean.requisicionActual.apCampo.id)}"
+                                                               title="Clic aquí para ver historial de compras..."
+                                                               process="@this" update="frmHistorialCompraReq">                                                    
+                                                </p:commandLink>                                                
+                                                <f:facet name="header">
+                                                    <h:outputText value="Número parte"/>
+                                                </f:facet>
+                                            </p:column>
+                                            <p:column rendered="#{recepcionRequisicionBean.requisicionActual.tipo eq 'PS'}">
+                                                <f:facet name="header">
+                                                    <h:outputText value="Tarea"/>
+                                                </f:facet>
+                                                <h:outputLabel value="#{currentRow['nombreTarea']}" style="color: #1d876b;"/>
+                                            </p:column>
+                                            <p:column headerText="Cantidad Autorizada">
+                                                <h:outputText value="#{currentRow['cantidadAutorizada']}">
+                                                    <f:convertNumber maxFractionDigits="3"/>
+                                                </h:outputText>
+                                            </p:column>
+                                            <p:column>
+                                                <h:outputText value="#{currentRow['artUnidad']}"/>
+                                                <f:facet name="header">
+                                                    <h:outputText value="Unidad"/>
+                                                </f:facet>
+                                            </p:column>
+                                            <p:column headerText="Descripción" style="text-align: justify;">
+                                                <h:outputText  value="#{currentRow['artDescripcion']}"/>
+                                                <p:commandLink value=" Ver inventario" style="color: blue" styleClass="text-capitalize"
+                                                               rendered="#{currentRow.totalInventario gt 0}"
+                                                               action="#{recepcionRequisicionBean.mostrarInventario(currentRow.artID)}"
+                                                               process="@this" update="frmInv">
+                                                </p:commandLink>
+                                            </p:column>
+                                            <p:column>
+                                                <h:outputText value="#{currentRow['observacion']}"/>
+                                                <f:facet name="header">
+                                                    <h:outputText value="Observaciones"/>
+                                                </f:facet>
+                                            </p:column>
+                                        </p:dataTable>
+                                    </div>
+                                    <div >
+                                        <p:commandButton value="XLS" styleClass="p-mr-2 p-mb-2">
+                                            <p:dataExporter type="xls" target="itemsOrden" fileName="ItemsReq"/>
+                                        </p:commandButton>
+                                    </div>
+                                </p:tab>
+                                <p:tab title="ETS">
+                                    <p:dataTable size="small" stripedRows="true" showGridlines="true" 
+                                                 value="#{recepcionRequisicionBean.listaEts}" var="ets">
+                                        <f:facet name="header">
+                                            <h:outputLabel value="Especificaciones técnicas"/>
+                                        </f:facet>
+                                        <p:column>
+                                            <f:facet name="header">
+                                                <h:outputLabel value="Nombre"/>
+                                            </f:facet>
+                                            <h:outputText value="#{ets['siAdjunto'].nombreSinUUID}"/>
+                                        </p:column>
+                                        <p:column width="10%">
+                                            <f:facet name="header">
+                                                <h:outputLabel value="Tamaño"/>
+                                            </f:facet>
+                                            <h:outputText  value="#{ets['siAdjunto'].peso}"/>
+                                        </p:column>
+                                        <p:column width="10%">
+                                            <f:facet name="header" >
+                                                <h:outputLabel value="Fecha"/>
+                                            </f:facet>
+                                            <h:outputText value="#{ets['siAdjunto'].fechaGenero}">
+                                                <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                            </h:outputText>
+                                        </p:column>
+                                        <p:column width="4%">
+                                            <h:outputLink target="_blank"  value="/Compras/AbrirArchivo?ZWZ2W=#{ets['siAdjunto'].id}&amp;ZWZ3W=#{ets['siAdjunto'].uuid}"
+                                                          >
+                                                <h:outputText value=" Abrir"/>
+                                            </h:outputLink>
+                                        </p:column>
+                                    </p:dataTable>
+                                </p:tab>
+                                <p:tab title="Autorizaciones">
+                                        <div class="input-group col-12" >
+                                            <strong><h:outputText styleClass="col-12 control-label" value="Requisición:"/></strong>
+                                            <div class="col-2" style="text-align: left;">
+                                                <h:outputText styleClass="control-label" value="#{recepcionRequisicionBean.requisicionActual.consecutivo}"/>
+                                            </div>
+                                            <strong><h:outputText styleClass="col-3 control-label" value="Estatus Actual:"/></strong>
+                                            <div class="col-3" style="text-align: left;">
+                                                <h:outputText styleClass="control-label" value="#{recepcionRequisicionBean.requisicionActual.estatus.nombre}"/>
+                                            </div>
+                                        </div>
+                                        <!-- aqui va la informacion del resto del estatus de la requisición -->
+                                        <div class="input-group row p-2" >
+                                            <div class="col-2">
+                                                <strong><h:outputText styleClass="control-label" value="Solicitada el:"/></strong>
+                                            </div>
+                                            <div class="col-2">
+                                                <h:outputText styleClass="control-label" value="#{recepcionRequisicionBean.requisicionActual.fechaSolicito}">
+                                                    <f:convertDateTime dateStyle="default" pattern="dd/MM/yyyy"/>
+                                                </h:outputText>
+                                            </div>
+                                            <div class="col-1">
+                                                <strong><h:outputText styleClass="control-label" value="hora: "/></strong>
+                                            </div>
+                                            <div class="col-1">
+                                                <h:outputText styleClass="control-label" value="#{recepcionRequisicionBean.requisicionActual.horaSolicito}">
+                                                    <f:convertDateTime pattern="hh:mm" timeStyle="default" type="time"/>
+                                                </h:outputText>
+                                            </div>
+                                            <div class="col-1">
+                                                <strong><h:outputText styleClass="control-label" value="Por:"/></strong>
+                                            </div>
+                                            <div class="col-5">
+                                                <h:outputText styleClass="control-label" value="#{recepcionRequisicionBean.requisicionActual.solicita.nombre}"/>
+
+                                            </div>
+                                        </div>
+                                        <div class="input-group row p-2" >
+                                            <div class="col-2">
+                                            <strong><h:outputText styleClass="control-label" value="Revisada el:"/></strong>
+                                            </div>
+                                            <div class="col-2">
+                                                <h:outputText styleClass="control-label" value="#{recepcionRequisicionBean.requisicionActual.fechaReviso}">
+                                                    <f:convertDateTime dateStyle="default" pattern="dd/MM/yyyy"/>
+                                                </h:outputText>
+                                            </div>
+                                            <div class="col-1">
+                                                <strong><h:outputText styleClass="control-label" value="hora: "/></strong>
+                                            </div>
+                                            <div class="col-1">
+                                                <h:outputText styleClass="control-label" value="#{recepcionRequisicionBean.requisicionActual.horaReviso}">
+                                                    <f:convertDateTime pattern="hh:mm" timeStyle="default" type="time"/>
+                                                </h:outputText>
+                                            </div>
+                                            <div class="col-1">
+                                                <strong><h:outputText styleClass="control-label" value="Por:"/></strong>
+                                            </div>
+                                            <div class="col-5">
+                                                <h:outputText styleClass="control-label" value="#{recepcionRequisicionBean.requisicionActual.revisa.nombre}"/>
+
+                                            </div>
+                                        </div>
+                                        <div class="input-group row p-2" >
+                                            <div class="col-2">
+                                            <strong><h:outputText styleClass="control-label" value="Aprobada el:"/></strong>
+                                            </div>
+                                            <div class="col-2">
+                                                <h:outputText styleClass="control-label" value="#{recepcionRequisicionBean.requisicionActual.fechaAprobo}">
+                                                    <f:convertDateTime dateStyle="default" pattern="dd/MM/yyyy"/>
+                                                </h:outputText>
+                                            </div>
+                                            <div class="col-1">
+                                                <strong><h:outputText styleClass="control-label" value="hora: "/></strong>
+                                            </div>
+                                            <div class="col-1">
+                                                <h:outputText styleClass="control-label" value="#{recepcionRequisicionBean.requisicionActual.horaAprobo}">
+                                                    <f:convertDateTime pattern="hh:mm" timeStyle="default" type="time"/>
+                                                </h:outputText>
+                                            </div>
+                                            <div class="col-1">
+                                                <strong><h:outputText styleClass="control-label" value="Por:"/></strong>
+                                            </div>
+                                            <div class="col-5">
+                                                <h:outputText styleClass="control-label" value="#{recepcionRequisicionBean.requisicionActual.aprueba.nombre}"/>
+
+                                            </div>
+                                        </div>
+                                        <div class="input-group row p-2" >
+                                            <div class="col-2">
+                                            <strong><h:outputText styleClass="control-label" value="Asignada el:"/></strong>
+                                            </div>
+                                            <div class="col-2">
+                                                <h:outputText styleClass="control-label" value="#{recepcionRequisicionBean.requisicionActual.fechaAsigno}">
+                                                    <f:convertDateTime dateStyle="default" pattern="dd/MM/yyyy"/>
+                                                </h:outputText>
+                                            </div>
+                                            <div class="col-1">
+                                                <strong><h:outputText styleClass="control-label" value="hora: "/></strong>
+                                            </div>
+                                            <div class="col-1">
+                                                <h:outputText styleClass="control-label" value="#{recepcionRequisicionBean.requisicionActual.horaAsigno}">
+                                                    <f:convertDateTime pattern="hh:mm" timeStyle="default" type="time"/>
+                                                </h:outputText>
+                                            </div>
+                                            <div class="col-1">
+                                                <strong><h:outputText styleClass="control-label" value="Por:"/></strong>
+                                            </div>
+                                            <div class="col-5">
+                                                <h:outputText styleClass="control-label" value="#{recepcionRequisicionBean.requisicionActual.asigna.nombre}"/>
+
+                                            </div>
+                                        </div>
+                                </p:tab>
+                                <p:tab title="Órdenes de compra">
+                                    <p:dataTable size="small" stripedRows="true" showGridlines="true" value="#{recepcionRequisicionBean.listaOrden}" var="data" styleClass="table table-striped">
+                                        <p:column>
+                                            <h:outputText value="#{data.consecutivo ne 'null' ? data.consecutivo : data.id}"/>
+                                            <f:facet name="header">
+                                                <h:outputText value="Código"/>
+                                            </f:facet>
+                                        </p:column>
+                                        <p:column>
+                                            <h:outputText value="#{data.estatus}"/>
+                                            <f:facet name="header">
+                                                <h:outputText value="Estatus Actual"/>
+                                            </f:facet>
+                                        </p:column>
+                                        <p:column>
+                                            <h:outputText  value="#{data.compania}"/>
+                                            <f:facet name="header">
+                                                <h:outputText value="Compañia"/>
+                                            </f:facet>
+                                        </p:column>
+                                        <p:column>
+                                            <p:commandLink action="#{recepcionRequisicionBean.seleccionarOrden(data.id)}" styleClass="btn btn-default"
+                                                           style="color:  blue;"
+                                                           title="Clic aquí para ver más información..." value="Seleccionar"
+                                                           process="@this" update="form1:tbReq:tbOcs form1:tbReq:lblOcs" >
+                                            </p:commandLink>
+                                        </p:column>
+                                    </p:dataTable>
+                                    <div id="container" class="card" >
+                                        <div class="input-group">
+                                            <h:outputText value="Orden Seleccionada: "/> 
+                                            <h:outputLabel id="lblOcs" value="#{recepcionRequisicionBean.ordenActual.consecutivo eq null ? recepcionRequisicionBean.ordenActual.id : recepcionRequisicionBean.ordenActual.consecutivo}"/>
+                                        </div>
+                                        <p:tabView id="tbOcs">
+                                            <p:tab title="Datos OC/S">
+                                                <div class="card" >
+                                                    <div class="input-group " >
+                                                        <div class="col-2 col-xs-12" style="text-align: left;" >
+                                                            <strong><h:outputLabel styleClass="control-label"   value="Compañia: "/></strong>
+                                                        </div>
+                                                        <div class="col-4 col-xs-12">
+                                                            <h:outputText styleClass="control-label"  value="#{recepcionRequisicionBean.ordenActual.compania.nombre}"/>
+                                                        </div>
+
+                                                        <div class="col-2 col-xs-12" style="text-align: left;" >
+                                                            <strong><h:outputLabel styleClass="control-label" value="Estatus:"/></strong>
+                                                        </div>
+                                                        <div class="col-4 col-xs-12">
+                                                            <h:outputText styleClass="control-label" value="#{recepcionRequisicionBean.ordenActual.autorizacionesOrden.estatus.nombre}"/>
+                                                        </div>
+                                                    </div>
+                                                    <div class="input-group " >
+                                                        <div class="col-2 col-xs-12" style="text-align: left;" >
+                                                            <strong><h:outputLabel styleClass="control-label"   value="Bloque:"/></strong>
+                                                        </div>
+                                                        <div class="col-4 col-xs-12">
+                                                            <h:outputText styleClass="control-label"  value="#{recepcionRequisicionBean.ordenActual.apCampo.nombre}"/>
+                                                        </div>
+
+                                                        <div class="col-2 col-xs-12" style="text-align: left;" >
+                                                            <strong><h:outputLabel styleClass="control-label" value="Destino:"/></strong>
+                                                        </div>
+                                                        <div class="col-4 col-xs-12">                        
+                                                            <h:outputText styleClass="control-label" value="#{recepcionRequisicionBean.ordenActual.destino}"/>
+                                                        </div>
+                                                    </div>
+                                                    <div class="input-group " >
+                                                        <div class="col-2 col-xs-12" style="text-align: left;" >
+                                                            <strong><h:outputLabel styleClass="control-label"   value="Pago:"/></strong>
+                                                        </div>
+                                                        <div class="col-4 col-xs-12">
+                                                            <h:outputText styleClass="control-label"  value="#{recepcionRequisicionBean.ordenActual.ocTerminoPago.nombre}"/>
+                                                        </div>
+
+                                                        <div class="col-2 col-xs-12" style="text-align: left;" >
+                                                            <strong><h:outputLabel styleClass="control-label" value="Elaboró:"/></strong>
+                                                        </div>
+                                                        <div class="col-4 col-xs-12">
+                                                            <h:outputText styleClass="control-label" value="#{recepcionRequisicionBean.ordenActual.analista.nombre}"/>
+                                                        </div>
+                                                    </div>
+                                                    <div class="input-group " >
+                                                        <div class="col-2 col-xs-12" style="text-align: left;" >
+                                                            <strong><h:outputLabel styleClass="control-label"   value="Solicitó:"/></strong>
+                                                        </div>
+                                                        <div class="col-4 col-xs-12">
+                                                            <h:outputText styleClass="control-label"   value="#{recepcionRequisicionBean.ordenActual.gerencia.nombre}"/>
+                                                        </div>
+
+                                                        <div class="col-2 col-xs-12" style="text-align: left;" >
+                                                            <strong><h:outputLabel styleClass="control-label" value="Proveedor:"/></strong>
+                                                        </div>
+                                                        <div class="col-4 col-xs-12">                        
+                                                            <h:outputText styleClass="control-label" value="#{recepcionRequisicionBean.ordenActual.proveedor.nombre}"/>
+                                                        </div>
+                                                    </div>
+                                                    <div class="input-group " >
+                                                        <div class="col-2 col-xs-12" style="text-align: left;" >
+                                                            <strong><h:outputLabel styleClass="control-label"   value="Responsable:"/></strong>
+                                                        </div>
+                                                        <div class="col-4 col-xs-12">
+                                                            <h:outputText styleClass="control-label"   value="#{recepcionRequisicionBean.ordenActual.responsableGerencia.nombre}"/>
+                                                        </div>
+
+                                                        <div class="col-2 col-xs-12" style="text-align: left;" >
+                                                            <strong><h:outputLabel styleClass="control-label" value="Contrato Marco:"/></strong>
+                                                        </div>
+                                                        <div class="col-4 col-xs-12">
+                                                            <h:panelGroup  rendered="#{recepcionRequisicionBean.ordenActual.contrato ne 'OCS_SIN_CONTRATO'}">
+                                                                <p:commandLink value="#{recepcionRequisicionBean.ordenActual.contrato}" action="#{recepcionRequisicionBean.llenarListaConvenio}"
+                                                                               onclick="$(dialogoContratos).modal('show');"
+                                                                               >
+                                                                    <f:param name="codigo" value="#{recepcionRequisicionBean.ordenActual.contrato}"/>
+                                                                </p:commandLink>
+                                                            </h:panelGroup>
+                                                            <h:panelGroup rendered="#{recepcionRequisicionBean.ordenActual.contrato eq 'OCS_SIN_CONTRATO'}">
+                                                                <h:outputLabel value="#{recepcionRequisicionBean.ordenActual.contrato}"/>
+                                                            </h:panelGroup>
+                                                        </div>
+                                                    </div>
+                                                    <div class="input-group " >
+                                                        <div class="col-2 col-xs-12" style="text-align: left;" >
+                                                            <strong><h:outputLabel styleClass="control-label"   value="OT:"/></strong>
+                                                        </div>
+                                                        <div class="col-4 col-xs-12">
+                                                            <ui:fragment rendered="#{recepcionRequisicionBean.ordenActual.multiproyecto eq 'False'}">
+                                                                <h:outputText styleClass="control-label"  value="#{recepcionRequisicionBean.ordenActual.proyectoOt.nombre}"/>
+                                                            </ui:fragment>
+                                                            <ui:fragment rendered="#{recepcionRequisicionBean.ordenActual.multiproyecto eq 'True'}">
+                                                                <h:outputText styleClass="control-label"  value="Multiproyecto OT"/>
+                                                            </ui:fragment>
+                                                        </div>
+
+                                                        <div class="col-2 col-xs-12" style="text-align: left;" >
+                                                            <strong><h:outputLabel styleClass="control-label" value="Revisa:"/></strong>
+                                                        </div>
+                                                        <div class="col-4 col-xs-12">
+                                                            <h:outputText styleClass="control-label" value="#{recepcionRequisicionBean.ordenActual.autorizacionesOrden.autorizaMpg.nombre}"/>
+                                                        </div>
+                                                    </div>
+                                                    <div class="input-group " >
+                                                        <div class="col-2 col-xs-12" style="text-align: left;" >
+                                                            <strong><h:outputLabel styleClass="control-label"    value="Destino:"/></strong>
+                                                        </div>
+                                                        <div class="col-4 col-xs-12">
+                                                            <h:outputText styleClass="control-label"  value="#{recepcionRequisicionBean.ordenActual.destino}"/>
+                                                        </div>                    
+                                                        <div class="col-2 col-xs-12" style="text-align: left;" >
+                                                            <strong><h:outputLabel styleClass="control-label" value="Tipo de orden:"/></strong>
+                                                        </div>
+                                                        <ui:fragment rendered="#{recepcionRequisicionBean.ordenActual.tipo eq 'PS'}">
+                                                            <div class="col-4 col-xs-12">
+                                                                <h:outputText styleClass="control-label" value="Producto / Servicio"/>
+                                                            </div>
+                                                        </ui:fragment>
+                                                        <ui:fragment rendered="#{recepcionRequisicionBean.ordenActual.tipo eq 'AF'}">
+                                                            <div class="col-4 col-xs-12">
+                                                                <h:outputText styleClass="control-label" value="Activo Fijo"/>
+                                                            </div>
+                                                        </ui:fragment>
+                                                        <ui:fragment rendered="#{recepcionRequisicionBean.ordenActual.tipo eq 'AI'}">
+                                                            <div class="col-2 col-xs-12">
+                                                                <h:outputText styleClass="control-label" value="Antes de integración" />
+                                                            </div>
+                                                        </ui:fragment>                    
+                                                    </div>
+                                                    <ui:fragment rendered="#{usuarioBean.usuarioConectado.apCampo.cartaIntencion eq true}">
+                                                        <div class="input-group " >
+                                                            <div class="col-2 col-xs-12" style="text-align: left;" >
+                                                                <strong><h:outputLabel styleClass="control-label"    value="REPSE:"/></strong>
+                                                            </div>
+                                                            <div class="col-4 col-xs-12">
+                                                                <h:outputText styleClass="control-label"  value="#{(recepcionRequisicionBean.ordenActual.repse eq true) ? 'Si' : 'No'} "/>
+                                                            </div>          
+                                                        </div>
+                                                    </ui:fragment>                
+                                                </div>
+                                                <div class=" input-group card" style="border: white; border-style: solid; border-width: 1px;">
+                                                    <div class="input-group " >
+                                                        <div class="col-12" style="text-align: left;" >
+                                                            <strong><h:outputText styleClass="control-label"    value="Observación de la requisición:"/></strong>
+                                                        </div>
+                                                        <div class="col-12">
+                                                            <h:outputText styleClass="control-label" rendered="#{recepcionRequisicionBean.ordenActual.requisicion.observaciones != null}" value="#{recepcionRequisicionBean.ordenActual.requisicion.observaciones}"/>
+                                                            <h:outputText styleClass="control-label" rendered="#{recepcionRequisicionBean.ordenActual.requisicion.observaciones == null}" value=" "/>
+                                                        </div>  
+                                                    </div>
+                                                    <div class="input-group " >
+                                                        <div class="col-12" style="text-align: left;" >
+                                                            <strong><h:outputText styleClass="control-label"   value="Observación al proveedor:"/></strong>
+                                                        </div>
+                                                        <div class="col-12">
+                                                            <h:outputText styleClass="control-label" rendered="#{recepcionRequisicionBean.ordenActual.nota != null}"  value="#{recepcionRequisicionBean.ordenActual.nota}"/>
+                                                            <h:outputText styleClass="control-label" rendered="#{recepcionRequisicionBean.ordenActual.nota == null}"  
+                                                                          style="color: #eee;"
+                                                                          value="_"/>
+                                                        </div>
+                                                    </div>                    
+                                                    <div class="input-group " >
+                                                        <div class="col-12" style="text-align: left;" >
+                                                            <strong><h:outputText styleClass="control-label"   value="Comentarios internos:"/></strong>
+                                                        </div>
+                                                        <div class="col-12">
+                                                            <h:outputText styleClass="control-label" rendered="#{recepcionRequisicionBean.ordenActual.observaciones != null}" value="#{recepcionRequisicionBean.ordenActual.observaciones}"/>
+                                                            <h:outputText styleClass="control-label" rendered="#{recepcionRequisicionBean.ordenActual.observaciones == null}" 
+                                                                          style="color: #eee;"
+                                                                          value="_"/>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row">  
+                                                    <div class="col-12">
+                                                        <ui:repeat value="#{recepcionRequisicionBean.listaItemsOrden}" var="currentRow">
+                                                            <div class="col-12"  >
+                                                                <ui:fragment rendered="#{currentRow['idpresupuesto'] gt 0}">
+                                                                    <div class="row" >
+                                                                        <div class="col-3">
+                                                                            <div class="col-12">
+                                                                                <strong><h:outputText styleClass="control-label" value="Presupuesto"/></strong>
+                                                                            </div>                            
+                                                                        </div>
+                                                                        <div class="col-3">
+                                                                            <div class="col-12">
+                                                                                <strong><h:outputText styleClass="control-label" value="Presup Año y Mes"/></strong>
+                                                                            </div>                            
+                                                                        </div>                        
+                                                                        <div class="col-6">
+                                                                            <div class="col-12">
+                                                                                <strong><h:outputText styleClass="control-label" value="Proyecto OT"/></strong>
+                                                                            </div>                                
+                                                                        </div>  
+                                                                    </div>
+                                                                    <div class="row" style="background-color: #f5f5f5;">
+                                                                        <div class="col-3">                            
+                                                                            <div class="col-12">                                
+                                                                                <h:outputText styleClass="control-label" title="#{currentRow['presupuestoCodigo']}" value="#{currentRow['presupuestoNombre']}"/>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="col-3">
+                                                                            <div class="col-12">                                    
+                                                                                <h:outputText styleClass="control-label" value="Año #{currentRow['anioPresupuesto']} y" title="#{currentRow['anioPresupuesto']}"/>
+                                                                                <h:outputText styleClass="control-label" value="  Mes #{currentRow['mesPresupuesto']}" title="#{currentRow['mesPresupuesto']}"/>                                
+                                                                            </div>
+                                                                        </div>                                                
+                                                                        <div class="col-6">
+                                                                            <div class="col-12">
+                                                                                <ui:fragment rendered="#{recepcionRequisicionBean.ordenActual.multiproyecto  eq 'False'}">
+                                                                                    <h:outputText styleClass="control-label" value="#{currentRow['proyectoOt']}"/>                                
+                                                                                </ui:fragment>
+                                                                                <ui:fragment rendered="#{recepcionRequisicionBean.ordenActual.multiproyecto  eq 'True'}">
+                                                                                    <h:outputText styleClass="control-label" title="#{currentRow['multiProyectos']}" value="#{currentRow['multiProyectos'].length() gt 90 ? currentRow['multiProyectos'].substring(0, 85).concat('.....') : currentRow['multiProyectos']}"/>                                    
+                                                                                </ui:fragment>
+                                                                            </div>
+                                                                        </div>                       
+                                                                    </div>                    
+                                                                </ui:fragment>
+                                                                <div class="row" style="#{currentRow['idpresupuesto'] eq 0 ? 'background-color: #39b3d7; border-radius: 5px 5px 0px 0px;' : 'background-color: #c3ebef;'}">
+                                                                    <ui:fragment rendered="#{currentRow['idpresupuesto'] eq 0}">
+                                                                        <div class="col-3">
+                                                                            <div class="col-12">
+                                                                                <strong><h:outputText styleClass="control-label" value="Proyecto OT"/></strong>
+                                                                            </div>                            
+                                                                        </div>
+                                                                    </ui:fragment>
+
+
+                                                                    <ui:fragment rendered="#{recepcionRequisicionBean.ordenActual.tipo  eq 'PS' or recepcionRequisicionBean.ordenActual.apCampo.tipo  eq 'C'}">
+                                                                        <div class="col-3">
+                                                                            <div class="col-12">
+                                                                                <strong><h:outputText styleClass="control-label" value="Tipo de Tarea"/></strong>
+                                                                            </div>                            
+                                                                        </div>
+                                                                        <div class="col-3">
+                                                                            <div class="col-12">
+                                                                                <strong><h:outputText styleClass="control-label" value="Tarea"/></strong>
+                                                                            </div>                                              
+                                                                        </div>  
+                                                                        <ui:fragment rendered="#{recepcionRequisicionBean.ordenActual.apCampo.tipo  eq 'C'}">
+                                                                            <div class="#{currentRow['idpresupuesto'] eq 0 ? 'col-3' : 'col-6'}">
+                                                                                <div class="col-12">
+                                                                                    <strong><h:outputText styleClass="control-label" value="Subtarea"/></strong>
+                                                                                </div>                                
+                                                                            </div>  
+                                                                        </ui:fragment>
+                                                                    </ui:fragment>            
+
+                                                                </div>
+                                                                <div class="row" style="background-color: #f5f5f5;">
+                                                                    <ui:fragment rendered="#{currentRow['idpresupuesto'] eq 0}">
+                                                                        <div class="col-3">                            
+                                                                            <div class="col-12">
+                                                                                <ui:fragment rendered="#{recepcionRequisicionBean.ordenActual.multiproyecto  eq 'False'}">
+                                                                                    <h:outputText styleClass="control-label" value="#{currentRow['proyectoOt']}"/>                                
+                                                                                </ui:fragment>
+                                                                                <ui:fragment rendered="#{recepcionRequisicionBean.ordenActual.multiproyecto  eq 'True'}">
+                                                                                    <h:outputText styleClass="control-label" title="#{currentRow['multiProyectos']}" value="#{currentRow['multiProyectos'].length() gt 90 ? currentRow['multiProyectos'].substring(0, 85).concat('.....') : currentRow['multiProyectos']}"/>                                    
+                                                                                </ui:fragment>
+                                                                            </div>
+                                                                        </div>
+                                                                    </ui:fragment>
+                                                                    <div class="col-3">
+                                                                        <div class="col-12">
+                                                                            <h:outputText styleClass="control-label" value="#{currentRow['tipoTarea']}"/>
+                                                                        </div>
+                                                                    </div>                        
+                                                                    <ui:fragment rendered="#{recepcionRequisicionBean.ordenActual.tipo  eq 'PS' or recepcionRequisicionBean.ordenActual.apCampo.tipo  eq 'C'}">
+                                                                        <div class="col-3">
+                                                                            <div class="col-12">
+                                                                                <h:outputText styleClass="control-label" value="#{currentRow['nombreTarea']}"/>                        
+                                                                            </div>
+                                                                        </div>
+                                                                        <ui:fragment rendered="#{recepcionRequisicionBean.ordenActual.apCampo.tipo  eq 'C'}">
+                                                                            <div class="#{currentRow['idpresupuesto'] eq 0 ? 'col-3' : 'col-6'}">
+                                                                                <div class="col-12">
+                                                                                    <h:outputText styleClass="control-label" value="#{currentRow['subTarea']}"/>                        
+                                                                                </div>
+                                                                            </div>   
+                                                                        </ui:fragment>
+                                                                    </ui:fragment>                                    
+                                                                </div>                    
+                                                                <div class="row" style="background-color: #c3ebef;">
+                                                                    <div class="col-3">
+                                                                        <div class="col-12">
+                                                                            <strong><h:outputText styleClass="control-label" value="Número parte"/></strong>
+                                                                        </div>
+                                                                    </div>                                                                            
+                                                                    <div class="col-9">
+                                                                        <div class="col-4">
+                                                                            <strong><h:outputText styleClass="control-label" value="Descripción"/></strong>
+                                                                        </div>
+                                                                        <ui:fragment rendered="#{recepcionRequisicionBean.ordenActual.conConvenio}">
+                                                                            <div class="col-8" style="text-align: right;">
+                                                                                <strong><h:outputText styleClass="control-label" value="Contrato: "/></strong>
+                                                                                <p:commandLink value="#{currentRow['convenio']}" action="#{recepcionRequisicionBean.llenarListaConvenio(currentRow.convenio)}"
+                                                                                               onclick="$(dialogoContratos).modal('show');"
+                                                                                               process="@this" update="">
+                                                                                </p:commandLink>
+                                                                            </div>
+                                                                        </ui:fragment>
+                                                                    </div>                    
+                                                                </div>
+                                                                <div class="row" style="background-color: #f5f5f5;">
+                                                                    <div class="col-3">
+                                                                        <div class="col-12">
+                                                                            <h:outputText styleClass="control-label" value="#{currentRow['artNumeroParte'] eq 'null' ? '' : currentRow['artNumeroParte']}"/>
+                                                                        </div>
+                                                                    </div>                                                                            
+                                                                    <div class="col-9">
+                                                                        <div class="col-12">
+                                                                            <h:outputText styleClass="control-label"  value="#{currentRow['artDescripcion']}"/>
+                                                                        </div>
+                                                                    </div>                    
+                                                                </div>
+                                                                <div class="row" style="background-color: #c3ebef;">
+                                                                    <div class="col-3">
+                                                                        <div class="col-12">
+                                                                            <strong><h:outputText styleClass="control-label" value="Unidad" /></strong>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="col-2">
+                                                                        <div class="col-12">
+                                                                            <strong><h:outputText styleClass="control-label" value="Cantidad"/></strong>
+                                                                        </div>
+                                                                    </div>              
+                                                                    <div class="col-2">
+                                                                        <div class="col-12">
+                                                                            <strong><h:outputText styleClass="control-label" value="Precio"/></strong>
+                                                                        </div>
+                                                                    </div>              
+                                                                    <div class="col-2" style="text-align: center;">
+                                                                        <div class="col-12" style="background-color: #c3ebef;">
+                                                                            <strong><h:outputText styleClass="control-label" value="Descuento"/></strong>
+                                                                        </div>
+                                                                    </div>                             
+                                                                    <div class="col-3" style="text-align: center;">
+                                                                        <div class="col-12" style="background-color: #c3ebef;">
+                                                                            <strong><h:outputText styleClass="control-label" value="Importe"/></strong>
+                                                                        </div>
+                                                                    </div>                             
+                                                                </div>
+                                                                <div class="row" style="background-color: #f5f5f5; border-radius: 0px 0px 5px 5px;">
+                                                                    <div class="col-3">
+                                                                        <div class="col-12">
+                                                                            <h:outputText styleClass="control-label" value="#{currentRow['artUnidad']}"/>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="col-2">
+                                                                        <div class="col-12" style="text-align: left;">
+                                                                            <h:outputText styleClass="control-label" value="#{currentRow['cantidad']}">
+                                                                                <f:convertNumber maxFractionDigits="3"/>
+                                                                            </h:outputText>
+                                                                        </div>
+                                                                    </div>              
+                                                                    <div class="col-2">
+                                                                        <div class="col-12">
+                                                                            <h:outputText styleClass="control-label" value="#{currentRow['precioUnitario']}">
+                                                                                <f:convertNumber maxFractionDigits="2" type="currency"/>
+                                                                            </h:outputText>
+                                                                        </div>
+                                                                    </div>              
+                                                                    <div class="col-2">
+                                                                        <div class="col-12" style="text-align: center;">
+                                                                            <h:outputText styleClass="control-label" value="#{currentRow['descuento']}">
+                                                                                <f:convertNumber maxFractionDigits="2" type="currency"/>
+                                                                            </h:outputText>
+                                                                        </div>
+                                                                    </div>                             
+                                                                    <div class="col-3">
+                                                                        <div class="col-12" style="text-align: right;">
+                                                                            <h:outputText styleClass="control-label" value="#{currentRow['importe']}">
+                                                                                <f:convertNumber maxFractionDigits="2" type="currency"/>
+                                                                            </h:outputText>
+                                                                        </div>
+                                                                    </div>                             
+                                                                </div>
+                                                            </div>
+                                                        </ui:repeat>     
+                                                        <div class="row">
+                                                            <div class="col-9"></div>
+                                                            <div class="col-3">
+                                                                <div class="row">
+                                                                    <div class="col-4" style="text-align: right;">
+                                                                        <strong><h:outputLabel styleClass="control-label" value="SubTotal:"/></strong>
+                                                                    </div>
+                                                                    <div class="col-8" style="text-align: left;">
+                                                                        <h:outputLabel value="#{recepcionRequisicionBean.ordenActual.subtotal}">
+                                                                            <f:convertNumber currencySymbol="$" groupingUsed="true" maxFractionDigits="2" type="currency"/>
+                                                                        </h:outputLabel>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="row">
+                                                                    <div class="col-4" style="text-align: right;">
+                                                                        <strong><h:outputLabel styleClass="control-label" value="IVA:"/></strong>
+                                                                    </div>
+                                                                    <div class="col-8" style="text-align: left;">
+                                                                        <h:outputLabel value="#{recepcionRequisicionBean.ordenActual.iva}">
+                                                                            <f:convertNumber currencySymbol="$" groupingUsed="true" maxFractionDigits="2" type="currency"/>
+                                                                        </h:outputLabel>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="row">
+                                                                    <div class="col-4" style="text-align: right;">
+                                                                        <strong><h:outputLabel styleClass="control-label" value="Descuento:"/></strong>
+                                                                    </div>
+                                                                    <div class="col-8" style="text-align: left;">
+                                                                        <h:outputLabel value="#{recepcionRequisicionBean.ordenActual.descuento}">
+                                                                            <f:convertNumber currencySymbol="$" groupingUsed="true" maxFractionDigits="2" type="currency"/>
+                                                                        </h:outputLabel>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="row">
+                                                                    <div class="col-4" style="text-align: right;">
+                                                                        <strong><h:outputLabel styleClass="control-label" value="Total:"/></strong>
+                                                                    </div>
+                                                                    <div class="col-8" style="text-align: left;">
+                                                                        <h:outputLabel value="#{recepcionRequisicionBean.ordenActual.total}">
+                                                                            <f:convertNumber currencySymbol="$" groupingUsed="true" maxFractionDigits="2" type="currency"/>
+                                                                        </h:outputLabel>
+                                                                    </div> 
+                                                                </div>
+                                                                <div class="row">
+                                                                    <div class="col-4" style="text-align: right;">
+                                                                        <strong><h:outputLabel styleClass="control-label" value="Móneda:"/></strong>
+                                                                    </div>
+                                                                    <div class="col-8" style="text-align: left;">
+                                                                        <h:outputLabel value="#{recepcionRequisicionBean.ordenActual.moneda.siglas}"/>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>   
+                                                <div class="row">  
+                                                    <p:dataTable size="small" stripedRows="true" showGridlines="true"  value="#{recepcionRequisicionBean.listaItemsOrden}" 
+                                                                 var="data" >
+                                                        <f:facet name="header"><h:outputText value="Decripción adicional por partida: #{recepcionRequisicionBean.ordenActual.consecutivo}"/></f:facet>
+                                                        <p:column headerText="Partida" width="20%">
+                                                            #{data.artNumeroParte}
+                                                        </p:column>
+                                                        <p:column headerText="Descripción">
+                                                            <h:outputText value="#{data.observaciones}"/>
+                                                        </p:column>
+                                                    </p:dataTable>                
+                                                </div>
+                                            </p:tab>
+                                            <p:tab title="Devoluciones">
+                                                <p:dataTable size="small" stripedRows="true" showGridlines="true"  value="#{recepcionRequisicionBean.ordenesRechazadas}" var="currentRow" styleClass="table table-striped">
+                                                    <p:column rendered="false">
+                                                        <h:outputText value="#{currentRow['id']}"/>
+                                                        <f:facet name="header">
+                                                            <h:outputText value="id"/>
+                                                        </f:facet>
+                                                    </p:column>
+                                                    <p:column>
+                                                        <h:outputText value="#{currentRow['rechazo'].nombreSolicito}"/>
+                                                        <f:facet name="header">
+                                                            <h:outputText value="Devolvió"/>
+                                                        </f:facet>
+                                                    </p:column>
+                                                    <p:column>
+                                                        <h:outputText value="#{currentRow['fecha']}">
+                                                            <f:convertDateTime dateStyle="default" pattern="dd/MM/yyyy"/>
+                                                        </h:outputText>
+                                                        <f:facet name="header">
+                                                            <h:outputText value="Fecha"/>
+                                                        </f:facet>
+                                                    </p:column>
+                                                    <p:column>
+                                                        <h:outputText value="#{currentRow['hora']}">
+                                                            <f:convertDateTime pattern="hh:mm" timeStyle="default" type="time"/>
+                                                        </h:outputText>
+                                                        <f:facet name="header">
+                                                            <h:outputText value="Hora"/>
+                                                        </f:facet>
+                                                    </p:column>
+                                                    <p:column>
+                                                        <h:inputTextarea cols="145" readonly="true" rows="3" value="#{currentRow['motivo']}"/>
+                                                        <f:facet name="header">
+                                                            <h:outputText value="Motivo"/>
+                                                        </f:facet>
+                                                    </p:column>
+                                                </p:dataTable>
+                                            </p:tab>
+                                            <p:tab title="Notas">
+                                                <ui:include src="../Orden/fragmento/noticia.xhtml"/>
+                                            </p:tab>
+                                            <p:tab title="Cancelaciones">
+                                                <div class="col-6">
+                                                    <h:panelGrid >
+                                                        <!-- aqui va la informacion de cancelado -->
+                                                        <h:outputText value="Cancelada el:"/>
+                                                        <h:outputText  value="#{recepcionRequisicionBean.ordenActual.autorizacionesOrden.fechaCancelo}">
+                                                            <f:convertDateTime dateStyle="default" pattern="dd/MM/yyyy"/>
+                                                        </h:outputText>
+                                                        <h:outputText  value="#{recepcionRequisicionBean.ordenActual.autorizacionesOrden.horaCancelo}">
+                                                            <f:convertDateTime pattern="hh:mm" timeStyle="default" type="time"/>
+                                                        </h:outputText>
+                                                        <h:outputText value="Por:"/>
+                                                        <h:outputText  value="#{recepcionRequisicionBean.ordenActual.autorizacionesOrden.cancelo.nombre}"/>
+                                                    </h:panelGrid>
+
+                                                    <h:outputText value="Motivo:"/>
+                                                    <div class="bordePanelGrid"><h:outputText   value="#{recepcionRequisicionBean.ordenActual.autorizacionesOrden.motivoCancelo}"/></div>
+                                                </div>
+                                            </p:tab>
+                                        </p:tabView>
+                                    </div>
+                                </p:tab> 
+                            </p:tabView>
+                        </div>
+                    </div>
+                </h:form>
+                <!-- inicio de inicio -->
+                <div class="modal fade" id="dialogoMostrarInventario" data-backdrop="static" data-keyboard="false">
+                    <div class="modal-dialog" style="width: 60%;">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h4 class="modal-title">Inventario</h4>
+                            </div>
+                            <h:form id="frmInv">
+                                <div class="modal-body">
+                                    <p:dataTable size="small" stripedRows="true" showGridlines="true" value="#{recepcionRequisicionBean.inventario}" var="dataInv" 
+                                                 >
+                                        <p:column headerText="Almacen">
+                                            #{dataInv.almacenNombre}
+                                        </p:column>
+                                        <p:column headerText="Mínimo">
+                                            #{dataInv.minimoUnidades}
+                                        </p:column>
+                                        <p:column headerText="Máximo">
+                                            #{dataInv.maximoDeInventario}
+                                        </p:column>
+                                        <p:column headerText="Disponible">
+                                            #{dataInv.numeroUnidades}
+                                        </p:column>
+                                        <p:column headerText="Nota">
+                                            #{dataInv.notasInventario}
+                                        </p:column>
+                                    </p:dataTable>
+                                </div>
+                                <div class="modal-footer">
+                                    <p:commandButton value="Cerrar"
+                                                     styleClass="btn btn-default"
+                                                     onclick="cerrarDialogoModal(dialogoMostrarInventario);"
+                                                     title="Cerrar ventana..." 
+                                                     immediate="true"/>
+                                </div>
+                            </h:form>
+                        </div>
+                    </div>
+                </div>
+            </ui:define>
+
+        </ui:composition>
+
+    </body>
+</html>

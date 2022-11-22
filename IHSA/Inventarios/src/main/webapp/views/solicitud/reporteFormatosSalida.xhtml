@@ -1,0 +1,192 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                template="/WEB-INF/templates/crud.xhtml">
+
+    <ui:define name="titulo">        
+        Datos de formatos de salida de material
+    </ui:define>    
+    <ui:define name="contenido"> 
+        <h:form id="frmRep">
+            <h:panelGrid columns="2" styleClass="border">
+                <h:panelGrid columns="3" >
+                    <h:outputText value="Inicio:"/>
+                    <h:outputText value="Fin:"/>
+                    <h:outputLabel value="Estado"/>
+                    <p:datePicker value="#{reporteFormatosSalidaBean.inicio}"
+                                  pattern="dd/MM/yyyy"
+                                  maxdate="#{reporteFormatosSalidaBean.maximaFecha}"/>
+                    <p:datePicker
+                        value="#{reporteFormatosSalidaBean.fin}"
+                        pattern="dd/MM/yyyy"
+                        maxdate="#{reporteFormatosSalidaBean.maximaFecha}"/>
+                    <h:selectOneMenu value="#{reporteFormatosSalidaBean.idStatus}" styleClass="custom-select">
+                        <f:selectItem itemLabel="Sin Selección . . . " itemValue="0"/>
+                        <f:selectItems value="#{reporteFormatosSalidaBean.estados}"/>
+                    </h:selectOneMenu>
+                </h:panelGrid>
+                <h:panelGrid columns="1">
+                    <p:commandLink  value="Buscar" actionListener="#{reporteFormatosSalidaBean.buscarFormatos}" 
+                                    process="@form" update="frmRep">
+                    </p:commandLink>
+                    <p:commandLink value="#{msg['sia.inventarios.comun.reestablecer']}" 
+                                   actionListener="#{reporteFormatosSalidaBean.reestablecerFormatos}" 
+                                   process="@this" update="@form">
+                    </p:commandLink>
+                </h:panelGrid>
+            </h:panelGrid>
+            <div class="row">
+                <p:dataTable id="dtFormatos" value="#{reporteFormatosSalidaBean.solicitudes}" var="data" showGridlines="true" size="small"
+                             rows="20" paginator="true" paginatorAlwaysVisible="true" paginatorPosition="bottom">
+                    <f:facet name="header">Formatos de salida</f:facet>
+                    <p:column headerText="Almacén">
+                        <h:outputText value="#{data.almacen}" />
+                    </p:column>
+                    <p:column headerText="Folio">
+                        <h:outputText value="#{data.folio}" />
+                    </p:column>
+                    <p:column headerText="Gerencia">
+                        <h:outputText value="#{data.gerencia}" />
+                    </p:column>
+                    <p:column headerText="Estado">
+                        <h:outputText value="#{data.status}" />
+                    </p:column>
+                    <p:column headerText="Recibió" style="text-align: left;">
+                        <h:outputText value="#{data.usuarioRecibeMaterial}"/>
+                    </p:column>
+                    <p:column headerText="Requerida">
+                        <h:outputText value="#{data.fechaRequiere}" >
+                            <f:convertDateTime pattern="dd/MM/yyyyy"/>
+                        </h:outputText>
+                    </p:column>
+                    <p:column headerText="Entrega">
+                        <h:outputText value="#{data.fechaEntrega}" >
+                            <f:convertDateTime pattern="dd/MM/yyyyy"/>
+                        </h:outputText>
+                    </p:column>
+                    <p:column headerText="Total de materiales">
+                        <h:outputText value="#{data.totalDetalle}" />
+                    </p:column>
+                    <p:column headerText="Cantidad Solicitada">
+                        <h:outputText value="#{data.cantidadSolicitada}" />
+                    </p:column>
+                    <p:column headerText="Observaciones" style="width: 18%;">
+                        <h:outputText value="#{data.observacion}" />
+                    </p:column>               
+                    <p:column width="50">
+                        <p:commandLink value="Ver" action="#{reporteFormatosSalidaBean.seleccionarSolicitud(data.id)}"
+                                       process="@this" update="frmDatosFolio" oncomplete="PF('dialogoDatosProcesoFolio').show();">
+                        </p:commandLink>
+                    </p:column>
+                </p:dataTable>
+
+                <p:commandButton value="Exportar">
+                    <p:dataExporter fileName="formatoSalida" target="dtFormatos" type="xls"
+                                    />
+                </p:commandButton>
+            </div>
+        </h:form>
+        <h:form id="frmDatosFolio"> <!-- Inicia popup  -->
+            <p:dialog id="formatoSalidaAlmacen" 
+                      header="Formatos de salida de material"
+                      closable="true"                      
+                      modal="true"
+                      resizable="false"
+                      draggable="false"
+                      showEffect="fade"
+                      hideEffect="fade"
+                      width="900"
+                      widgetVar="dialogoDatosProcesoFolio"
+                      >        
+                <h:panelGroup id="formatoSalida">
+                    <h:panelGroup id="panelInformacion">
+                        <table class="table-form">
+                            <tr>
+                                <td width="50">
+                                    <h:outputText value="Solicitante: "/>
+                                </td>
+                                <td>
+                                    <h:outputLabel value="#{reporteFormatosSalidaBean.solicitudeVo.solicita}" style="font-weight: bold;"/>
+                                </td> 
+                                <td style="text-align: right;">
+                                    <h:outputText value="Gerencia:"/>
+                                </td>
+                                <td >
+                                    <h:outputLabel value="#{reporteFormatosSalidaBean.solicitudeVo.gerencia}"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td >
+                                    <h:outputText value="Teléfono: "/>
+                                </td>
+                                <td>
+                                    <h:outputLabel value="#{reporteFormatosSalidaBean.solicitudeVo.telefono}"/>
+                                </td>
+                                <td style="text-align: right;">
+                                    <h:outputText value="Fecha:"/>
+                                </td>
+                                <td>
+                                    <h:outputLabel value="#{reporteFormatosSalidaBean.solicitudeVo.fechaRequiere}"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="4">
+                                    <p:dataTable id="tblMat" value="#{reporteFormatosSalidaBean.detalleSolicitudMaterialAlmacenVos}" 
+                                                 var="dataM">
+                                        <p:column style="text-align: left;" >
+                                            <f:facet name="header">Material</f:facet>
+                                            <h:outputText value="#{dataM.articulo}"/>
+                                        </p:column>
+                                        <p:column headerText="Unidad" style="width: 10%;">
+                                            <h:outputText value="#{dataM.unidad}"/>
+                                        </p:column>
+                                        <p:column headerText="Cant. Sol." style="width: 8%">
+                                            <h:outputText value="#{dataM.cantidad}" />
+                                        </p:column>
+                                        <p:column headerText="Cant. Ent." style="width: 8%">
+                                            <h:outputText value="#{dataM.cantidadRecibida}" />
+                                        </p:column>
+                                    </p:dataTable>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="4">
+                                    <p:dataTable id="tblEst" value="#{reporteFormatosSalidaBean.datosSolicitud}" 
+                                                 var="dataD">
+                                        <p:column style="text-align: left;" >
+                                            <f:facet name="header">Estado</f:facet>
+                                            <h:outputText value="#{dataD.status}"/>
+                                        </p:column>
+                                        <p:column style="text-align: left;" >
+                                            <f:facet name="header">Usuario</f:facet>
+                                            <h:outputText value="#{dataD.usuario}"/>
+                                        </p:column>
+                                        <p:column headerText="Fecha" style="width: 10%;">
+                                            <h:outputText value="#{dataD.fecaModifico}"/>
+                                            <h:outputText value="#{dataD.fechaGenero}" rendered="#{dataD.actual eq true}"/>
+                                        </p:column>
+                                        <p:column headerText="Hora" style="width: 8%">
+                                            <h:outputText value="#{dataD.horaModifico}" />
+                                            <h:outputText value="#{dataD.horaGenero}"  rendered="#{dataD.actual eq true}"/>
+                                        </p:column>
+                                    </p:dataTable>
+                                </td>
+                            </tr>
+                            <tr style="border-top: 1px solid #8f8f8f;">
+                                <td colspan="4">
+                                    <p:commandLink value="Cerrar" style="float: right;" immediate="true"
+                                                   action="#{reporteFormatosSalidaBean.cerrarFormatosSalidaMaterial}">
+                                    </p:commandLink>
+                                </td>
+                            </tr>
+                        </table>
+                    </h:panelGroup>
+                </h:panelGroup>
+            </p:dialog>
+        </h:form> <!-- Termina popup --> 
+    </ui:define>
+</ui:composition>
+

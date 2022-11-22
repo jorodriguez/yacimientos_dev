@@ -1,0 +1,65 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:p="http://primefaces.org/ui">
+    <div class="card card-primary">
+        <div class="card-heading">
+            <h3 class="card-title">Viajes por autorizar</h3>            
+        </div>
+        <div class="card-body" id="viajesPauID">
+            <p:accordionPanel id="pnlViaPausa" widgetVar="basicPau" >
+                <c:forEach items="#{sesion.rutasPausa}" var="ruta">
+                    <p:tab title="Ruta: #{ruta.nombre}  (Tiempo:#{ruta.tiempoViaje} hrs.)  (Viajes:#{ruta.viajes.size()})"
+                           titleStyle="background-color: #{ruta.cssColorSemaforo}; ">
+                        <p:commandLink                                                         
+                            styleClass="btn btn-link btn-lg"                                                        
+                            style="margin-top: 4px; margin-bottom: 4px;align-content: center;"
+                            action="#{grViaje.goPopupRutaDet(ruta.id)}"
+                            title="Click aquí para consultar el detalle de la ruta..." 
+                            update="frmRutaDet">        
+                            <span class="fa fa-road"></span>
+                        </p:commandLink>
+                        <c:forEach items="#{ruta.viajes}" var="viaje">
+                            <div style="#{viaje.sgViaje > 0 ? 'background-color: #d9edf7; border-color: #bce8f1;' : ''}" title="#{viaje.codigo}" data-toggle="collapse" data-target="#viajeColap#{viaje.id}">
+                                <div style="width: 100%;">
+                                    #{viaje.codigo}                                                         
+                                    <strong>#{viaje.responsable} </strong>
+                                    #{viaje.fechaProgramadaTxt} #{viaje.horaProgramadaTxt}
+                                    <span class="fa fa-users fa-1g"></span>                                                            
+                                    (#{viaje.numViajeros}/#{viaje.vehiculoVO.capacidadPasajeros})                                                        
+
+                                    <p:commandLink                                                         
+                                        styleClass="btn btn-link btn-lg"                                                        
+                                        style="margin-top: 4px; margin-bottom: 4px;align-content: center;"
+                                        actionListener="#{sesion.goGRViajeDet(viaje.id, 0)}"
+                                        title="Click aquí para ver detalle del viaje..." 
+                                        process="@this" update="frmPnlViajeDet">               
+                                        <span class="fa fa-car"></span>
+                                    </p:commandLink>                                                                                                        
+                                </div>
+                            </div>
+                        </c:forEach>
+                    </p:tab>
+                </c:forEach>
+            </p:accordionPanel>
+        </div>
+    </div>
+    <script>
+        $(document).ready(function () {
+            //$("#tipoViaje").tabs({active: 0});
+            //startDate();            
+
+//            var kanbanCol = $('.card-body');
+//            kanbanCol.css('max-height', (window.innerHeight - 150) + 'px');
+//            var kanbanColCount = parseInt(kanbanCol.length);
+//            $('.container-fluid').css('width', '100%');
+//            draggableInit();
+//            $('.card-heading').click(function () {
+//                var $cardBody = $(this).parent().children('.card-body');
+//                $cardBody.slideToggle();
+//            });
+        });
+    </script>
+</ui:composition>

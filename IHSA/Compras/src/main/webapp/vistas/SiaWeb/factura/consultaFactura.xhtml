@@ -1,0 +1,78 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      >
+    <body>
+        <ui:composition template="./../templates/template.xhtml">
+            <ui:define name="tituloPagina">
+                Consulta facturas
+            </ui:define>
+            <ui:define name="contenido">
+                <h:form id="frmConsFact">
+                    <div class="form-inline">
+                        <ui:include src="filtroFactura.xhtml"/>
+                    </div>
+                    <div class="form-row">
+                        <p:dataTable size="small" stripedRows="true" showGridlines="true" id="tblFacturas" value="#{consultaFacturaBean.facturas}" var="dataFac" rows="20"
+                                     paginator="true" paginatorAlwaysVisible="true" paginatorPosition="bottom"
+                                     >
+                            <p:column headerText="Proveedor"  style="text-align: left;">
+                                <h:outputText value="#{dataFac.proveedor}"/>
+                            </p:column>
+                            <p:column headerText="Folio" width="5%">
+                                <h:outputText value="#{dataFac.folio}"/>
+                            </p:column>
+                            <p:column headerText="Emisión" width="6%">
+                                <h:outputText value="#{dataFac.fechaEmision}">
+                                    <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                </h:outputText>
+                            </p:column>                                                                                    
+                            <p:column headerText="EstatusActual">
+                                <h:outputText value="#{dataFac.status}"/>
+                            </p:column>
+                            <p:column headerText="Fecha Estatus">
+                                <h:outputText value="#{dataFac.fechaStatus}">
+                                    <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                </h:outputText>
+                            </p:column>
+                            <p:column headerText="Rechazo"  style="text-align: left;" width="5%">
+                                <h:outputText value="#{dataFac.rechazoFin ? 'Si' : 'No'}"/>
+                            </p:column>
+                            <p:column headerText="Concepto"  style="text-align: left;">
+                                <h:outputText value="#{dataFac.concepto}"/>
+                            </p:column>
+                            <p:column headerText="SubTotal" style="text-align:  right;" width="90">
+                                <h:outputText value="#{dataFac.subTotal}"/>
+                            </p:column>
+                            <p:column headerText="Total" style="text-align:  right;" width="90">
+                                <h:outputText value="#{dataFac.monto}"/>
+                            </p:column>
+                            <p:column headerText="Moneda" width="80">
+                                <h:outputText value="#{dataFac.moneda}"/>
+                            </p:column>
+                            <p:column width="35">
+                                <p:commandLink action="#{consultaFacturaBean.seleccionar(dataFac.id)}"
+                                               process="@this" update="frmConsFac">
+                                    <i class="fa fa-cog text-primary"/>
+                                </p:commandLink>
+                            </p:column>
+                        </p:dataTable>
+                    </div>
+                    <div class="form-inline">
+                        <p:commandButton value="Exportar">
+                            <p:dataExporter fileName="facturas" type="xls" target="tblFacturas" /> 
+                        </p:commandButton>
+                    </div>                    
+                </h:form>
+                <ui:include src="fragmentos/dialogoDatosFactura.xhtml"/>
+            </ui:define>
+        </ui:composition>
+
+    </body>
+</html>

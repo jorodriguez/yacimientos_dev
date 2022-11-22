@@ -1,0 +1,135 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+     >
+
+    <body>
+
+        <ui:composition template="./../../../WEB-INF/facelets/templates/templateServiciosGenerales.xhtml">
+
+            <ui:define name="contenido">
+                <h:panelGroup >
+
+                    <h:panelGroup  rendered="#{empty sesion.usuario}" styleClass="altura">
+                        <ui:include src="./../../../login.xhtml"/>
+                    </h:panelGroup>
+
+                    <h:form >
+                        <center><h:messages  globalOnly="true" errorClass="errorMessage" infoClass="infoMessage"/></center>
+                        <br/>
+
+                        <p class="tituloEncabezado">#{msgs['sgl.vehiculo.titulo.administracion']}</p>
+
+
+                        <h:panelGrid styleClass="bordePanelGrid">
+
+                            <f:facet name="header"><h:outputLabel value="#{msgs['sgl.oficina.nombre']}"/></f:facet>
+
+                            <p:selectOneMenu  value="#{vehiculoBean.idOficina}" id="campoGerencia" valueChangeListener="#{vehiculoBean.idOficinaSel}">
+                                <f:selectItem itemValue="-1" itemLabel="#{msgs['sistema.seleccionar.combo']}"/>
+                                <f:selectItems value="#{vehiculoBean.listaOficina}"/>
+                            </p:selectOneMenu>
+                        </h:panelGrid>
+                        <br/>
+
+                        <p:dataTable id="dgVehiculos" rows="10" value="#{vehiculoBean.traerAllVehiculoPorOficina}"  >
+
+                            <p:column>
+                                <f:facet name="header"><h:outputText value="#{msgs['sgl.marca']}"/></f:facet>
+                                <h:outputText value="#{data.sgMarca.nombre}"/>
+                            </p:column>                            
+                            <p:column>
+                                <f:facet name="header"><h:outputText value="#{msgs['sgl.vehiculo.modelo']}"/></f:facet>
+                                <h:outputText value="#{data.sgModelo.nombre}"/>
+                            </p:column>                            
+                            <p:column>
+                                <f:facet name="header"><h:outputText value="# #{msgs['sgl.vehiculo.serie']}"/></f:facet>
+                                <h:outputText value="#{data.serie}"/>
+                            </p:column>                            
+                            <p:column>
+                                <f:facet name="header"><h:outputText value="# #{msgs['sgl.vehiculo.placa']}"/></f:facet>
+                                <h:outputText value="#{data.numeroPlaca}"/>
+                            </p:column>                            
+                            <p:column>
+                                <p:commandLink id="linkcambiar" value="#{msgs['sgl.viaje.cambiar']} de #{msgs['sgl.oficina.nombre']}" actionListener="#{vehiculoBean.openPopupCambioOficina(actionEvent)}" styleClass="link"/>
+                            </p:column>
+                        </p:dataTable>                                     
+                    </h:form>
+
+                    <h:form id="popupCambiarOficina">
+                        <p:dialog  header="#{msgs['sgl.viaje.cambiar']} #{msgs['sgl.vehiculo']} de #{msgs['sgl.oficina.nombre']}" 
+                                   >
+                            <center><h:messages for="idOficina" id="msgpopupcambio" errorClass="errorMessage" infoClass="infoMessage"/></center>  
+                            <table width="300px" cellpadding="0" cellspacing="0">
+                                <tr>
+                                    <td ><h:outputLabel value="#{msgs['sgl.vehiculo.oficina.actual']}: " styleClass="f12"/> </td>
+                                    <td ><h:outputText value="#{vehiculoBean.vehiculo.sgOficina.nombre}" styleClass="f11"/></td>
+                                </tr>
+                                <tr>
+                                    <td ><h:outputLabel value="#{msgs['sgl.marca']}: " styleClass="f12"/> </td>
+                                    <td ><h:outputText value="#{vehiculoBean.vehiculo.sgMarca.nombre}" styleClass="f11"/></td>
+                                </tr>
+                                <tr>
+                                    <td ><h:outputLabel value="#{msgs['sgl.vehiculo.modelo']}: " styleClass="f12"/> </td>
+                                    <td ><h:outputText value="#{vehiculoBean.vehiculo.sgModelo.nombre}" styleClass="f11"/></td>
+                                </tr>
+                                <tr>
+                                    <td><h:outputLabel value="# #{msgs['sgl.vehiculo.serie']}: " styleClass="f12"/> </td>
+                                    <td><h:outputText value="#{vehiculoBean.vehiculo.serie}" styleClass="f11"/></td>
+                                </tr>
+                                <tr>
+                                    <td><h:outputLabel value="##{msgs['sgl.vehiculo.placa']}: " styleClass="f12"/> </td>
+                                    <td><h:outputText value="#{vehiculoBean.vehiculo.numeroPlaca}" styleClass="f11"/></td>
+                                </tr>
+                                <tr> 
+                                    <td><h:outputLabel value="#{msgs['sgl.solicitudViaje.oficina.destino']}: " styleClass="f12"/> </td>
+                                    <td> <p:selectOneMenu value="#{vehiculoBean.idOficina2}" id="idOficina" >
+                                            <f:selectItem itemValue="-1" itemLabel="#{msgs['sistema.seleccionar.combo']}"/>
+                                            <f:selectItems value="#{vehiculoBean.listaOficina2}"/>
+                                        </p:selectOneMenu>
+                                    </td>
+                                </tr>
+                            </table>
+                            <center>
+                                <h:panelGrid columns="3">
+                                    <p:commandButton onclick="if(!confirm('#{msgs['sgl.vehiculo.oficina.cambio.mensaje']}')) return false;"
+                                                       value="#{msgs['sistema.cambiar']}" actionListener="#{vehiculoBean.openPopupCambioOficina(actionEvent)}" styleClass="btn btn-info" />
+                                    <p:commandButton value="#{msgs['sistema.cancelar']}" actionListener="#{vehiculoBean.closePopupCambioOficina(actionEvent)}" styleClass="btn btn-default" immediate="true"/>        
+                                </h:panelGrid>                        
+                            </center>
+                        </my:panelPopup>
+                    </h:form>  
+
+                    <h:form id="formPopupPreGuardarCambioOficina" >
+                        <p:dialog   id="popupPreGuardarCambioOficina" draggable="false" 
+                                        visible="#{sesion.controladorPopups['popupPreGuardarCambioOficina']}"
+                                        styleClass="corePopup"
+                                        modal="true" style="z-index:2001; position: relative;" >
+                            <f:facet name="body">
+                                <center>
+                                    <h:outputLabel value="# #{msgs['sgl.vehiculo.cambio.oficina']}: " styleClass="f12"/><br />
+                                    
+                                    <p:inputTextarea cols="55" rows="5" value="#{vehiculoBean.mensaje}" required="true">
+                        
+                                     </p:inputTextarea> <br/>
+                                    
+                                    <h:panelGrid columns="2">
+                                        <p:commandLink value="#{msgs['sistema.guardar']}"
+                                                         actionListener="#{vehiculoBean.saveCambioOficina(event)}" 
+                                                         styleClass="btn btn-info" />
+                                        <p:commandLink value="#{msgs['sistema.cancelar']}" actionListener="#{vehiculoBean.closePopupPreGuardarCambioOficina(event)}" immediate="true" styleClass="btn btn-default" />
+                                    </h:panelGrid>
+                                </center>          
+                            </f:facet>
+                        </<p:dialog >
+                    </h:form>
+                </h:panelGroup>
+                
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

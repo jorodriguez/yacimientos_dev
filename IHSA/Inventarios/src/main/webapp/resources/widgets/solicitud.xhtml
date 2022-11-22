@@ -1,0 +1,193 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+    <p:dialog id="nuevoDialogoSolicitar"
+              header="Solicitud de material"
+              closable="true"
+              modal="true"
+              resizable="false"
+              draggable="false"
+              showEffect="fade"
+              hideEffect="fade"
+              width="900"
+              widgetVar="crearDialogoMaterial"
+              style="overflow: auto;" height="550"
+              >
+        <p:tabView id="tbSol" >
+            <p:tab title="Solicitar">
+                <h:panelGroup id="panelSolicitud">
+                    <h:panelGroup id="panelInformacion">
+                        <table class="table-form">
+                            <tr>
+                                <td>
+                                    <h:outputText value="Solicitante: "/>
+                                </td>
+                                <td>
+                                    <h:outputLabel value="#{principal.user.nombre}" style="font-weight: bold;"/>
+                                </td> 
+                                <td style="vertical-align: middle; text-align: right;">
+                                    <h:outputText value="Gerencia:"/>
+                                </td>
+                                <td colspan="3">
+                                    <h:selectOneMenu value="#{solicitarMaterialBean.idGerencia}"
+                                                     styleClass="custom-select">
+                                        <f:selectItems value="#{solicitarMaterialBean.gerencias}"/>
+                                    </h:selectOneMenu>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="vertical-align: middle;">
+                                    <h:outputText value="Teléfono: "/>
+                                </td>
+                                <td>
+                                    <h:inputText value="#{solicitarMaterialBean.solicitudMaterialAlmacenVo.telefono}" size="20"
+                                                 styleClass="ui-inputfield ui-textentry ui-widget ui-state-optional ui-corner-all"/>
+                                </td>
+                                <td style="vertical-align: middle; text-align: right;">
+                                    <h:outputText value="Fecha:"/>
+                                </td>
+                                <td>
+                                    <p:datePicker pattern="dd/MM/yyyy" mindate="#{solicitarMaterialBean.fechaMinima}"
+                                                  value="#{solicitarMaterialBean.solicitudMaterialAlmacenVo.fechaRequiere}"
+                                                  >
+                                    </p:datePicker>
+                                </td>
+                                <td style="text-align: right;vertical-align: middle;">
+                                    <h:outputText value="Almacén: "/>
+                                </td>
+                                <td>
+                                    <p:selectOneMenu value="#{solicitarMaterialBean.idAlmacen}"                                                    
+                                                     styleClass="custom-select">
+                                        <f:selectItems value="#{solicitarMaterialBean.almacenes}"/>
+                                        <p:ajax event="change" listener="#{solicitarMaterialBean.seleccionarAlmacen}" process="@this"
+                                                update="frmSol:tbSol"/>
+                                    </p:selectOneMenu>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="6">
+                                    Artículos
+                                    <p:autoComplete id="autoComplete" value="#{solicitarMaterialBean.articulo}" 
+                                                    completeMethod="#{solicitarMaterialBean.completarArticulo}" size="80"
+                                                    var="inv" itemLabel="#{inv.articuloNombre}" itemValue="#{inv}"
+                                                    converter="#{inventarioConverter}" 
+                                                    minQueryLength="4">
+                                        <p:ajax event="itemSelect" 
+                                                listener="#{solicitarMaterialBean.seleccionarArticulo}" 
+                                                update="frmSol:tbSol:tblMat @this"
+                                                process="@this frmSol:tbSol:tblMat"/>
+                                    </p:autoComplete>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="6">
+                                    <p:dataTable id="tblMat" value="#{solicitarMaterialBean.materiales}" 
+                                                 var="dataM" rowIndexVar="index" 
+                                                 showGridlines="true" size="small">
+                                        <p:column style="text-align: left;" >
+                                            <f:facet name="header">Descripción del artículo</f:facet>
+                                            <h:outputText value="#{dataM.articulo}" title="#{dataM.codigoArt}"/>
+                                        </p:column>
+                                        <p:column headerText="Unidad" style="width: 10%;">
+                                            <h:outputText value="#{dataM.unidad}"/>
+                                        </p:column>
+                                        <p:column headerText="Disp." width="60">
+                                            <h:outputText value="#{dataM.disponibles}"/>
+                                        </p:column>
+                                        <p:column headerText="Cant." style="width: 6%">
+                                            <h:inputText value="#{dataM.cantidad}" class="form-control" size="5"/>
+                                        </p:column>
+                                        <p:column width="35"> 
+                                            <p:commandLink action="#{solicitarMaterialBean.eliminarMaterialSolicitud(dataM.codigoArt)}"
+                                                           process="@this" update="frmSol:tbSol:tblMat"
+                                                           >
+                                                <span class="fa fa-trash text-danger"/>
+                                            </p:commandLink>
+                                        </p:column>
+                                    </p:dataTable>
+                                </td>
+                            </tr>
+                            <tr style="padding-top: 5%;">
+                                <td style="vertical-align: middle;">
+                                    <h:outputLabel value="Observación:" style="margin-top: 20px;"/>
+                                </td>
+                                <td colspan="5">
+                                    <h:inputTextarea value="#{solicitarMaterialBean.observacion}" rows="2"
+                                                     styleClass="ui-inputfield ui-textentry ui-widget ui-state-optional ui-corner-all"/>
+                                </td>
+                            </tr>
+                            <tr style="padding-top: 10%;">
+                                <td style="vertical-align: middle;">
+                                    <h:outputLabel value="Recogerá material:"/>
+                                </td>
+                                <td colspan="2"> 
+                                    <h:inputText id="inpUserRecoge" value="#{solicitarMaterialBean.solicitudMaterialAlmacenVo.usuarioRecoge}" style="font-weight: bold;"
+                                                 styleClass="ui-inputfield ui-textentry ui-widget ui-corner-all"/>
+                                    <small>Nombre y apellidos</small>
+                                </td>
+                                <td style="vertical-align: middle; text-align: right;">
+                                    <h:outputLabel value="Autoriza:"/>
+                                </td>
+                                <td style="vertical-align: middle;" colspan="2"> 
+                                    <h:selectOneMenu value="#{solicitarMaterialBean.idAutoriza}"
+                                                     styleClass="custom-select">
+                                        <f:selectItems value="#{solicitarMaterialBean.autorizadores}"/>
+                                    </h:selectOneMenu>
+                                </td>
+                            </tr>
+                        </table>
+                        <table class="table-form">
+                            <tr>
+                                <td>
+                                    <h:messages id="mensajeSol" showDetail="false" globalOnly="true" 
+                                                errorClass="text text-danger"/>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td>
+                                    <p:commandLink value="Guardar"  action="#{solicitarMaterialBean.guardar}" 
+                                                   process="@form" update="frmSolMat frmSol:tbSol:mensajeSol" 
+                                                   styleClass="btn btn-primary" style="color: white; font-weight: bold;">
+                                    </p:commandLink>
+                                    <p:commandLink value="Guardar y solicitar" styleClass="btn btn-success"  style="color: white; font-weight: bold;"
+                                                   action="#{solicitarMaterialBean.guardarSolicitarMaterial}"
+                                                   process="@form" update="frmSolMat frmSol:tbSol:mensajeSol" >
+                                    </p:commandLink>
+                                    <p:commandLink value="Cerrar"  styleClass="hbutton cancelar" 
+                                                   action="#{solicitarMaterialBean.cerrarSolicitudMaterial}"
+                                                   immediate="true" >
+                                    </p:commandLink>
+                                </td>
+                            </tr>
+
+                        </table>
+                    </h:panelGroup>
+                </h:panelGroup>
+            </p:tab>
+            <p:tab title="Devoluciones" >
+                <p:dataTable value="#{solicitarMaterialBean.devoluciones}" var="dataDev">
+                    <p:column headerText="Devolvió">
+                        <h:outputText value="#{dataDev.genero}"/>
+                    </p:column>
+                    <p:column headerText="Motivo">
+                        <h:outputText value="#{dataDev.motivo}"/>
+                    </p:column>
+                    <p:column headerText="Fecha">
+                        <h:outputText value="#{dataDev.fechaGenero}">
+                            <f:convertDateTime pattern="dd/MM/yyyy"/> 
+                        </h:outputText>
+                    </p:column>
+                    <p:column headerText="Hora">
+                        <h:outputText value="#{dataDev.horaGenero}">
+                            <f:convertDateTime pattern="dd/MM/yyyy"/> 
+                        </h:outputText>
+                    </p:column>
+                </p:dataTable>
+            </p:tab>
+        </p:tabView>
+    </p:dialog>
+</html>

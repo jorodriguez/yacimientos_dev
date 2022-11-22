@@ -1,0 +1,60 @@
+<ui:composition xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+		>
+    <div class="col-lg-12 col-xs-12">
+	<div class="form-group">
+	    <div class="form-control">
+		<h:outputText value="Inicio: "/>
+		<p:datePicker value="#{consultaBean.fechaInicio}" 
+				   pattern="dd/MM/yyyy">
+		</ace:dateTimeEntry>
+		<h:outputText value="Fin: "/>
+		<p:datePicker value="#{consultaBean.fechaFin}" 
+				   pattern="dd/MM/yyyy">
+		</ace:dateTimeEntry>
+		<p:commandLink value="#{msgs['sistema.buscar']}" 
+				 actionListener="#{consultaBean.buscarViajeros(event)}"  
+				 styleClass="btn btn-sm btn-success"/>
+	    </div>
+	</div>
+    </div>
+    <h:commandLink id="btnLimpiar" style="display: none" actionListener="#{consultaBean.limiarLista(event)}" 
+		   styleClass="btn btn-sm btn-success"/>
+    <div id="graficaViajeros" style="min-width: 700px; height: 400px; margin: 0 auto;" ></div>
+    <br/>
+    <h:inputHidden id="hidenServicio" value="#{consultaBean.servicioVehiculo}"/>
+    <p:commandLink id="btnBuscarPorServicio" value="Buscar" actionListener="#{consultaBean.traerViajerosPorOperacion(event)}"
+		     style="display: none;"/>
+    <p:dataTable id="dtViajero" value="#{consultaBean.listaViajeros}" var="data"
+		   rows="10" styleClass="dataPaginatorDataTable" 
+		   paginator="true"  showGridlines="true" size="small"
+		   paginatorPosition="bottom"  
+		   style="font-size: 1em; width: 100%" >
+	<f:facet name="header"><h:outputLabel value="#{consultaBean.servicioVehiculo}"/></f:facet>
+	<p:column headerText="Gerencia" style="text-align: left;">
+	    <h:outputText value="#{data.gerenciaResponsable}"/>
+	</p:column>
+	<p:column headerText="Viaje" >
+	    <h:outputText value="#{data.codigoViaje}" style="text-align: left;" />
+	</p:column>
+	<p:column headerText="Viajero" >
+	    <h:outputText value="#{data.idInvitado == 0 ? data.usuario : data.invitado}" style="text-align: left;" />
+	</p:column>
+	<p:column headerText="Registró" >
+	    <h:outputText value="#{data.generoSolicitudViaje}" style="text-align: left;" />
+	</p:column>
+	<p:column headerText="Fecha" style="text-align: center;">
+	    <h:outputText value="#{data.fechaProgramada}">
+		<f:convertDateTime pattern="dd/MM/yyyy"/>
+	    </h:outputText>
+	</p:column>
+    </p:dataTable>
+    <h:panelGrid columns="2">
+        <p:commandButton value="Exportar">
+	<p:dataExporter fileName="viajeros- #{consultaBean.servicio}" type="xls" target="dtViajero" />
+        </p:commandButton>
+    </h:panelGrid>
+    <br/>
+</ui:composition>

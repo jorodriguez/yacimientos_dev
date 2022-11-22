@@ -1,0 +1,234 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      >
+
+    <body>
+        <ui:composition template="./../templates/template.xhtml">
+            <ui:define name="tituloPagina">
+                Autorizar #{msgs['orden.titulo']} SM
+            </ui:define>
+            <ui:define name="contenido">
+                <h:form id="form1">
+                    <div class="row">
+                        <p:confirmDialog global="true" showEffect="fade" hideEffect="fade" responsive="true" width="350">
+                            <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no ui-button-flat"/>
+                            <p:commandButton value="Si" type="button" styleClass="ui-confirmdialog-yes" />
+                        </p:confirmDialog>
+                        <div id="divAutoriza" class="btn-group" style="text-align: left;">                            
+                            <p:commandLink styleClass="btn btn-default"
+                                           value="Autorizar"
+                                           action="#{ordenBean.autorizarLicitacion}"
+                                           process="@this  form1:Ordenes" update="@form">
+                                <p:confirm header="Confirmar" message="La operación va a autorizar la(s) OC/S seleccionada(s). ¿Está seguro?" 
+                                           icon="pi pi-exclamation-triangle"/>
+                            </p:commandLink>                                
+                            <p:commandLink value="Devolver"
+                                           class="btn btn-md btn-default"                                 
+                                           action="#{ordenBean.inicioDevolverOrdenCompras}"
+                                           update="frmDevsOCS" process="@this form1:Ordenes"/>
+                            <p:commandLink value="Cancelar"
+                                           class="btn btn-md btn-default"                         
+                                           action="#{ordenBean.inicioCancelarOrdenCompras}"
+                                           update="frmCancelVarOCS" process="@this form1:Ordenes"/>                            
+                        </div>
+                        <div id="divOperacion" class="btn-group" style="text-align: left; display: none;">
+                            <p:commandLink value="Regresar" action="#{ordenBean.iniciarLimpiar}"
+                                           onclick="regresar('divTabla', 'divDatos', 'divOperacion', 'divAutoriza')"
+                                           styleClass="btn btn-default"/>
+                            <p:commandLink styleClass="btn btn-default"
+                                           value="Autorizar"
+                                           action="#{ordenBean.autorizarLicitacion}"
+                                           process="@this" update="form1 frmMenu">
+                                <p:confirmDialog header="Confirmar" message="La operación va a autorizar la(s) OC/S seleccionada(s). ¿Está seguro?"/>
+                            </p:commandLink>
+                            <p:commandLink 
+                                title="Clic aquí para cancelar la orden de compra..." value="Cancelar"
+                                onclick="$(dialogoCancelOCS).modal('show');"
+                                styleClass="btn btn-default" 
+                                process="@this" update="frmCancelOCS"/>
+                            <p:commandLink     title="Clic aquí para devolver la orden de compra..." value="Devolver"
+                                               onclick="$(dialogoDevolverOCS).modal('show');"
+                                               styleClass="btn btn-default"
+                                               process="@this" update="frmDevOCS"/>
+                            <p:commandLink  action="#{ordenBean.crearNota}" 
+                                            title="Clic aquí para generar una Nota sobre la orden de compra..." value="Generar Nota"
+                                            onclick="$(dialogoNotaOrden).modal('show');"
+                                            styleClass="btn btn-default" 
+                                            process="@this" update="frmNotasOCS"/>                            
+                        </div>
+                    </div>
+                    
+                    <div id="divTabla" class="row"> 
+                        <p  style="float: right; color: #E79E19;"><i class="fa fa-asterisk"/>Ordenes con contrato vencido</p>
+                        <div scope="colgroup" colspan="7"  style="font-weight: normal;"><span>Licitaciones pendientes de autorizar</span></div>
+                        <div class="table table-responsive">                            
+                            <p:dataTable size="small" stripedRows="true" showGridlines="true" id="Ordenes"   value="#{ordenBean.ordenesAutorizaLicitacion}" var="data"                                                                              
+                                         styleClass="table table-striped" rows="20" 
+                                         paginator="true"  
+                                         paginatorPosition="bottom" 
+                                         style="font-size: 1em; width: 100%" >
+                                <p:column styleClass="#{data.leida eq 'False' ? 'filaConSombra': 'filaSinSombra'}">
+                                    <f:facet name="header">
+                                        <h:selectBooleanCheckbox  class="todos" 
+                                                                  onchange="seleccionarTodo('todos', 'seleccion')"
+                                                                  style="#{data.contratoActivo lt 0  ? 'color: #E79E19' : ''}"/>
+                                    </f:facet>
+                                    <h:selectBooleanCheckbox value="#{data.selected}" class="seleccion"/>
+                                </p:column>
+                                <p:column styleClass="#{data.leida eq 'False' ? 'filaConSombra': 'filaSinSombra'}" style="width: 9%">
+                                    <h:outputText value="#{data['consecutivo']}"
+                                                  style="#{data['superaMonto'] eq 'True' ? 'color: maroon;' : ''}"/>
+                                    <f:facet name="header">
+                                        <h:outputText value="Código"/>
+                                    </f:facet>
+                                </p:column>
+                                <p:column styleClass="#{data.leida eq 'False' ? 'filaConSombra': 'filaSinSombra'}">
+                                    <h:outputText value="#{data['referencia']}"
+                                                  style="#{data['superaMonto'] eq 'True' ? 'color: maroon;' : ''}"/>
+                                    <f:facet name="header">
+                                        <h:outputText value="Referencia"/>
+                                    </f:facet>
+                                </p:column>
+                                <p:column styleClass="#{data.leida eq 'False' ? 'filaConSombra': 'filaSinSombra'}">
+                                    <h:outputText value="#{data['requisicion']}" style="#{data['superaMonto'] eq 'True' ? 'color: maroon;' : ''}"/>
+                                    <f:facet name="header">
+                                        <h:outputText value="Requisición"/>
+                                    </f:facet>
+                                </p:column>
+                                <p:column styleClass="#{data.leida eq 'False' ? 'filaConSombra': 'filaSinSombra'}">
+                                    <center>
+                                        <h:outputText value="#{data['fecha']}" style="#{data['superaMonto'] eq 'True' ? 'color: maroon;' : ''}">
+                                            <f:convertDateTime dateStyle="default" pattern="dd/MM/yyyy"/>
+                                        </h:outputText>
+                                    </center>
+                                    <f:facet name="header">
+                                        <h:outputText value="F. Ingreso"/>
+                                    </f:facet>
+                                </p:column>
+                                <p:column styleClass="#{data.leida eq 'False' ? 'filaConSombra': 'filaSinSombra'}" style="width: 11%">
+                                    <f:facet name="header">
+                                        <h:outputText value="Subtotal"/>
+                                    </f:facet>
+                                    <h:outputText value="#{data['subTotal']}" style="#{data['superaMonto'] eq 'True' ? 'color: maroon;' : ''}" >
+                                        <f:convertNumber pattern="$ #,##0.00" locale="es-MX"/>
+                                    </h:outputText>
+                                </p:column>
+                                <!--<p:column styleClass="#{data.leida eq 'False' ? 'filaConSombra': 'filaSinSombra'}">
+                                    <f:facet name="header">
+                                        <h:outputText value="I.V.A."/>
+                                    </f:facet>
+                                    <h:outputText value="#{data['iva']}" style="#{data['superaMonto'] eq 'True' ? 'color: maroon;' : ''}" >
+                                        <f:convertNumber pattern="#,##0.00" locale="es-MX"/>
+                                    </h:outputText>
+                                </p:column>
+                                <p:column styleClass="#{data.leida eq 'False' ? 'filaConSombra': 'filaSinSombra'}">
+                                    <h:outputText value="#{data['total']}" style="#{data['superaMonto'] eq 'True' ? 'color: maroon;' : ''}" >
+                                        <f:convertNumber pattern="#,##0.00" locale="es-MX"/>
+                                    </h:outputText>
+                                    <f:facet name="header">
+                                        <h:outputText value="Monto Total" />
+                                    </f:facet>
+                                </p:column>-->
+                                <p:column styleClass="#{data.leida eq 'False' ? 'filaConSombra': 'filaSinSombra'}">
+                                    <h:outputText value="#{data['moneda']}"
+                                                  style="#{data['superaMonto'] eq 'True' ? 'color: maroon;' : ''}"/>
+                                    <f:facet name="header">
+                                        <h:outputText value="$"/>
+                                    </f:facet>
+                                </p:column>                                
+                                <p:column styleClass="#{data.leida eq 'False' ? 'filaConSombra': 'filaSinSombra'}">
+                                    <h:outputText value="#{data['proveedor']}"
+                                                  style="#{data['superaMonto'] eq 'True' ? 'color: maroon;' : ''}"/>
+                                    <f:facet name="header">
+                                        <h:outputText value="Proveedor"/>
+                                    </f:facet>
+                                </p:column>
+                                <p:column headerText="Contrato"
+                                          styleClass="#{data.leida eq 'False' ? 'filaConSombra': 'filaSinSombra'}">	
+                                    <h:panelGroup  rendered="#{data.contratoVO.id gt 0}">
+                                        <p:commandLink value="#{data.contratoVO.numero}" action="#{ordenBean.llenarListaConvenio(data.contratoVO.numero)}"
+                                                       onclick="$(dialogoContratos).modal('show');"
+                                                       >
+                                        </p:commandLink>
+                                    </h:panelGroup>
+                                    <h:panelGroup rendered="#{data.contratoVO.id eq 0}">
+                                        <h:outputLabel value="#{data.contratoVO.numero}"/>
+                                    </h:panelGroup>
+                                </p:column>
+                                <p:column headerText="Tabulación" styleClass="#{data.leida eq 'False' ? 'filaConSombra': 'filaSinSombra'}">
+                                    <h:panelGroup  rendered="#{data.adjuntoETS.id gt 0}">
+                                        <p:link  href="/Compras/AbrirArchivo?ZWZ2W=#{data.adjuntoETS.id}&amp;ZWZ3W=#{data.adjuntoETS.uuid}"
+                                                 target="_blank"
+                                                 value="">
+                                            <h:graphicImage url="/sia/resources/img/Documento.gif" 
+                                                            style="cursor: pointer;"
+                                                            title="Abrir la tabla #{data.adjuntoETS.nombre}"/>
+                                        </p:link>
+                                    </h:panelGroup>
+                                    <h:panelGroup  rendered="#{data.adjuntoETS.id eq 0}">
+                                        <ui:repeat value="#{data.listaETS}" var="lista" >
+                                            <div align="left">
+                                                <p:link  href="/Compras/AbrirArchivo?ZWZ2W=#{lista.id}&amp;ZWZ3W=#{lista.uuid}"
+                                                         target="_blank"
+                                                         value="" style="margin: 0px; padding: 0px;">
+                                                    <h:graphicImage url="/sia/resources/img/Documento.gif" style="cursor: pointer;"
+                                                                    title="Abrir la tabla #{lista.nombre}"/>
+                                                </p:link>
+                                            </div>
+                                        </ui:repeat>
+                                    </h:panelGroup>
+                                </p:column>
+                                <p:column styleClass="#{data.leida eq 'False' ? 'filaConSombra': 'filaSinSombra'}">
+                                    <p:commandLink action="#{ordenBean.seleccionarOrden(data.id)}"
+                                                   style="#{data.errorEnvio eq 'True' ? 'color: red' : 'color : blue'}"
+                                                   title="Clic aqui para ver Items..." value="Seleccionar"
+                                                   onclick="activarTab('tabOCSProcComprasLi', 0, 'divDatos', 'divTabla', 'divOperacion', 'divAutoriza');"
+                                                   process="@this" update="form1:tbLici form1:lbOcs"/>
+                                </p:column>
+                            </p:dataTable>
+                        </div>
+                    </div>
+
+                    
+                    <div id="divDatos" style="display: none;" class="row">
+                        <div class="col-5" style="padding-top: 5px; z-index: 999;">
+                            <h:outputText value="Información de la OC/S: "/>
+                            <h:outputText id="lbOcs" value="#{ordenBean.ordenActual.consecutivo}" style="font-weight:  bold;"/>
+                        </div>
+                        <p:tabView id="tbLici">
+                            <p:tab title="Información de la compra">
+                                <ui:include src="../Orden/fragmento/masInformacionOrden.xhtml"/>				                                </p:tab>
+                            <p:tab title="Espercificación Técnica">
+                                <ui:include src="../Orden/fragmento/especificacionTecnica.xhtml"/>
+                            </p:tab>
+                            <p:tab title="Estatus">
+                                <ui:include src="../Orden/fragmento/autorizaciones.xhtml"/>
+                            </p:tab>
+                            <p:tab title="Tabulación">
+                                <ui:include src="../Orden/fragmento/tablaComparativa.xhtml"/>
+                            </p:tab>
+                            <p:tab title="Requisición">
+                                <ui:include src="../Orden/fragmento/infRequisicion.xhtml"/>
+                            </p:tab>
+                            <p:tab title="Notas">
+                                <ui:include src="../Orden/fragmento/noticia.xhtml"/>                                    
+                            </p:tab>
+                        </p:tabView>
+                    </div>
+                </h:form>
+                <!-- Forma para los paneles emergentes -->
+                <!-- Popup -->
+                <ui:include src="../Orden/fragmento/popUpGeneralOrden.xhtml"/>
+                <ui:include src="../Orden/fragmento/popUpNoticia.xhtml"/>
+            </ui:define>
+        </ui:composition>
+
+    </body>
+</html>

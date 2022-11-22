@@ -1,0 +1,250 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      >
+    <body>
+        <ui:composition template="./../templates/template.xhtml">
+            <ui:define name="tituloPagina">
+                Solicitar Proveedor
+            </ui:define>
+            <ui:define name="contenido"> 
+                <h:form id="form1">
+                    <div class="card card-primary">
+                        <div class="card-header">
+                            <h1 class="card-title">Datos generales proveedor / Prestador de Servicio / Contratista</h1>
+                        </div>
+                        <div  class="card-body">
+                            <div class="row">
+                                <p:commandLink  action="#{solicitarProveedorBean.agregarProveedor}"                                                               
+                                                styleClass="btn btn-primary text-white"
+                                                process="@this" update="frmArchivo">
+                                    <i class="fa fa-plus"><b> Agregar</b></i>
+                                </p:commandLink>   
+                            </div>
+                            <div class="row">
+                                <div class="col-2">
+                                    <h:outputText value="Legalización/Ejidatario:" rendered="#{solicitarProveedorBean.proveedorVo.status eq 910}"/>
+                                    <h:selectOneRadio value="#{solicitarProveedorBean.proveedorVo.tipoProveedor}"
+                                                      rendered="#{solicitarProveedorBean.proveedorVo.status eq 910}">
+                                        <f:selectItem itemLabel="Si" itemValue="1"/>
+                                        <f:selectItem itemLabel="No" itemValue="0"/>
+                                    </h:selectOneRadio>
+                                </div>
+                                <div class="col-3">
+                                    <h:outputText value="Término de pago:" rendered="#{solicitarProveedorBean.proveedorVo.status eq 910}"/>
+                                    <h:selectOneMenu value="#{solicitarProveedorBean.proveedorVo.idPago}" styleClass="custom-select"
+                                                     rendered="#{solicitarProveedorBean.proveedorVo.status eq 910}">
+                                        <f:selectItem itemLabel="Seleccione . . . " itemValue="0"/>
+                                        <f:selectItems value="#{solicitarProveedorBean.listaTerminoPago}"/>
+                                    </h:selectOneMenu>
+                                </div>
+                                <div class="col-2">
+                                    <h:outputText value="Carta Contenido Nacional:" rendered="#{solicitarProveedorBean.proveedorVo.status eq 910}"/>
+                                    <div class="col-12">
+                                        <p:selectBooleanCheckbox value="#{solicitarProveedorBean.proveedorVo.carta}" 
+                                                                 rendered="#{solicitarProveedorBean.proveedorVo.status eq 910}"/>
+                                    </div>
+                                </div>    
+                                <div class="col-2">                                    
+                                    <p:commandLink styleClass="btn btn-info text-white"  rendered="#{solicitarProveedorBean.proveedorVo.status eq 910}"
+                                                   action="#{solicitarProveedorBean.procesarProveedor}"
+                                                   process="@this form1" update="@form">
+                                        <i class="fa fa-send"><b> Enviar</b></i>
+                                    </p:commandLink>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-xs-12">
+                            <div class="input-group col-12 col-xs-12">
+                                <div class="row form-group ">                           
+                                    <h:outputText class="col-12 solicitarProveedorBeanol-label" value="Nombre: "/>
+                                    <div class="col-12">
+                                        <h:outputLabel value="#{solicitarProveedorBean.proveedorVo.nombre}"/>
+                                    </div>
+                                </div>                        
+                                <div class="row form-group">            
+                                    <h:outputText class="col-12 solicitarProveedorBeanol-label" value="Extranjera/Nacional: "/>
+                                    <div class="col-12">
+                                        <h:outputLabel value="#{solicitarProveedorBean.proveedorVo.nacional eq true ? 'Si' : 'No'}"/>
+                                    </div>                                        			                            
+                                </div>
+                                <div class="row form-group">
+                                    <h:outputText class="col-12 solicitarProveedorBeanol-label" value="RFC: "/>
+                                    <div class="col-12">
+                                        <h:outputLabel value="#{solicitarProveedorBean.proveedorVo.rfc}"/>
+                                    </div>                  
+                                </div>
+                                <div class="row form-group">                  
+                                    <h:outputText class="col-12 solicitarProveedorBeanol-label" value="idCIF: "/>
+                                    <div class="col-12" >
+                                        <h:outputLabel value="#{solicitarProveedorBean.proveedorVo.idCIF}"/>                                        
+                                    </div>
+
+                                </div>
+                                <div class="row form-group">                           
+                                    <h:outputText class="col-12 solicitarProveedorBeanol-label" value="Giro: "/>
+                                    <div class="col-12">
+                                        <h:outputLabel value="#{solicitarProveedorBean.proveedorVo.giro}"/>
+                                    </div>
+                                </div>                        
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card card-primary" id="datosContacto">
+                        <div class="card-header">                        
+                            <h4 class="card-title">
+                                <a data-toggle="collapse"  href="#collapseDatosContacto">
+                                    Datos de Contacto
+                                </a>
+                            </h4>
+                        </div>
+                        <div id="collapseDatosContacto">
+                            <div class="card-body">
+                                <div class="col-12 col-xs-12">
+                                    <div class="input-group col-12 col-xs-12">                                
+                                        <div class="table table-responsive" style="margin-bottom: 0px;">
+                                            <p:dataTable size="small" stripedRows="true" showGridlines="true" id="tblDatosContacto" rows="10" 
+                                                         value="#{solicitarProveedorBean.proveedorVo.contactos}" 
+                                                         var="data" styleClass="table table-striped"
+                                                         style="font-size:12px; color: black;">                                                                                  
+                                                <p:column headerText="Nombre">
+                                                    <h:outputText value="#{data.nombre}"/>
+                                                </p:column>
+                                                <p:column headerText="Correo">
+                                                    <h:outputText value="#{data.correo}"/>
+                                                </p:column>
+                                                <p:column headerText="Teléfono">
+                                                    <h:outputText value="#{data.telefono}"/>
+                                                </p:column>            
+                                            </p:dataTable>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card card-primary" id="pnlDocto">
+                        <div class="card-header">
+                            <h4 class="card-title">
+                                Documentación
+                            </h4>
+                        </div>
+                        <div id="collapseDoctos">
+                            <div class="card-body">
+                                <ui:fragment rendered="#{solicitarProveedorBean.proveedorVo.status eq 910}">
+                                    <div style="text-align: right;" class="col-12">
+                                        <p:commandLink  action="#{solicitarProveedorBean.nuevoDocumento(solicitarProveedorBean.proveedorVo.idProveedor)}"
+                                                        styleClass="btn btn-primary text-white" process="@this" update="frmDoctosProv">
+                                            <i class="fa fa-plus"/>
+                                        </p:commandLink>   
+                                    </div>
+                                </ui:fragment>
+                                <div class="table table-responsive">
+                                    <p:dataTable size="small" stripedRows="true" showGridlines="true" id="dtDoctos" value="#{solicitarProveedorBean.proveedorVo.lstDocsProveedor}"
+                                                 var="data" style="width: 100%; font-size: 1.0em;"
+                                                 styleClass="table  table-striped"
+                                                 paginator="true"  
+                                                 paginatorPosition="bottom" 
+                                                 rows="5">
+                                        <p:column headerText="Documento">
+                                            <h:outputText value="#{data.documento}" />
+                                        </p:column>
+                                        <p:column headerText="Recibida">
+                                            <h:outputText value="#{data.fechaEntrega}">
+                                                <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                            </h:outputText>
+                                        </p:column>
+                                        <p:column width="50">
+                                            <h:outputLink target="_blank"  
+                                                          value="/Compras/AbrirArchivo?ZWZ2W=#{data.adjuntoVO.id}&amp;ZWZ3W=#{data.adjuntoVO.uuid}"
+                                                          rendered="#{data.adjuntoVO.id gt 0}">
+                                                <span class="text-info" style="font-weight: bold;"> #{data.adjuntoVO.nombre}</span>
+                                            </h:outputLink>
+                                            <p:commandLink action="#{solicitarProveedorBean.quitarSoloArchivoDocumento(data)}"
+                                                           rendered="#{data.adjuntoVO.id gt 0}"
+                                                           process="@this" update="@form">
+                                                <i class="fa fa-trash text-danger "/>
+                                            </p:commandLink>
+                                        </p:column>
+                                        <p:column width="50">
+                                            <p:commandLink action="#{solicitarProveedorBean.agregarArchivoDocto(data)}"
+                                                           rendered="#{data.adjuntoVO.id lt 1}"
+                                                           process="@this" update="frmArchivo">
+                                                <i class="fa fa-edit text-success "/>
+                                            </p:commandLink>
+                                        </p:column>
+                                        <p:column width="50">
+                                            <p:commandLink action="#{solicitarProveedorBean.eliminarProveedorDocumento(data)}"
+                                                           process="@this" update="@form">
+                                                <i class="fa fa-trash text-danger "/>
+                                            </p:commandLink>
+                                        </p:column>                                
+                                    </p:dataTable>
+                                </div>
+                            </div>
+                        </div>
+                    </div> 
+                </h:form>
+                <div class="modal fade" id="dialogoAgregarDoctoProv" data-backdrop="static" data-keyboard="false">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h4 class="modal-title">Agregar documentación</h4>
+                            </div>
+                            <h:form id="frmDoctosProv">
+                                <div class="modal-body card-body">
+                                    <div class="input-group">
+                                        <div class="form-group col-12">                           
+                                            <p:dataTable size="small" stripedRows="true" showGridlines="true" value="#{solicitarProveedorBean.listaDocto}" var="data"
+                                                         >
+                                                <p:column width="35">
+                                                    <h:selectBooleanCheckbox value="#{data.selected}"/>
+                                                </p:column>
+                                                <p:column headerText="Docuemento" style="text-align: left;" width="150">
+                                                    <h:outputText value="#{data.nombre}"/>
+                                                </p:column>
+                                            </p:dataTable>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <p:commandButton id="btnGuardar" value="Guardar" action="#{solicitarProveedorBean.agregarDocumentos}" 
+                                                     class="btn btn-info" process="@form" update="form1 frmMenu">
+                                    </p:commandButton>
+                                    <p:commandLink id="btnCerrar" value="Cancelar" class="btn btn-default"
+                                                   onclick="$(dialogoAgregarDoctoProv).modal('hide');"
+                                                   immediate="true"/>
+                                </div>
+                            </h:form>
+                        </div>
+                    </div>
+                </div>
+                <!-- Modal Panel Popup agergar archivos -->
+                <div class="modal fade" id="adjuntarArchivo" data-backdrop="static" data-keyboard="false">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h4 class="modal-title">Agregar documentos</h4>
+                            </div>
+                            <h:form id="frmArchivo">
+                                <div class="modal-body ">
+                                    <p:fileUpload  label="Archivo "
+                                                   listener="#{solicitarProveedorBean.subirArchivo}"
+                                                   process="@form" update="form1 frmMenu" /> 
+                                </div>
+                                <div class="modal-footer">
+                                    <p:commandLink id="btnCerrar" value="Cancelar" class="btn btn-default"
+                                                   onclick="$(adjuntarArchivo).modal('hide');" immediate="true"/>
+                                </div>
+                            </h:form>
+                        </div>
+                    </div>
+                </div>
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

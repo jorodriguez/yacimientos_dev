@@ -1,0 +1,48 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                template="/WEB-INF/templates/crud.xhtml">
+
+    <ui:define name="titulo">
+        Visto bueno salida de almacén
+    </ui:define>    
+    <ui:define name="tabla"> 
+        <div class="row">
+            <p:dataTable value="#{vistoBuenoSalida.solicitudes}" var="data">
+                <p:column headerText="Almacén">
+                    <h:outputText value="#{data.almacen}" />
+                </p:column>
+                <p:column headerText="Folio">
+                    <h:outputText value="#{data.folio}" />
+                </p:column>
+                <p:column headerText="Requerida">
+                    <h:outputText value="#{data.fechaRequiere}" >
+                        <f:convertDateTime pattern="dd/MM/yyyyy"/>
+                    </h:outputText>
+                </p:column>
+                <p:column headerText="Total de materiales">
+                    <h:outputText value="#{data.totalDetalle}" />
+                </p:column>
+                <p:column headerText="Recibió">
+                    <h:outputText value="#{data.usuarioRecibeMaterial}" />
+                </p:column>
+                <p:column >
+                    <h:commandLink value="Ver" action="#{vistoBuenoSalida.verSolicitud(data.id)}">
+                    </h:commandLink>
+                </p:column>
+            </p:dataTable>
+        </div>
+        <h:form> <!-- Inicia popup  -->
+            <h:panelGroup id="vistoComponente" >
+                <ui:include src="../../resources/widgets/vistoBueno.xhtml"/>
+            </h:panelGroup>
+        </h:form> <!-- Termina popup --> 
+    </ui:define>
+
+    <ui:param name="confirmarEliminar" value="#{msg['sia.inventarios.almacenes.confirmarEliminar']}"/>
+    <ui:param name="dialogoAncho" value="515" />
+</ui:composition>
+

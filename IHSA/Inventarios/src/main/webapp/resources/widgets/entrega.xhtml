@@ -1,0 +1,168 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:composite="http://java.sun.com/jsf/composite">
+    <h:panelGroup id="panelEntregaSol">
+        <h:form id="frmDialogEntrega"> <!-- Inicia popup  -->
+            <p:dialog id="nuevoDialogoDatosSolicitud"
+                      width="80%"
+                      header="Entrega de material"
+                      closable="true"
+                      modal="true"
+                      resizable="false"
+                      draggable="false"
+                      showEffect="fade"
+                      hideEffect="fade"
+                      widgetVar="crearDialogoEntregaMaterial"
+                      >            
+                <h:panelGroup id="panelInformacion" style="overflow-y: auto;">
+                    <table class="table-form">
+                        <tr>
+                            <td width="50">
+                                <h:outputText value="Solicitante: "/>
+                            </td>
+                            <td>
+                                <h:outputLabel value="#{entregaMaterialBean.solicitudeVo.solicita}" style="font-weight: bold;"/>
+                            </td> 
+                            <td style="text-align: right;">
+                                <h:outputText value="Gerencia:"/>
+                            </td>
+                            <td >
+                                <h:outputLabel value="#{entregaMaterialBean.solicitudeVo.gerencia}"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td >
+                                <h:outputText value="Teléfono: "/>
+                            </td>
+                            <td>
+                                <h:outputLabel value="#{entregaMaterialBean.solicitudeVo.telefono}"/>
+                            </td>
+                            <td style="text-align: right;">
+                                <h:outputText value="Recoge el material:"/>
+                            </td>
+                            <td>
+                                <h:outputLabel value="#{entregaMaterialBean.solicitudeVo.usuarioRecoge}"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="4">
+                                <p:dataTable id="tblMat" value="#{entregaMaterialBean.solicitudeVo.materiales}" 
+                                             var="dataM" rowIndexVar="index">
+                                    <p:column style="text-align: left;" >
+                                        <f:facet name="header">Descripción del artículo</f:facet>
+                                        <h:outputText value="#{dataM.articulo}" title="#{dataM.codigoArt}"/>
+                                    </p:column>
+                                    <p:column headerText="Unidad" style="width: 8%;">
+                                        <h:outputText value="#{dataM.unidad}"/>
+                                    </p:column>
+                                    <p:column headerText="Ubicación" style="width: 5%;">
+                                        <h:outputText value="#{dataM.ubicacion}"/>
+                                    </p:column>
+                                    <p:column headerText="Disp." width="50">
+                                        <h:outputText value="#{dataM.disponibles}"/>
+                                    </p:column>
+                                    <p:column headerText="Cant. Sol." style="width: 8%">
+                                        <h:outputText value="#{dataM.cantidad}" class="ui-inputfield ui-textentry"/>
+                                    </p:column>
+                                    <p:column headerText="Cant. Ent." style="width: 8%">
+                                        <h:inputText value="#{dataM.cantidadRecibida}" class="ui-inputfield ui-textentry"/>
+                                    </p:column>
+                                </p:dataTable>
+                            </td>
+                        </tr>
+                        <tr style="padding-top: 5%;">
+                            <td style="vertical-align: middle;">
+                                <h:outputLabel value="Observación:" />
+                            </td>
+                            <td >
+                                <h:inputTextarea value="#{entregaMaterialBean.observacion}" 
+                                                 rows="2" styleClass="form-control"/>
+                            </td>
+                            <td >
+                                <h:outputLabel value="Obs. del solicitante: " style="margin-top: 20px;"/>
+                            </td>
+                            <td >
+                                <h:outputText value="#{entregaMaterialBean.solicitudeVo.observacion}"/>
+                            </td>
+                        </tr>
+                        <tr style="padding-top: 10%;">
+                            <td>
+                                <h:outputLabel value="Recoge el material:"/>
+                            </td>
+                            <td colspan="2">
+                                <h:inputText value="#{entregaMaterialBean.solicitudeVo.usuarioRecibeMaterial}" style="font-weight: bold;"
+                                             styleClass="ui-inputfield ui-textentry ui-widget ui-corner-all"/>
+                                <small>Nombre y apellidos</small>
+                            </td>
+                        </tr>
+                    </table>
+                    <table class="table-form">
+                        <tr>
+                            <td>
+                                <h:messages id="mensajeEntrega" showDetail="false" globalOnly="true" styleClass="mensajes-ul"
+                                            infoClass="ui-widget ui-corner-all ui-state-highlight input-msg"
+                                            errorClass=" ui-widget ui-corner-all ui-state-error input-msg"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td> 
+                                <p:commandLink value="Actualizar inventario"  styleClass="hbutton"  
+                                               action="#{entregaMaterialBean.guardarEntrega}"                                               
+                                               process="@form" update="frmEntMat">
+                                </p:commandLink>
+                                <p:commandLink value="Cerrar"  styleClass="hbutton cancelar" 
+                                               action="#{entregaMaterialBean.cerrarEntrega}"
+                                               immediate="true">
+                                </p:commandLink>
+                            </td>
+                        </tr>
+
+                    </table>
+                </h:panelGroup>
+            </p:dialog>
+        </h:form>
+    </h:panelGroup>
+    <h:panelGroup id="panelConfEntregaSol">
+
+        <h:form id="frmConfEntrega"> <!-- Inicia popup  -->
+            <p:dialog id="dialogoConfirmarEntrega"
+                      header="Entrega de material"
+                      closable="true"
+                      modal="true"
+                      resizable="false"
+                      draggable="false"
+                      showEffect="fade"
+                      hideEffect="fade"
+                      width="450"
+                      widgetVar="confirmarEntrega">            
+                <h:panelGroup id="panelConfirmacion">
+                    <table>
+                        <tr>
+                            <td>
+                                Estás entregando materiales en Ceros o con cantidades diferentes a las solicitadas, ¿deseas continuar?
+                            </td>
+                        </tr>
+                        <tr>
+                            <td> 
+                                <p:commandLink value="Confirmar entrega"  styleClass="hbutton"  
+                                               action="#{entregaMaterialBean.confirmarEntrega}"
+                                               process="@form" update="frmEntMat">
+                                </p:commandLink>
+
+                                <p:commandLink value="Cancelar entrega"  styleClass="hbutton cancelar" 
+                                               action="#{entregaMaterialBean.cerrarConfirmacionEntrega}"
+                                               immediate="true">
+                                </p:commandLink>
+                            </td>
+                        </tr>
+
+                    </table>
+                </h:panelGroup>
+            </p:dialog>
+        </h:form>
+    </h:panelGroup>
+</html>

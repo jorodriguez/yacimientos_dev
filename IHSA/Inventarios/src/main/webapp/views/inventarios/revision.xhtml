@@ -1,0 +1,103 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:ui="http://xmlns.jcp.org/jsf/facelets"  
+                xmlns:p="http://primefaces.org/ui" xmlns:h="http://xmlns.jcp.org/jsf/html" xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+                template="/WEB-INF/templates/master.xhtml">
+
+    <ui:define name="tituloPagina">
+        #{msg['sia.inventarios.revision.modulo']}
+    </ui:define>
+
+    <ui:define name="titulo">
+        #{msg['sia.inventarios.revision.titulo']}
+        <a href="#{request.contextPath}/resources/videos/ayuda/revision-fisica.mp4" class="link-ayuda" target="_blank">Ayuda</a>
+    </ui:define>
+
+    <ui:define name="contenido">
+        <h:form id="frmRevision">
+            <h:messages id="mensajesPagina" showDetail="false" globalOnly="true" styleClass="mensajes-ul" infoClass="ui-widget ui-corner-all ui-state-highlight input-msg" errorClass=" ui-widget ui-corner-all ui-state-error input-msg" />
+            <h:panelGroup id="pnControles">
+                <table style="width: 500px">
+                    <tr>
+                        <td>
+                            <h:outputText value="#{msg['sia.inventarios.comun.almacen']}:" />
+                        </td>
+                        <td>
+                            <p:selectOneMenu id="smAlmacen" value="#{revision.almacenId}" styleClass="custom-select">
+                                <f:selectItem itemLabel="#{msg['sia.inventarios.comun.seleccione']}" itemValue="#{null}" />
+                                <f:selectItems value="#{revision.almacenes}" var="a" itemLabel="#{a.nombre}" itemValue="#{a.id}" />
+                                <p:ajax event="change" update="pnControles"/>
+                            </p:selectOneMenu>
+                        </td>
+                    </tr>
+                    <tr style="display: #{revision.almacenId != null ? 'table-row' : 'none'}">
+                        <td>
+                            <h:outputText value="#{msg['sia.inventarios.comun.articulo']}:" />
+                        </td>
+                        <td>
+                            <h:panelGroup id="pnArticulo">
+                                <p:autoComplete value="#{revision.articulo}" 
+                                                completeMethod="#{revision.completarArticulo}" size="80"
+                                                var="art" itemLabel="#{art.nombre}" itemValue="#{art}"
+                                                converter="#{articuloConverter}" forceSelection="true" 
+                                                minQueryLength="4">
+                                    <p:ajax event="itemSelect" listener="#{revision.buscarInventario}" 
+                                            update="frmRevision:pnControles frmRevision:pnConciliar" />
+                                    <p:ajax event="change" listener="#{revision.buscarInventario}" 
+                                            update="frmRevision:pnControles frmRevision:pnConciliar" />
+                                </p:autoComplete>
+                                <div class="articulo-info">
+                                    #{msg['sia.inventarios.revision.articuloInfo']}
+                                </div>
+                            </h:panelGroup>
+                        </td>
+                    </tr>
+                </table>
+            </h:panelGroup>
+
+            <h:panelGroup id="pnConciliar" class="border">
+                <h:panelGroup rendered="#{revision.inventario != null}">
+                    <h4>#{msg['sia.inventarios.revision.conciliarInventario']} de "#{revision.articulo.nombre}"</h4>
+                    <table style="width: 500px">
+                        <tr>
+                            <td>
+                                <h:outputText value="#{msg['sia.inventarios.revision.unidadesActuales']}:" />
+                            </td>
+                            <td>
+                                <h:inputText readonly="true" value="#{revision.inventario.numeroUnidades}" styleClass="ui-inputfield ui-textentry ui-widget ui-state-optional ui-corner-all" style="width:150px"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <h:outputText value="#{msg['sia.inventarios.revision.unidadesReales']}:" /><span class="required" >*</span>
+                            </td>
+                            <td>
+                                <h:inputText id="txtUnidadesReales" value="#{revision.unidadesReales}" maxlength="5" styleClass="ui-inputfield ui-textentry ui-widget ui-state-optional ui-corner-all" required="true" requiredMessage="#{msg['sia.validaciones.required']}" label="#{msg['sia.inventarios.revision.unidadesReales']}"
+                                             validator="#{revision.validarUnidades}" style="width:150px">
+                                    <f:ajax render="msjUnidadesReales" event="change" />
+                                </h:inputText>
+                                <h:message for="txtUnidadesReales" id="msjUnidadesReales" styleClass="ui-widget ui-corner-all ui-state-error input-msg" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <h:outputText value="#{msg['sia.inventarios.revision.concepto']}:" />
+                            </td>
+                            <td>
+                                <h:inputText id="txtConcepto" value="#{revision.notas}" maxlength="40" styleClass="ui-inputfield ui-textentry ui-widget ui-state-optional ui-corner-all" style="width: 300px"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">
+                                <p:commandLink id="btnConciliar" styleClass="hbutton" 
+                                               value="#{msg['sia.inventarios.revision.conciliar']}" 
+                                               action="#{revision.conciliar()}" 
+                                               process="pnConciliar" update="@all"/>
+                            </td>
+                        </tr>
+                    </table>
+                </h:panelGroup>
+            </h:panelGroup>
+        </h:form>
+    </ui:define>
+</ui:composition>

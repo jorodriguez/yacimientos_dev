@@ -1,0 +1,69 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core">
+    <body>
+        <ui:composition template="./../WEB-INF/template/plantilla.xhtml">
+            <ui:define name="title">
+                #{msgs['sia.proveedor.reciben.notificaciones']}
+            </ui:define>
+            <ui:define name="contenido">
+                <h:form id="frmNot">
+                    <div class="row">
+                        <p:commandLink action="#{notificacionBean.inicioRegistroContacto}" class="btn btn-info">
+                            <i class="fa fa-plus fa-2x text-white"/> 
+                        </p:commandLink>
+                    </div>
+                    <div class="row">
+                        <div class="table table-responsive">
+                            <p:dataTable id="dtNot" value="#{notificacionBean.listaContacto}" var="dataN"
+                                           paginator="true" paginatorAlwaysVisible="true" paginatorPosition="bottom"
+                                           rows="10" rowIndexVar="indice" size="small" showGridlines="true">
+                                <p:column headerText="#{msgs['sia.nombre']}" style="text-align: left;">
+                                    <h:outputText value="#{dataN.nombre}" rendered="#{dataN.editar eq false}"/>
+                                    <h:inputText value="#{dataN.nombre}" rendered="#{dataN.editar}" class="form-control"/>
+                                </p:column>
+                                <p:column headerText="#{msgs['sia.tipo']}Tipo" style="text-align: left;">
+                                    <h:outputText value="#{dataN.tipoContactoTxt}" rendered="#{dataN.editar eq false}"/>
+                                </p:column>
+                                <p:column headerText="#{msgs['sia.proveedor.recibe.notificacion']}">
+                                    <h:outputText value="#{dataN.notifica ? 'Si' : 'No'}" rendered="#{dataN.editar eq false}" />
+                                    <h:selectBooleanCheckbox value="#{dataN.notifica}" rendered="#{dataN.editar}" />
+                                </p:column>
+                                <p:column headerText="#{msgs['sia.usuario.correo']}" >
+                                    <h:outputText value="#{dataN.correo}" rendered="#{dataN.editar eq false}"/>
+                                    <h:inputText value="#{dataN.correo}" rendered="#{dataN.editar}" class="form-control"/>
+                                </p:column>
+                                <p:column headerText="#{msgs['sia.telefono']}">
+                                    <h:outputText value="#{dataN.telefono}" rendered="#{dataN.editar eq false}"/>
+                                    <h:inputText value="#{dataN.telefono}" rendered="#{dataN.editar}" class="form-control"/>
+                                </p:column>
+                                <p:column width="5%">
+                                    <p:commandLink action="#{notificacionBean.editar(indice)}" rendered="#{dataN.editar eq false}"
+                                                   process="@this" update="frmNot:dtNot">
+                                        <i class="fa fa-edit fa-2x text-primary"></i>
+                                    </p:commandLink>                    
+                                    <p:commandLink action="#{notificacionBean.completarEditar(indice)}" rendered="#{dataN.editar}"
+                                                   process="@form" update="frmNot:dtNot">
+                                        <i class="fa fa-check fa-2x text-primary"></i>
+                                    </p:commandLink>                    
+                                </p:column>
+                                <p:column width="5%">
+                                    <p:commandLink action="#{notificacionBean.eliminar(indice)}"
+                                                   process="@this" update="frmNot:dtNot" >
+                                        <i class="fa fa-trash fa-2x text-danger"></i>
+                                    </p:commandLink>
+                                </p:column>
+                            </p:dataTable>
+                        </div>
+                    </div>
+                </h:form>
+                <ui:include src="fragmento/popContactoProveedor.xhtml"/>
+            </ui:define>
+        </ui:composition>
+
+    </body>
+</html>

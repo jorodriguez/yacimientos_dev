@@ -1,0 +1,361 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:c="http://java.sun.com/jsp/jstl/core">
+    <body>
+        <ui:composition template="./../../../../WEB-INF/facelets/templates/templateServiciosGenerales.xhtml">
+            <ui:define name="titulo">
+                Solicitud de Viaje
+            </ui:define>
+            <ui:define name="contenido">
+                <div class="card  card-primary col-l0">
+                    <div class="card-body" >
+                        <div class="row">
+                            <div id="tabsTerrestre">
+                                <h:form  id="formTerrestre">
+                                    <div class="card-body">
+                                        <ui:fragment >
+                                            <h4>Datos Generales</h4>
+                                            <ui:include src="../../viaje/solicitud/fragmentos/datosSolicitud.xhtml"/>
+                                        </ui:fragment>
+                                        <ui:fragment >
+                                            <h4>Viajeros</h4>
+                                            <ui:include src="../../viaje/solicitud/fragmentos/datosViajerosSolicitud.xhtml"/>
+                                        </ui:fragment>
+                                    </div>
+                                </h:form>
+                            </div>
+                        </div>
+                        <h:form id="finalizarSolicitud" >                            
+                            <div class="modal fade" id="modalFinalizar" data-backdrop="static">
+                                <div class="modal-dialog modal-lg">
+                                    <div class="modal-content">
+                                        <div class="modal-header">                                    
+                                            <h5>Terminar Solicitud</h5> 
+                                        </div>
+                                        <div class="modal-body">
+                                            <div>
+                                                <div class="row alert alert-info" style="display: #{solicitudViajeBean.solicitudViajeVO.idSgTipoEspecifico == 3 ? 'none' : 'block' }">
+                                                    Esta apunto de generar una solicitud de viaje <strong>Terrestre!</strong>
+                                                </div>
+                                                <div class="row alert alert-info" style="display: #{solicitudViajeBean.solicitudViajeVO.idSgTipoEspecifico == 3 ? 'block' : 'none' }">
+                                                    Esta apunto de generar una solicitud de viaje <strong>Aereá!</strong>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-md-6">
+                                                        <label>Origen:</label>
+                                                        #{solicitudViajeBean.origen}
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <label>Destino:</label>
+                                                        #{solicitudViajeBean.destino}
+                                                    </div>                                     
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-md-6">
+                                                        <label>Fecha Salida: </label>
+                                                        <h:outputLabel id="fechaSalida" value="#{solicitudViajeBean.fechaSalida}" >
+                                                            <f:convertDateTime pattern="dd/MM/yyyy" type="date" />
+                                                        </h:outputLabel>
+                                                        <h:outputText value=" #{msgs['sistema.hora.a.las']} "  />
+                                                        <h:outputLabel id="fechaSalidaHora" value="#{solicitudViajeBean.fechaSalida}" >
+                                                            <f:convertDateTime pattern="HH:mm" type="date" />
+                                                        </h:outputLabel>
+                                                    </div>
+                                                    <div class="col-md-6" style="display: #{solicitudViajeBean.solicitudViajeVO.redondo ? 'block' : 'none'}">
+                                                        <label>Fecha Regreso: </label>
+                                                        <h:outputLabel id="fechaRegreso" value="#{solicitudViajeBean.fechaRegreso}" >
+                                                            <f:convertDateTime pattern="dd/MM/yyyy" type="date" />
+                                                        </h:outputLabel>        
+                                                        <h:outputText value=" #{msgs['sistema.hora.a.las']} "  />
+                                                        <h:outputLabel id="fechaRegresoHoras" value="#{solicitudViajeBean.fechaRegreso}" >
+                                                            <f:convertDateTime pattern="HH:mm" type="date" />
+                                                        </h:outputLabel> 
+                                                    </div>
+                                                    <div class="col-md-6" style="display: #{solicitudViajeBean.solicitudViajeVO.redondo ? 'none' : 'block'}">
+                                                        <label>El viaje es sencillo por eso no cuenta con fecha de regreso.</label>
+                                                    </div>
+                                                </div>
+                                                <br/>
+                                                <div style="display: #{solicitudViajeBean.solicitudViajeVO.idSgTipoEspecifico != 3 ? 'none' : 'block'}">
+                                                    <div style="display: #{solicitudViajeBean.withEstancia ? 'block': 'none'}">
+                                                        <div class="row">
+                                                            <div style="margin-top: 20px; margin-bottom: 20px; font-style: italic; text-align: justify;" class="col-lg-12 alert alert-warning">
+                                                                Se requieren los siguientes datos para una mejor administracion de su <strong>estancia</strong>.
+                                                            </div>   
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-md-6 col-12">
+                                                                <label class="col-md-4 col-3" style="text-align: left;">Ubicacion:</label>
+                                                                <div class="col-md-8 col-9">
+                                                                    <p:selectOneMenu  id="selectOneMenuUbiccacion" styleClass="form-control" value="#{solicitudViajeBean.idUbicacion}">
+                                                                        <f:selectItem itemLabel="Seleccione..." itemValue="-1"/>
+                                                                        <f:selectItems value="#{solicitudViajeBean.ubicacion}" />
+                                                                    </p:selectOneMenu>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-6 col-12">
+                                                                <label class="col-md-3 col-4">Hotel Sugerido:</label>
+                                                                <div class="col-md-9 col-8">
+                                                                    <input type="text" id="hotelSug" class=" form-control" name="hotelSug"></input>
+                                                                </div>
+
+                                                            </div>
+                                                        </div>
+                                                        <br/>
+                                                        <div class="row" >
+                                                            <div class="col-md-2 col-12">
+                                                                <label class="col-md-12 col-12">Dirección a visitar:</label> 
+                                                            </div> 
+
+                                                            <div class="col-md-10- col-10">
+                                                                <textarea type="text" id="direccionV" class="form-control" name="direccionV"></textarea>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div> 
+                                                <div style="display: #{solicitudViajeBean.solicitudViajeVO.idSgTipoEspecifico == 3 ? 'none' : 'block'}">
+                                                    <div class="row" style="display: #{solicitudViajeBean.viajaSolicitante ? 'block' : 'none'}">
+                                                        <div class="row" style="display: #{solicitudViajeBean.tieneVehiculo ? 'block' : 'none'}">
+
+                                                            <div class="row">
+                                                                <div class="col-md-2">
+                                                                    <label>Tipo de Viaje</label>  
+                                                                </div>   
+                                                                <div class="col-md-4">
+                                                                    <script>
+
+                                                                        $("[name='tipoVehiculo']").bootstrapSwitch('labelText', 'Con Conductor');
+                                                                        function vehiculoAsignado() {
+                                                                            $("#vehiculoAsignadoNo").slideToggle();
+                                                                            $("#vehiculoAsignadoSi").slideToggle();
+                                                                            $("#comboVehiculo").slideToggle();
+                                                                            var d = document.getElementById("tipoVehiculo").checked;
+                                                                            var tipo = document.getElementById('tipoVehiculo');
+                                                                            if (d == true) {
+                                                                                ejecutarBoton('finalizarSolicitud', 'vehiculoAsignado');
+                                                                                 $('#tipoVehiculo').bootstrapSwitch('labelText', 'Con Conductor');
+                                                                                $(tipo).attr("value", "False");
+                                                                            } else {
+                                                                                $('#tipoVehiculo').bootstrapSwitch('labelText', 'Vehiculo Asignado');
+                                                                                ejecutarBoton('finalizarSolicitud', 'vehiculoNoAsignado');
+                                                                                $(tipo).attr("value", "True");
+                                                                            }
+                                                                        }
+                                                                        ;
+                                                                        function cargarDatosVehiculo(json, idElement) {
+                                                                            var tablaElementos = document.getElementById('tabla-elementos');
+                                                                            var index = 0;
+                                                                            var newlist = document.getElementById(idElement);
+                                                                            var nav = navigator.userAgent.toLowerCase();
+                                                                            // var gt = document.getElementById(idGroupT);
+                                                                            //  var ga = document.getElementById(idGroupA);
+
+
+                                                                            $(json).each(function () {
+                                                                                var op = document.createElement('option');
+                                                                                op.value = this.label;
+
+
+                                                                                op.setAttribute("id", this.value);
+                                                                                if (nav.indexOf("chrome") != -1) {
+                                                                                    op.setAttribute("label", this.type);
+                                                                                }
+
+                                                                                //  op.setAttribute("text", this.value);
+
+                                                                                newlist.appendChild(op);
+                                                                                index++;
+                                                                            });
+                                                                        }
+                                                                        function limpiarDataListVehiculo() {
+                                                                            //var  listOptions= document.getElementById('empleadosList').children; 
+                                                                            var des = document.getElementById('completarVehiculo');
+                                                                            $('#vehiculosList').empty();
+                                                                            des.value = '';
+
+                                                                        }
+                                                                    </script>
+                                                                    <p:commandLink id="vehiculoAsignado" action="#{solicitudViajeBean.vehiculoAsignado()}"/>
+                                                                    <p:commandLink id="vehiculoNoAsignado" action="#{solicitudViajeBean.vehiculoNoAsignado()}"/>
+                                                                    <input type="checkbox" name="tipoVehiculo"  data-on-text="Vehiculo Asignado" data-off-text="Con Conductor" id="tipoVehiculo" 
+                                                                           onchange="vehiculoAsignado()" class="form-control" data-label-width="0" data-on-color="primary" data-off-color="primary" data-handle-width="130"/>
+                                                                </div>
+                                                                <div class="col-md-6" id="comboVehiculo" style="display: #{!solicitudViajeBean.conChofer ? 'block' : 'none'}">
+                                                                    <div class="col-md-2"><labe>Vehiculo:</labe></div>
+                                                                    <div class="col-md-10" style="display: #{solicitudViajeBean.cambiarVehiculo ? 'block' : 'none'}">
+
+                                                                        <input type="text" list="vehiculosList" autocomplete="on" class="form-control" 
+                                                                               onclick="if (this.value != '') {
+                                                                                           this.value = ''
+                                                                                       }"
+                                                                               id="completarVehiculo" name="completarVehiculo"/>                   
+                                                                        <datalist id="vehiculosList"></datalist> 
+                                                                    </div>
+                                                                    <div class="col-md-10" style="display: #{!solicitudViajeBean.cambiarVehiculo ? 'block': 'none'};">
+                                                                        <label class="col-8">#{solicitudViajeBean.vehiculoActual}</label>
+                                                                        <div class="col-4">
+                                                                            <p:commandLink   title="Editar Vehiculo" styleClass="col-6" 
+                                                                                             actionListener="#{solicitudViajeBean.editarVehiculo()}">
+                                                                                <span class="glyphicon glyphicon-edit" style="color: #777"/>
+                                                                            </p:commandLink>
+                                                                            <p:commandLink  actionListener="#{solicitudViajeBean.confirVehiculoActual()}" styleClass="col-6" 
+                                                                                            title="confirmar Vehiculo" >
+                                                                                <span class="glyphicon glyphicon-ok" style="color: #{solicitudViajeBean.confirVehiculo ? 'green': '#777'}"/>
+                                                                            </p:commandLink>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div> 
+                                                            <div class="row" style="display: #{solicitudViajeBean.conChofer ? 'block' : 'none'}" id="vehiculoAsignadoNo">
+                                                                <div style="margin-top: 20px; margin-bottom: 20px; font-style: italic; text-align: justify;" class="col-lg-12 alert alert-warning">
+                                                                    La programación del viaje queda sujeta a las condiciones de seguridad impuesta por <strong>Gestión de Riesgos</strong>, así como a la disponibilidad de vehículos y choferes en base a la logística del día de <strong>Servicios Generales y Logística</strong>.
+                                                                </div>                                                        
+                                                            </div>
+                                                            <div class="row" style="display: #{solicitudViajeBean.conChofer ? 'none' : 'block'}" id="vehiculoAsignadoSi">
+                                                                <div style="margin-top: 20px; margin-bottom: 20px; font-style: italic; text-align: justify;" class="col-lg-12 alert alert-danger">
+                                                                    La programación del viaje queda sujeta a las condiciones de seguridad impuesta por <strong>Gestión de Riesgos</strong>.
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                    </div>
+                                                </div>
+                                                <div class="row" style="display: #{solicitudViajeBean.viajaSolicitante ? 'none' : 'block'}">
+                                                    <div style="margin-top: 20px; margin-bottom: 20px; font-style: italic; text-align: justify;" class="col-lg-12 alert alert-warning">
+                                                        La programación del viaje queda sujeta a las condiciones de seguridad impuesta por <strong>Gestión de Riesgos</strong>, así como a la disponibilidad de vehículos y choferes en base a la logística del día de <strong>Servicios Generales y Logística</strong>.
+                                                    </div>
+                                                </div>
+                                                <br/>
+                                                <div class="row" style="display: #{solicitudViajeBean.justifica eq true ? 'block' : 'none'}">
+                                                    <div class="card  card-danger">
+                                                        <div class="card-header">
+                                                            <h3 class="card-title" style="text-align: center;font-weight: bold ">Justificación</h3>
+                                                            <br/>
+                                                            <div class="row">
+                                                                <div class="col-12">                                                        
+                                                                    <label style="font-style: italic; text-align: justify; font-weight: 300">#{msgs['sgl.mensaje.politica1']}</label>
+                                                                    <label style="font-style: italic; text-align: justify; font-weight: 400">#{msgs['sgl.semaforo.politica2']} Gestion de Riesgos para su aprobación</label>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <br/>
+                                                        <div class="row">
+                                                            <div class="col-2 " style="text-align: left; display: #{solicitudViajeBean.justificaVisita ? 'none' : 'block'}">
+                                                                <script>
+
+                                                                    $("[name='visitaEI']").bootstrapSwitch('visitaEI');
+                                                                    function empleadoOtro() {
+                                                                        $("#tabEmpleado").slideToggle();
+                                                                        $("#tabOtros").slideToggle();
+                                                                        var d = document.getElementById('visitaEI').checked;
+                                                                    }
+                                                                    ;
+                                                                    function limpiarDataListEmpJust() {
+                                                                        // var listOptions = document.getElementById('empleadosListJust').children;
+                                                                        var des = document.getElementById('completarEmpleadoVisita');
+                                                                        des.value = '';
+                                                                        $('#empleadosListJust').empty();
+                                                                    }
+                                                                    function limpiarDataListInvJust() {
+                                                                        // var listOptions = document.getElementById('invitadosListJust').children;
+                                                                        var des = document.getElementById('completarOtro');
+                                                                        des.value = '';
+                                                                        $('#invitadosListJust').empty();
+                                                                    }
+                                                                </script>
+                                                                <div class="col-12" style="text-align: left;">
+                                                                    <input type="checkbox" name="visitaEI" checked="true" data-on-text="Empleado" data-off-text="Otro" id="visitaEI" 
+                                                                           data-on-color="primary" data-off-color="primary" onchange="empleadoOtro()"  class="form-control" data-label-width="0"/>
+                                                                </div>
+                                                            </div>                                                                                           
+                                                            <div class="col-12 input-group " style="display: #{solicitudViajeBean.justificaVisita ? 'none' : 'block'}">
+                                                                <label class="col-3">¿Visita o Autoriza?</label>
+                                                                <div  id="tabEmpleado" style="display: #{solicitudViajeBean.tabEmpOInv ? 'block': 'none'}" class="col-5">
+                                                                    <div class="col-6">
+                                                                        <p:autoComplete value="#{solicitudViajeBean.empleadoAdd}"
+                                                                                        completeMethod="#{solicitudViajeBean.usuarioListener}">
+                                                                            <p:ajax listener="#{solicitudViajeBean.visitoAEmpleado()}" 
+                                                                                    process="@this" update="@this finalizarSolicitud:pnlVisita finalizarSolicitud:pnlJustifica"/>
+                                                                        </p:autoComplete>
+                                                                        <p:commandLink   action="#{solicitudViajeBean.visitoAEmpleado()}" id="selectEmpleadoVisita"/>
+                                                                    </div>
+                                                                </div>
+                                                                <div id="tabOtros" class="col-5" style="display: #{solicitudViajeBean.tabEmpOInv ? 'none': 'block'}"  >
+                                                                    <div class="col-6">
+                                                                        <p:autoComplete value="#{solicitudViajeBean.invitado}"
+                                                                                        completeMethod="#{solicitudViajeBean.invitadoListener}">
+                                                                            <p:ajax listener="#{solicitudViajeBean.visitoAOtro()}" 
+                                                                                    process="@this" update="@this finalizarSolicitud:pnlVisita finalizarSolicitud:pnlJustifica"/>
+                                                                        </p:autoComplete>                                                                                 
+                                                                    </div>
+                                                                </div>
+                                                                <p:panel id="pnlVisita">
+                                                                    <div class="col-4" style="display: #{solicitudViajeBean.justificaVisita ? 'block' : 'none'};">
+                                                                        <div class="col-12">
+                                                                            <div class="row">
+                                                                                <label>Nombre:</label> 
+                                                                                #{solicitudViajeBean.visita.nombre}
+                                                                            </div>
+                                                                            <div class="row">
+                                                                                <label>Empresa:</label>
+                                                                                #{solicitudViajeBean.visita.empresa}
+                                                                            </div>
+                                                                            <div class="row">
+                                                                                <label>Email:</label>
+                                                                                #{solicitudViajeBean.visita.email}
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </p:panel>
+                                                            </div>
+                                                            <p:panel id="pnlJustifica">
+                                                                <div class="col-12" style="display: #{solicitudViajeBean.justificaVisita ? 'block' : 'none'}">
+                                                                    <div class="row">
+                                                                        <label>Motivo de Justificación:</label>
+                                                                        <h:inputTextarea id="justificacionRetraso" value="#{solicitudViajeBean.mensaje}" 
+                                                                                         rows="3" cols="115" styleClass="form-control" onkeydown="contarCaracteres('finalizarSolicitud', 'justificacionRetraso');" onchange="contarCaracteres('finalizarSolicitud', 'justificacionRetraso');" onkeyup="contarCaracteres('finalizarSolicitud', 'justificacionRetraso');"
+                                                                                         />
+                                                                        <label style="color: red">minimo de 50 caracteres. </label>
+                                                                        <h:inputText  readonly="true" id="remLen" size="3" maxlength="3" value="0"/> Carácteres
+
+                                                                    </div>
+                                                                </div>
+                                                            </p:panel>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <br/>
+                                                <div class="modal-footer">
+                                                    <p:commandButton id="solicitarV"   action="#{solicitudViajeBean.solicitarSolicitud()}"  
+                                                                     process="@form"  update="formTerrestre" value="Finalizar"
+                                                                     oncomplete=";$(modalFinalizar).modal('hide');"/>
+                                                    <button type="button" class="btn btn-default" data-dismiss="modal" 
+                                                            onclick="$(modalFinalizar).modal('hide');">Cerrar</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+
+                        </h:form>
+
+                        <ui:include src="fragmentos/popEditoConfirTel.xhtml"/>
+                    </div>
+
+
+                </div>
+
+
+            </ui:define>
+
+        </ui:composition>
+
+    </body>
+</html>

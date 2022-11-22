@@ -1,0 +1,923 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"      
+      xmlns:p="http://primefaces.org/ui"      
+      xmlns:f="http://java.sun.com/jsf/core"      
+      xmlns:my="http://www.mytags.com/schema/mytags"
+      xmlns:c="http://java.sun.com/jsp/jstl/core">    
+    <body>
+        <ui:composition template="./../../WEB-INF/template/template.xhtml">
+            <ui:define name="content">
+                <h:panelGroup rendered="#{empty sesion.usuario}">
+                    <ui:include src="../../salir.xhtml"/>
+                </h:panelGroup>
+
+                <h:form styleClass="textoIzquierda" rendered="#{not empty sesion.usuario}" id="formOficios">
+
+                    <div class="page-header">
+                        <h3>
+                            #{oficioEditarBean.titulo}
+                        </h3>
+                    </div>
+
+                    <!-- Mensajes con estilos de Bootstrap  -->
+                    <h:message style="display: block;"
+                               for=""
+                               infoClass="alert alert-success"
+                               warnClass="alert alert-warning"
+                               errorClass="alert alert-danger"
+                               fatalClass="alert alert-danger"
+                               />
+
+
+                    <div class="jumbotron">
+
+                        <div class="row">
+                            <div class="col-sm-2">
+                                #{msgs['sistema.oficios.comun.oficio.numero']}
+                            </div>
+                            <div class="col-sm-6">
+                                <!--cambio del 13/02/15 rango de caracteres de 25 a 50 jevazquez-->
+                                <!-- Nota: Se permiten solo 50 caracteres para dejar espacio en el campo de BD para anulación. Se anexa sufijo "-<ID>" en número de Oficio para diferenciar. -->
+                                <p:inputText 
+                                    id="numeroOficio" 
+                                    size="58" 
+                                    value="#{oficioEditarBean.vo.oficioNumero}" 
+                                    tabindex=""                                     
+                                    placeholder="Escribe el no. de oficio"
+                                    maxlength="50" />
+                            </div>                               
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-12">
+                                &nbsp;
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-2">
+                                #{msgs['sistema.oficios.comun.asunto']}
+                            </div>
+                            <div class="col-sm-6">
+                                <p:inputTextarea 
+                                    id="asunto"                                     
+                                    value="#{oficioEditarBean.vo.oficioAsunto}" 
+                                    tabindex="" 
+                                    rows="2" 
+                                    maxlength="300" 
+                                    style="width: 650px ; resize: none;" />
+                            </div>
+                        </div>
+
+                        <hr />
+
+                        <div class="row">
+                            <div class="col-sm-2">
+                                #{msgs['sistema.comun.compania.nombre']}
+                            </div>
+                            <div class="col-sm-5">
+                                <!-- Opción Mostrar todas las gerencias -->
+                                <!--
+                                TODO: se comento 
+                                -->
+                                <p:selectOneMenu id="idCompania"
+                                                 value="#{oficioEditarBean.vo.companiaId}"
+                                                 valueChangeListener="#{catalogosBean.actualizarBloques}"
+                                                 tabindex=""                                                    
+                                                 required="false" 
+                                                 requiredMessage="Seleccione una compañía"                                                 
+                                                 rendered="#{oficioEditarBean.mostrarTodasGerencias}"
+                                                 >
+                                    <f:selectItem itemValue="-1" itemLabel="Seleccione..."/>
+                                    <f:selectItems value="#{catalogosBean.companias}"/>
+                                    <p:ajax process="@this" update="formOficios:idBloque "  />
+                                </p:selectOneMenu>
+
+                                <!-- Opción Mostrar opciones bloque u opción única -->
+                                <h:outputText value="#{oficioEditarBean.vo.companiaNombre}" 
+                                              rendered="#{oficioEditarBean.mostrarOpcionesBloques or oficioEditarBean.mostrarOpcionUnicaBloque}" />
+                            </div>
+                            <div class="col-sm-2">
+                                #{msgs['sistema.oficios.comun.oficio.fecha']}
+                            </div>
+                            <div class="col-sm-3">         
+                                <p:datePicker  id="idFechaOficio"
+                                               value="#{oficioEditarBean.vo.oficioFecha}"                                                
+                                               required="false"                                                
+                                               requiredMessage="Proporcione la fecha de oficio"                                               
+                                               placeholder="Selecciona la fecha"
+                                               showIcon="true"
+
+                                               >
+                                    <f:convertDateTime dateStyle="default" type="date" pattern="dd/MM/yyyy" timeZone="America/Monterrey"/>
+                                </p:datePicker>
+                            </div>
+                        </div> <!-- row -->
+
+                        <div class="row">
+                            <div class="col-sm-2">
+                                #{msgs['sistema.comun.bloque.nombre']}
+                            </div>
+                            <div class="col-sm-5">
+                                <!-- Combo de bloques de usuario con permiso para ver todas las gerencias -->                                
+                                <p:selectOneMenu id="idBloque"
+                                                 value="#{oficioEditarBean.vo.bloqueId}"
+                                                 valueChangeListener="#{catalogosBean.actualizarGerencias}"                                                   
+                                                 tabindex="" 
+                                                 required="false"
+                                                 requiredMessage="Seleccione un bloque" 
+                                                 rendered="#{oficioEditarBean.mostrarTodasGerencias}"
+                                                 >
+                                    <f:selectItem itemValue="-1" itemLabel="Seleccione..."/> 
+                                    <f:selectItems value="#{catalogosBean.bloques}"/>
+                                    <p:ajax process="@this" update="formOficios:idGerencia "   />
+                                </p:selectOneMenu>
+
+
+                                <!-- Combo de bloques de usuario sin acceso a todas las gerencias y compañías -->
+                                <p:selectOneMenu valueChangeListener="#{oficioEditarBean.actualizarCompaniaGerencia}"
+                                                 value="#{oficioEditarBean.vo.bloqueId}"
+                                                 tabindex="" 
+                                                 rendered="#{oficioEditarBean.mostrarOpcionesBloques}"
+                                                 >
+                                    <f:selectItems value="#{oficioEditarBean.opcionesBloques}"/>
+                                    <p:ajax process="@this" update="formOficios:idGerencia"  />
+                                </p:selectOneMenu>
+
+                                <h:outputText value="#{oficioEditarBean.vo.bloqueNombre}" rendered="#{oficioEditarBean.mostrarOpcionUnicaBloque}" />
+
+                            </div>
+                            <div class="col-sm-2">
+                                #{msgs['sistema.oficios.comun.fecha.alta']}
+                            </div>
+                            <div class="col-sm-3">
+                                <h:outputText value="#{oficioEditarBean.fechaActual}" rendered="#{empty oficioEditarBean.vo.oficioId}"/>
+                                <h:outputText value="#{oficioEditarBean.vo.fechaGeneroFormato}" rendered="#{not empty oficioEditarBean.vo.oficioId}"/>
+                            </div>
+                        </div> <!-- row -->
+
+                        <div class="row">
+                            <div class="col-sm-2">
+                                #{msgs['sistema.comun.gerencia.nombre']}
+                            </div>
+                            <div class="col-sm-5">
+                                <!-- Combo de las gerencias del bloque seleccionado -->
+                                <p:selectOneMenu id="idGerencia"
+                                                 value="#{oficioEditarBean.vo.gerenciaId}"
+                                                 tabindex="" 
+                                                 required="false"
+                                                 requiredMessage="Seleccione una gerencia"
+                                                 >
+                                    <f:selectItem itemValue="-1" itemLabel="Seleccione..."/>
+                                    <f:selectItems value="#{catalogosBean.gerencias}"/>
+                                    <p:ajax process="@this" />
+                                </p:selectOneMenu>
+
+                                <h:outputText value="#{oficioEditarBean.gerenciaUsuario.nombre}" rendered="#{!oficioEditarBean.permisos.verTodoGerencias}" />
+
+                            </div>
+                            <div class="col-sm-2">
+                                Tipo de Oficio
+                            </div>
+                            <div class="col-sm-3">
+                                #{oficioEditarBean.vo.tipoOficioNombre}
+                            </div>
+                        </div> <!-- row -->
+
+                        <div class="row">
+                            <div class="col-sm-2">
+                                Acceso
+                            </div>
+                            <div class="col-sm-5">
+
+
+
+                                <p:selectOneRadio id="acceso" 
+                                                  value="#{oficioEditarBean.vo.acceso}"                                                                                                      
+                                                  onchange="toggleRestringidos();">
+                                    <f:selectItem 
+                                        itemLabel="&nbsp;Gerencia&nbsp;&nbsp;&nbsp;" 
+                                        itemValue="#{oficioEditarBean.accesoGerencia}"/>
+                                    <f:selectItem 
+                                        itemLabel="&nbsp;Público&nbsp;&nbsp;&nbsp;" 
+                                        itemValue="#{oficioEditarBean.accesoPublico}" />                                 
+                                    <f:selectItem 
+                                        itemLabel="&nbsp;Restringido" 
+                                        itemValue="#{oficioEditarBean.accesoRestringido}"/>
+
+                                </p:selectOneRadio>
+                            </div>
+                            <div class="col-sm-2">
+                                Urgente
+                            </div>
+                            <div class="col-sm-3">
+                                <h:selectOneRadio id="oficioUrgente" value="#{oficioEditarBean.vo.urgente}">
+                                    <f:selectItem itemLabel="&nbsp;Sí&nbsp;&nbsp;&nbsp;" itemValue="true" />
+                                    <f:selectItem itemLabel="&nbsp;No" itemValue="false"/>
+                                </h:selectOneRadio>
+                            </div>
+
+                        </div> <!-- row -->
+
+
+
+                        <div class="row">
+                            <div class="col-sm-12">
+                                &nbsp;
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-sm-2">
+
+                                <ui:fragment rendered="#{!oficioEditarBean.modificacion}">
+                                    Archivo Adjunto
+                                </ui:fragment>
+                                <ui:fragment rendered="#{oficioEditarBean.modificacion}">
+                                    Estatus Actual
+                                </ui:fragment>
+
+                            </div>
+                            <div class="col-sm-10">
+                                <p:panel id="panelAdjunto">
+                                    <p:commandButton title="Buscar Archivo" 
+                                                     alt="Buscar Archivo"                                   
+                                                     tabindex=""
+                                                     icon="fa fa-search"
+                                                     style="vertical-align: middle;margin: 4px;display: inline;"
+                                                     rendered="#{!oficioEditarBean.modificacion}"                                                     
+                                                     onclick="$('#modalAdjuntarOficio').modal('show');" />
+
+                                    <h:commandButton title="Remover Archivo Adjunto" 
+                                                     type="button" 
+                                                     tabindex=""                                                     
+                                                     alt="Remover Archivo Adjunto" 
+                                                     rendered="#{oficioEditarBean.archivoAdjuntoSeleccionado and !oficioEditarBean.modificacion}"
+                                                     immediate="false" 
+                                                     actionListener="#{oficioEditarBean.removerArchivoAdjunto(event)}"                                                     
+                                                     image="../../resources/imagenes/icon_bad.png"
+                                                     style="vertical-align: middle;margin: 4px;display: inline;"/>
+                                    <h:outputText 
+                                        id="nombreAdjunto" 
+                                        value="#{!oficioEditarBean.archivoAdjuntoSeleccionado ? 'Ninguno seleccionado' : oficioEditarBean.vo.archivoAdjunto.nombreUUID}"
+                                        rendered="#{!oficioEditarBean.modificacion}"
+                                        />
+
+
+                                    <h:outputText value="#{oficioEditarBean.vo.estatusNombre}" rendered="#{oficioEditarBean.modificacion}" />
+
+                                </p:panel>
+
+                            </div>
+                        </div> <!-- row -->
+
+                        <div class="row">
+                            <div class="col-sm-12">
+                                &nbsp;
+                            </div>
+                        </div> <!-- row -->
+
+
+                        <div class="row">
+                            <div class="col-sm-2">
+                                Asociado a Oficio(s)
+                            </div>
+                            <div class="col-sm-10">
+                                <!-- binding="#{oficioEditarBean.tablaAsociados}"-->
+                                <p:dataTable id="oficiosAsociados"  
+                                             showGridlines="false" 
+                                             emptyMessage="No hay oficios asociados"
+                                             stripedRows="true"
+                                             size="small" 
+                                             rows="10"  
+                                             value="#{oficioEditarBean.vo.asociadoHaciaOficios}" 
+                                             binding="#{oficioEditarBean.tablaAsociados}"
+                                             var="currentRow"
+                                             paginator="true" paginatorPosition="both"
+                                             paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                             currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} registros"
+                                             rowsPerPageTemplate="5,10,{ShowAll|'All'}"
+                                             >
+                                    <f:facet name="header">
+
+                                        <p:commandButton 
+                                            value="Agregar..." 
+                                            icon="fa fa-plus"
+                                            styleClass="ui-button ui-button-secondary"
+                                            style="float: right;"
+                                            actionListener="#{oficioEditarBean.limpiarOficiosAsociados(event)}"
+                                            onclick="setTimeout(function () {
+                                                        $(modalAsociarOficio).modal('show')
+                                                    }, 1000);"
+                                            immediate="true"
+                                            rendered="true"
+                                            title="Buscar oficios a asociar" />
+
+                                    </f:facet>
+                                    <p:column>
+                                        <h:outputText value="#{currentRow['oficioNumero']}"/>
+                                        <f:facet name="header">
+                                            <h:outputText value="#{msgs['sistema.oficios.comun.oficio.numero']}"/>
+                                        </f:facet>
+                                    </p:column>
+                                    <p:column>
+                                        <h:outputText value="#{currentRow['oficioAsunto']}"/>
+                                        <f:facet name="header">
+                                            <h:outputText value="#{msgs['sistema.oficios.comun.asunto']}"/>
+                                        </f:facet>
+                                    </p:column>
+                                    <p:column>
+                                        <h:outputText value="#{currentRow['companiaSiglas']}"/>
+                                        <f:facet name="header">
+                                            <h:outputText value="#{msgs['sistema.comun.compania.nombre']}"/>
+                                        </f:facet>
+                                    </p:column>
+                                    <p:column>
+                                        <h:outputText value="#{currentRow['bloqueNombre']}"/>
+                                        <f:facet name="header">
+                                            <h:outputText value="#{msgs['sistema.comun.bloque.nombre']}"/>
+                                        </f:facet>
+                                    </p:column>
+                                    <p:column>
+                                        <h:outputText value="#{currentRow['gerenciaNombre']}"/>
+                                        <f:facet name="header">
+                                            <h:outputText value="#{msgs['sistema.comun.gerencia.nombre']}"/>
+                                        </f:facet>
+                                    </p:column>
+                                    <p:column style="width: 20px;">
+                                        <p:commandLink id="btnRemoverAsociado"
+                                                       styleClass="link"
+                                                       actionListener="#{oficioEditarBean.removerDeAsociados(actionEvent)}"
+                                                       process="@this"
+                                                       update="oficiosAsociados"
+                                                       title="Desasociar a este oficio" 
+                                                       rendered="true" >
+                                            <center>
+                                                <i class="fa fa-remove icono-contenido" style="font-size: 18px;"></i>
+                                            </center>                                            
+                                        </p:commandLink>
+                                    </p:column>
+                                </p:dataTable>
+                                <p:blockUI block="oficiosAsociados" trigger="oficiosAsociados:btnRemoverAsociado"> 
+
+                                </p:blockUI>
+                                <br></br>
+                            </div>
+                        </div> <!-- row -->
+
+                        <div id="divUsuariosRestringidos" style="display: #{oficioEditarBean.vo.restringido ? 'block' : 'none'};">
+                            <div class="row">
+                                <div class="col-sm-2">
+                                    Restringido a Usuario(s)
+                                </div>
+                                <div class="col-sm-10">                                    
+                                    <p:dataTable id="usuariosRestringido"  
+                                                 showGridlines="true" 
+                                                 size="small" 
+                                                 rows="10"  
+                                                 value="#{oficioEditarBean.vo.restringidoAUsuarios}" 
+                                                 binding="#{oficioEditarBean.tablaUsuariosRestringido}"
+                                                 var="currentRow"
+                                                 paginator="true" paginatorPosition="both"
+                                                 paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                                 currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} registros"
+                                                 rowsPerPageTemplate="5,10,{ShowAll|'All'}"
+                                                 >           
+                                        <f:facet name="header">
+                                            <p:commandButton value="Agregar..." 
+                                                             icon="fa fa-plus"
+                                                             styleClass="ui-button ui-button-secondary"
+                                                             style="float: right;"
+                                                             actionListener="#{oficioEditarBean.limpiarUsuariosAcceso(event)}"
+                                                             onclick="setTimeout(function () {
+                                                                 $(modalUsuariosAcceso).modal('show')
+                                                             }, 1000);"
+                                                             immediate="true"
+                                                             rendered="true"
+                                                             title="Buscar usuarios" />
+                                        </f:facet>
+                                        <p:column style="width: 150px;">
+                                            <h:outputText value="#{currentRow['id']}"/>
+                                            <f:facet name="header">
+                                                <h:outputText value="Usuario"/>
+                                            </f:facet>
+                                        </p:column>
+                                        <p:column>
+                                            <h:outputText value="#{currentRow['nombre']}"/>
+                                            <f:facet name="header">
+                                                <h:outputText value="Nombre Completo"/>
+                                            </f:facet>
+                                        </p:column>
+
+                                        <p:column style="width: 10px;">
+
+
+                                            <p:commandLink id="btnRemoverUsuarioRestringido"
+                                                           styleClass="link"
+                                                           actionListener="#{oficioEditarBean.removerUsuarioRestringido(actionEvent)}"
+                                                           process="@this"
+                                                           update="usuariosRestringido"
+                                                           title="Remover usuario" 
+                                                           >
+                                                <center>
+                                                    <i class="fa fa-remove icono-contenido" style="font-size: 18px;"></i>
+                                                </center>
+                                                <f:param name="usuarioId" value="#{currentRow['id']}" />
+                                            </p:commandLink>
+
+                                        </p:column>
+                                    </p:dataTable>
+                                    <br></br>
+                                </div>
+                            </div> <!-- row -->
+                        </div>
+
+
+
+                        <div class="row">
+                            <div class="col-sm-2">
+                                Observaciones
+                            </div>
+                            <div class="col-sm-10">
+                                <p:inputTextarea 
+                                    id="observaciones" 
+                                    value="#{oficioEditarBean.vo.observaciones}" 
+                                    tabindex="" 
+                                    rows="2" 
+                                    maxlength="200" 
+                                    style="width: 100%; resize: none;" />
+                            </div>
+                        </div> <!-- row -->
+                        <br/>
+                        <div class="row">
+                            <script type="text/javascript" >
+
+                                function toggleCrearCopia() {
+
+                                    if (document.getElementById("formOficios:conCopia:_1").checked) {
+                                        $(selectBloque).slideDown('fast');
+                                        e
+                                    } else {
+                                        $(selectBloque).slideUp('fast');
+                                    }
+                                }
+
+                            </script>
+                            <div class="col-sm-5" style="display: #{oficioEditarBean.mulitoBlque ?'block':'none'}">
+                                <label class="col-md-8">Crear copia(s) en otro(s) bloque(s)?</label> 
+                                <div class="col-md-4">
+                                    <p:selectOneRadio id="conCopia" 
+                                                      value="#{oficioEditarBean.crearCopia}"
+                                                      onchange="toggleCrearCopia();">
+                                        <f:selectItem 
+                                            itemLabel="&nbsp;Si&nbsp;&nbsp;&nbsp;" 
+                                            itemValue="true"/>
+                                        <f:selectItem 
+                                            itemLabel="&nbsp;No&nbsp;&nbsp;&nbsp;" 
+                                            itemValue="false" />                                 
+                                    </p:selectOneRadio>
+                                </div>
+
+                            </div>
+                            <div class="col-sm-7" id="selectBloque" style="display: #{oficioEditarBean.crearCopia ? 'block' : 'none'};">
+                                <label class="col-md-2">Bloque(s)</label>
+                                <div class="col-md-5">
+                                    <p:selectOneMenu id="idBloqueCopi"
+                                                     value="#{oficioEditarBean.bloqueACopiarId}"
+                                                     valueChangeListener="#{oficioEditarBean.agregarBloqueCopy}"                                                       
+                                                     tabindex="" 
+                                                     required="false"
+                                                     requiredMessage="Seleccionar bloque(S) donde se generara la(s) copia(s)."
+                                                     >
+                                        <f:selectItem itemValue="-1" itemLabel="Seleccione..."/>
+                                        <f:selectItems value="#{catalogosBean.bloques}"/>
+                                    </p:selectOneMenu>
+                                </div>
+
+                            </div>
+
+                        </div>
+                        <br/>
+                        <div class="row" style="display: #{oficioEditarBean.crearCopia ? 'block' : 'none'};">
+                            <label class="col-md-5">Se creara una copia del archivo en el o los Bloques: </label>
+                            <label class="col-md-7">#{oficioEditarBean.listaBloques}</label>
+                        </div>
+
+
+                        <div class="row">
+                            <div class="col-sm-12" align="right">
+                                &nbsp;
+                            </div>
+                        </div> <!-- row -->
+
+
+                        <hr />
+
+                        <div class="row">
+                            <div class="col-sm-12" style="text-align: right;">
+
+                                <!-- Boton Guardar - Altas -->
+
+                                <p:commandButton value="Guardar nuevo" 
+                                                 tabindex=""
+                                                 styleClass="ui-button-raised ui-button-success"
+                                                 onclick="bloquearPantalla('true');"
+                                                 action="#{oficioEditarBean.guardarOficio()}"
+                                                 rendered="#{oficioEditarBean.botonGuardarNuevo.visible}"
+                                                 ajax="false"
+                                                 icon="fa fa-save"
+                                                 title="Guardar nuevo oficio" />
+
+                                <h:outputText value="&nbsp;&nbsp;" />
+
+                                <!-- Boton Guardar - Cambios -->
+
+                                <p:commandButton value="Guardar edición" 
+                                                 tabindex=""
+                                                 icon="fa fa-save"
+                                                 styleClass="ui-button-raised ui-button-success"
+                                                 onclick="bloquearPantalla('true');"
+                                                 actionListener="#{oficioEditarBean.guardarOficio()}"
+                                                 rendered="#{oficioEditarBean.botonGuardarEdicion.visible}"                                                                                         
+                                                 ajax="false"
+                                                 title="Guardar cambios" >
+                                    <f:param name="oficioId" value="#{oficioEditarBean.vo.oficioId}"/>
+                                </p:commandButton>
+
+                                <h:outputText value="&nbsp;&nbsp;" />
+                                <!-- Boton Guardar y Promover - Altas -->
+
+                                <p:commandButton
+                                    value="Guardar y Promover" 
+                                    tabindex=""
+                                    icon="fa fa-send"
+                                    styleClass="ui-button-raised ui-button-info"
+                                    onclick="bloquearPantalla('true');"
+                                    action="#{oficioEditarBean.guardarPromover()}"
+                                    ajax="false"
+                                    rendered="#{oficioEditarBean.botonGuardarPromover.visible}"                                                   
+                                    title="Guardar nuevo oficio y promover" />
+
+                                <h:outputText value="&nbsp;&nbsp;" />
+
+                                <!--Boton crear con copia -->
+                                <!--ice:commandLink value="Guardar con copia" 
+                                                 tabindex=""
+                                                 styleClass="btn btn-primary btn-xs"
+                                                 action="detalle"
+                                                 title="Guardar el oficio con copia en otro(s) bloque(s)" >
+                                    <f:param name="oficioId" value="{oficioEditarBean.vo.oficioId}" />
+                                </ice:commandLink>
+                                <h:outputText value="&nbsp;&nbsp;" /-->
+
+                                <!-- Boton Cancelar -->
+
+                                <p:button value="Cancelar" 
+                                          tabindex=""
+                                          styleClass="ui-button-raised ui-button-secondary"
+                                          outcome="bandejaEntrada"
+                                          rendered="#{oficioEditarBean.botonCancelarNuevo.visible}"
+                                          title="Cancelar operación" />
+                                <h:outputText value="&nbsp;&nbsp;" />
+
+                                <p:button value="Cancelar" 
+                                          tabindex=""
+                                          styleClass="ui-button-raised ui-button-secondary "
+                                          outcome="detalle"
+                                          rendered="#{oficioEditarBean.botonCancelarEdicion.visible}"
+                                          title="Cancelar operación" >
+                                    <f:param name="oficioId" value="#{oficioEditarBean.vo.oficioId}" />
+                                </p:button>
+                                
+                            </div>
+                        </div> <!-- row -->
+
+                    </div> <!-- jumbotron -->
+
+                </h:form>
+
+                <!-- Modal - Seleccionar archivo adjunto -->
+
+                <div class="modal fade" id="modalAdjuntarOficio">
+                    <div class="modal-dialog" style="width: 650px;">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                                    &times;
+                                </button>
+                                <h4 class="modal-title">Adjuntar Archivo de Oficio</h4>
+                            </div>
+                            <div class="modal-body">
+                                <h:form id="formAdjunto">
+                                    <div class="jumbotron">
+                                        <div class="row">
+                                            <center>
+                                                <div class="col-sm-12">
+                                                    <table width="100%">
+                                                        <tr>
+                                                            <td>
+                                                                <h:form id="formUpload" enctype="multipart/form-data">
+                                                                    <p:fileUpload id="fileEntryAdjunto" 
+                                                                                  multiple="false"
+                                                                                  label="Seleccionar"                                                                                  
+                                                                                  uploadLabel="Subir"                                                                                  
+                                                                                  uploadButtonTitle="Subir"
+                                                                                  uploadButtonStyleClass="ui-button-success  "                                                                                  
+                                                                                  cancelLabel="Cancelar"
+                                                                                  cancelButtonTitle="Cancelar"                
+                                                                                  cancelButtonStyleClass="ui-button-secondary"
+                                                                                  mode="advanced"                                                                                  
+                                                                                  fileLimit="1"
+                                                                                  fileLimitMessage="Solo puede subir 1 archivo"
+                                                                                  previewWidth="100"                                                                                 
+                                                                                  oncomplete="$('#modalAdjuntarOficio').modal('hide')"
+                                                                                  update="@form formOficios:panelAdjunto"
+                                                                                  listener="#{oficioEditarBean.prepararArchivoAdjuntoVo}"/>
+                                                                </h:form>
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+                                                </div>
+                                            </center>
+                                        </div>
+                                    </div>
+                                </h:form>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default " data-dismiss="modal">
+                                    Cerrar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Termina modal - Seleccionar archivo adjunto -->
+
+
+                <!-- Modal - Asociar a Oficio(s) -->
+
+                <div class="modal fade" id="modalAsociarOficio">
+                    <div class="modal-dialog modal-lg" >
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                                    &times;
+                                </button>
+                                <h4 class="modal-title">Asociar a Oficio(s)</h4>
+                            </div>
+                            <div class="modal-body">
+
+                                <h:form id="formAsociado" styleClass="textoIzquierda" prependId="false">
+
+                                    <div class="jumbotron pt-1">
+                                        <div class="row">
+                                            <div class="col-sm-12">
+                                                <center>
+                                                    Nº Oficio
+                                                    &nbsp;
+                                                    <p:inputText 
+                                                        id="txtOficioAsociadoNumero" 
+                                                        size="30"
+                                                        value="#{oficioEditarBean.numeroOficioAsociado}" 
+                                                        onkeypress="return submitEnter('formAsociado:botonBuscarAsociado', event);" 
+                                                        placeholder="Fragmento del oficio.."
+                                                        />
+                                                    &nbsp;
+                                                    <p:commandButton 
+                                                        id="botonBuscarAsociado" 
+                                                        value="Buscar" 
+                                                        styleClass="ui-button ui-button-secondary"
+                                                        icon="pi pi-search"
+                                                        process="@this txtOficioAsociadoNumero"
+                                                        update="@form"
+                                                        action="#{oficioEditarBean.buscarOficiosAsociacion(event)}" />
+                                                </center>
+                                            </div>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="col-sm-12">
+                                                &nbsp;
+                                            </div>
+                                        </div>
+
+                                        <div class="row">
+                                            <center>                                                
+                                                <p:dataTable id="dataTable1"  
+                                                             showGridlines="true" 
+                                                             size="small" 
+                                                             rows="5"  
+                                                             value="#{oficioEditarBean.oficios}" 
+                                                             binding="#{oficioEditarBean.tablaResultados}"
+                                                             var="currentRow"
+                                                             paginator="true" 
+                                                             paginatorPosition="botton"                                                            
+                                                             paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                                             currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} registros"
+                                                             rowsPerPageTemplate="5,10,20"
+                                                             emptyMessage="Sin registros"
+                                                             
+                                                             >
+                                                    <p:ajax event="page" process="@this" update="@this" ></p:ajax>
+
+                                                    <p:column style="white-space: nowrap;">
+                                                        <h:outputText value="#{currentRow['oficioNumero']}"/>
+                                                        <f:facet name="header">
+                                                            <h:outputText value="Nº Oficio"/>
+                                                        </f:facet>
+                                                    </p:column>
+                                                    <p:column style="width: 20px;">
+                                                        <h:graphicImage value="../../resources/imagenes/tipo_oficio/tipo_oficio_#{currentRow['tipoOficioId']}.png" 
+                                                                        alt="Oficio de #{currentRow['tipoOficioNombre']}" 
+                                                                        title="Oficio de #{currentRow['tipoOficioNombre']}" />
+                                                        <f:facet name="header">
+                                                            <h:outputText value="Tipo"/>
+                                                        </f:facet>
+                                                    </p:column>
+                                                    <p:column style="white-space: nowrap; width: 180px;">
+                                                        <h:outputText value="#{currentRow['companiaSiglas']}"/>
+                                                        <f:facet name="header">
+                                                            <h:outputText value="Compañía"/>
+                                                        </f:facet>
+                                                    </p:column>
+                                                    <p:column style="white-space: nowrap;">
+                                                        <h:outputText value="#{currentRow['bloqueNombre']}"/>
+                                                        <f:facet name="header">
+                                                            <h:outputText value="Bloque"/>
+                                                        </f:facet>
+                                                    </p:column>
+                                                    <p:column style="white-space: nowrap; width: 180px;">
+                                                        <h:outputText value="#{currentRow['gerenciaNombre']}"/>
+                                                        <f:facet name="header">
+                                                            <h:outputText value="Gerencia"/>
+                                                        </f:facet>
+                                                    </p:column>
+                                                    <p:column>
+                                                        <p:commandLink id="btnAgregarAsociados"
+                                                                       styleClass="link"
+                                                                       actionListener="#{oficioEditarBean.agregarAAsociados(actionEvent)}"
+                                                                       title="Asociar a este oficio" 
+                                                                       process="@this"
+                                                                       update="dataTable1 formOficios:oficiosAsociados"
+                                                                       rendered="true" >
+                                                            <center>
+                                                                <i class="fa fa-plus icono-contenido" style="font-size: 18px;"></i>
+                                                            </center>
+                                                            <!--<f:param name="oficioId" value="#{currentRow['oficioId']}" />   -->
+                                                        </p:commandLink>
+                                                    </p:column>
+                                                </p:dataTable>
+                                                <p:blockUI block="dataTable1" trigger="botonBuscarAsociado dataTable1:btnAgregarAsociados"> 
+
+                                                </p:blockUI>
+                                            </center>
+                                        </div>
+                                    </div>  <!-- jumbotron -->
+                                </h:form>
+                            </div>
+
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default " data-dismiss="modal">
+                                    Cerrar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Termina Modal - Asociar a Oficio -->
+
+
+
+                <!-- Modal - Usuarios con Acceso -->
+
+                <div class="modal fade" id="modalUsuariosAcceso">
+                    <div class="modal-dialog" style="width: 550px;">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                                    &times;
+                                </button>
+                                <h4 class="modal-title">Restringir a Usuario(s) - Bloque #{oficioEditarBean.vo.bloqueNombre}</h4>
+                            </div>
+                            <div class="modal-body">
+
+                                <h:form id="formUsuariosAcceso" styleClass="textoIzquierda">
+                                    <div class="jumbotron">
+                                        <div class="row">
+                                            <div class="col-sm-12">
+                                                <center>
+                                                    Usuario
+                                                    &nbsp;
+                                                    <!--onkeypress="return submitEnter('formUsuariosAcceso:botonBuscarUsuariosAcceso', event);" -->
+                                                    <p:inputText 
+                                                        id="txtNombreUsuarioAcceso"
+                                                        size="30"
+                                                        value="#{oficioEditarBean.nombreUsuarioAcceso}"                                                         
+                                                        placeholder="Fragmento del nombre del usuario.."
+                                                        />
+                                                    &nbsp;                                                      
+                                                    <p:commandButton 
+                                                        id="botonBuscarUsuariosAcceso" 
+                                                        value="Buscar" 
+                                                        process="@this txtNombreUsuarioAcceso"
+                                                        update="@form"
+                                                        icon="pi pi-search"
+                                                        styleClass="ui-button-raised ui-button-secondary"
+                                                        action="#{oficioEditarBean.buscarUsuariosAcceso(event)}" />
+                                                </center>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-sm-12">
+                                                &nbsp;
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <center>
+
+                                                <p:dataTable id="dataTable2" 
+                                                             showGridlines="true" 
+                                                             size="small" 
+                                                             rows="10"  
+                                                             value="#{oficioEditarBean.resultadosUsuariosAcceso}" 
+                                                             var="currentRow"
+                                                             binding="#{oficioEditarBean.tablaResultadosUsuariosAcceso}"
+                                                             paginator="true" 
+                                                             paginatorPosition="botton"       
+                                                             paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                                             currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} registros"
+                                                             rowsPerPageTemplate="5,10,{ShowAll|'All'}"
+                                                             >
+                                                    <p:column style="width: 120px;">
+                                                        <h:outputText value="#{currentRow['id']}"/>
+                                                        <f:facet name="header">
+                                                            <h:outputText value="Usuario"/>
+                                                        </f:facet>
+                                                    </p:column>
+                                                    <p:column style="white-space: nowrap;">
+                                                        <h:outputText value="#{currentRow['nombre']}"/>
+                                                        <f:facet name="header">
+                                                            <h:outputText value="Nombre Completo"/>
+                                                        </f:facet>
+                                                    </p:column>
+                                                    <p:column style="width: 10px;">
+                                                        <p:commandLink id="btnAgregarUsuarioRestringido"
+                                                                       styleClass="link"
+                                                                       actionListener="#{oficioEditarBean.agregarAUsuariosAcceso(actionEvent)}"
+                                                                       title="Agregar usuario" 
+                                                                       process="@this"
+                                                                       update="dataTable2 formOficios:usuariosRestringido"
+                                                                       >
+                                                            <center>
+                                                                <i class="fa fa-plus icono-contenido" style="font-size: 18px;"></i>
+                                                            </center>                                                            
+                                                        </p:commandLink>
+                                                    </p:column>
+                                                </p:dataTable>
+                                                <p:blockUI block="dataTable2" trigger="botonBuscarUsuariosAcceso dataTable2:btnAgregarUsuarioRestringido"> 
+
+                                                </p:blockUI>
+                                                <br/>
+                                            </center>
+                                        </div>
+                                    </div>  <!-- jumbotron -->
+                                </h:form>
+                            </div>
+
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default " data-dismiss="modal">
+                                    Cerrar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Termina Modal - Usuarios con Acceso -->
+
+                <script type="text/javascript" >
+
+                    function toggleRestringidos() {
+                        console.log("@toggleRestringidos");
+
+                        const isChecked = document.getElementById("formOficios:acceso:2").checked;
+
+                        console.log("is checked  " + isChecked);
+
+                        if (isChecked) {
+                            $(divUsuariosRestringidos).slideDown('fast');
+                        } else {
+                            $(divUsuariosRestringidos).slideUp('fast');
+                        }
+                    }
+
+                </script>
+
+            </ui:define>
+
+        </ui:composition>
+    </body>
+</html>

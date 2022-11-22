@@ -1,0 +1,499 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:p="http://primefaces.org/ui">
+
+    <!-- Popup agregar Docto -->
+    <div class="modal fade" id="dialogoDocumento" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Documentos</h4>
+                </div>
+                <h:form id="frmDocto">
+                    <div class="modal-body card-body">
+                        <div class="form-group col-12">                           
+                            <h:outputText class="col-2 control-label" value="Nombre: "/>
+                            <div class="col-8">
+                                <h:inputText id="nombre" value="#{catalogoBean.nombre}" styleClass="form-control"
+                                             required="true" requiredMessage="Agregue el nombre"/>
+                            </div>
+                        </div>
+                        <div class="form-group col-12">                           
+                            <h:outputText class="col-2 control-label" value="Descripción: "/>
+                            <div class="col-8">
+                                <h:inputTextarea value="#{catalogoBean.descripcion}" styleClass="form-control"
+                                                 />
+                            </div>
+                        </div>
+                        <div class="form-group col-12">                           
+                            <h:outputText class="col-2 control-label" value="Tipo: "/>
+                            <div class="col-8">
+                                <p:selectOneMenu styleClass="form-control"
+                                                   value="#{catalogoBean.tipoDoc}"                                                                   
+                                                   >
+                                    <f:selectItem itemValue="0" itemLabel="Seleccione . . . "/>
+                                    <f:selectItems value="#{catalogoBean.lstTipoDoc}"/>
+                                </p:selectOneMenu>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <p:commandLink id="btnGuardar" value="Guardar"
+                                       action="#{catalogoBean.guardarDocto}" 
+                                       class="btn btn-info text-white" process="@form" update="frmClasifica:tabViewCat"/>
+                        <p:commandLink id="btnCerrar" value="Cancelar" immediate="true"
+                                       action="#{catalogoBean.limpiar}" 
+                                       class="btn btn-default" 
+                                       onclick="$(dialogoDocumento).modal('hide');"/>
+                    </div>
+                </h:form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="dialogoDocumentoMod" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Documentos</h4>
+                </div>
+                <h:form id="frmDoctoMod">
+                    <div class="modal-body card-body">
+                        <div class="form-group col-12">                           
+                            <h:outputText class="col-2 control-label" value="Nombre: "/>
+                            <div class="col-8">
+                                <h:inputText id="nombre" value="#{catalogoBean.nombre}" styleClass="form-control"
+                                             required="true" requiredMessage="Agruegue el nombre"/>
+                            </div>
+                        </div>
+                        <div class="form-group col-12">                           
+                            <h:outputText class="col-2 control-label" value="Descripción: "/>
+                            <div class="col-8">
+                                <h:inputTextarea value="#{catalogoBean.descripcion}" styleClass="form-control"/>
+                            </div>
+                        </div>
+                        <div class="form-group col-12">                           
+                            <h:outputText class="col-2 control-label" value="Tipo: "/>
+                            <div class="col-8">
+                                <p:selectOneMenu styleClass="form-control"
+                                                   value="#{catalogoBean.tipoDoc}"                                                                   
+                                                   >
+                                    <f:selectItem itemValue="0" itemLabel="Seleccione . . . "/>
+                                    <f:selectItems value="#{catalogoBean.lstTipoDoc}"/>
+                                </p:selectOneMenu>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <p:commandLink id="btnGuardar" value="Modificar"
+                                       action="#{catalogoBean.completarModDocto}" 
+                                       class="btn btn-info text-white"  process="@form" update="frmClasifica:tabViewCat"/>
+                        <p:commandLink id="btnCerrar" value="Cancelar" 
+                                       action="#{catalogoBean.limpiar}" 
+                                       class="btn btn-default"  immediate="true"
+                                       onclick="$(dialogoDocumentoMod).modal('hide');"/>
+                    </div>
+                </h:form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Popup agregar hito -->
+    <div class="modal fade" id="dialogoTipo" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Agregar Tipo de contrato</h4>
+                </div>
+                <h:form id="frmTipo">
+                    <div class="modal-body card-body">
+                        <div class="form-group col-12">                           
+                            <h:outputText class="col-2 control-label" value="Nombre: "/>
+                            <div class="col-8">
+                                <h:inputText id="nombre" value="#{catalogoBean.nombre}" styleClass="form-control"
+                                             required="true" requiredMessage="Agregue el nombre"/>
+                            </div>
+                        </div>
+                        <div class="form-group col-12">                           
+                            <h:outputText class="col-2 control-label" value="Descripción: "/>
+                            <div class="col-8">
+                                <h:inputTextarea value="#{catalogoBean.descripcion}" styleClass="form-control"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <p:commandLink id="btnGuardar" value="Guardar" action="#{catalogoBean.guardarTipo}" 
+                                       class="btn btn-info text-white" process="@form" update="frmClasifica:tabViewCat"/>
+                        <p:commandLink id="btnCerrar" value="Cancelar" immediate="true"
+                                       action="#{catalogoBean.limpiar}" 
+                                       class="btn btn-default" 
+                                       onclick="$(dialogoTipo).modal('hide');"/>
+                    </div>
+                </h:form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="dialogoTipoMod" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Modificar tipo de contrato</h4>
+                </div>
+                <h:form id="frmTipoMod">
+                    <div class="modal-body card-body">
+                        <div class="form-group col-12">                           
+                            <h:outputText class="col-2 control-label" value="Nombre: "/>
+                            <div class="col-12">
+                                <h:inputText id="nombre" value="#{catalogoBean.nombre}" styleClass="form-control"
+                                             required="true" requiredMessage="Agregue el nombre"/>
+                            </div>
+                        </div>
+                        <div class="form-group col-12">                           
+                            <h:outputText class="col-2 control-label" value="Descripción: "/>
+                            <div class="col-12">
+                                <h:inputTextarea value="#{catalogoBean.descripcion}" styleClass="form-control"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <p:commandLink id="btnModificar" value="Modificar" process="@form" update="frmClasifica:tabViewCat"
+                                       action="#{catalogoBean.completarModificaTipo}" 
+                                       class="btn btn-info text-white"/>
+                        <p:commandLink id="btnCerrar" value="Cancelar"  immediate="true"
+                                       action="#{catalogoBean.limpiar}" 
+                                       class="btn btn-default" 
+                                       onclick="$(dialogoTipoMod).modal('hide');"/>
+                    </div>
+                </h:form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Popup agregar Clasi -->
+    <div class="modal fade" id="dialogoClasi" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Agregar Clasificación</h4>
+                </div>
+                <h:form id="frmClasi">
+                    <div class="modal-body card-body">
+                        <div class="form-group col-12">                           
+                            <h:outputText class="col-2 control-label" value="Nombre: "/>
+                            <div class="col-8">
+                                <h:inputText id="nombre" value="#{catalogoBean.nombre}" styleClass="form-control"
+                                             required="true" requiredMessage="Agregue el nombre"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <p:commandLink id="btnGuardar" 
+                                       value="Guardar" action="#{catalogoBean.guardarClasificacion}" 
+                                       class="btn btn-info text-white" process="@form" update="frmClasifica:tabViewCat"/>
+                        <p:commandLink id="btnCerrar" value="Cancelar" action="#{catalogoBean.limpiar}" 
+                                       class="btn btn-default" 
+                                       onclick="$(dialogoClasi).modal('hide');"
+                                       immediate="true"/>
+                    </div>
+                </h:form>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="dialogoClasiMod" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Modificar Clasificación</h4>
+                </div>
+                <h:form id="frmClasiMod">
+                    <div class="modal-body card-body">
+                        <div class="form-group col-12">                           
+                            <h:outputText class="col-2 control-label" value="Nombre: "/>
+                            <div class="col-8">
+                                <h:inputText id="nombre" value="#{catalogoBean.nombre}" styleClass="form-control"
+                                             required="true" requiredMessage="Agregue el nombre"/>
+                            </div>
+                        </div>
+                        <div class="form-group col-12">                           
+                            <h:outputText class="col-2 control-label" value="Descripción: "/>
+                            <div class="col-8">
+                                <h:inputTextarea value="#{catalogoBean.descripcion}" styleClass="form-control"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <p:commandLink id="btnModificar" value="Modificar" 
+                                       action="#{catalogoBean.completarModClasifica}"
+                                       class="btn btn-info text-white" process="@form" update="frmClasifica:tabViewCat"/>
+                        <p:commandLink id="btnCerrar" value="Cancelar" action="#{catalogoBean.limpiar}" 
+                                       class="btn btn-default" immediate="true"
+                                       onclick="$(dialogoClasiMod).modal('hide');"/>
+                    </div>
+                </h:form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Popup agregar Hito -->
+    <div class="modal fade" id="dialogoHito" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Agregar Hito de pago</h4>
+                </div>
+                <h:form id="frmHito">
+                    <div class="modal-body card-body">
+                        <div class="form-group col-12">                           
+                            <h:outputText class="col-2 control-label" value="Nombre: "/>
+                            <div class="col-8">
+                                <h:inputText id="nombre" value="#{catalogoBean.nombre}" styleClass="form-control"
+                                             required="true" requiredMessage="Agregue el nombre"/>
+                            </div>
+                        </div>
+                        <div class="form-group col-12">                           
+                            <h:outputText class="col-2 control-label" value="Descripción: "/>
+                            <div class="col-8">
+                                <h:inputTextarea value="#{catalogoBean.descripcion}" styleClass="form-control"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <p:commandLink id="btnGuardar" value="Guardar" 
+                                       action="#{catalogoBean.guardarHito}" 
+                                       class="btn btn-info text-white" process="@form" update="frmClasifica:tabViewCat"/>
+                        <p:commandLink id="btnCerrar" value="Cancelar" action="#{catalogoBean.limpiar}" 
+                                       class="btn btn-default" immediate="true"
+                                       onclick="$(dialogoHito).modal('hide');"/>
+                    </div>
+                </h:form>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="dialogoHitoMod" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Modificar Hito de pago</h4>
+                </div>
+                <h:form id="frmHitoMod">
+                    <div class="modal-body card-body">
+                        <div class="form-group col-12">                           
+                            <h:outputText class="col-2 control-label" value="Nombre: "/>
+                            <div class="col-8">
+                                <h:inputText id="nombre" value="#{catalogoBean.nombre}" styleClass="form-control"
+                                             required="true" requiredMessage="Agregue el nombre"/>
+                            </div>
+                        </div>
+                        <div class="form-group col-12">                           
+                            <h:outputText class="col-2 control-label" value="Descripción: "/>
+                            <div class="col-8">
+                                <h:inputTextarea value="#{catalogoBean.descripcion}" styleClass="form-control"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <p:commandLink id="btnGuardar" value="Modificar" 
+                                       action="#{catalogoBean.completarModHito}" 
+                                       class="btn btn-info text-white" process="@form" update="frmClasifica:tabViewCat"/>
+                        <p:commandLink id="btnCerrar" value="Cancelar" action="#{catalogoBean.limpiar}" 
+                                       class="btn btn-default" immediate="true"
+                                       onclick="$(dialogoHitoMod).modal('hide');"/>
+                    </div>
+                </h:form>
+            </div>
+        </div>
+    </div>
+    <!-- Popup agregar Condicion -->
+    <div class="modal fade" id="dialogoCondicion" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Agregar Condición de pago</h4>
+                </div>
+                <h:form id="frmCondi">
+                    <div class="modal-body card-body">
+                        <div class="form-group col-12">                           
+                            <h:outputText class="col-2 control-label" value="Nombre: "/>
+                            <div class="col-8">
+                                <h:inputText id="nombre" value="#{catalogoBean.nombre}" styleClass="form-control" 
+                                             required="true" requiredMessage="Agregue el nombre"/>
+                            </div>
+                        </div>
+                        <div class="form-group col-12">                           
+                            <h:outputText class="col-2 control-label" value="Descripción: "/>
+                            <div class="col-8">
+                                <h:inputTextarea value="#{catalogoBean.descripcion}" styleClass="form-control"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <p:commandLink id="btnGuardar" value="Guardar" 
+                                       action="#{catalogoBean.guardarCondicion}" 
+                                       class="btn btn-info text-white" process="@form" update="frmClasifica:tabViewCat"/>
+                        <p:commandLink id="btnCerrar" value="Cancelar" action="#{catalogoBean.limpiar}" 
+                                       class="btn btn-default" immediate="true"
+                                       onclick="$(dialogoCondicion).modal('hide');"/>
+                    </div>
+                </h:form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="dialogoCondicionMod" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Modificar Condición de pago</h4>
+                </div>
+                <h:form id="frmCondiMod">
+                    <div class="modal-body card-body">
+                        <div class="form-group col-12">                           
+                            <h:outputText class="col-2 control-label" value="Nombre: "/>
+                            <div class="col-8">
+                                <h:inputText id="nombre" value="#{catalogoBean.nombre}" styleClass="form-control"  required="true" requiredMessage="Es necesario agregar el nombre"/>
+                            </div>
+                        </div>
+                        <div class="form-group col-12">                           
+                            <h:outputText class="col-2 control-label" value="Descripción: "/>
+                            <div class="col-8">
+                                <h:inputTextarea value="#{catalogoBean.descripcion}" styleClass="form-control"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <p:commandLink id="btnGuardar" value="Modificar" 
+                                       action="#{catalogoBean.completarModCondicion}" 
+                                       class="btn btn-info text-white" process="@form" update="frmClasifica:tabViewCat"/>
+                        <p:commandLink id="btnCerrar" value="Cancelar" action="#{catalogoBean.limpiar}" 
+                                       class="btn btn-default"  immediate="true"
+                                       onclick="$(dialogoCondicionMod).modal('hide');"/>
+                    </div>
+                </h:form>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="modal fade" id="dialogoFormato" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Agregar/Editar Formato</h4>
+                </div>
+                <h:form id="frmFormato">
+                    <div class="modal-body card-body">
+                        <div class="form-group col-12">                           
+                            <h:outputText class="col-2 control-label" value="Nombre: "/>
+                            <div class="col-8">
+                                <h:inputTextarea id="nombreFormato" value="#{catalogoBean.nuevoFormato.nombre}" styleClass="form-control"
+                                                 required="true" requiredMessage="Agregue el nombre"/>
+                            </div>
+                        </div>
+                        <div class="form-group col-12">                           
+                            <h:outputText class="col-2 control-label" value="Descripcion: "/>
+                            <div class="col-8">
+                                <h:inputTextarea id="descFormato" value="#{catalogoBean.nuevoFormato.descripcion}" styleClass="form-control"/>
+                            </div>
+                        </div>
+                        <div class="form-group col-12">                           
+                            <h:outputText class="col-2 control-label" value="Titulo: "/>
+                            <div class="col-8">
+                                <h:inputTextarea id="tituloFormato" value="#{catalogoBean.nuevoFormato.titulo}" styleClass="form-control"/>
+                            </div>
+                        </div>
+                        <div class="form-group col-12">                           
+                            <h:outputText class="col-2 control-label" value="Tipo: "/>
+                            <div class="col-10">
+                                <h:selectOneMenu id="tipoFormato" styleClass="form-control selectt"                                                                        
+                                                 value="#{catalogoBean.nuevoFormato.idClasificacion}"
+                                                 >
+                                    <f:selectItem itemValue="0" itemLabel="Seleccione . . . "/>
+                                    <f:selectItems value="#{catalogoBean.clasificaciones}" var="itemT" itemValue="#{itemT.id}" itemLabel="#{itemT.nombre}"/>                                                                
+                                </h:selectOneMenu>                                                                
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="modal-footer">
+                        <p:commandLink id="btnGuardarFor" value="Guardar" 
+                                       action="#{catalogoBean.guardarFormato}" 
+                                       class="btn btn-info text-white" process="@form" update="frmClasifica:tabViewCat"/>
+                        <p:commandLink id="btnCerrarFor" value="Cancelar"
+                                       class="btn btn-default" immediate="true"
+                                       onclick="$(dialogoFormato).modal('hide');"/>
+                    </div>
+                </h:form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="dialogoSeccion" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Agregar/Editar Sección</h4>
+                </div>
+                <h:form id="frmSeccion">
+                    <div class="modal-body card-body">
+                        <div class="form-group col-12">                           
+                            <h:outputText class="col-2 control-label" value="Nombre: "/>
+                            <div class="col-8">
+                                <h:inputText id="nombreSeccion" value="#{catalogoBean.nuevaSeccion.seccionNombre}" styleClass="form-control"
+                                             required="true" requiredMessage="Agregue el nombre"/>
+                            </div>
+                        </div>
+                        <div class="form-group col-12">                           
+                            <h:outputText class="col-2 control-label" value="Maximo: "/>
+                            <div class="col-8">
+                                <h:inputText id="maxSeccion"  value="#{catalogoBean.nuevaSeccion.seccionMaximo}" styleClass="form-control"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <p:commandLink id="btnGuardarSec" value="Guardar" 
+                                       action="#{catalogoBean.guardarSeccion}" 
+                                       class="btn btn-info text-white" process="@form" update="frmClasifica:tabViewCat"/>
+                        <p:commandLink id="btnCerrarSec" value="Cancelar"
+                                       class="btn btn-default"  immediate="true"
+                                       onclick="$(dialogoSeccion).modal('hide');"/>
+                    </div>
+                </h:form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="dialogoPregunta" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Agregar/Editar Pregunta</h4>
+                </div>
+                <h:form id="frmPregunta">
+                    <div class="modal-body card-body">
+                        <div class="form-group col-12">                           
+                            <h:outputText class="col-2 control-label" value="Pregunta: "/>
+                            <div class="col-8">
+                                <h:inputText id="nombrePregunta" value="#{catalogoBean.nuevaPregunta.pregunta}" styleClass="form-control"
+                                             required="true" requiredMessage="Agregue la pregunta"/>
+                            </div>
+                        </div>			
+                    </div>
+                    <div class="modal-footer">
+                        <p:commandLink id="btnGuardarPre" value="Guardar" 
+                                       action="#{catalogoBean.guardarPregunta}" 
+                                       class="btn btn-info text-white" process="@form" update="frmClasifica:tabViewCat"/>
+                        <p:commandLink id="btnCerrarPre" value="Cancelar"
+                                       class="btn btn-default" immediate="true"
+                                       onclick="$(dialogoPregunta).modal('hide');"/>
+                    </div>
+                </h:form>
+            </div>
+        </div>
+    </div>
+
+</ui:composition>

@@ -1,0 +1,340 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:p="http://primefaces.org/ui">    
+    <div class="row" >
+        Dias restantes: <b class="text text-danger"> #{contratoBean.contratoVo.diasRestantes} </b>, 
+        Acumulado en oc/s: 
+        <h:outputLabel value="#{contratoBean.contratoVo.acumulado}" class="text text-danger">
+            <f:convertNumber type="currency"/>
+        </h:outputLabel>	    
+        <ui:fragment rendered="#{contratoBean.contratoVo.monto gt contr.acumulado}"> 
+            , Remanente : 
+            <h:outputLabel value="#{contratoBean.contratoVo.remanente}" class="text text-danger">
+                <f:convertNumber type="currency"/>
+            </h:outputLabel>	    
+        </ui:fragment>
+    </div>
+    <div class="row">
+        <ui:fragment rendered="#{contratoBean.contratoVo.editar}">
+            <div style="text-align: right;" class="col-12">
+                <p:commandLink oncomplete="$(dialogoModificarDatosGenerales).modal('show');" 
+                               styleClass="btn btn-primary" update=":frmModContratoGenerales" process="@this">
+                    <i class="fa fa-edit text-white"/>
+                </p:commandLink>
+            </div>
+        </ui:fragment>
+        <div class="col-6">
+            <div class="input-group ">
+                <div class="form-group"> 
+                    <h:outputText class="col-4 control-label" value="Número: "/>
+                    <div class="col-12">
+                        <h:outputLabel value="#{contratoBean.contratoVo.numero}"/>
+                    </div>
+                </div>
+                <div class="form-group ">                           
+                    <h:outputText class="col-4 control-label" value="Objetivo: "/>
+                    <div class="col-12">
+                        <h:outputLabel value="#{contratoBean.contratoVo.nombre}"/>
+                    </div>
+                </div>
+                <div class="form-group">                           
+                    <h:outputText class="col-4 control-label" value="Proveedor: "/>
+                    <div class="col-12">
+                        <h:outputLabel value="#{contratoBean.contratoVo.nombreProveedor}"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-6">
+            <div class="input-group">
+                <div class="form-group  col-12">
+                    <h:outputText class="col-3 control-label" value="Gerencia: "/>
+                    <div class="col-12">
+                        <ul style="margin-left: -30px;">
+                            <ui:repeat value="#{contratoBean.contratoVo.listaGerencia}" var="data">
+                                <li>
+                                    <h:outputLabel value="#{data.nombre}" class="text-md" />
+                                </li>
+                            </ui:repeat>
+                        </ul>
+                    </div>
+                </div>
+                <div class="form-group col-12">
+                    <h:outputText class="col-3 control-label" value="Tipo: "/>
+                    <div class="col-12">
+                        <h:outputLabel value="#{contratoBean.contratoVo.tipo}"/>
+                    </div>
+                </div>
+                <div class="form-group col-12">
+                    <h:outputText class="col-3 control-label" value="Clasificación: "/>
+                    <div class="col-12">
+                        <h:outputLabel value="#{contratoBean.contratoVo.clasificacion}">
+                        </h:outputLabel>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <p:accordionPanel >
+        <p:tab title="Datos complementarios">
+            <ui:fragment rendered="#{contratoBean.contratoVo.editar}">
+                <div style="text-align: right;" class="col-12">				
+                    <p:commandLink oncomplete="$(dialogoModificarComplementos).modal('show');"
+                                   process="@this" update="frmModContratoComp" styleClass="btn btn-primary">                            
+                        <i class="fa fa-edit text-white"/>
+                    </p:commandLink>
+                </div>
+            </ui:fragment>
+            <div class="row">
+                <div class="col-4">
+                    <div class="input-group">
+                        <div class="form-group col-12">                           
+                            <h:outputText class="col-4 control-label" value="Estado: "/>
+                            <div class="col-12">
+                                <h:outputLabel value="#{contratoBean.contratoVo.estado}"/>
+                            </div>
+                        </div>
+                        <div class="form-group  col-12">                           
+                            <h:outputText class="col-4 control-label" value="Firma: "/>
+                            <div class="col-12">
+                                <h:outputLabel value="#{contratoBean.contratoVo.fechaFirma}">
+                                    <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                </h:outputLabel>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="input-group">
+                        <div class="form-group col-12">                           
+                            <h:outputText class="col-4 control-label" value="Inicio: "/>
+                            <div class="col-12">
+                                <h:outputLabel value="#{contratoBean.contratoVo.fechaInicio}">
+                                    <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                </h:outputLabel>
+                            </div>
+                        </div>
+                        <div class="form-group  col-12">                           
+                            <h:outputText class="col-4 control-label" value="Fin: "/>
+                            <div class="col-12">
+                                <h:outputLabel value="#{contratoBean.contratoVo.fechaVencimiento}">
+                                    <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                </h:outputLabel>
+                            </div>
+                        </div>
+                        <div class="form-group  col-12">                           
+                            <h:outputText class="col-4 control-label" value="Vigencia: "/>
+                            <div class="col-12">
+                                <h:outputLabel value="#{contratoBean.contratoVo.vigencia}"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="input-group">				    
+                        <div class="form-group  col-12">                           
+                            <h:outputText class="col-4 control-label" value="Monto: "/>
+                            <div class="col-12">
+                                <h:outputLabel value="#{contratoBean.contratoVo.monto}" >
+                                    <f:convertNumber type="currency"/>
+                                </h:outputLabel>
+                                #{contratoBean.contratoVo.moneda}
+                            </div>
+                        </div>
+                        <div class="form-group  col-12">                           
+                            <h:outputText class="col-4 control-label" value="Total Contratos: "/>
+                            <div class="col-12">
+                                <h:outputLabel value="#{contratoBean.contratoVo.totalContratoConModificatorios}" >
+                                    <f:convertNumber type="currency"/>
+                                </h:outputLabel>
+                                #{contratoBean.contratoVo.moneda}
+                            </div>
+                        </div>
+                        <div class="form-group  col-12">                           
+                            <h:outputText class="col-4 control-label" value="Deducción: "/>
+                            <div class="col-6">
+                                <h:outputLabel value="#{contratoBean.contratoVo.porcentajeDeduccion} %"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </p:tab>
+        <p:tab title="Documentación">
+            <ui:fragment rendered="#{contratoBean.contratoVo.idEstado ne 380}">
+                <div style="text-align: right;" class="col-12">
+                    <p:commandLink action="#{contratoBean.traerDocumentos}"
+                                   class="btn btn-primary"
+                                   oncomplete="$(dialogoAgregarDocto).modal('show');"
+                                   process="@this"  update="frmDoctos" global="false">
+                        <i class="fa fa-plus text-white"/>
+                    </p:commandLink>
+                </div>
+            </ui:fragment>
+            <div class="table table-responsive">
+                <p:dataTable id="dtConvDoctos" value="#{contratoBean.contratoVo.listaConvenioDocumento}"
+                             var="data" showGridlines="true" size="small"
+                             paginator="true"  
+                             paginatorPosition="bottom" 
+                             rows="5">
+                    <p:column headerText="Documento">
+                        <h:outputText value="#{data.documento}" />
+                    </p:column>
+                    <p:column headerText="Recibida" width="90">
+                        <h:outputText value="#{data.fechaEntrega}">
+                            <f:convertDateTime pattern="dd/MM/yyyy"/>
+                        </h:outputText>
+                    </p:column>
+                    <p:column headerText="Inicio" width="90">
+                        <h:outputText value="#{data.inicioVigencia}" >
+                            <f:convertDateTime pattern="dd/MM/yyyy"/>
+                        </h:outputText>
+                    </p:column>
+                    <p:column headerText="Fin" width="90">
+                        <h:outputText value="#{data.finVigencia}" >
+                            <f:convertDateTime pattern="dd/MM/yyyy"/>
+                        </h:outputText>
+                    </p:column>
+                    <p:column headerText="Validado" width="90">
+                        <h:outputText value="#{data.valido eq 'True' ? 'Si'  : 'No'}"/>				    
+                    </p:column>
+                    <p:column width="80">
+                        <h:outputLink target="_blank"  
+                                      value="/Sia/AbrirArchivo?ZWZ2W=#{data.adjuntoVO.id}&amp;ZWZ3W=#{data.adjuntoVO.uuid}"
+                                      rendered="#{data.adjuntoVO.id gt 0}">
+                            <span class="text-info" style="font-weight: bold;"> #{data.adjuntoVO.nombre}</span>
+                        </h:outputLink>
+                        <p:commandLink action="#{contratoBean.quitarSoloArchivoDocumento(data.id, data.adjuntoVO.id)}"
+                                       rendered="#{data.adjuntoVO.id gt 0}" process="@this" update="frmAdmin:tabView">
+                            <i class="fa fa-remove text-danger btn btn-md"/>
+                        </p:commandLink>
+                    </p:column>
+                    <p:column rendered="#{contratoBean.contratoVo.idEstado ne 380}" width="50">
+                        <p:commandLink  rendered="#{data.adjuntoVO.id eq 0}"
+                                        action="#{contratoBean.agregarArchivoDocto(data.id)}"
+                                        process="@this" update="frmArchivo">
+                            <i class="fa fa-upload btn btn-md"/>
+                        </p:commandLink>
+                    </p:column>
+                    <p:column rendered="#{contratoBean.contratoVo.idEstado ne 380}" width="50">
+                        <p:commandLink action="#{contratoBean.agregarArchivoDocumento(data.id)}"
+                                       process="@this" update="frmArchivoDocto">
+                            <i class="fa fa-edit btn btn-md"/>
+                        </p:commandLink>
+                    </p:column>
+                    <p:column rendered="#{contratoBean.contratoVo.idEstado ne 380}" width="50">
+                        <p:commandLink action="#{contratoBean.quitarArchivoDocumento(data.id)}"
+                                       process="@this" update="frmAdmin:tabView">
+                            <i class="fa fa-remove text-danger btn btn-md"/>
+                        </p:commandLink>
+                    </p:column>
+                </p:dataTable>
+            </div>
+        </p:tab>
+        <p:tab title="Documentación de Recursos Humanos">
+            <div class="table table-responsive">
+                <p:dataTable id="dtDoctosRh" value="#{contratoBean.contratoVo.doctosRh}"
+                             var="dataRh"  showGridlines="true" size="small"
+                             paginator="true"  
+                             paginatorPosition="bottom" 
+                             rows="5">
+                    <p:column headerText="Documento" style="text-align: left;">
+                        <h:outputText value="#{dataRh.documento}" />
+                    </p:column>
+                    <p:column headerText="Peridicidad" width="150">
+                        <h:outputText value="#{dataRh.periodicidad}" />
+                    </p:column>
+                    <p:column width="50">
+                        <p:commandLink  action="#{contratoBean.quitarDoctoRh(dataRh.idDocumento)}"
+                                        process="@this" update="frmAdmin:tabView">
+                            <i class="fa fa-trash text-danger"/>
+                        </p:commandLink>
+                    </p:column>
+                </p:dataTable>
+            </div>
+        </p:tab>
+        <p:tab title="Condiciones de pago">
+            <div class="card-body">
+                <div style="text-align: right;" class="col-12">
+                    <p:commandLink action="#{contratoBean.traerCondicionesPago}"
+                                   class="btn btn-primary"
+                                   oncomplete="$(dialogoAgregarConvCondicion).modal('show');"
+                                   process="@this" update="frmCondConv">
+                        <i class="fa fa-plus text-white"/>
+                    </p:commandLink>
+                </div>
+                <div class="table table-responsive">
+                    <p:dataTable id="dtConvCond" value="#{contratoBean.contratoVo.listaConvenioCondicion}"
+                                 var="data" showGridlines="true" size="small">
+                        <p:column headerText="Condición" style="text-align: left;">
+                            <h:outputText value="#{data.nombre}" class="control-label" />
+                        </p:column>
+                        <p:column  width="50">
+                            <p:commandLink action="#{contratoBean.quitarRelacionConvCondicion(data.id)}"
+                                           process="@this" update="frmAdmin:tabView">
+                                <i class="fa fa-remove text-danger  btn btn-md"/>
+                            </p:commandLink>
+                        </p:column>
+                    </p:dataTable>
+                </div>
+            </div>
+        </p:tab>
+        <p:tab title="Archivos del convenio">
+            <div style="text-align: right;" class="col-12">
+                <p:commandLink 
+                    action="#{contratoBean.agregarArchivoContrato}"
+                    onclick="$(adjuntarArchivo).modal('show');"
+                    class="btn btn-primary" process="@this" update="frmArchivo">
+                    <i class="fa fa-plus text-white "/>
+                </p:commandLink>
+            </div>
+            <div class="table table-responsive">
+                <p:dataTable id="dtConvArchivo" value="#{contratoBean.contratoVo.listaArchivoConvenio}"
+                             var="data" showGridlines="true" size="small">
+                    <p:column headerText="Archivos" style="text-align: left;">
+                        <h:outputLink target="_blank" styleClass="control-label"
+                                      style="color: #0895d6;"
+                                      value="/Sia/AbrirArchivo?ZWZ2W=#{data.id}&amp;ZWZ3W=#{data.uuid}">
+                            <p class="control-label">#{data.nombre}</p>
+                        </h:outputLink>
+                    </p:column>
+                    <p:column >
+                        <p:commandLink action="#{contratoBean.quitarRelacionConvAdjunto(data.idTabla)}"
+                                       process="@this" update="frmAdmin:tabView">
+                            <i class="fa fa-remove text-danger  btn btn-md"/>
+                        </p:commandLink>
+                    </p:column>
+                </p:dataTable>
+            </div>
+        </p:tab>
+        <p:tab title="Hitos de pago de pago"  rendered="#{contratoBean.contratoVo.listaConvenioCondicion.size() eq 0}">
+            <div style="text-align: right;" class="col-12">
+                <p:commandLink action="#{contratoBean.traerHitosPago}"
+                               onclick="$(dialogoAgregarConvHito).modal('show');"
+                               class="btn btn-primary" process="@this" update="frmHitoConv">
+                    <i class="fa fa-plus text-white"/>
+                </p:commandLink>
+            </div>
+            <div class="table table-responsive">
+                <p:dataTable id="dtConvHito" value="#{contratoBean.contratoVo.listaConvenioHito}"
+                             var="data" showGridlines="true" size="small">
+                    <p:column headerText="Hitos de pago" style="text-align: left;">
+                        <h:outputText value="#{data.nombre}" class="control-label" />
+                    </p:column>
+                    <p:column headerText="Condición de pago" style="text-align: left;">
+                        <h:outputText value="#{data.nombreRelacion}" class="control-label" />
+                    </p:column>
+                    <p:column width="50">
+                        <p:commandLink action="#{contratoBean.quitarRelacionConvHito(data.id)}"
+                                       process="@this" update="frmAdmin:tabView">
+                            <i class="fa fa-remove text-danger  btn btn-md"/>
+                        </p:commandLink>
+                    </p:column>
+                </p:dataTable>
+            </div>
+        </p:tab>
+    </p:accordionPanel>
+</ui:composition>

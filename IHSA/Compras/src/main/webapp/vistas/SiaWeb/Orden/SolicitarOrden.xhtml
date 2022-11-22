@@ -1,0 +1,479 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html  xmlns="http://www.w3.org/1999/xhtml"
+       xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+       xmlns:p="http://primefaces.org/ui"
+       xmlns:f="http://xmlns.jcp.org/jsf/core"
+
+
+       xmlns:h="http://xmlns.jcp.org/jsf/html">
+    <body>
+        <ui:composition template="./../templates/template.xhtml">
+            <style type="text/css">
+                .ui-panelgrid .ui-panelgrid-cell{
+                    padding: 0.2rem;
+                }
+            </style>
+            <ui:define name="tituloPagina">
+                Solicitar OC/S
+            </ui:define>
+            <ui:define name="contenido">  
+                <div class="row">
+                    <div class="col-5 col-xs-12">
+                        <h:outputText value="Orden: "/>
+                        <h:outputLabel value="#{solicitarOrdenBean.ordenActual.id}"/>
+                    </div>
+                </div>
+                <div id="ocsSolicita" class="row" >
+                    <h:form id="form1">
+
+                        <p:confirmDialog global="true" showEffect="fade" hideEffect="fade" responsive="true" width="350">
+                            <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no ui-button-flat"/>
+                            <p:commandButton value="Si" type="button" styleClass="ui-confirmdialog-yes" />
+                        </p:confirmDialog>
+                        <p:tabView  id="tbDatoOrden">
+                            <p:tab title="Solicitar" >
+                                <div class="row">       
+                                    <div class="col-12 border">
+                                        <ui:fragment rendered="#{solicitarOrdenBean.ordenActual.conConvenio eq 'False'}">
+                                            <div class="row ">
+                                                <div class="form-group col-9">
+                                                    <h:outputText class="control-label col-2" value="#{msgs['orden.solicita.proveedor']}"/>
+                                                    <div class="col-9">
+                                                        <p:autoComplete id="autoProv" value="#{solicitarOrdenBean.proveedorSeleccionado}" size="80" 
+                                                                        completeMethod="#{solicitarOrdenBean.completaProveedor}"
+                                                                        multiple="false" selectLimit="1">
+                                                            <p:ajax event="itemSelect" listener="#{solicitarOrdenBean.llenarDatosProveedor}" 
+                                                                    process="@this" ignoreAutoUpdate="true"
+                                                                    update="form1:tbDatoOrden:tablaContacto form1:tbDatoOrden:pnlProveedor @this form1:tbDatoOrden:cmbConv"/>
+                                                        </p:autoComplete>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </ui:fragment>
+                                        <div class="border" >
+                                            <div class="border-title">
+                                                <h:outputLabel value="#{msgs['proveedor.datos']}"/>
+                                            </div>
+                                            <div class="border-body">
+                                                <div class="row">
+                                                    <div class="col-6" >
+                                                        #{msgs['orden.solicita.contacto.proveedor']}
+                                                        <div style="overflow: scroll;  width: 100%; height: 200px;">
+                                                            <div class="table table-responsive">
+                                                                <p:dataTable size="small" stripedRows="true" showGridlines="true"  
+                                                                             value="#{solicitarOrdenBean.listaContactos}" var="d" 
+                                                                             id="tablaContacto" 
+                                                                             emptyMessage="No hay contactos registrados">
+                                                                    <p:column width="25">
+                                                                        <h:selectBooleanCheckbox value="#{d.selected}" class="seleccion"/>
+                                                                    </p:column>
+                                                                    <p:column>
+                                                                        <f:facet name="header"><h:outputText value="#{msgs['sistema.usuario.nombre']}"/></f:facet>
+                                                                        <h:outputText value="#{d.nombre}"/>
+                                                                    </p:column>
+                                                                    <p:column>
+                                                                        <f:facet name="header"><h:outputText value="#{msgs['sistema.usuario.correo']}"/></f:facet>
+                                                                        <h:outputText value="#{d.correo}"/>
+                                                                    </p:column>
+                                                                </p:dataTable>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-10 input-group-sm btn-danger" style="display: none;">
+                                                            <h:outputText  value="#{msgs['proveedor.no.contacto']}"/>
+                                                            <h:outputText  value="#{msgs['proveedor.mensaje.agregar.contacto']}"/>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-6">
+                                                        <h:panelGrid id="pnlProveedor" columns="2" >
+                                                            <h:outputText value="RFC:"  />
+                                                            <h:outputLabel id="rfc" value="#{solicitarOrdenBean.proveedorVo.rfc}"/>
+                                                            <h:outputText value="Nombre:"  />
+                                                            <h:outputLabel id="pNombre" value="#{solicitarOrdenBean.proveedorVo.nombre}"/>
+                                                            <h:outputText value="Dirección:" />
+                                                            <h:outputLabel id="pCalle" value="#{solicitarOrdenBean.proveedorVo.calle}"/>
+                                                            <h:outputText value="#{msgs['proveedor.colonia']}" />
+                                                            <h:outputLabel id="pColonia" value="#{solicitarOrdenBean.proveedorVo.colonia}"/>
+                                                            <h:outputText value="#{msgs['proveedor.ciudad']}" />
+                                                            <h:outputLabel id="pCiudad" value="#{solicitarOrdenBean.proveedorVo.ciudad}"/>
+                                                            <h:outputText value="#{msgs['proveedor.estado']}" />
+                                                            <h:outputLabel id="pEstado" value="#{solicitarOrdenBean.proveedorVo.estado}"/>
+                                                            <h:outputText value="#{msgs['proveedor.pais']}" />
+                                                            <h:outputLabel id="pPais" value="#{solicitarOrdenBean.proveedorVo.pais}"/>
+                                                        </h:panelGrid>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row mt-2">
+                                            <div class="input-group col-6">
+                                                <div class="form-group col-12">
+                                                    <div class="col-3">
+                                                        <h:outputText class="control-label" value="#{msgs['orden.solicita.contrato']} "/>
+                                                    </div>
+                                                    <div   class="col-9" id="tablaConvenio">
+                                                        <h:selectOneMenu id="cmbConv" value="#{solicitarOrdenBean.ordenActual.contrato}"
+                                                                         disabled="#{solicitarOrdenBean.ordenActual.conConvenio}"
+                                                                         styleClass="form-control">
+                                                            <f:selectItems value="#{solicitarOrdenBean.listConvenio}" />
+                                                            <p:ajax event="change" listener="#{solicitarOrdenBean.seleccionarContrato}"
+                                                                    update="@this"/>
+                                                        </h:selectOneMenu>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group col-12">
+                                                    <div class="col-3">
+                                                        <h:outputText class="control-label" value="Tipo de compra: "/>                                                                    
+                                                    </div>
+                                                    <div class="col-9">
+                                                        <h:selectOneMenu styleClass="form-control" value="#{solicitarOrdenBean.ordenActual.ocTipoCompra.id}" style="z-index: 1;" >
+                                                            <f:selectItems value="#{solicitarOrdenBean.listaTipoPago}"/>
+                                                        </h:selectOneMenu>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group col-12">                           
+                                                    <div class="col-3">
+                                                        <h:outputText class="control-label" value="Forma de Pago: "/>                                                                    
+                                                    </div>
+                                                    <div class="col-9">
+                                                        <h:selectOneMenu styleClass="form-control" value="#{solicitarOrdenBean.ordenActual.ocFormaPago.id}" style="z-index: 1;" >
+                                                            <f:selectItems value="#{solicitarOrdenBean.listaFormaPago}"/> 
+                                                        </h:selectOneMenu>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group col-12">                           
+                                                    <div class="col-3">
+                                                        <h:outputText class="control-label" value="#{msgs['orden.solicita.revisa']}*"/>                                                                    
+                                                    </div>
+                                                    <div class="col-9">
+                                                        <h:selectOneMenu styleClass="form-control" id="cmbRevisa" value="#{solicitarOrdenBean.revisa}" style="z-index: 1;" >
+                                                            <f:selectItem itemLabel="Seleccione  . . . " itemValue="-1"/>
+                                                            <f:selectItems value="#{solicitarOrdenBean.usuarioRevisa}"/>
+                                                        </h:selectOneMenu>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group col-12">                           
+                                                    <h:outputText class="col-3 control-label" value="#{msgs['orden.solicita.aprueba']}*"/>
+                                                    <div class="col-9">
+                                                        <h:selectOneMenu styleClass="form-control" id="cmbAprueba" value="#{solicitarOrdenBean.aprueba}" style="z-index: 1;" >
+                                                            <f:selectItem itemLabel="Seleccione  . . . " itemValue="-1"/>
+                                                            <f:selectItems value="#{solicitarOrdenBean.usuarioAprueba}"/>
+                                                        </h:selectOneMenu>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group col-12">                           
+                                                    <h:outputText class="col-3 control-label" value="#{msgs['orden.solicita.termino.pago']}*"/>
+                                                    <div class="col-9">
+                                                        <h:selectOneMenu styleClass="form-control" id="cmbTerminoPago" value="#{solicitarOrdenBean.idTerminoPago}" style="z-index: 1;"
+                                                                         >
+                                                            <f:selectItem itemLabel="#{msgs['orden.solicita.termino.pago']}..." itemValue="-1" />
+                                                            <f:selectItems value="#{solicitarOrdenBean.listaTerminoPago}"/>
+                                                        </h:selectOneMenu>
+                                                    </div>
+                                                </div>
+                                                <ui:fragment rendered="#{solicitarOrdenBean.ordenActual.apCampo.id ne 4 and solicitarOrdenBean.ordenActual.apCampo.id ne 5}">
+                                                    <div class="form-group col-12">
+                                                        <h:outputText styleClass="col-3 control-label" 
+                                                                      value="¿La forma de pago será Confirming?:*" />
+                                                        <div class="col-9" >
+                                                            <h:selectOneRadio  value="#{solicitarOrdenBean.confirming}">
+                                                                <f:selectItem itemLabel="Si" itemValue="Si"/>
+                                                                <f:selectItem itemLabel="No" itemValue="No"/>
+                                                            </h:selectOneRadio>
+                                                        </div>
+                                                    </div>
+                                                </ui:fragment>
+                                                <div class="form-group col-12">   
+                                                    <h:outputText class="col-3 control-label" value="#{msgs['orden.solicita.fecha.entrega']}*"/>
+                                                    <div class="col-3" >
+                                                        <div>
+                                                            <p:datePicker value="#{solicitarOrdenBean.ordenActual.fechaEntrega}" id="fecha" 
+                                                                          pattern="dd/MM/yyyy"
+                                                                          required="true" requiredMessage="Seleccione la fecha"
+                                                                          />
+                                                            <h:message errorClass="errorMessage" fatalClass="fatalMessage" for="fecha" infoClass="infoMessage"
+                                                                       style="color: rgb(204, 0, 0);width: 214px" warnClass="warnMessage"/>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group col-6">
+                                                        <div class="col-4" >
+                                                            <h:outputText class="control-label" value="Subtotal: "/>
+                                                        </div>
+                                                        <div class="col-6 input-group">
+                                                            <h:outputLabel value="#{solicitarOrdenBean.ordenActual.subtotal}">
+                                                                <f:convertNumber type="currency" maxFractionDigits="2"/>
+                                                            </h:outputLabel> 
+                                                            <h:outputLabel value="#{solicitarOrdenBean.monedaSeleccionada}"/>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group col-12">                           
+                                                    <h:outputText class="col-3 control-label" value="#{msgs['orden.solicita.impuesto']}*"/>
+                                                    <div class="col-6" >
+                                                        <h:selectOneRadio   value="#{solicitarOrdenBean.iva}" >
+                                                            <f:selectItems value="#{solicitarOrdenBean.lstImpuestos}" />
+                                                        </h:selectOneRadio>
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-group col-12">
+                                                    <h:outputText styleClass="col-3 control-label" value="#{msgs['orden.solicita.tipo.orden']}*"                                                                   
+                                                                  rendered="#{solicitarOrdenBean.mostrarTipoOrden eq true}"/>
+                                                    <div class="col-9" >
+                                                        <h:selectOneRadio  value="#{solicitarOrdenBean.tipoOrden}"
+                                                                           rendered="#{solicitarOrdenBean.mostrarTipoOrden eq true}">
+                                                            <f:selectItems value="#{solicitarOrdenBean.tiposOrdenes}"/>
+                                                        </h:selectOneRadio>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group col-12">
+                                                    <h:outputText styleClass="col-3 control-label" 
+                                                                  value="¿Habrá mano de obra en sitio?:*" />
+                                                    <div class="col-9" >
+                                                        <h:selectOneRadio  value="#{solicitarOrdenBean.archivoRepse}">
+                                                            <f:selectItem itemLabel="Si" itemValue="Si"/>
+                                                            <f:selectItem itemLabel="No" itemValue="No"/>
+                                                        </h:selectOneRadio>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group col-12">    
+                                                    <div class="col-3"></div>
+                                                    <p:commandLink id="btnSolicitar" 
+                                                                   action="#{solicitarOrdenBean.completarSolicitudOrden()}"
+                                                                   title="Solicita la orden de compra..."
+                                                                   value="#{msgs['sistema.solicitar']}" styleClass="btn btn-primary text-white"
+                                                                   process="@form" update="form1:tbDatoOrden">
+                                                        <p:confirm header="Confirmar" message="¿Está seguro de solicitar la orden...?" 
+                                                                   icon="pi pi-exclamation-triangle"/>
+                                                    </p:commandLink>
+                                                    <p:commandLink action="/vistas/SiaWeb/Orden/OrdenCompra.xthml?faces-redirect=true" 
+                                                                   styleClass="btn btn-default btn-md"
+                                                                   immediate="true"
+                                                                   title="No solicita la orden de compra..." value="Cancelar"/>
+                                                </div>
+                                            </div>
+                                            <span id="msgSolicitaOrden" style="color: red;" class="textoRojo"></span>
+                                            <h:message for="msgSolicitaOrden" style="color: red;" infoClass="infoMessage" errorClass="errorMessage" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </p:tab>
+                            <p:tab title="Datos" >                            
+                                <div class="row">                    
+                                    <div class="col-12 col-xs-12">
+                                        <div><span>Inf. de la OC/S</span></div>    
+                                        <div class="input-group row" >
+                                            <div class="form-group col-12 col-xs-12" >
+                                                <h:outputLabel styleClass="col-2 col-xs-12 control-label"  value="Dpto. Solicitó:"/>
+                                                <div class="col-4 col-xs-12">
+                                                    <h:outputText  value="#{solicitarOrdenBean.ordenActual.gerencia.nombre}"/>
+                                                </div>                                            
+                                                <h:outputLabel styleClass="col-2 col-xs-12 control-label" value="Destino:"/>
+                                                <div class="col-4 col-xs-12">
+                                                    <h:outputText  value="#{solicitarOrdenBean.ordenActual.destino}"/>
+                                                </div>
+                                            </div>                                            
+                                            <div class="form-group col-12 col-xs-12" >
+                                                <h:outputLabel styleClass="col-2 col-xs-12 control-label"  value="Gerente:"/>
+                                                <div class="col-4 col-xs-12">
+                                                    <h:outputText  value="#{solicitarOrdenBean.ordenActual.responsableGerencia.nombre}"/>
+                                                </div>                                            
+                                                <h:outputLabel styleClass="col-2 col-xs-12 control-label" value="Elaboro:"/>
+                                                <div class="col-4 col-xs-12">
+                                                    <h:outputText  value="#{solicitarOrdenBean.ordenActual.analista.nombre}"/>
+                                                </div>
+                                            </div>                                            
+                                            <div class="form-group col-12 col-xs-12" >
+                                                <h:outputLabel styleClass="col-2 col-xs-12 control-label"  value="Referencia: "/>
+                                                <div class="col-4 col-xs-12">
+                                                    <h:outputText  value="#{solicitarOrdenBean.ordenActual.referencia}"/>    
+                                                </div>
+                                                <h:outputLabel styleClass="col-2 col-xs-12 control-label" value="Entrega:"/>
+                                                <div class="col-4 col-xs-12">
+                                                    <h:outputText  value="#{solicitarOrdenBean.ordenActual.fechaEntrega}">
+                                                        <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                                    </h:outputText>
+                                                </div>                                            
+                                            </div>
+                                        </div>
+                                        <div class="col-12 input-group border" >
+                                            <div class="form-group col-12 col-xs-12" >
+                                                <div class="col-2 col-xs-12" style="text-align: left;" >
+                                                    <strong><h:outputText styleClass="control-label"    value="Obs. de la Req.:"/></strong>
+                                                </div>
+                                                <div class="col-10 col-xs-12">
+                                                    <h:outputText styleClass="control-label" rendered="#{solicitarOrdenBean.ordenActual.requisicion.observaciones != null}" value="#{solicitarOrdenBean.ordenActual.requisicion.observaciones}"/>
+                                                    <h:outputText styleClass="control-label" rendered="#{solicitarOrdenBean.ordenActual.requisicion.observaciones == null}" value=" "/>
+                                                </div>  
+                                            </div>
+                                            <div class="form-group col-12 col-xs-12" style="border: white; border-bottom: #eee; border-top: white;  border-style: solid; border-width: 2px;">
+                                                <div class="col-2 col-xs-12" style="text-align: left;" >
+                                                    <strong><h:outputText styleClass="control-label"   value="Observ. proveedor:"/></strong>
+                                                </div>
+                                                <div class="col-10 col-xs-12">
+                                                    <h:outputText styleClass="control-label" rendered="#{solicitarOrdenBean.ordenActual.nota != null}"  value="#{solicitarOrdenBean.ordenActual.nota}"/>
+                                                    <h:outputText styleClass="control-label" rendered="#{solicitarOrdenBean.ordenActual.nota == null}"  
+                                                                  style="color: #eee;"
+                                                                  value="_"/>
+                                                </div>
+                                            </div>                    
+                                            <div class="form-group col-12 col-xs-12" style="border: white; border-bottom: #eee; border-top: white;  border-style: solid; border-width: 2px;">
+                                                <div class="col-2 col-xs-12" style="text-align: left;" >
+                                                    <strong><h:outputText styleClass="control-label"   value="Coment. Internos:"/></strong>
+                                                </div>
+                                                <div class="col-10 col-xs-12">
+                                                    <h:outputText styleClass="control-label" rendered="#{solicitarOrdenBean.ordenActual.observaciones != null}" value="#{solicitarOrdenBean.ordenActual.observaciones}"/>
+                                                    <h:outputText styleClass="control-label" rendered="#{solicitarOrdenBean.ordenActual.observaciones == null}" 
+                                                                  style="color: #eee;"
+                                                                  value="_"/>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">  
+                                        <div class="col-12">
+                                            <div class="col-12 col-12 col-xs-12 mm">
+                                                <div class="col-10 col-8 col-xs-8" style="text-align: right;">
+                                                    <strong><h:outputLabel styleClass="control-label" value="SubTotal:"/></strong>
+                                                </div>
+                                                <div class="col-2 col-4 col-xs-4 mm" style="text-align: right;">
+                                                    <h:outputLabel value="#{solicitarOrdenBean.ordenActual.subtotal}">
+                                                        <f:convertNumber currencySymbol="$" groupingUsed="true" maxFractionDigits="2" type="currency"/>
+                                                    </h:outputLabel>
+                                                </div>
+                                            </div>
+                                            <div class="col-12 col-12 col-xs-12 mm">
+                                                <div class="col-10 col-8 col-xs-8" style="text-align: right;">
+                                                    <strong><h:outputLabel styleClass="control-label" value="IVA:"/></strong>
+                                                </div>
+                                                <div class="col-2 col-4 col-xs-4 mm" style="text-align: right;">
+                                                    <h:outputLabel value="#{solicitarOrdenBean.ordenActual.iva}">
+                                                        <f:convertNumber currencySymbol="$" groupingUsed="true" maxFractionDigits="2" type="currency"/>
+                                                    </h:outputLabel>
+                                                </div>
+                                            </div>
+                                            <div class="col-12 col-12 col-xs-12 mm">
+                                                <div class="col-10 col-8 col-xs-8" style="text-align: right;">
+                                                    <strong><h:outputLabel styleClass="control-label" value="Total:"/></strong>
+                                                </div>
+                                                <div class="col-2 col-4 col-xs-4 mm" style="text-align: right;">
+                                                    <h:outputLabel value="#{solicitarOrdenBean.ordenActual.total}">
+                                                        <f:convertNumber currencySymbol="$" groupingUsed="true" maxFractionDigits="2" type="currency"/>
+                                                    </h:outputLabel>
+                                                </div>                
+                                            </div>
+                                            <div class="col-12 col-12 col-xs-12 mm">
+                                                <div class="col-10 col-8 col-xs-8" style="text-align: right;">
+                                                    <strong><h:outputLabel styleClass="control-label" value="Móneda:"/></strong>
+                                                </div>
+                                                <div class="col-2 col-4 col-xs-4 mm" style="text-align: right;">
+                                                    <h:outputLabel value="#{solicitarOrdenBean.ordenActual.moneda.siglas}"/>
+                                                </div>                
+                                            </div>
+                                        </div>
+                                    </div>  
+                                </div>
+                            </p:tab>             
+                            <p:tab title="Partidas ( #{solicitarOrdenBean.listaItems.size()} )"
+                                   >
+                                <div class="table table-responsive">
+                                    <p:dataTable size="small" stripedRows="true" showGridlines="true"  id="itemRecSol" value="#{solicitarOrdenBean.listaItems}" 
+                                                 var="currentRow" styleClass="table table-striped">
+                                        <f:facet name="header"><h:outputLabel value="Items de la orden de compra" /></f:facet>
+                                        <p:column>
+                                            <h:outputText value="#{currentRow['artNumeroParte']}"/>
+                                            <f:facet name="header">
+                                                <h:outputText value="Código"/>
+                                            </f:facet>
+                                        </p:column>
+                                        <p:column>
+                                            <h:outputText value="#{currentRow.proyectoOt}"/>
+                                            <f:facet name="header">
+                                                <h:outputText value="Proyecto"/>
+                                            </f:facet>
+                                        </p:column>
+                                        <p:column>
+                                            <h:outputText value="#{currentRow['cantidad']}"/>
+                                            <f:facet name="header">
+                                                <h:outputText value="Cantidad"/>
+                                            </f:facet>
+                                        </p:column>
+                                        <p:column>
+                                            <h:outputText value="#{currentRow['artUnidad']}"/>
+                                            <f:facet name="header">
+                                                <h:outputText value="Unidad"/>
+                                            </f:facet>
+                                        </p:column>
+                                        <p:column>
+                                            <h:outputText value="#{currentRow['artDescripcion']}"/>
+                                            <f:facet name="header">
+                                                <h:outputText value="Descripción"/>
+                                            </f:facet>
+                                        </p:column>
+                                        <p:column style="width: 12%;">
+                                            <h:outputText value="#{currentRow['precioUnitario']}">
+                                                <f:convertNumber pattern="$ #,##0.00" locale="es-MX"/>
+                                            </h:outputText>
+                                            <f:facet name="header">
+                                                <h:outputText value="Precio Unitario"/>
+                                            </f:facet>
+                                        </p:column>
+                                        <p:column style="width: 12%;">
+                                            <h:outputText value="#{currentRow['importe']}">
+                                                <f:convertNumber pattern="$ #,##0.00" locale="es-MX"/>
+                                            </h:outputText>
+                                            <f:facet name="header">
+                                                <h:outputText value="Importe"/>
+                                            </f:facet>
+                                        </p:column>
+                                    </p:dataTable>
+                                </div>
+                            </p:tab>                        
+                        </p:tabView>
+                    </h:form> 
+                </div>
+                <!-- Modal Panel Popup Rechazo -->
+                <div class="modal fade" id="dialogoCartasRechazadas" data-backdrop="static" data-keyboard="false">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h4 class="modal-title">Cartas de Intención de Compra rechazadas</h4>
+                            </div>
+                            <h:form id="frmRecCart">
+                                <div class="modal-body">
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <h:outputLabel value="*El proveedor seleccionado previamente ha rechazado compras asignadas." style="color: maroon;"/>
+                                        </div>
+                                        <div class="col-12">                                            
+                                            <p:dataTable size="small" stripedRows="true" showGridlines="true" value="#{solicitarOrdenBean.rechazosCarta}" var="dataC">
+                                                <p:column headerText="Código">
+                                                    <h:outputText value="#{dataC.codigo}"/>
+                                                </p:column>
+                                                <p:column headerText="Referencia" style="text-align: left;">
+                                                    <h:outputText value="#{dataC.descripcion}"/>
+                                                </p:column>
+                                                <p:column headerText="Fecha">
+                                                    <h:outputText value="#{dataC.fechaGenero}">
+                                                        <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                                    </h:outputText>
+                                                </p:column>
+                                                <p:column headerText="Motivo" style="text-align: left;">
+                                                    <h:outputText value="#{dataC.motivo}"/>
+                                                </p:column>
+                                            </p:dataTable>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <p:commandLink immediate="true" value="Cerrar"
+                                                   onclick="$(dialogoCartasRechazadas).modal('hide');"/>
+                                </div>
+                            </h:form>
+                        </div>
+                    </div>
+                </div>
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

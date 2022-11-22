@@ -1,0 +1,884 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                >  
+
+    <!-- CREAR Y EDITAR REQUISICION  -->
+    <div class="modal fade" id="dialogoCrearNewReq" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <strong><h4 class="modal-title">Crear requisición</h4></strong>
+                </div>
+
+                <h:form id="frmCrearRequisicion">
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="input-group card" >
+                                    <div class="iceSelOneRbihsa" >
+                                        <strong>
+                                            <p:selectOneRadio id="tipoReq" value="#{requisicionBean.tipoRequisicion}"
+                                                              styleClass="form-control" >                                        
+                                                <f:selectItems value="#{requisicionBean.listaTipoRequisicion}" />
+                                                <p:ajax listener="#{requisicionBean.cambiarTipoRequisicion}" update="frmCrearRequisicion"/>
+                                            </p:selectOneRadio >
+                                        </strong>
+                                    </div>
+                                    <div class="form-group col-12" >
+                                        <strong><h:outputText class="col-2 control-label" value="Gerencia:"/></strong>
+                                        <div class="col-10">                                            
+                                            <p:selectOneMenu id="idGerencia" styleClass="form-control" 
+                                                             value="#{requisicionBean.idGerencia}"
+                                                             >
+                                                <f:selectItem itemValue="0" itemLabel="Seleccione . . . "/>
+                                                <f:selectItems value="#{requisicionBean.listaG}"/>
+                                                <p:ajax process="@this" update="idProyectoOt" listener="#{requisicionBean.cambiarValorGerencia}"/>
+                                            </p:selectOneMenu>
+                                        </div>
+                                    </div> 
+                                    <ui:fragment rendered="#{requisicionBean.requisicionActual.apCampo.tipo eq 'N'}" >                                        
+                                        <div class="form-group col-12" >
+                                            <strong><h:outputText class="col-2 control-label" value="Proyecto OT:"/></strong>
+                                            <div class="col-10">
+                                                <p:selectOneMenu id="idProyectoOt" styleClass="form-control" value="#{requisicionBean.idProyectoOT}"
+                                                                 >
+                                                    <f:selectItem itemValue="0" itemLabel="Seleccione . . . "/>
+                                                    <f:selectItems value="#{requisicionBean.proyectosOt}"/>
+                                                    <p:ajax process="@this" update="unidaCosto" listener="#{requisicionBean.cambiarValorProyectoOt}"/>
+                                                </p:selectOneMenu>
+                                            </div>
+                                        </div>
+                                        <ui:fragment rendered="#{requisicionBean.tipoRequisicion eq 'PS'}">
+                                            <div class="form-group col-12">
+                                                <strong><h:outputText class="col-2 control-label" value="Tipo de Tarea:"/></strong>
+                                                <div class="col-10">                                            
+                                                    <p:selectOneMenu id="unidaCosto" styleClass="form-control" 
+                                                                     value="#{requisicionBean.idUnidadCosto}">
+                                                        <f:selectItem itemValue="0" itemLabel="Seleccione . . . "/>
+                                                        <f:selectItems value="#{requisicionBean.listaUnidadCosto}"/>
+
+                                                    </p:selectOneMenu>
+                                                </div>
+                                            </div>
+                                        </ui:fragment>
+                                    </ui:fragment>
+                                    <div class="form-group col-12" >
+                                        <strong><h:outputText class="col-2 control-label" value="Revisa:"/></strong>
+                                        <div class="col-10">
+                                            <p:selectOneMenu id="userRevisa" styleClass="form-control" value="#{requisicionBean.idRevisa}"
+                                                             >
+                                                <f:selectItem itemLabel="Seleccione . . . " itemValue="revisa"/>
+                                                <f:selectItems value="#{requisicionBean.listaRevisan}"/>
+                                                <p:ajax process="@this" update="userAAprueba" listener="#{requisicionBean.cambiarValorRevisa}"/>
+                                            </p:selectOneMenu>
+                                        </div>
+                                    </div>
+                                    <div class="form-group col-12" >
+                                        <strong><h:outputText class="col-2 control-label" value="Aprueba:"/></strong>
+                                        <div class="col-10">
+                                            <p:selectOneMenu id="userAAprueba" styleClass="form-control"  value="#{requisicionBean.idAprueba}">
+                                                <f:selectItem itemLabel="Seleccione . . . " itemValue="aprueba"/>
+                                                <f:selectItems   value="#{requisicionBean.listaAprueban}"/>
+                                            </p:selectOneMenu>
+                                        </div>
+                                    </div>
+                                    <div class="form-group panel">
+                                        <strong><h:outputText class="col-2 control-label" value="Observaciones:"/></strong>
+
+                                        <div class="col-12">
+                                            <h:inputTextarea styleClass="form-control" id="motivoCancelo"  value="#{requisicionBean.requisicionActual.observaciones}" />                                
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <p:commandButton id="buttonAceptar"
+                                         value="#{requisicionBean.operacionRequisicion}"
+                                         styleClass="btn btn-info"
+                                         action="#{requisicionBean.completarActualizacionRequisicion}"
+                                         process="@form" update="form1:tbRequi frmCrearRequisicion form1"/>
+                        <ui:fragment rendered="#{requisicionBean.operacionRequisicion eq 'Crear'}">
+                            <p:commandLink id="buttonCancelarCrear"
+                                           value="Cancelar"
+                                           styleClass="btn btn-cancelar"                                           
+                                           action="#{requisicionBean.cancelarModificaRequisicion}"
+                                           title="Cerrar ventana sin cancelar la requisición..." 
+                                           immediate="true" update="form1:tbRequi"/>
+                        </ui:fragment>
+                        <ui:fragment rendered="#{requisicionBean.operacionRequisicion eq 'Actualizar'}">
+                            <p:commandLink id="buttonCancelarUpd" 
+                                           value="Cancelar"
+                                           styleClass="btn btn-cancelar"                                                                                      
+                                           title="Cerrar ventana sin cancelar la requisición..." 
+                                           onclick="cerrarDialogoModal(dialogoCrearNewReq);"
+                                           immediate="true"/>
+                        </ui:fragment>
+                    </div>
+                </h:form>
+            </div>
+        </div>
+    </div>
+    <!-- CREAR Y EDITAR REQUISICION  -->
+    <!-- ITEMS REQUISICION  -->
+    <div class="modal fade" id="dialogoItemsRequi" data-backdrop="static" data-keyboard="false" draggable="true">
+        <div class="modal-dialog modal-lg" style="max-width: 80%;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">#{requisicionBean.operacionItem} Ítem</h4>
+                </div>                
+                <h:form id="frmItemReq">
+                    <div class="modal-body">
+                        <div class="row">
+                            <p:accordionPanel id="pnlAcord" >
+                                <p:tab title="Articulos frecuentes" class="bg-primary">
+                                    <p:dataTable size="small" stripedRows="true" showGridlines="true" 
+                                                 value="#{requisicionBean.articulosFrecuentes}" var="artF"
+                                                 rows="10" paginator="true"  
+                                                 paginatorPosition="bottom" 
+                                                 selectionMode="single"
+                                                 selection="#{requisicionBean.articuloVo}" rowKey="#{artF.id}"
+                                                 >
+                                        <p:ajax event="rowSelect" listener="#{requisicionBean.seleccionarArtFrecuente}" 
+                                                update="frmItemReq frmItemReq:pnlArticuloSeleccionado "/>
+                                        <p:column style="text-align: left;">
+                                            <h:outputText value="#{artF.numParte} - #{artF.nombre.length() > 200 ? artF.nombre.substring(0,200) : artF.nombre}" 
+                                                          title="#{artF.nombre}"/>
+                                        </p:column>                                                
+                                    </p:dataTable>
+                                </p:tab>
+                                <p:tab id="tbBuscar" title="Buscar" class="bg-primary">
+                                    <div class="card">
+                                        <div class="form-group" >
+                                            <p:panel id="pnlCat">
+                                                <ui:repeat id="rpCategorias" value="#{requisicionBean.categoriasSeleccionadas}" var="data"
+                                                           varStatus="indice">
+                                                    <p:commandLink  action="#{requisicionBean.seleccionarCategoriaCabecera(indice.index)}"
+                                                                    styleClass="text text-primary"
+                                                                    process="@this" 
+                                                                    update="frmItemReq:pnlAcord:dtCatPrin frmItemReq:pnlAcord:lblArtTotal frmItemReq:pnlAcord:tablaResBusquedaAvTABLE">
+                                                        <i class="fa fa-arrow-right"/>
+                                                        #{data.nombre} 
+                                                    </p:commandLink>
+                                                </ui:repeat>
+                                            </p:panel>
+                                        </div>                                                        
+                                        <p:dataTable id="dtCatPrin"  size="small" stripedRows="true" showGridlines="true" 
+                                                     value="#{requisicionBean.categorias}" var="data"
+                                                     rows="20" paginator="true"  
+                                                     paginatorPosition="bottom" 
+                                                     selectionMode="single" rowKey="#{data.id}" 
+                                                     selection="#{requisicionBean.categoriaTempVo}"                                                                             
+                                                     >
+                                            <p:ajax event="rowSelect" listener="#{requisicionBean.seleccionarCategoria}" process="@this"
+                                                    update="frmItemReq:pnlAcord:pnlCat frmItemReq:pnlAcord:dtCatPrin frmItemReq:pnlAcord:lblArtTotal frmItemReq:pnlAcord:tablaResBusquedaAvTABLE"/>
+                                            <p:column headerText="Código"  width="120">
+                                                <h:outputText value="#{data.codigo}"/>
+                                            </p:column>
+                                            <p:column headerText="Categoría" style="text-align: left;">
+                                                <h:outputText value="#{data.nombre}"/>
+                                            </p:column>                                                
+                                        </p:dataTable>
+                                        <div class="input-group">
+                                            <strong><h:outputText id="lblArtTotal" value="#{requisicionBean.articulosResultadoBqda.size()} Artículos"/>
+                                            </strong>
+                                        </div>                                                            
+                                        <div class="form-group">
+                                            <p:dataTable size="small" stripedRows="true" showGridlines="true" 
+                                                         value="#{requisicionBean.articulosResultadoBqda}" var="dataRBA"
+                                                         id="tablaResBusquedaAvTABLE"
+                                                         rows="20" paginator="true"  
+                                                         paginatorPosition="bottom" 
+                                                         selectionMode="single" rowKey="#{dataRBA.id}"
+                                                         selection="#{requisicionBean.articuloVo}"
+                                                         >
+                                                <p:ajax event="rowSelect" listener="#{requisicionBean.seleccionarResultadoBA}" 
+                                                        update="frmItemReq frmItemReq:pnlArticuloSeleccionado"/>
+                                                <p:column headerText="Código" width="240" styleClass="resultadoBdaCodigo"
+                                                          filterBy="#{dataRBA.numParte}" filterMatchMode="contains">
+                                                    <h:outputText value="#{dataRBA.numParte}"/>
+                                                </p:column>
+                                                <p:column headerText="Nombre"  filterBy="#{dataRBA.nombre}" filterMatchMode="contains">
+                                                    <h:outputText value="#{dataRBA.nombre}"/>
+                                                </p:column> 
+                                            </p:dataTable>
+                                        </div>
+                                    </div>
+                                </p:tab>
+                            </p:accordionPanel>
+                        </div>
+                        <p:panel id="pnlArticuloSeleccionado" >
+                            <div class="card " >                                    
+                                <div class="input-group" style="text-align: right;">
+                                    <div class="col-12">
+                                        <strong><h:outputText value="Si el artículo no fue encontrado, favor de solicitar el registro del nuevo artículo. " /></strong>
+                                        <p:commandButton value="Solicitar" styleClass="btn btn-info text-white"
+                                                         onclick="return enviarNuevoItemReg();"
+                                                         process="@this" update="frmItemReqNewArt"/>
+                                    </div>
+                                </div>                                    
+                                <ui:fragment id="frgArt" rendered="#{requisicionBean.itemActual.invArticulo.id gt 0 or 
+                                                                     requisicionBean.itemActual.id gt 0}">
+                                    <div class="row">
+                                        <ui:fragment rendered="#{(requisicionBean.requisicionActual.apCampo.tipo eq 'C') or (requisicionBean.requisicionActual.apCampo.tipo eq 'N' and requisicionBean.requisicionActual.tipo eq 'PS')}">
+                                            <div class="form-group col-6" >
+                                                <ui:fragment rendered="#{requisicionBean.requisicionActual.apCampo.tipo eq 'C'}">
+                                                    <div class="form-group col-12" >
+                                                        <strong><h:outputText class="col-3 control-label" value="Presupuesto:"/></strong>
+                                                        <div class="col-9">                                            
+                                                            <p:selectOneMenu id="idPresupuesto" styleClass="form-control"
+                                                                             value="#{requisicionBean.idPresupuesto}"
+                                                                             >
+                                                                <f:selectItem itemValue="0" itemLabel="Seleccione . . . "/>
+                                                                <f:selectItems value="#{requisicionBean.lstPresupuesto}"/>
+                                                                <p:ajax event="change" update="@form" 
+                                                                        listener="#{requisicionBean.actualizaPresupuesto}"/>  
+                                                            </p:selectOneMenu>
+                                                        </div>
+                                                    </div>                                            
+                                                    <div class="form-group col-12" >
+                                                        <strong><h:outputText class="col-3 control-label" value="Año Presupuesto:"/></strong>
+                                                        <div class="col-3">                                            
+                                                            <p:selectOneMenu id="anioPresupuesto" styleClass="form-control"
+                                                                             value="#{requisicionBean.anioPresupuesto}"
+                                                                             >
+                                                                <f:selectItem itemValue="0" itemLabel="Seleccione . . . "/>
+                                                                <f:selectItems value="#{requisicionBean.lstAnioPresupuesto}"/>
+                                                                <p:ajax event="change" update="@form" listener="#{requisicionBean.actualizaAnio}"/>  
+                                                            </p:selectOneMenu>
+                                                        </div>
+
+                                                        <strong><h:outputText class="col-3 control-label" value="Mes Presupuesto:"/></strong>
+                                                        <div class="col-3">                                            
+                                                            <p:selectOneMenu id="mesPresupuesto" styleClass="form-control"
+                                                                             value="#{requisicionBean.mesPresupuesto}"
+                                                                             >
+                                                                <f:selectItem itemValue="0" itemLabel="Seleccione . . . "/>
+                                                                <f:selectItems value="#{requisicionBean.lstMesPresupuesto}"/>
+                                                                <p:ajax event="change" update="@form" listener="#{requisicionBean.actualizaMes}"/>  
+                                                            </p:selectOneMenu>
+                                                        </div>
+                                                    </div>                                            
+                                                    <div class="form-group col-12" >
+                                                        <strong><h:outputText class="col-3 control-label" value="Actividad:"/></strong>
+                                                        <div class="col-9">                                            
+                                                            <p:selectOneMenu id="idActividad" styleClass="form-control"
+                                                                             value="#{requisicionBean.idActPetrolera}"
+                                                                             >
+                                                                <f:selectItem itemValue="0" itemLabel="Seleccione . . . "/>
+                                                                <f:selectItems value="#{requisicionBean.lstActividad}"/>
+                                                                <p:ajax event="change" update="@form" listener="#{requisicionBean.actualizaActividadPetrolera}"/>  
+                                                            </p:selectOneMenu>
+                                                        </div>
+                                                    </div>                                            
+                                                    <div class="form-group col-12" >
+                                                        <strong><h:outputText class="col-3 control-label" value="Proyecto OT:"/></strong>
+                                                        <div class="col-9">                                                            
+                                                            <p:selectOneMenu id="idProyectoOtDt" styleClass="form-control"                                                                        
+                                                                             value="#{requisicionBean.idProyectoOT}"
+                                                                             >
+                                                                <f:selectItem itemValue="0" itemLabel="Seleccione . . . "/>
+                                                                <f:selectItems value="#{requisicionBean.listaProyectosOT}" var="itemOT" itemValue="#{itemOT.id}" itemLabel="#{itemOT.nombre}"/>
+                                                                <p:ajax event="change" update="@form" 
+                                                                        listener="#{requisicionBean.actualizaProyectoOT}"/>  
+                                                            </p:selectOneMenu>                                                                
+                                                        </div>
+                                                    </div>
+                                                </ui:fragment>
+
+
+                                                <ui:fragment rendered="#{requisicionBean.requisicionActual.apCampo.tipo eq 'C'}">
+                                                    <div class="form-group col-12">
+                                                        <strong><h:outputText class="col-3 control-label" value="Subactividad:"/></strong>
+                                                        <div class="col-9">                                            
+                                                            <p:selectOneMenu id="unidaCostoDtll" styleClass="form-control"                                                                            
+                                                                             value="#{requisicionBean.idTipoTarea}">
+                                                                <f:selectItem itemValue="0" itemLabel="Seleccione . . . "/>
+                                                                <f:selectItems value="#{requisicionBean.listaUnidadCosto}"/>
+                                                                <p:ajax event="change" update="@form" listener="#{requisicionBean.actualizaTipoTarea}"/>  
+                                                            </p:selectOneMenu>
+                                                        </div>
+                                                    </div>                                                                                            
+                                                </ui:fragment>
+                                                <ui:fragment rendered="#{requisicionBean.requisicionActual.apCampo.tipo eq 'C' or (requisicionBean.requisicionActual.apCampo.tipo eq 'N' and requisicionBean.requisicionActual.tipo eq 'PS')}">
+                                                    <div class="form-group col-12" >
+                                                        <strong><h:outputText class="col-3 control-label" value="Tarea:" /> </strong>
+                                                        <div class="col-9">                                            
+                                                            <p:selectOneMenu id="nombreTipoObraDt"  
+                                                                             value="#{requisicionBean.idTarea}" 
+                                                                             styleClass="form-control">
+                                                                <f:selectItem itemValue="0" itemLabel="Seleccione . . . "/>
+                                                                <f:selectItems value="#{requisicionBean.listaTO}"/>
+                                                                <p:ajax event="change" update="@form" 
+                                                                        listener="#{requisicionBean.actualizaTarea}" />  
+                                                            </p:selectOneMenu>
+                                                            <p:commandLink value="#{msgs['orden.ayuda.tarea']}" 
+                                                                           rendered="#{requisicionBean.requisicionActual.gerencia.abrev.startsWith('PER')}"
+                                                                           styleClass="btn btn-default" 
+                                                                           title="Datos para crear items " 
+                                                                           onclick="dialogoAyudaRequisicion('dialogoAyudaItem')"
+                                                                           process="@this" update="frmCerrarAyuda">                                              
+                                                            </p:commandLink>
+                                                        </div>
+                                                    </div>
+                                                </ui:fragment>
+                                                <h:panelGroup id="centroCostoPanelID" rendered="#{requisicionBean.requisicionActual.apCampo.tipo eq 'C' and requisicionBean.lstCentroCosto.size() gt 0}">
+                                                    <div class="form-group col-12" >
+                                                        <strong><h:outputText class="col-3 control-label" value="Subtarea:" /> </strong>
+                                                        <div class="col-9">         
+                                                            <ui:fragment rendered="#{!requisicionBean.multiProyecto}">
+                                                                <p:selectOneMenu id="centroCostoID"  value="#{requisicionBean.idCentroCosto}" styleClass="form-control">
+                                                                    <f:selectItem itemValue="-1" itemLabel="Seleccione . . . "/>
+                                                                    <f:selectItems value="#{requisicionBean.lstCentroCosto}"/>                                                                        
+                                                                </p:selectOneMenu>
+                                                            </ui:fragment>
+                                                            <ui:fragment rendered="#{requisicionBean.multiProyecto}">
+                                                                <p:selectOneMenu id="centroCosto2ID"  value="#{requisicionBean.idCentroCosto}" styleClass="form-control">
+                                                                    <f:selectItem itemValue="-1" itemLabel="Seleccione . . . "/>
+                                                                    <f:selectItems value="#{requisicionBean.lstCentroCosto}"/>                                                                        
+                                                                    <p:ajax event="change" update="@form" listener="#{requisicionBean.actualizaSubTarea}" />  
+                                                                </p:selectOneMenu>
+                                                            </ui:fragment>
+                                                        </div>
+                                                    </div>
+                                                </h:panelGroup>                                            
+
+                                            </div>
+                                        </ui:fragment>
+                                        <div class="form-group col-6" >
+                                            <div class="form-group col-12" >
+                                                <strong><h:outputText class="col-3 control-label" value="Núm. de parte:" /></strong>
+                                                <div class="col-9">
+                                                    <h:inputText id="codigo" size="50" class="form-control" readonly="true" value="#{requisicionBean.itemActual.invArticulo.codigoInt}"/>
+                                                </div>
+                                            </div>                                            
+                                            <ui:fragment rendered="#{requisicionBean.itemActual.invArticulo.id > 0}">
+                                                <div class="form-group col-12" >
+                                                    <strong><h:outputText class="col-3 control-label" value="Nombre: " /></strong>
+                                                    <div class="col-9">
+                                                        <h:inputTextarea id="nombre" readonly="true" style="width: 100%;" rows="3" class="form-control" value="#{requisicionBean.itemActual.invArticulo.nombre}"/>
+                                                    </div>
+                                                </div>
+                                            </ui:fragment>
+                                            <ui:fragment rendered="#{requisicionBean.itemActual.invArticulo == null}">
+                                                <div class="form-group col-12" >
+                                                    <strong><h:outputText class="col-3 control-label" value="Descripción: " /></strong>
+                                                    <div class="col-9">
+                                                        <h:inputTextarea id="descripcion" readonly="true" rows="3" style="width: 100%;" class="form-control" value="#{requisicionBean.itemActual.invArticulo.descripcion}"/>
+                                                    </div>
+                                                </div>
+                                            </ui:fragment>
+                                            <div class="form-group col-12" >
+                                                <div class="row" >
+                                                    <strong><h:outputText class="col-2 control-label" value="Unidad:" /></strong>
+                                                    <div class="col-4">
+                                                        <h:inputText id="nombreUnidad" size="50" class="form-control" readonly="true" value="#{requisicionBean.itemActual.invArticulo.unidad.nombre}"/>                                                    
+                                                    </div>                                            
+                                                    <strong><h:outputText class="col-2 control-label" value="Cantidad:" /></strong>
+                                                    <div class="col-4">
+                                                        <h:inputText id="cantidad" class="form-control" value="#{requisicionBean.itemActual.cantidadSolicitada}"/>
+                                                    </div>
+                                                </div>
+                                            </div>                                           
+                                        </div>
+                                    </div>
+                                    <div class="form-group col-12" >
+                                        <div class="row" >
+                                            <div class="col-6" >
+                                                <strong><h:outputText class="col-12 control-label" value="Observaciones Navision:"/></strong>
+                                                <div class="col-12">
+                                                    <h:inputTextarea styleClass="form-control"   value="#{requisicionBean.itemActual.textNav}" />
+                                                </div>
+                                            </div>
+                                            <div class="col-6" >
+                                                <strong><h:outputText class="col-12 control-label" value="Observaciones:"/></strong>
+                                                <div class="col-12">
+                                                    <h:inputTextarea styleClass="form-control"   value="#{requisicionBean.itemActual.observaciones}" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row input-group">
+                                        <div class="input-group col-5" id="usuarioBeneficiado">
+                                            <h:outputText value="Usuario beneficiado" styleClass="col-12" /> 
+                                            <p:autoComplete id="autoUsuerNav" value="#{requisicionBean.itemActual.usuarioBeneficiado}" class="autoUsuarioBeneficiado"
+                                                            completeMethod="#{requisicionBean.completarUsuarioBeneficiado}" 
+                                                            size="40" minQueryLength="4" placeholder="Usuario en la base de datos" >
+                                            </p:autoComplete>               
+                                            <p:selectBooleanCheckbox onchange="mostrarUsuarioNoNavision()" label="Otro" 
+                                                                     title="Agregar un usuario" styleClass="ml-2"/>                         
+                                        </div>
+                                        <div id="inputUsuarioNoNavision" class="col-5" style="display: none;">
+                                            <h:outputText value="Agregar usuario" styleClass="col-12" /> 
+                                            <p:inputText id="inpConsul" value="#{requisicionBean.usuarioBeneficiado}" 
+                                                         placeholder="Usuario no encontrado" size="50"/>
+                                        </div>
+                                    </div>
+
+                                </ui:fragment>
+                            </div>
+                            <div class="row">
+                                <ui:fragment rendered="#{requisicionBean.idTarea > 0}">
+                                    <div id="panelCrearArticuloMulti" style="display: none;" class="col-12 col-xs-12">
+                                        <div class="col-12">                                        
+                                            <strong><h:outputText class="col-12 control-label" value="Selección multiple de proyectos OTs"/></strong>                                        
+                                        </div>
+                                        <div class="col-12">
+                                            <div class="col-12">
+                                                <div class="col-3">
+                                                    <h:selectBooleanCheckbox onchange="seleccionarGeneralReq('todosMM', 'proyOTM');" class="todosMM form-control" style="height:24px; margin-top: -3px;"/>
+                                                </div>                                        
+                                                <div class="col-9">
+                                                    <strong><h:outputText class="col-12 control-label" value="Seleccionar todos"/></strong>                                            
+                                                </div> 
+                                            </div>
+                                        </div>
+                                        <div class="col-12">
+                                            <ui:repeat id="rpMultiProyecto" value="#{requisicionBean.listaProyectosOTMulti}" var="proyOT" varStatus="indiceOT">
+                                                <ui:fragment rendered="#{requisicionBean.listaProyectosOTMulti.size() lt 13}">
+                                                    <div class="col-12" style="margin-top: 5px;">
+                                                        <div class="col-3" style="text-align: right;">                                                                                                                
+                                                            <h:selectBooleanCheckbox onchange="changeMultiItemReq('todosMM');" value="#{proyOT.selected}" class="proyOTM form-control" style="height:24px; margin-top: -3px;"/>
+                                                        </div>
+                                                        <div class="col-9">
+                                                            <strong><h:outputText class="col-12 control-label" value="#{proyOT.nombre}"/></strong>
+                                                        </div>                                            
+                                                    </div>                                                 
+                                                </ui:fragment>
+                                                <ui:fragment rendered="#{requisicionBean.listaProyectosOTMulti.size() gt 12}">
+                                                    <div class="col-3">
+                                                        <div class="col-3" style="text-align: right;">                                                        
+                                                            <h:selectBooleanCheckbox onchange="changeMultiItemReq('todosMM');" value="#{proyOT.selected}" class="proyOTM form-control" style="height:24px; margin-top: -3px;"/>                                                        
+                                                        </div>
+                                                        <div class="col-9">
+                                                            <strong><h:outputText class="col-12 control-label" value="#{proyOT.nombre}"/></strong>
+                                                        </div>                                            
+                                                    </div> 
+                                                </ui:fragment>                                                                                                                                         
+                                            </ui:repeat>
+                                        </div>
+
+                                    </div>
+                                </ui:fragment>                  
+
+                            </div>
+                        </p:panel>
+                    </div>
+                    <div class="modal-footer">
+                        <div class="input-group">
+                            <div id="btnfrmItemReq" >                                
+                                <p:commandButton value="#{requisicionBean.operacionItem}"
+                                                 styleClass="btn btn-info"                                         
+                                                 action="#{requisicionBean.completarActualizacionItemCrearRequisicion}"
+                                                 onclick="return validaItemReqProyOT('frmItemReq', '#{requisicionBean.requisicionActual.tipo}', '#{requisicionBean.requisicionActual.apCampo.tipo}')"
+                                                 rendered="#{requisicionBean.itemActual.invArticulo.id gt 0 or 
+                                                             requisicionBean.itemActual.id gt 0}"
+                                                 process="@form" update="form1:tbRequi"/>
+                            </div>
+                            <div id="btnfrmItemReqCont" style="display: none;">
+                                <p:commandButton value="#{requisicionBean.operacionItem}"
+                                                 styleClass="btn btn-info" 
+                                                 onclick="return validateMultiItemReq('proyOTM');"
+                                                 action="#{requisicionBean.completarActualizacionItemCrearRequisicion}"                                                 
+                                                 rendered="#{requisicionBean.itemActual.invArticulo.id gt 0 or requisicionBean.itemActual.id gt 0}"
+                                                 process="@form" update="form1:tbRequi"/>
+                            </div>
+                            <p:commandLink value="Cancelar"
+                                           styleClass="btn btn-default"
+                                           onclick="cerrarDialogoModal(dialogoItemsRequi);"
+                                           title="Cerrar ventana..." 
+                                           immediate="true"/>
+                        </div>
+                    </div>
+                </h:form>
+            </div>
+        </div>
+    </div>
+    <!-- ITEMS REQUISICION  -->
+
+
+    <div class="modal fade" id="dialogoItemsRequiNewArt" data-backdrop="static" data-keyboard="false" draggable="true">
+        <div class="modal-dialog modal-lg" >
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Solicitud de registro de un nuevo artículo</h4>
+                </div>
+
+                <h:form id="frmItemReqNewArt">
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="card  col-12" >                                    
+                                    <div class="form-group col-12" >
+                                        <div class="col-12" style="margin-bottom: 0px;" >                                        
+                                            <div class="form-group col-12" style="margin-top: 10px;">
+                                                <strong><h:outputText class="col-12 control-label" style="text-align: left;" value="Categoría a la que se integrará el nuevo Artículo o nueva Categoría "/></strong>
+                                                <div class="form-group col-12" style="margin-bottom: 0px;" >
+                                                    <ui:repeat value="#{requisicionBean.categoriasSeleccionadas}" var="data"
+                                                               varStatus="indice">
+                                                        <p:commandLink  style="padding-left: 2%;"
+                                                                        action="#{requisicionBean.seleccionarCategoriaCabecera(indice.index)}"
+                                                                        styleClass="text text-primary">
+                                                            <i class="fa fa-arrow-right"
+                                                               style="display: #{requisicionBean.categoriasSeleccionadas.size() gt 0} ? 'block' : 'none'"></i>
+                                                            #{data.nombre} 
+                                                        </p:commandLink>
+                                                    </ui:repeat>
+                                                </div>                                                                                                                
+                                                <div class="col-12" id="tablaCategorias">
+                                                    <p:dataTable size="small" stripedRows="true" showGridlines="true" value="#{requisicionBean.categorias}" var="data"
+                                                                 rendered="#{requisicionBean.categorias.size() gt 0}"
+                                                                 rowStyleClass="table table-bordered table-striped"
+                                                                 rows="20" paginator="true"  
+                                                                 paginatorPosition="bottom" 
+                                                                 selectionMode="single"
+                                                                 selection="#{requisicionBean.categoriaTempVo}" rowKey="#{data.id}"
+                                                                 >
+                                                        <p:ajax event="rowSelect" listener="#{requisicionBean.seleccionarCategoria}"
+                                                                update="@form"/>
+                                                        <p:column headerText="Código" width="120">
+                                                            <h:outputText value="#{data.codigo}"/>
+                                                        </p:column>
+                                                        <p:column headerText="Nombre" style="text-align: left;">
+                                                            <h:outputText value="#{data.nombre}"/>
+                                                        </p:column>                                                
+                                                    </p:dataTable>
+                                                </div>
+                                                <strong><h:outputText class="col-12 control-label" style="text-align: left; margin-top: 10px;" 
+                                                                      value="Si es necesario agregar nuevas categorías, especifique el nombre y jerarquía de las categorías. Ej. OBRA > CIVIL"/></strong>                                                
+                                                <div class="col-12">
+                                                    <h:inputText id="descNewArtUso" styleClass="form-control" value="#{requisicionBean.newArticuloTextUso}"
+                                                                 />
+                                                </div>
+                                            </div>
+                                            <div class="form-group col-12" style="margin-top: 10px;" >                                                            
+                                                <strong><h:outputText class="col-4 control-label" style="text-align: left;" value="Nombre del nuevo artículo:*"/></strong>
+                                                <div class="col-8"></div>
+                                                <div class="col-12" style="margin-bottom: 10px;">
+                                                    <h:inputTextarea id="descNewArt" styleClass="form-control" value="#{requisicionBean.newArticuloText}"
+                                                                     required="true" requiredMessage="Agregar el nombre del artículo"/>
+                                                </div>
+                                            </div>                                            
+                                            <div class="form-group col-12" >
+                                                <strong><h:outputText class="col-4 control-label" value="Unidad de medida:" /></strong>
+                                                <div class="col-8"></div>
+                                                <div class="col-12">                                                
+                                                    <p:selectOneMenu id="idUnidad" value="#{requisicionBean.unidadMedida}" styleClass="form-control">
+                                                        <f:selectItem itemValue="0" itemLabel="Seleccione . . ."/>
+                                                        <f:selectItems value="#{requisicionBean.listaUnidad}"/>
+                                                    </p:selectOneMenu>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>                                                                        
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer"> 
+                        <p:commandButton value="Enviar"
+                                         styleClass="btn btn-info"  
+                                         action="#{requisicionBean.enviarSolicitudAltaArticulo}"
+                                         process="@form" update="form1:tbRequi"/>
+                        <p:commandLink value="Cancelar"
+                                       styleClass="btn btn-default"
+                                       onclick="cancelarNuevoItemReg();"
+                                       title="Cerrar ventana..." 
+                                       immediate="true"/>                                    
+                    </div>
+                </h:form>
+            </div>
+        </div>
+    </div>
+
+
+
+    <!-- Autorizar ITEMS REQUISICION  -->
+
+    <!-- ITEMS CATEGORIA  -->
+
+    <!-- ITEMS CATEGORIA  -->
+
+    <!--Nueva Requi desde otra -->    
+    <!--div id="dialogoCrearReq" style="display: none; width: 800px; font-size: 12px; z-index: 1101;"  title="Crear requisición desde otra" -->
+    <div class="modal fade" id="dialogoCrearReq" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog modal-lg" >
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Crear requisición desde otra</h4>
+                </div>
+                <h:form id="frmDialogoCrearReq">
+                    <div class="modal-body">
+                        <div class="row input-group">
+                            <h:inputText value="#{requisicionBean.codigo}" class="form-control col-3"/>
+                            <p:commandLink value="Buscar" styleClass="btn btn-info text-white"
+                                           action="#{requisicionBean.buscarRequisicionPorConsecutivoBloque}"
+                                           update="frmDialogoCrearReq" process="@form"/>
+
+                            <p:commandLink id="btnLimpiar" styleClass="btn btn-default" action="#{requisicionBean.limpiar}"
+                                           value="Limpiar" update="frmDialogoCrearReq" process="@form"/>
+                            <p:commandLink value="Nueva Requisición - #{requisicionBean.requisicionVO.consecutivo}"                                                       
+                                           title="#{msgs['sistema.tooltip.genera.nueva.requision']} "
+                                           rendered="#{requisicionBean.requisicionVO.id gt 0}"
+                                           action="#{requisicionBean.generarRequisicion}"
+                                           styleClass="btn btn-default" update="form1 frmMenu" process="@form"
+                                           />
+                        </div>
+                        <div class="form-group col-12" > 
+                            <h:messages id="noEncontro"  styleClass="text-danger" errorClass="text-danger"/>
+                        </div>
+                        <div class="row">
+                            <div class="col-6">
+                                <div class="col-12">
+                                    <strong><h:outputText class="col-12 control-label" value="Requisición:"/></strong>
+                                    <div class="col-12">                                            
+                                        <h:inputText disabled="true" class="form-control" value="#{requisicionBean.requisicionVO.consecutivo}"/>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <strong><h:outputText class="col-12 control-label" value="Compañia:"/></strong>
+                                    <div class="col-12">
+                                        <h:inputText disabled="true" size="40" class="form-control" value="#{requisicionBean.requisicionVO.compania}"/>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <strong><h:outputText class="col-12 control-label" value="Campo:"/></strong>
+                                    <div class="col-12">
+                                        <h:inputText disabled="true" class="form-control" value="#{requisicionBean.requisicionVO.bloque}"/>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <strong><h:outputText class="col-12 control-label" value="Gerencia:"/></strong>
+                                    <div class="col-12">
+                                        <h:inputText disabled="true" class="form-control" size="40" value="#{requisicionBean.requisicionVO.gerencia}"/>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <strong><h:outputText class="col-12 control-label" value="ProyectoOT:"/></strong>
+                                    <div class="col-12">
+                                        <h:inputText disabled="true" class="form-control" size="40" value="#{requisicionBean.requisicionVO.proyectoOT}"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="col-12">
+                                    <strong><h:outputText class="col-2 control-label" value="Estatus:"/></strong>
+                                    <div class="col-5">
+                                        <h:inputText disabled="true" class="form-control" value="#{requisicionBean.requisicionVO.estatus}"/>
+                                    </div>
+                                </div>
+                                <div class="col-12" >    
+                                    <strong><h:outputText class="col-12 control-label" value="Fecha en que se requiere:"/></strong>
+                                    <div class="col-12">
+                                        <h:inputText disabled="true" class="form-control" value="#{requisicionBean.requisicionVO.fechaRequerida}" size="12">
+                                            <f:convertDateTime dateStyle="default" type="date"/>
+                                        </h:inputText>
+                                    </div>                                            
+                                </div>
+                                <div class="col-12" > 
+                                    <strong><h:outputText class="col-12 control-label" value="Lugar de entrega:"/></strong>
+                                    <div class="col-12">
+                                        <h:inputText disabled="true" class="form-control" size="30" value="#{requisicionBean.requisicionVO.lugarEntrega}"/>
+                                    </div>
+                                </div>
+                                <div class="col-12" >    
+                                    <c:if test="#{requisicionBean.requisicionVO.idTarea eq 0}">
+                                        <strong><h:outputText class="col-2 control-label" value="Tipo de Obra:"/></strong>
+                                        <div class="col-12">
+                                            <h:inputText disabled="true" class="form-control" size="40" value="#{requisicionBean.requisicionVO.tipoObra}"/>
+                                        </div>
+                                    </c:if>
+                                </div>
+                                <div class="col-12" >    
+                                    <c:if test="#{requisicionBean.requisicionVO.idTarea ne 0}">
+                                        <strong><h:outputText class="col-12 control-label" value="Tarea:"/></strong>
+                                        <div class="col-12">
+                                            <h:inputText disabled="true" class="form-control" size="40" value="#{requisicionBean.requisicionVO.nombreTarea}"/>
+                                        </div>
+                                    </c:if>
+                                </div>
+                                <div class="col-12" >    
+                                    <strong><h:outputText class="col-2 1control-label" value="Proveedor:"/></strong>
+                                    <div class="col-12">
+                                        <h:inputText disabled="true" class="form-control" size="40" value="#{requisicionBean.requisicionVO.proveedor}"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12" >                                        
+                            <strong><h:outputText class="col-12 control-label" value="Analista asignado para colocar la orden de compra y/o servicio:"/></strong>
+                            <div class="col-12">
+                                <h:outputText value="#{requisicionBean.requisicionVO.comprador}"/>
+                            </div>
+                        </div>
+                        <div class="col-12" >  
+                            <strong><h:outputText class="col-2 control-label" value="Observaciones:"/></strong>
+                            <div class="col-10">
+                                <h:inputTextarea rendered="#{requisicionBean.requisicionVO.observaciones != nul}" style="width: 100%;" styleClass="form-control" value="#{requisicionBean.requisicionVO.observaciones}"/>
+                            </div>
+                        </div>                                    
+                        <strong><h:outputText class="col-12 control-label" value="Items"/></strong>
+                        <p:dataTable size="small" stripedRows="true" showGridlines="true" 
+                                     value="#{requisicionBean.requisicionVO.listaDetalleRequision}"
+                                     var="currentRow" >
+                            <p:column width="3%">
+                                <h:selectBooleanCheckbox  value="#{currentRow['selected']}"/>
+                            </p:column>
+                            <p:column>
+                                <h:outputText value="#{currentRow['artNumeroParte']}"/>
+                                <f:facet name="header">
+                                    <h:outputText value="Número parte"/>
+                                </f:facet>
+                            </p:column>
+                            <p:column>
+                                <h:outputText style="width: 30px" value="#{currentRow['cantidadSolicitada']}"/>
+                                <f:facet name="header">
+                                    <h:outputText value="Cantidad Solicitada"/>
+                                </f:facet>
+                            </p:column>
+                            <p:column width="10%">
+                                <h:outputText value="#{currentRow['artUnidad']}"/>
+                                <f:facet name="header">
+                                    <h:outputText value="Unidad"/>
+                                </f:facet>
+                            </p:column>
+                            <p:column>
+                                <h:outputText value="#{currentRow['artNombre']}"/>
+                                <f:facet name="header">
+                                    <h:outputText value="Descripción"/>
+                                </f:facet>
+                            </p:column>
+                        </p:dataTable>
+                    </div>
+                    <div class="modal-footer" >
+                        <p:commandLink id="btnCerrar" styleClass="btn btn btn-primary text-white"
+                                       onclick="$(dialogoCrearReq).modal('hide');"
+                                       action="#{requisicionBean.limpiar}"
+                                       value="Cerrar" immediate="true"/>  
+                    </div>
+
+                </h:form>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- CREAR Y EDITAR REQUISICION  -->
+    <div class="modal fade" id="dialogoAdjArchReq" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog modal-lg" style="max-width: 80%;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <strong><h4 class="modal-title">Carga Especificación Técnica de Suministros</h4></strong>
+                </div><!-- comment -->
+
+                <h:form id="frmDialogoAdjArch">
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-12 col-xs-12" style="font-size:12px; margin-top: 10px;">                                                    
+                                <h:outputText styleClass="col-12 col-xs-12 control-label" value="Busca un archivo en tu computadora, luego presiona el boton Subir para enviar los datos al servidor."/>
+                                <h:outputText styleClass="col-6 col-xs-12 control-label" value="No se permiten los siguientes caracteres en el nombre del Archivo:" style=" font-size: 12px; font-weight: bold;" />
+                                <h:outputText styleClass="col-6 col-xs-12 control-label" value="Acentos, signos de puntuación y/o caracteres especiales" style="color: red; font-size: 12px; font-weight: bold; text-align: left;" />
+                            </div>
+                            <div class="col-12 col-xs-12" >
+                                <p:fileUpload id="fileEntryComp" 
+                                              label="Archivo "
+                                              listener="#{requisicionBean.uploadFile}"
+                                              styleClass="btn-default"
+                                              update="frmDialogoAdjArch form1:tbRequi"/>
+                            </div>
+
+                            <div class="table table-responsive">
+                                <p:dataTable id="dtArch" size="small" stripedRows="true" showGridlines="true" 
+                                             value="#{requisicionBean.listaEts}" 
+                                             var="ets">
+                                    <p:column>
+                                        <f:facet name="header">
+                                            <h:outputLabel value="Nombre"/>
+                                        </f:facet>
+                                        <h:outputText value="#{ets['siAdjunto'].nombreSinUUID}"/>
+                                    </p:column>
+                                    <p:column width="80">
+                                        <f:facet name="header">
+                                            <h:outputLabel value="Tamaño"/>
+                                        </f:facet>
+                                        <h:outputText  value="#{ets['siAdjunto'].peso}"/>
+                                    </p:column>
+                                    <p:column>
+                                        <f:facet name="header">
+                                            <h:outputLabel value="Fecha"/>
+                                        </f:facet>
+                                        <h:outputText value="#{ets['siAdjunto'].fechaGenero}">
+                                            <f:convertDateTime dateStyle="default" type="date"/>
+                                        </h:outputText>
+                                    </p:column>
+                                    <p:column>
+                                        <f:facet name="header">
+                                            <h:outputLabel value="Descripción"/>
+                                        </f:facet>
+                                        <h:outputText value="#{ets['siAdjunto'].descripcion}"/>
+                                    </p:column>
+                                    <p:column width="50">
+                                        <p:commandLink title="Modificar descripción"
+                                                       action="#{requisicionBean.actualizarEts(ets.siAdjunto)}"
+                                                       styleClass="btn btn-default" oncomplete="PF('dlgDescArchReq').show()"
+                                                       process="@this" update="frmDesArch">
+                                            <i class="fa fa-edit text-primary"/>
+                                        </p:commandLink>
+                                    </p:column>
+                                    <p:column width="50">
+                                        <h:outputLink target="_blank"  value="/Compras/AbrirArchivo?ZWZ2W=#{ets['siAdjunto'].id}&amp;ZWZ3W=#{ets['siAdjunto'].uuid}"
+                                                      styleClass="btn btn-link text-primary">
+                                            <h:outputText value=" Abrir"/>
+                                        </h:outputLink>
+                                    </p:column>
+                                    <p:column width="50">
+                                        <p:commandLink styleClass="btn btn-default"
+                                                       action="#{requisicionBean.eliminarEts(ets)}"
+                                                       update="dtArch" process="@this">
+                                            <i class="fa fa-trash text-danger"/>
+                                        </p:commandLink>
+                                    </p:column>
+                                </p:dataTable>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <p:commandLink id="btnCerrar" styleClass="btn btn btn-primary text-white"
+                                       onclick="$(dialogoAdjArchReq).modal('hide');"
+                                       action="#{requisicionBean.limpiar}"
+                                       value="Cerrar" immediate="true"/>                        
+                    </div>
+                </h:form>
+            </div>
+        </div>
+    </div>
+
+    <p:dialog style="z-index:10000099;" widgetVar="dlgDescArchReq"
+              draggable="false" modal="true"
+              header="Actualizar descripción">
+        <h:form id="frmDesArch">
+            <div  class="input-group border" >
+                <h:outputLabel value="Nombre:"/>
+                <h:outputText value="#{requisicionBean.etsActualAdjunto.nombreSinUUID}" styleClass="col-12"/> 
+                <h:outputLabel value="Tamaño:"/>
+                <h:outputText value="#{requisicionBean.etsActualAdjunto.peso}" styleClass="col-12"/>
+                <h:outputLabel value="Descripción:"/>
+                <h:inputTextarea cols="80"  value="#{requisicionBean.etsActualAdjunto.descripcion}" styleClass="col-12 form-control"/> 
+            </div>
+            <center>
+                <p:panel >
+                    <p:commandButton value="Actualizar" action="#{requisicionBean.completarActualizacionEts}"
+                                     process="@form" update="frmDialogoAdjArch:dtArch"
+                                     oncomplete="PF('dlgNotaSubArh').hide()"/>
+                </p:panel>
+            </center>
+        </h:form>
+    </p:dialog>
+
+
+</ui:composition>

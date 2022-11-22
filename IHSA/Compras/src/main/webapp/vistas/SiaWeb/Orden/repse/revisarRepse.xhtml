@@ -1,0 +1,576 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+
+      >
+    <body>
+        <ui:composition template="./../../templates/template.xhtml">
+            <ui:define name="tituloPagina">
+                Revisión de archivos Repse
+            </ui:define>
+            <ui:define name="contenido">
+                <h:form id="frmRevRepse">
+                    <p:confirmDialog global="true" showEffect="fade" hideEffect="fade" responsive="true" width="350">
+                        <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no ui-button-flat"/>
+                        <p:commandButton value="Si" type="button" styleClass="ui-confirmdialog-yes" />
+                    </p:confirmDialog>
+                    <p:tabView id="tbRepse">
+                        <p:tab title="Compras Sin REPSE ( #{revisaRepseBean.comprasSinRepse.size()} )">
+                            <div>
+                                <p:commandLink value="Aceptar" class="btn btn-primary text-white" 
+                                               action="#{revisaRepseBean.aceptarRepseSinRepse}"
+                                               process="@form" update="@this frmRevRepse:tbRepse:dtCompraSinRepse"/>
+                            </div>
+                            <div class="table table-responsive">                        
+                                <p:dataTable size="small" stripedRows="true" showGridlines="true" id="dtCompraSinRepse" value="#{revisaRepseBean.comprasSinRepse}" var="dataCom" 
+                                             rows="15" paginatorAlwaysVisible="true"
+                                             paginatorPosition="bottom" paginator="true" 
+                                             styleClass="table-striped"
+                                             rowIndexVar="index" >   
+                                    <p:column width="25">
+                                        <h:selectBooleanCheckbox value="#{dataCom.selected}"/>
+                                    </p:column>
+                                    <p:column headerText="Código">
+                                        <h:outputText value="#{dataCom.consecutivo}"/>
+                                    </p:column>
+                                    <p:column headerText="Referencia">
+                                        <h:outputText value="#{dataCom.referencia}"/>                                        
+                                    </p:column>
+                                    <p:column headerText="Proveedor" sortBy="#{dataCom.proveedor}" 
+                                              >
+                                        <h:outputText value="#{dataCom.proveedor}"/>
+                                    </p:column>
+                                    <p:column headerText="Lugar">
+                                        <h:outputText value="#{dataCom.destino}"/>
+                                    </p:column>
+                                    <p:column headerText="Total">
+                                        <h:outputText value="#{dataCom.total}">
+                                            <f:convertNumber pattern="#,###.00"/>
+                                        </h:outputText>
+                                    </p:column>
+                                    <p:column headerText="Moneda">
+                                        <h:outputText value="#{dataCom.monedaSiglas}"/>
+                                    </p:column>
+                                    <p:column rendered="#{usuarioBean.usuarioConectado.apCampo.cartaIntencion eq true}" width="35">
+                                        <p:commandLink action="#{revisaRepseBean.inicioRechazarSinRepse(index)}"
+                                                       title="Rechazar el REPSE"
+                                                       process="@this" update="frmRecRepse" >
+                                            <i class="fa fa-trash text-danger" />
+                                        </p:commandLink>
+                                    </p:column>
+                                    <p:column width="35" >
+                                        <p:commandLink action="#{revisaRepseBean.aceptarCompraSinRepse(index)}"
+                                                       title="Aceptar la compra"
+                                                       process="@this" update="frmRevRepse:tbRepse">
+                                            <i class="fa fa-check text-primary"/>
+                                            <p:confirm header="Confirmar" 
+                                                       message="La operación va aceptar la compra, ¿Está seguro?" 
+                                                       icon="pi pi-exclamation-triangle"
+                                                       />
+                                        </p:commandLink>                                
+                                    </p:column>
+                                    <p:column width="35" >
+                                        <p:commandLink action="#{revisaRepseBean.seleccionarSinCompra(index)}"
+                                                       process="@this" update="frmRevRepse:tbRepse:dtCompraSinRepse">
+                                            <i class="fa fa-eye-open text-primary"/>
+                                        </p:commandLink>                                
+                                    </p:column>
+                                </p:dataTable>
+                            </div>
+                        </p:tab>
+                        <p:tab title="Compras Con REPSE ( #{revisaRepseBean.comprasConRepse.size()} )"> 
+                            <div>
+                                <p:commandLink value="Aceptar" class="btn btn-primary text-white"
+                                               action="#{revisaRepseBean.aceptarRepse}"
+                                               process="@form" update="frmRevRepse:tbRepse:dtCompraConRepse"/>
+                            </div>
+                            <div class="table table-responsive">                        
+                                <p:dataTable size="small" stripedRows="true" showGridlines="true" id="dtCompraConRepse" value="#{revisaRepseBean.comprasConRepse}" var="dataCom" 
+                                             rows="15" paginatorAlwaysVisible="true"
+                                             paginatorPosition="bottom" paginator="true" 
+                                             styleClass="table-striped"
+                                             rowIndexVar="index" >   
+                                    <p:column width="25">
+                                        <h:selectBooleanCheckbox value="#{dataCom.selected}"/>
+                                    </p:column>
+                                    <p:column headerText="Coódigo" width="120">
+                                        <h:outputText value="#{dataCom.consecutivo}"/>
+                                    </p:column>
+                                    <p:column headerText="Referencia" >
+                                        <h:outputText value="#{dataCom.referencia}"/>                                        
+                                    </p:column>
+                                    <p:column headerText="Proveedor" sortBy="#{dataCom.proveedor}">
+                                        <h:outputText value="#{dataCom.proveedor}" />
+                                    </p:column>
+                                    <p:column headerText="Lugar">
+                                        <h:outputText value="#{dataCom.destino}"/>
+                                    </p:column>
+                                    <p:column headerText="Total">
+                                        <h:outputText value="#{dataCom.total}">
+                                            <f:convertNumber pattern="#,###.00"/>
+                                        </h:outputText>
+                                    </p:column>
+                                    <p:column headerText="Moneda" width="80">
+                                        <h:outputText value="#{dataCom.monedaSiglas}"/>
+                                    </p:column>
+                                    <p:column rendered="#{usuarioBean.usuarioConectado.apCampo.cartaIntencion eq true}"
+                                              width="35">
+                                        <p:commandLink action="#{revisaRepseBean.inicioRechazarRepse(index)}"
+                                                       title="Rechazar el REPSE">
+                                            <i class="fa fa-trash text-danger" />
+                                            <f:param name="indice" value="#{index}"/>
+                                        </p:commandLink>
+                                    </p:column>
+                                    <p:column width="35">
+                                        <p:commandLink action="#{revisaRepseBean.aceptarCompraConRepse(index)}"
+                                                       title="Aceptar compra" process="@this" update="frmRevRepse:tbRepse:dtCompraConRepse">
+                                            <i class="fa fa-check text-primary"/>
+                                        </p:commandLink>                                
+                                    </p:column>
+                                    <p:column width="35">
+                                        <p:commandLink action="#{revisaRepseBean.seleccionarCompra(e)}"
+                                                       process="@this" update="frmDatosCompra">
+                                            <i class="fa fa-eye text-primary"/>
+                                        </p:commandLink>                                
+                                    </p:column>
+                                    <p:column rendered="#{usuarioBean.usuarioConectado.apCampo.cartaIntencion eq false}" width="35">
+                                        <p:commandLink action="#{revisaRepseBean.agregarArchivoRepse(index)}"
+                                                       process="@this" update="frmDocArch">
+                                            <i class="fa fa-file text-primary"/>
+                                        </p:commandLink>                                
+                                    </p:column>
+                                </p:dataTable>
+                            </div>
+                        </p:tab>
+                    </p:tabView>
+                </h:form>
+                <!-- Agregar archivo de repse -->
+                <div class="modal fade" data-backdrop="static" id="dialogoSubirRepse" 
+                     data-keyboard="false" style="z-index: 100002;">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h4 class="modal-title">Subir REPSE</h4>
+                            </div>
+                            <h:form id="frmDocArch">
+                                <div class="modal-body ">
+                                    <div class="row">
+                                        <p:fileUpload id="fileDocto" 
+                                                      label="Archivo"
+                                                      listener="#{revisaRepseBean.uploadFile}"
+                                                      styleClass="col-11 col-xs-12 btn btn-default"/>
+                                        <h:message  id="msg-docto" for="fileEntryDoc" 
+                                                    styleClass="text-danger" showDetail="false" showSummary="true"/>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <p:commandButton value="Cerrar" class="btn btn-default" onclick="$(dialogoSubirRepse).modal('hide');"
+                                                     immediate="true"/>
+                                </div>
+                            </h:form>
+                        </div>
+                    </div>
+                </div>
+                <!--Datos de la compra-->
+                <div class="modal fade" data-backdrop="static" id="dialogoDatosCompra" 
+                     data-keyboard="false" style="z-index: 100002;">
+                    <div class="modal-dialog modal-xl" >
+                        <div class="modal-content">
+                            <h:form id="frmDatosCompra">
+                                <div class="modal-header">
+                                    <h4 class="modal-title">Datos de la compra #{revisaRepseBean.ordenVo.consecutivo}</h4>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="row" >
+                                        <div class="row">
+                                            <div class="col-4">
+                                                <div class="form-group">
+                                                    <h:outputLabel styleClass="control-label"   value="Compañia: "/>
+                                                    <div >
+                                                        <h:outputText styleClass="control-label"  value="#{revisaRepseBean.ordenVo.compania}"/>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <h:outputLabel styleClass="control-label" value="Estatus:"/>
+                                                    <div >
+                                                        <h:outputText styleClass="control-label" value="#{revisaRepseBean.ordenVo.estatus}"/>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <h:outputLabel styleClass="control-label"   value="Bloque:"/>
+                                                    <div>
+                                                        <h:outputText styleClass="control-label"  value="#{revisaRepseBean.ordenVo.bloque}"/>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <h:outputLabel styleClass="control-label" value="Destino:"/>
+                                                    <div >                        
+                                                        <h:outputText styleClass="control-label" value="#{revisaRepseBean.ordenVo.destino}"/>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-4" >
+                                                <div class="form-group" >
+                                                    <h:outputLabel styleClass="control-label" value="Elaboro:"/>
+                                                    <div >
+                                                        <h:outputText styleClass="control-label" value="#{revisaRepseBean.ordenVo.analista}"/>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group" >
+                                                    <h:outputLabel styleClass="control-label"   value="Gerencia:"/>
+                                                    <div >
+                                                        <h:outputText styleClass="control-label"   value="#{revisaRepseBean.ordenVo.gerencia}"/>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group" >
+                                                    <h:outputLabel styleClass="control-label" value="Proveedor:"/>
+                                                    <div >
+                                                        <h:outputText styleClass="control-label" value="#{revisaRepseBean.ordenVo.proveedor}"/>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group" >
+                                                    <h:outputLabel styleClass="control-label" value="Contrato:"/>
+                                                    <div >
+                                                        <h:outputLabel value="#{revisaRepseBean.ordenVo.numeroContrato}"/>
+                                                    </div>
+                                                </div>                
+                                            </div>                                            
+                                            <div class="col-4">   
+                                                <div class="form-group" >
+                                                    <h:outputLabel styleClass="control-label"   value="Pago:"/>
+                                                    <div>
+                                                        <h:outputText styleClass="control-label"  value="#{revisaRepseBean.ordenVo.terminoPago}"/>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group " >
+                                                    <h:outputLabel styleClass="control-label"    value="Destino:"/>
+                                                    <div>
+                                                        <h:outputText styleClass="control-label"  value="#{revisaRepseBean.ordenVo.destino}"/>
+                                                    </div>
+                                                </div>       
+                                                <div class="form-group">
+                                                    <h:outputText styleClass="control-label"    value="Observ. Requisición:"/>
+                                                    <div>
+                                                        <h:outputText styleClass="control-label" value="#{revisaRepseBean.ordenVo.observaciones}"/>
+                                                    </div>  
+                                                </div>
+                                                <div class="form-group" >
+                                                    <h:outputText styleClass="control-label"   value="Observ. proveedor:"/>
+                                                    <div>
+                                                        <h:outputText styleClass="control-label" 
+                                                                      value="#{revisaRepseBean.ordenVo.nota}"/>
+                                                    </div>
+                                                </div>                    
+                                                <div class="form-group " >
+                                                    <h:outputText styleClass="control-label"   value="Coment. Internos:"/>
+                                                    <div >
+                                                        <h:outputText styleClass="control-label" 
+                                                                      value="#{revisaRepseBean.ordenVo.observaciones}"/>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>    
+                                    <h:messages  styleClass="small " style="font-weight: bold;"
+                                                 errorClass="text-danger" showSummary="false" showDetail="false"/>
+                                    <p:tabView id="tbDatosRepse">
+                                        <p:tab title="Partidas">
+                                            <p:dataTable size="small" stripedRows="true" showGridlines="true" value="#{revisaRepseBean.items}" var="dataIt"
+                                                         paginator="true"  rows="10"
+                                                         paginatorPosition="bottom" paginatorAlwaysVisible="true">
+                                                <p:column headerText="Núm. Parte" width="150">
+                                                    <h:outputText value="#{dataIt.artNumeroParte}"/>
+                                                </p:column>
+                                                <p:column headerText="Descripción" style=" text-align: left;">
+                                                    <h:outputText value="#{dataIt.artDescripcion}"/>                                                        
+                                                </p:column>
+                                                <p:column headerText="Unidad" width="110">
+                                                    <h:outputText value="#{dataIt.artUnidad}"/>                                                        
+                                                </p:column>
+                                                <p:column headerText="Cantidad" width="110">
+                                                    <h:outputText value="#{dataIt.cantidad}"/>                                                        
+                                                </p:column>
+                                                <p:column headerText="P. U." width="110">
+                                                    <h:outputText value="#{dataIt.precioUnitario}">
+                                                        <f:convertNumber maxFractionDigits="2" pattern="#,###.00"/>
+                                                    </h:outputText>
+                                                </p:column>
+                                                <p:column headerText="Importe" width="110">
+                                                    <h:outputText value="#{dataIt.importe}">
+                                                        <f:convertNumber maxFractionDigits="2" pattern="#,###.00"/>
+                                                    </h:outputText>
+                                                </p:column>
+                                            </p:dataTable>
+                                            <div class="row">
+                                                <div class="col-8"></div>
+                                                <div class="col-4">
+                                                    <div class="form-inline">
+                                                        <div class="col-4" >
+                                                            <h:outputLabel styleClass="control-label" value="SubTotal:"/>
+                                                        </div>
+                                                        <div class="col-6">
+                                                            <h:outputLabel value="#{revisaRepseBean.ordenVo.subTotal}">
+                                                                <f:convertNumber currencySymbol="$" groupingUsed="true" maxFractionDigits="2" type="currency"/>
+                                                            </h:outputLabel>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-inline">
+                                                        <div class="col-4">
+                                                            <h:outputLabel styleClass="control-label" value="IVA:"/>
+                                                        </div>
+                                                        <div class="col-6">
+                                                            <h:outputLabel value="#{revisaRepseBean.ordenVo.iva}">
+                                                                <f:convertNumber currencySymbol="$" groupingUsed="true" maxFractionDigits="2" type="currency"/>
+                                                            </h:outputLabel>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-inline">
+                                                        <div class="col-4">
+                                                            <h:outputLabel styleClass="control-label" value="Descuento:"/>
+                                                        </div>
+                                                        <div class="col-6">
+                                                            <h:outputLabel value="#{revisaRepseBean.ordenVo.descuento}">
+                                                                <f:convertNumber currencySymbol="$" groupingUsed="true" maxFractionDigits="2" type="currency"/>
+                                                            </h:outputLabel>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-inline">
+                                                        <div class="col-4">
+                                                            <h:outputLabel styleClass="control-label" value="Total:"/>
+                                                        </div>
+                                                        <div class="col-6">
+                                                            <h:outputLabel value="#{revisaRepseBean.ordenVo.total}">
+                                                                <f:convertNumber currencySymbol="$" groupingUsed="true" maxFractionDigits="2" type="currency"/>
+                                                            </h:outputLabel>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-inline">
+                                                        <div class="col-4">
+                                                            <h:outputLabel styleClass="control-label" value="Móneda:"/>
+                                                        </div>
+                                                        <div class="col-6">
+                                                            <h:outputLabel value="#{revisaRepseBean.ordenVo.monedaSiglas}"/>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>   
+                                        </p:tab>
+                                        <p:tab title="Archivos de REPSE">
+                                            <p:dataTable size="small" stripedRows="true" showGridlines="true" value="#{revisaRepseBean.archivosRepse}" 
+                                                         var="dataArcRep" styleClass="table table-striped" 
+                                                         rowIndexVar="index">
+                                                <p:column headerText="Categoría" style="text-align: left;">
+                                                    <h:outputText value="#{dataArcRep.categoria}"/>
+                                                </p:column>
+                                                <p:column headerText="Archivo" style="text-align: left;">
+                                                    <h:outputText value="#{dataArcRep.nombre}"/>
+                                                </p:column>
+                                                <p:column headerText="Descargar">                                                      
+                                                    <h:outputLink target="_blank"  value="/Compras/AbrirArchivo?ZWZ2W=#{dataArcRep.id}&amp;ZWZ3W=#{dataArcRep.uuid}"
+                                                                  >
+                                                        <h:outputText value="Descargar"/>
+                                                    </h:outputLink>
+                                                </p:column>
+                                                <p:column>
+                                                    <p:commandLink id="btnArbrir" value="Abrir Archivo" 
+                                                                   action="#{revisaRepseBean.abriraArchivo(index)}"
+                                                                   process="@this" update="frmAbrirArch">
+                                                    </p:commandLink>
+                                                </p:column>
+                                            </p:dataTable>
+                                        </p:tab>
+                                        <p:tab title="Especificaciones Técnicas">
+                                            <p:dataTable size="small" stripedRows="true" showGridlines="true" value="#{revisaRepseBean.doctos}" 
+                                                         var="dataDoc" styleClass="table table-striped" 
+                                                         rowIndexVar="index">
+                                                <p:column headerText="Categoría">
+                                                    <h:outputText value="#{dataDoc.categoria}"/>                                                    
+                                                </p:column>
+                                                <p:column headerText="Documento" style="text-align: left;">
+                                                    <h:outputText value="#{dataDoc.nombre}"/>
+                                                </p:column>
+                                                <p:column headerText="Descargar">                                                    
+                                                    <h:outputLink target="_blank"  value="/Compras/AbrirArchivo?ZWZ2W=#{dataDoc.id}&amp;ZWZ3W=#{dataDoc.uuid}"
+                                                                  >
+                                                        <h:outputText value=" Descargar"/>
+                                                    </h:outputLink>
+                                                </p:column>
+                                            </p:dataTable>
+                                        </p:tab>
+                                        <p:tab title="Documentos del proveedor">   
+                                            <div class="row">
+                                                <h:messages  styleClass="small " style="font-weight: bold;"
+                                                             errorClass="text-danger" showSummary="false" showDetail="false"/>
+                                                <div class="col-4">
+                                                    <p:dataTable size="small" stripedRows="true" showGridlines="true" value="#{revisaRepseBean.documentosProveedor}" 
+                                                                 var="dataDocPro" styleClass="table table-striped" >
+                                                        <p:column headerText="Documento" style="text-align: left;">
+                                                            <h:outputText value="#{dataDocPro.documento}"/>
+                                                        </p:column>
+                                                        <p:column >
+                                                            <h:outputLink target="_blank"  
+                                                                          value="/Compras/AbrirArchivo?ZWZ2W=#{dataDocPro.adjuntoVO.id}&amp;ZWZ3W=#{dataDocPro.adjuntoVO.uuid}"
+
+                                                                          title="Descargar el archivo">
+                                                                <i class="fa fa-file"/>
+                                                            </h:outputLink>
+                                                        </p:column>
+                                                        <p:column headerText="Abrir">
+                                                            <p:commandLink action="#{revisaRepseBean.mostrarDoctoProveedor(dataDocPro.adjuntoVO.id, dataDocPro.adjuntoVO.uuid, dataDocPro.adjuntoVO.nombre )}"
+                                                                           value="Abrir" styleClass="btn btn-link"
+                                                                           process="@this" update="frmDatosCompra:tbDatosRepse">
+                                                            </p:commandLink>
+                                                        </p:column>
+                                                    </p:dataTable>
+                                                </div>
+                                                <div class="col-8">
+                                                    <iframe src="/Compras/MostraArchivo?ZWZ2W=#{revisaRepseBean.documentoVo.adjuntoVO.id}&amp;ZWZ3W=#{revisaRepseBean.documentoVo.adjuntoVO.uuid}"
+                                                            scrolling="auto"
+                                                            style="width:100%; height:450px;" frameborder="0" ></iframe>
+                                                </div>
+                                            </div>
+
+                                        </p:tab>
+                                        <p:tab title="Archivos del contrato">   
+                                            <p:dataTable size="small" stripedRows="true" showGridlines="true" value="#{revisaRepseBean.archivosContrato}" 
+                                                         var="dataArcCon" styleClass="table table-striped" >
+                                                <p:column headerText="Código" style="text-align: left;">
+                                                    <h:outputText value="#{dataArcCon.numero}"/>
+                                                </p:column>
+                                                <p:column headerText="Nombre" style="text-align: left;">
+                                                    <h:outputText value="#{dataArcCon.nombre}"/>
+                                                </p:column>
+                                                <p:column headerText="Contrato" style="text-align: left;">
+                                                    <h:outputText value="#{dataArcCon.nombre}"/>
+                                                </p:column>
+                                                <p:column headerText="Documento" style="text-align: left;">
+                                                    <h:outputText value="#{dataArcCon.nombre}"/>
+                                                </p:column>
+                                                <p:column headerText="Descargar">                                                    
+                                                    <h:outputLink target="_blank"  
+                                                                  value="/Compras/AbrirArchivo?ZWZ2W=#{dataArcCon.adjuntoVO.id}&amp;ZWZ3W=#{dataArcCon.adjuntoVO.uuid}"
+                                                                  >
+                                                        <h:outputText value=" Descargar"/>
+                                                    </h:outputLink>
+                                                </p:column>
+                                            </p:dataTable>   
+                                        </p:tab>   
+                                        <p:tab title="Revisión de documentos" >   
+                                            <div class="row">
+                                                <div class="col-6">
+                                                    <h:outputLabel value="REPSE" styleClass="form-control" 
+                                                                   />
+                                                    <iframe src="/Compras/MostraArchivo?ZWZ2W=#{revisaRepseBean.adjuntoVo.id}&amp;ZWZ3W=#{revisaRepseBean.adjuntoVo.uuid}"
+                                                            scrolling="auto"
+                                                            style="width:100%; height:450px;" frameborder="0" ></iframe>
+                                                </div>
+                                                <div class="col-6">
+                                                    <h:outputLabel value="#{revisaRepseBean.proveedorDocumentoVo.documento}" styleClass="form-control" 
+                                                                   />
+                                                    <iframe src="/Compras/MostraArchivo?ZWZ2W=#{revisaRepseBean.proveedorDocumentoVo.adjuntoVO.id}&amp;ZWZ3W=#{revisaRepseBean.proveedorDocumentoVo.adjuntoVO.uuid}"
+                                                            scrolling="auto"
+                                                            style="width:100%; height:450px;" frameborder="0" ></iframe>
+                                                </div>
+                                            </div>
+                                        </p:tab>
+                                    </p:tabView>
+                                </div>
+                                <div class="modal-footer">
+                                    <p:commandLink value="Cerrar" styleClass="btn btn-default"
+                                                   onclick="$(dialogoDatosCompra).modal('hide');"
+                                                   immediate="true"/>
+                                </div>
+                            </h:form>
+                        </div>
+                    </div>
+                </div>
+                <!--Rechazar repse  de la compra-->
+                <div class="modal fade" data-backdrop="static" id="dialogoAbrirArchivo" 
+                     data-keyboard="false" style="z-index: 100002;">
+                    <div class="modal-dialog" style="width: 70%" >
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h4 class="modal-title">Abrir archivo</h4>
+                            </div>
+                            <h:form id="frmAbrirArch">
+                                <div class="modal-body">
+                                    <iframe src="/Compras/MostraArchivo?ZWZ2W=#{revisaRepseBean.adjuntoVo.id}&amp;ZWZ3W=#{revisaRepseBean.adjuntoVo.uuid}"
+                                            scrolling="auto"
+                                            style="width:100%; height:450px;" frameborder="0" ></iframe>
+                                </div>
+                                <div class="modal-footer">                                    
+                                    <p:commandLink value="Cerrar" styleClass="btn btn-default" 
+                                                   action="#{revisaRepseBean.cerrarAbriraArchivo}"
+                                                   immediate="true"/>
+                                </div>
+                            </h:form>
+                        </div>
+                    </div>
+                </div>
+                <!--Rechazar repse  de la compra-->
+                <div class="modal fade" data-backdrop="static" id="dialogoRechazarRepse" 
+                     data-keyboard="false" style="z-index: 100002;">
+                    <div class="modal-dialog" >
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h4 class="modal-title">Rechazar REPSE</h4>
+                            </div>
+                            <h:form id="frmRecRepse">
+                                <div class="modal-body">
+                                    <div class="row">
+                                        <div class="col-3">
+                                            <div class="form-group">
+                                                <h:outputText value="Compra:"/>
+                                                <div>
+                                                    <h:outputLabel value="#{revisaRepseBean.ordenVo.consecutivo}"/>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-5">
+                                            <div class="form-group">
+                                                <h:outputText value="Referencia:"/>
+                                                <div>
+                                                    <h:outputLabel value="#{revisaRepseBean.ordenVo.referencia}"/>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-4">
+                                            <div class="form-group">
+                                                <h:outputText value="Proveedor:"/>
+                                                <div>
+                                                    <h:outputLabel value="#{revisaRepseBean.ordenVo.proveedor}"/>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <div class="form-group">
+                                                <h:outputText value="Motivo:*"/>
+                                                <div>
+                                                    <h:inputTextarea value="#{revisaRepseBean.motivo}" styleClass="form-control"
+                                                                     required="true" requiredMessage="Es necesario agregar un motivo"/>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <p:commandLink value="Cerrar" styleClass="btn btn-default" immediate="true"
+                                                   onclick="$(dialogoRechazarRepse).modal('hide');"/>
+                                    <p:commandButton value="Guardar" styleClass="btn btn-primary text-white" 
+                                                   action="#{revisaRepseBean.rechazarRepse}"
+                                                   process="@this" update="frmRevRepse:tbRepse"/>
+                                </div>
+                            </h:form>
+                        </div>
+                    </div>
+                </div>
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

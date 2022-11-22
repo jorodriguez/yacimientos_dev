@@ -1,0 +1,252 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html  xmlns="http://www.w3.org/1999/xhtml"
+       xmlns:ui="http://xmlns.jcp.org/jsf/facelets"  
+       xmlns:p="http://primefaces.org/ui"      
+       xmlns:f="http://xmlns.jcp.org/jsf/core"
+       xmlns:h="http://xmlns.jcp.org/jsf/html"
+       xmlns:my="http://www.mytags.com/schema/mytags"
+       xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">      
+    <body>
+        <ui:composition template="./../../WEB-INF/facelets/templates/templateSistema.xhtml">
+
+            <ui:define name="menu" rendered="#{not empty sesion.usuario}">
+                <h:form rendered="#{not empty sesion.usuario}">                
+                    <ui:include src="menuAdministracion.xhtml"/>
+                </h:form>
+            </ui:define>
+
+            <ui:define name="contenido">                                           
+                <center><h:messages errorClass="errorMessage" infoClass="infoMessage"/></center>  
+                <h:panelGroup  rendered="#{empty sesion.usuario}" styleClass="altura">
+                    <ui:include src="./../../login.xhtml"/>
+                </h:panelGroup>
+
+                <h:form id="frmConPago" rendered="#{not empty sesion.usuario}" >  
+                    <p class="tituloEncabezado" >Relación de proveedor con condiciones de pago</p>
+                    <p:panelGrid columns="1">
+                        <p:commandLink title="Ir a Catalogo de Condiciones de Pago" style="color: blue; margin-left: 15px;" styleClass="btn btn-default"
+                                         action="#{condicionPagoB.goToCatalogoConPago}"                                       
+                                         action="#{catalogoConPagoB.entrar}">                               
+                            <p:graphicImage url="/resources/imagenes/regresar.png" alt="Ir a Catalogo de Condiciones de Pago"
+                                              styleClass="imagenSinBorde"/>
+                        </p:commandLink>
+                        <p:commandLink title="Ir a Catalogo de Condiciones de Pago" style="color: blue; margin-left: 15px;" 
+                                         styleClass="linkPequenio"
+                                         value="Ir a Catalogo de Condiciones de Pago"
+                                         action="#{condicionPagoB.goToCatalogoConPago}"                                       
+                                         action="#{catalogoConPagoB.entrar}"/>
+                    </p:panelGrid>
+                    <br/>
+                    <h:outputLabel value="Seleccione la compania" style="margin-left: 15px;"/>
+                    <p:selectOneRadio value="#{condicionPagoB.rfcCompania}" 
+                                        valueChangeListener="#{condicionPagoB.cambiarLstaCondicionesPorCompania}"
+                                        >
+                        <f:selectItems value="#{condicionPagoB.listaCompania}"/>
+                    </p:selectOneRadio>
+                    <h:outputLabel value="Escriba y seleccione el proveedor" style="margin-left: 15px;"/>
+                    <p:panelGrid columns="1" styleClass="bordePanelGrid" style="margin:0px 15px 15px 15px;" >
+                        <!--AUTOCOMPLETE Proveedor-->
+                        <h:outputText value="#{msgs['orden.proveedor']}:  "/>
+                        <p:panelGrid columns="2">
+                            <p:inputText id="autocompleteProveedor" size="40"
+                                           onclick="autocompletar(this, 'hidenDesProveedor', 'frmConPago');"/>
+                            <h:inputHidden id="hidenDesProveedor" value="#{condicionPagoB.pro}"/>
+                        </p:panelGrid>  
+                    </p:panelGrid>
+                        <!--p:autoComplete id="userDatos"  listVar="userTDatos" 
+                                             width="400" listValue="#{condicionPagoB.condicionPagoModel.listaProveedor}" immediate="true"    
+                                             value="#{condicionPagoB.condicionPagoModel.pro}" 
+                                             valueChangeListener="#{condicionPagoB.proveedorListener}">
+                            <f:facet name="selectInputText" >                                
+                                <h:outputText id="autoCompleteDatos" value="#{userTDatos}"/>                                                                          
+                            </f:facet>
+                        </p:autoComplete>                        
+                    </p:panelGrid-->
+                    <p:commandLink id="btnFiltro" value="ejecutar" action="#{condicionPagoB.proveedorListener}" 
+                                   style="display: none;"/>
+
+                    <br/><b/>  
+                    <!--Proveedor Seleccionado: <h:outputText id="cjNombreProveedor"/>-->
+
+                    <h:panelGroup  rendered="#{condicionPagoB.condicionPagoModel.visibleConPago}" >                        
+                        <h:outputLabel value="Escriba y seleccione la Condicion de Pago que desea agregar al proveedor" style="margin: 15px;"/>
+
+                        <!--AUTOCOMPLETE Condicion de Pago-->
+                        <p:panelGrid columns="1" styleClass="bordePanelGrid" style="margin: 15px 15px 15px 15px;" >
+
+                            <h:outputText value="#{msgs['orden.conPago']}:  "/>                            
+                            <p:panelGrid columns="3">
+                                <!--listValue="#{condicionPagoB.condicionPagoModel.listaConPago}"-->
+                                <p:autoComplete  id="conPagoDatos"  
+                                                     value="#{condicionPagoB.condicionPagoModel.nomConPago}" 
+                                                     valueChangeListener="#{condicionPagoB.conPagoListener}">
+                                    <f:facet name="selectInputText">                                
+                                        <h:outputText id="autoCompleteConPago" value="#{conPagoTDatos}"/>                                                                          
+                                    </f:facet>
+                                </p:autoComplete>                                                            
+
+                                <!--Boton LIGAR/AGREGAR Condicion de Pago del Catalogo al proveedor-->                                                     
+                                <p:commandButton title="#{msgs['orden.ligar']} #{msgs['orden.proveedor']}" 
+                                                   value="#{msgs['orden.ligar']} #{msgs['orden.proveedor']}"
+                                                   action="#{condicionPagoB.validaAutoCompleteConPago}" 
+                                                   styleClass="compartir" style="height: 27px;" />                                                                                               
+                            </p:panelGrid> 
+                        </p:panelGrid>                          
+                    </h:panelGroup>                   
+                    <br/><b/>             
+                    <h:panelGroup  rendered="#{condicionPagoB.listData.rowCount gt 0}" styleClass="altura">
+                        <p:commandLink title="Ir a Catalogo de Condiciones de Pago" style="color: blue; margin-left: 15px;" styleClass="tituloPaginaLink"
+                                         value="Condiciones de Pago"
+                                         action="#{condicionPagoB.goToCatalogoConPago}"                                       
+                                         action="#{catalogoConPagoB.entrar}"/>                                                                                                       
+                        <br/>
+
+                        <!--DATATABLE para mostrar las Condiciones de Pago asociadas al proveedor-->
+                        <my:dataGrid id="dtGP" styleClass="contenidoTabla"
+                                     rows="15" value="#{condicionPagoB.listData}"                                         
+                                     showPaginator="true"                                  
+                                     textoResultado="#{msgs['sistema.paginador.mostrando']} #{msgs['orden.conPago']} " 
+                                     textoPagina="#{msgs['sistema.paginador.pagina']}" 
+                                     textoDe="#{msgs['sistema.paginador.de']}" 
+                                     >
+                            <p:column>
+                                <f:facet name="header"><h:outputText value="Nombre"/></f:facet>
+                                <h:outputText value="#{data.nombreConPago}"/>
+                            </p:column>
+                            <p:column style="text-align: center; text-align: center;">
+                                <f:facet name="header"><h:outputText value="Notificar"/></f:facet>
+                                <h:outputText value="#{data.notificar}"/>
+                            </p:column>
+                            <p:column>
+                                <center>
+                                    <f:facet name="header"><h:outputText value="#{msgs['orden.cambiar']}"/></f:facet>
+                                    <p:commandLink value="#{msgs['orden.cambiar']}" title="#{msgs['orden.cambiar']}" action="#{condicionPagoB.mostrarPopupActualizar}" type="submit" styleClass="link" />
+                                </center>
+                            </p:column>
+                            <p:column>
+                                <center>
+                                    <f:facet name="header"><h:outputText value="#{msgs['sistema.eliminar']}"/></f:facet>
+                                    <p:commandLink value="#{msgs['sistema.eliminar']}" title="#{msgs['sistema.eliminar']}" action="#{condicionPagoB.mostrarPopupEliminar}" type="submit" styleClass="link" />
+                                </center>
+                            </p:column>
+                        </my:dataGrid>   
+                    </h:panelGroup> 
+                </h:form>
+
+
+                <!-- Popup AGREGAR Condicion de Pago del Catalogo al Proveedor -->
+                <h:form id="formPopupAgregarConPago" rendered="#{not empty sesion.usuario}" >
+                    <my:panelPopup tituloPanel="#{msgs['sistema.agregar']} #{msgs['orden.conPago']}" mostrarPanel="#{genericPanelPopup.modalRenderedAgregar}" conBoton="false">
+                        <h:outputText id="msgsPopupAgregarConPago" value="" />
+                        <center><h:messages for="msgsPopupAgregarConPago" errorClass="errorMessage" infoClass="infoMessage"/></center>  
+
+                        <p:panelGrid columns="3" styleClass="f11">
+                            <h:outputText value="Está seguro que desea ligar al Proveedor la Condición de Pago " />
+                            <h:outputText value="#{condicionPagoB.condicionPagoModel.nomConPago}" style="font-weight: bold;" />
+                            <h:outputText value="?" />
+                        </p:panelGrid>
+
+                        <center>
+                            <p:panelGrid columns="2">
+                                <p:commandButton value="Confirmar" action="#{condicionPagoB.agregarProveedorConPago}" styleClass="btn btn-info"/>
+                                <p:commandButton value="Cancelar" action="#{condicionPagoB.cancelarAgregarProveedorConPago}" styleClass="btn btn-default"/>        
+                            </p:panelGrid>                             
+                        </center>
+                    </my:panelPopup>
+                </h:form>  
+
+                <!-- Popup CREAR Nueva Condicion de Pago -->
+                <h:form id="formPopupCrearConPago" rendered="#{not empty sesion.usuario}" >
+                    <my:panelPopup tituloPanel="#{msgs['sistema.crear']} #{msgs['orden.conPago']}" mostrarPanel="#{genericPanelPopup.modalRenderedCrear}" conBoton="false" >
+
+                        <h:outputText id="msgsPopupCrearConPago" value="" />                        
+                        <center><h:message for="msgsPopupCrearConPago" errorClass="errorMessage" infoClass="infoMessage"/></center>                                              
+
+                        <h:panelGroup>
+                            <p:panelGrid columns="1" >
+                                <center><h:outputLabel value="#{msgs['orden.conPago.no.existe.catalogo.desea.agregar']} " styleClass="f11" style="color: blue;"/></center>
+                            </p:panelGrid>                                
+                            <p:panelGrid columns="2">
+                                <h:outputLabel value="#{msgs['orden.proveedor']}: " styleClass="f11"/>
+                                <h:outputText value="#{condicionPagoB.condicionPagoModel.pro}" styleClass="f11"/>
+                                <p:panelGrid columns="2">
+                                    <h:outputLabel value="#{msgs['generales.nombre']}:  " styleClass="f11"/>
+                                    <h:outputText value="*" styleClass="textoRojo" />
+                                </p:panelGrid>
+                                <p:panelGrid columns="2">
+                                    <p:inputText id="inpTxtnombreConPago" value="#{condicionPagoB.condicionPagoModel.nomConPago}" 
+                                                 styleClass="f11" maxlength="150" size="32" required="true" requiredMessage="#{msgs['generales.nombre']} #{msgs['sistema.mensaje.error.esRequerido']}"/>
+                                    <h:message id="nombreConPagoMessage" for="inpTxtnombreConPago" errorClass="errorMessage" infoClass="infoMessage"/>
+                                </p:panelGrid>
+                            </p:panelGrid>  
+                        </h:panelGroup>
+
+                        <center>
+                            <p:panelGrid columns="2">
+                                <p:commandLink value="#{msgs['sistema.crear']}" action="#{condicionPagoB.crearProveedorConPago}" styleClass="btn btn-info"/>
+                                <p:commandLink value="#{msgs['sistema.cancelar']}" action="#{condicionPagoB.cancelarCrearProveedorConPago}" immediate="true" styleClass="btn btn-default" />        
+                            </p:panelGrid>                        
+                        </center> 
+                    </my:panelPopup>
+                </h:form>                  
+
+                <!--PopUp para MODIFICAR Condicion de Pago-->
+                <h:form id="formPopupActualizarConPago" rendered="#{not empty sesion.usuario}" >
+                    <my:panelPopup tituloPanel="#{msgs['orden.cambiar']} #{msgs['orden.conPago']}" mostrarPanel="#{genericPanelPopup.modalRenderedActualizar}" conBoton="false" >
+
+                        <h:outputText id="msgsPopupActualizarConPago" value="" />                        
+                        <center><h:message for="msgsPopupActualizarConPago" errorClass="errorMessage" infoClass="infoMessage"/></center>       
+
+                        <p:panelGrid columns="2" styleClass="f11">
+                            <h:outputLabel value="#{msgs['orden.conPago']}: " />
+                            <h:outputText value="#{condicionPagoB.condicionPagoModel.proveedorConPagoVo.nombreConPago}" />                                                                            
+                            <p:panelGrid columns="2">
+                                <h:outputLabel value="#{msgs['generales.nombre']}: "/>
+                                <h:outputText value="*" styleClass="textoRojo" />
+                            </p:panelGrid>
+                            <p:panelGrid columns="2">
+                                <p:selectOneMenu id="somActualizarConPago" 
+                                                   value="#{condicionPagoB.condicionPagoModel.conPagoEdit}"                                               
+                                                                                                  
+                                                   style="width: 400px;">                                
+                                    <f:selectItem itemLabel="#{msgs['orden.seleccionar.condicion.pago']}..." itemValue="-1" />
+                                    <f:selectItems value="#{condicionPagoB.condicionPagoModel.listaConPagoEdit}"/>                                
+                                </p:selectOneMenu>                          
+                                <h:message for="somActualizarConPago" errorClass="errorMessage" infoClass="infoMessage"/>
+                            </p:panelGrid>
+                        </p:panelGrid>
+
+                        <center>
+                            <p:panelGrid columns="2">
+                                <p:commandLink value="#{msgs['sistema.actualizar']}" action="#{condicionPagoB.actualizarProveedorConPago}" styleClass="btn btn-info" />
+                                <p:commandLink value="#{msgs['sistema.cancelar']}" action="#{condicionPagoB.cancelarActualizarProveedorConPago}" immediate="true" styleClass="btn btn-default" />
+                            </p:panelGrid>
+                        </center>                                                       
+                    </my:panelPopup>
+                </h:form> 
+
+                <!--PopUp para ELIMINAR Condicion de Pago-->
+                <h:form id="formPopupEliminarConPago" rendered="#{not empty sesion.usuario}" >
+                    <my:panelPopup tituloPanel="#{msgs['sistema.eliminar']} #{msgs['orden.conPago']}" mostrarPanel="#{genericPanelPopup.modalRenderedEliminar}" conBoton="false">
+                        <h:outputText id="msgsPopupEliminarConPago" value="" />
+                        <center><h:messages for="msgsPopupEliminarConPago" errorClass="errorMessage" infoClass="infoMessage"/></center>  
+
+                        <p:panelGrid columns="3" styleClass="f11">
+                            <h:outputText value="Está seguro que desea eliminar la Condición de Pago " />
+                            <h:outputText value="#{condicionPagoB.condicionPagoModel.proveedorConPagoVo.nombreConPago}" style="font-weight: bold;" />
+                            <h:outputText value="?" />
+                        </p:panelGrid>
+
+                        <center>
+                            <p:panelGrid columns="2">
+                                <p:commandButton value="Confirmar" action="#{condicionPagoB.eliminarProveedorConPago}" styleClass="btn btn-info"/>
+                                <p:commandButton value="Cancelar" action="#{condicionPagoB.cancelarEliminarProveedorConPago}" immediate="true" styleClass="btn btn-default"/>        
+                            </p:panelGrid>                        
+                        </center>
+                    </my:panelPopup>
+                </h:form>                
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

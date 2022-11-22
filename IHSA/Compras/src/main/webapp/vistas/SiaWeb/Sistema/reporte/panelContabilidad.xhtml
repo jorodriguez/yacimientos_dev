@@ -1,0 +1,462 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <body>
+        <ui:composition template="./../../templates/template.xhtml">
+            <ui:define name="tituloPagina">
+                Panel de compras
+            </ui:define>
+            <ui:define name="contenido">
+                <h:form id="frmRepoCn">
+                    <div class="row">
+                        <div class="col-3">
+                            <h:outputLabel value="Proveedor:" styleClass="font-weight-bold"/>
+                            <p:autoComplete  id="listProveedor" value="#{reporteContabilidadBean.proveedor}"                                                 
+                                             styleClass="custom-select"  placeholder="p.e. Proveedor de válvulas">
+                                <div id="listProv" style="z-index: 100005;">
+                                    <f:selectItems value="#{reporteContabilidadBean.proveedoresDisponibles}" />
+                                </div>
+                            </p:autoComplete> 
+                        </div>
+                        <!--div class="col-3">
+                            <h:outputLabel value="Estado: " styleClass="font-weight-bold"/>
+                            <h:selectOneMenu value="#{reporteContabilidadBean.proceso}" styleClass="form-control">
+                                <f:selectItem itemLabel="En proceso de compra" itemValue="1"/>
+                                <f:selectItem itemLabel="Enviadas a proveedor" itemValue="2"/>
+                            </h:selectOneMenu>
+                        </div-->
+                        <div class="col-3">
+                            <div class="form-inline" style="margin-top: 10%;">
+                                <p:commandLink value="Buscar" styleClass="btn btn-info text-white" 
+                                               action="#{reporteContabilidadBean.buscarCompras}"
+                                               process="this" update="@form"/>
+                                <p:commandLink value="Limpiar" styleClass="btn btn-warning" onclick="iniciar();"
+                                               action="#{reporteContabilidadBean.limpiarConsulta}" 
+                                               immediate="true"/>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <h4><h:outputLabel value="#{reporteContabilidadBean.proveedorSeleccionado}" styleClass="text-capitalize text-primary"/></h4>
+                        </div>
+                    </div>
+                    <div class="card"/>
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="card card-info">
+                                <div class="card-header">
+                                    Compras en proceso - #{reporteContabilidadBean.proveedorSeleccionado}
+                                </div>
+                                <div class="card-body">
+                                    <p:dataTable size="small" stripedRows="true" showGridlines="true" value="#{reporteContabilidadBean.mapaTotales.get('comprasProceso')}" var="dataC"
+                                                 style="font-size: 1.1em;">
+                                        <p:column headerText="Moneda">
+                                            <h:outputLabel value="#{dataC.moneda}"/>
+                                        </p:column>
+                                        <p:column >
+                                            <h:outputLabel value="#{dataC.total}">
+                                                <f:convertNumber type="number"/>
+                                            </h:outputLabel>
+                                        </p:column>
+                                    </p:dataTable>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="card panel-warning">
+                                <div class="card-header">
+                                    Compras enviadas - #{reporteContabilidadBean.proveedorSeleccionado}
+                                </div>
+                                <div class="card-body">
+                                    <p:dataTable size="small" stripedRows="true" showGridlines="true" value="#{reporteContabilidadBean.mapaTotales.get('comprasPorRecibir')}" var="dataR"
+                                                 style="font-size: 1.1em;">
+                                        <p:column headerText="Moneda">
+                                            <h:outputLabel value="#{dataR.moneda}"/>
+                                        </p:column>
+                                        <p:column headerText="Total">
+                                            <h:outputLabel value="#{dataR.total}">
+                                                <f:convertNumber type="number"/>
+                                            </h:outputLabel>
+                                        </p:column>
+                                    </p:dataTable>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="card card-info">
+                                <div class="card-header">
+                                    <b>Desglose compras en proceso</b>
+                                </div>                                   
+                                <div  class="card-body"> 
+                                    <!--<!-- rowSelectListener="#{reporteContabilidadBean.seleccionarCompraProceso}" -->
+                                    <p:dataTable size="small" stripedRows="true" showGridlines="true" id="tblCompraProyecto" value="#{reporteContabilidadBean.mapaTotales.get('proyecto')}" var="dataProc" 
+                                                 selectionMode="single" >
+                                        <p:column headerText="Proyecto OT" style="text-align:  left;">
+                                            <h:outputText value="#{dataProc.proyectoOt}" rendered="#{dataProc.proyectoOt ne null}"/>
+                                            <h:outputLabel value="Total" rendered="#{dataProc.proyectoOt eq null}"/>
+                                        </p:column>
+                                        <p:column headerText="Total" style="text-align:  right;">
+                                            <h:outputText value="#{dataProc.totalProyectoOt}" rendered="#{dataProc.proyectoOt ne null}">
+                                                <f:convertNumber type="number"/>
+                                            </h:outputText>
+                                            <h:outputLabel value="#{dataProc.total}" rendered="#{dataProc.proyectoOt eq null}">
+                                                <f:convertNumber type="number"/>
+                                            </h:outputLabel>
+                                        </p:column>
+                                        <p:column >
+                                            <h:outputText value="#{dataProc.monedaSiglas}">
+                                            </h:outputText>
+                                        </p:column>
+                                    </p:dataTable>
+
+                                    <p:commandButton value="Exportar">
+                                        <p:dataExporter fileName="comprasProyectoProceso" target="tblCompraProyecto" type="xls" />
+                                    </p:commandButton>
+                                    <p:commandLink value="Ver todas las compras" 
+                                                   action="#{reporteContabilidadBean.mostrarComprasProcesoProveedor}" 
+                                                   styleClass="btn btn-link" style="float: right;"
+                                                   process="@this" update="frmComProc"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="card panel-warning">
+                                <div class="card-header">
+                                    <b>Compras enviadas a proveedor</b>
+                                </div>                                   
+                                <div  class="card-body"> 
+                                    <!--<!-- rowSelectListener="#{reporteContabilidadBean.seleccionarCompraConProveedor}" -->
+                                    <p:dataTable size="small" stripedRows="true" showGridlines="true" id="tblCompraProyectoPorRecibir" value="#{reporteContabilidadBean.mapaTotales.get('proyectoPorRecibir')}" 
+                                                 var="dataProc"  paginator="true" paginatorPosition="bottom" rows="10"
+                                                 selectionMode="single" >
+                                        <p:column headerText="Proyecto OT" style="text-align:  left;">
+                                            <h:outputText value="#{dataProc.proyectoOt}" rendered="#{dataProc.proyectoOt ne null}"/>
+                                            <h:outputLabel value="Total" rendered="#{dataProc.proyectoOt eq null}"/>
+                                        </p:column>
+                                        <p:column headerText="Total" style="text-align:  right;">
+                                            <h:outputText value="#{dataProc.totalProyectoOt}" rendered="#{dataProc.proyectoOt ne null}">
+                                                <f:convertNumber type="number"/>
+                                            </h:outputText>
+                                            <h:outputLabel value="#{dataProc.total}" rendered="#{dataProc.proyectoOt eq null}">
+                                                <f:convertNumber type="number"/>
+                                            </h:outputLabel>
+                                        </p:column>
+                                        <p:column >
+                                            <h:outputText value="#{dataProc.monedaSiglas}">
+                                            </h:outputText>
+                                        </p:column>
+                                    </p:dataTable>
+                                    <p:commandButton value="Exportar">
+                                        <p:dataExporter fileName="comprasProyectoPorRecibir" target="tblCompraProyectoPorRecibir" type="xls" />
+                                    </p:commandButton>
+                                    <p:commandLink value="Ver todas las compras" 
+                                                   action="#{reporteContabilidadBean.mostrarComprasEnviadasProveedor}" 
+                                                   styleClass="btn btn-link" style="float: right;"
+                                                   process="@this" update="frmComProvEnv"/>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </h:form>
+                <!-- compras en proceso-->
+                <div class="modal fade" data-backdrop="static" id="dialogDetalleComprasProc" data-keyboard="false">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h4 class="modal-title">Desglose compras</h4>
+                            </div>
+                            <h:form id="frmDetComProv">
+                                <div class="modal-body">
+                                    <div class="table table-responsive">
+                                        <p:dataTable size="small" stripedRows="true" showGridlines="true" id="tblCompraDetProyectoProc" value="#{reporteContabilidadBean.mapaTotales.get('proyectoDetalleProceso')}" 
+                                                     var="dataDetProc"  paginator="true" paginatorPosition="bottom" rows="10" >
+                                            <p:column headerText="Proyecto">
+                                                <h:outputText value="#{dataDetProc.proyectoOt}"/>    
+                                            </p:column>
+                                            <p:column headerText="OT">
+                                                <h:outputText value="#{dataDetProc.cuentaContable}"/>    
+                                            </p:column>
+                                            <p:column headerText="Requisición">
+                                                <h:outputText value="#{dataDetProc.requisicion}"/>    
+                                            </p:column>
+                                            <p:column headerText="Compra">
+                                                <h:outputText value="#{dataDetProc.consecutivo}"/>    
+                                            </p:column>
+                                            <p:column headerText="Pedido">
+                                                <h:outputText value="#{dataDetProc.navCode}"/>    
+                                            </p:column>
+                                            <p:column headerText="Proveedor">
+                                                <h:outputText value="#{dataDetProc.proveedor}"/>    
+                                            </p:column>
+                                            <p:column headerText="Fecha">
+                                                <h:outputText value="#{dataDetProc.fecha}">
+                                                    <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                                </h:outputText>    
+                                            </p:column>
+                                            <p:column headerText="Referencia">
+                                                <h:outputText value="#{dataDetProc.referencia}"/>    
+                                            </p:column>
+                                            <p:column headerText="Destino">
+                                                <h:outputText value="#{dataDetProc.destino}"/>    
+                                            </p:column>
+                                            <p:column headerText="subtToal">
+                                                <h:outputText value="#{dataDetProc.subTotal}">
+                                                    <f:convertNumber type="number"/>
+                                                </h:outputText>    
+                                            </p:column>
+                                            <p:column headerText="IVA">
+                                                <h:outputText value="#{dataDetProc.proyectoOt}">
+                                                    <f:convertNumber type="number"/>
+                                                </h:outputText>
+                                            </p:column>
+                                            <p:column headerText="Total">
+                                                <h:outputText value="#{dataDetProc.total}">
+                                                    <f:convertNumber type="number"/>
+                                                </h:outputText>    
+                                            </p:column>
+                                            <p:column headerText="Moneda">
+                                                <h:outputText value="#{dataDetProc.monedaSiglas}"/>
+                                            </p:column>
+                                        </p:dataTable>
+                                    </div>
+                                    <p:commandButton value="Exportar">
+                                        <p:dataExporter fileName="comprasDetProyectoProc" target="tblCompraDetProyectoProc" type="xls" />
+
+                                    </p:commandButton>
+                                </div>
+                                <div class="modal-footer">
+                                    <p:commandLink value="Cerrar" onclick="$(dialogDetalleComprasProc).modal('hide');" styleClass="btn btn-default"/>
+                                </div>
+                            </h:form>
+                        </div>
+                    </div>
+                </div>
+                <!--compras con el proveedor-->
+                <div class="modal fade" data-backdrop="static" id="dialogDetalleComprasProveedor" data-keyboard="false">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h4 class="modal-title">Desglose compras</h4>
+                            </div>
+                            <h:form id="frmDetComProc">
+                                <div class="modal-body">
+                                    <div class="table table-responsive">
+                                        <p:dataTable size="small" stripedRows="true" showGridlines="true" id="tblCompraDetProyectoProveedor" value="#{reporteContabilidadBean.mapaTotales.get('detalleProyectoComprasProveedor')}" 
+                                                     var="dataDetProc"  paginator="true" paginatorPosition="bottom" rows="10" >
+                                            <p:column headerText="Proyecto">
+                                                <h:outputText value="#{dataDetProc.proyectoOt}"/>    
+                                            </p:column>
+                                            <p:column headerText="OT">
+                                                <h:outputText value="#{dataDetProc.cuentaContable}"/>    
+                                            </p:column>
+                                            <p:column headerText="Requisición">
+                                                <h:outputText value="#{dataDetProc.requisicion}"/>    
+                                            </p:column>
+                                            <p:column headerText="Compra">
+                                                <h:outputText value="#{dataDetProc.consecutivo}"/>    
+                                            </p:column>
+                                            <p:column headerText="Pedido">
+                                                <h:outputText value="#{dataDetProc.navCode}"/>    
+                                            </p:column>
+                                            <p:column headerText="Proveedor">
+                                                <h:outputText value="#{dataDetProc.proveedor}"/>    
+                                            </p:column>
+                                            <p:column headerText="Fecha">
+                                                <h:outputText value="#{dataDetProc.fecha}">
+                                                    <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                                </h:outputText>    
+                                            </p:column>
+                                            <p:column headerText="Referencia">
+                                                <h:outputText value="#{dataDetProc.referencia}"/>    
+                                            </p:column>
+                                            <p:column headerText="Destino">
+                                                <h:outputText value="#{dataDetProc.destino}"/>    
+                                            </p:column>
+                                            <p:column headerText="subtToal">
+                                                <h:outputText value="#{dataDetProc.subTotal}">
+                                                    <f:convertNumber type="number"/>
+                                                </h:outputText>    
+                                            </p:column>
+                                            <p:column headerText="IVA">
+                                                <h:outputText value="#{dataDetProc.proyectoOt}">
+                                                    <f:convertNumber type="number"/>
+                                                </h:outputText>
+                                            </p:column>
+                                            <p:column headerText="Total">
+                                                <h:outputText value="#{dataDetProc.total}">
+                                                    <f:convertNumber type="number"/>
+                                                </h:outputText>    
+                                            </p:column>
+                                            <p:column headerText="Moneda">
+                                                <h:outputText value="#{dataDetProc.monedaSiglas}"/>
+                                            </p:column>
+                                        </p:dataTable>
+                                    </div>
+                                    <p:commandButton value="Exportar">
+                                        <p:dataExporter fileName="comprasDetProyectoProveedor" target="tblCompraDetProyectoProveedor" type="xls" />
+                                    </p:commandButton>
+                                </div>
+                                <div class="modal-footer">
+                                    <p:commandLink value="Cerrar" onclick="$(dialogDetalleComprasProveedor).modal('hide');" styleClass="btn btn-default"/>
+                                </div>
+                            </h:form>
+                        </div>
+                    </div>
+                </div>
+                <!-- todas compras en procesos-->
+                <div class="modal fade" data-backdrop="static" id="dialogComprasProveedorEnProceso" data-keyboard="false">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h4 class="modal-title">Compas en proceso</h4>
+                            </div>
+                            <h:form id="frmComProc">
+                                <div class="modal-body">
+                                    <div class="table table-responsive">
+                                        <p:dataTable size="small" stripedRows="true" showGridlines="true" id="tblCompraProveedorProceso" value="#{reporteContabilidadBean.mapaTotales.get('comprasProveedorEnProceso')}" 
+                                                     var="dataDetProc"  paginator="true" paginatorPosition="bottom" rows="10" >
+                                            <p:column headerText="Proyecto">
+                                                <h:outputText value="#{dataDetProc.proyectoOt}"/>    
+                                            </p:column>
+                                            <p:column headerText="OT">
+                                                <h:outputText value="#{dataDetProc.cuentaContable}"/>    
+                                            </p:column>
+                                            <p:column headerText="Requisición">
+                                                <h:outputText value="#{dataDetProc.requisicion}"/>    
+                                            </p:column>
+                                            <p:column headerText="Compra">
+                                                <h:outputText value="#{dataDetProc.consecutivo}"/>    
+                                            </p:column>
+                                            <p:column headerText="Pedido">
+                                                <h:outputText value="#{dataDetProc.navCode}"/>    
+                                            </p:column>
+                                            <p:column headerText="Proveedor">
+                                                <h:outputText value="#{dataDetProc.proveedor}"/>    
+                                            </p:column>
+                                            <p:column headerText="Fecha">
+                                                <h:outputText value="#{dataDetProc.fecha}">
+                                                    <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                                </h:outputText>    
+                                            </p:column>
+                                            <p:column headerText="Referencia">
+                                                <h:outputText value="#{dataDetProc.referencia}"/>    
+                                            </p:column>
+                                            <p:column headerText="Destino">
+                                                <h:outputText value="#{dataDetProc.destino}"/>    
+                                            </p:column>
+                                            <p:column headerText="subtToal">
+                                                <h:outputText value="#{dataDetProc.subTotal}">
+                                                    <f:convertNumber type="number"/>
+                                                </h:outputText>    
+                                            </p:column>
+                                            <p:column headerText="IVA">
+                                                <h:outputText value="#{dataDetProc.proyectoOt}">
+                                                    <f:convertNumber type="number"/>
+                                                </h:outputText>
+                                            </p:column>
+                                            <p:column headerText="Total">
+                                                <h:outputText value="#{dataDetProc.total}">
+                                                    <f:convertNumber type="number"/>
+                                                </h:outputText>    
+                                            </p:column>
+                                            <p:column headerText="Moneda">
+                                                <h:outputText value="#{dataDetProc.monedaSiglas}"/>
+                                            </p:column>
+                                        </p:dataTable>
+                                    </div>
+                                    <p:commandButton value="Exportar">
+                                        <p:dataExporter fileName="comprasProveedorEnProceso" target="tblCompraProveedorProceso" type="xls" />
+                                    </p:commandButton>
+                                </div>
+                                <div class="modal-footer">
+                                    <p:commandLink value="Cerrar" onclick="$(dialogComprasProveedorEnProceso).modal('hide');" styleClass="btn btn-default"/>
+                                </div>
+                            </h:form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- todas compras en procesos-->
+                <div class="modal fade" data-backdrop="static" id="dialogComprasProveedorEnviadas" data-keyboard="false">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h4 class="modal-title">Compas en proceso</h4>
+                            </div>
+                            <h:form id="frmComProvEnv">
+                                <div class="modal-body">
+                                    <div class="table table-responsive">
+                                        <p:dataTable size="small" stripedRows="true" showGridlines="true" id="tblCompraProveedorEnviadas" value="#{reporteContabilidadBean.mapaTotales.get('comprasProveedorEnviadas')}" 
+                                                     var="dataDetProc"  paginator="true" paginatorPosition="bottom" rows="10" >
+                                            <p:column headerText="Proyecto">
+                                                <h:outputText value="#{dataDetProc.proyectoOt}"/>    
+                                            </p:column>
+                                            <p:column headerText="OT">
+                                                <h:outputText value="#{dataDetProc.cuentaContable}"/>    
+                                            </p:column>
+                                            <p:column headerText="Requisición">
+                                                <h:outputText value="#{dataDetProc.requisicion}"/>    
+                                            </p:column>
+                                            <p:column headerText="Compra">
+                                                <h:outputText value="#{dataDetProc.consecutivo}"/>    
+                                            </p:column>
+                                            <p:column headerText="Pedido">
+                                                <h:outputText value="#{dataDetProc.navCode}"/>    
+                                            </p:column>
+                                            <p:column headerText="Proveedor">
+                                                <h:outputText value="#{dataDetProc.proveedor}"/>    
+                                            </p:column>
+                                            <p:column headerText="Fecha">
+                                                <h:outputText value="#{dataDetProc.fecha}">
+                                                    <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                                </h:outputText>    
+                                            </p:column>
+                                            <p:column headerText="Referencia">
+                                                <h:outputText value="#{dataDetProc.referencia}"/>    
+                                            </p:column>
+                                            <p:column headerText="Destino">
+                                                <h:outputText value="#{dataDetProc.destino}"/>    
+                                            </p:column>
+                                            <p:column headerText="subtToal">
+                                                <h:outputText value="#{dataDetProc.subTotal}">
+                                                    <f:convertNumber type="number"/>
+                                                </h:outputText>    
+                                            </p:column>
+                                            <p:column headerText="IVA">
+                                                <h:outputText value="#{dataDetProc.proyectoOt}">
+                                                    <f:convertNumber type="number"/>
+                                                </h:outputText>
+                                            </p:column>
+                                            <p:column headerText="Total">
+                                                <h:outputText value="#{dataDetProc.total}">
+                                                    <f:convertNumber type="number"/>
+                                                </h:outputText>    
+                                            </p:column>
+                                            <p:column headerText="Moneda">
+                                                <h:outputText value="#{dataDetProc.monedaSiglas}"/>
+                                            </p:column>
+                                        </p:dataTable>
+                                    </div>
+                                    <p:commandButton value="Exportar">
+                                        <p:dataExporter fileName="comprasProveedorEnEnviadas" target="tblCompraProveedorEnviadas" type="xls" />
+                                    </p:commandButton>
+                                </div>
+                                <div class="modal-footer">
+                                    <p:commandLink value="Cerrar" onclick="$(dialogComprasProveedorEnviadas).modal('hide');" styleClass="btn btn-default"/>
+                                </div>
+                            </h:form>
+                        </div>
+                    </div>
+                </div>
+
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

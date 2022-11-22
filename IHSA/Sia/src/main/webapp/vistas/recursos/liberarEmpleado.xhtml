@@ -1,0 +1,104 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"   
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+    <body>
+        <ui:composition template="./../../WEB-INF/facelets/templates/templateGrupos.xhtml">
+            <ui:define name="contenido">
+		<div id="Page">
+		    <div class="row">
+			<ui:include src="./menuRecursos.xhtml"   />
+		    </div>
+		    <div class="row"> 
+			<h:form id="formBajaEmpleado"   >
+			    <div class="col-lg-12">
+				<div class="col-lg-4"></div>
+				<div class="col-lg-6">
+				    <h2 class="page-header">#{msgs['sia.Usuario.titulo.bajaEmpleado']}</h2>
+				</div>
+			    </div>
+			    <center><h:messages globalOnly="true" errorClass="errorMessage" infoClass="infoMessage"/></center>
+			    <div class="row col-lg-12 col-xs-12">
+				<h:outputLabel value="Total: #{usuarioBean.listaUsuarioFree.rowCount}"/>
+                                <p:dataTable id="dgEmpleadosBaja"  size="small" showGridlines="true"
+					     rows="10" 
+					     value="#{usuarioBean.listaUsuarioFree}">
+				    <p:column>
+					<f:facet name="header"><h:outputText value="#{msgs['generales.nombre']}"/></f:facet>
+					<h:outputText value="#{data.nombre}"/>
+				    </p:column>                            
+				    <p:column>
+					<f:facet name="header"><h:outputText value="#{msgs['sia.campo.nombre']}"/></f:facet>
+					<h:outputText value="#{data.nombreApCampo}"/>
+				    </p:column>
+				    <p:column>
+					<f:facet name="header"><h:outputText value="#{msgs['sia.rh.gerencia']}"/></f:facet>
+					<h:outputText value="#{data.gerencia}"/>
+				    </p:column>                        
+				    <p:column>      
+					<p:commandLink value="#{msgs['comunicacion.comentar']}" 
+							 title="#{msgs['comunicacion.comentar']}" 
+							 styleClass="link"                                                
+							 action="#{usuarioBean.abrirPopupComentarBaja}"> 
+					    <f:param name="maxComments" value="2"/>                                                    
+					    <f:param name="idNoticia" value="#{data['idNoticia']}"/>                                                                                                              
+					</p:commandLink>
+				    </p:column>
+				    <p:column>
+                                        <p:commandButton value="Liberar" 
+							 action="#{usuarioBean.setFreeEmployee}" 
+							 onclick="if (!confirm('#{msgs['sia.Usuario.msg.liberar1']} #{data.nombre} #{msgs['sia.Usuario.msg.liberar2']} '))
+								     return false;"
+							 styleClass="link"/>
+				    </p:column>
+				</p:dataTable>   
+			    </div>
+			</h:form>
+
+			<h:form id="formPopupComentar"  >
+                            <p:dialog header="Realizar comentario"
+                                      widgetVar="dlgLiberar">
+				<h:outputText id="msgsPopupComentar" value="" />
+				<center><h:messages for="msgsPopupComentar" errorClass="errorMessage" infoClass="infoMessage"/></center>            
+				<p:panelGrid columns="1" >
+				    <p:panelGrid columns="2">
+					<h:outputLabel value="Empleado : "/>
+					<h:outputText value="#{usuarioBean.usuarioGerenciaVo.nombre}"/>
+					<p:panelGrid columns="2">
+					    <h:outputLabel value="#{msgs['comunicacion.comentario2']}: " />
+					    <h:outputText value="*" styleClass="textoRojo" />
+					</p:panelGrid>
+					<p:panelGrid columns="2">
+					    <p:inputTextarea id="inptxtComentar"
+							       value="#{usuarioBean.nombre}"
+							       rows="4" style="width: 400px;"
+							       styleClass="f11" />
+					    <h:message id="msgsInptxtRecomendacion" for="inptxtRecomendacion" errorClass="errorMessage" infoClass="infoMessage"/>
+					</p:panelGrid>
+				    </p:panelGrid>                            
+				</p:panelGrid>                        
+				<center>
+				    <p:panelGrid columns="2">
+					<p:commandLink value="Comentar" 
+							 action="#{usuarioBean.comentarBaja}" 
+							 styleClass="btn btn-info">       
+					</p:commandLink>
+					<p:commandLink value="Cancelar" action="#{usuarioBean.cerrarPopupComentarBaja}" styleClass="btn btn-default"  />        
+				    </p:panelGrid>                        
+				</center>    
+			    </p:dialog>
+			</h:form>   
+			<!-- <p:panelGrid >
+			     <ui:include src="/vistas/comunicacion/comunicacion.xhtml"/>
+			 </p:panelGrid>
+			 <h:outputLabel id="comentarAnclas"/>-->
+		    </div>
+		</div>
+	    </ui:define>
+	</ui:composition>
+
+    </body>
+</html>

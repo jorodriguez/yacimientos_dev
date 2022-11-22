@@ -1,0 +1,118 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"    
+      xmlns:p="http://primefaces.org/ui"
+      
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:my="http://www.mytags.com/schema/mytags">
+    <body>
+
+        <ui:composition template="./../../WEB-INF/facelets/templates/templateGrupos.xhtml">
+            <ui:define name="contenido">                
+                <br/>
+                <center>
+                    <h:outputText value="Ordenes de Compra o Servicio generadas del proyecto Ot : #{proyectoOTBean.proyectoOtVo.cuentaContable}" styleClass="tituloEncabezado"/>
+                </center>
+                <br/>
+                <h:form id="proyectoOT" 
+                          rendered="#{not empty sesion.usuario}" >                    
+                    <p:panelGrid columns="2">
+                        <p:commandLink title="Regresar al proyecto OT" action="proyectoOT"
+                                         styleClass="btn btn-default">                               
+                            <p:graphicImage url="./resources/imagenes/regresar.png" alt="Regresar al catalogo de Proyectos OTs"
+                                              styleClass="imagenSinBorde"/>
+                        </p:commandLink>
+                        <p:commandLink value="Regresar" title="Regresar al catalogo de Proyectos OTs" styleClass="linkPequenio" 
+                                         action="proyectoOT" />
+                    </p:panelGrid>
+
+                    <p:panelGrid>
+                        <h:messages style="color: maroon; font-size: small; font-weight: normal;"/>
+                    </p:panelGrid>
+                    <p:panelGrid style="float: right;" rendered="#{proyectoOTBean.listaOrden.rowCount gt 0}">
+                        <p:panelGrid columns="2" style="float: right; margin-right: 20px;">
+                            <h:outputText value="Exportar" title="Da clic en este icono para Exportar los registros a un documento de tipo .xls"/>
+                            <p:dataExporter type="excel" target="detalle" />
+                        </p:panelGrid>
+                    </p:panelGrid>
+                    <!--        -->
+                    <my:dataGrid id="detalle" rows="20"  showPaginator="true" 
+                                 value="#{proyectoOTBean.listaOrden}"  textoResultado="de ordenes " textoPagina="#{msgs['sistema.paginador.pagina']}" textoDe="#{msgs['sistema.paginador.de']}" >
+                        <f:facet name="header">
+                            <h:outputText value="Ordenes de compra"/>
+                        </f:facet>
+                        <p:column rendered="false">
+                            <f:facet name="header">
+                                <h:outputText value="Id"/>
+                            </f:facet>
+                            <h:outputText value="#{data.id}" />
+                        </p:column>                                                        
+                        <p:column >
+                            <f:facet name="header">
+                                <h:outputText value="Código"/>
+                            </f:facet>
+                            <h:outputText value="#{data.consecutivo}" />
+                        </p:column>                                                        
+                        <p:column >
+                            <f:facet name="header">
+                                <h:outputText value="Gerencia"/>
+                            </f:facet>
+                            <h:outputText value="#{data.gerencia}" />
+                        </p:column>                                                        
+                        <p:column >
+                            <f:facet name="header">
+                                <h:outputText value="Proveedor"/>
+                            </f:facet>
+                            <h:outputText value="#{data.proveedor}" />
+                        </p:column>                                                        
+                        <p:column >
+                            <f:facet name="header">
+                                <h:outputText value="Requsición"/>
+                            </f:facet>
+                            <h:outputText value="#{data.consecutivoRequisicion}" />
+                        </p:column>                                                        
+                        <p:column >
+                            <f:facet name="header">
+                                <h:outputText value="SubTotal"/>
+                            </f:facet>
+                            <h:outputText value="#{data.subTotal}" >
+                                <f:convertNumber currencySymbol="$" groupingUsed="true" maxFractionDigits="2" type="currency"/>
+                            </h:outputText>
+                        </p:column>                                                        
+                        <p:column >
+                            <f:facet name="header">
+                                <h:outputText value="Total"/>
+                            </f:facet>
+                            <h:outputText value="#{data.total}" >
+                                <f:convertNumber currencySymbol="$" groupingUsed="true" maxFractionDigits="2" type="currency"/>
+                            </h:outputText>
+                        </p:column>                                                        
+                        <p:column >
+                            <f:facet name="header">
+                                <h:outputText value="Total (USD)"/>
+                            </f:facet>
+                            <h:outputText value="#{data.totalUsd}" >
+                                <f:convertNumber currencySymbol="$" groupingUsed="true" maxFractionDigits="2" type="currency"/>
+                            </h:outputText>
+                        </p:column>   
+                        <p:column >
+                            <f:facet name="header">
+                                <h:outputText value="Estatus"/>
+                            </f:facet>
+                            <h:outputText value="#{data.estatus}" />
+                        </p:column>                          
+
+                    </my:dataGrid>
+                    <p:panelGrid style="float: right;" rendered="#{proyectoOTBean.listaOrden.rowCount gt 0}">
+                        <p:panelGrid columns="2" style="float: right; margin-right: 20px;">
+                            <h:outputText value="Exportar" title="Da clic en este icono para Exportar los registros a un documento de tipo .xls"/>
+                            <p:dataExporter type="excel" target="detalle" />
+                        </p:panelGrid>
+                    </p:panelGrid>
+                </h:form>
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

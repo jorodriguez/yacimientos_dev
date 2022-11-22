@@ -1,0 +1,142 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                >
+    <div class="row" style="margin-top: 15px;">
+        <div class="input-group">
+            <div class="col-2">
+                <h:outputText value="Consecutivo" styleClass="control-label" style="margin: 15px;"/>    
+            </div>
+            <div class="col-2">
+                <h:outputText value="Gerencia:" styleClass="control-label" style="margin: 15px;"/>            
+            </div>
+            <div class="col-2">
+                <h:outputText value="Estatus:" styleClass="control-label" style="margin: 15px;"/>            
+            </div>
+            <div class="col-4">
+                <h:outputText value="Fechas:" styleClass="control-label" style="margin: 15px;"/>
+
+            </div>            
+        </div>
+    </div>
+    <div class="row">
+        <div class="input-group">
+            <div class="col-2">
+                <h:inputText value="#{reporteReqTiemposBean.consecutivo}" styleClass="form-control"/>
+            </div>
+            <div class="col-2">
+                <h:selectOneMenu value="#{reporteReqTiemposBean.idGerencia}" class="form-control">
+                    <f:selectItem  itemLabel="Seleccionar" itemValue="0"/>
+                    <f:selectItems value="#{reporteReqTiemposBean.gerencias}"/>
+                </h:selectOneMenu>	
+            </div>
+            <div class="col-2">
+                <h:selectOneMenu value="#{reporteReqTiemposBean.idEstatus}" class="form-control">
+                    <f:selectItem  itemLabel="Seleccionar" itemValue="0"/>
+                    <f:selectItems value="#{reporteReqTiemposBean.estatus}"/>
+                </h:selectOneMenu>
+            </div>
+            <div class="col-4 input-group">
+                <p:datePicker value="#{reporteReqTiemposBean.fecha1}" 
+                              pattern="dd/MM/yyyy"
+                              readonly="true">
+                </p:datePicker>
+                <h:outputText value=" a " styleClass="control-label" style="margin: 5px;"/>
+                <p:datePicker value="#{reporteReqTiemposBean.fecha2}" 
+                              pattern="dd/MM/yyyy">
+                </p:datePicker>
+            </div>     
+        </div>
+    </div>
+    <div class="col-12">  
+        <p:commandLink value="Buscar" action="#{reporteReqTiemposBean.traerRequisicionTiempos}" 
+                       styleClass="btn btn-primary text-white" 
+                       process="@this form1:tbRepBI" update="form1:tbRepBI:dtReqTiempos"/>
+    </div>
+    
+    <div class="table table-responsive">
+        <p:dataTable size="small" stripedRows="true" showGridlines="true" 
+                     id="dtReqTiempos" value="#{reporteReqTiemposBean.lstRequisiciones}" var="data"
+                     rows="10" 
+                     paginator="true"  
+                     paginatorPosition="bottom" >        
+            <p:column headerText="#{msgs['orden.consecutivo']}" style="text-align: left;background-color: yellow;">
+                <h:outputText value="#{data.consecutivo}"/>
+            </p:column>
+            <p:column headerText="#{msgs['requisicion.referencia']}" style="text-align: left;background-color: yellow;">
+                <h:outputText value="#{data.referencia}"/>
+            </p:column>
+            <p:column headerText="#{msgs['orden.gerencia.nombre']}" style="text-align: left;background-color: yellow;">
+                <h:outputText value="#{data.gerencia}"/>
+            </p:column>                
+
+
+            <p:column headerText="#{msgs['requisicion.solicito']}" style="text-align: left;#{data.fechaSolicita eq null ? '' : 'background-color: green'};">
+                <h:outputText value="#{data.nombreSolicita}"/>
+            </p:column>
+            <p:column headerText="F. Sol" style="text-align: left;#{data.fechaSolicita eq null ? '' : 'background-color: green'};">
+                <h:outputText value="#{data.fechaSolicita}">
+                    <f:convertDateTime pattern="dd/MM/yyyy"/>
+                </h:outputText>
+            </p:column>
+
+            <p:column headerText="Visto Bueno" style="text-align: left;#{data.fechaVistoBueno eq null ? '' : 'background-color: green'};">
+                <h:outputText value="#{data.nombreVistoBueno}"/>
+            </p:column>
+            <p:column headerText="F. VoBo" style="text-align: left;#{data.fechaVistoBueno eq null ? '' : 'background-color: green'};">
+                <h:outputText value="#{data.fechaVistoBueno}">
+                    <f:convertDateTime pattern="dd/MM/yyyy"/>
+                </h:outputText>
+            </p:column>
+            <p:column headerText="Dias VoBo" style="text-align: left;#{data.fechaVistoBueno eq null ? (data.fechaSolicita eq null ? '' : 'background-color: red') : 'background-color: green'};">
+                <h:outputText value="#{data.fechaSolicita eq null ? '' : data.diasVistoBueno}"/>                
+            </p:column>
+
+            <p:column headerText="Revisa" style="text-align: left;#{data.fechaRevisa eq null ? '' : 'background-color: green'};">
+                <h:outputText value="#{data.nombreRevisa}"/>
+            </p:column>
+            <p:column headerText="F. Rev" style="text-align: left;#{data.fechaRevisa eq null ? '' : 'background-color: green'};">
+                <h:outputText value="#{data.fechaRevisa}">
+                    <f:convertDateTime pattern="dd/MM/yyyy"/>
+                </h:outputText>
+            </p:column>
+            <p:column headerText="Dias Rev" style="text-align: left;#{data.fechaRevisa eq null ? (data.fechaVistoBueno eq null ? '' : 'background-color: red') : 'background-color: green'};">
+                <h:outputText value="#{data.fechaVistoBueno eq null ? '' : data.diasRevisa}"/>                
+            </p:column>
+
+            <p:column headerText="Aprueba" style="text-align: left;#{data.fechaAprueba eq null ? '' : 'background-color: green'};">
+                <h:outputText value="#{data.nombreAprueba}"/>
+            </p:column>
+            <p:column headerText="F. Apru" style="text-align: left;#{data.fechaAprueba eq null ? '' : 'background-color: green'};">
+                <h:outputText value="#{data.fechaAprueba}">
+                    <f:convertDateTime pattern="dd/MM/yyyy"/>
+                </h:outputText>
+            </p:column>
+            <p:column headerText="Dias Apru" style="text-align: left;#{data.fechaAprueba eq null ? (data.fechaRevisa eq null ? '' : 'background-color: red') : 'background-color: green'};">
+                <h:outputText value="#{data.fechaRevisa eq null ? '' : data.diasAprueba}"/>                
+            </p:column>
+
+            <p:column headerText="Asigna" style="text-align: left;#{data.fechaAsigna eq null ? '' : 'background-color: green'};">
+                <h:outputText value="#{data.nombreAsigna}"/>
+            </p:column>
+            <p:column headerText="F. Asig" style="text-align: left;#{data.fechaAsigna eq null ? '' : 'background-color: green'};">
+                <h:outputText value="#{data.fechaAsigna}">
+                    <f:convertDateTime pattern="dd/MM/yyyy"/>
+                </h:outputText>
+            </p:column>
+            <p:column headerText="Dias Asig" style="text-align: left;#{data.fechaAsigna eq null ? (data.fechaAprueba eq null ? '' : 'background-color: red') : 'background-color: green'};">
+                <h:outputText value="#{data.fechaAprueba eq null ? '' : data.diasAsigna}"/>                
+            </p:column>
+            <p:column headerText="Total" style="text-align: left;">
+                <h:outputText value="#{(data.diasAsigna+data.diasAprueba+data.diasRevisa+data.diasVistoBueno)}"/>                
+            </p:column>
+        </p:dataTable>
+    </div>
+    <p:commandButton value="XLS" styleClass="p-mr-2 p-mb-2">
+        <p:dataExporter type="xls" target="dtReqTiempos" fileName="RequisicionesTiempos"/>
+    </p:commandButton>
+
+</ui:composition>

@@ -1,0 +1,194 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://java.sun.com/jsf/core">
+
+    <div class="modal fade" data-backdrop="static" id="dialogoDatosFactura" data-keyboard="false">
+        <h:form id="frmDatosFac"> 
+            <div class="modal-dialog modal-lg"  >
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title">Datos de la factura</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <div class="form-inline">
+                                    <h:outputText value="Folio: " class="control-label col-lg-3"></h:outputText>
+                                    <h:outputText value="#{proveedorBean.facturaVo.folio}"/>
+                                </div>                                         
+                                <div class="form-inline">
+                                    <h:outputText value="Fecha: " class="control-label col-lg-3"></h:outputText>
+                                    <h:outputText value="#{proveedorBean.facturaVo.fechaEmision}">
+                                        <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                    </h:outputText>
+                                </div>
+                                <div class="form-inline">
+                                    <h:outputText value="Cambio: " class="control-label col-lg-3"></h:outputText>
+                                    <h:outputLabel  value="#{proveedorBean.facturaVo.tipoCambio}">
+                                        <f:convertNumber pattern="#,###.0000"/>
+                                    </h:outputLabel>
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="form-inline">
+                                    <h:outputText value="Subtotal: " class="control-label col-lg-4"></h:outputText>
+                                    <h:outputText  value="#{proveedorBean.facturaVo.subTotal}">
+                                        <f:convertNumber  type="currency" pattern="#,###.0000" />
+                                    </h:outputText>
+                                </div>
+                                <div class="form-inline">
+                                    <h:outputText value="Total: " class="control-label col-lg-4"></h:outputText>
+                                    <h:outputText id="facMonto" value="#{proveedorBean.facturaVo.monto}">
+                                        <f:convertNumber  pattern="#,###.0000"/>
+                                    </h:outputText>
+                                </div>
+                                <div class="form-inline">
+                                    <h:outputText value="Moneda: " class="control-label col-lg-4"></h:outputText>
+                                    <h:outputLabel value="#{proveedorBean.facturaVo.moneda}"/>
+                                </div>
+                            </div>
+                        </div>
+                        <p:tabView>
+                            <p:tab id="tabOrdenCompra" title="Partidas de la factura">
+                                <div class="row">
+                                    <p:dataTable value="#{proveedorBean.facturaVo.detalleFactura}" var="dataDet"
+                                                 rowIndexVar="indice"  paginator="true" rows="10"  lazy="true"
+                                                 paginatorPosition="bottom"  paginatorAlwaysVisible="true"
+                                                 size="small" showGridlines="true">
+                                        <p:column headerText="Descripción" style="text-align: justify">
+                                            #{dataDet.descripcion}
+                                        </p:column>
+                                        <p:column headerText="Cant." width="8%">
+                                            <h:outputText value="#{dataDet.cantidad}">
+                                                <f:convertNumber maxFractionDigits="2"/>
+                                            </h:outputText>
+                                        </p:column>
+                                        <p:column headerText="Precio" style="text-align: right;" width="8%">
+                                            <h:outputText value="#{dataDet.precio}">
+                                                <f:convertNumber maxFractionDigits="2"  pattern="#####.##"/>
+                                            </h:outputText>
+                                        </p:column>
+                                        <p:column headerText="Importe" style="text-align: right;" width="8%">
+                                            <h:outputText value="#{dataDet.importe}">
+                                                <f:convertNumber maxFractionDigits="2" pattern="#####.##"/>
+                                            </h:outputText>
+                                        </p:column>
+                                    </p:dataTable>
+                                </div>
+                            </p:tab>
+                            <p:tab title="Soportes">
+                                <div class="row">
+                                    <p:dataTable value="#{proveedorBean.soportes}" var="data"
+                                                 size="small" showGridlines="true">
+                                        <p:column headerText="Tipo" style="text-align: left;" >
+                                            #{data.tipo}
+                                        </p:column>
+                                        <p:column headerText="Archivo">
+                                            #{data.adjuntoVo.nombre}
+                                        </p:column>
+                                        <p:column width="5%">
+                                            <h:outputLink id="abrir" target="_blank" 
+                                                          style="color: blue;"
+                                                          title="Click aqui para abrir el archivo..." 
+                                                          value="/Proveedor/AbrirArchivo?ZWZ2W=#{data.adjuntoVo.id}&amp;ZWZ3W=#{data.adjuntoVo.uuid}">
+                                                <h:outputText value=" Abrir"/>
+                                            </h:outputLink>  
+                                        </p:column>
+                                    </p:dataTable>
+                                </div>
+                            </p:tab>
+                            <p:tab title="Contenido Nacional">
+                                <div class="row">
+                                    <p:dataTable value="#{proveedorBean.contenidoNacionalFactura}" var="dataCN"
+                                                 size="small" showGridlines="true"> 
+                                        <p:column headerText="Código">                                    
+                                            <h:outputText value="#{dataCN.codigoCatalogoHidro}" />
+                                        </p:column>
+                                        <p:column headerText="Descripción" style="text-align: left;">
+                                            <h:outputText value="#{dataCN.nombreCatalogoHidro}" />
+                                        </p:column>
+                                        <p:column headerText="Cont. Nac." >
+                                            <h:outputText value="#{dataCN.proporcionContenido}" />
+                                            <h:outputText value="#{dataCN.nombreCatalogoHidro}"/>
+                                        </p:column>
+                                        <p:column headerText="Monto Facturado" style="text-align: right;">
+                                            <h:outputText value="#{dataCN.montoFacturado}"  >
+                                                <f:convertNumber  pattern="#,###.0000" type="currency"/>
+                                            </h:outputText>
+                                            <h:outputLabel value="#{dataCN.totalMontoFacturado}" style="text-align: right;">
+                                                <f:convertNumber pattern="#,###.0000"/>
+                                            </h:outputLabel>
+                                        </p:column>
+                                    </p:dataTable>
+                                </div>
+                            </p:tab>
+                            <p:tab title="Comprobante de pago">
+                                <div class="row">
+                                    <p:dataTable value="#{proveedorBean.comprobantes}" var="data">
+                                        <p:column headerText="Tipo" style="text-align: left;" >
+                                            #{data.tipo}
+                                        </p:column>
+                                        <p:column headerText="Archivo">
+                                            #{data.adjuntoVo.nombre}
+                                        </p:column>
+                                        <p:column width="8%">
+                                            <h:outputLink id="abrir" target="_blank" 
+                                                          style="color: blue;"
+                                                          title="Click aqui para abrir el archivo..." 
+                                                          value="/Proveedor/AbrirArchivo?ZWZ2W=#{data.adjuntoVo.id}&amp;ZWZ3W=#{data.adjuntoVo.uuid}">
+                                                <h:outputText value=" Abrir"/>
+                                            </h:outputLink>  
+                                        </p:column>
+                                    </p:dataTable>
+                                </div>
+                            </p:tab>
+                        </p:tabView>
+                    </div>
+                    <div class="modal-footer">
+                        <p:commandLink value="Cerrar" styleClass="btn btn-default"
+                                       onclick="$(dialogoDatosFactura).modal('hide');"/>
+                    </div>
+                </div>
+            </div>
+        </h:form>
+    </div>
+
+    <div class="modal fade" data-backdrop="static" id="dialogoDatosFacturaCXP" data-keyboard="false">
+
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <h:form id="frmArchivoFact">
+                    <div class="modal-header">
+
+                        <h:outputLabel value="Cargar complemento de pago XML" class="modal-title" rendered="#{proveedorBean.isTipoCXPXML}"/>
+                        <h:outputLabel value="Cargar complemento de pago PDF" class="modal-title" rendered="#{!proveedorBean.isTipoCXPXML}"/>
+                    </div>
+                    <div class="modal-body container-fluid">                        
+                        <div class="col-lg-12">                            
+                            <p:fileUpload id="file-entry"
+                                          style=" color: maroon;"
+                                          required="true"
+                                          requiredMessage="Debe seleccionar un archivo"                                           
+                                          listener="#{proveedorBean.uploadFile}"
+                                          process="@this" update="frmPrincipal:tbPrincipal"/>
+                        </div>
+                        <h:message  id="msg-file" for="file-entry" styleClass="text-danger" showDetail="false" showSummary="true"/>
+                    </div>
+                    <div class="modal-footer">
+                        <div id="msjValidando" style="visibility: hidden">
+                            <h:outputText value="Por favor espere, se está validando el archivo ..." rendered="#{proveedorBean.isTipoCXPXML}"/>
+                        </div>
+                        <p:commandLink value="Cerrar" class="btn btn-default" 
+                                       action="#{proveedorBean.cerrarCargaSoporte}"
+                                       immediate="true">
+                        </p:commandLink>
+                    </div>
+                </h:form>
+            </div>
+        </div>
+
+    </div>
+
+</ui:composition>

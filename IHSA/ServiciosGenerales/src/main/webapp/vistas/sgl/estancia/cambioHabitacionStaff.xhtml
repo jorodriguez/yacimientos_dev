@@ -1,0 +1,431 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      >
+    <body>
+        <ui:composition template="./../../../WEB-INF/facelets/templates/templateServiciosGenerales.xhtml">
+            <ui:define name="titulo">
+                Huéspedes en Staff House's
+            </ui:define>
+            <ui:define name="contenido">
+                <h:form id="frmRegistroHuesped" >
+                    <p:dataTable id="dataGridHuespedesStaff" rows="20"  showGridlines="true" size="small"
+                                 value="#{administrarHuespedStaffBean.huespedes}" 
+                                 var="data">                              
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="Solicitud" />
+                            </f:facet>
+                            <h:outputText value="#{data.sgSolicitudEstancia.codigo}" />
+                        </p:column>                               
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="Huésped" />
+                            </f:facet>
+                            <h:outputText value="#{data.sgDetalleSolicitudEstancia.usuario != null ? data.sgDetalleSolicitudEstancia.usuario.nombre : data.sgDetalleSolicitudEstancia.sgInvitado.nombre}" />
+                        </p:column>
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="Tipo" />
+                            </f:facet>
+                            <h:outputText value="#{data.sgTipoEspecifico.nombre}" />
+                        </p:column>      
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="Staff House" />
+                            </f:facet>
+                            <h:outputText value="#{data.sgStaffHabitacion.sgStaff.nombre}" />
+                        </p:column>
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="# Staff House" />
+                            </f:facet>
+                            <h:outputText value="#{data.sgStaffHabitacion.sgStaff.numeroStaff}" />
+                        </p:column>                            
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="Habitación" />
+                            </f:facet>
+                            <h:outputText value="#{data.sgStaffHabitacion.nombre}" />
+                        </p:column>
+                        <p:column style="text-align: center" >
+                            <f:facet name="header">
+                                <h:outputText value="# Habitación" />
+                            </f:facet>
+                            <h:outputText value="#{data.sgStaffHabitacion.numeroHabitacion}" />
+                        </p:column> 
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="Fecha ingreso" />
+                            </f:facet>
+                            <h:outputText value="#{data.fechaIngreso}">
+                                <f:convertDateTime pattern="dd/MM/yyyy" type="date"/>
+                            </h:outputText>
+                        </p:column>
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="Fecha salida" />
+                            </f:facet>
+                            <h:outputText value="#{data.fechaSalida}" styleClass="#{data.prolongada eq true ? 'fNegrita12' : ''}">
+                                <f:convertDateTime pattern="dd/MM/yyyy" type="date"/>
+                            </h:outputText>
+                        </p:column>
+                        <p:column headerText="Mod. Fecha">
+                            <p:commandLink value="Mod. Fecha"
+                                           rendered="#{data.prolongada eq true}"
+                                           action="#{administrarHuespedStaffBean.seleccionarFechaSalidaHuespedStaffProlongado(data)}"
+                                           update="frmModFecha" process="@this"/>
+                        </p:column> 
+                        <p:column width="80">
+                            <p:commandLink value="#{msgs['sistema.salir']}" 
+                                           action="#{administrarHuespedStaffBean.mostrarPopupSalidaHuespedStaff(data)}" />
+                        </p:column>                             
+                        <!--p:column>
+                            <p:commandLink value="#{msgs['sistema.cambiar']}" 
+                                           action="#{administrarHuespedStaffBean.mostrarPopupCambiarHuesped(data)}" 
+                                           rendered="#{data.sgTipoEspecifico.id != 17}"
+                                           process="@this" update="popupCambiarHuespedStaff"/>
+                        </p:column-->  
+                        <p:column width="80"> 
+                            <p:commandLink value="#{msgs['sistema.cancelar']}" styleClass="link"
+                                           action="#{administrarHuespedStaffBean.cancelHospedajeStaff(data)}"  
+                                           process="@this" update="@form"/>
+                        </p:column>                            
+                    </p:dataTable> 
+                </h:form>
+                <h:form id="frmModFecha">
+                    <p:dialog id="dialogModificarFechaStyaff"
+                              widgetVar="myPanelModificarFechaStaff" 
+                              modal="true"                                                                                                                                        
+                              resizable="false"                    
+                              header="Cambiar fecha de salida"
+                              showHeader="true"    
+                              width="220"                                
+                              closeOnEscape="true"
+                              draggable="false"
+                              position="center">                       
+                        <h:panelGroup >                                
+                            <center><h:messages globalOnly="true" errorClass="errorMessage" infoClass="infoMessage"/></center>
+                            <h:panelGrid columns="2">
+                                <h:outputLabel value="Huésped :"/>                
+                                <h:outputText  value="#{administrarHuespedStaffBean.huespedStaff.sgDetalleSolicitudEstancia.usuario}"/>
+                                <h:outputLabel value="Fecha ingreso actual : "/>              
+                                <h:outputText  value="#{administrarHuespedStaffBean.huespedStaff.fechaIngreso}">
+                                    <f:convertDateTime pattern="dd/MM/yyyy" type="date"/>
+                                </h:outputText>
+                                <h:outputLabel value="Fecha Salida :"/>
+                                <h:outputText  value="#{administrarHuespedStaffBean.huespedStaff.fechaSalida}">                            
+                                    <f:convertDateTime pattern="dd/MM/yyyy" type="date"/>
+                                </h:outputText>                                
+                            </h:panelGrid>   
+
+                            <h:outputLabel value="Por favor seleccione la fecha nueva:"/>
+                            <p:datePicker  value="#{administrarHuespedStaffBean.fechaSalidaPropuesta}"  id="fechaRealSalidaProlong"
+                                           pattern="dd/MM/yyyy"/>
+                        </h:panelGroup>
+                        <footer>
+                            <p:commandLink value="#{msgs['sistema.aceptar']}"
+                                           action="#{administrarHuespedStaffBean.modificarFechaSalidaHuespedStaffProlongado}"
+                                           styleClass="btn btn-info text-white" 
+                                           process="@form" update="frmRegistroHuesped"/>
+                        </footer>
+                    </p:dialog>
+
+
+                </h:form>
+
+                <!-- Cambiar Huésped de Staff -->
+                <!--h:form id="popupCambiarHuespedStaff"  >
+                    <p:dialog  header="Cambio de Habitación"  widgetVar="dlgCambiarHab" >
+                        <h:panelGrid width="400px" >
+                            <center><h:messages id="msgCambioHuespedStaff" errorClass="errorMessage" infoClass="infoMessage"/></center>
+
+                            <h:panelGrid  styleClass="bordePanelGrid" >
+                                <h:outputLabel value="Registro Actual" style="text-align: left" styleClass="fNegrita12" />
+
+                                <h:panelGrid  columns="2">
+                                    <h:panelGrid columns="2" >
+                                        <h:outputLabel value="Huésped:" styleClass="f11" />
+                                        <h:outputText value="#{administrarHuespedStaffBean.huespedStaff.sgDetalleSolicitudEstancia.usuario.nombre}" rendered="#{administrarHuespedStaffBean.huespedStaff.sgDetalleSolicitudEstancia.usuario != null}" style="font-weight: bold; font-size: 9pt;" />
+                                        <h:outputText value="#{administrarHuespedStaffBean.huespedStaff.sgDetalleSolicitudEstancia.sgInvitado.nombre}" rendered="#{administrarHuespedStaffBean.huespedStaff.sgDetalleSolicitudEstancia.sgInvitado != null}" style="font-weight: bold; font-size: 9pt;" />
+                                    </h:panelGrid> 
+                                    <h:panelGrid columns="2">
+                                        <h:outputLabel value="Tipo registro:" styleClass="f11" />
+                                        <h:outputText value="#{administrarHuespedStaffBean.huespedStaff.sgTipoEspecifico.nombre}" styleClass="f10" />
+                                    </h:panelGrid>                                    
+                                    <h:panelGrid columns="2">
+                                        <h:outputLabel value="Staff: " styleClass="f11" />
+                                        <h:outputText value="#{administrarHuespedStaffBean.huespedStaff.sgStaffHabitacion.sgStaff.nombre}" styleClass="f10" />
+                                    </h:panelGrid>
+                                    <h:panelGrid columns="2">
+                                        <h:outputLabel value="# Staff: " styleClass="f11" />
+                                        <h:outputText value="#{administrarHuespedStaffBean.huespedStaff.sgStaffHabitacion.sgStaff.numeroStaff}" styleClass="f10" />
+                                    </h:panelGrid>
+                                    <h:panelGrid columns="2">
+                                        <h:outputLabel value="Habitación: " styleClass="f11" />
+                                        <h:outputText value="#{administrarHuespedStaffBean.huespedStaff.sgStaffHabitacion.nombre}" styleClass="f10" />
+                                    </h:panelGrid>
+                                    <h:panelGrid columns="2">
+                                        <h:outputLabel value="# Habitación: " styleClass="f11" />
+                                        <h:outputText value="#{administrarHuespedStaffBean.huespedStaff.sgStaffHabitacion.numeroHabitacion}" styleClass="f10" />
+                                    </h:panelGrid>
+                                    <h:panelGrid columns="2">
+                                        <h:outputLabel value="Fecha Ingreso: " styleClass="f11" />
+                                        <h:outputText value="#{administrarHuespedStaffBean.huespedStaff.fechaIngreso}" styleClass="f10" >
+                                            <f:convertDateTime pattern="dd/MM/yyyy" type="date"/>
+                                        </h:outputText>
+                                    </h:panelGrid>
+                                    <h:panelGrid columns="2">
+                                        <h:outputLabel value="Fecha Salida: " styleClass="f11" />
+                                        <h:outputText value="#{administrarHuespedStaffBean.huespedStaff.fechaSalida}" styleClass="f10" >
+                                            <f:convertDateTime pattern="dd/MM/yyyy" type="date"/>
+                                        </h:outputText>
+                                    </h:panelGrid>
+                                </h:panelGrid> 
+                                <h:panelGrid columns="2" >
+                                    <h:outputLabel value="Fecha real de ingreso: " styleClass="f11" />
+                                    <p:datePicker value="#{administrarHuespedStaffBean.fechaRealIngresoHuesped}" id="fechaRealIngresoHuespedActual"
+                                                  pattern="dd/MM/yyyy"/>
+                                </h:panelGrid>
+                                <h:panelGrid columns="2" >
+                                    <h:outputLabel value="Fecha real de salida: " styleClass="f11" />
+                                    <p:datePicker value="#{administrarHuespedStaffBean.fechaRealSalidaHuesped}" id="fechaRealSalidaHuespedActual"
+                                                  pattern="dd/MM/yyyy"/>    
+                                </h:panelGrid>
+                            </h:panelGrid>                             
+
+                            <h:panelGrid >
+                                <f:facet name="header"><h:outputText value="Cambiar a: "/></f:facet>
+                                <p:selectOneRadio value="#{administrarHuespedStaffBean.opcionSeleccionada}"  >
+                                    <f:selectItem itemLabel="Staff" itemValue="Staff"/>
+                                    <f:selectItem itemLabel="Hotel" itemValue="Hotel"/>
+                                </p:selectOneRadio>
+                            </h:panelGrid-->
+                            <!-- selectedPanel="#{administrarHuespedStaffBean.opcionSeleccionada}" -->
+                <!--p:panel id="pnStk" >
+                    <h:panelGroup id="Staff">
+                        <h:panelGrid width="400px" styleClass="bordePanelGrid" >
+                            <h:outputLabel value="Registro en Nueva Habitación de Staff" style="text-align: left" styleClass="fNegrita12" />
+                            <h:panelGrid  columns="2">
+                                <h:outputLabel value="Fecha ingreso: " styleClass="f11" />
+                                <p:datePicker  value="#{administrarHuespedStaffBean.fechaIngresoHuesped}" id="fechaIngresoHuespedNueva"
+                                               pattern="dd/MM/yyyy"/>                   
+                            </h:panelGrid>
+                            <h:panelGrid  columns="2">
+                                <h:outputLabel value="Fecha salida:" styleClass="f11" />
+                                <p:datePicker  value="#{administrarHuespedStaffBean.fechaSalidaHuesped}" id="fechaSalidaHuespedNueva"
+                                               pattern="dd/MM/yyyy"/>
+                            </h:panelGrid>
+
+                            <h:panelGrid columns="2">
+                                <h:outputLabel value="Staff: " styleClass="f11" />
+                                <p:selectOneMenu id="tipo" value="#{administrarHuespedStaffBean.idStaff}"  valueChangeListener="#{administrarHuespedStaffBean.cargarHabitacionesInTableByStaff}" style="width: 150px;" >
+                                    <f:selectItem itemLabel="Seleccione Staff..." itemValue="-1" />
+                                    <f:selectItems value="#{administrarHuespedStaffBean.staffListSelectItem}" />
+                                </p:selectOneMenu>
+                            </h:panelGrid>
+
+                            <h:panelGrid columns="2" rendered="#{administrarHuespedStaffBean.idStaff > 0}">
+                                <h:outputLabel value="Habitación seleccionada: " styleClass="f11" />
+                                <h:outputText value="#{administrarHuespedStaffBean.habitacion.nombre} | #{administrarHuespedStaffBean.habitacion.numeroHabitacion}" style="font-size: 13px; font-weight: bold" />
+                            </h:panelGrid>
+
+                            <h:panelGrid  rendered="#{administrarHuespedStaffBean.idStaff > 0}" >
+                                <p:dataTable showGridlines="true" size="small"  value="#{administrarHuespedStaffBean.habitacionesStaffDataModel}" var="item"  >
+                                    <p:column>
+                                        <f:facet name="header">
+                                            <h:outputText value="Nombre"/>
+                                        </f:facet>
+                                        <h:outputText value="#{item.nombre}"/>
+                                    </p:column>
+                                    <p:column>
+                                        <f:facet name="header">
+                                            <h:outputText value="Número" />
+                                        </f:facet>
+                                        <h:outputText value="#{item.numeroHabitacion}" />
+                                    </p:column> 
+                                    <p:column>
+                                        <p:commandLink value="#{msgs['sistema.seleccionar']}" action="#{administrarHuespedStaffBean.seleccionarHabitacion(actionEvent)}" styleClass="link" />
+                                    </p:column>
+                                </p:dataTable>                                            
+                            </h:panelGrid> 
+                        </h:panelGrid>
+                    </h:panelGroup>
+
+                    <h:panelGroup id="Hotel">
+                        <h:panelGrid width="350px" styleClass="bordePanelGrid" >
+                            <h:outputLabel value="Registro en Nueva Habitación de Hotel" style="text-align: left" styleClass="fNegrita12" />
+                            <h:panelGrid  columns="2">
+                                <h:outputLabel value="Fecha ingreso: " styleClass="f11" />
+                                <p:datePicker value="#{administrarHuespedStaffBean.fechaIngresoHuesped}" id="fechaIngresoHuesped"
+                                              pattern="dd/MM/yyyy"/>                   
+                            </h:panelGrid>
+                            <h:panelGrid  columns="2">
+                                <h:outputLabel value="Fecha salida:" styleClass="f11" />
+                                <p:datePicker value="#{administrarHuespedStaffBean.fechaSalidaHuesped}" id="fechaSalidaHuesped"
+                                              pattern="dd/MM/yyyy"/>
+                            </h:panelGrid>
+                            <h:panelGrid columns="2" >
+                                <h:outputLabel value="Hotel: " styleClass="f11" />
+                                <p:selectOneMenu value="#{administrarHuespedStaffBean.idHotel}" valueChangeListener="#{administrarHuespedStaffBean.traerHabitacionesCambio}"  
+                                                 styleClass="form-control">
+                                    <f:selectItem itemLabel="Seleccione..." itemValue="-1"/>
+                                    <f:selectItems value="#{administrarHuespedStaffBean.listaHotel}"/>
+                                </p:selectOneMenu>                                                    
+                                <h:outputLabel value="Habitación: " styleClass="f11" />
+                                <p:selectOneMenu value="#{administrarHuespedStaffBean.idHabitacion}" styleClass="form-control">
+                                    <f:selectItem itemLabel="Seleccione..." itemValue="-1"/>
+                                    <f:selectItems value="#{administrarHuespedStaffBean.listaHabitacionCambio}"/>
+                                </p:selectOneMenu>       
+                                <h:outputLabel value="# Reservación: " styleClass="f11" />
+                                <p:inputText value="#{administrarHuespedStaffBean.numeroHabitacion}"/>
+                            </h:panelGrid>
+                        </h:panelGrid>
+                    </h:panelGroup>
+
+                </p:panel>
+
+            </h:panelGrid>
+
+            <br/>
+
+            <center>
+                <h:panelGrid columns="2">
+                    <p:commandButton value="#{msgs['sistema.guardar']}" action="#{administrarHuespedStaffBean.changeHuesped(actionEvent)}" styleClass="btn btn-info"/>
+                    <p:commandButton value="#{msgs['sistema.cancelar']}" action="#{administrarHuespedStaffBean.ocultarPopupCambiarHuesped(actionEvent)}" immediate="true" styleClass="btn btn-default"/>        
+                </h:panelGrid>                        
+            </center>                          
+
+        </p:dialog>
+    </h:form-->
+
+                <!-- Salir de habitación de Staff -->
+                <h:form id="frmSalirHabitacionStaff">
+                    <p:dialog widgetVar="dlgSalirHab"  header="Salir de Habitación"  >
+                        <h:panelGrid styleClass="bordePanelGrid" >
+                            <center><h:messages id="msgSalirHabitacionStaffPopup" errorClass="errorMessage" infoClass="infoMessage"/></center>
+
+                            <h:outputLabel value="Datos de la Habitación Actual" style="text-align: left" styleClass="fNegrita12" />
+
+                            <h:panelGrid columns="2" >
+                                <h:panelGrid columns="2">
+                                    <h:outputLabel value="Huésped: " styleClass="f11" />
+                                    <h:panelGrid>
+                                        <h:outputText value="#{administrarHuespedStaffBean.huespedStaff.sgDetalleSolicitudEstancia.usuario.nombre}" rendered="#{administrarHuespedStaffBean.huespedStaff.sgDetalleSolicitudEstancia.usuario != null}" />
+                                        <h:outputText value="#{administrarHuespedStaffBean.huespedStaff.sgDetalleSolicitudEstancia.sgInvitado.nombre}" rendered="#{administrarHuespedStaffBean.huespedStaff.sgDetalleSolicitudEstancia.sgInvitado != null}" />
+                                    </h:panelGrid>
+                                    <h:outputLabel value="Tipo de Huésped: " styleClass="f11" />
+                                    <h:outputText value="#{administrarHuespedStaffBean.huespedStaff.sgTipoEspecifico.nombre}" styleClass="f11" />
+                                    <h:outputLabel value="Fecha Ingreso: " styleClass="f11"/>
+                                    <h:outputText value="#{administrarHuespedStaffBean.huespedStaff.fechaIngreso}" styleClass="f11" >
+                                        <f:convertDateTime pattern="dd/MM/yyyy" type="date"/>
+                                    </h:outputText>
+                                    <h:outputLabel value="Fecha Salida: " styleClass="f11"/>
+                                    <h:outputText value="#{administrarHuespedStaffBean.huespedStaff.fechaSalida}" styleClass="f11" >
+                                        <f:convertDateTime pattern="dd/MM/yyyy" type="date"/>
+                                    </h:outputText>
+                                </h:panelGrid> 
+                                <h:panelGrid columns="2">
+                                    <h:outputLabel value="Staff: " styleClass="f11" />
+                                    <h:outputText value="#{administrarHuespedStaffBean.huespedStaff.sgStaffHabitacion.sgStaff.nombre}" styleClass="f11" />
+                                    <h:outputLabel value="# Staff: " styleClass="f11" />
+                                    <h:outputText value="#{administrarHuespedStaffBean.huespedStaff.sgStaffHabitacion.sgStaff.numeroStaff}" styleClass="f11" />
+                                    <h:outputLabel value="Habitación: " styleClass="f11" />
+                                    <h:outputText value="#{administrarHuespedStaffBean.huespedStaff.sgStaffHabitacion.nombre}" styleClass="f11" />
+                                    <h:outputLabel value="# Habitación: " styleClass="f11" />
+                                    <h:outputText value="#{administrarHuespedStaffBean.huespedStaff.sgStaffHabitacion.numeroHabitacion}" styleClass="f11" />
+                                </h:panelGrid> 
+                            </h:panelGrid> 
+                        </h:panelGrid>
+                        <h:panelGrid  columns="4">
+                            <h:outputLabel value="Fecha real de Ingreso: "/>
+                            <p:datePicker value="#{administrarHuespedStaffBean.fechaRealIngresoHuesped}" id="fechaRealIngresoHuesped"
+                                          pattern="dd/MM/yyyy"/>
+                            <h:outputLabel value="Fecha real de Salida: "/>
+                            <p:datePicker value="#{administrarHuespedStaffBean.fechaRealSalidaHuesped}" id="fechaRealSalidaHuesped"
+                                          pattern="dd/MM/yyyy"/>
+                        </h:panelGrid>
+                        <f:facet name="footer">
+                            <p:commandLink value="#{msgs['sistema.cancelar']}" 
+                                           action="#{administrarHuespedStaffBean.ocultarPopupSalidaHuespedStaff}" 
+                                           styleClass="btn btn-default" immediate="true"/>        
+                            <p:commandButton value="#{msgs['sistema.aceptar']}" action="#{administrarHuespedStaffBean.exitHuespedStaff}" 
+                                             styleClass="btn btn-info text-white" process="@this" update="frmRegistroHuesped"/>
+                        </f:facet>
+                    </p:dialog>
+                </h:form> 
+
+                <!-- Establecer fecha de salida para el Huésped de Staff de tipo Base -->
+                <h:form id="popupEstablecerFechaSalidaHuespedStaffBase">
+                    <p:dialog widgetVar="dlgEstFechaSal"  header="Establecer fecha de salida" >
+                        <center><h:messages id="msgEstablecerFechaSalidaHuespedStaffBase" errorClass="errorMessage" infoClass="infoMessage"/></center>
+
+                        <h:panelGrid >
+
+                            <h:outputLabel value="Datos de la Habitación Actual" style="text-align: left" styleClass="fNegrita12" />
+                            <h:panelGrid columns="2" >
+                                <h:outputLabel value="Huésped:" />
+                                <h:outputText value="#{administrarHuespedStaffBean.huespedStaff.sgDetalleSolicitudEstancia.usuario.nombre}" rendered="#{administrarHuespedStaffBean.huespedStaff.sgDetalleSolicitudEstancia.usuario != null}" />
+                                <h:outputText value="#{administrarHuespedStaffBean.huespedStaff.sgDetalleSolicitudEstancia.sgInvitado.nombre}" rendered="#{administrarHuespedStaffBean.huespedStaff.sgDetalleSolicitudEstancia.sgInvitado != null}" />
+                            </h:panelGrid>                             
+                            <h:panelGrid columns="2">
+                                <h:panelGrid columns="2">
+                                    <h:outputLabel value="Staff:" />
+                                    <h:outputText value="#{administrarHuespedStaffBean.huespedStaff.sgStaffHabitacion.sgStaff.nombre}" />
+                                </h:panelGrid>
+                                <h:panelGrid columns="2">
+                                    <h:outputLabel value="# Staff:" />
+                                    <h:outputText value="#{administrarHuespedStaffBean.huespedStaff.sgStaffHabitacion.sgStaff.numeroStaff}" />
+                                </h:panelGrid>
+                                <h:panelGrid columns="2">
+                                    <h:outputLabel value="Habitación:" />
+                                    <h:outputText value="#{administrarHuespedStaffBean.huespedStaff.sgStaffHabitacion.nombre}" />
+                                </h:panelGrid>
+                                <h:panelGrid columns="2">
+                                    <h:outputLabel value="# Habitación:" />
+                                    <h:outputText value="#{administrarHuespedStaffBean.huespedStaff.sgStaffHabitacion.numeroHabitacion}" />
+                                </h:panelGrid>
+                                <h:panelGrid columns="2">
+                                    <h:outputLabel value="Fecha Ingreso"/>
+                                    <h:outputText value="#{administrarHuespedStaffBean.huespedStaff.fechaIngreso}" >
+                                        <f:convertDateTime pattern="dd/MM/yyyy" type="date"/>
+                                    </h:outputText>
+                                </h:panelGrid>
+                                <h:panelGrid columns="2">
+                                    <h:outputLabel value="Fecha Salida: "/>
+                                    <h:outputText value="#{administrarHuespedStaffBean.huespedStaff.fechaSalida}" >
+                                        <f:convertDateTime pattern="dd/MM/yyyy" type="date"/>
+                                    </h:outputText>
+                                </h:panelGrid>
+                            </h:panelGrid> 
+                        </h:panelGrid>
+                        <br />
+                        <h:panelGrid  >
+                            <h:outputLabel value="Fecha salida: "/>
+                            <p:datePicker value="#{administrarHuespedStaffBean.fechaSalidaPropuesta}" id="fechaSalidaHuespedStaffBasePropuesta"
+                                          pattern="dd/MM/yyyy"/>
+                        </h:panelGrid>
+                        <center>
+                            <h:panelGrid columns="2">
+                                <p:commandButton value="#{msgs['sistema.guardar']}" 
+                                                 action="#{administrarHuespedStaffBean.establecerFechaSalidaHuespedStaffBase}" 
+                                                 styleClass="btn btn-info text-white" process="@form" update="frmRegistroHuesped"/>        
+                                <p:commandLink value="#{msgs['sistema.cancelar']}" 
+                                               action="#{administrarHuespedStaffBean.ocultarPopupSalidaHuespedStaff}" 
+                                               styleClass="btn btn-default" immediate="true" />        
+                            </h:panelGrid>                        
+                        </center>
+                    </p:dialog>                    
+                </h:form>              
+
+            </ui:define>
+
+        </ui:composition>
+
+    </body>
+</html>

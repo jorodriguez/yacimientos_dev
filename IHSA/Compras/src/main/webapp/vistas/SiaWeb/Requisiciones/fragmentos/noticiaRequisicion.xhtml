@@ -1,0 +1,149 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                >  
+    <div class="row">
+        <h:dataTable id="dtNotasReq" value="#{notaRequisicionBean.notas}" style="padding-left: 15%" 
+                     var="data" cellpadding="0"  
+                     styleClass="table table-striped" >
+            <p:column> 
+                <div class="col-10 bordePanelGrid">                    
+                    <div class="col-1" style="padding:  0 3% 0 0;" >
+                        <img src="/resources/imagenes/logo.png" width="50" height="40" alt="logo"
+                             />
+                    </div>
+                    <div class="col-10" style="border-left: 1px solid #cccccc">
+                        <div class="row">
+                            <h:outputLabel styleClass="control-label" value="#{data['usuarioNombre']}"/>
+                            <h:outputText styleClass="control-label" value=" - "/>  
+                            <h:outputText styleClass="control-label" value="#{data['fechaGenero']}">
+                                <f:convertDateTime pattern="dd/MM/yyyy"/>
+                            </h:outputText>
+                            <h:outputText styleClass="control-label" value=" - "/>  
+                            <h:outputText styleClass="control-label" value="#{data['horaGenero']}">
+                                <f:convertDateTime pattern="h:mm a" timeStyle="default" type="time"/>
+                            </h:outputText>
+                        </div>
+                        <div class="container-fluid">
+                            <div class="row-fluid" >                                                        
+                                <div class="container-fluid">
+                                    <h:outputLabel  value="#{data['titulo']}" styleClass="f12Negrita"/>
+                                    <ui:fragment rendered="#{data['genero'] eq usuarioBean.usuarioConectado.id}">
+                                        <p:commandLink value="#{msgs['sistema.modificar']}" 
+                                                       action="#{notaRequisicionBean.mostrarPopupModificarNoticia(data.id)}"
+                                                       oncomplete="PF('dlgNoticiaReq').show()"
+                                                       process="@this" update="frmNotReq"
+                                                       title="#{msgs['comunicacion.clic.aqui.para']} #{msgs['sistema.modificar']} #{msgs['comunicacion.esta']} #{msgs['comunicacion.publicacion']}"
+                                                       >
+                                        </p:commandLink>
+                                        <h:outputText styleClass="f11gris" value=" - " />  
+                                        <p:commandLink value="#{msgs['sistema.eliminar']}" 
+                                                       title="#{msgs['comunicacion.clic.aqui.para']} #{msgs['sistema.eliminar']} #{msgs['comunicacion.esta']} #{msgs['comunicacion.publicacion']}"
+                                                       styleClass="btn btn-link"
+                                                       action="#{notaRequisicionBean.eliminarNoticia(data.id)}"
+                                                       process="@this" update="form1 frmMenu">
+
+                                        </p:commandLink>
+                                        <h:outputText style="color: graytext; font-size: 11px;" value=" - "/>                                                                                                
+                                        <p:commandLink title="#{msgs['comunicacion.clic.agregar.archivos']}"    
+                                                       process="@this" update="frmAdjArchNot"                                                         
+                                                       action="#{notaRequisicionBean.mostrarPopupSubirArchivo(data.id)}"
+                                                       value="Adjuntar" oncomplete="PF('dlgSubArhNotReq').show();">
+                                        </p:commandLink> 
+                                    </ui:fragment>
+                                </div>                            
+                                <div class="container-fluid">
+                                    <h:outputText style=" text-align: justify; font-size: 1.0em; padding-left: 4px;" value="#{data['mensajeAutomatico']}"/>
+                                    <h:inputTextarea id="comentarioText"  
+                                                     title="#{msgs['comunicacion.escribe.tu.comentario']}" 
+                                                     styleClass="form-control" value="#{data.respuesta}"/>
+                                    <p:commandLink value="#{msgs['comunicacion.responder']}" 
+                                                   styleClass="btn btn-info text-white"
+                                                   process="@this form1" update="form1"
+                                                   title="#{msgs['comunicacion.clic.para.guardar.respuesta']}" 
+                                                   action="#{notaRequisicionBean.agregarComentario(data.id, data.idCampo,data.respuesta)}">
+                                    </p:commandLink>
+                                </div>
+                            </div>
+                            <div class=" container-fluid">
+                                <ui:fragment rendered="#{data.adjuntosCount gt 0}">
+                                    <div class="container-fluid">
+                                        <h:outputLabel value="Archivo(s)"/>
+                                        <h:dataTable id="adjuntos" value="#{data.listaAdjunto}"
+                                                     var="adj" width="60%"> 
+                                            <h:column >      
+                                                <h:outputLink target="_blank"  value="/Compras/AbrirArchivo?ZWZ2W=#{adj['id']}&amp;ZWZ3W=#{adj['uuid']}">
+                                                    <h:outputText value="#{adj['nombre']}" styleClass="btn btn-default"/>
+                                                </h:outputLink>
+                                            </h:column>
+                                            <h:column rendered="#{data['genero'] eq usuarioBean.usuarioConectado.id}">                                        
+                                                <p:commandLink value="#{msgs['sistema.eliminar']}"
+                                                               process="@this" update="form1"
+                                                               action="#{notaRequisicionBean.eliminarArchivo(adj.id, adj.idNoticiaAdjunto, data.id)}"
+                                                               >
+                                                </p:commandLink>
+                                            </h:column>
+                                        </h:dataTable>
+                                    </div>
+                                </ui:fragment>
+
+                                <ui:fragment rendered="#{not empty data.listaComentario}">
+                                    <div class="container-fluid">
+                                        <h:outputLabel value="Respuesta(s)"/>
+                                        <h:dataTable value="#{data.listaComentario}" var="comentario"  
+                                                     >
+                                            <p:column>
+                                                <div class="container-fluid" style="text-align: left; padding-left: 0;
+                                                     border: 1px dashed #cccccc;">
+                                                    <div class="row-fluid">
+                                                        <h:outputLabel  value="#{comentario.usuarioNombre}"/>
+                                                        <h:outputText  value=" - "/> 
+                                                        <h:outputText  value="#{comentario.fechaGenero}">
+                                                            <f:convertDateTime dateStyle="medium" pattern="dd/MM/yyyy"/>
+                                                        </h:outputText>
+                                                        <h:outputText styleClass="control-label" value=" - "/>  
+                                                        <h:outputText  value="#{comentario.horaGenero}">
+                                                            <f:convertDateTime pattern="h:mm a" timeStyle="default" type="time"/>
+                                                        </h:outputText>
+                                                    </div>
+                                                    <div class="container-fluid" >
+                                                        <div class="row" style="text-align: left;">
+                                                            <div class="col-8">
+                                                                <h:outputText styleClass="control-label" value="#{comentario.mensaje}" 
+                                                                              style="font-style: italic;"/>
+                                                            </div>
+                                                            <ui:fragment rendered="#{comentario.genero eq usuarioBean.usuarioConectado.id}">
+                                                                <div class="col-4">
+                                                                    <p:commandLink value="#{msgs['sistema.modificar']}" 
+                                                                                   action="#{notaRequisicionBean.mostrarPopupModificarComentario(comentario.id)}"
+                                                                                   process="@this" update="frmComReq"
+                                                                                   oncomplete="PF('dlgComentar').show()"
+                                                                                   title="#{msgs['comunicacion.clic.aqui.para']} #{msgs['sistema.modificar']} #{msgs['comunicacion.este']} #{msgs['comunicacion.comentario']}" 
+                                                                                   >
+                                                                    </p:commandLink>
+                                                                    <h:outputText value=" | "/>
+                                                                    <p:commandLink value="#{msgs['sistema.eliminar']}" title="#{msgs['comunicacion.clic.aqui.para']} #{msgs['sistema.eliminar']} #{msgs['comunicacion.este']} #{msgs['comunicacion.comentario']}" 
+                                                                                   action="#{notaRequisicionBean.eliminarComentario(comentario.id)}"                                                                                              
+                                                                                   process="@this" update="form1">
+                                                                    </p:commandLink>
+                                                                </div>
+                                                            </ui:fragment>
+                                                        </div>                                                                    
+                                                    </div>
+                                                </div>
+                                            </p:column>
+                                        </h:dataTable>
+                                    </div>
+                                </ui:fragment>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </p:column>
+        </h:dataTable>  
+    </div>
+
+</ui:composition>

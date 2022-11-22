@@ -1,0 +1,165 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+     >
+    <body>
+
+        <ui:composition template="./../../../../WEB-INF/facelets/templates/templateServiciosGenerales.xhtml">
+
+            <ui:define name="contenido">
+
+                <h:panelGroup  rendered="#{empty sesion.usuario}" styleClass="altura">
+                    <ui:include src="./../../../../login.xhtml"/>
+                </h:panelGroup> 
+
+                <h:form >
+                    <p class="tituloEncabezado">Catálogo de Modelos de #{catalogoBean.cadena}s</p>
+
+                    <h:panelGrid columns="3">
+                        <h:outputText value="Tipo de #{catalogoBean.cadena}: " />
+                        <p:selectOneMenu id="tipoEspecifico" value="#{catalogoBean.idTipoEspecifico}"  valueChangeListener="#{catalogoBean.loadMarcasIntoComboMarcas}" styleClass="form-control" >
+                            <f:selectItem itemLabel="Seleccione Tipo de #{catalogoBean.cadena} ..." itemValue="-1" />
+                            <f:selectItems value="#{catalogoBean.tipoEspecificoByTipoListSelectItem}" />
+                        </p:selectOneMenu>
+                        <p:commandLink type="submit" value="+" title="Crear Tipo de #{catalogoBean.cadena}" action="#{catalogoBean.mostrarPopupCrearTipoEspecifico(actionEvent)}" styleClass="btn btn-default" />
+
+                        <h:outputText value="Marca: " />
+                        <p:selectOneMenu id="marca" value="#{catalogoBean.idMarca}"  valueChangeListener="#{catalogoBean.loadModelosIntoTable}" styleClass="form-control" >
+                            <f:selectItem itemLabel="Seleccione Marca..." itemValue="-1" />
+                            <f:selectItems value="#{catalogoBean.marcasByTipoListSelectItem}" />
+                        </p:selectOneMenu>
+                        <p:commandLink type="submit" value="+" title="Crear Marca" action="#{catalogoBean.mostrarPopupCrearMarca(actionEvent)}" styleClass="btn btn-default" />                        
+                    </h:panelGrid>
+
+                    <br/>
+
+                    <h:panelGrid >
+                        <p:commandLink type="submit" title="#{msgs['sistema.crear']} Modelo" actionListener="#{catalogoBean.givenMemoryModelo(actionEvent)}" action="#{catalogoBean.goToCreateModelo()}" styleClass="btn btn-default" >
+                            <h:graphicImage url="#{msgs['sgl.ruta.imagen']}button_create.png" alt="#{msgs['sistema.crear']} Modelo" styleClass="imagenSinBorde" width="16px" height="16px" />
+                        </p:commandLink>
+                        <p:commandLink value="#{msgs['sistema.crear']} Modelo" actionListener="#{catalogoBean.givenMemoryModelo(actionEvent)}" action="#{catalogoBean.goToCreateModelo()}" title="#{msgs['sistema.crear']} Modelo" styleClass="linkPequenio" />
+                    </h:panelGrid>                         
+
+                    <p:dataTable id="dataGridCatalogoModeloVehiculo"  rows="10"  value="#{catalogoBean.modeloDataModel}" var="data" 
+                                 >
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="Nombre" />
+                            </f:facet>
+                            <h:outputText value="#{data.nombre}" />
+                        </p:column>
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="Marca" />
+                            </f:facet>
+                            <h:outputText value="#{data.sgMarca.nombre}" />
+                        </p:column>                        
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="Tipo de #{catalogoBean.cadena}" />
+                            </f:facet>
+                            <h:outputText value="#{data.sgTipoEspecifico.nombre}" />
+                        </p:column>
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="Descripción" />
+                            </f:facet>
+                            <h:outputText value="#{data.descripcion}" />
+                        </p:column> 
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="Modificar" />
+                            </f:facet>
+                            <h:commandLink value="Modificar" actionListener="#{catalogoBean.selectModelo(actionEvent)}" action="edit" styleClass="link" />
+                        </p:column>                            
+                        <p:column> 
+                            <f:facet name="header">
+                                <h:outputText value="Eliminar" />
+                            </f:facet>
+                            <h:commandLink value="Eliminar" actionListener="#{catalogoBean.selectModelo(actionEvent)}" action="#{catalogoBean.mostrarPopupEliminarModelo()}" styleClass="link" />                               
+                        </p:column>
+                    </p:dataTable>                    
+
+                </h:form>
+
+                <!-- Popup Eliminar Modelo Vehículo -->
+                <h:form>
+                    <p:dialog  header="Eliminar Modelo" >
+                        <h:panelGrid columns="3">
+                            <h:outputText value="Está seguro que desea eliminar el Modelo " />
+                            <h:outputText value="#{catalogoBean.modelo.nombre}" style="font-weight: bold;" />
+                            <h:outputText value="?" />
+                        </h:panelGrid>    
+                        <center>
+                            <h:panelGrid columns="2">
+                                <p:commandButton value="#{msgs['sistema.eliminar']}" action="#{catalogoBean.deleteModelo()}" styleClass="btn btn-info"/>        
+                                <p:commandButton value="#{msgs['sistema.cancelar']}" actionListener="#{catalogoBean.removeMemoryModelo(actionEvent)}" action="#{catalogoBean.ocultarPopupEliminarModelo()}" styleClass="btn btn-default"/>        
+                            </h:panelGrid>                        
+                        </center>
+                    </my:panelPopup>                    
+                </h:form>
+
+                <!-- Crear Tipo Específico -->
+                <h:form id="popupCrearTipoEspecificoCatalogoModelo">
+                    <p:dialog  header="Crear Tipo de #{catalogoBean.cadena}" >
+                        <center><h:messages errorClass="errorMessage" infoClass="infoMessage"/></center>
+
+                        <h:panelGrid columns="2">
+                            <!--<h:outputLabel value="Tipo de #{catalogoBean.cadena}:" />
+                            <h:outputText value="#{catalogoBean.sgTipo.nombre}" />-->
+                            <h:panelGrid columns="2">
+                                <h:outputLabel value="Nombre: " />
+                                <h:outputText value="*" styleClass="textoRojo" />
+                            </h:panelGrid>
+                            <p:inputText id="nombreTipoEspecifico" value="#{catalogoBean.sgTipoEspecifico.nombre}" maxlength="64" required="true" requiredMessage="Nombre es requerido" style="width: 200px" styleClass="f11" />                            
+                            <h:outputLabel value="Descripción: " />
+                            <p:inputTextarea id="descripcionTipoEspecifico" value="#{catalogoBean.sgTipoEspecifico.descripcion}" rows="5" maxlength="1024" style="width: 200px" styleClass="f11" />
+                            <!--<h:panelGrid columns="2">
+                                <h:outputLabel value="Se paga?: " />
+                                <p:selectBooleanCheckbox value="#{catalogoBean.pago}" />
+                            </h:panelGrid>-->
+                        </h:panelGrid>
+
+                        <center>
+                            <h:panelGrid columns="2">
+                                <p:commandButton value="#{msgs['sistema.crear']}" action="#{catalogoBean.createTipoEspecifico(actionEvent)}" styleClass="btn btn-info"/>        
+                                <p:commandButton value="#{msgs['sistema.cancelar']}" actionListener="#{catalogoBean.ocultarPopupCrearTipoEspecifico(actionEvent)}" styleClass="btn btn-default" immediate="true" />        
+                            </h:panelGrid>                        
+                        </center>
+                    </my:panelPopup>                    
+                </h:form>
+
+                <!-- Crear Marca -->
+                <h:form id="popupCrearMarcaCatalogoModelo">
+                    <p:dialog  header="Crear Marca" >
+                        <center><h:messages errorClass="errorMessage" infoClass="infoMessage"/></center>
+
+                        <h:panelGrid columns="2">
+                            <h:outputLabel value="Tipo de Marca:" />
+                            <h:outputText value="#{catalogoBean.sgTipo.nombre}" />
+                            <h:panelGrid columns="2">
+                                <h:outputLabel value="Nombre: " />
+                                <h:outputText value="*" styleClass="textoRojo" />
+                            </h:panelGrid>
+                            <p:inputText id="nombreMarca" value="#{catalogoBean.marca.nombre}" maxlength="64" required="true" requiredMessage="Nombre es requerido" style="width: 200px" styleClass="f11" />                            
+                        </h:panelGrid>
+
+                        <center>
+                            <h:panelGrid columns="2">
+                                <p:commandButton value="#{msgs['sistema.crear']}" action="#{catalogoBean.saveMarcaFromCatalogoModelo(actionEvent)}" styleClass="btn btn-info"/>        
+                                <p:commandButton value="#{msgs['sistema.cancelar']}" actionListener="#{catalogoBean.ocultarPopupCrearMarca(actionEvent)}" styleClass="btn btn-default" immediate="true" />        
+                            </h:panelGrid>                        
+                        </center>
+                    </my:panelPopup>                    
+                </h:form>                 
+
+            </ui:define>
+
+        </ui:composition>
+
+    </body>
+</html>

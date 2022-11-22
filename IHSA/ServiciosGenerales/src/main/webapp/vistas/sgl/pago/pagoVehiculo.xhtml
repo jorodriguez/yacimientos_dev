@@ -1,0 +1,306 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+
+      xmlns:c="http://java.sun.com/jsp/jstl/core">
+    <body>
+        <ui:composition template="./../../../WEB-INF/facelets/templates/templateServiciosGenerales.xhtml">
+            <ui:define name="contenido">
+                <h:panelGroup  rendered="#{empty sesion.usuario}" styleClass="altura">
+                    <ui:include src="./../../../login.xhtml"/>
+                </h:panelGroup> 
+                <h:form >               
+                    <p class="tituloEncabezado">Registro de Pago de Servicios de Vehículo </p>
+                    <div class="card  panel-default">
+                        <div class="card -heading">
+                            <div class="input-group col-lg-10">
+                                <div class="col-lg-1">
+                                    <p:commandLink title="Regresar a Administrar Vehículo"
+                                                   styleClass="btn btn-default" action="/vistas/sgl/vehiculo/administrarVehiculo">                               
+                                        <i class="fa fa-arrow-circle-left fa-2x"></i>
+                                    </p:commandLink>
+                                </div>
+                                <h:outputLabel value="#{vehiculoBean.vehiculo.marca}, #{vehiculoBean.vehiculo.modelo}, #{vehiculoBean.vehiculo.serie}"
+                                               class="control-label col-lg-4" style="margin-top: 0.5%"/>
+                                <div class="col-lg-2 ">
+                                    <p:selectOneMenu value="#{vehiculoBean.idTipoEspecifico}"  
+                                                     styleClass="form-control"
+                                                     valueChangeListener="#{vehiculoBean.traerPagoVehiculo}" >
+                                        <f:selectItem itemLabel="Seleccione . . ." itemValue="-1"/>
+                                        <f:selectItems value="#{vehiculoBean.traerTipoEspVehiculo}"/>
+                                    </p:selectOneMenu> 
+                                </div>
+                                <div class="col-lg-1">
+                                    <p:commandLink title="Agregar pago de servicios" 
+                                                   rendered="#{vehiculoBean.idTipoEspecifico gt 0}"
+                                                   actionListener="#{vehiculoBean.agregarPagoServicioOficina(event)}"
+                                                   styleClass="btn btn-default"
+                                                   >
+                                        <i class="fa fa-plus-circle fa-2x"></i>
+                                    </p:commandLink>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="card-body">
+                            <p:dataTable showGridlines="true" size="small"  id="dtPagoSerVe" value="#{vehiculoBean.mapaDatos.get('pagoVehiculo')}" var="pagoSerV" >
+                                <p:column>
+                                    <f:facet name="header"><h:outputText value="Servicio"/></f:facet>
+                                    <h:outputText value="#{pagoSerV.sgPagoServicio.sgTipoEspecifico.nombre}"/>
+                                </p:column>
+                                <p:column>
+                                    <f:facet name="header"><h:outputText value="Importe"/></f:facet>
+                                    <h:outputText value="#{pagoSerV.sgPagoServicio.importe}">
+                                        <f:convertNumber currencySymbol="$" maxFractionDigits="2" type="currency"/>
+                                    </h:outputText>
+                                </p:column>
+                                <p:column>
+                                    <f:facet name="header"><h:outputText value="Moneda"/></f:facet>
+                                    <h:outputText value="#{pagoSerV.sgPagoServicio.moneda.siglas}"/>
+                                </p:column>
+                                <p:column>
+                                    <f:facet name="header"><h:outputText value="Inicio"/></f:facet>
+                                    <h:outputText value="#{pagoSerV.sgPagoServicio.fechaInicio}">
+                                        <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                    </h:outputText>
+                                </p:column>
+                                <p:column>
+                                    <f:facet name="header"><h:outputText value="Fin"/></f:facet>
+                                    <h:outputText value="#{pagoSerV.sgPagoServicio.fechaFin}">
+                                        <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                    </h:outputText>
+                                </p:column>
+
+                                <p:column>
+                                    <f:facet name="header"><h:outputText value="# Recibo"/></f:facet>
+                                    <h:outputText value="#{pagoSerV.sgPagoServicio.numeroFactura}"/>
+                                </p:column>
+
+                                <p:column>
+                                    <f:facet name="header"><h:outputText value="Observación"/></f:facet>
+                                    <h:outputText value="#{pagoSerV.sgPagoServicio.observacion}"/>
+                                </p:column>
+                                <p:column>
+                                    <h:outputLink target="_blank"  value="/ServiciosGenerales/AbrirArchivo?ZWZ2W=#{pagoSerV.sgPagoServicio.siAdjunto.id}&amp;ZWZ3W=#{pagoSerV.sgPagoServicio.siAdjunto.uuid}">
+                                        <center><h:graphicImage url="#{msgs['sgl.ruta.imagen']}icon_attach.gif"  alt="Abrir archivo" rendered="#{pagoSerV.sgPagoServicio.siAdjunto != null}"/></center>
+                                    </h:outputLink>
+                                </p:column>                              
+                                <p:column>
+                                    <p:commandLink value="Modificar" styleClass="link" actionListener="#{vehiculoBean.seleccionarPagoVehiculo(event)}"/>
+                                </p:column>
+                                <p:column>
+                                    <p:commandLink value="Eliminar" styleClass="link"                                                  
+                                                   actionListener="#{vehiculoBean.eliminarPagoServicioVehiculo(event)}"/>
+                                </p:column>
+                                <p:column>
+                                    <p:commandLink value="Comprobante" 
+                                                   styleClass="link" 
+                                                   actionListener="#{vehiculoBean.subirComprobanteVehiculo(event)}" 
+                                                   rendered="#{pagoSerV.sgPagoServicio.siAdjunto == null}"/>
+                                    <p:commandLink value="Quitar comprobante"
+                                                   onclick="if (!confirm('Esta seguro de eliminar el comprobante del pago  #{pagoSerV.sgPagoServicio.sgTipoEspecifico.nombre}...? '))
+                                                               return false;"
+                                                   styleClass="link" 
+                                                   actionListener="#{vehiculoBean.eliminarComprobanteVehiculo(event)}" 
+                                                   rendered="#{pagoSerV.sgPagoServicio.siAdjunto != null}"/>
+                                </p:column>
+                            </p:dataTable>
+                        </div>
+                    </div>
+                </h:form>
+
+                <!--Adjuntar archivos pago de servicios-->
+                <h:form >
+                    <p:dialog   style="background: #FFFFFF;" visible="#{vehiculoBean.subirArchivoPop and vehiculoBean.sgPagoServicio != null}"
+                                draggable="false" modal="true">
+                        <f:facet name="header">
+                            <h:panelGroup > 
+                                <h:outputText  value="Adjuntar archivos de pago servicio de vehículo"
+                                               style="float: left; padding: 4px;text-align: center; vertical-align: middle;font: 11px;color: #484848; font-weight: bold;"/>
+                                <p:commandButton title="Cerrar ventana" 
+                                                 type="button" 
+                                                 alt="Cerrar" 
+                                                 immediate="false" 
+                                                 actionListener="#{vehiculoBean.cerrarPopSubirArchivo(event)}"
+
+                                                 style="vertical-align: middle;margin: 4px;display: inline; float: right;"/>
+                            </h:panelGroup>
+                        </f:facet>
+                        <f:facet name="body">
+                            <h:panelGroup>
+                                <h:panelGrid columns="5">
+                                    <h:outputText value="Archivos"/>
+                                    <p:fileUpload  id="fileEntryPago"
+                                                   listener="#{vehiculoBean.subirArchivoPago}" 
+                                                   />
+                                    <p:commandLink value="Cancelar" styleClass="btn btn-default" actionListener="#{vehiculoBean.cerrarPopSubirArchivo(event)}" immediate="true"/>
+                                </h:panelGrid>
+                            </h:panelGroup>
+                        </f:facet>
+                        </<p:dialog >
+                            </h:form>
+
+                            <!--Crear pago de servicios-->
+                            <h:form >
+                                <p:dialog   style="background: #FFFFFF;" visible="#{vehiculoBean.popUp and vehiculoBean.sgPagoServicio != null}"
+                                            draggable="false" modal="true">
+                                    <f:facet name="header">
+                                        <h:panelGroup > 
+                                            <h:panelGrid columns="2"  rendered="#{vehiculoBean.crearPop}">
+                                                <h:outputText  value="Agregar pago servicio vehículo"
+                                                               style="float: left; padding: 4px;text-align: center; vertical-align: middle;font: 11px;color: #484848; font-weight: bold;"/>
+                                                <p:commandButton title="Cerrar ventana" type="button" alt="Cerrar" immediate="false" actionListener="#{vehiculoBean.cerraPopPagoServicio(event)}"
+
+                                                                 style="vertical-align: middle;margin: 4px;display: inline; float: right;"/>
+                                            </h:panelGrid>  
+                                        </h:panelGroup>
+                                    </f:facet>
+                                    <f:facet name="body">
+                                        <h:panelGroup>
+                                            <h:panelGrid columns="2">
+                                                <h:outputText value="Oficina"/>
+                                                <p:inputText value="#{sesion.oficinaActual.nombre}" disabled="true"/>
+                                                <h:outputText value="Pago de"/>
+                                                <p:inputText value="Vehículo" disabled="true"/>
+                                                <h:outputText value="Proveedor"/>
+                                                <p:selectOneMenu id="userDatos" immediate="true"
+                                                                 value="#{vehiculoBean.pro}" valueChangeListener="#{vehiculoBean.proveedorListener}">
+                                                    <f:selectItems value="#{oficinaBean.listaProveedor}"/>
+                                                    <f:facet name="selectInputText">
+                                                        <h:panelGrid style="margin-bottom: 1px;">
+                                                            <h:outputText id="autoCompleteDatos" value="#{userTDatos}"/>                                            
+                                                        </h:panelGrid>
+
+                                                    </f:facet>
+                                                </p:selectOneMenu>                       
+
+                                                <h:outputText value="Servicio"/>
+                                                <p:inputText value="#{vehiculoBean.sgTipoEspecifico.nombre}" disabled="true"/>
+                                                <h:outputText value="Inicio de periodo"/>
+                                                <p:datePicker  value="#{vehiculoBean.sgPagoServicio.fechaInicio}" >
+                                                    <f:convertDateTime pattern="dd/MM/yyyy" timeZone="America/Mexico_City" />
+                                                </p:datePicker>
+                                                <h:outputText value="Fin del periodo"/>
+                                                <p:datePicker value="#{vehiculoBean.sgPagoServicio.fechaFin}"  validator="#{vehiculoBean.validaFechaPago}">
+                                                    <f:convertDateTime pattern="dd/MM/yyyy" timeZone="America/Mexico_City" />
+                                                </p:datePicker>
+                                                <h:outputText value="Fecha vencimiento"/>
+                                                <p:datePicker value="#{vehiculoBean.sgPagoServicio.fechaVencimiento}"  validator="#{vehiculoBean.validaFechaPago}">
+                                                    <f:convertDateTime pattern="dd/MM/yyyy" timeZone="America/Mexico_City"/>
+                                                </p:datePicker>
+                                                <h:outputText value="Importe *"/>
+                                                <h:panelGrid columns="3">
+                                                    <h:outputText value="$" />
+                                                    <p:inputText value="#{vehiculoBean.sgPagoServicio.importe}" size="12"/>
+                                                    <p:selectOneMenu value="#{vehiculoBean.idMoneda}" >
+                                                        <f:selectItem itemLabel="Seleccione. . ." itemValue="-1"/>
+                                                        <f:selectItems value="#{vehiculoBean.traerMondeda}"/>
+                                                    </p:selectOneMenu>
+                                                </h:panelGrid>
+                                                <h:outputLabel value="# Recibo: " />
+                                                <p:inputText  value="#{vehiculoBean.sgPagoServicio.numeroFactura}" maxlength="15" />                               
+                                                <h:outputText value="Observación"/>
+                                                <p:inputTextarea value="#{vehiculoBean.sgPagoServicio.observacion}" cols="45"/>
+                                            </h:panelGrid> 
+                                            <br/>
+                                            <center>
+                                                <h:panelGrid columns="2" cellspacing="8">
+                                                    <p:commandLink value="Guardar" styleClass="btn btn-info" actionListener="#{vehiculoBean.guardarPagoServicioVehiculo(event)}"/>
+                                                    <p:commandLink value="Cancelar" styleClass="btn btn-default" actionListener="#{vehiculoBean.cerraPopPagoServicio(event)}"/>
+                                                </h:panelGrid>
+                                            </center>
+                                            <center><h:messages errorClass="errorMessage" infoClass="infoMessage"/></center>
+                                        </h:panelGroup>
+                                    </f:facet>
+                                    </<p:dialog >
+                                        </h:form>
+                                        <!--Modificar pago de servicios-->
+                                        <h:form id="formModificarPago" >
+                                            <p:dialog   style="background: #FFFFFF;" visible="#{vehiculoBean.modificarPop and vehiculoBean.sgPagoServicio != null}"
+                                                        draggable="false" modal="true">
+                                                <f:facet name="header">
+                                                    <h:panelGroup > 
+                                                        <h:panelGrid columns="2"  rendered="#{vehiculoBean.modificarPop}">                                
+                                                            <h:outputText  value="Modificar pago servicio vehículo"
+                                                                           style="float: left; padding: 4px;text-align: center; vertical-align: middle;font: 11px;color: #484848; font-weight: bold;"/>
+                                                            <p:commandButton title="Cerrar ventana" type="button" alt="Cerrar" actionListener="#{vehiculoBean.cerraPopModificarPagoServicio(event)}"
+
+                                                                             style="vertical-align: middle;margin: 4px;display: inline; float: right;"/>
+                                                        </h:panelGrid>
+                                                    </h:panelGroup>
+                                                </f:facet>
+                                                <f:facet name="body">
+                                                    <h:panelGroup>
+                                                        <h:panelGrid columns="2">
+                                                            <h:outputText value="Proveedor"/>
+                                                            <h:outputLabel value="#{vehiculoBean.sgPagoServicio.proveedor.nombre}"/>
+                                                            <h:outputText value="Inicio de periodo"/>
+                                                            <p:datePicker id="fInicio"  value="#{vehiculoBean.sgPagoServicio.fechaInicio}" >
+                                                                <f:convertDateTime pattern="dd/MM/yyyy" timeZone="America/Mexico_City"/>
+                                                            </p:datePicker>
+                                                            <h:outputText value="Fin del periodo"/>
+                                                            <p:datePicker id="fFin" value="#{vehiculoBean.sgPagoServicio.fechaFin}" validator="#{vehiculoBean.validaFechaPago}"
+                                                                          >
+                                                                <f:convertDateTime pattern="dd/MM/yyyy" timeZone="America/Mexico_City" />
+                                                            </p:datePicker>
+                                                            <h:outputText value="Fecha vencimiento"/>
+                                                            <p:datePicker id="fVencimiento" value="#{vehiculoBean.sgPagoServicio.fechaVencimiento}"  validator="#{vehiculoBean.validaFechaPago}">
+                                                                <f:convertDateTime pattern="dd/MM/yyyy" timeZone="America/Mexico_City"/>
+                                                            </p:datePicker>
+                                                            <h:outputText value="Importe *"/>
+                                                            <h:panelGrid columns="3">
+                                                                <h:outputText value="$" />
+                                                                <p:inputText value="#{vehiculoBean.sgPagoServicio.importe}" size="12"/>
+                                                                <p:selectOneMenu value="#{vehiculoBean.idMoneda}" >
+                                                                    <f:selectItem itemLabel="Seleccione. . ." itemValue="-1"/>
+                                                                    <f:selectItems value="#{vehiculoBean.traerMondeda}"/>
+                                                                </p:selectOneMenu>
+                                                            </h:panelGrid>
+                                                            <h:outputLabel value="# Recibo: " />
+                                                            <p:inputText  value="#{vehiculoBean.sgPagoServicio.numeroFactura}" maxlength="15" />                                                             
+                                                            <h:outputText value="Observación"/>
+                                                            <p:inputTextarea value="#{vehiculoBean.sgPagoServicio.observacion}" cols="45"/>
+                                                        </h:panelGrid>
+                                                        <h:panelGrid columns="2" cellspacing="8">
+                                                            <p:commandLink value="Guardar" styleClass="btn btn-info" actionListener="#{vehiculoBean.modificarPagoServicio(event)}"/>
+                                                            <p:commandLink value="Cancelar" styleClass="btn btn-default" actionListener="#{vehiculoBean.cerraPopModificarPagoServicio(event)}" immediate="true"/>
+                                                        </h:panelGrid>
+                                                        <h:messages infoClass="textoMensajeError"/>
+                                                    </h:panelGroup>
+                                                </f:facet>
+                                                </<p:dialog >
+                                                    </h:form>
+                                                    <!--eliminar pago de vehiculo-->
+                                                    <h:form >
+                                                        <p:dialog   style="background: #FFFFFF;" visible="#{vehiculoBean.eliminarPop}"
+                                                                    draggable="false" modal="true">
+                                                            <f:facet name="header">
+                                                                <h:panelGroup > 
+                                                                    <h:outputText  value="Eliminar pago del vehiculo"
+                                                                                   style="float: left; padding: 4px;text-align: center; vertical-align: middle;font: 11px;color: #484848; font-weight: bold;"/>
+                                                                </h:panelGroup>
+                                                            </f:facet>
+                                                            <f:facet name="body">
+                                                                <h:panelGroup>
+                                                                    <h:panelGrid columns="3">
+                                                                        <h:outputText value="La operación va a eliminar el pago realizado"/>
+                                                                        <h:outputText value=", ¿está seguro?"/>
+                                                                    </h:panelGrid><br/>
+                                                                    <center>
+                                                                        <h:panelGrid columns="2" cellspacing="8">
+                                                                            <p:commandLink value="Aceptar" actionListener="#{vehiculoBean.completarEliminarPagoVehiculo(event)}" styleClass="btn btn-info"/>
+                                                                            <p:commandLink value="Cancelar" actionListener="#{vehiculoBean.cerrarPopEliminar(event)}" styleClass="btn btn-default"/>
+                                                                        </h:panelGrid>
+                                                                    </center>
+                                                                </h:panelGroup> 
+                                                            </f:facet>
+                                                            </<p:dialog >
+                                                                </h:form>
+                                                                </ui:define>
+                                                                </ui:composition>
+                                                                </body>
+                                                                </html>

@@ -1,0 +1,78 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      
+      
+     >
+
+    <body>
+
+        <ui:composition template="./../../../../WEB-INF/facelets/templates/templateServiciosGenerales.xhtml">
+
+            <ui:define name="contenido">
+
+                <h:panelGroup  rendered="#{empty sesion.usuario}" styleClass="altura">
+                    <ui:include src="./../../../../login.xhtml"/>
+                </h:panelGroup> 
+
+                <h:form >
+                    <p class="tituloEncabezado">Catálogo de Marcas</p>
+                    <h:panelGrid >
+                        <p:commandLink type="submit" title="#{msgs['sistema.crear']} Marca" 
+					 actionListener="#{catalogoBean.givenMemoryMarcaVehiculo(actionEvent)}" action="create" styleClass="btn btn-default" >
+                            <h:graphicImage url="#{msgs['sgl.ruta.imagen']}button_create.png" alt="Crear Marca" styleClass="imagenSinBorde" width="16px" height="16px" />
+                        </p:commandLink>
+                        <p:commandLink value="#{msgs['sistema.crear']} Marca" actionListener="#{catalogoBean.givenMemoryMarcaVehiculo(actionEvent)}" action="create" title="#{msgs['sistema.crear']} Marca" styleClass="linkPequenio" />
+                    </h:panelGrid>                         
+
+                    <p:dataTable id="dataGridCatalogoMarcaVehiculo"  rows="10" value="#{catalogoBean.listaMarca}" var="data" 
+                                 >
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="Nombre" />
+                            </f:facet>
+                            <h:outputText value="#{data.nombre}" />
+                        </p:column>
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="Modificar" />
+                            </f:facet>
+                            <h:commandLink value="Modificar" actionListener="#{catalogoBean.selectMarca(actionEvent)}" action="edit" styleClass="link" />
+                        </p:column>                          
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="Eliminar" />
+                            </f:facet>                            
+                            <h:commandLink value="Eliminar" actionListener="#{catalogoBean.selectMarca(actionEvent)}" action="#{catalogoBean.mostrarPopupEliminarMarca()}" styleClass="link" />                               
+                        </p:column>
+                    </p:dataTable>                    
+
+                </h:form>
+
+                <!-- Popup Eliminar Marca Vehículo -->
+                <h:form>
+                    <p:dialog  header="Eliminar Marca" >
+                        <h:panelGrid columns="3">
+                            <h:outputText value="Está seguro que desea eliminar la Marca " />
+                            <h:outputText value="#{catalogoBean.marca.nombre}" style="font-weight: bold;" />
+                            <h:outputText value="?" />
+                        </h:panelGrid>    
+                        <center>
+                            <h:panelGrid columns="2">
+                                <p:commandButton value="#{msgs['sistema.eliminar']}" action="#{catalogoBean.deleteMarca()}" styleClass="btn btn-info"/>        
+                                <p:commandButton value="#{msgs['sistema.cancelar']}" actionListener="#{catalogoBean.removeMemoryMarcaVehiculo(actionEvent)}" action="#{catalogoBean.ocultarPopupEliminarMarca()}" styleClass="btn btn-default"/>        
+                            </h:panelGrid>                        
+                        </center>
+                    </my:panelPopup>                    
+                </h:form>                 
+
+            </ui:define>
+
+        </ui:composition>
+
+    </body>
+</html>

@@ -1,0 +1,452 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:p="http://primefaces.org/ui"
+      
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets">
+    <body>
+        <ui:composition template="./../../../../WEB-INF/facelets/templates/templateServiciosGenerales.xhtml">
+            <ui:define name="contenido">
+                <p class="tituloEncabezado">#{msgs['sgl.viaje.viaje(s)']} #{msgs['sgl.viaje.aereas']}</p>
+		<div class="row">
+		    <h:form id="frmViajesAereos" rendered="#{not empty sesion.usuario}">
+			<div class="col-lg-6">
+			    <div class="card  card-primary">
+				<div class="card  panel-heading">
+				    <b>Viajes programados</b>
+				</div>			    
+
+				<div class="card  panel-body">
+				    <p:dataTable value="#{viajeAereoBean.lista}"
+						   var="ps" style="font-size: small"
+						   rowStyleClass="table table-bordered table-striped"
+						   paginator="true"  showGridlines="true" size="small"
+						   paginatorPosition="bottom" >
+					<p:column>
+					    <f:facet name="header"><h:outputText value="#{msgs['sistema.codigo']}"/></f:facet>
+					    <h:outputText value="#{ps.codigo}"/>
+					</p:column>
+					<p:column>
+					    <f:facet name="header"><h:outputText value="#{msgs['sgl.viaje.responsable']}"/></f:facet>
+					    <h:outputText value="#{ps.responsable}"/>
+					</p:column>
+					<p:column>
+					    <f:facet name="header"><h:outputText value="Salida"/></f:facet>
+					    <h:outputText value="#{ps.fechaProgramada}">
+						<f:convertDateTime pattern="dd/MM/yyyy" type="date"/>
+					    </h:outputText>
+					</p:column>
+					<p:column>
+					    <f:facet name="header"><h:outputText value="Salida"/></f:facet>
+					    <h:outputText value="#{ps.horaProgramada}">
+					    </h:outputText>
+					</p:column>
+					<p:column>
+					    <p:commandLink value="#{msgs['sistema.salir']}" style="color: blue;" 
+							     actionListener="#{viajeAereoBean.salidaViaje(event)}">
+						<f:param name="idViaje" value="#{ps.id}"/>
+					    </p:commandLink>
+					</p:column>
+					<p:column>
+					    <p:commandLink value="#{msgs['sistema.detalle']}" style="color: blue;"
+							     actionListener="#{viajeAereoBean.verDetalleViajeAereo(e)}">
+						<f:param name="idViaje" value="#{ps.id}"/>
+					    </p:commandLink>
+					</p:column>                    
+				    </p:dataTable>
+				</div>			    
+			    </div>
+			</div>
+			<div class="col-lg-6">
+			    <div class="card  card-primary">
+				<div class="card  panel-heading">
+				    Viajes en proceso
+				</div>
+				<div class="card  panel-body">
+				    <p:dataTable value="#{viajeAereoBean.traerViajesAereosEnProceso}"  var="ps"
+						   style="font-size: 0.9em">
+					<p:column>
+					    <f:facet name="header"><h:outputText value="#{msgs['sistema.codigo']}"/></f:facet>
+					    <h:outputText value="#{ps.codigo}"/>
+					</p:column>                    
+					<p:column>
+					    <f:facet name="header"><h:outputText value="#{msgs['sgl.viaje.responsable']}"/></f:facet>
+					    <h:outputText value="#{ps.responsable}"/>
+					</p:column>
+					<p:column>
+					    <f:facet name="header"><h:outputText value="#{msgs['sgl.solicitudViaje.fechaSalida']}"/></f:facet>
+					    <h:outputText value="#{ps.fechaSalida}">
+						<f:convertDateTime pattern="dd/MM/yyyy" type="date"/>
+					    </h:outputText>
+					</p:column>
+					<p:column>
+					    <f:facet name="header"><h:outputText value="#{msgs['sgl.solicitudViaje.fechaRegreso']}"/></f:facet>
+					    <h:outputText value="#{ps.fechaRegreso}">
+						<f:convertDateTime pattern="dd/MM/yyyy" type="date"/>
+					    </h:outputText>
+					</p:column>
+					<p:column>
+					    <f:facet name="header"><h:outputText value="#{msgs['sgl.viaje']}"/></f:facet>
+					    <h:outputText value="#{ps.sgViaje != 0 ? 'Regreso':'Ida'}"/>
+					</p:column>
+					<p:column>
+					    <f:facet name="header"><h:outputText value="#{msgs['sgl.solicitudViaje.tipoViaje']}"/></f:facet>
+					    <h:outputText value="#{ps.redondo eq 'True' ? 'Redondo' : 'Sencillo'}"/>
+					</p:column>
+					<p:column>
+					    <p:commandLink value="Viaje regreso" style="color: blue;" 
+							     actionListener="#{viajeAereoBean.crearViajeAereoRegreso(event)}"
+							     rendered="#{ps.redondo eq 'True'}" >
+						<f:param name="idViaje" value="#{ps.id}"/>
+
+					    </p:commandLink>
+					</p:column>
+					<p:column>
+					    <p:commandLink value="#{msgs['sistema.finalizar']}" style="color: blue;"
+							     actionListener="#{viajeAereoBean.finalizarViaje(event)}"   >
+						<f:param name="idViaje" value="#{ps.id}"/>
+					    </p:commandLink>
+					</p:column>
+					<p:column>
+					    <p:commandLink value="#{msgs['sistema.detalle']}" style="color: blue;" 
+							     actionListener="#{viajeAereoBean.verDetalleViajeAereo(e)}">
+						<f:param name="idViaje" value="#{ps.id}"/>
+					    </p:commandLink>
+					</p:column>                             
+				    </p:dataTable>
+				</div>			    
+			    </div>
+			</div>
+		    </h:form>
+		</div>
+		<div class="modal fade" id="dialogoCancelarViaje" data-backdrop="static" data-keyboard="false">
+		    <div class="modal-dialog">
+			<div class="modal-content">
+			    <div class="modal-header">
+				<h4 class="modal-title">Cancelar viaje</h4>
+			    </div>
+			    <h:form id="frmCancelarViaje">
+				<div class="modal-bodycard panel-body">
+				    <div class="form-group col-lg-8">                           
+					<h:outputText class="col-lg-3 control-label text-left" value="Motivo: *"/>
+					<div class="col-lg-8">
+					    <p:inputText value="#{viajeAereoBean.motivo}" size="30" styleClass="form-control"   />
+					</div>
+				    </div>
+				</div>
+				<div class="modal-footercard panel-footer">
+				    <p:commandLink value="Guardar" styleClass="btn btn-info" actionListener="#{viajeAereoBean.completarCancelar(event)}"/>
+				    <p:commandLink value="Cancelar" styleClass="btn btn-default" 
+						     onclick="return $(dialogoCancelarViaje).modal('hide');"/>
+				</div>
+			    </h:form>
+			</div>
+		    </div>
+		</div>
+		<div class="modal fade" id="dialogoDetalleViaje" data-backdrop="static" data-keyboard="false">
+		    <div class="modal-dialog">
+			<div class="modal-content">
+			    <div class="modal-header">
+				<h4 class="modal-title">Detalle de viaje</h4>
+			    </div>
+			    <h:form id="frmDetalleViaje">
+				<div class="modal-bodycard panel-body">
+				    <div class="col-lg-12">
+					<h:panelGrid columns="2">        
+					    <h:outputLabel value="#{msgs['sistema.codigo']}: "/>
+					    <h:outputText value="#{viajeAereoBean.viajeVO.codigo}">
+						<f:convertDateTime pattern="dd/MM/yyyy" type="date" />
+					    </h:outputText>
+					    <h:outputLabel value="#{msgs['sgl.solicitudViaje.fecha.programada']}: "/>
+					    <h:outputText value="#{viajeAereoBean.viajeVO.fechaProgramada}">
+						<f:convertDateTime pattern="dd/MM/yyyy" type="date" />
+					    </h:outputText>
+					    <h:outputLabel value="#{msgs['sgl.solicitudViaje.hora.programada']}: " />
+					    <h:outputText value="#{viajeAereoBean.viajeVO.horaProgramada}" >
+						<f:convertDateTime pattern="h:mm a"/>
+					    </h:outputText>
+					    <h:outputLabel value="#{msgs['sgl.solicitudViaje.fechaSalida']}: "/>
+					    <h:outputText value="#{viajeAereoBean.viajeVO.fechaSalida}">
+						<f:convertDateTime pattern="dd/MM/yyyy" type="date" />
+					    </h:outputText>
+					    <h:outputLabel value="#{msgs['sgl.solicitudViaje.horaSalida']}: " />
+					    <h:outputText value="#{viajeAereoBean.viajeVO.horaSalida}" >
+						<f:convertDateTime pattern="h:mm a"/>
+					    </h:outputText>
+					    <h:outputLabel value="#{msgs['sgl.solicitudViaje.fechaRegreso']}: "/>
+					    <h:outputText value="#{viajeAereoBean.viajeVO.fechaRegreso}">
+						<f:convertDateTime pattern="dd/MM/yyyy" type="date" />
+					    </h:outputText>
+					    <h:outputLabel value="#{msgs['sgl.solicitudViaje.horaRegreso']}: "/>
+					    <h:outputText value="#{viajeAereoBean.viajeVO.horaRegreso}">
+						<f:convertDateTime pattern="HH:mm a"/>
+					    </h:outputText>
+					    <h:outputLabel value="#{msgs['sgl.viaje.responsable']}: "/>
+					    <h:outputText value="#{viajeAereoBean.viajeVO.responsable}"/>
+					</h:panelGrid>
+				    </div>
+				    <div class="col-lg-12">
+					<p:dataTable id="dataViaje" value="#{viajeAereoBean.viajeVO.listaViajeros}" var="data"
+						       style=" font-size: 0.9em; width: 60%;">
+					    <p:column>
+						<f:facet name="header"><h:outputText value="#{msgs['sgl.generales.nombre']}"/></f:facet>
+						<h:outputText value="#{data.usuario}"/>
+					    </p:column>
+					</p:dataTable>
+				    </div>
+				    <div class="col-lg-12">
+					<h:panelGrid columns="1"  cellspacing="0" styleClass="bordePanelGrid" >
+					    <h:panelGrid  styleClass="bordePanelGrid" >
+						<h:outputLabel value="#{msgs['sgl.solicitudViaje.origen']}" />
+						<h:outputText value="#{viajeAereoBean.viajeVO.itinerarioCompletoVo.nombreCiudadOrigen}" styleClass="f12"/>
+					    </h:panelGrid>
+					    <h:panelGrid  >
+						<f:facet name="header"><h:outputText  value="#{msgs['sgl.sgItinerario.escala.plural']}" style="font-weight: bold; font-size: 10pt;"/></f:facet>
+						<h:panelGrid >
+						    <ui:repeat value="#{viajeAereoBean.viajeVO.itinerarioCompletoVo.escalas}" var="data" >
+							<h:panelGroup style="float: left; margin-left: 5px; padding-left: 5px;">
+							    <h:panelGrid columns="2" styleClass="bordePanelGrid" cellspacing="5" >
+								<h:outputLabel value="#{msgs['sgl.solicitudViaje.ciudadOrigen']}:"/>
+								<h:outputText value="#{data.nombreCiudadOrigen}"/>
+								<h:outputLabel value="#{msgs['sgl.solicitudViaje.ciudadDestino']}:"/>
+								<h:outputText value="#{data.nombreCiudadDestino}"/>
+								<h:outputLabel value="#{msgs['sgl.aerolinea']}:"/>
+								<h:outputText value="#{data.nombreAerolinea}"/>
+								<h:outputLabel value="#{msgs['sgl.sgItinerario.numeroVuelo']}:"/>
+								<h:outputText value="#{data.numeroVuelo}"/>
+								<h:outputLabel value="#{msgs['sgl.solicitudViaje.fechaSalida']}:"/>
+								<h:outputText value="#{data.fechaSalida}">
+								    <f:convertDateTime pattern="dd/MM/yyyy" type="date" />
+								</h:outputText>
+								<h:outputLabel value="#{msgs['sgl.solicitudViaje.horaSalida']}:"/>
+								<h:panelGrid columns="2" styleClass="f11" >
+								    <h:outputText value="#{data.horaSalida}">
+									<f:convertDateTime pattern="h:mm a" />
+								    </h:outputText>  
+								    <h:outputText value="hrs." />
+								</h:panelGrid>
+								<h:outputLabel value="#{msgs['sgl.sgItinerario.fechaLlegada']}:"/>
+								<h:outputText value="#{data.fechaLlegada}">
+								    <f:convertDateTime pattern="dd/MM/yyyy" type="date" />
+								</h:outputText>
+								<h:outputLabel value="#{msgs['sgl.sgItinerario.horaLlegada']}:"/>
+								<h:panelGrid columns="2" styleClass="f11" >
+								    <h:outputText value="#{data.horaLlegada}" >
+									<f:convertDateTime pattern="h:mm a" />
+								    </h:outputText>  
+								    <h:outputText value="hrs." />
+								</h:panelGrid>
+								<h:outputLabel value="#{msgs['sgl.sgItinerario.tiempoVuelo']}:"/>								
+								<h:panelGrid columns="2" styleClass="f11" >
+								    <h:outputText value="#{data.tiempoVuelo}">
+									<f:convertNumber maxFractionDigits="2"/>
+								    </h:outputText>
+								    hrs
+								</h:panelGrid>
+							    </h:panelGrid>
+							</h:panelGroup>
+						    </ui:repeat>
+						</h:panelGrid>
+					    </h:panelGrid>
+					    <h:panelGrid  styleClass="bordePanelGrid" >
+						<h:outputLabel value="#{msgs['sgl.solicitudViaje.destino']}" />
+						<h:outputText value="#{viajeAereoBean.viajeVO.itinerarioCompletoVo.nombreCiudadDestino}" styleClass="f12"/>
+					    </h:panelGrid>                        
+					</h:panelGrid>
+				    </div>
+				    <div class="modal-footercard panel-footer">
+					<p:commandLink value="#{msgs['sistema.cerrar']}" 
+							 actionListener="#{viajeAereoBean.cerrarDetalleViaje(event)}" 
+							 styleClass="btn btn-default"/>
+				    </div>
+				</div>
+			    </h:form>
+			</div>
+		    </div>
+		</div>
+
+		<div class="modal fade" id="dialogoViajeRegreso" data-backdrop="static" data-keyboard="false">
+		    <div class="modal-dialog">
+			<h:form id="frmNuevascala"  rendered="#{not empty sesion.usuario}">   
+			    <div class="modal-content">
+				<div class="modal-header">
+				    <h4 class="modal-title">Viaje regreso</h4>
+				</div>
+				<div class="">
+				    <h:commandLink onclick="mostrarDiv('dvAgregarEscala');" styleClass="btn btn-default">
+					<i class="fa fa-plus-circle"></i><br/>
+					Agregar escala
+				    </h:commandLink>					
+
+				</div>
+				<div id="dvAgregarEscala" class="card  panel-default" style="display: none;">
+				    <div class="card  panel-body">
+					<h:panelGrid columns="2">			                            
+					    <h:outputLabel value="#{msgs['sgl.bitacoraViaje.origen']}: " styleClass="f11" />
+					    <p:selectOneMenu id="siOrigen" 
+							       value="#{viajeAereoBean.idCiudadOrigen}"
+							       
+							       styleClass="form-control">
+						<f:selectItem itemLabel="#{msgs['sistema.seleccionar']} #{msgs['sgl.solicitudViaje.ciudadOrigen']}..."
+							      itemValue="-1"/>
+						<f:selectItems value="#{viajeAereoBean.listaCiudadOrigen}" />
+					    </p:selectOneMenu>  
+					    <h:outputLabel value="#{msgs['sgl.bitacoraViaje.destino']}: " styleClass="f11" />
+					    <p:selectOneMenu id="siDestino" 
+							       value="#{viajeAereoBean.idCiudadDestino}"
+							       
+							       styleClass="form-control">
+						<f:selectItem itemLabel="#{msgs['sistema.seleccionar']} #{msgs['sgl.solicitudViaje.ciudadDestino']}..."
+							      itemValue="-1"/>
+						<f:selectItems value="#{viajeAereoBean.listaCiudadDestino}" />
+					    </p:selectOneMenu> 
+					    <h:outputLabel value="#{msgs['sgl.aerolinea']}: " styleClass="f11" />
+					    <p:selectOneMenu id="sgAerolinea" 
+							       value="#{viajeAereoBean.idAerolinea}"
+							       
+							       styleClass="form-control">
+						<f:selectItem itemLabel="#{msgs['sistema.seleccionar']} #{msgs['sgl.aerolinea']}..." itemValue="-1"/>
+						<f:selectItems value="#{viajeAereoBean.listaAerolinea}" />
+					    </p:selectOneMenu>
+					    <h:outputLabel value="#{msgs['sgl.sgItinerario.numeroVuelo']}: " styleClass="f11" />
+					    <p:inputText id="numeroVuelo" value="#{viajeAereoBean.numeroVuelo}" styleClass="form-control" />
+					    <h:outputLabel value="#{msgs['sgl.solicitudViaje.fechaSalida']}: " styleClass="f11" />
+					    <p:datePicker value="#{viajeAereoBean.fechaSalida}" pattern="dd/MM/yyyy"
+							       >
+
+					    </ace:dateTimeEntry>
+					    <h:outputLabel value="#{msgs['sgl.solicitudViaje.horaSalida']}: " styleClass="f11" />
+					    <h:panelGrid columns="4">
+						<p:selectOneMenu id="horaSalida" 
+								   value="#{viajeAereoBean.horaSalida}"
+								   
+								   styleClass="form-control">
+						    <f:selectItems value="#{viajeAereoBean.selectItemHoras}" />
+						</p:selectOneMenu>
+						<p:selectOneMenu id="minutoSalida" 
+								   value="#{viajeAereoBean.minutoSalida}"
+								   styleClass="form-control">
+						    <f:selectItems value="#{viajeAereoBean.selectItemMinutos}" />
+						</p:selectOneMenu>                                    
+						<h:outputText value="mins." styleClass="f10" />
+					    </h:panelGrid>
+					    <h:outputLabel value="#{msgs['sgl.sgItinerario.fechaLlegada']}: " styleClass="f11" />
+
+					    <p:datePicker value="#{viajeAereoBean.fechaLlegada}" pattern="dd/MM/yyyy"
+							       >					
+					    </ace:dateTimeEntry>
+					    <h:outputLabel value="#{msgs['sgl.sgItinerario.horaLlegada']}: " styleClass="f11" />
+					    <h:panelGrid columns="3" >
+						<p:selectOneMenu id="horaRegreso" 
+								   value="#{viajeAereoBean.horaLlegada}"
+								   
+								   styleClass="form-control">
+						    <f:selectItems value="#{viajeAereoBean.selectItemHoras}" />
+						</p:selectOneMenu>
+						<p:selectOneMenu id="minutoRegreso" 
+								   value="#{viajeAereoBean.minutoLlegada}"
+								   
+								   styleClass="form-control">
+						    <f:selectItems value="#{viajeAereoBean.selectItemMinutos}" />
+						</p:selectOneMenu>                                    
+						<h:outputText value="mins." styleClass="f10" />
+					    </h:panelGrid>
+					</h:panelGrid>
+				    </div>
+				    <div class="card  panel-footer">
+					<p:commandLink value="#{msgs['sistema.guardar']} Itinerario"
+							 actionListener="#{viajeAereoBean.saveSgDetalleItinerario(event)}" 
+							 styleClass="btn btn-success"/>
+					<h:commandLink onclick="ocultarDiv('dvAgregarEscala');" styleClass="btn btn-default">
+					    <i class="fa fa-remove"></i> Ocultar Escala
+					</h:commandLink>					
+				    </div>
+				</div>
+
+				<h:panelGrid columns="1"  cellspacing="0" styleClass="bordePanelGrid" >
+				    <h:panelGrid  styleClass="bordePanelGrid" >
+					<h:outputLabel value="#{msgs['sgl.solicitudViaje.origen']}" />
+					<h:outputText value="#{viajeAereoBean.itinerarioVuelta.nombreCiudadOrigen}" styleClass="f12"/>
+				    </h:panelGrid>
+				    <h:panelGrid  >
+					<f:facet name="header"><h:outputText  value="#{msgs['sgl.sgItinerario.escala.plural']}" style="font-weight: bold; font-size: 10pt;"/></f:facet>
+					<h:panelGrid >
+					    <ui:repeat value="#{viajeAereoBean.itinerarioVuelta.escalas}" var="data" >
+						<h:panelGroup style="float: left; margin-left: 5px; padding-left: 5px;">
+						    <h:panelGrid columns="2" styleClass="bordePanelGrid" cellspacing="5" >
+							<h:outputLabel value="#{msgs['sgl.solicitudViaje.ciudadOrigen']}:"/>
+							<h:outputText value="#{data.nombreCiudadOrigen}"/>
+							<h:outputLabel value="#{msgs['sgl.solicitudViaje.ciudadDestino']}:"/>
+							<h:outputText value="#{data.nombreCiudadDestino}"/>
+							<h:outputLabel value="#{msgs['sgl.aerolinea']}:"/>
+							<h:outputText value="#{data.nombreAerolinea}"/>
+							<h:outputLabel value="#{msgs['sgl.sgItinerario.numeroVuelo']}:"/>
+							<h:outputText value="#{data.numeroVuelo}"/>
+							<h:outputLabel value="#{msgs['sgl.solicitudViaje.fechaSalida']}:"/>
+							<h:outputText value="#{data.fechaSalida}">
+							    <f:convertDateTime pattern="dd/MM/yyyy" type="date" />
+							</h:outputText>
+							<h:outputLabel value="#{msgs['sgl.solicitudViaje.horaSalida']}:"/>
+							<h:panelGrid columns="2" styleClass="f11" >
+							    <h:outputText value="#{data.horaSalida}">
+								<f:convertDateTime pattern="h:mm a" />
+							    </h:outputText>  
+							    <h:outputText value="hrs." />
+							</h:panelGrid>
+							<h:outputLabel value="#{msgs['sgl.sgItinerario.fechaLlegada']}:"/>
+							<h:outputText value="#{data.fechaLlegada}">
+							    <f:convertDateTime pattern="dd/MM/yyyy" type="date" />
+							</h:outputText>
+							<h:outputLabel value="#{msgs['sgl.sgItinerario.horaLlegada']}:"/>
+							<h:panelGrid columns="2" styleClass="f11" >
+							    <h:outputText value="#{data.horaLlegada}" >
+								<f:convertDateTime pattern="h:mm a" />
+							    </h:outputText>  
+							    <h:outputText value="hrs." />
+							</h:panelGrid>
+							<h:outputLabel value="#{msgs['sgl.sgItinerario.tiempoVuelo']}:"/>								
+							<h:panelGrid columns="2" styleClass="f11" >
+							    <h:outputText value="#{data.tiempoVuelo}">
+								<f:convertNumber maxFractionDigits="2"/>
+							    </h:outputText>
+							    hrs
+							</h:panelGrid>
+						    </h:panelGrid>
+						</h:panelGroup>
+					    </ui:repeat>
+					</h:panelGrid>
+				    </h:panelGrid>
+				    <h:panelGrid  styleClass="bordePanelGrid" >
+					<h:outputLabel value="#{msgs['sgl.solicitudViaje.destino']}" />
+					<h:outputText value="#{viajeAereoBean.itinerarioVuelta.nombreCiudadDestino}" styleClass="f12"/>
+				    </h:panelGrid>                        
+				</h:panelGrid>
+				<p:dataTable value="#{viajeAereoBean.viajeVO.listaViajeros}" var="via"
+					       style="font-size: 0.9em; width: 50%;">
+				    <f:facet name="header"><h:outputText value="#{msgs['sgl.viaje.viajeros']}"/></f:facet>
+				    <p:column >
+					<f:facet name="header"><h:outputText value="#{msgs['sgl.generales.nombre']}"/> </f:facet>
+					<h:outputText value="#{via.usuario eq 'null' ? via.invitado : via.usuario}"/>
+				    </p:column>
+				    <p:column>
+					<p:commandLink  value="Quitar" actionListener="#{viajeAereoBean.cancelarViajero(event)}"
+							  style="color: blue;"/>
+				    </p:column>
+				</p:dataTable>
+			    </div>
+			    <div class="modal-footercard panel-footer">
+				<p:commandLink value="Crear viaje"  styleClass="btn btn-info"
+						 actionListener="#{viajeAereoBean.completarCrearViajeAereoRegreso(event)}" 
+						 immediate="true"/>
+				<p:commandLink value="#{msgs['sistema.cancelar']}"  styleClass="btn btn-default" 
+						 actionListener="#{viajeAereoBean.cerrarViajeRegreso(event)}"/>
+			    </div>
+			</h:form>
+		    </div>
+		</div>
+	    </ui:define>
+        </ui:composition>
+    </body>
+</html>

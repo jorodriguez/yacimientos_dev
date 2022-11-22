@@ -1,0 +1,1076 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+
+      xmlns:c="http://java.sun.com/jsp/jstl/core"
+      >    
+    <body>        
+        <ui:composition template="./../../../../../WEB-INF/facelets/templates/templateServiciosGenerales.xhtml">
+            <ui:define name="titulo">
+                Reporte de viajes
+            </ui:define>
+            <ui:define name="contenido">
+                <style>
+                    article.solicitudDraggable {
+                    }
+                    article.viajeroDraggable {
+                    }
+                    article.bodyViajeItem {
+                    }
+                    .card-body.bodySolicitud {
+                    }
+                    .card-body.bodyViajeCreado {
+                    }
+                    .card-body.bodyViajeProgramado {
+                    }
+                    .card-body.bodyViajeProceso {
+                    }
+                    .fechaInt1 {
+                    }
+                    .fechaInt2 {
+                    }
+                    .usrSesion {
+                    }
+                    .valConChofer {
+                    }
+                    .textBusqueda {
+                    }
+                    div.bodyNoDragable {
+                    }
+                    .textoOficinas{
+                        width: 100px;
+                        transform: rotate(-37deg);
+                    }
+
+                    .textoOficinasTiempo{
+                        width: 50px;
+                        transform: rotate(-60deg);
+                    }
+
+                    .textInstrucciones{
+                        width: 115px;
+                        text-align: center;
+                        padding-top: 5px;
+                    }
+
+                    .estilo0, .estilo1, .estilo2, .estilo3, .estilo4, .estilo5, .estilo6, .estilo7, .estilo8, .estilo9, .estilo10{
+                        position:absolute;
+                        margin-top:-10px;
+                        z-index:1;
+                        height:40px;
+                        width:40px;
+                        border-radius:25px;
+
+                    }
+
+                    .nodo {
+                        position:absolute;
+                        margin-top:-10px;
+                        z-index:1;
+                        height:20px;
+                        width:20px;
+                        border-radius:25px;
+                    }
+
+                    .nodoAlert {
+                        position:absolute;
+                        margin-top:-40px;
+                        margin-left: -40px;
+                        z-index:1;
+                        height:100px;
+                        width:100px;
+                    }
+
+                    .estilo0{
+                        left:1%;
+                    }
+                    .estilo1{
+                        left:10%;
+                    }
+                    .estilo2{
+                        left:20%;
+                    }
+                    .estilo3{
+                        left:30%;
+                    }
+                    .estilo4{
+                        left:40%;
+                    }
+                    .estilo5{
+                        left:50%;
+                    }
+                    .estilo6{
+                        left:60%;
+                    }
+                    .estilo7{
+                        left:70%;
+                    }
+                    .estilo8{
+                        left:80%;
+                    }
+                    .estilo9{
+                        left:90%;
+                    }
+                    .estilo10{
+                        left:97%;
+                    }
+
+                    .tamano0{
+                        width:1%;
+                    }
+                    .tamano1{
+                        width:10%;
+                    }
+                    .tamano2{
+                        width:20%;
+                    }
+                    .tamano3{
+                        width:30%;
+                    }
+                    .tamano4{
+                        width:40%;
+                    }
+                    .tamano5{
+                        width:50%;
+                    }
+                    .tamano6{
+                        width:60%;
+                    }
+                    .tamano7{
+                        width:70%;
+                    }
+                    .tamano8{
+                        width:80%;
+                    }
+                    .tamano9{
+                        width:90%;
+                    }
+                    .tamano10{
+                        width:97%;
+                    }
+
+                    .primary-color{
+                        background-color:#4989bd;
+                    }
+                    .success-color{
+                        background-color:#5cb85c;
+                    }
+                    .danger-color{
+                        background-color:#d9534f;
+                    }
+                    .warning-color{
+                        background-color:#f0ad4e;
+                    }
+                    .info-color{
+                        background-color:#5bc0de;
+                    }
+                    .no-color{
+                        background-color:inherit;
+                    }
+                    setViajeREY
+
+                    .progress-bar {
+                        height: 100%;
+                    }
+
+                    .progress {
+                        height: 5px;
+                    }
+
+                    .progress.interseccion {
+                        float: left;
+                    }
+
+                    .container {
+                        padding: 20px;
+                    }
+
+                    .pulse-ring {
+                        content: '';
+                        width: 30px;
+                        height: 30px;
+                        border: 10px solid #F00;
+                        border-radius: 50%;
+                        position: absolute;
+                        top: 0px;
+                        left: 0px;
+                        margin-left: -5px;
+                        margin-top: -5px;
+                        animation: pulsate infinite 1s;
+                    }
+
+                    @-webkit-keyframes pulsate {
+                        0% {
+                            -webkit-transform: scale(1, 1);
+                            opacity: 1;
+                        }
+                        100% {
+                            -webkit-transform: scale(1.2, 1.2);
+                            opacity: 0;
+                        }
+                    }
+
+                </style>
+
+                <h:form id="frmCrearViajeTablero">
+                    <div class="row" style="margin-top: 10px;">                    
+                        <div class="col-lg-1" style="margin-top: 5px;">
+                            <label class="col-xs-3 col-xs-6 control-label" >Filtros: </label>
+                        </div>
+                        <div class="col-lg-2">
+                            <script>
+                                $(function () {
+                                    $(".fechaInt1").datepicker({
+                                        showButtonPanel: true,
+                                        buttonImage: "#{msgs['sgl.ruta.imagen']}cal_button.gif",
+                                        buttonImageOnly: true,
+                                        numberOfMonths: 2,
+                                        dateFormat: "dd/mm/yy",
+                                        onSelect: function (date) {
+                                            fechaSeleccinadaSalida = date;
+                                        },
+                                        onClose: function (selectedDate) {
+                                            $(".fechaInt2").datepicker("option", "minDate", selectedDate);
+                                            $(".fechaInt2").datepicker('show');
+                                        }
+                                    });
+                                });
+                            </script>
+                            <style>
+                                .ui-datepicker-calendar .ui-state-active {
+                                    background: #6eafbf;
+                                    -webkit-box-shadow: inset 0px 0px 10px 0px rgba(0, 0, 0, .1);
+                                    -moz-box-shadow: inset 0px 0px 10px 0px rgba(0, 0, 0, .1);
+                                    box-shadow: inset 0px 0px 10px 0px rgba(0, 0, 0, .1);
+                                    color: #e0e0e0;
+                                    text-shadow: 0px 1px 0px #4d7a85;
+                                    filter: dropshadow(color=#4d7a85, offx=0, offy=1);
+                                    border: 1px solid #55838f;
+                                    position: relative;
+                                    margin: -1px;
+                                }
+                                .ui-datepicker-unselectable .ui-state-default {
+                                    background-image:  url(#{msgs['sgl.ruta.imagen']}flight-status-icon.png);
+                                }
+                            </style>
+                            <h:inputText id="fechaInt1" value="#{administrarViajeTableroBean.fechaInt1}" styleClass="form-control fechaInt1"> 
+                                <f:convertDateTime pattern="dd/MM/yyyy"/>
+                            </h:inputText>
+                        </div>
+                        <div class="col-lg-2">
+                            <script>
+                                $(function () {
+                                    $(".fechaInt2").datepicker({
+                                        showButtonPanel: true,
+                                        buttonImage: "#{msgs['sgl.ruta.imagen']}cal_button.gif",
+                                        buttonImageOnly: true,
+                                        dateFormat: "dd/mm/yy",
+                                        numberOfMonths: 2,
+                                        onSelect: function (date) {
+                                            fechaSeleccinadaSalida = date;
+                                        }
+                                    });
+                                });
+                            </script>
+                            <h:inputText id="fechaInt2" value="#{administrarViajeTableroBean.fechaInt2}" styleClass="form-control fechaInt2" >
+                                <f:convertDateTime pattern="dd/MM/yyyy"/>
+                            </h:inputText>
+                        </div>                         
+                        <div class="col-lg-1" style="margin-top: 5px;">
+                            <label class="col-xs-3 col-xs-6 control-label" >Origen: </label>
+                        </div>
+                        <div class="col-lg-2 col-xs-12">                                            
+                            <p:selectOneMenu  id="selectOneMenuOficinaVehiculos" value="#{administrarViajeTableroBean.oficinaID}"   styleClass="form-control"
+                                              >
+                                <f:selectItem itemLabel="Todas" itemValue="0"/>
+                                <f:selectItems value="#{administrarViajeTableroBean.lstOficinasOrigen}"/>
+                            </p:selectOneMenu>
+                        </div>
+                        <div class="col-lg-3">                            
+                            <div class="col-lg-6 iceSelOneRbihsa">
+                                <script>
+                                    $('.valConChofer').bootstrapSwitch();
+                                    function vehiculoAsignado() {
+                                        if ($('.valConChofer').is(':checked')) {
+                                            $('.bootstrap-switch-container').css('margin-left', '0px');
+                                        } else {
+                                            $('.bootstrap-switch-container').css('margin-left', '-100px');
+                                        }
+                                    }
+                                    ;
+                                </script>                                                               
+                                <h:selectBooleanCheckbox onchange="vehiculoAsignado()" styleClass="valConChofer" 
+                                                         value="#{administrarViajeTableroBean.conChofer}"></h:selectBooleanCheckbox>
+                            </div>
+                        </div>   
+                        <p:commandLink 
+                            id="btnRecargarSol"
+                            styleClass="col-lg-1 col-xs-3 btn btn-primary btn-lg"                                                                                                                                                             
+                            actionListener="#{administrarViajeTableroBean.iniciarConversasionCrearViajeTablero(actionEvent)}"
+                            title="Click aquí para recargar los viajes..." process="@form" update="@form">   
+                            <span class="fa fa-search" style="color: whitesmoke"></span>
+                        </p:commandLink>                             
+                    </div>
+                    <div class="col-lg-11" style="margin-left: 20px; margin-top: 20px; margin-bottom: 20px;">
+                        <div class="nodo primary-color"
+                             style="left: 0%;">
+                            <span><div class="textInstrucciones">Origen</div></span>
+                        </div>
+                        <div class="nodo danger-color"
+                             style="left: 100px;">
+                            <span><div class="textInstrucciones">Destino</div></span>
+                        </div>
+                        <div class="nodo warning-color"
+                             style="left: 200px;">
+                            <span><div class="textInstrucciones" style="width: 190px;">Punto de Seguridad</div></span>
+                        </div>
+                    </div>                    
+                    <h:inputText style="visibility: hidden;" styleClass="valTab" value="#{administrarViajeTableroBean.indexTab}"/>
+                    <div class="col-lg-12">
+                        <div class="card  card-info">
+                            <div class="card-header">
+                                <ul class="nav nav-tabs" id="myTab" role="tablist">
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home" 
+                                                type="button" role="tab" aria-controls="home" aria-selected="true">Viajes programados</button>
+
+                                    </li>
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link" id="menu1-tab" data-bs-toggle="tab" data-bs-target="#menu1" 
+                                                type="button" role="tab" aria-controls="menu1" aria-selected="true">Viajes en curso</button>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="tab-content" id="myTabContent">
+                                <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+                                    <ui:fragment 
+                                        rendered="#{(administrarViajeTableroBean.viajesProgramadosMTY.size() gt 0) or (administrarViajeTableroBean.viajesProgramadosREY.size() gt 0) or (administrarViajeTableroBean.viajesProgramadosSF.size() gt 0)}">                        
+                                        <div class="col-lg-12" style="font-size: 12px; font-weight: bold;margin-top: 15px;">                            
+                                            <p class="tituloEncabezado col-lg-12" > Viajes terrestres entre oficinas </p>    
+                                            <c:forEach items="#{administrarViajeTableroBean.viajesProgramadosMTY}" var="itiMty">                                        
+                                                <ui:fragment rendered="#{itiMty.viajeMTY != null}">                                                                         
+                                                    <div class="card  card-default"> 
+                                                        <div class="card-header">
+                                                            <p:commandLink  value="#{itiMty.viajeMTY.codigo}" actionListener="#{administrarViajeTableroBean.goInfoViaje(actionEvent)}">
+                                                                <f:param name="idViajeInfo" value="#{itiMty.viajeMTY.id}"/>                                                
+                                                            </p:commandLink>                                        
+                                                            , #{itiMty.viajeMTY.responsable}, #{itiMty.viajeMTY.fechaProgramadaTxt} #{itiMty.viajeMTY.horaProgramadaTxt}                                                                                                    
+                                                            <p:commandLink                                                 
+                                                                actionListener="#{administrarViajeTableroBean.goInterceptarViaje(actionEvent)}"
+                                                                title="Click aquí para interceptar el viaje..." >                                                                                                                                                
+                                                                <f:param name="idViaje" value="#{itiMty.viajeMTY.id}"/>                                                
+                                                                <span class="fa fa-2x fa-compress pull-right"></span>
+                                                            </p:commandLink>                                                
+                                                        </div>
+                                                        <div class="card-body">
+                                                            <div class="progress" title="#{itiMty.viajeMTY.codigo} : #{itiMty.viajeMTY.ruta}">                                                                                                            
+                                                                <c:forEach items="#{itiMty.viajeMTY.lstRutaDet}" varStatus="indicevMTY" var="vMTY">                                                                                                                            
+                                                                    <ui:fragment rendered="#{indicevMTY.index eq 0}">
+                                                                        <div class="nodo primary-color" 
+                                                                             style="left: #{indicevMTY.index > 0 ? indicevMTY.index*administrarViajeTableroBean.itinerarioReferencia.factor : 2}%;">
+                                                                            <span><div class="textoOficinas">#{vMTY.nombre}</div></span></div>
+                                                                    </ui:fragment>
+                                                                    <ui:fragment rendered="#{(indicevMTY.index gt 0) and (indicevMTY.index lt (itiMty.viajeMTY.lstRutaDet.size()-1))}">
+                                                                        <div class="nodo info-color" 
+                                                                             style="left: #{indicevMTY.index > 0 ? indicevMTY.index*administrarViajeTableroBean.itinerarioReferencia.factor : 2}%;">
+                                                                            <span><div class="textoOficinas">#{vMTY.nombre}</div></span>
+                                                                        </div>
+                                                                    </ui:fragment>
+                                                                    <ui:fragment rendered="#{indicevMTY.index eq (itiMty.viajeMTY.lstRutaDet.size()-1)}">
+                                                                        <div class="nodo danger-color" 
+                                                                             style="left: #{indicevMTY.index > 0 ? indicevMTY.index*administrarViajeTableroBean.itinerarioReferencia.factor : 2}%;">
+                                                                            <span><div class="textoOficinas">#{vMTY.nombre}</div></span></div>
+                                                                    </ui:fragment>                                                    
+                                                                </c:forEach>                                                                                                        
+                                                                <div class="progress-bar progress-bar-info" style="width: 100%; text-align: left;"></div>                                            
+                                                            </div>                                                
+                                                        </div>
+                                                    </div>
+                                                </ui:fragment>                                                                                    
+                                            </c:forEach>            
+                                            <c:forEach items="#{administrarViajeTableroBean.viajesProgramadosREY}" var="itiRey">                                                                                    
+                                                <div class="card  card-default"> 
+                                                    <div class="card-header">
+                                                        <p:commandLink  value="#{itiRey.viajeREY.codigo}" actionListener="#{administrarViajeTableroBean.goInfoViaje(actionEvent)}">
+                                                            <f:param name="idViajeInfo" value="#{itiRey.viajeREY.id}"/>                                                
+                                                        </p:commandLink>                                        
+                                                        , #{itiRey.viajeREY.responsable}, #{itiRey.viajeREY.fechaProgramadaTxt} #{itiRey.viajeREY.horaProgramadaTxt}
+                                                        <p:commandLink                                                 
+                                                            actionListener="#{administrarViajeTableroBean.goInterceptarViaje(actionEvent)}"
+                                                            title="Click aquí para interceptar el viaje..." >                                                                                                                                                
+                                                            <f:param name="idViaje" value="#{itiRey.viajeREY.id}"/>                                                
+                                                            <span class="fa fa-2x fa-compress pull-right"></span>
+                                                        </p:commandLink>                                                
+                                                    </div>
+                                                    <div class="card-body">
+                                                        <div class="progress" title="#{itiRey.viajeREY.codigo} : #{itiRey.viajeREY.ruta}">                                                                                                    
+                                                            <c:forEach items="#{itiRey.viajeREY.lstRutaDet}" varStatus="indicevREY" var="vREY">
+                                                                <c:forEach items="#{administrarViajeTableroBean.itinerarioReferencia.lstRutaDetPredefinida}" varStatus="indicevReyRef" var="vReyRef">                                        
+                                                                    <ui:fragment rendered="#{vReyRef.mapa eq vREY.mapa}">
+                                                                        <ui:fragment rendered="#{indicevREY.index eq 0}">
+                                                                            <div class="nodo primary-color" 
+                                                                                 style="left: #{indicevReyRef.index > 0 ? (indicevReyRef.index*administrarViajeTableroBean.itinerarioReferencia.factor) : 2}%;">
+                                                                                <span><div class="textoOficinas">#{vREY.nombre}</div></span>
+                                                                            </div>
+                                                                        </ui:fragment>
+                                                                        <ui:fragment rendered="#{(indicevREY.index gt 0) and (indicevREY.index lt (itiRey.viajeREY.lstRutaDet.size()-1))}">
+                                                                            <div class="nodo info-color" 
+                                                                                 style="left: #{indicevReyRef.index > 0 ? (indicevReyRef.index*administrarViajeTableroBean.itinerarioReferencia.factor) : 2}%;">
+                                                                                <span><div class="textoOficinas">#{vREY.nombre}</div></span>
+                                                                            </div>
+                                                                        </ui:fragment>
+                                                                        <ui:fragment rendered="#{indicevREY.index eq (itiRey.viajeREY.lstRutaDet.size()-1)}">
+                                                                            <div class="nodo danger-color" 
+                                                                                 style="left: #{indicevReyRef.index > 0 ? (indicevReyRef.index*administrarViajeTableroBean.itinerarioReferencia.factor) : 2}%;">
+                                                                                <span><div class="textoOficinas">#{vREY.nombre}</div></span>
+                                                                            </div>
+                                                                        </ui:fragment>
+                                                                    </ui:fragment>
+                                                                </c:forEach>              
+                                                            </c:forEach>                                                
+                                                            <div class="progress-bar progress-bar-info" style="width: 100%; text-align: left;"></div>                                            
+                                                        </div>
+                                                    </div>
+                                                </div>                                            
+                                            </c:forEach>
+                                            <c:forEach items="#{administrarViajeTableroBean.viajesProgramadosSF}" var="itiSf">                                                                                    
+                                                <div class="card  card-default"> 
+                                                    <div class="card-header">
+                                                        <p:commandLink  value="#{itiSf.viajeSF.codigo}" actionListener="#{administrarViajeTableroBean.goInfoViaje(actionEvent)}">
+                                                            <f:param name="idViajeInfo" value="#{itiSf.viajeSF.id}"/>                                                
+                                                        </p:commandLink>                                        
+                                                        , #{itiSf.viajeSF.responsable}, #{itiSf.viajeSF.fechaProgramadaTxt} #{itiSf.viajeSF.horaProgramadaTxt}
+                                                        <p:commandLink                                                 
+                                                            actionListener="#{administrarViajeTableroBean.goInterceptarViaje(actionEvent)}"
+                                                            title="Click aquí para interceptar el viaje..." >                                                                                                                                                
+                                                            <f:param name="idViaje" value="#{itiSf.viajeSF.id}"/>                                                
+                                                            <span class="fa fa-2x fa-compress pull-right"></span>
+                                                        </p:commandLink> 
+                                                    </div>
+                                                    <div class="card-body">
+                                                        <div class="progress" title="#{itiSf.viajeSF.codigo} : #{itiSf.viajeSF.ruta}">                                                                                                    
+                                                            <c:forEach items="#{itiSf.viajeSF.lstRutaDet}" varStatus="indicevSF" var="vSF">
+                                                                <c:forEach items="#{administrarViajeTableroBean.itinerarioReferencia.lstRutaDetPredefinida}" varStatus="indicevSFRef" var="vSFRef">                                        
+                                                                    <ui:fragment rendered="#{vSFRef.mapa eq vSF.mapa}">                                                        
+                                                                        <ui:fragment rendered="#{indicevSF.index eq 0}">
+                                                                            <div class="nodo primary-color" 
+                                                                                 style="left: #{indicevSFRef.index > 0 ? (indicevSFRef.index*administrarViajeTableroBean.itinerarioReferencia.factor) : 2}%;">
+                                                                                <span><div class="textoOficinas">#{vSF.nombre}</div></span>
+                                                                            </div>
+                                                                        </ui:fragment>
+                                                                        <ui:fragment rendered="#{(indicevSF.index gt 0) and (indicevSF.index lt (itiSf.viajeSF.lstRutaDet.size()-1))}">
+                                                                            <div class="nodo info-color" 
+                                                                                 style="left: #{indicevSFRef.index > 0 ? (indicevSFRef.index*administrarViajeTableroBean.itinerarioReferencia.factor) : 2}%;">
+                                                                                <span><div class="textoOficinas">#{vSF.nombre}</div></span>
+                                                                            </div>
+                                                                        </ui:fragment>
+                                                                        <ui:fragment rendered="#{indicevSF.index eq (itiSf.viajeSF.lstRutaDet.size()-1)}">
+                                                                            <div class="nodo danger-color" 
+                                                                                 style="left: #{indicevSFRef.index > 0 ? (indicevSFRef.index*administrarViajeTableroBean.itinerarioReferencia.factor) : 2}%;">
+                                                                                <span><div class="textoOficinas">#{vSF.nombre}</div></span>
+                                                                            </div>
+                                                                        </ui:fragment>
+                                                                    </ui:fragment>
+                                                                </c:forEach>              
+                                                            </c:forEach>                                                
+                                                            <div class="progress-bar progress-bar-info" style="width: 100%; text-align: left;"></div>                                            
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </c:forEach>
+
+                                        </div>                 
+                                    </ui:fragment>
+                                    <ui:fragment 
+                                        rendered="#{administrarViajeTableroBean.viajesProgramadosInt.size() gt 0}">
+                                        <div class="col-lg-12" style="font-size: 12px; font-weight: bold;margin-top: 15px;">
+                                            <p class="tituloEncabezado col-lg-12" > Viajes terrestres a Interceptar </p>    
+                                            <div class="container-fluid">
+                                                <c:forEach items="#{administrarViajeTableroBean.viajesProgramadosInt}" var="iti">                                                                                                                        
+                                                    <div class="card  card-default"> 
+                                                        <div class="card-header">
+                                                            Intercepción de los viajes:
+                                                            <ui:fragment rendered="#{iti.viajeMTY != null}">
+                                                                (
+                                                                <p:commandLink  value="#{iti.viajeMTY.codigo}" actionListener="#{administrarViajeTableroBean.goInfoViaje(actionEvent)}">
+                                                                    <f:param name="idViajeInfo" value="#{iti.viajeMTY.id}"/>                                                
+                                                                </p:commandLink>
+                                                                , #{iti.viajeMTY.responsable}, #{iti.viajeMTY.fechaProgramadaTxt} #{iti.viajeMTY.horaProgramadaTxt}
+                                                                )
+                                                            </ui:fragment>
+                                                            <ui:fragment rendered="#{iti.viajeREY != null}">
+                                                                (
+                                                                <p:commandLink  value="#{iti.viajeREY.codigo}" actionListener="#{administrarViajeTableroBean.goInfoViaje(actionEvent)}">
+                                                                    <f:param name="idViajeInfo" value="#{iti.viajeREY.id}"/>                                                
+                                                                </p:commandLink>
+                                                                , #{iti.viajeREY.responsable}, #{iti.viajeREY.fechaProgramadaTxt} #{iti.viajeREY.horaProgramadaTxt})
+                                                            </ui:fragment>
+                                                            <ui:fragment rendered="#{iti.viajeSF != null}">
+                                                                (
+                                                                <p:commandLink  value="#{iti.viajeSF.codigo}" actionListener="#{administrarViajeTableroBean.goInfoViaje(actionEvent)}">
+                                                                    <f:param name="idViajeInfo" value="#{iti.viajeSF.id}"/>                                                
+                                                                </p:commandLink>
+                                                                , #{iti.viajeSF.responsable}, #{iti.viajeSF.fechaProgramadaTxt} #{iti.viajeSF.horaProgramadaTxt}
+                                                                )
+                                                            </ui:fragment>
+                                                        </div>
+                                                        <div class="card-body">
+                                                            <ui:fragment rendered="#{iti.viajeMTY != null}">                                                             
+                                                                <div class="progress interseccion" 
+                                                                     title="#{iti.viajeMTY.indicePS}::#{administrarViajeTableroBean.itinerarioReferencia.factor}::#{iti.idPS}::#{vMTY.id}"
+                                                                     style="width: #{iti.viajeMTY.indicePS*administrarViajeTableroBean.itinerarioReferencia.factor}%;">
+                                                                    <c:forEach items="#{iti.viajeMTY.lstRutaDet}" varStatus="indicevMTY" var="vMTY">
+                                                                        <c:forEach items="#{administrarViajeTableroBean.itinerarioReferencia.lstRutaDetPredefinida}" varStatus="indicevINTMTY" var="vINTRefMTY">
+                                                                            <ui:fragment rendered="#{vINTRefMTY.mapa eq vMTY.mapa}">
+                                                                                <ui:fragment rendered="#{indicevMTY.index eq 0}">
+                                                                                    <div class="nodo primary-color"                                  
+                                                                                         title="#{iti.id}:#{vMTY.id}:#{vINTRefMTY.mapa}:#{vMTY.mapa}::#{vMTY.id}"
+                                                                                         style="left: #{indicevINTMTY.index > 0 ? indicevINTMTY.index*administrarViajeTableroBean.itinerarioReferencia.factor : 3}%;">
+                                                                                        <span><div class="textoOficinas">#{vMTY.nombre}</div></span></div>
+                                                                                </ui:fragment>
+                                                                                <ui:fragment rendered="#{(indicevMTY.index gt 0) and (indicevMTY.index lt (iti.viajeMTY.lstRutaDet.size()-1))}">
+                                                                                    <div class="nodo info-color"                                     
+                                                                                         title="#{iti.id}:#{vMTY.id}:#{vINTRefMTY.mapa}:#{vMTY.mapa}::#{vMTY.id}"
+                                                                                         style="left: #{indicevINTMTY.index > 0 ? indicevINTMTY.index*administrarViajeTableroBean.itinerarioReferencia.factor : 3}%;">
+                                                                                        <span><div class="textoOficinas">#{vMTY.nombre}</div></span>
+                                                                                    </div>
+                                                                                </ui:fragment>
+                                                                                <ui:fragment rendered="#{indicevMTY.index eq (iti.viajeMTY.lstRutaDet.size()-1)}">
+                                                                                    <div class="nodo primary-color"                                                                      
+                                                                                         title="#{iti.id}:#{vMTY.id}:#{vINTRefMTY.mapa}:#{vMTY.mapa}::#{vMTY.id}"
+                                                                                         style="left: #{indicevINTMTY.index > 0 ? ((indicevINTMTY.index*administrarViajeTableroBean.itinerarioReferencia.factor)) : 3}%;">
+                                                                                        <span><div class="textoOficinas">#{vMTY.nombre}</div></span></div>
+                                                                                </ui:fragment>    
+                                                                                <ui:fragment rendered="#{iti.idPS eq vMTY.id}">                                                            
+                                                                                    <div class="nodo warning-color"        
+                                                                                         title="#{iti.id}:#{vMTY.id}:#{vINTRefMTY.mapa}:#{vMTY.mapa}::#{vMTY.id}"
+                                                                                         style="left: #{indicevINTMTY.index > 0 ? indicevINTMTY.index*administrarViajeTableroBean.itinerarioReferencia.factor : 3}%;">
+                                                                                        <span><div class="textoOficinas">#{vMTY.nombre}</div></span>
+                                                                                    </div>                                                            
+                                                                                </ui:fragment>
+                                                                            </ui:fragment>
+                                                                        </c:forEach>
+                                                                    </c:forEach>
+                                                                    <div class="progress-bar progress-bar-info" style="width: 100%; text-align: left;"
+                                                                         title="#{iti.viajeMTY.codigo} : #{iti.viajeMTY.ruta}"></div>                                            
+                                                                </div>
+                                                            </ui:fragment>
+                                                            <ui:fragment rendered="#{iti.viajeREY != null}">      
+                                                                <div class="progress interseccion"
+                                                                     title="#{administrarViajeTableroBean.itinerarioReferencia.lstRutaDetPredefinida.size()}::#{iti.viajeREY.indicePS}::#{administrarViajeTableroBean.itinerarioReferencia.factor}"
+                                                                     style="width: #{(administrarViajeTableroBean.itinerarioReferencia.lstRutaDetPredefinida.size() - iti.viajeREY.indicePS)*administrarViajeTableroBean.itinerarioReferencia.factor}%;">
+                                                                    <c:forEach items="#{iti.viajeREY.lstRutaDet}" varStatus="indicevREY" var="vREY">
+                                                                        <c:forEach items="#{administrarViajeTableroBean.itinerarioReferencia.lstRutaDetPredefinida}" varStatus="indicevINTREY" var="vINTRefREY">
+                                                                            <ui:fragment rendered="#{vINTRefREY.mapa eq vREY.mapa}">
+                                                                                <ui:fragment rendered="#{indicevREY.index eq 0}">
+                                                                                    <div class="nodo primary-color"                                                                      
+                                                                                         style="left: #{indicevINTREY.index > 0 ? indicevINTREY.index*administrarViajeTableroBean.itinerarioReferencia.factor : 3}%;">
+                                                                                        <span><div class="textoOficinas">#{vREY.nombre}</div></span></div>
+                                                                                </ui:fragment>
+                                                                                <ui:fragment rendered="#{(indicevREY.index gt 0) and (indicevREY.index lt (iti.viajeREY.lstRutaDet.size()-1))}">
+                                                                                    <div class="nodo info-color"                                                                      
+                                                                                         style="left: #{indicevINTREY.index > 0 ? indicevINTREY.index*administrarViajeTableroBean.itinerarioReferencia.factor : 3}%;">
+                                                                                        <span><div class="textoOficinas">#{vREY.nombre}</div></span>
+                                                                                    </div>
+                                                                                </ui:fragment>
+                                                                                <ui:fragment rendered="#{indicevREY.index eq (iti.viajeREY.lstRutaDet.size()-1)}">
+                                                                                    <div class="nodo primary-color"                                                                      
+                                                                                         style="left: #{indicevINTREY.index > 0 ? ((indicevINTREY.index*administrarViajeTableroBean.itinerarioReferencia.factor)) : 3}%;">
+                                                                                        <span><div class="textoOficinas">#{vREY.nombre}</div></span></div>
+                                                                                </ui:fragment>     
+                                                                                <ui:fragment rendered="#{iti.idPS eq vREY.id}">                                                            
+                                                                                    <div class="nodo warning-color"                                                                      
+                                                                                         style="left: #{indicevINTREY.index > 0 ? indicevINTREY.index*administrarViajeTableroBean.itinerarioReferencia.factor : 3}%;">
+                                                                                        <span><div class="textoOficinas">#{vREY.nombre}</div></span>
+                                                                                    </div>                                                            
+                                                                                </ui:fragment>
+                                                                            </ui:fragment>                                                        
+                                                                        </c:forEach>
+                                                                    </c:forEach>
+                                                                    <div class="progress-bar progress-bar-success" style="width: 100%; text-align: left;"
+                                                                         title="#{iti.viajeREY.codigo} : #{iti.viajeREY.ruta}"></div>                                            
+                                                                </div>
+                                                            </ui:fragment>
+                                                            <ui:fragment rendered="#{iti.viajeSF != null}">
+                                                                <div class="progress interseccion" 
+                                                                     title="#{administrarViajeTableroBean.itinerarioReferencia.lstRutaDetPredefinida.size()}::#{iti.viajeSF.indicePS}::#{administrarViajeTableroBean.itinerarioReferencia.factor}"
+                                                                     style="width: #{(administrarViajeTableroBean.itinerarioReferencia.lstRutaDetPredefinida.size() - iti.viajeSF.indicePS)*administrarViajeTableroBean.itinerarioReferencia.factor}%;">
+                                                                    <c:forEach items="#{iti.viajeSF.lstRutaDet}" varStatus="indicevSF" var="vSF">   
+                                                                        <c:forEach items="#{administrarViajeTableroBean.itinerarioReferencia.lstRutaDetPredefinida}" varStatus="indicevINTSF" var="vINTRefSF">
+                                                                            <ui:fragment rendered="#{vINTRefSF.mapa eq vSF.mapa}">
+                                                                                <ui:fragment rendered="#{indicevSF.index eq 0}">
+                                                                                    <div class="nodo primary-color"                                                                      
+                                                                                         style="left: #{indicevINTSF.index > 0 ? indicevINTSF.index*administrarViajeTableroBean.itinerarioReferencia.factor : 3}%;">
+                                                                                        <span><div class="textoOficinas">#{vSF.nombre}</div></span></div>
+                                                                                </ui:fragment>
+                                                                                <ui:fragment rendered="#{(indicevSF.index gt 0) and (indicevSF.index lt (iti.viajeSF.lstRutaDet.size()-1))}">
+                                                                                    <div class="nodo info-color"                                                                      
+                                                                                         style="left: #{indicevINTSF.index > 0 ? indicevINTSF.index*administrarViajeTableroBean.itinerarioReferencia.factor : 3}%;">
+                                                                                        <span><div class="textoOficinas">#{vSF.nombre}</div></span>
+                                                                                    </div>
+                                                                                </ui:fragment>
+                                                                                <ui:fragment rendered="#{indicevSF.index eq (iti.viajeSF.lstRutaDet.size()-1)}">
+                                                                                    <div class="nodo primary-color"                                                                      
+                                                                                         style="left: #{indicevINTSF.index > 0 ? ((indicevINTSF.index*administrarViajeTableroBean.itinerarioReferencia.factor)) : 3}%;">
+                                                                                        <span><div class="textoOficinas">#{vSF.nombre}</div></span></div>
+                                                                                </ui:fragment>    
+                                                                                <ui:fragment rendered="#{iti.idPS eq vSF.id}">                                                            
+                                                                                    <div class="nodo warning-color"                                                                      
+                                                                                         style="left: #{indicevINTSF.index > 0 ? indicevINTSF.index*administrarViajeTableroBean.itinerarioReferencia.factor : 3}%;">
+                                                                                        <span><div class="textoOficinas">#{vSF.nombre}</div></span>
+                                                                                    </div>                                                            
+                                                                                </ui:fragment>
+                                                                            </ui:fragment>                                                        
+                                                                        </c:forEach>
+                                                                    </c:forEach>
+                                                                    <div class="progress-bar progress-bar-danger" style="width: 100%; text-align: left;"
+                                                                         title="#{iti.viajeSF.codigo} : #{iti.viajeSF.ruta}"></div>                                            
+                                                                </div>
+                                                            </ui:fragment>                                        
+                                                        </div>
+                                                    </div>
+                                                </c:forEach>              
+                                            </div>
+                                        </div>                 
+                                    </ui:fragment>
+                                    <ui:fragment
+                                        rendered="#{(administrarViajeTableroBean.viajesProgramadosMTYCd.size() gt 0) or (administrarViajeTableroBean.viajesProgramadosREYCd.size() gt 0) or (administrarViajeTableroBean.viajesProgramadosSFCd.size() gt 0)}">
+                                        <div class="col-lg-12"  style="font-size: 12px; font-weight: bold;margin-top: 15px;">
+                                            <p class="tituloEncabezado col-lg-12" > Viajes terrestres a ciudad </p>                    			                                                    
+                                            <div class="container-fluid">
+                                                <c:forEach items="#{administrarViajeTableroBean.viajesProgramadosMTYCd}" var="itiMty">                                        
+                                                    <ui:fragment rendered="#{itiMty.viajeMTY != null}">                         
+                                                        <div class="card  card-default"> 
+                                                            <div class="card-header">                                                
+                                                                <p:commandLink  value="#{itiMty.viajeMTY.codigo}" actionListener="#{administrarViajeTableroBean.goInfoViaje(actionEvent)}">
+                                                                    <f:param name="idViajeInfo" value="#{itiMty.viajeMTY.id}"/>                                                
+                                                                </p:commandLink>                                        
+                                                                #{itiMty.viajeMTY.responsable}, #{itiMty.viajeMTY.fechaProgramadaTxt} #{itiMty.viajeMTY.horaProgramadaTxt}</div>
+                                                            <div class="card-body">
+                                                                <div class="progress" title="#{itiMty.viajeMTY.codigo} : #{itiMty.viajeMTY.ruta}">                                                        
+                                                                    <c:forEach items="#{itiMty.viajeMTY.lstRutaDet}" varStatus="indicevMTY" var="vMTY">                                                                                                                            
+                                                                        <ui:fragment rendered="#{indicevMTY.index eq 0}">
+                                                                            <div class="nodo primary-color" 
+                                                                                 style="left: #{indicevMTY.index > 0 ? indicevMTY.index*administrarViajeTableroBean.itinerarioReferencia.factor : 3}%;">
+                                                                                <span><div class="textoOficinas">#{vMTY.nombre}</div></span></div>
+                                                                        </ui:fragment>
+                                                                        <ui:fragment rendered="#{(indicevMTY.index gt 0) and (indicevMTY.index lt (itiMty.viajeMTY.lstRutaDet.size()-1))}">
+                                                                            <div class="nodo info-color" 
+                                                                                 style="left: #{indicevMTY.index > 0 ? indicevMTY.index*administrarViajeTableroBean.itinerarioReferencia.factor : 3}%;">
+                                                                                <span><div class="textoOficinas">#{vMTY.nombre}</div></span>
+                                                                            </div>
+                                                                        </ui:fragment>
+                                                                        <ui:fragment rendered="#{indicevMTY.index eq (itiMty.viajeMTY.lstRutaDet.size()-1)}">
+                                                                            <div class="nodo danger-color" 
+                                                                                 style="left: #{indicevMTY.index > 0 ? indicevMTY.index*administrarViajeTableroBean.itinerarioReferencia.factor : 3}%;">
+                                                                                <span><div class="textoOficinas">#{vMTY.nombre}</div></span></div>
+                                                                        </ui:fragment>                                                    
+                                                                    </c:forEach>                                                                                                        
+                                                                    <div class="progress-bar progress-bar-info" style="width: 100%; text-align: left;">
+
+                                                                    </div>                                            
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </ui:fragment>                                                                                    
+                                                </c:forEach>              
+
+                                                <c:forEach items="#{administrarViajeTableroBean.viajesProgramadosREYCd}" var="itiRey">                                                                                    
+                                                    <div class="card  card-default"> 
+                                                        <div class="card-header">                                            
+                                                            <p:commandLink  value="#{itiRey.viajeREY.codigo}" actionListener="#{administrarViajeTableroBean.goInfoViaje(actionEvent)}">
+                                                                <f:param name="idViajeInfo" value="#{itiRey.viajeREY.id}"/>                                                
+                                                            </p:commandLink>                                        
+                                                            , #{itiRey.viajeREY.responsable}, #{itiRey.viajeREY.fechaProgramadaTxt} #{itiRey.viajeREY.horaProgramadaTxt}</div>
+                                                        <div class="card-body">
+                                                            <div class="progress" title="#{itiRey.viajeREY.codigo} : #{itiRey.viajeREY.ruta}">                                                                                                    
+                                                                <c:forEach items="#{itiRey.viajeREY.lstRutaDet}" varStatus="indicevREY" var="vREY">                                                
+                                                                    <ui:fragment rendered="#{indicevREY.index eq 0}">
+                                                                        <div class="nodo primary-color" 
+                                                                             style="left: #{indicevRey.index > 0 ? (indicevRey.index*administrarViajeTableroBean.itinerarioReferencia.factor) : 3}%;">
+                                                                            <span><div class="textoOficinas">#{vREY.nombre}</div></span>
+                                                                        </div>
+                                                                    </ui:fragment>
+                                                                    <ui:fragment rendered="#{(indicevREY.index gt 0) and (indicevREY.index lt (itiRey.viajeREY.lstRutaDet.size()-1))}">
+                                                                        <div class="nodo info-color" 
+                                                                             style="left: #{indicevRey.index > 0 ? (indicevRey.index*administrarViajeTableroBean.itinerarioReferencia.factor) : 3}%;">
+                                                                            <span><div class="textoOficinas">#{vREY.nombre}</div></span>
+                                                                        </div>
+                                                                    </ui:fragment>
+                                                                    <ui:fragment rendered="#{indicevREY.index eq (itiRey.viajeREY.lstRutaDet.size()-1)}">
+                                                                        <div class="nodo danger-color" 
+                                                                             style="left: #{indicevRey.index > 0 ? (indicevRey.index*administrarViajeTableroBean.itinerarioReferencia.factor) : 3}%;">
+                                                                            <span><div class="textoOficinas">#{vREY.nombre}</div></span>
+                                                                        </div>
+                                                                    </ui:fragment>
+                                                                </c:forEach>                                                
+                                                                <div class="progress-bar progress-bar-info" style="width: 100%; text-align: left;"></div>                                            
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </c:forEach>
+
+                                                <c:forEach items="#{administrarViajeTableroBean.viajesProgramadosSFCd}" var="itiSf">                                                                                    
+                                                    <div class="card  card-default"> 
+                                                        <div class="card-header">                                            
+                                                            <p:commandLink  value="#{itiSf.viajeSF.codigo}" actionListener="#{administrarViajeTableroBean.goInfoViaje(actionEvent)}">
+                                                                <f:param name="idViajeInfo" value="#{itiSf.viajeSF.id}"/>                                                
+                                                            </p:commandLink>                                        
+                                                            , #{itiSf.viajeSF.responsable}, #{itiSf.viajeSF.fechaProgramadaTxt} #{itiSf.viajeSF.horaProgramadaTxt}</div>
+                                                        <div class="card-body">
+                                                            <div class="progress" title="#{itiSf.viajeSF.codigo} : #{itiSf.viajeSF.ruta}">                                                                                                    
+                                                                <c:forEach items="#{itiSf.viajeSF.lstRutaDet}" varStatus="indicevSF" var="vSF">                                                                                                
+                                                                    <ui:fragment rendered="#{indicevSF.index eq 0}">
+                                                                        <div class="nodo primary-color" 
+                                                                             style="left: #{indicevSF.index > 0 ? (indicevSF.index*administrarViajeTableroBean.itinerarioReferencia.factor) : 3}%;">
+                                                                            <span><div class="textoOficinas">#{vSF.nombre}</div></span>
+                                                                        </div>
+                                                                    </ui:fragment>
+                                                                    <ui:fragment rendered="#{(indicevSF.index gt 0) and (indicevSF.index lt (itiSf.viajeSF.lstRutaDet.size()-1))}">
+                                                                        <div class="nodo info-color" 
+                                                                             style="left: #{indicevSF.index > 0 ? (indicevSF.index*administrarViajeTableroBean.itinerarioReferencia.factor) : 3}%;">
+                                                                            <span><div class="textoOficinas">#{vSF.nombre}</div></span>
+                                                                        </div>
+                                                                    </ui:fragment>
+                                                                    <ui:fragment rendered="#{indicevSF.index eq (itiSf.viajeSF.lstRutaDet.size()-1)}">
+                                                                        <div class="nodo danger-color" 
+                                                                             style="left: #{indicevSF.index > 0 ? (indicevSF.index*administrarViajeTableroBean.itinerarioReferencia.factor) : 3}%;">
+                                                                            <span><div class="textoOficinas">#{vSF.nombre}</div></span>
+                                                                        </div>
+                                                                    </ui:fragment>
+                                                                </c:forEach>                                                
+                                                                <div class="progress-bar progress-bar-info" style="width: 100%; text-align: left;"></div>                                            
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </c:forEach>
+                                            </div>                                
+                                        </div>                 
+                                    </ui:fragment>
+                                </div>
+                                <div id="menu1" class="tab-pane fade" role="tabpanel" aria-labelledby="menu1-tab">
+                                    <ui:fragment 
+                                        rendered="#{(administrarViajeTableroBean.viajesEnCursoMTY.size() gt 0) or (administrarViajeTableroBean.viajesEnCursoREY.size() gt 0) or (administrarViajeTableroBean.viajesEnCursoSF.size() gt 0)}">                        
+                                        <div class="col-lg-12" style="font-size: 12px; font-weight: bold;margin-top: 15px;">                            
+                                            <p class="tituloEncabezado col-lg-12"> Viajes terrestres en curso entre oficinas </p>    
+                                            <c:forEach items="#{administrarViajeTableroBean.viajesEnCursoMTY}" var="itiMtyEC">                                        
+                                                <ui:fragment rendered="#{itiMtyEC.viajeMTY != null}">                                                                         
+                                                    <div class="card  card-default"> 
+                                                        <div class="card-header">
+                                                            <p:commandLink  value="#{itiMtyEC.viajeMTY.codigo}" actionListener="#{administrarViajeTableroBean.goInfoViaje(actionEvent)}">
+                                                                <f:param name="idViajeInfo" value="#{itiMtyEC.viajeMTY.id}"/>                                                
+                                                            </p:commandLink>                                        
+                                                            , #{itiMtyEC.viajeMTY.responsable}, #{itiMtyEC.viajeMTY.fechaSalidaTxt} #{itiMtyEC.viajeMTY.horaSalidaTxt} Tiempo de viaje: #{itiMtyEC.viajeMTY.tiempoViaje} hora(s)
+                                                        </div>
+                                                        <div class="card-body">
+                                                            <div class="progress" style="width: 95%; height: 1px;">
+                                                                <c:forEach items="#{itiMtyEC.viajeMTY.lstTiempoNodos}" var="nodoTime">
+                                                                    <div class="nodo" style="left:#{nodoTime.porcentaje}%;">
+                                                                        <div class="textoOficinasTiempo" style="text-align: right;">#{nodoTime.etiqueta} hrs</div>
+                                                                    </div>
+                                                                </c:forEach>                                                                        
+                                                                <div class="progress-bar progress-bar-danger progress-bar-striped active" style="width: #{itiMtyEC.viajeMTY.tiempoViajeReal > 100 ? 100 : itiMtyEC.viajeMTY.tiempoViajeReal}%; text-align: left;"></div>                                            
+                                                            </div>  
+                                                            <div class="progress" style="width: 95%; margin-top: 10px;" title="#{itiMtyEC.viajeMTY.codigo} : #{itiMtyEC.viajeMTY.ruta}">                                                                                                            
+                                                                <c:forEach items="#{itiMtyEC.viajeMTY.lstRutaDet}" varStatus="indicevMTY" var="vMTY">                                                                                                                            
+                                                                    <ui:fragment rendered="#{indicevMTY.index eq 0}">
+                                                                        <div class="nodo primary-color" 
+                                                                             style="left: #{indicevMTY.index > 0 ? (indicevMTY.index*(92/(itiMtyEC.viajeMTY.lstRutaDet.size()-1))) : 2}%;">
+                                                                            <span><div class="textoOficinas">#{vMTY.nombre}</div></span></div>
+                                                                    </ui:fragment>
+                                                                    <ui:fragment rendered="#{(indicevMTY.index gt 0) and (indicevMTY.index lt (itiMtyEC.viajeMTY.lstRutaDet.size()-1))}">
+                                                                        <div class="nodo info-color" 
+                                                                             style="left: #{indicevMTY.index > 0 ? (indicevMTY.index*(92/(itiMtyEC.viajeMTY.lstRutaDet.size()-1))) : 2}%;">
+                                                                            <span><div class="textoOficinas">#{vMTY.nombre}</div></span>
+                                                                        </div>
+                                                                    </ui:fragment>
+                                                                    <ui:fragment rendered="#{indicevMTY.index eq (itiMtyEC.viajeMTY.lstRutaDet.size()-1)}">
+                                                                        <div class="nodo danger-color"                                                                                  
+                                                                             style="left: #{indicevMTY.index > 0 ? (indicevMTY.index*(92/(itiMtyEC.viajeMTY.lstRutaDet.size()-1))) : 2}%;">                                                                                
+                                                                            <div class="textoOficinas">#{vMTY.nombre}
+                                                                            </div>
+                                                                            <ui:fragment rendered="#{itiMtyEC.viajeMTY.tiempoViajeReal gt 99}">
+                                                                                <div class="pulse-ring"></div>
+                                                                            </ui:fragment>                                                                                
+                                                                        </div>
+                                                                    </ui:fragment>                                                                        
+                                                                </c:forEach>                                                                                                        
+                                                                <div class="progress-bar progress-bar-danger progress-bar-striped active" style="width: #{itiMtyEC.viajeMTY.tiempoViajeReal > 100 ? 100 : itiMtyEC.viajeMTY.tiempoViajeReal}%; text-align: left;"></div>                                            
+                                                            </div>                                                
+                                                        </div>
+                                                    </div>
+                                                </ui:fragment>                                                                                    
+                                            </c:forEach>            
+                                            <c:forEach items="#{administrarViajeTableroBean.viajesEnCursoREY}" var="itiReyEC">                                                                                    
+                                                <ui:fragment rendered="#{itiReyEC.viajeREY != null}">                                                                         
+                                                    <div class="card  card-default"> 
+                                                        <div class="card-header">
+                                                            <p:commandLink  value="#{itiReyEC.viajeREY.codigo}" actionListener="#{administrarViajeTableroBean.goInfoViaje(actionEvent)}">
+                                                                <f:param name="idViajeInfo" value="#{itiReyEC.viajeREY.id}"/>                                                
+                                                            </p:commandLink>                                        
+                                                            , #{itiReyEC.viajeREY.responsable}, #{itiReyEC.viajeREY.fechaSalidaTxt} #{itiReyEC.viajeREY.horaSalidaTxt} Tiempo de viaje: #{itiReyEC.viajeREY.tiempoViaje} hora(s)
+                                                        </div>
+                                                        <div class="card-body">
+                                                            <div class="progress" style="width: 95%; height: 1px;">
+                                                                <c:forEach items="#{itiReyEC.viajeREY.lstTiempoNodos}" var="nodoTime">
+                                                                    <div class="nodo" style="left:#{nodoTime.porcentaje}%;">
+                                                                        <div class="textoOficinasTiempo" style="text-align: right;">#{nodoTime.etiqueta} hrs</div>
+                                                                    </div>
+                                                                </c:forEach>                                                                        
+                                                                <div class="progress-bar progress-bar-danger progress-bar-striped active" style="width: #{itiReyEC.viajeREY.tiempoViajeReal > 100 ? 100 : itiReyEC.viajeREY.tiempoViajeReal}%; text-align: left;"></div>                                            
+                                                            </div>  
+                                                            <div class="progress" style="width: 95%;" title="#{itiReyEC.viajeREY.codigo} : #{itiReyEC.viajeREY.ruta}">                                                                                                    
+                                                                <c:forEach items="#{itiReyEC.viajeREY.lstRutaDet}" varStatus="indicevREY" var="vREY">                                                                    
+                                                                    <ui:fragment rendered="#{indicevREY.index eq 0}">
+                                                                        <div class="nodo primary-color"                                                                                  
+                                                                             style="left: #{indicevREY.index > 0 ? (indicevREY.index*(92/(itiReyEC.viajeREY.lstRutaDet.size()-1))) : 2}%;">
+                                                                            <span><div class="textoOficinas">#{vREY.nombre}</div></span>
+                                                                        </div>
+                                                                    </ui:fragment>
+                                                                    <ui:fragment rendered="#{(indicevREY.index gt 0) and (indicevREY.index lt (itiReyEC.viajeREY.lstRutaDet.size()-1))}">
+                                                                        <div class="nodo info-color"                                                                                  
+                                                                             style="left: #{indicevREY.index > 0 ? (indicevREY.index*(92/(itiReyEC.viajeREY.lstRutaDet.size()-1))) : 2}%;">
+                                                                            <span><div class="textoOficinas">#{vREY.nombre}</div></span>
+                                                                        </div>
+                                                                    </ui:fragment>
+                                                                    <ui:fragment rendered="#{indicevREY.index eq (itiReyEC.viajeREY.lstRutaDet.size()-1) and itiReyEC.viajeREY.tiempoViajeReal lt 100}">
+                                                                        <div class="nodo danger-color"                                                                                  
+                                                                             style="left: #{indicevREY.index > 0 ? (indicevREY.index*(92/(itiReyEC.viajeREY.lstRutaDet.size()-1))) : 2}%;">                                                                                
+                                                                            <div class="textoOficinas">#{vREY.nombre}                                                                                                                                                                            
+                                                                            </div>
+                                                                            <ui:fragment rendered="#{itiReyEC.viajeREY.tiempoViajeReal gt 99}">
+                                                                                <div class="pulse-ring"></div>
+                                                                            </ui:fragment>                                                                                
+                                                                        </div>
+                                                                    </ui:fragment>                                                                        
+                                                                </c:forEach>                                                
+                                                                <div class="progress-bar progress-bar-info" style="width: #{itiReyEC.viajeREY.tiempoViajeReal > 100 ? 100 : itiReyEC.viajeREY.tiempoViajeReal}%; text-align: left;"></div>                                            
+                                                            </div>
+                                                        </div>
+                                                    </div>                                            
+                                                </ui:fragment>
+                                            </c:forEach>
+                                            <c:forEach items="#{administrarViajeTableroBean.viajesEnCursoSF}" var="itiSfEC">                                                  
+                                                <ui:fragment rendered="#{itiSfEC.viajeSF != null}">                                                                         
+                                                    <div class="card  card-default"> 
+                                                        <div class="card-header">
+                                                            <p:commandLink  value="#{itiSfEC.viajeSF.codigo}" actionListener="#{administrarViajeTableroBean.goInfoViaje(actionEvent)}">
+                                                                <f:param name="idViajeInfo" value="#{itiSfEC.viajeSF.id}"/>                                                
+                                                            </p:commandLink>                                        
+                                                            , #{itiSfEC.viajeSF.responsable}, #{itiSfEC.viajeSF.fechaSalidaTxt} #{itiSfEC.viajeSF.horaSalidaTxt} Tiempo de viaje: #{itiSfEC.viajeSF.tiempoViaje} hora(s)
+                                                        </div>
+                                                        <div class="card-body">
+                                                            <div class="progress" style="width: 95%; height: 1px;">
+                                                                <c:forEach items="#{itiSfEC.viajeSF.lstTiempoNodos}" var="nodoTime">
+                                                                    <div class="nodo" style="left:#{nodoTime.porcentaje}%;">
+                                                                        <div class="textoOficinasTiempo" style="text-align: right;">#{nodoTime.etiqueta} hrs</div>
+                                                                    </div>
+                                                                </c:forEach>                                                                        
+                                                                <div class="progress-bar progress-bar-danger progress-bar-striped active" style="width: #{itiSfEC.viajeSF.tiempoViajeReal > 100 ? 100 : itiSfEC.viajeSF.tiempoViajeReal}%; text-align: left;"></div>                                            
+                                                            </div>  
+                                                            <div class="progress" style="width: 95%;" title="#{itiSfEC.viajeSF.codigo} : #{itiSfEC.viajeSF.ruta}">                                                                                                    
+                                                                <c:forEach items="#{itiSfEC.viajeSF.lstRutaDet}" varStatus="indicevSF" var="vSF">                                                                    
+                                                                    <ui:fragment rendered="#{indicevSF.index eq 0}">
+                                                                        <div class="nodo primary-color" 
+                                                                             style="left: #{indicevSF.index > 0 ? (indicevSF.index*(92/(itiSfEC.viajeSF.lstRutaDet.size()-1))) : 2}%;">
+                                                                            <span><div class="textoOficinas">#{vSF.nombre}</div></span>
+                                                                        </div>
+                                                                    </ui:fragment>
+                                                                    <ui:fragment rendered="#{(indicevSF.index gt 0) and (indicevSF.index lt (itiSfEC.viajeSF.lstRutaDet.size()-1))}">
+                                                                        <div class="nodo info-color" 
+                                                                             style="left: #{indicevSF.index > 0 ? (indicevSF.index*(92/(itiSfEC.viajeSF.lstRutaDet.size()-1))) : 2}%;">
+                                                                            <span><div class="textoOficinas">#{vSF.nombre}</div></span>
+                                                                        </div>
+                                                                    </ui:fragment>
+                                                                    <ui:fragment rendered="#{indicevSF.index eq (itiSfEC.viajeSF.lstRutaDet.size()-1) and itiSfEC.viajeSF.tiempoViajeReal lt 100}">
+                                                                        <div class="nodo danger-color" 
+                                                                             style="left: #{indicevSF.index > 0 ? (indicevSF.index*(92/(itiSfEC.viajeSF.lstRutaDet.size()-1))) : 2}%;">
+                                                                            <div class="textoOficinas">#{vSF.nombre}</div>
+                                                                            <ui:fragment rendered="#{itiSfEC.viajeSF.tiempoViajeReal gt 99}">
+                                                                                <div class="pulse-ring"></div>
+                                                                            </ui:fragment>                                                                                
+                                                                        </div>
+                                                                    </ui:fragment>                                                                        
+                                                                </c:forEach>                                                
+                                                                <div class="progress-bar progress-bar-info" style="width: #{itiSfEC.viajeSF.tiempoViajeReal > 100 ? 100 : itiSfEC.viajeSF.tiempoViajeReal}%; text-align: left;"></div>                                            
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </ui:fragment>
+                                            </c:forEach>
+
+                                        </div>                 
+                                    </ui:fragment>
+                                    <ui:fragment
+                                        rendered="#{(administrarViajeTableroBean.viajesEnCursoMTYCd.size() gt 0) or (administrarViajeTableroBean.viajesEnCursoREYCd.size() gt 0) or (administrarViajeTableroBean.viajesEnCursoSFCd.size() gt 0)}">
+                                        <div class="col-lg-12"  style="font-size: 12px; font-weight: bold;margin-top: 15px;">
+                                            <p class="tituloEncabezado col-lg-12" > Viajes terrestres en curso a ciudad </p>                    			                                                    
+
+                                            <c:forEach items="#{administrarViajeTableroBean.viajesEnCursoMTYCd}" var="itiMtyEC">                                        
+                                                <ui:fragment rendered="#{itiMtyEC.viajeMTY != null}">                         
+                                                    <div class="card  card-default"> 
+                                                        <div class="card-header">                                                
+                                                            <p:commandLink  value="#{itiMtyEC.viajeMTY.codigo}" actionListener="#{administrarViajeTableroBean.goInfoViaje(actionEvent)}">
+                                                                <f:param name="idViajeInfo" value="#{itiMtyEC.viajeMTY.id}"/>                                                
+                                                            </p:commandLink>                                        
+                                                            #{itiMtyEC.viajeMTY.responsable}, #{itiMtyEC.viajeMTY.fechaSalidaTxt} #{itiMtyEC.viajeMTY.horaSalidaTxt} Tiempo de viaje: #{itiMtyEC.viajeMTY.tiempoViaje} hora(s)
+                                                        </div>
+                                                        <div class="card-body">
+                                                            <div class="progress" style="width: 95%; height: 1px;" title="#{itiMtyEC.viajeMTY.codigo} : #{itiMtyEC.viajeMTY.ruta}">                                                                                                                                                                                
+                                                                <c:forEach items="#{itiMtyEC.viajeMTY.lstTiempoNodos}" var="nodoTime">
+                                                                    <div class="nodo" style="left:#{nodoTime.porcentaje}%;">
+                                                                        <div class="textoOficinasTiempo" style="text-align: right;">#{nodoTime.etiqueta} hrs</div>
+                                                                    </div>
+                                                                </c:forEach>                                                                        
+                                                                <div class="progress-bar progress-bar-danger progress-bar-striped active" style="width: #{itiMtyEC.viajeMTY.tiempoViajeReal > 100 ? 100 :  itiMtyEC.viajeMTY.tiempoViajeReal}%; text-align: left;"></div>                                            
+                                                            </div>  
+                                                            <div class="progress" style="width: 95%;" title="#{itiMtyEC.viajeMTY.codigo} : #{itiMtyEC.viajeMTY.ruta}">                                                        
+                                                                <c:forEach items="#{itiMtyEC.viajeMTY.lstRutaDet}" varStatus="indicevMTY" var="vMTY">                                                                                                                            
+                                                                    <ui:fragment rendered="#{indicevMTY.index eq 0}">
+                                                                        <div class="nodo primary-color"                                                                                      
+                                                                             style="left: #{indicevMTY.index > 0 ? (indicevMTY.index*(92/(itiMtyEC.viajeMTY.lstRutaDet.size()-1))) : 2}%;">
+                                                                            <span><div class="textoOficinas">#{vMTY.nombre}</div></span></div>
+                                                                    </ui:fragment>
+                                                                    <ui:fragment rendered="#{(indicevMTY.index gt 0) and (indicevMTY.index lt (itiMtyEC.viajeMTY.lstRutaDet.size()-1))}">
+                                                                        <div class="nodo info-color" 
+                                                                             style="left: #{indicevMTY.index > 0 ? (indicevMTY.index*(92/(itiMtyEC.viajeMTY.lstRutaDet.size()-1))) : 2}%;">
+                                                                            <span><div class="textoOficinas">#{vMTY.nombre}</div></span>
+                                                                        </div>
+                                                                    </ui:fragment>
+                                                                    <ui:fragment rendered="#{indicevMTY.index eq (itiMtyEC.viajeMTY.lstRutaDet.size()-1)}">
+                                                                        <div class="nodo danger-color" 
+                                                                             style="left: #{indicevMTY.index > 0 ? (indicevMTY.index*(92/(itiMtyEC.viajeMTY.lstRutaDet.size()-1))) : 2}%;">
+                                                                            <div class="textoOficinas">#{vMTY.nombre}</div>
+                                                                            <ui:fragment rendered="#{itiMtyEC.viajeMTY.tiempoViajeReal gt 99}">
+                                                                                <div class="pulse-ring"></div>
+                                                                            </ui:fragment>                                                                                
+                                                                        </div>
+                                                                    </ui:fragment>                                                    
+                                                                </c:forEach>                                                                                                        
+                                                                <div class="progress-bar progress-bar-info" style="width: #{itiMtyEC.viajeMTY.tiempoViajeReal > 100 ? 100 : itiMtyEC.viajeMTY.tiempoViajeReal}%; text-align: left;">
+
+                                                                </div>                                            
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </ui:fragment>                                                                                    
+                                            </c:forEach>              
+
+                                            <c:forEach items="#{administrarViajeTableroBean.viajesEnCursoREYCd}" var="itiReyEC">                                                                                    
+                                                <div class="card  card-default"> 
+                                                    <div class="card-header">                                            
+                                                        <p:commandLink  value="#{itiReyEC.viajeREY.codigo}" actionListener="#{administrarViajeTableroBean.goInfoViaje(actionEvent)}">
+                                                            <f:param name="idViajeInfo" value="#{itiReyEC.viajeREY.id}"/>                                                
+                                                        </p:commandLink>                                        
+                                                        , #{itiReyEC.viajeREY.responsable}, #{itiReyEC.viajeREY.fechaSalidaTxt} #{itiReyEC.viajeREY.horaSalidaTxt} Tiempo de viaje: #{itiReyEC.viajeREY.tiempoViaje} hora(s)
+                                                    </div>
+                                                    <div class="card-body">
+                                                        <div class="progress" style="width: 95%; height: 1px;">
+                                                            <c:forEach items="#{itiReyEC.viajeREY.lstTiempoNodos}" var="nodoTime">
+                                                                <div class="nodo" style="left:#{nodoTime.porcentaje}%;">
+                                                                    <div class="textoOficinasTiempo" style="text-align: right;">#{nodoTime.etiqueta} hrs</div>
+                                                                </div>
+                                                            </c:forEach>                                                                        
+                                                            <div class="progress-bar progress-bar-danger progress-bar-striped active" style="width: #{itiReyEC.viajeREY.tiempoViajeReal > 100 ? 100 : itiReyEC.viajeREY.tiempoViajeReal}%; text-align: left;"></div>                                            
+                                                        </div>  
+                                                        <div class="progress" style="width: 95%;" title="#{itiReyEC.viajeREY.codigo} : #{itiReyEC.viajeREY.ruta}">                                                                                                    
+                                                            <c:forEach items="#{itiReyEC.viajeREY.lstRutaDet}" varStatus="indicevREY" var="vREY">                                                
+                                                                <ui:fragment rendered="#{indicevREY.index eq 0}">
+                                                                    <div class="nodo primary-color"                                                                                  
+                                                                         style="left: #{indicevREY.index > 0 ? (indicevREY.index*(92/(itiReyEC.viajeREY.lstRutaDet.size()-1))) : 2}%;">
+                                                                        <span><div class="textoOficinas">#{vREY.nombre}</div></span>
+                                                                    </div>
+                                                                </ui:fragment>
+                                                                <ui:fragment rendered="#{(indicevREY.index gt 0) and (indicevREY.index lt (itiReyEC.viajeREY.lstRutaDet.size()-1))}">
+                                                                    <div class="nodo info-color"                                                                                  
+                                                                         style="left: #{indicevREY.index > 0 ? (indicevREY.index*(92/(itiReyEC.viajeREY.lstRutaDet.size()-1))) : 2}%;">
+                                                                        <span><div class="textoOficinas">#{vREY.nombre}</div></span>
+                                                                    </div>
+                                                                </ui:fragment>
+                                                                <ui:fragment rendered="#{indicevREY.index eq (itiReyEC.viajeREY.lstRutaDet.size()-1)}">
+                                                                    <div class="nodo danger-color"                                                                                  
+                                                                         style="left: #{indicevREY.index > 0 ? (indicevREY.index*(92/(itiReyEC.viajeREY.lstRutaDet.size()-1))) : 2}%;">
+                                                                        <div class="textoOficinas">#{vREY.nombre}</div>
+                                                                        <ui:fragment rendered="#{itiReyEC.viajeREY.tiempoViajeReal gt 99}">
+                                                                            <div class="pulse-ring"></div>
+                                                                        </ui:fragment>                                                                                
+                                                                    </div>
+                                                                </ui:fragment>
+                                                            </c:forEach>                                                
+                                                            <div class="progress-bar progress-bar-info" style="width: #{itiReyEC.viajeREY.tiempoViajeReal > 100 ? 100 : itiReyEC.viajeREY.tiempoViajeReal}%; text-align: left;"></div>                                            
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </c:forEach>
+
+                                            <c:forEach items="#{administrarViajeTableroBean.viajesEnCursoSFCd}" var="itiSfEC">                                                                                    
+                                                <div class="card  card-default"> 
+                                                    <div class="card-header">                                            
+                                                        <p:commandLink  value="#{itiSfEC.viajeSF.codigo}" actionListener="#{administrarViajeTableroBean.goInfoViaje(actionEvent)}">
+                                                            <f:param name="idViajeInfo" value="#{itiSfEC.viajeSF.id}"/>                                                
+                                                        </p:commandLink>                                        
+                                                        , #{itiSfEC.viajeSF.responsable}, #{itiSfEC.viajeSF.fechaSalidaTxt} #{itiSfEC.viajeSF.horaSalidaTxt} Tiempo de viaje: #{itiSfEC.viajeSF.tiempoViaje} hora(s)
+                                                    </div>
+                                                    <div class="card-body">
+                                                        <div class="progress" style="width: 95%; height: 1px;">
+                                                            <c:forEach items="#{itiSfEC.viajeSF.lstTiempoNodos}" var="nodoTime">
+                                                                <div class="nodo" style="left:#{nodoTime.porcentaje}%;">
+                                                                    <div class="textoOficinasTiempo" style="text-align: right;">#{nodoTime.etiqueta} hrs</div>
+                                                                </div>
+                                                            </c:forEach>                                                                        
+                                                            <div class="progress-bar progress-bar-danger progress-bar-striped active" style="width: #{itiSfEC.viajeSF.tiempoViajeReal > 100 ? 100 : itiSfEC.viajeSF.tiempoViajeReal}%; text-align: left;"></div>                                            
+                                                        </div>  
+                                                        <div class="progress" style="width: 95%;" title="#{itiSfEC.viajeSF.codigo} : #{itiSfEC.viajeSF.ruta}">                                                                                                    
+                                                            <c:forEach items="#{itiSfEC.viajeSF.lstRutaDet}" varStatus="indicevSF" var="vSF">                                                                                                
+                                                                <ui:fragment rendered="#{indicevSF.index eq 0}">
+                                                                    <div class="nodo primary-color"                                                                                  
+                                                                         style="left: #{indicevSF.index > 0 ? (indicevSF.index*(92/(itiSfEC.viajeSF.lstRutaDet.size()-1))) : 2}%;">
+                                                                        <span><div class="textoOficinas">#{vSF.nombre}</div></span>
+                                                                    </div>
+                                                                </ui:fragment>
+                                                                <ui:fragment rendered="#{(indicevSF.index gt 0) and (indicevSF.index lt (itiSfEC.viajeSF.lstRutaDet.size()-1))}">
+                                                                    <div class="nodo info-color"                                                                                  
+                                                                         style="left: #{indicevSF.index > 0 ? (indicevSF.index*(92/(itiSfEC.viajeSF.lstRutaDet.size()-1))) : 2}%;">
+                                                                        <span><div class="textoOficinas">#{vSF.nombre}</div></span>
+                                                                    </div>
+                                                                </ui:fragment>
+                                                                <ui:fragment rendered="#{indicevSF.index eq (itiSfEC.viajeSF.lstRutaDet.size()-1)}">
+                                                                    <div class="nodo danger-color"                                                                                  
+                                                                         style="left: #{indicevSF.index > 0 ? (indicevSF.index*(92/(itiSfEC.viajeSF.lstRutaDet.size()-1))) : 2}%;">
+                                                                        <div class="textoOficinas">#{vSF.nombre}</div>
+                                                                        <ui:fragment rendered="#{itiSfEC.viajeSF.tiempoViajeReal gt 99}">
+                                                                            <div class="pulse-ring"></div>
+                                                                        </ui:fragment>                                                                                
+                                                                    </div>
+                                                                </ui:fragment>
+                                                            </c:forEach>                                                
+                                                            <div class="progress-bar progress-bar-info" style="width: #{itiSfEC.viajeSF.tiempoViajeReal > 100 ? 100 : itiSfEC.viajeSF.tiempoViajeReal}%; text-align: left;"></div>                                            
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </c:forEach>
+
+                                        </div>                 
+                                    </ui:fragment>                                        
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </h:form>
+                <div class="row">                    
+                    <ui:include src="../fragmentosViaje/administracion/popupTableroViajes.xhtml"/>                      
+                </div>
+                <script>
+                    $(document).ready(function () {
+                        initControlChofer();
+                    });
+                </script>
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>
+

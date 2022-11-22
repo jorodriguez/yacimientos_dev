@@ -1,0 +1,109 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"    
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"  
+
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <body>
+        <ui:composition template="./../../WEB-INF/facelets/templates/templateGrupos.xhtml">
+            <ui:define name="tituloPagina">
+                #{msgs['sia.reporte.viajero.titulo']}
+            </ui:define>
+            <ui:define name="contenido">
+                <div class="row">
+                    <ui:include src="./menuRecursos.xhtml"  />
+                </div>
+                <div class="row"> 
+                    <h:form   id="frmReporteViajeoro">     
+                        <h:message for="inicio" infoClass="infoMessage" errorClass="errorMessage" />
+                        <h:message for="fin" infoClass="infoMessage" errorClass="errorMessage" />
+                        <div class="col-12 input-group">
+                            <div class="col-8 input-group">
+                                <div class="col-1">
+                                    <label>#{msgs['sia.reporte.fecha.inicio']}</label>
+                                </div>
+                                <div class="col-5">
+                                    <p:datePicker  value="#{reporteBean.inicio}" 
+                                                   pattern="dd/MM/yyyy"
+                                                   id="principio">
+                                    </p:datePicker>
+                                </div>
+                                <div class="col-1">
+                                    <label>#{msgs['sia.reporte.fecha.fin']}</label>
+                                </div>
+                                <div class="col-5">
+                                    <p:datePicker  value="#{reporteBean.fin}" 
+                                                   pattern="dd/MM/yyyy"
+                                                   id="final">
+                                    </p:datePicker> 
+                                </div>
+
+                            </div>
+                            <div class="col-3 input-group">
+                                <p:commandButton styleClass="btn btn-info btn-sm" value="Buscar" 
+                                                 action="#{reporteBean.traerViajero}" process="@form" 
+                                                 update="frmReporteViajeoro:tblRep "/>
+
+                                <p:commandButton value="Exportar">
+                                    <p:dataExporter target="tblRep" type="xls" fileName="Viajes"/>    
+                                </p:commandButton>
+
+                            </div>
+                        </div>                       
+                        <div class="col-12">
+                            <p:dataTable size="small" stripedRows="true" showGridlines="true" 
+                                         id="tblRep" value="#{reporteBean.lista}" var="data" 
+                                         rows="15" >
+                                <f:facet name="header"><h:outputLabel value="Viajeros terrestres"/></f:facet>
+                                <p:column>
+                                    <f:facet name="header"><h:outputText value="#{msgs['sgl.viaje']}"/></f:facet>
+                                    <h:outputText value="#{data.codigoViaje}"/>
+                                </p:column>
+                                <p:column>
+                                    <f:facet name="header"><h:outputText value="#{msgs['sia.rh.empleado']}"/></f:facet>
+                                    <h:outputText value="#{data.usuario}"/>
+                                </p:column>
+                                <p:column>
+                                    <f:facet name="header"><h:outputText value="#{msgs['sia.reporte.salida']}"/></f:facet>
+                                    <h:outputText value="#{data.fechaSalida}">
+                                        <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                    </h:outputText>
+                                </p:column>
+                                <p:column>
+                                    <f:facet name="header"><h:outputText value="#{msgs['sia.reporte.hora.salida']}"/></f:facet>
+                                    <h:outputText value="#{data.horaSalida}">
+                                        <f:convertDateTime pattern="HH:mm"/>
+                                    </h:outputText>
+                                </p:column>
+                                <p:column>
+                                    <f:facet name="header"><h:outputText value="#{msgs['sia.reporte.regreso']}"/></f:facet>
+                                    <h:outputText value="#{data.fechaRegreso}">
+                                        <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                    </h:outputText>
+                                </p:column>
+                                <p:column>
+                                    <f:facet name="header"><h:outputText value="#{msgs['sia.reporte.hora.regreso']}"/></f:facet>
+                                    <h:outputText value="#{data.horaRegreso}">
+                                        <f:convertDateTime pattern="HH:mm"/>
+                                    </h:outputText>
+                                </p:column>
+                                <p:column>
+                                    <f:facet name="header"><h:outputText value="#{msgs['sia.reporte.origen']}"/></f:facet>
+                                    <h:outputText value="#{data.origen}"/>
+                                </p:column>
+                                <p:column>
+                                    <f:facet name="header"><h:outputText value="#{msgs['sia.reporte.destino']}"/></f:facet>
+                                    <h:outputText value="#{data.destino}"/>
+                                </p:column>
+                            </p:dataTable>  
+                        </div>
+                    </h:form>
+                </div>
+            </ui:define>
+
+        </ui:composition>
+
+    </body>
+</html>

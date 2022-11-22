@@ -1,0 +1,188 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+      >
+    <body>
+        <ui:composition template="./../templates/template.xhtml">
+            <ui:define name="tituloPagina">
+                Revisar Requisiciones Costos
+            </ui:define>
+            <ui:define name="contenido">     
+                <h:form id="form1">    
+                    <div class="row">     
+                        <p:confirmDialog global="true" showEffect="fade" hideEffect="fade" responsive="true" width="350">
+                            <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no ui-button-flat"/>
+                            <p:commandButton value="Si" type="button" styleClass="ui-confirmdialog-yes" />
+                        </p:confirmDialog>                                           
+                        <div id="divAutoriza" class="btn-group"  style="text-align: left;">
+                            <p:commandLink value="Revisar" styleClass="btn btn-default"
+                                           action="#{vistoBuenoCostosBean.vistoBuenoCostosVarias}"
+                                           title="Clic aqui para revisar la requisición..." 
+                                           style="font-weight: bold;"
+                                           disabled="#{vistoBuenoCostosBean.listaRequisiciones.rowCount lt 1}"
+                                           process="@this form1:dtReqCostos" update="form1 frmMenu"/>
+                            <p:commandLink value="Devolver" styleClass="btn btn-default"
+                                           action="#{vistoBuenoCostosBean.iniciodevolverVariasRequisiciones()}"
+                                           title="Clic aqui para devolver la(s) requisición(es)"
+                                           disabled="#{vistoBuenoCostosBean.listaRequisiciones.rowCount lt 1}"
+                                           style="font-weight: bold;" process="@this form1:dtReqCostos"
+                                           update="frmDevV"/>
+                            <p:commandLink value="Cancelar" styleClass="btn btn-default"
+                                           action="#{vistoBuenoCostosBean.inicioCancelarVariasRequisiciones()}"
+                                           title="Clic aqui para cancelar la(s) requisición(es)"
+                                           disabled="#{vistoBuenoCostosBean.listaRequisiciones.rowCount lt 1}"
+                                           style="font-weight: bold;" process="@this form1:dtReqCostos " update="frmCanReqV"/>
+                        </div>
+                        <div id="divOperacion" class="btn-group" style="display: none;">                                                                
+                            <p:commandLink value="Regresar" styleClass="btn btn-default" action="#{vistoBuenoCostosBean.limpiarRequisicion}"
+                                           onclick="regresar('divTabla', 'divDatos', 'divOperacion', 'divAutoriza')"/>
+
+                            <p:commandLink value="Revisar" styleClass="btn btn-default"
+                                           action="#{vistoBuenoCostosBean.vistoBuenoCosto}"    
+                                           title="Clic aqui para revisar la requisición..." 
+                                           process="@this form1:tbReq" update="form1 form1:tbReq frmMenu">
+                                <p:confirm header="Confirmar" message="La operación pasará la requisición. ¿Está seguro?." 
+                                           icon="pi pi-exclamation-triangle"/>
+                            </p:commandLink>
+
+                            <p:commandLink value="Devolver" styleClass="btn btn-default"
+                                           action="#{vistoBuenoCostosBean.devolverRequisicion}"
+                                           title="Clic aqui para devolver la requisición..." 
+                                           process="@this" update="frmDev"/>                                                                                            
+                        </div>                            
+                    </div>
+                    <div id="divTabla" class="row"> 
+                        <p:dataTable id="dtReqCostos" size="small" stripedRows="true" showGridlines="true" rows="10" 
+                                     value="#{vistoBuenoCostosBean.listaRequisiciones}" 
+                                     var="currentRow" paginator="true" paginatorPosition="bottom" paginatorAlwaysVisible="true" 
+                                     >
+                            <p:column  width="20" style="text-align: center;">
+                                <f:facet name="header">
+                                    <h:selectBooleanCheckbox  class="todos" onchange="seleccionarGeneral('todos', 'seleccion', 'divAutoriza')"/>
+                                </f:facet>
+                                <h:selectBooleanCheckbox  value="#{currentRow.selected}" class="seleccion" 
+                                                          onclick="mostrarDiv('divRevisa');"/>
+                            </p:column>
+                            <p:column style="width: 20%; text-align: center;"                                                
+                                      rendered="#{usuarioBean.usuarioConectado.apCampo.compania ne '901066223-8'}"
+                                      headerText="Uso CFDI*">
+                                <h:selectOneMenu value="#{currentRow.idCfdi}" styleClass="form-control">
+                                    <f:selectItem itemValue="0" itemLabel="Seleccione . . ."/>
+                                    <f:selectItems value="#{vistoBuenoCostosBean.listaUso}"/>
+                                </h:selectOneMenu>
+                            </p:column>
+                            <p:column width="120" headerText="Código" style="text-align: center;">
+                                <h:outputText value="#{currentRow['consecutivo']}"/>
+                            </p:column>
+                            <p:column headerText="Gerencia" style="text-align: center;">
+                                <h:outputText value="#{currentRow['gerencia']}"/>
+                            </p:column>
+                            <p:column headerText="Referencia" style="text-align: center;">
+                                <h:outputText value="#{currentRow['referencia']}"/>
+                            </p:column>
+                            <p:column headerText="Solicitada" style="text-align: center;">
+                                <h:outputText value="#{currentRow['fechaSolicitada']}">
+                                    <f:convertDateTime dateStyle="default"
+                                                       type="date"/>
+                                </h:outputText>
+                            </p:column>
+                            <p:column headerText="Último rechazo" style="text-align: center;">
+                                <h:outputText value="#{currentRow['ultimoRechazo']}">
+                                    <f:convertDateTime dateStyle="default"
+                                                       type="date"/>
+                                </h:outputText>
+                            </p:column>
+                            <p:column width="30" style="text-align: center;">
+                                <p:commandLink action="#{vistoBuenoCostosBean.seleccionarRequisicionCostosConta(currentRow)}"                                                   
+                                               title="Clic aqui para ver y modificar los items de la requisición..."
+                                               process="@this" update="form1:tbReq">
+                                    <i class="fa fa-eye text-primary"/>
+                                </p:commandLink>
+
+                            </p:column>
+                        </p:dataTable>
+                    </div>
+                    <div id="divDatos"   style="display: none;"  class="mt-3">
+                        <p:tabView id="tbReq" activeIndex="0">
+                            <p:tab title="ITEMS">
+                                <div class="row">   
+                                    <div class="col-6">
+                                        <div class="row">
+                                            <div class="col-2" >
+                                                <h:outputLabel value="USO CFDI: "/>
+                                            </div>
+                                            <div class="col-10" style="text-align: left;">
+                                                <h:selectOneMenu value="#{vistoBuenoCostosBean.idCfdi}" styleClass="form-control fa-fa2x">
+                                                    <f:selectItem itemValue="0" itemLabel="Seleccione . . ."/>
+                                                    <f:selectItems value="#{vistoBuenoCostosBean.listaUso}"/>
+                                                </h:selectOneMenu>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="row">
+                                            <div class="col-3" style="text-align: right;" >
+                                                <h:outputLabel value="Metodo de pago: "/>
+                                            </div>
+                                            <div  class="col-9" style="text-align: left;">
+                                                <h:outputLabel value="#{vistoBuenoCostosBean.requisicionActual.ocMetodoPago.descripcion}"/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <ui:include src="../Requisiciones/verVBRequi.xhtml"/>
+                            </p:tab>
+                            <p:tab title="ETS">
+                                <ui:include src="../Requisiciones/verETSCostos.xhtml"/>
+                            </p:tab>
+                            <p:tab title="Devoluciones">
+                                <p:dataTable size="small" stripedRows="true" showGridlines="true"  value="#{vistoBuenoCostosBean.listaRechazo}" var="currentRow"   styleClass="table table-striped">
+                                    <f:facet name="header">
+                                        <center>
+                                            <h:outputLabel value="Información de Devolución"/>
+                                        </center>
+                                    </f:facet>
+                                    <p:column style="text-align: center;">
+                                        <h:outputText value="#{currentRow.rechazo.nombre}"/>
+                                        <f:facet name="header">
+                                            <h:outputText value="Devolvió"/>
+                                        </f:facet>
+                                    </p:column>
+                                    <p:column style="text-align: center;">
+                                        <h:outputText value="#{currentRow.fecha}">
+                                            <f:convertDateTime dateStyle="default" type="date"/>
+                                        </h:outputText>
+                                        <f:facet name="header">
+                                            <h:outputText value="Fecha"/>
+                                        </f:facet>
+                                    </p:column>
+                                    <p:column style="text-align: center;">
+                                        <h:outputText value="#{currentRow.hora}">
+                                            <f:convertDateTime pattern="hh:mm" timeStyle="default" type="time"/>
+                                        </h:outputText>
+                                        <f:facet name="header">
+                                            <h:outputText value="Hora"/>
+                                        </f:facet>
+                                    </p:column>
+                                    <p:column style="text-align: center;">
+                                        <h:outputText value="#{currentRow.motivo}"/>
+                                        <f:facet name="header">
+                                            <h:outputText value="Motivo"/>
+                                        </f:facet>
+                                    </p:column>
+                                </p:dataTable>
+
+                            </p:tab>
+                        </p:tabView>
+                    </div>
+                </h:form> 
+                <ui:include src="../../SiaWeb/Requisiciones/fragmentos/popUpDevolverRequisicion.xhtml"/>
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

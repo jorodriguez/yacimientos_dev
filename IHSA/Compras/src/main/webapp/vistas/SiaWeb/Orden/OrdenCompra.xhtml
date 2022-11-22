@@ -1,0 +1,619 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      >
+    <body>
+        <ui:composition template="./../templates/template.xhtml">
+            <ui:define name="tituloPagina">
+                Órdenes pendientes de solicitar
+            </ui:define>
+            <ui:define name="contenido">
+                <h:form id="form1" >
+                    <div class="row">                        
+                        <div id="divOperacion" class="btn-group col-12" style="text-align: left; display: none;">
+                            <div class="col-12 input-group">
+                                <p:panel id="pnlBotones">
+                                    <p:commandLink value="Regresar" action="#{ordenCompraBean.iniciarLimpiar}"
+                                                   onclick="regresar('divTabla', 'divDatos', 'divOperacion', 'divAutoriza')"
+                                                   styleClass="btn btn-default"/>
+                                    <p:commandLink value="Solicitar" styleClass="btn btn-default"           
+                                                   action="#{ordenCompraBean.soliciarOCS}"
+                                                   title="Clic aquí para modificar orden de compra..." >
+                                    </p:commandLink>
+
+                                    <p:commandLink value="#{msgs['sistema.modificar']}" styleClass="btn btn-default"                                                  
+                                                   onclick="$(dialogoModOCS).modal('show');"
+                                                   title="Clic aquí para modificar orden de compra..." 
+                                                   process="@this" update="frmModReq">
+                                    </p:commandLink>
+                                    <p:commandLink value="Cargar ETS" 
+                                                   title="Clic aquí para agregar Especificación Tecnica de Suministro..." 
+                                                   styleClass="btn btn-default"
+                                                   onclick="$(dialogoCargarEts).modal('show');"
+                                                   process="@this" update="form1Ets">
+                                    </p:commandLink>
+                                    <p:commandLink id="btnAgrearItem" value="Agregar Ítem" styleClass="btn btn-default"                                            
+                                                   action="#{ordenCompraBean.crearItem}"
+                                                   title="Clic aquí para crear ítem..."
+                                                   rendered="#{(ordenCompraBean.ordenActual.conConvenio eq false and ordenCompraBean.ordenActual.multiproyecto eq false)}"
+                                                   process="@this" update="frmItemOrden frmItemOrden:pnlAcord"/>
+                                    <p:commandLink id="btnAgrearItemConv" action="#{ordenCompraBean.agregarItemConvenio}"
+                                                   styleClass="btn btn-default"  title="Clic aquí para agregar item desde convenio. . ."
+                                                   style="display: #{ordenCompraBean.ordenActual.detalleProcesado eq true ? 'block' : 'none'}"
+                                                   process="@this" update="frmDialogoItemConvenio">
+                                        Agregar Item
+                                    </p:commandLink>
+                                    <p:commandLink id="btnAgrearItemOtraOcs" value="Agregar Ítem de otra OC/S" styleClass="btn btn-default"
+                                                   onclick="$(dialogoDetalleOCS).modal('show');"                                           
+                                                   title="Clic aquí para traer items de otra OC/S ..."
+                                                   rendered="#{(ordenCompraBean.ordenActual.conConvenio eq false and ordenCompraBean.ordenActual.multiproyecto eq false)}"
+                                                   process="@this" update="frmDialogoDetalleOCS"/>      
+                                    <p:commandLink id="btnEliminarOc" value="Eliminar" 
+                                                   title="Clic aquí para eliminar orden de compra" 
+                                                   styleClass="btn btn-default text-danger"
+                                                   action="#{ordenCompraBean.eliminarOrdenConContrato}"
+                                                   style="display: #{ordenCompraBean.ordenActual.conConvenio eq true ? 'block' : 'none'}"
+                                                   process="@this" update="form1 frmMenu">
+                                    </p:commandLink>
+                                </p:panel>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="divTabla" class="row">  
+                        <p:tabView id="tbOcsPrin">
+                            <p:tab title="Órdenes sin contrato ( #{ordenCompraBean.listaOrden.size()} )">                  
+                                <div id="divAutoriza" class="btn-group" style="text-align: left;">
+                                    <p:confirmDialog global="true" showEffect="fade" hideEffect="fade" responsive="true" width="350">
+                                        <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no ui-button-flat"/>
+                                        <p:commandButton value="Si" type="button" styleClass="ui-confirmdialog-yes" />
+                                    </p:confirmDialog>
+                                    <p:commandLink value="Eliminar OC/S" styleClass="btn btn-default" 
+                                                   action="#{ordenCompraBean.eliminarOrden}"
+                                                   title="Clic aquí para eliminar una o más ordenes de compra..."
+                                                   process="@this form1:tbOcsPrin:ordenes" update="form1:tbOcsPrin:ordenes">
+                                        <p:confirm header="Confirmar" 
+                                                   message="Se eliminaran la o las ordenes de compra y regresaran a recepción de Requisiciones. ¿Está seguro?"/>
+                                    </p:commandLink>
+                                </div>
+                                <div class="table table-responsive">
+                                    <p:dataTable size="small" stripedRows="true" showGridlines="true" id="ordenes" rows="18" 
+                                                 value="#{ordenCompraBean.listaOrden}"  var="data" 
+                                                 paginator="true"  
+                                                 paginatorPosition="bottom" >
+                                        <f:facet name="header">órdenes pendientes de solicitar</f:facet>
+                                        <p:column width="25">
+                                            <f:facet name="header">
+                                                <h:selectBooleanCheckbox  class="todos" onchange="seleccionarGeneral('todos', 'seleccion', 'divAutoriza')"/>
+                                            </f:facet>
+                                            <h:selectBooleanCheckbox value="#{data.selected}" class="seleccion" onclick="mostrarDiv('divAutoriza');"/>
+                                        </p:column>
+                                        <p:column styleClass="#{data.leida eq false ? 'filaConSombra': 'filaSinSombra'}">
+                                            <h:outputText  value="#{data['id']}" />
+                                            <f:facet name="header">
+                                                <h:outputText value="Número" />
+                                            </f:facet>
+                                        </p:column>
+                                        <p:column styleClass="#{data.leida eq false ? 'filaConSombra': 'filaSinSombra'}">
+                                            <h:outputText value="#{data['referencia']}" />
+                                            <f:facet name="header">
+                                                <h:outputText value="Referencia"/>
+                                            </f:facet>
+                                        </p:column>
+                                        <p:column styleClass="#{data.leida eq false ? 'filaConSombra': 'filaSinSombra'}">
+                                            <h:outputText value="#{data['gerencia']}" />
+                                            <f:facet name="header">
+                                                <h:outputText value="Gerencia"/>
+                                            </f:facet>
+                                        </p:column>
+                                        <p:column styleClass="#{data.leida eq false ? 'filaConSombra': 'filaSinSombra'}">
+                                            <h:outputText value="#{data['proveedor']}" />
+                                            <f:facet name="header">
+                                                <h:outputText value="Proveedor"/>
+                                            </f:facet>
+                                        </p:column>
+                                        <p:column styleClass="#{data.leida eq false ? 'filaConSombra': 'filaSinSombra'}"
+                                                  width="60" headerText="Dev.">
+                                            <h:outputText value="#{data['devuelta'] eq false ? 'No' : 'Si' }" />
+                                        </p:column>
+                                        <p:column styleClass="#{data.leida eq false ? 'filaConSombra': 'filaSinSombra'}">
+                                            <h:outputText value="#{data['consecutivo']}" />
+                                            <f:facet name="header">
+                                                <h:outputText value="Requisición"/>
+                                            </f:facet>
+                                        </p:column>
+                                        <p:column styleClass="#{data.leida eq false ? 'filaConSombra': 'filaSinSombra'}">
+                                            <center>
+                                                <h:outputText   value="#{data['fecha']}" >
+                                                    <f:convertDateTime dateStyle="default" pattern="dd/MM/yyyy" type="date"/>
+                                                </h:outputText>
+                                            </center>
+                                            <f:facet name="header">
+                                                <h:outputText value="Creada"/>
+                                            </f:facet>
+                                        </p:column> 
+                                        <p:column styleClass="#{data.leida eq false ? 'filaConSombra': 'filaSinSombra'}">
+                                            <h:outputText value="#{data['total']}" >
+                                                <f:convertNumber pattern="$ #,##0.00" locale="es-MX"/>
+                                            </h:outputText>
+                                            <f:facet name="header">
+                                                <h:outputText value="Monto Total"/>
+                                            </f:facet>
+                                        </p:column>
+                                        <p:column styleClass="#{data.leida eq false ? 'filaConSombra': 'filaSinSombra'}" width="40">
+                                            <h:outputText value="#{data.tipo}" />
+                                        </p:column>
+                                        <p:column styleClass="#{data.leida eq false ? 'filaConSombra': 'filaSinSombra'}"  width="80">
+                                            <p:commandLink value="#{msgs['sistema.solicitar']}" 
+                                                           action="#{ordenCompraBean.solicitarOrden(data.id)}" 
+                                                           title="Clic aquí para solicitar la orden de compra a un proveedor..." >
+                                                <f:param name="idOrden" value="#{data.id}"/>
+                                            </p:commandLink>
+                                        </p:column>
+                                        <p:column styleClass="#{data.leida eq false ? 'filaConSombra': 'filaSinSombra'}"
+                                                  width="50">
+                                            <p:commandLink action="#{ordenCompraBean.seleccionarOrden(data.id)}"
+                                                           title="Clic aquí para ver Ítems..." process="@this" 
+                                                           update="form1:tbOcs form1:lblOcs form1:pnlBotones"
+                                                           >
+                                                <i class="fa fa-eye text-primary fa-2x"/>
+                                            </p:commandLink>
+                                        </p:column>
+                                    </p:dataTable>
+                                </div>
+                            </p:tab>
+                            <p:tab id="tbOcsCon" title="Órdenes con contrato ( #{ordenCompraBean.listaConContrato.size()} )">
+                                <p:dataTable size="small" stripedRows="true" showGridlines="true" id="ordenesConContrato" rows="18" value="#{ordenCompraBean.listaConContrato}"  var="data" 
+                                             paginator="true"  
+                                             paginatorPosition="bottom" >
+                                    <f:facet name="header">Órdenes pendientes de solicitar</f:facet>
+                                    <p:column styleClass="#{data.leida eq false ? 'filaConSombra': 'filaSinSombra'}">
+                                        <h:outputText  value="#{data['id']}" />
+                                        <f:facet name="header">
+                                            <h:outputText value="Número" />
+                                        </f:facet>
+                                    </p:column>
+                                    <p:column styleClass="#{data.leida eq false ? 'filaConSombra': 'filaSinSombra'}">
+                                        <h:outputText value="#{data['referencia']}" />
+                                        <f:facet name="header">
+                                            <h:outputText value="Referencia"/>
+                                        </f:facet>
+                                    </p:column>
+                                    <p:column styleClass="#{data.leida eq false ? 'filaConSombra': 'filaSinSombra'}">
+                                        <h:outputText value="#{data['gerencia']}" />
+                                        <f:facet name="header">
+                                            <h:outputText value="Gerencia"/>
+                                        </f:facet>
+                                    </p:column>
+                                    <p:column styleClass="#{data.leida eq false ? 'filaConSombra': 'filaSinSombra'}">
+                                        <h:outputText value="#{data['proveedor']}" />
+                                        <f:facet name="header">
+                                            <h:outputText value="Proveedor"/>
+                                        </f:facet>
+                                    </p:column>
+                                    <p:column styleClass="#{data.leida eq false ? 'filaConSombra': 'filaSinSombra'}">
+                                        <center>
+                                            <h:outputText value="#{data['devuelta']  eq false ? 'No' : 'Si' }" />
+                                        </center>
+                                        <f:facet name="header">
+                                            <h:outputText value="Dev."/>
+                                        </f:facet>
+                                    </p:column>
+                                    <p:column styleClass="#{data.leida eq false ? 'filaConSombra': 'filaSinSombra'}">
+                                        <h:outputText value="#{data['consecutivo']}" />
+                                        <f:facet name="header">
+                                            <h:outputText value="Requisición"/>
+                                        </f:facet>
+                                    </p:column>
+                                    <p:column styleClass="#{data.leida eq false ? 'filaConSombra': 'filaSinSombra'}">
+                                        <center>
+                                            <h:outputText   value="#{data['fecha']}" >
+                                                <f:convertDateTime dateStyle="default" pattern="dd/MM/yyyy" type="date"/>
+                                            </h:outputText>
+                                        </center>
+                                        <f:facet name="header">
+                                            <h:outputText value="Creada"/>
+                                        </f:facet>
+                                    </p:column> 
+                                    <p:column styleClass="#{data.leida eq false ? 'filaConSombra': 'filaSinSombra'}">
+                                        <h:outputText value="#{data['total']}" >
+                                            <f:convertNumber pattern="$ #,##0.00" locale="es-MX"/>
+                                        </h:outputText>
+                                        <f:facet name="header">
+                                            <h:outputText value="Monto Total"/>
+                                        </f:facet>
+                                    </p:column>
+                                    <p:column styleClass="#{data.leida eq false ? 'filaConSombra': 'filaSinSombra'}" width="40">
+                                        <h:outputText value="#{data.tipo}" />
+                                    </p:column>
+                                    <p:column styleClass="#{data.leida eq false ? 'filaConSombra': 'filaSinSombra'}" width="80">
+                                        <p:commandLink value="#{msgs['sistema.solicitar']}" 
+                                                       action="#{ordenCompraBean.solicitarOrden(data.id)}" 
+                                                       title="Clic aquí para solicitar la orden de compra a un proveedor..." >
+                                        </p:commandLink>
+                                    </p:column>
+                                    <p:column styleClass="#{data.leida eq false ? 'filaConSombra': 'filaSinSombra'}" width="50">
+                                        <p:commandLink action="#{ordenCompraBean.seleccionarOrden(data.id)}"                                                         
+                                                       title="Clic aquí para ver Ítems..."
+                                                       process="@this" update="form1 form1:tbOcs form1:lblOcs  form1:pnlBotones">
+                                            <f:ajax render="form1:pnlBotones"/>
+                                            <i class="fa fa-eye text-primary fa-2x"/>
+                                        </p:commandLink>
+                                    </p:column>
+                                </p:dataTable>
+                            </p:tab>
+                        </p:tabView>
+                    </div>
+                    <div id="divDatos" class="row " style="display: none;" >
+                        <div class="col-12" >
+                            <h:outputText value="OC/S: "/>
+                            <strong><h:outputText id="lblOcs" value="#{ordenCompraBean.ordenActual.id}"/></strong>
+                        </div>
+                        <p:tabView activeIndex="0" id="tbOcs">
+                            <p:tab title="Datos de la compra" id="tbDatos">
+                                <div class="row">  
+                                    <div class="col-12">
+                                        <div class="input-group" >
+                                            <div class="form-group col-4" >
+                                                <h:outputLabel styleClass="col-12 control-label"  value="Departamento solicitó:"/>
+                                                <div class="col-12">
+                                                    <h:outputText  value="#{ordenCompraBean.ordenActual.gerencia.nombre}"/>
+                                                </div>                                            
+                                                <h:outputLabel styleClass="col-12 control-label" value="Destino:"/>
+                                                <div class="col-12">
+                                                    <h:outputText  value="#{ordenCompraBean.ordenActual.destino}"/>
+                                                </div>
+                                            </div>                                            
+                                            <div class="form-group col-4" >
+                                                <h:outputLabel styleClass="col-12 control-label"  value="Gerente:"/>
+                                                <div class="col-12">
+                                                    <h:outputText  value="#{ordenCompraBean.ordenActual.responsableGerencia.nombre}"/>
+                                                </div>                                            
+                                                <h:outputLabel styleClass="col-12 control-label" value="Elaboro:"/>
+                                                <div class="col-12">
+                                                    <h:outputText  value="#{ordenCompraBean.ordenActual.analista.nombre}"/>
+                                                </div>
+                                            </div>                                            
+                                            <div class="form-group col-4" >
+                                                <h:outputLabel styleClass="col-12 control-label"  value="Referencia: "/>
+                                                <div class="col-12">
+                                                    <h:outputText  value="#{ordenCompraBean.ordenActual.referencia}"/>    
+                                                </div>
+                                                <h:outputLabel styleClass="col-12 control-label" value="Entrega:"/>
+                                                <div class="col-12">
+                                                    <h:outputText  value="#{ordenCompraBean.ordenActual.fechaEntrega}">
+                                                        <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                                    </h:outputText>
+                                                </div>                                            
+                                            </div>
+                                        </div>
+                                        <div class="input-group card" >
+                                            <div class="form-group col-12" >
+                                                <div class="col-12" >
+                                                    <strong><h:outputText styleClass="control-label"    value="Observaciones de la requisición:"/></strong>
+                                                </div>
+                                                <div class="col-12">
+                                                    <h:outputText styleClass="control-label" rendered="#{ordenCompraBean.ordenActual.requisicion.observaciones != null}" value="#{ordenCompraBean.ordenActual.requisicion.observaciones}"/>
+                                                    <h:outputText styleClass="control-label" rendered="#{ordenCompraBean.ordenActual.requisicion.observaciones == null}" value=" "/>
+                                                </div>  
+                                            </div>
+                                            <div class="form-group col-12" >
+                                                <div class="col-12" style="text-align: left;" >
+                                                    <strong><h:outputText styleClass="control-label"   value="Observaciones al proveedor:"/></strong>
+                                                </div>
+                                                <div class="col-12">
+                                                    <h:outputText styleClass="control-label" rendered="#{ordenCompraBean.ordenActual.nota != null}"  value="#{ordenCompraBean.ordenActual.nota}"/>
+                                                    <h:outputText styleClass="control-label" rendered="#{ordenCompraBean.ordenActual.nota == null}"  
+                                                                  style="color: #eee;"
+                                                                  value="_"/>
+                                                </div>
+                                            </div>                    
+                                            <div class="form-group col-12" >
+                                                <div class="col-12" style="text-align: left;" >
+                                                    <strong><h:outputText styleClass="control-label"   value="Comentarios internos:"/></strong>
+                                                </div>
+                                                <div class="col-12">
+                                                    <h:outputText styleClass="control-label" rendered="#{ordenCompraBean.ordenActual.observaciones != null}" value="#{ordenCompraBean.ordenActual.observaciones}"/>
+                                                    <h:outputText styleClass="control-label" rendered="#{ordenCompraBean.ordenActual.observaciones == null}" 
+                                                                  style="color: #eee;"
+                                                                  value="_"/>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="col-4">
+                                            <ui:fragment  rendered="#{ordenCompraBean.ordenActual.conConvenio }">
+                                                <p:commandLink action="#{ordenCompraBean.mostrarContratoItem}"
+                                                               value="Seleccionar contrato"                                                                   
+                                                               title="Seleccionar contrato a las partidas" 
+                                                               styleClass="btn btn-default" process="@this" update="frmCambiarContrato">
+                                                </p:commandLink>
+                                            </ui:fragment>
+                                        </div>
+                                        <div class="form-group col-8" >
+                                            <div class="col-1 col-xs-1" >
+                                                <strong><h:outputText styleClass="control-label"   value="Total:"/></strong>
+                                            </div>
+                                            <div class="col-1">
+                                                <div class="col-6 col-xs-1">
+                                                    <h:outputText styleClass="control-label" value="#{ordenCompraBean.ordenActual.total}">
+                                                        <f:convertNumber type="currency"/>                                                        
+                                                    </h:outputText>
+                                                </div>
+                                                <div class="col-6 col-xs-1 input-group" >
+                                                    <div class="form-group">
+                                                        <div class="col-6 col-xs-1">
+                                                            <h:outputLabel id="monSeleccinada" value="#{ordenCompraBean.ordenActual.moneda.siglas}"/>
+                                                        </div>
+                                                        <div class="col-6 col-xs-1">
+                                                            <h:outputLabel id="nombreMoneda" value="Moneda" 
+                                                                           rendered="#{ordenCompraBean.ordenActual.total eq null}"/>
+                                                            <p:commandLink onclick="mostrarDiv('selMoneda');" title="Clic para seleccionar la moneda para la orden de compra . . ."
+                                                                           rendered="#{ordenCompraBean.ordenActual.conConvenio eq false}">
+                                                                <i class="fa fa-edit text-info" />
+                                                            </p:commandLink>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div id="selMoneda" class="col-2" style="display: none;">
+                                                <h:selectOneMenu id="listaMoneda" styleClass="form-control"                                                                      
+                                                                 value="#{ordenCompraBean.idMoneda}">
+                                                    <f:selectItem itemValue="0" itemLabel="Seleccione ..."/>
+                                                    <f:selectItems value="#{ordenCompraBean.listaMonedas}"/>
+                                                    <f:ajax listener="#{ordenCompraBean.seleccionaMoneda}" render="monSeleccinada nombreMoneda"/>
+                                                </h:selectOneMenu>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div id="container" class="col-12">
+                                        <ui:repeat value="#{ordenCompraBean.listaItems}" var="currentRow" varStatus="indice">
+                                            <div class="row border">
+                                                <div class="col-10">
+                                                    <div class="input-group">
+                                                        <div class="#{currentRow['idpresupuesto'] gt 0 ? 'col-3' : 'col-6'}">
+                                                            <div class="col-4">
+                                                                <strong><h:outputText styleClass="control-label" value="Contrato: "/></strong>
+                                                            </div>
+                                                            <div class="col-8">     
+                                                                <h:outputText styleClass="control-label" value="#{currentRow['convenio']}"/>
+                                                            </div>
+                                                        </div>
+                                                        <ui:fragment rendered="#{currentRow['idpresupuesto'] gt 0}">
+                                                            <div class="col-3">
+                                                                <div class="col-12">
+                                                                    <strong><h:outputText styleClass="control-label" value="Presupuesto: "/></strong>
+                                                                </div>
+                                                                <div class="col-1"></div>
+                                                                <div class="col-11">                            
+                                                                    <h:outputText styleClass="control-label" value="#{currentRow['presupuestoNombre']}" title="#{currentRow['presupuestoCodigo']}"/>
+                                                                </div>
+                                                            </div>                                                                          
+                                                            <div class="col-3">
+                                                                <div class="col-12">                                    
+                                                                    <strong><h:outputText styleClass="control-label" value="Presup Año y Mes"/></strong>
+                                                                </div>
+                                                                <div class="col-12">                                    
+                                                                    <h:outputText styleClass="control-label" value="Año #{currentRow['anioPresupuesto']} y" title="#{currentRow['anioPresupuesto']}"/>
+                                                                    <h:outputText styleClass="control-label" value="  Mes #{currentRow['mesPresupuesto']}" title="#{currentRow['mesPresupuesto']}"/>                                
+                                                                </div>
+                                                            </div>
+                                                        </ui:fragment>
+
+                                                    </div>
+                                                    <div class="input-group col-12">
+                                                        <div class="col-3">
+                                                            <div class="col-12">
+                                                                <strong><h:outputText styleClass="control-label" value="Cantidad"/></strong>
+                                                            </div>
+                                                            <div id="dvCantidad#{currentRow.id}" class="col-12">
+                                                                <h:outputText styleClass="control-label col-6" value="#{currentRow['cantidad']}"
+                                                                              >
+                                                                    <f:convertNumber maxFractionDigits="3"/>
+                                                                </h:outputText>
+                                                                <div class="col-4">
+                                                                    <p:commandLink styleClass="btn btn-default" 
+                                                                                   onclick="mostrarDiv('dvCantidadMod#{currentRow.id}'); ocultarDiv('dvCantidad#{currentRow.id}')" 
+                                                                                   rendered="#{ordenCompraBean.ordenActual.conConvenio eq true}"
+                                                                                   update="inpCan">
+                                                                        <i class="fa fa-edit"/>
+                                                                    </p:commandLink>
+                                                                </div>
+                                                            </div>
+                                                            <div id="dvCantidadMod#{currentRow.id}" class="col-12" style="display: none;">
+                                                                <h:inputText id="inpCan" styleClass="col-6 control-label"  value="#{currentRow.cantidad}"/>
+                                                                <p:commandLink action="#{ordenCompraBean.agregarCantidad(indice.index)}"
+                                                                               styleClass="btn btn-primary text-white" process="@this" update="frmDialogoDetalleOCS">
+                                                                    <i class="fa fa-check"/>
+                                                                </p:commandLink>
+                                                            </div>
+                                                        </div>              
+                                                        <div class="col-3">
+                                                            <div class="col-12">
+                                                                <strong><h:outputText styleClass="control-label" value="Precio"/></strong>
+                                                            </div>                                                            
+                                                            <div class="col-12">                            
+                                                                <h:outputText styleClass="control-label" value="#{currentRow['precioUnitario']}">
+                                                                    <f:convertNumber maxFractionDigits="2" type="currency"/>
+                                                                </h:outputText>
+                                                            </div>
+                                                        </div>              
+                                                        <div class="col-6">
+                                                            <div class="col-6">
+                                                                <div class="col-12">
+                                                                    <strong><h:outputText styleClass="control-label" value="Importe"/></strong>
+                                                                </div>
+                                                                <div class="col-12">
+                                                                    <h:outputText value="#{currentRow['importe']}"
+                                                                                  styleClass="control-label #{currentRow['importe'] eq 0 ? 'text-danger': 'text-default' }">
+                                                                        <f:convertNumber maxFractionDigits="2" type="currency"/>
+                                                                    </h:outputText>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-6 " style="display:#{ordenCompraBean.ordenActual.total gt 0 ? 'bloque' : 'none'}">
+                                                                <div class="col-12">
+                                                                    <strong><h:outputText styleClass="control-label" value="Descuento"/></strong>
+                                                                </div>
+                                                                <div id="divDesc#{currentRow.id}" class="form-group">
+                                                                    <h:outputText id="txtDesc" styleClass="control-label col-4"  value="#{currentRow.descuento}"/>                                                                    
+                                                                    <p:commandLink onclick="mostrarDiv('divDescOp#{currentRow.id}'); ocultarDiv('divDesc#{currentRow.id}')" 
+                                                                                   rendered="#{ordenCompraBean.ordenActual.conConvenio eq true}"
+                                                                                   styleClass="btn btn-default" >
+                                                                        <i class="fa fa-edit text-info"/>
+                                                                    </p:commandLink>
+                                                                </div>
+                                                                <div id="divDescOp#{currentRow.id}" class="form-group"  style="display: none;">
+                                                                    <h:inputText styleClass="col-4 control-label"  value="#{currentRow.descuento}"/>                                     
+                                                                    <p:commandLink action="#{ordenCompraBean.agregarDescuentoItem(indice.index)}"
+                                                                                   styleClass="btn btn-default">
+                                                                        <i class="fa fa-check text-primary"/>
+                                                                    </p:commandLink>
+                                                                </div>
+                                                            </div>
+
+                                                        </div>                                                             
+                                                    </div>
+                                                    <div class="input-group col-12">
+                                                        <div class="col-3">
+                                                            <div class="col-12">
+                                                                <strong><h:outputText styleClass="control-label" value="Número parte"/></strong>
+                                                            </div>
+                                                            <div class="col-12">
+                                                                <h:outputText styleClass="control-label" value="#{currentRow['artNumeroParte'] eq 'null' ? '' : currentRow['artNumeroParte']}"/>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-6">
+                                                            <div class="col-12">
+                                                                <strong><h:outputText styleClass="control-label" title="Observaciones: #{currentRow['observaciones']}" value="Descripción"/></strong>
+                                                            </div>
+                                                            <div class="col-12">
+                                                                <h:outputText styleClass="control-label" value="#{currentRow['artDescripcion']}"/>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-3">
+                                                            <div class="col-12">
+                                                                <strong><h:outputText styleClass="control-label" value="Unidad" /></strong>                                                                
+                                                            </div>
+                                                            <div class="col-12">                            
+                                                                <h:outputText styleClass="control-label" value="#{currentRow['artUnidad']}"/>
+                                                            </div>                                                            
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-2">
+                                                    <p:commandLink action="#{ordenCompraBean.actualizarItem(indice.index)}"
+                                                                   styleClass="btn btn-default"  title="Clic aquí para modificar item . . ."
+                                                                   rendered="#{ordenCompraBean.ordenActual.conConvenio eq false}"
+                                                                   process="@this" update="frmItemOrden">
+                                                        <i class="fa fa-edit"/>
+                                                    </p:commandLink>
+                                                    <p:commandLink action="#{ordenCompraBean.historyItem(currentRow.artID, ordenCompraBean.ordenActual.apCampo.id)}"
+                                                                   styleClass="btn btn-default"  
+                                                                   title="Clic aquí para mostrar historial . . ."
+                                                                   process="@this" update="frmHistorialCompra">
+                                                        <i class="fa fa-eye"/>
+                                                    </p:commandLink>
+                                                    <ui:fragment rendered="#{ordenCompraBean.ordenActual.multiproyecto eq false}">
+                                                        <p:commandLink styleClass="btn btn-default"
+                                                                       action="#{ordenCompraBean.eliminarItem(indice.index)}"
+                                                                       title="Clic aquí para eliminar el item..." process="@this"
+                                                                       update="form1:tbOcs">
+                                                            <i class="fa fa-trash text-danger"/>
+                                                        </p:commandLink>
+                                                    </ui:fragment>
+                                                </div>
+                                            </div>
+
+
+                                        </ui:repeat>               
+                                    </div>
+                                </div>
+                            </p:tab>
+                            <p:tab title="ETS">
+                                <p:dataTable size="small" stripedRows="true" showGridlines="true"  
+                                             value="#{ordenCompraBean.listaOcOrdenEts}" var="ets" styleClass="table table-striped">
+                                    <f:facet name="header">
+                                        <h:outputLabel value="Especificaciones técnicas"/>
+                                    </f:facet>
+                                    <p:column >
+                                        <f:facet name="header"><h:outputLabel value="Categoría"/></f:facet>
+                                        <h:outputText value="#{ets.categoria}"/>
+                                    </p:column>
+                                    <p:column>
+                                        <f:facet name="header"><h:outputLabel value="Nombre"/></f:facet>
+                                        <h:outputText value="#{ets.nombreSinUUID}"/>
+                                    </p:column>
+                                    <p:column>
+                                        <f:facet name="header"><h:outputLabel value="Tipo"/></f:facet>
+                                        <h:outputText value="#{ets.tipoArchivo}"/>
+                                    </p:column>
+                                    <p:column>
+                                        <h:outputLink target="_blank"  value="/Compras/AbrirArchivo?ZWZ2W=#{ets.id}&amp;ZWZ3W=#{ets.uuid}"
+                                                      >
+                                            <h:outputText value=" Abrir"/>
+                                        </h:outputLink>
+                                    </p:column>
+                                </p:dataTable> 
+                            </p:tab>
+                            <p:tab title="Requisición">
+                                <ui:include src="../Orden/fragmento/infRequisicion.xhtml"/>
+                            </p:tab>
+                            <p:tab title="Devoluciones">
+                                <p:dataTable size="small" stripedRows="true" showGridlines="true"  value="#{ordenCompraBean.listaRechazos}" var="currentRow" styleClass="table table-striped">
+                                    <p:column width="20%">
+                                        <h:outputText value="#{currentRow['nombreSolicito']}"/>
+                                        <f:facet name="header">
+                                            <h:outputText value="Devolvió"/>
+                                        </f:facet>
+                                    </p:column>
+                                    <p:column width="10%">
+                                        <h:outputText value="#{currentRow['fechaGenero']}">
+                                            <f:convertDateTime dateStyle="default" type="date"/>
+                                        </h:outputText>
+                                        <f:facet name="header">
+                                            <h:outputText value="Fecha"/>
+                                        </f:facet>
+                                    </p:column>
+                                    <p:column width="10%">
+                                        <h:outputText value="#{currentRow['horaGenero']}">
+                                            <f:convertDateTime pattern="hh:mm" timeStyle="default" type="time"/>
+                                        </h:outputText>
+                                        <f:facet name="header">
+                                            <h:outputText value="Hora"/>
+                                        </f:facet>
+                                    </p:column>
+                                    <p:column width="10%">
+                                        <h:outputText  value="#{currentRow['operacion']}"/>
+                                        <f:facet name="header">
+                                            <h:outputText value="Operación"/>
+                                        </f:facet>
+                                    </p:column>
+                                    <p:column>
+                                        <h:outputText value="#{currentRow['motivo']}"/>
+                                        <f:facet name="header">
+                                            <h:outputText value="Motivo"/>
+                                        </f:facet>
+                                    </p:column>
+                                </p:dataTable>
+                            </p:tab>
+                        </p:tabView>
+                    </div>
+                </h:form>
+                <div id="dialogOK" style="display: none;" title="Items agregados">
+                    <h:outputText value="Se agregaron los Items a la OC/S"
+                                  styleClass="textoNegrita10" />
+                    <h:outputText value="Por favor verifique cantidad, precio y la unidad de medida de los items agregados." styleClass="textoNegrita10" style="color: blue; background-color: #eee;"/>
+                </div>
+                <!-- Forma para los paneles emergentes -->
+                <!-- Popup -->
+                <ui:include src="../../SiaWeb/Orden/fragmento/popUpSolicitarOrden.xhtml"/>
+                <ui:include src="../../SiaWeb/Orden/fragmento/popCambiarContrato.xhtml"/>
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

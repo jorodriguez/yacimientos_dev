@@ -1,0 +1,37 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                >
+    <p:panel >
+        <h:outputText value="#{msgs['sistema.fecha.inicio']}"/>
+        <p:datePicker value="#{reporteBean.inicio}" pattern="dd/MM/yyyy"/>
+        <h:outputText value="#{msgs['sistema.fecha.fin']}" />
+        <p:datePicker value="#{reporteBean.fin}" pattern="dd/MM/yyyy"/>
+        <h:selectOneMenu id="cmbOCSMov" value="#{reporteBean.idStatus}">
+            <f:selectItem itemLabel="Devueltas" itemValue="4"/>                
+            <f:selectItem itemLabel="Canceladas" itemValue="3"/>
+        </h:selectOneMenu>
+        <p:commandLink value="#{msgs['sistema.buscar']}" 
+                       action="#{reporteBean.traerOCSMovimiento}" 
+                       styleClass="btn btn-sm btn-info"
+                       style="float: right;"/>
+    </p:panel>
+    
+    <h:panelGrid   style="text-align: center;">
+        <h:outputText id="tituloTablaMOv" style="font-weight: bold; color: #336699;"/>
+    </h:panelGrid>   
+    <p:dataTable size="small" stripedRows="true" showGridlines="true" id="dtOCSDevueltas" value="#{reporteBean.lista}" var="data"
+                 rows="20" styleClass="dataPaginatorDataTable" 
+                 paginator="true"  
+                 paginatorPosition="bottom" 
+                 style="font-size: 1em;" >
+        <ui:include src="/vistas/SiaWeb/Orden/reporte/fragmento/tabla/tablaOCSMovimiento.xhtml"/>
+    </p:dataTable>
+    <p:commandButton value="Exportar" styleClass="p-mr-2 p-mb-2"> 
+        <p:dataExporter fileName="OCSMovimiento" type="xls" target="dtOCSDevueltas" />
+    </p:commandButton>
+
+</ui:composition>

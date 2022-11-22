@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+
+    <h:head>
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+        <meta
+            content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
+            name="viewport" />
+        <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+        <meta http-equiv="Pragma" content="no-cache" />
+        <meta http-equiv="Expires" content="-1" />
+
+        <title>Sistema Integral de Administración</title>
+
+
+
+
+        <!-- Font Awesome -->
+        <link rel="stylesheet" href="/resources/css/all.min.css" />
+        <!-- Theme style -->
+        <link rel="stylesheet" href="/resources/css/adminlte.min.css" />
+        <!-- overlayScrollbars -->
+        <link rel="stylesheet" href="/resources/css/OverlayScrollbars.min.css"/>
+
+        <!-- Google Font -->
+        <link rel="stylesheet"
+              href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic"></link>
+
+
+        <style type="text/css">
+            .ui-datepicker {
+                z-index: 10004 !important;
+            }
+
+            .ui-autocomplete-panel {
+                z-index: 10004 !important;
+            }
+            .ui-selectonemenu-panel{
+                z-index: 100004 !important;
+
+            }
+            /* Quita la sombra del menuitem*/
+            .ui-menu{
+                background-color: white !important;
+                border: 0 !important;
+                
+            }
+        </style>
+    </h:head>
+
+    <h:body class="hold-transition sidebar-mini">
+
+        <div class="wrapper">
+
+            <p:ajaxStatus onstart="PF('statusDialog').show()"
+                          delay="200"
+                          onsuccess="PF('statusDialog').hide()" />
+            <p:dialog widgetVar="statusDialog" modal="true"  draggable="false"
+                      closable="false" resizable="false" showHeader="false">
+                <img src="/resources/img/loader.svg" width="150px" alt="Procesando . . . "/>
+            </p:dialog>
+
+            <!-- Navbar -->
+            <ui:insert name="header">
+                <ui:include src="header.xhtml" />
+            </ui:insert>
+
+
+            <ui:insert name="sidebar">
+                <ui:include src="sidebar.xhtml" />
+            </ui:insert>
+
+
+            <!-- Content Wrapper. Contains page content -->
+            <div class="content-wrapper">
+                <!-- /.content-header -->
+
+                <!-- Main content -->
+                <div class="content">
+                    <div class="container-fluid">
+                        <div class="text-center">
+                        <h1 class="center">
+                            <ui:insert name="tituloPagina"/>
+                        </h1>
+                        </div>
+                        <div  class="row">
+                            <p:messages id="messages" showDetail="false" closable="true" 
+                                        class="col-12">
+                                <p:autoUpdate />
+                            </p:messages>
+                        </div>
+                        <ui:insert name="contenido" />
+                    </div>
+                    <!-- /.container-fluid -->
+                </div>
+                <!-- /.content -->
+            </div>
+            <!-- /.content-wrapper -->
+
+
+
+            <!-- /.content-wrapper -->
+            <footer class="main-footer">
+                <div class="pull-right hidden-xs">
+                    <b>Version</b> 3
+                </div>
+                <strong>Copyright &#xA9; 2022 <a
+                        href="http://www.ihsa.mx" target="_blank"
+                        rel="noopener noreferrer">Iberoamericana de Hidrocarburos, S. A. de C. V.</a>
+                </strong> All rights reserved.
+            </footer>
+
+
+            <!-- Registro de categoría -->
+            <div class="modal fade" id="dialogoUsuarioCampo" data-backdrop="static" data-keyboard="false">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title">Campos</h4>
+                        </div>
+                        <h:form id="frmCampoUsuario">
+                            <div class="modal-body">				   
+                                <p:dataTable size="small" stripedRows="true" showGridlines="true" value="#{sesion.camposPorUsuario}" var="data"
+                                             rowStyleClass="table table-bordered table-striped">
+                                    <p:column style="text-align: left;">
+                                        <h:outputText value=" #{data.campo}" 
+                                                      class="#{sesion.usuario.apCampo.id  eq data.idCampo ? 'fa fa-dot-circle-o text-info' : 'fa fa-circle-o'} " />
+                                    </p:column>
+                                    <p:column width="50">
+                                        <p:commandLink action="#{sesion.cambioCampoUsuario(data.idCampo)}"
+                                                       rendered="#{sesion.usuario.apCampo.id  ne data.idCampo}">
+                                            <i class="fas fa-check text-primary"/>
+                                        </p:commandLink>
+                                    </p:column>
+                                </p:dataTable>
+                            </div>
+                            <div class="modal-footer">
+                                <p:commandLink value="Cerrar" styleClass="btn btn-default"
+                                               immediate="true"
+                                               onclick="$(dialogoUsuarioCampo).modal('hide');"/>
+                            </div>
+                        </h:form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+        <ui:include src="sessionTimeOut.xhtml" />
+
+        <!-- jQuery -->
+        <script src="/resources/js/jquery.min.js"></script>
+        <!-- jQuery UI 1.11.4 -->
+        <script>
+                                                   $.noConflict(true);
+                                                   // Code that uses other library's $ can follow here.
+        </script>
+        <script src="/resources/js/jquery-ui.min.js"></script>
+        <!-- Resolve conflict in jQuery UI tooltip with Bootstrap tooltip -->
+        <script>
+                                                   $.widget.bridge('uibutton', $.ui.button);
+        </script>
+        <!-- Bootstrap 4 -->
+        <script src="/resources/js/bootstrap.bundle.min.js"></script>
+        <!-- overlayScrollbars -->
+        <script src="/resources/js/jquery.overlayScrollbars.min.js"></script>
+        <!-- AdminLTE App -->
+        <script src="/resources/js/adminlte.js"></script>
+        <script src="#{request.contextPath}/recursos/js/validacionSIA.js"></script>
+    </h:body>
+</html>

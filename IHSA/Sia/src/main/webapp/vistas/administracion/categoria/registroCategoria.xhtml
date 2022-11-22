@@ -1,0 +1,622 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"       
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+    <body>
+        <ui:composition template="./../../../WEB-INF/facelets/templates/templateGrupos.xhtml">
+            <ui:define name="tituloPagina">
+                Administración de categorías y artículos
+            </ui:define>
+            <ui:define name="contenido">
+                <h:form id="frmCategoria">
+                    <div class="row">
+                        <div class="input-group mt-2">
+                            <strong><h:outputText class="col-1 control-label" value="Bloque:" /></strong>
+                            <div class="col-3">
+                                <p:selectOneMenu id="bloqueSel1" value="#{categoriaBean.idBloque}" styleClass="form-control">
+                                    <f:selectItems value="#{categoriaBean.listaCampo}" var="ccBloque" 
+                                                   itemValue="#{ccBloque.idCampo}" itemLabel="#{ccBloque.campo}"/>                                    
+                                </p:selectOneMenu>
+                            </div>
+                        </div>
+                        <div class="col-12 col-xs-12">
+                            <div class="card card-header">
+                                <div class="form-group">
+                                    <div class="col-10">
+                                        <ui:repeat value="#{categoriaBean.categoriasSeleccionadas}" var="data"
+                                                   varStatus="indice">
+                                            <p:commandLink  action="#{categoriaBean.traerSubcategoria(indice.index)}"
+                                                            styleClass="text text-primary"
+                                                            process="@this" update="frmCategoria:dtCategorias">
+                                                <i class="fa fa-arrow-right"
+                                                   style="display: #{categoriaBean.categoriasSeleccionadas.size() gt 0} ? 'block' : 'none'"></i>
+                                                #{data.nombre} 
+                                            </p:commandLink>
+                                        </ui:repeat>
+                                    </div>
+                                    <div class="col-2">
+                                        <p:commandLink styleClass="btn btn-success"						       
+                                                       rendered="#{categoriaBean.mostrarArticulos}"
+                                                       title="Agregar artículo"                                                       
+                                                       action="#{categoriaBean.abrirPopUpArticulo}"
+                                                       process="@this" update="frmAgregarArticulo">
+                                            <i class="fa fa-plus-square-o"></i>
+                                        </p:commandLink>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-xs-12">	
+                            <ui:fragment rendered="#{categoriaBean.listaArticulos.size() lt 1}">
+                                <div class="col-8 col-xs-8">
+                                    <div class="card card-info">
+                                        <div class="card card-header">
+                                            <div class="input-group col-12">
+                                                <div class="col-10">
+                                                    #{categoriaBean.categoriasSeleccionadas.size()  eq 1 ? 'Pricipales' : categoriaBean.categoriaVo.nombre}
+                                                </div>
+                                                <div class="col-2">
+                                                    <p:commandLink styleClass="btn btn-primary" 
+                                                                   rendered="#{categoriaBean.categoriasSeleccionadas.size()  gt 1}"
+                                                                   action="#{categoriaBean.agregarCategoria}"
+                                                                   title="Enlazar categorías">
+                                                        <i class="fa fa-link"></i>
+                                                    </p:commandLink>
+                                                    <p:commandLink styleClass="btn btn-primary" 
+                                                                   rendered="#{categoriaBean.categoriasSeleccionadas.size()  eq 1}"
+                                                                   onclick="$(registrarCategoria).modal('show');"
+                                                                   title="Registrar categoría">
+                                                        <i class="fa fa-plus text-white"></i>
+                                                    </p:commandLink>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="card card-body">
+                                            <p:dataTable id="dtCategorias" size="small" stripedRows="true" showGridlines="true" 
+                                                         value="#{categoriaBean.listaCategoría}" var="data"
+                                                         rendered="#{categoriaBean.listaCategoría.size() gt 0}"
+                                                         rowStyleClass="table table-bordered table-striped"
+                                                         rows="20" paginator="true"  
+                                                         paginatorPosition="bottom" 
+                                                         selectionMode="single"
+                                                         selection="#{categoriaBean.categoriaTempVo}" rowKey="#{data.id}"
+                                                         >
+                                                <p:ajax event="rowSelect" listener="#{categoriaBean.seleccionarCategoria}"
+                                                        update="frmCategoria:dtArticulos frmCategoria:dtCategorias"/>
+                                                <p:column headerText="Nombre" style="text-align: left;">
+                                                    <h:outputText value="#{data.nombre}"/>
+                                                </p:column>
+                                                <p:column headerText="Código">
+                                                    <h:outputText value="#{data.codigo}"/>
+                                                </p:column>
+                                                <p:column rendered="#{categoriaBean.categoriasSeleccionadas.size() gt 1}">
+                                                    <p:commandLink
+                                                        action="#{categoriaBean.eliminarCategoria(indice)}"
+                                                        process="@this" update="frmCategoria:dtCategorias">
+                                                        <i class="fa fa-trash text-danger"></i>
+                                                    </p:commandLink>
+                                                </p:column>
+                                            </p:dataTable>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group col-12">
+                                    <h:outputText
+                                        value="#{categoriaBean.articulosResultadoBqda.size()} Artículos"/>
+                                </div>  
+                                <div class="form-group col-12">
+                                    <div class="col-12" id="tablaResBusquedaAv">
+                                        <p:dataTable id="dtArticulos" size="small" stripedRows="true" showGridlines="true" 
+                                                     value="#{categoriaBean.articulosResultadoBqda}" var="dataRBA"
+                                                     rows="20" paginator="true"  
+                                                     paginatorPosition="bottom" 
+                                                     selectionMode="single" rowKey="#{dataRBA.id}"
+                                                     selection="#{categoriaBean.articuloVO}">
+                                            <p:ajax event="rowSelect" listener="#{categoriaBean.seleccionarResultadoBA}" 
+                                                    update="frmAgregarArticuloCampo"/>
+                                            <p:column headerText="Código" style="width: 25%;" styleClass="resultadoBdaCodigo">
+                                                <h:outputText value="#{dataRBA.numParte}"/>
+                                            </p:column>
+                                            <p:column headerText="Nombre" style="text-align: left; width: 75%" styleClass="resultadoBdaNombre">
+                                                <h:outputText value="#{dataRBA.nombre}"/>
+                                            </p:column> 
+                                        </p:dataTable>
+                                    </div>                 
+                                </div>
+                            </ui:fragment>
+                            <div class="col-12">
+                                <ui:fragment rendered="#{categoriaBean.adminCategoria}">
+                                    <div class="col-12 col-12">
+                                        <div class="card card-info">
+                                            <div class="card card-header">
+                                                <div class="form-group" >
+                                                    <div align="left" class="col-8">
+                                                        <h:outputText class="card-title" value="Agregar categorías ( #{categoriaBean.categoriaVo.nombre} )"/>
+                                                    </div>
+                                                    <div align="right" class="col-4">
+                                                        <p:commandLink action="#{categoriaBean.cancelarGuardarCategoria}"
+                                                                       styleClass="btn btn-default">
+                                                            <i class="fa fa-remove text-danger"></i>
+                                                        </p:commandLink>
+                                                        <p:commandLink action="#{categoriaBean.terminarGuardarCategoria}"
+                                                                       styleClass="btn btn-primary"
+                                                                       style="margin-left: 20px;">
+                                                            <i class="fa fa-floppy-o"></i>
+                                                        </p:commandLink>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="card card-body">
+                                                <div class="col-6 col-xs-6">
+                                                    <!--rowSelectListener="#{categoriaBean.seleccionarCategoriaAgregar}"-->
+                                                    <p:dataTable size="small" stripedRows="true" showGridlines="true" 
+                                                                 value="#{categoriaBean.listaCategoría}" var="data"
+                                                                 rows="10" paginator="true"  
+                                                                 paginatorPosition="bottom" 
+                                                                 selectionMode="single"
+                                                                 >
+                                                        <p:column headerText="Nombre" filterBy="#{data.nombre}" filterMatchMode="contains">
+                                                            <h:outputText value="#{data.nombre}"/>
+                                                        </p:column>
+                                                        <p:column headerText="Código" filterBy="#{data.codigo}" filterMatchMode="contains">
+                                                            <h:outputText value="#{data.codigo}"/>
+                                                        </p:column>
+                                                    </p:dataTable>
+                                                </div>
+                                                <div class="col-6 col-xs-6">					
+                                                    <p:dataTable size="small" stripedRows="true" showGridlines="true" 
+                                                                 value="#{categoriaBean.listaCategoriaTemporal}" var="data"
+                                                                 rows="10" paginator="true" 
+                                                                 paginatorPosition="bottom" 
+                                                                 rowIndexVar="indice">
+                                                        <f:facet name="header" >Categorías a guardar</f:facet>
+                                                        <p:column headerText="Nombre">
+                                                            <h:outputText value="#{data.nombre}"/>
+                                                        </p:column>
+                                                        <p:column headerText="Código">
+                                                            <h:outputText value="#{data.codigo}"/>
+                                                        </p:column>
+                                                        <p:column>
+                                                            <p:commandLink
+                                                                action="#{categoriaBean.eliminarCategoriaTemporal}">
+                                                                <i class="fa fa-trash text-danger"></i>
+                                                                <f:param name="idCatTablaTemp" value="#{indice}"/>
+                                                            </p:commandLink>
+                                                        </p:column>
+                                                    </p:dataTable>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </ui:fragment>
+                            </div>
+
+                            <div class="col-12">
+                                <p:panel id="pnlArticuloSeleccionado" >
+                                    <ui:fragment rendered="#{categoriaBean.mostrarArticulos and categoriaBean.listaArticulos.size() gt 0}">
+                                        <div class="col-12 col-12">
+                                            <div class="card card-info">
+                                                <div class="card card-header">
+                                                    <div class="form-group" >
+                                                        <div align="left" class="col-12">
+                                                            <h:outputText class="card-title" value="Articulos en la categoría ( #{categoriaBean.categoriaVo.nombre} )"/>
+                                                        </div>					    
+                                                    </div>
+                                                </div>
+                                                <div class="card card-body">
+                                                    <div class="col-12">
+                                                        <p:commandLink onclick="validaCambiarArticulo('seleccion');"
+                                                                       action="#{categoriaBean.seleccinarArticulos}"
+                                                                       title="Cambiar artículos de categoría"
+                                                                       class="btn btn-primary" rendered="#{categoriaBean.listaArticulos.size() gt 0}">
+                                                            <i class="fa fa-exchange text-default"></i>
+                                                        </p:commandLink>
+                                                    </div>
+                                                    <p:dataTable size="small" stripedRows="true" showGridlines="true" value="#{categoriaBean.listaArticulos}" var="data"
+                                                                 rowStyleClass="table table-bordered table-striped"
+                                                                 rows="15" paginator="true"  
+                                                                 paginatorPosition="bottom" 
+                                                                 rowIndexVar="indice" selectionMode="single" 
+                                                                 >
+                                                        <p:column>
+                                                            <h:selectBooleanCheckbox value="#{data.selected}" class="seleccion"/>
+                                                        </p:column>
+                                                        <p:column style="text-align: left;" headerText="No Parte" >
+                                                            <h:outputText value="#{data.numParte}"/>
+                                                        </p:column>
+                                                        <p:column style="text-align: left;" headerText="Articulo"> 
+                                                            <h:outputText value="#{data.nombre}" rendered="#{data.editar eq false}"/>
+                                                            <h:inputTextarea value="#{data.nombre}"
+                                                                             rendered="#{data.editar}"/>
+                                                        </p:column>
+                                                        <p:column style="text-align: left;" headerText="Unidad"> 
+                                                            #{data.unidadNombre}
+                                                        </p:column>
+                                                        <p:column> 
+                                                            <p:commandLink action="#{categoriaBean.inicioEditarArticulo}"
+                                                                           rendered="#{data.editar eq false}">	
+                                                                <i class="fa fa-edit "></i>
+                                                                <f:param name="articulo" value="#{indice}"/>
+                                                            </p:commandLink>
+                                                            <p:commandLink action="#{categoriaBean.editarArticulo}"
+                                                                           rendered="#{data.editar eq true}">
+                                                                <i class="fa fa-save text-primary"></i>
+                                                                <f:param name="indexTbl" value="#{indice}"/>
+                                                                <!--f:param name="articuloNombre" value="#{data.nombre}"/-->
+                                                            </p:commandLink>
+                                                        </p:column>
+                                                        <p:column>
+                                                            <p:commandLink action="#{categoriaBean.eliminarArticulo}">
+                                                                <i class="fa fa-trash text-danger"></i>
+                                                                <f:param name="eliArt" value="#{indice}"/>
+                                                            </p:commandLink>
+                                                        </p:column>
+                                                    </p:dataTable>
+                                                    <h:outputLabel value="No hay articulos registrados en la combinación de categorías seleccionada."
+                                                                   rendered="#{categoriaBean.listaArticulos.size() eq 0}"/>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </ui:fragment>
+                                </p:panel>
+                            </div>
+                        </div>
+                    </div>
+                </h:form>
+                <!-- Muestra los artículos de la categoría -->
+                <div class="modal fade" id="dialogoCambiarArticulos" data-backdrop="static" data-keyboard="false">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <h:form id="frmCambiarArticulo">
+                                <div class="modal-header">
+                                    <h4 class="modal-title">Categoría donde se moverán los artículos</h4>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <div class="card card-info">
+                                                <div class="card-header">
+                                                    Artículos seleccionados
+                                                </div>
+                                                <div class="card-body">
+                                                    Categoría actual
+                                                    <div class="col-12">
+                                                        <ui:repeat value="#{categoriaBean.categoriasSeleccionadas}" 
+                                                                   var="data">
+                                                            <i class="#{data.nombre eq 'Pricipales' ? 'fa fa-circle' : 'fa fa-arrow-right' }" ></i>
+                                                            #{data.nombre}
+                                                        </ui:repeat>
+                                                    </div>
+                                                    <p:dataTable size="small" stripedRows="true" showGridlines="true" value="#{categoriaBean.listaCambiarArticulos}" var="data"
+                                                                 rowStyleClass="table table-bordered table-striped"
+                                                                 rows="5" paginator="true"  
+                                                                 paginatorPosition="bottom" 
+                                                                 rowIndexVar="indice">
+                                                        <p:column style="text-align: left;">
+                                                            #{data.nombre}
+                                                        </p:column>
+                                                        <p:column>
+                                                            #{data.unidadNombre}
+                                                        </p:column>
+                                                    </p:dataTable>			
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="card card-info">
+                                                <div class="card-header">
+                                                    <ui:repeat value="#{categoriaBean.listaCambiarSeleccionada}" var="data"
+                                                               varStatus="indice">
+                                                        <i class="eq 'Pricipales' ? 'fa fa-circle' : 'fa fa-arrow-right' }" ></i>
+                                                            #{data.nombre} 
+                                                    </ui:repeat>
+                                                </div>
+                                                <div class="card-body">
+                                                    <p:dataTable size="small" stripedRows="true" showGridlines="true" 
+                                                                 value="#{categoriaBean.listaCategoriaCambiar}" var="data"
+                                                                 rows="5" paginator="true"  
+                                                                 paginatorPosition="bottom" 
+                                                                 rowIndexVar="indice" selectionMode="single"
+                                                                 >
+                                                        <p:column style="text-align: left;">
+                                                            <h:outputText value="#{data.nombre}"/>
+                                                        </p:column>
+                                                    </p:dataTable>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <p:commandLink value="Cerrar" styleClass="btn btn-default" 
+                                                   action="#{categoriaBean.cerrarVerArticulos}"
+                                                   onclick="$(dialogoCambiarArticulos).modal('hide');"/>
+                                    <p:commandLink value="Guardar" styleClass="btn btn-primary" 
+                                                   action="#{categoriaBean.cambiarArticulo}"/>
+                                </div>
+                            </h:form>
+                        </div>
+                    </div>
+                </div>
+                <!-- Registro de categoría -->
+                <div class="modal fade" id="registrarCategoria" data-backdrop="static" data-keyboard="false">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h4 class="modal-title">Categoría</h4>
+                            </div>
+                            <h:form id="frmAgregarCategoria">
+                                <div class="modal-body card card-body">				    
+                                    <div class="input-group col-12" >
+                                        <div class="form-group col-12">
+                                            <div class="col-2">
+                                                <h:outputLabel value="Categoría: " styleClass="control-label"/>
+                                            </div>					    
+                                            <div class="col-8">
+                                                <p:inputText id="txtCategoria" value="#{categoriaBean.nombreCategoria}" styleClass="form-control"/>
+                                            </div>
+                                        </div>
+                                        <div class="form-group col-12">
+                                            <div class="col-2">
+                                                <h:outputLabel value="Código:" styleClass="control-label"/>
+                                            </div>
+                                            <div class="col-8">
+                                                <p:inputText id="txtCodCat" value="#{categoriaBean.codigoCategoria}" styleClass="form-control"
+                                                             maxlength="3"/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <p:commandLink value="Cerrar" styleClass="btn btn-default"  immediate="true"
+                                                   onclick="$(registrarCategoria).modal('hide');"/>
+                                    <p:commandButton value="Guardar" styleClass="btn btn-primary" 
+                                                     action="#{categoriaBean.registroCategoria}"/>
+                                </div>
+                            </h:form>
+                        </div>
+                    </div>
+                </div>
+                <!-- Registro de categoría -->
+                <div class="modal fade" id="registrarArticulo" data-backdrop="static" data-keyboard="false">                
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h4 class="modal-title">Registrar artículo</h4>
+                            </div>
+                            <h:form id="frmAgregarArticulo">
+                                <div class="modal-body card card-body">
+                                    <div class="col-12">
+                                        <ui:repeat value="#{categoriaBean.categoriasSeleccionadas}" var="data"
+                                                   varStatus="indice">
+                                            <h:outputLabel  styleClass="text text-primary" style="margin-left: 1%;">
+                                                <i class="#{data.nombre eq 'Pricipales' ? 'fa fa-circle' : 'fa fa-arrow-right' }" ></i>
+                                                #{data.nombre} 
+                                            </h:outputLabel>
+                                        </ui:repeat>
+                                    </div>
+                                    <div class="input-group col-12">
+                                        <div class="form-group col-12">
+                                            <div class="col-2">
+                                                Artículo:
+                                            </div>
+                                            <div class="col-8">
+                                                <h:inputTextarea id="txtArticulo" value="#{categoriaBean.articulo}" styleClass="form-control"/>                                                
+                                            </div>
+                                        </div>
+                                        <div class="form-group col-12">
+                                            <div class="col-2">
+                                                No. Parte:
+                                            </div>
+                                            <div class="col-8">
+                                                <p:inputText id="txtNoParte" value="#{categoriaBean.numParte}" styleClass="form-control"/>
+                                            </div>
+                                        </div>
+                                        <div class="form-group col-12">
+                                            <div class="col-2">
+                                                Unidad:
+                                            </div>
+                                            <div class="col-4">
+                                                <p:selectOneMenu value="#{categoriaBean.idUnidad}" styleClass="form-control">
+                                                    <f:selectItems value="#{categoriaBean.unidad}"/>
+                                                </p:selectOneMenu>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group col-6">
+                                        <h:dataTable value="#{categoriaBean.listaCampo}" var="data"
+                                                     styleClass="table table-striped table-bordered">
+                                            <f:facet name="header">Proyectos</f:facet>
+                                            <h:column>
+                                                <p:selectBooleanCheckbox value="#{data.selected}"
+                                                                         styleClass="checkbox text-info"/>
+                                            </h:column>
+                                            <h:column>
+                                                #{data.campo}					    						
+                                            </h:column>
+                                        </h:dataTable>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <p:commandLink value="Cerrar" immediate="true"
+                                                   styleClass="btn btn-default"
+                                                   onclick="$(registrarArticulo).modal('hide');">
+
+                                    </p:commandLink>
+                                    <p:commandButton  styleClass="btn btn-success" value="Guardar"
+                                                      action="#{categoriaBean.guardarArticulo}" process="@form" update="@all">
+                                    </p:commandButton>
+                                    <div class="col-12">
+                                        <h:message  for="" style="display: block;" infoClass="alert alert-success" warnClass="alert alert-warning"
+                                                    errorClass="alert alert-danger" fatalClass="alert alert-danger"  />
+                                    </div>
+                                </div>
+                            </h:form>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal fade" id="dialogoNotificarNuevoItem" data-backdrop="static" data-keyboard="false" draggable="true">
+                    <div class="modal-dialog modal">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h4 class="modal-title">Notificar registro de un nuevo artículo</h4>
+                            </div>
+                            <h:form id="frmNotificarNuevoItem">
+                                <div class="modal-body">
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <div class="card card-default col-12" >                                    
+                                                <div class="form-group col-12" >
+                                                    <div class="col-12" style="margin-bottom: 0px;" > 
+                                                        <div class="col-12">
+                                                            <h:message  for="" style="display: block;" infoClass="alert alert-success" warnClass="alert alert-warning"
+                                                                        errorClass="alert alert-danger" fatalClass="alert alert-danger"  />
+                                                        </div>
+                                                        <div class="col-12 col-xs-12">                                                        
+                                                            <div class="visible col-1"></div>
+                                                            <h:outputText value="Usuario " class="col-2 col-xs-12 control-label" style="text-align: right;"/>
+                                                            <div class="col-6 col-xs-12">
+                                                                <!--textChangeListener="#{categoriaBean.usuarioListener}"-->
+                                                                <p:autoComplete  id="userSelect"
+                                                                                 value="#{categoriaBean.usuarioNotificar}">
+                                                                    <f:selectItems value="#{categoriaBean.listaUsuario}" />
+                                                                </p:autoComplete>
+                                                            </div>
+                                                            <div class="visible col-3"></div>
+                                                        </div>
+                                                    </div>
+                                                </div>                                                                        
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <p:commandButton value="Enviar"
+                                                     styleClass="btn btn-info"  process="@form" update="frmCategoria"
+                                                     action="#{categoriaBean.enviarNotificacionAltaArticulo}"
+                                                     />
+                                    <p:commandButton value="Cancelar"
+                                                     styleClass="btn btn-default"                                                       
+                                                     title="Cerrar ventana..." 
+                                                     immediate="true"
+                                                     onclick="$(dialogoNotificarNuevoItem).modal('hide');"/>
+                                </div>
+                            </h:form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Agregar articulo a campo -->
+                <div class="modal fade" id="dialogoAgregarArticuloCampo" data-backdrop="static" data-keyboard="false">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h4 class="modal-title">Datos del artículo</h4>
+                            </div>
+                            <h:form id="frmAgregarArticuloCampo">
+                                <div class="modal-body">
+                                    <div class="card card-body">
+                                        <div class="card card-info">
+                                            <div class="card-header">
+                                                <ui:repeat value="#{categoriaBean.categoriasSeleccionadas}" var="data"
+                                                           varStatus="indice">
+                                                    <p:commandLink  styleClass="text text-primary"
+                                                                    action="#{categoriaBean.seleccionarCambiarCategoriaCabecera}">
+                                                        <i class="#{data.nombre eq 'Pricipales' ? 'fa fa-circle' : 'fa fa-arrow-right' }" ></i>
+                                                        #{data.nombre} 
+                                                        <f:param name="indiceCatCamSel" value="#{indice.index}"/>
+                                                        <f:param name="idCatCamSel" value="#{data.id}"/>
+                                                    </p:commandLink>
+                                                </ui:repeat>
+                                            </div>
+                                        </div>
+                                        <div class="card card-info">
+                                            <div class="card-header">
+                                                Artículo seleccionado
+                                            </div>
+                                            <div class="card-body">
+                                                <div class="input-group col-12">
+                                                    <div class="form-group">
+                                                        <div class="form-group col-12">
+                                                            <p:dataTable size="small" stripedRows="true" showGridlines="true" value="#{categoriaBean.listaCampoPorArticulo}" var="data"
+                                                                         rowIndexVar="indice">
+                                                                <p:column headerText="Bloque" style="text-align: left;">
+                                                                    <h:outputLabel value="#{data.nombre}"/>
+                                                                </p:column>
+                                                                <p:column>
+                                                                    <p:commandLink action="#{categoriaBean.quitarArticuloCampo}">
+                                                                        <i class="fa fa-trash-o text-danger"></i>									
+                                                                        <f:param name="idRelCamArt" value="#{indice}"/>
+                                                                    </p:commandLink>
+                                                                </p:column>
+                                                            </p:dataTable>
+                                                        </div>
+                                                        <div class="col-12">
+
+                                                            <div class="col-12">
+                                                                <strong>Artículo:</strong>
+                                                            </div>
+                                                            <div class="col-12">
+                                                                <h:outputText value="#{categoriaBean.articuloVO.nombre}" styleClass="control-label"/>                                                
+                                                            </div>
+
+                                                            <div class="col-12">
+                                                                <strong>No. Parte:</strong>
+                                                            </div>
+                                                            <div class="col-12">
+                                                                <h:outputText value="#{categoriaBean.articuloVO.numParte}" styleClass="control-label"/>
+                                                            </div>
+
+                                                            <div class="col-12">
+                                                                <strong>Unidad:</strong>
+                                                            </div>
+                                                            <div class="col-12">
+                                                                <h:outputText value="#{categoriaBean.articuloVO.unidadNombre}" styleClass="control-label"/>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-12">
+                                            <div class="col-12">
+                                                Agregar el artículo a los bloques
+                                            </div>
+                                            <div class="col-12">
+                                                <p:dataTable size="small" stripedRows="true" showGridlines="true" 
+                                                             value="#{categoriaBean.listaNoCampoPorArticulo}" var="data">
+                                                    <p:column width="35">
+                                                        <h:selectBooleanCheckbox value="#{data.selected}"
+                                                                                 class="seleccion"
+                                                                                 styleClass="checkbox text-info"/>
+                                                    </p:column>
+                                                    <p:column>
+                                                        <h:outputLabel value="#{data.nombre}"/>
+                                                    </p:column>					    
+                                                </p:dataTable>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <p:commandLink value="Cerrar" styleClass="btn btn-default"  immediate="true"
+                                                   action="#{categoriaBean.cerrarCambiarArticulos}"
+                                                   onclick="$(dialogoAgregarArticuloCampo).modal('hide');"/>
+                                    <p:commandButton value="Guardar" styleClass="btn btn-primary text-white" 
+                                                   action="#{categoriaBean.agregarArticuloCampo}"
+                                                   process="@form" update="frmCategoria"/>
+                                </div>
+                            </h:form>
+                        </div>
+                    </div>
+                </div>
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

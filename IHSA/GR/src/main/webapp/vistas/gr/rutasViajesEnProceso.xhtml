@@ -1,0 +1,96 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:p="http://primefaces.org/ui">
+    <style>
+        .focoRojo {
+            position:absolute;
+            margin-top:-35px;
+            margin-left: 85%;
+            z-index:1;
+            height:20px;
+            width:20px;
+            border-radius:25px;
+            background-color: #F00;
+        }
+        .focoVerde {
+            position:absolute;
+            margin-top:-35px;
+            margin-left: 85%;
+            z-index:1;
+            height:20px;
+            width:20px;
+            border-radius:25px;
+            background-color: #4cae4c;
+        }
+
+
+    </style>
+    <div class="card card-primary">
+        <div class="card-header">
+            <h3 class="card-title">Viajes en Proceso</h3>            
+        </div>
+        <div class="card-body" id="viajesProID">
+            <p:accordionPanel id="pnlViaProc" widgetVar="basicProc" >
+                <c:forEach items="#{sesion.rutasProceso}" var="ruta">
+                    <p:tab title="Ruta: #{ruta.nombre}  (Tiempo:#{ruta.tiempoViaje} hrs.)  (Viajes:#{ruta.viajes.size()})"
+                           titleStyle="background-color: #{ruta.cssColorSemaforo};">
+                        <p:commandLink                                                         
+                            styleClass="btn btn-link btn-lg"
+                            action="#{grViaje.goPopupRutaDet(ruta.id)}"
+                            title="Click aquí para consultar el detalle de la ruta..." 
+                            update="frmRutaDet" process="@this">        
+                            <span class="fa fa-road"></span>
+                        </p:commandLink>
+                        <c:forEach items="#{ruta.viajes}" var="viaje">
+                            <div style="width: 100%;">
+                                #{viaje.codigo}                                                         
+                                <strong>#{viaje.responsable} </strong>
+                                #{viaje.fechaProgramadaTxt} #{viaje.horaProgramadaTxt}
+                                <span class="fa fa-users fa-1g"></span>                                                            
+                                (#{viaje.numViajeros}/#{viaje.vehiculoVO.capacidadPasajeros})                                                        
+
+                                <p:commandLink                                                         
+                                    styleClass="btn btn-link btn-lg"                                                        
+                                    style="margin-top: 4px; margin-bottom: 4px;align-content: center;"
+                                    action="#{sesion.goGRViajeDet(viaje.id, 0)}"
+                                    title="Click aquí para ver detalle del viaje..." 
+                                    process="@this" update="frmPnlViajeDet">               
+                                    <span class="fa fa-car"></span>
+                                </p:commandLink>   
+
+                                <ui:fragment rendered="#{viaje.tiempoViajeReal lt 100}">
+                                    <div class="focoVerde success-color"></div>
+                                </ui:fragment>                                                                                
+                                <ui:fragment rendered="#{viaje.tiempoViajeReal gt 100 and viaje.tiempoViajeReal lt 107}">
+                                    <div class="focoVerde success-color"></div>
+                                </ui:fragment>                                                                                
+                                <ui:fragment rendered="#{viaje.tiempoViajeReal gt 106}">
+                                    <div class="focoRojo danger-color"></div>
+                                </ui:fragment>
+
+                            </div>
+                        </c:forEach>
+                    </p:tab>
+                </c:forEach>
+            </p:accordionPanel>
+        </div>
+    </div>
+    <script>
+        $(document).ready(function () {
+            //            $("#tipoViaje").tabs({active: 0});
+            //            startDate();
+            //            var kanbanCol = $('.card-body');
+            //            kanbanCol.css('max-height', (window.innerHeight - 150) + 'px');
+            //            var kanbanColCount = parseInt(kanbanCol.length);
+            //            $('.container-fluid').css('width', '100%');
+            //            draggableInit();
+            //            $('.card-heading').click(function () {
+            //                var $cardBody = $(this).parent().children('.card-body');
+            //                $cardBody.slideToggle();
+            //            });
+        });
+    </script>
+</ui:composition>

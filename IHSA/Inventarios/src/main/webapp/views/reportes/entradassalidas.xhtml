@@ -1,0 +1,78 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/templates/crud.xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:sia="http://www.sia.com/componentes">
+
+    <ui:define name="tituloPagina">
+        #{msg['sia.inventarios.reportes.entradasalida.modulo']}
+    </ui:define>
+    <ui:define name="titulo">
+        #{msg['sia.inventarios.reportes.entradasalida.titulo']}
+    </ui:define>
+
+    <ui:define name="contenido">
+        <h:form id="frmEntSal">
+            <div class="clearfix" style="width: 900px">
+                <div class="fright">
+                    <button type="button" onclick="window.print();" class="hbutton-imp" data-icon="ui-icon-print">#{msg['sia.inventarios.comun.imprimir']}</button>
+                    <p:commandButton value="Exportar">
+                        <p:dataExporter id="dataExporter" 
+                                        type="csv" target="tablaDatos" fileName="entradasalidas" encoding="ISO-8859-1" />
+                    </p:commandButton>
+                </div>
+            </div>
+
+            <h:panelGrid columns="2" width="80%" id="panelFiltro" styleClass="border" border="1">
+                <h:panelGrid columns="3">
+                    <h:outputText value="#{msg['sia.inventarios.reportes.rango.fecha']}:"/>
+                    <h:outputText value="#{msg['sia.inventarios.reportes.entradasalida.minimoUnidadesEntrantes']}:"/>
+                    <h:outputText value="#{msg['sia.inventarios.reportes.entradasalida.minimoUnidadesSalientes']}:"/>
+                    <h:panelGrid columns="4">
+                        <h:outputText value="#{msg['sia.inventarios.reportes.rango.fecha.entre']}" class="entre"/>
+                        <p:datePicker id="dtFechaInicio"
+                                      value="#{entradasSalidas.filtro.fechaInicio}"
+                                      pattern="dd/MM/yyyy"
+                                      validator="#{entradasSalidas.fechaValidador}"
+                                      styleClass="campo"/>
+                        <h:outputText value="#{msg['sia.inventarios.reportes.rango.fecha.y']}" class="separador"/>
+                        <p:datePicker id="dtFechaFin"
+                                      value="#{entradasSalidas.filtro.fechaFin}"
+                                      pattern="dd/MM/yyyy"                                   
+                                      styleClass="campo"/>
+                    </h:panelGrid>
+                    <h:inputText id="txtFiltroNumeroEntrantes" value="#{entradasSalidas.filtro.numeroEntradas}" label="#{msg['sia.inventarios.reportes.entradasalida.minimoUnidadesEntrantes']}"
+                                 styleClass="ui-inputfield ui-textentry ui-widget ui-state-optional ui-corner-all" size="10" maxlength="10"/>
+                    <h:inputText id="txtFiltroNumeroSalientes" value="#{entradasSalidas.filtro.numeroSalidas}" label="#{msg['sia.inventarios.reportes.entradasalida.minimoUnidadesSalientes']}"
+                                 styleClass="ui-inputfield ui-textentry ui-widget ui-state-optional ui-corner-all" size="10" maxlength="10"/>
+                </h:panelGrid>
+                <h:panelGrid>
+                    <p:commandLink  value="#{msg['sia.inventarios.comun.buscarTexto']}" action="#{entradasSalidas.cargarListaConFiltros()}" 
+                                    styleClass="hbutton-bu" process="@this frmEntSal:panelFiltro " update="@form">
+                    </p:commandLink>
+                    <p:commandLink value="#{msg['sia.inventarios.comun.reestablecer']}" immediate="true" action="#{entradasSalidas.reestablecer()}" 
+                                   styleClass="hbutton-bu" process="@this frmEntSal:panelFiltro " update="@form">
+                    </p:commandLink>
+                </h:panelGrid>
+            </h:panelGrid>
+            <p:dataTable id="tablaDatos"
+                         value="#{entradasSalidas.lista}"                       
+                         var="m"
+                         style="width: 900px;">
+                <p:column id="id" headerText="#{msg['sia.inventarios.comun.articulo']}" sortBy="#{m.articuloNombre}" style="width: 600px">
+                    <h:outputText value="#{m.articuloNombre} (#{m.articuloCodigo})"/>
+                </p:column>
+                <p:column id="codigo" headerText="#{msg['sia.inventarios.reportes.entradasalida.unidadesEntrantes']}" sortBy="#{m.numeroEntradas}" style="width: 150px">
+                    <h:outputText value="#{m.numeroEntradas}"/>
+                </p:column>
+                <p:column id="nombre" headerText="#{msg['sia.inventarios.reportes.entradasalida.unidadesSalientes']}" sortBy="#{m.numeroSalidas}" style="width: 150px">
+                    <h:outputText value="#{m.numeroSalidas}"/>
+                </p:column>            
+            </p:dataTable>    
+            <h:outputText value="#{msg['sia.inventarios.reportes.entradasalida.reporteMensaje']}" styleClass="mensajePaginacion reporte"/>
+        </h:form>
+    </ui:define>
+</ui:composition>

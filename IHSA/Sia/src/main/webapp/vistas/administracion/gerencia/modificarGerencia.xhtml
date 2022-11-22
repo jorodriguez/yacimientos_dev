@@ -1,0 +1,199 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"    
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"  
+
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <body>
+        <ui:composition template="./../../../WEB-INF/facelets/templates/templateGrupos.xhtml">
+            <ui:define name="contenido">
+                <h:form  id="frmUser">
+                    <br/>
+                    <center>
+                        <p:panelGrid columns="1">
+                            <h:outputText value="Administración de usuarios" styleClass="tituloEncabezado"/>
+                        </p:panelGrid>
+                        <br/>
+                    </center>
+                    <h:panelGroup >
+                        <h:messages errorClass="textoMensajeError" infoClass="textoMensajeError"/>
+                        <p:panelGrid columns="5">
+                            <p:panelGrid>
+                                <p:commandLink title="Regresar" styleClass="btn btn-default" 
+                                               action="#{usuarioBean.cancelarModificacionUuario}" action="consultaUsuario">
+                                    <p:graphicImage url="./resources/imagenes/regresar.png" styleClass="imagenSinBorde" />
+                                </p:commandLink>
+                                <p:commandLink  styleClass="linkPequenio" value="Regresar" title="Regresar" action="consultaUsuario" action="#{usuarioBean.cancelarModificacionUuario}"/>    
+                            </p:panelGrid>
+                            <p:panelGrid>
+                                <p:commandLink title="Eliminar usuario" action="#{usuarioBean.eiminarUsuario}" styleClass="btn btn-default" 
+                                               rendered="#{usuarioBean.usuarioVOAlta.activo eq 'True'}">
+                                    <p:graphicImage url="./resources/imagenes/eliminar.png" styleClass="imagenSinBorde" />
+                                </p:commandLink>
+                                <p:commandLink  styleClass="linkPequenio" value="Desactivar" title="Eliminar usuario" 
+                                                rendered="#{usuarioBean.usuarioVOAlta.activo eq 'True'}" action="#{usuarioBean.eiminarUsuario}"/>    
+                            </p:panelGrid>
+                            <p:panelGrid>
+                                <p:commandLink title="Activar usuario" action="#{usuarioBean.activarUsuario}" styleClass="btn btn-default" 
+                                               rendered="#{usuarioBean.usuarioVOAlta.activo eq 'False'}">                                        
+                                    <p:graphicImage url="./resources/imagenes/check-mark.png" styleClass="imagenSinBorde" />
+                                </p:commandLink>
+                                <p:commandLink title="Activar usuario" action="#{usuarioBean.activarUsuario}" styleClass="linkPequenio" 
+                                               rendered="#{usuarioBean.usuarioVOAlta.activo eq 'False'}"/>
+                            </p:panelGrid>
+                            <p:panelGrid>
+                                <p:commandLink title="Reinicio clave" action="#{usuarioBean.reinicioClave}" styleClass="btn btn-default"
+                                               >
+                                    <p:graphicImage url="./resources/imagenes/envioClave.jpg" styleClass="imagenSinBorde" />
+                                </p:commandLink>
+                                <p:commandLink  styleClass="linkPequenio" value="Reinicio de clave" 
+                                                action="#{usuarioBean.reinicioClave}" />
+                            </p:panelGrid>
+                            <p:panelGrid>
+                                <p:commandLink title="Asignar campo" action="#{usuarioBean.agregarUsuaroACampo()}" styleClass="btn btn-default" >                                        
+                                    <p:graphicImage url="./resources/imagenes/" styleClass="imagenSinBorde" />
+                                </p:commandLink>
+                                <p:commandLink  styleClass="linkPequenio" value="Asignar campo" 
+                                                action="#{usuarioBean.agregarUsuaroACampo()}" />
+                            </p:panelGrid>
+                            <p:confirmDialog  id="pcClave"
+                                              message="La operación va a reiniciar la clave del usuario, ¿está seguro?">
+
+                            </p:confirmDialog>
+                            <p:confirmDialog id="pcUserAc"
+                                             message="La operación va a activar al usuario: #{usuarioBean.usuario.nombre}, ¿esta seguro?">
+
+                            </p:confirmDialog>
+                        </p:panelGrid>
+
+
+                        <p:panelGrid columns="2"  styleClass="bordePanelGrid">
+                            <f:facet name="header"><h:outputText value="Modificación de datos del usuario: #{usuarioBean.usuario.nombre}" styleClass="textoListaTabla"/></f:facet>
+                            <p:panelGrid columns="2" >
+                                <h:outputText value="Id"/>
+                                <p:inputText value="#{usuarioBean.usuarioVOAlta.id}" disabled="true"/>
+                                <h:outputText value="Nombre"/>
+                                <p:inputText value="#{usuarioBean.usuarioVOAlta.nombre}" size="30"/>
+                                <h:outputText value="Puesto"/>
+                                <p:inputText value="#{usuarioBean.usuarioVOAlta.puesto}" size="35" disabled="true"/>                                
+                                <h:outputText value="Gerencia"/>
+                                <p:selectOneMenu value="#{usuarioBean.idGerencia}">
+                                    <f:selectItem itemLabel="Seleccione . . ." itemValue="-1"/>
+                                    <f:selectItems value="#{usuarioBean.listaGerencia}"/>
+                                </p:selectOneMenu>
+                                <h:outputText value="Solicita"/>
+                                <p:selectBooleanCheckbox value="#{usuarioBean.usuarioVOAlta.solicita}"/>
+                                <h:outputText value="Revisa" />
+                                <p:selectBooleanCheckbox value="#{usuarioBean.usuarioVOAlta.revisa}" />
+                                <h:outputText value="Aprueba"/>
+                                <p:selectBooleanCheckbox value="#{usuarioBean.usuarioVOAlta.aprueba}" />
+                                <h:outputText value="Autoriza"/>
+                                <p:selectBooleanCheckbox value="#{usuarioBean.usuarioVOAlta.autoriza}" />
+                                <h:outputText value="Visto Bueno"/>
+                                <p:selectBooleanCheckbox value="#{usuarioBean.usuarioVOAlta.vistoBueno}"/>
+                                <h:outputText value="Asigna"/>
+                                <p:selectBooleanCheckbox value="#{usuarioBean.usuarioVOAlta.asigna}" />
+                                <h:outputText value="Compra"/>
+                                <p:selectBooleanCheckbox value="#{usuarioBean.usuarioVOAlta.compra}"/>
+                                <h:outputText value="Mail"/>
+                                <p:panelGrid>
+                                    <p:inputTextarea cols="55" value="#{usuarioBean.usuarioVOAlta.correo}"/>                           
+                                    <h:outputText value="Si tiene más de un mail, separarlos por comas." styleClass="textoPequenio"/>
+                                </p:panelGrid> 
+                                <h:outputText value="Destinatarios"/>
+                                <p:panelGrid>
+                                    <p:inputTextarea cols="55" value="#{usuarioBean.usuarioVOAlta.destinatarios}" />                           
+                                    <h:outputText value="Si tiene más de un mail, separarlos por comas." styleClass="textoPequenio"/>
+                                </p:panelGrid>                              
+                            </p:panelGrid>
+                            <p:panelGrid columns="2">    
+                                <h:outputText value="Teléfono"/>
+                                <p:inputText value="#{usuarioBean.usuarioVOAlta.telefono}" size="20"/>
+                                <h:outputText value="Extensión"/>
+                                <p:inputText value="#{usuarioBean.usuarioVOAlta.extension}" size="15"/>
+                                <h:outputText value="Sexo"/>
+                                <p:panelGrid columns="2">
+                                    <p:selectOneRadio value="#{usuarioBean.usuarioVOAlta.sexo}">
+                                        <f:selectItem itemValue="M" itemLabel="M"/>
+                                        <f:selectItem itemValue="F" itemLabel="F"/>
+                                    </p:selectOneRadio>
+                                    <!--p:inputText value="#{usuarioBean.usuarioVOAlta.sexo}" maxlength="1" size="3"/>
+                                    <h:outputText value="M o F" styleClass="textoPequenio"/-->
+                                </p:panelGrid>
+                                <h:outputText value="Celular"/>
+                                <p:inputText value="#{usuarioBean.usuarioVOAlta.celular}"/>
+                                <h:outputText value="Fecha nacimiento"/>
+                                <p:inputText value="#{usuarioBean.usuarioVOAlta.fechaNacimiento}"  disabled="true"/>
+                                <h:outputText value="RFC"/>
+                                <p:inputText value="#{usuarioBean.usuarioVOAlta.rfc}" disabled="true"/>
+                                <h:outputText value="Publica"/>
+                                <p:selectBooleanCheckbox value="#{usuarioBean.usuarioVOAlta.publica}" disabled="true" />
+                                <h:outputText value="Notifica"/>
+                                <p:selectBooleanCheckbox value="#{usuarioBean.usuarioVOAlta.notifica}" disabled="true" />
+                                <h:outputText value="Admin SIA"/>
+                                <p:selectBooleanCheckbox value="#{usuarioBean.usuarioVOAlta.adminSIA}" />
+                                <h:outputText value="Admin Contrato"/>
+                                <p:selectBooleanCheckbox value="#{usuarioBean.usuarioVOAlta.adminContrato}" />
+                                <h:outputText value="Admin SGL"/>
+                                <p:selectBooleanCheckbox value="#{usuarioBean.usuarioVOAlta.adminSGL}" />
+                                <h:outputText value="Responsable SGL"/>
+                                <p:selectBooleanCheckbox value="#{usuarioBean.usuarioVOAlta.responsableSGL}" />
+                                <h:outputText value="Seguridad"/>
+                                <p:selectBooleanCheckbox value="#{usuarioBean.usuarioVOAlta.seguridad}" />
+                                <h:outputText value="Asistente dirección"/>
+                                <p:selectBooleanCheckbox value="#{usuarioBean.usuarioVOAlta.asistenteDireccion}" />                                
+                                <!--h:outputText value="Pregunta "/>
+                                <p:inputTextarea value="#{usuarioBean.usuarioVOAlta.preguntaSecreta}" cols="55" rows="1"/>
+                                <h:outputText value="Respuesta"/>
+                                <p:inputTextarea value="#{usuarioBean.usuarioVOAlta.respuestaPreguntaSecreta}" cols="55" rows="1"/-->
+                            </p:panelGrid>
+                            <p:panelGrid columns="2" style="text-align: right;">
+                                <p:commandButton style="text-align: right;" styleClass="btn btn-default" value="Actualizar"  
+                                                 action="#{usuarioBean.modificarUsuario()}" title="Modificar usuario"/>
+                                <p:commandButton styleClass="btn btn-default" value="Cancelar" action="consultaUsuario" action="#{usuarioBean.cancelarModificacionUuario}"/>
+                            </p:panelGrid>
+                            <h:outputText/>
+                        </p:panelGrid>
+                        <br/>
+                        <p:panelGrid  rendered="#{usuarioBean.traerCadenaMando.rowCount gt 0}">
+                            <f:facet name="header"><h:outputText value="Cadenas de aprobación de requisiciones"/></f:facet>
+                            <p:dataTable size="small" stripedRows="true" showGridlines="true" id="dtCad" value="#{usuarioBean.traerCadenaMando}" var="cadUser"  rows="10"
+                                         styleClass="contenidoTabla">
+                                <p:column>
+                                    <f:facet name="header"><h:outputText value="Solicita"/></f:facet>
+                                    <h:outputText value="#{cadUser.usuario.nombre}"/>
+                                </p:column>
+                                <p:column>
+                                    <f:facet name="header"><h:outputText value="Revisa"/></f:facet>
+                                    <h:outputText value="#{cadUser.revisa.nombre}"/>
+                                </p:column>
+                                <p:column>
+                                    <f:facet name="header"><h:outputText value="Aprueba"/></f:facet>
+                                    <h:outputText value="#{cadUser.aprueba.nombre}"/>
+                                </p:column>
+                            </p:dataTable>
+                            <center>
+
+                            </center>
+                            <p:panelGrid style="float: right;">
+                                <p:panelGrid columns="2" style="float: right; margin-right: 20px;">
+                                    <h:outputText value="Exportar"/>
+                                    <p:dataExporter type="xls"  target="dtCad"/>
+                                </p:panelGrid>
+                            </p:panelGrid>
+                        </p:panelGrid>
+                        <p:panelGrid columns="3" rendered="#{usuarioBean.traerCadenaMando.rowCount lt 1}">
+                            <h:outputText value="El usuario: "/>
+                            <h:outputLabel value="#{usuarioBean.usuario.nombre},"/>
+                            <h:outputText value="no tiene cadena de aprobación"/>
+                        </p:panelGrid>
+                    </h:panelGroup>
+                </h:form>
+            </ui:define>
+
+        </ui:composition>
+
+    </body>
+</html>
