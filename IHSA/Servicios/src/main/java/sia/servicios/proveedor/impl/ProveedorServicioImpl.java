@@ -1279,8 +1279,7 @@ public class ProveedorServicioImpl extends AbstractFacade<Proveedor> {
     public List<String> traerRfcNombreLikeProveedorQueryNativo(String cadena, String rfcCompania, int status) {
         return em.createNativeQuery("SELECT p.rfc || ' / ' || p.nombre FROM pv_proveedor_compania pc"
                 + "     inner join proveedor p on pc.proveedor = p.id"
-                + " WHERE p.visible = true "
-                + " and p.status = " + status
+                + " WHERE p.status = " + status
                 + " AND  upper(p.nombre) LIKE '" + cadena.toUpperCase() + "%'"
                 + " and pc.compania = '" + rfcCompania + "' "
                 + " and pc.eliminado = false ORDER BY p.nombre ASC").getResultList();
