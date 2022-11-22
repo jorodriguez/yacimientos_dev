@@ -291,4 +291,18 @@ public class Requisicion implements Serializable {
     public String toString() {
         return "sia.modelo.Requisicion[ id=" + id + " ]";
     }
+
+    /**
+     * @return the contrato
+     */
+    public boolean isContrato() {
+        return contrato;
+    }
+
+    /**
+     * @param contrato the contrato to set
+     */
+    public void setContrato(boolean contrato) {
+        this.contrato = contrato;
+    }
 }

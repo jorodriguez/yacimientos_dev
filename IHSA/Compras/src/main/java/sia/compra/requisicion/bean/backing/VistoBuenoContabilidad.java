@@ -262,13 +262,13 @@ public class VistoBuenoContabilidad implements Serializable {
         PrimeFaces.current().executeScript(";cerrarCancelar();");
     }
 
-    public void seleccionarRequisicionCostosConta(int idCfId, int idReq) {
+    public void seleccionarRequisicionCostosConta(RequisicionVO reqVo) {
         try {
+            requisicionVO = reqVo;
             //
-            idCfdi = idCfId;
+            idCfdi = requisicionVO.getIdCfdi();
             //
-            setRequisicionActual(requisicionRemoto.find(idReq));
-            //
+            setRequisicionActual(requisicionRemoto.find(requisicionVO.getId()));
             itemsProcesoAprobar();
             //
             etsPorRequisicion();
