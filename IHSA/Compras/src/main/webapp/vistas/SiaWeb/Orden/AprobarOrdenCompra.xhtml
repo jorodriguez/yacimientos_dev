@@ -18,9 +18,9 @@
                         <div class="col-12 col-xs-12">
                             <div id="divAutoriza" class="btn-group" style="text-align: left;">                            
                                 <p:commandLink value="Visto Bueno" 
-                                               class="btn btn-md btn-default"
+                                               class="btn btn-info text-white"
                                                action="#{ordenBean.aprobarOrdenCompras}"
-                                               process="@this  form1:Ordenes" update="@form">
+                                               process="@this  form1:Ordenes" update="@form frmMenu">
                                     <p:confirm header="Confirmar" message="La operación va a autorizar la(s) OC/S seleccionada(s). ¿Está seguro?" 
                                                icon="pi pi-exclamation-triangle"/>
                                 </p:commandLink>
@@ -39,7 +39,7 @@
                                                styleClass="btn btn-default"/>
 
                                 <p:commandLink value="Visto Bueno" 
-                                               class="btn btn-md btn-default"                                               
+                                                class="btn btn-info text-white"
                                                style="font-weight: bold;"
                                                action="#{ordenBean.aprobarOrdenCompras}"
                                                process="@this" update="form1 frmMenu">
@@ -68,15 +68,98 @@
                     </div>
 
                     <div id="divTabla" class="row"> 
-                        <div class="col-12 col-xs-12">
-                            <p  style="float: right; color: #E79E19;"><i class="fa fa-asterisk"/>
-                                Ordenes con contrato vencido</p>                            
-                            <div class="table table-responsive">
-                                <p:dataTable size="small" stripedRows="true" showGridlines="true" id="Ordenes" rows="15" 
+                        <div class="col-12 col-xs-12">                                                 
+                            
+                               <p:dataTable size="small" stripedRows="true" showGridlines="true" id="Ordenes" rows="15" 
                                              value="#{ordenBean.ocs}" var="data"
                                              paginator="true"  
+                                             reflow="true"                                              
+                                             rowStyleClass="#{data.leida eq 'False' ? 'filaConSombra': 'filaSinSombra'}"
+                                             emptyMessage="Sin registros"
                                              paginatorPosition="bottom"  >
-                                    <p:column style="text-align: right;" styleClass="#{data.leida eq 'False' ? 'filaConSombra': 'filaSinSombra'}"
+                                    <f:facet name="header">
+                                        <div class="d-flex justify-content-end">
+                                            <p class="p-0 pl-1  m-0 font-weight-normal"  style="color: #E79E19;"><i class="fa fa-asterisk"/>Ordenes con contrato vencido</p>     
+                                        </div>
+                                    </f:facet>                                           
+                                    <p:column style="text-center" width="30">
+                                        <f:facet name="header">
+                                            <h:selectBooleanCheckbox  class="todos" onchange="seleccionarGeneral('todos', 'seleccion', 'divAutoriza')"/>
+                                        </f:facet>
+                                        <h:selectBooleanCheckbox  value="#{data.selected}" class="seleccion" 
+                                                                 onclick="mostrarDiv('divAutoriza');"/>
+                                    </p:column>
+                                    <p:column headerText="Código"  >
+                                          <p:commandLink action="#{ordenBean.seleccionarOrden(data.id)}"                                                        
+                                                       title="Clic aquí para ver Items..." 	
+                                                       onclick="activarTab('tabOCSProc', 0, 'divDatos', 'divTabla', 'divOperacion', 'divAutoriza');"
+                                                       process="@this" update="form1:tbDatos form1:lblOcs">
+                                              <span >#{data['consecutivo']}</span>
+                                           </p:commandLink>                                        
+                                    </p:column>
+                                    <p:column >
+                                        <h:outputText value="#{data['referencia']}" style=" #{data.contratoActivo gt 0  ? 'color: #E79E19' : ''}"/>
+                                        <f:facet name="header">
+                                            <h:outputText value="Referencia" />
+                                        </f:facet>
+                                    </p:column>	
+                                    <p:column headerText="Analista" >
+                                        <h:outputText value="#{data.analista}" style=" #{data.contratoActivo gt 0  ? 'color: #E79E19' : ''}"/>
+                                    </p:column>
+                                    <p:column headerText="Gerencia" >
+                                        <h:outputText value="#{data.gerencia}" style=" #{data.contratoActivo gt 0  ? 'color: #E79E19' : ''}"/>
+                                    </p:column>
+                                    <p:column headerText="Entrega">
+                                        <center>
+                                            <h:outputText value="#{data['fechaEntrega']}" style=" #{data.contratoActivo gt 0  ? 'color: #E79E19' : ''}">
+                                                <f:convertDateTime dateStyle="default" type="date"/>
+                                            </h:outputText>
+                                        </center>
+                                    </p:column>
+                                    <p:column headerText="Subtotal" >
+                                        <h:outputText value="#{data['subTotal']}" style=" #{data.contratoActivo gt 0  ? 'color: #E79E19' : ''}">
+                                            <f:convertNumber pattern="$ #,##0.00" locale="es-MX"/>
+                                        </h:outputText>
+                                    </p:column>                            
+                                    <p:column headerText="$" width="40">
+                                        <h:outputText value="#{data['moneda']}" style=" #{data.contratoActivo gt 0  ? 'color: #E79E19' : ''}"/>                                    
+                                    </p:column> 
+                                    <p:column headerText="" >
+                                        <h:outputText value="#{data['proveedor']}"  style=" #{data.contratoActivo gt 0  ? 'color: #E79E19' : ''}"/>
+                                        <f:facet name="header"><h:outputText value="Proveedor"/></f:facet>
+                                    </p:column>
+                                    <p:column headerText="Contrato" >
+                                        <h:panelGroup  rendered="#{data.contratoVO.id gt 0}">
+                                            <p:commandLink value="#{data.contratoVO.numero}" 
+                                                           action="#{ordenBean.llenarListaConvenio(data.contratoVO.numero)}"
+                                                           onclick="$(dialogoContratos).modal('show');"
+                                                           process="@this" update="formContratoOrden">
+                                            </p:commandLink>
+                                        </h:panelGroup>
+                                        <h:panelGroup rendered="#{data.contratoVO.id eq 0}">
+                                            <h:outputLabel value="#{data.contratoVO.numero}" style=" #{data.contratoActivo gt 0  ? 'color: #E79E19' : ''}"/>
+                                        </h:panelGroup>                                    
+                                    </p:column>                                    
+                                    <p:column width="50" 
+                                              headerText="REPSE">
+                                        <h:outputText value="#{(data.repse eq true) ? 'Si' : 'No'}"  style=" #{data.contratoActivo gt 0  ? 'color: #E79E19' : ''}"/>
+                                    </p:column>
+                                    <p:column width="40" >
+                                        <p:commandLink action="#{ordenBean.seleccionarOrden(data.id)}" 
+                                                       style="#{data.errorEnvio eq 'True' ? 'color: red' : 'color : blue'}"
+                                                       title="Clic aquí para ver Items..." 	
+                                                       onclick="activarTab('tabOCSProc', 0, 'divDatos', 'divTabla', 'divOperacion', 'divAutoriza');"
+                                                       process="@this" update="form1:tbDatos form1:lblOcs">
+                                            <i class="fa fa-eye text-primary"/>
+                                        </p:commandLink>
+                                    </p:column>
+                                </p:dataTable>
+                              <!--  <p:dataTable size="small" stripedRows="true" showGridlines="true" id="Ordenes" rows="15" 
+                                             value="#{ordenBean.ocs}" var="data"
+                                             paginator="true"  
+                                             reflow="true"                                              
+                                             paginatorPosition="bottom"  >
+                                    <p:column style="text-align: right;"
                                               width="30">
                                         <f:facet name="header">
                                             <h:selectBooleanCheckbox  class="todos" onchange="seleccionarGeneral('todos', 'seleccion', 'divAutoriza')"/>
@@ -144,7 +227,7 @@
                                         </p:commandLink>
                                     </p:column>
                                 </p:dataTable>
-                            </div>
+                            -->
                         </div>
                     </div>
 
