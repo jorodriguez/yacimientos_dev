@@ -195,6 +195,7 @@ public class UsuarioBean implements Serializable {
     private void eliminarSesionActual() {
         LOGGER.info(this, "@eliminarSesionActual");
         // eliminar bean de usuario de sesion
+        Env.removeContext(ctx, Env.SESSION_ID);
         this.usuarioConectado = null;
 
         // realizar limpieza de informacion
