@@ -626,7 +626,7 @@ public class OrdenDetalleImpl extends AbstractFacade<OrdenDetalle> {
         od.setCantidad(ordenDetalleVO.getCantidad());
 
         od.setImporte(ordenDetalleVO.getImporte());
-        if (TipoRequisicion.PS.equals(orOrigen.getTipo())) {
+        if (TipoRequisicion.PS.name().equals(orOrigen.getTipo())) {
             od.setOcTarea(ocTareaRemote.find(ordenDetalleVO.getOcTarea()));
         } else {
             od.setOcTarea(null);

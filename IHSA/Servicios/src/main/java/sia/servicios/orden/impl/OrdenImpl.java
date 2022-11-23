@@ -2835,7 +2835,7 @@ public class OrdenImpl extends AbstractFacade<Orden> {
             XSSFSheet my_worksheet = wb.getSheetAt(0);
             if (TipoRequisicion.AF.equals(orden.getTipo())) {
                 cargarExcelAF(my_worksheet, wb, orden, i);
-            } else if (TipoRequisicion.PS.equals(orden.getTipo())) {
+            } else if (TipoRequisicion.PS.name().equals(orden.getTipo())) {
                 cargarExcelPS(my_worksheet, wb, orden, i);
             } else {
                 cargarExcelAI(my_worksheet, wb, orden, i);
@@ -3032,7 +3032,7 @@ public class OrdenImpl extends AbstractFacade<Orden> {
         int rows = 1;
         if (Constantes.PAIS_MEXICO == orden.getCompania().getSiPais().getId()) {
             setValueExcel(fileExcel, linea.getProyectoOtCC(), 0, i, 4);//Proyecto            
-            if (TipoRequisicion.PS.equals(orden.getTipo()) && !Constantes.RFC_MPG.equals(orden.getCompania().getRfc())) {
+            if (TipoRequisicion.PS.name().equals(orden.getTipo()) && !Constantes.RFC_MPG.equals(orden.getCompania().getRfc())) {
                 if (linea != null && linea.getSubTarea() != null && !linea.getSubTarea().isEmpty()) {
                     if (linea.getIdpresupuesto() > 0 && linea.getIdpresupuesto() > 2) {
                         setValueExcel(fileExcel, (linea.getIdpresupuesto() > 9 ? "" : "0") + linea.getIdpresupuesto() + linea.getCodigoSubTarea(), 0, i, 5);//SubTarea
@@ -3042,7 +3042,7 @@ public class OrdenImpl extends AbstractFacade<Orden> {
                 } else {
                     setValueExcel(fileExcel, linea.getCodeTarea(), 0, i, 5);//Tarea
                 }
-            } else if (TipoRequisicion.PS.equals(orden.getTipo()) && Constantes.RFC_MPG.equals(orden.getCompania().getRfc())) {
+            } else if (TipoRequisicion.PS.name().equals(orden.getTipo()) && Constantes.RFC_MPG.equals(orden.getCompania().getRfc())) {
                 setValueExcel(fileExcel, linea.getProyectoOtCC(), 0, i, 5);//Tarea
             }
             setValueExcel(fileExcel, linea.getArtUnidad(), 0, i, 6);//Unidad Medida
@@ -3080,13 +3080,13 @@ public class OrdenImpl extends AbstractFacade<Orden> {
             }
             setValueExcel(fileExcel, linea.getProyectoOtCC(), 0, i, 5);//Proyecto
 
-            if (TipoRequisicion.PS.equals(orden.getTipo()) && !Constantes.RFC_MPG.equals(orden.getCompania().getRfc())) {
+            if (TipoRequisicion.PS.name().equals(orden.getTipo()) && !Constantes.RFC_MPG.equals(orden.getCompania().getRfc())) {
                 if (linea != null && linea.getSubTarea() != null && !linea.getSubTarea().isEmpty()) {
                     setValueExcel(fileExcel, linea.getCodigoSubTarea(), 0, i, 6);//SubTarea
                 } else {
                     setValueExcel(fileExcel, linea.getCodeTarea(), 0, i, 6);//Tarea
                 }
-            } else if (TipoRequisicion.PS.equals(orden.getTipo()) && Constantes.RFC_MPG.equals(orden.getCompania().getRfc())) {
+            } else if (TipoRequisicion.PS.name().equals(orden.getTipo()) && Constantes.RFC_MPG.equals(orden.getCompania().getRfc())) {
                 setValueExcel(fileExcel, linea.getProyectoOtCC(), 0, i, 6);//Tarea
             }
 

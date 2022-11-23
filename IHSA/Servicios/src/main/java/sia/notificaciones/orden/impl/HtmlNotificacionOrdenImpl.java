@@ -1661,7 +1661,7 @@ public class HtmlNotificacionOrdenImpl extends CodigoHtml {
                 sb.append("</span></strong>");
                 sb.append("</div>");
                 sb.append("<div>");
-                sb.append("<span style=\"font-size: -1; font-family: Arial, Helvetica, sans-serif;\">").append((orden.getTipo().equals(TipoRequisicion.PS) || "C".equals(orden.getApCampo().getTipo())) ? validarNullHtml(Lista.getTipoTarea()) : "Activo Fijo").append("</span>");
+                sb.append("<span style=\"font-size: -1; font-family: Arial, Helvetica, sans-serif;\">").append((orden.getTipo().equals(TipoRequisicion.PS.name()) || "C".equals(orden.getApCampo().getTipo())) ? validarNullHtml(Lista.getTipoTarea()) : "Activo Fijo").append("</span>");
                 sb.append("</div>");
                 sb.append("</div>");
                 sb.append("</td>");

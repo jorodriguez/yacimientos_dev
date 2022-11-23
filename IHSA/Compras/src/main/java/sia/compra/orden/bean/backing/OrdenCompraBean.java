@@ -1156,7 +1156,7 @@ public class OrdenCompraBean implements Serializable {
             boolean continuar = true;
 //
             if (ordenActual.getApCampo().getTipo().equals("C")) {
-                if (ordenActual.getTipo().equals(TipoRequisicion.PS)) {
+                if (ordenActual.getTipo().equals(TipoRequisicion.PS.name())) {
                     if (itemActual.getOcActividadPetrolera().getId() == Constantes.CERO
                             || itemActual.getProyectoOt().getId() == Constantes.CERO
                             || itemActual.getOcUnidadCosto().getId() == Constantes.CERO
