@@ -203,7 +203,7 @@ public class SolicitudViajeBeanModel implements Serializable {
     private String optionRangoSiCiudadOrigen;
     private String optionRangoSiCiudadDestino;
     private String observacion;
-    private String cadena = "redondo"; //tambien se utiliza para tomar el comando para saber si una solicitud de viaje es sencilla o con regreso
+    private String cadena = "false"; //tambien se utiliza para tomar el comando para saber si una solicitud de viaje es sencilla o con regreso
     private String mensaje = "";
     private String nombre;
     private String operacion = Constantes.insertar;
@@ -2500,10 +2500,11 @@ public class SolicitudViajeBeanModel implements Serializable {
         Usuario usuarioSesion = sesion.getUsuario();
         String u = usuarioSesion.getId();
         fechasFestivas();
+        setCadena(Constantes.sencillo);
         SgSolicitudViaje sv = sgSolicitudViajeImpl.traerUltimaSolicitud(u);
         if (sv != null) {
-            if (sv.isRedondo()) {
-                setCadena(Constantes.redondo);
+//            if (sv.isRedondo()) {
+//                setCadena(Constantes.redondo);
                 if (siManejoFechaImpl.compare(sv.getFechaSalida(), new Date()) >= 0) {
                     setFechaSalida(sv.getFechaSalida());
                     setFechaRegreso(sv.getFechaRegreso());
@@ -2511,16 +2512,17 @@ public class SolicitudViajeBeanModel implements Serializable {
                     setFechaSalida(new Date());
                     setFechaRegreso(new Date());
                 }
-            } else {
-                setCadena(Constantes.redondo);
-                if (siManejoFechaImpl.compare(sv.getFechaSalida(), new Date()) >= 0) {
-                    setFechaSalida(sv.getFechaSalida());
-                    setFechaRegreso(getFechaSalida());
-                } else {
-                    setFechaSalida(new Date());
-                    setFechaRegreso(new Date());
-                }
-            }
+//            } 
+//            else {
+//                setCadena(Constantes.sencillo);
+//                if (siManejoFechaImpl.compare(sv.getFechaSalida(), new Date()) >= 0) {
+//                    setFechaSalida(sv.getFechaSalida());
+//                    setFechaRegreso(getFechaSalida());
+//                } else {
+//                    setFechaSalida(new Date());
+//                    setFechaRegreso(new Date());
+//                }
+//            }
             setOrigen(sv.getOficinaOrigen().getNombre());
             setIdOficinaOrigen(sv.getOficinaOrigen().getId());
 
@@ -2600,8 +2602,8 @@ public class SolicitudViajeBeanModel implements Serializable {
                             }
                         }
                         if (!enLista) {
-                            Usuario u = usuarioImpl.find(idUsuario);                                                       
-                          //  newVO = new ViajeroVO(); 
+                            Usuario u = usuarioImpl.find(idUsuario);
+                            //  newVO = new ViajeroVO(); 
                             newVO.setIdUsuario(idUsuario);
                             newVO.setUsuario(u.getNombre());
                             newVO.setEsEmpleado(Constantes.TRUE);
@@ -2634,7 +2636,7 @@ public class SolicitudViajeBeanModel implements Serializable {
                             }
                             if (!enLista) {
                                 SgInvitado nuevoInvitado = sgInvitadoImpl.find(idInvitado);
-                                
+
                                 newVO = new ViajeroVO();
                                 newVO.setIdInvitado(idInvitado);
                                 newVO.setInvitado(nuevoInvitado.getNombre());
@@ -4190,7 +4192,7 @@ public class SolicitudViajeBeanModel implements Serializable {
             } else {
                 if (inv != null) {
                     int idInv = Integer.parseInt(inv);
-                    if (vo.getIdInvitado() == idInv) {
+                    if (vo != null && vo.getIdInvitado() != null && vo.getIdInvitado() == idInv) {
                         vo.setEditarTel(Constantes.TRUE);
                         setNombre(vo.getInvitado());
                         setNewTelefono(vo.getTelefono() != null ? vo.getTelefono() : 0 + "");
@@ -4223,16 +4225,17 @@ public class SolicitudViajeBeanModel implements Serializable {
                         vo.setConfirTel(Constantes.TRUE);
                         break;
                     }
+                } else {
+                    if (getTemporal() != null && getTemporal().getIdInvitado() != null && vo != null && vo.getIdInvitado() != null) {
+                        if (getTemporal().getIdInvitado().intValue() == vo.getIdInvitado().intValue()) {
+                            if (vo.getTelefono() != null && !vo.getTelefono().isEmpty()) {
+                                vo.setConfirTel(Constantes.TRUE);
+                                vo.setTelefono(tel);
+                                break;
+                            }
+                        }
+                    }
                 }
-//                else {
-//                    if(vo.getIdInvitado() == inv){
-//                        if(vo.getTelefono() != null && !vo.getTelefono().isEmpty()){
-//                            vo.setConfirTel(Constantes.TRUE);
-//                            vo.setTelefono(tel);
-//                            break;
-//                        }
-//                    }
-//                }
             }
             PrimeFaces.current().executeScript(";$(modalAddTel).modal('hide');");
         } else {

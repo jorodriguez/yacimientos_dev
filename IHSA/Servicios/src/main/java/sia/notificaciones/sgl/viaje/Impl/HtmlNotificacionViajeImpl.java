@@ -1625,7 +1625,7 @@ public class HtmlNotificacionViajeImpl extends CodigoHtml {
             this.cuerpoCorreo.append("<tr>");
             this.cuerpoCorreo.append("<td  style=\"").append(getEstiloContenido()).append("\" align=\"center\">".concat(fechaSalida != null ? Constantes.FMT_TextDate.format(fechaSalida) : Constantes.FMT_TextDate.format(fechaProgramada)).concat("</td>"));
             this.cuerpoCorreo.append("<td  style=\"").append(getEstiloContenido()).append("\" align=\"center\">".concat(horaSalida != null ? Constantes.FMT_hmm_a.format(horaSalida)+"Hrs" : Constantes.FMT_hmm_a.format(horaProgramada)+"Hrs").concat("</td>"));
-            this.cuerpoCorreo.append("<td  style=\"").append(getEstiloContenido()).append("\" align=\"center\">".concat(redondo ? Constantes.redondo : Constantes.sencillo).concat("</td></tr>"));
+            this.cuerpoCorreo.append("<td  style=\"").append(getEstiloContenido()).append("\" align=\"center\">".concat(redondo ? Constantes.redondoTxt : Constantes.sencilloTxt).concat("</td></tr>"));
             this.cuerpoCorreo.append("</table><br/>");
         } catch (Exception e) {
             log("Exepcion al llenar Datos " + e.getMessage());

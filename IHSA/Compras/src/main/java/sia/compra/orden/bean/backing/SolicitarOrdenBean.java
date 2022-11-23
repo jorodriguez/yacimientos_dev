@@ -134,6 +134,7 @@ public class SolicitarOrdenBean implements Serializable {
     private List<MovimientoVO> rechazosCarta = null;
     private String archivoRepse;
     private String confirming;
+    private String anticipo;
     @Getter
     @Setter
     private ProveedorVo proveedorVo;
@@ -142,6 +143,7 @@ public class SolicitarOrdenBean implements Serializable {
     public void iniciar() {
         int idOrden = 0;
         archivoRepse = "";
+        anticipo = "";
         confirming = "No";
         Integer parametro = Env.getContextAsInt(sesion.getCtx(), "ORDEN_ID");
         if (parametro > 0) {
@@ -429,6 +431,8 @@ public class SolicitarOrdenBean implements Serializable {
                                 FacesUtilsBean.addErrorMessage("El convenio " + ordenActual.getContrato() + " no cuenta con saldo suficiente para realizar la compra.");
                             } else if (archivoRepse == null) {
                                 FacesUtilsBean.addErrorMessage("Para solicitar la oc/s debe especificar si la compra requiere mano de obra en sitio ..");
+                            } else if (anticipo == null) {
+                                FacesUtilsBean.addErrorMessage("Para solicitar la oc/s debe especificar si la compra requiere anticipo al facturar ..");
                             } else if (confirming == null) {
                                 FacesUtilsBean.addErrorMessage("Para solicitar la oc/s debe especificar si la compra se pagara por confirming ..");
                             } else {
@@ -440,6 +444,7 @@ public class SolicitarOrdenBean implements Serializable {
                                         // Solicitar la orden
                                         try {
                                             ordenActual.setRepse("Si".equals(archivoRepse) ? Constantes.BOOLEAN_TRUE : Constantes.BOOLEAN_FALSE);
+                                            ordenActual.setConAnticipo("Si".equals(anticipo) ? Constantes.BOOLEAN_TRUE : Constantes.BOOLEAN_FALSE);
                                             ordenActual.setConfirming("Si".equals(confirming) ? Constantes.BOOLEAN_TRUE : Constantes.BOOLEAN_FALSE);
 
                                             boolean solicitada = ordenImpl.solicitarOrden(getIdProveedorr(), getRevisa(), aprueba,
@@ -479,6 +484,7 @@ public class SolicitarOrdenBean implements Serializable {
                                     try {
                                         //, getIdFormaPago()
                                         ordenActual.setRepse("Si".equals(archivoRepse) ? Constantes.BOOLEAN_TRUE : Constantes.BOOLEAN_FALSE);
+                                        ordenActual.setConAnticipo("Si".equals(anticipo) ? Constantes.BOOLEAN_TRUE : Constantes.BOOLEAN_FALSE);
                                         ordenActual.setConfirming("Si".equals(confirming) ? Constantes.BOOLEAN_TRUE : Constantes.BOOLEAN_FALSE);
 
                                         boolean solicitada
@@ -939,6 +945,20 @@ public class SolicitarOrdenBean implements Serializable {
      */
     public void setConfirming(String confirming) {
         this.confirming = confirming;
+    }
+
+    /**
+     * @return the anticipo
+     */
+    public String getAnticipo() {
+        return anticipo;
+    }
+
+    /**
+     * @param anticipo the anticipo to set
+     */
+    public void setAnticipo(String anticipo) {
+        this.anticipo = anticipo;
     }
 
 }

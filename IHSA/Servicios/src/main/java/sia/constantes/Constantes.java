@@ -986,7 +986,8 @@ public class Constantes {
     public static final int TIPO_ESPECIFICO_SOLICITUD_AEREA = 3;
     public static final int SG_TIPO_ESPECIFICO_SOLICITUD_VIAJE_AEREA = 3;
     public static final int SG_TIPO_ESPECIFICO_SOLICITUD_VIAJE_TERRESTRE = 2;
-    public static final String redondo = "redondo";
+    public static final String redondo = "true";
+    public static final String redondoTxt = "redondo";
     /**
      * Tipos de Solicitudes de Viaje
      */
@@ -1018,7 +1019,8 @@ public class Constantes {
     public static final String solicitudAereo = "AEREO";
     public static final String modificar = "MODIFICAR";
     public static final String insertar = "INSERTAR";
-    public static final String sencillo = "sencillo";
+    public static final String sencillo = "false";
+    public static final String sencilloTxt = "sencillo";
     public static final String OPCION_OTRO = "otro";
     public static final boolean TRUE = true;
     public static final boolean FALSE = false;

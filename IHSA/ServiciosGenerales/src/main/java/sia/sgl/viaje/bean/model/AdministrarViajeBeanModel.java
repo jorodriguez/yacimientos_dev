@@ -1204,7 +1204,7 @@ public class AdministrarViajeBeanModel implements Serializable {
                     FacesUtils.addErrorMessage("Nose a selecionado un reponsable del viaje");
                 } else {
                     sgViajeImpl.updateTrips(sesion.getUsuario(), sgViaje, sgViajeVehiculoImpl.getVehicleByTravel(getViajeVO().getId()), getViajeVO().getVehiculoVO(),
-                            Constantes.VEHICULO_EMPRESA, getViajeVO().getIdRuta(), (isRedondoSencillo() ? Constantes.redondo : Constantes.sencillo), getViajeVO().isConInter());
+                            Constantes.VEHICULO_EMPRESA, getViajeVO().getIdRuta(), (isRedondoSencillo() ? Constantes.redondoTxt : Constantes.sencilloTxt), getViajeVO().isConInter());
                     iniciarConversasionCrearViaje();
                     FacesUtils.addInfoMessage("El viaje " + getViajeVO().getCodigo() + " se actualizo con exito");
                     String metodo = ";cerrarDialogoCrearViaje();";

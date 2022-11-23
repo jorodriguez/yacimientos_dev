@@ -1447,7 +1447,7 @@ public class SolicitudViajeBean implements Serializable {
         if (tel != null && !tel.isEmpty()) {
             getTemporal().setTelefono(tel);
             getTemporal().setConfirTel(Constantes.TRUE);
-            solicitudViajeBeanModel.addOrRemoveViajeros(getEmpleadoAdd(), Constantes.TRUE, getInvitadoAdd());
+            solicitudViajeBeanModel.addOrRemoveViajeros(getEmpleadoAdd(), Constantes.TRUE, (getTemporal().getIdInvitado() != null ? getTemporal().getIdInvitado().intValue() : 0));
             PrimeFaces.current().executeScript(";$(modalAddTel).modal('hide');");
         } else {
             FacesUtils.addErrorMessage("Favor de agregar el Telefono");

@@ -285,6 +285,12 @@ public class Orden implements Serializable {
     @Column(name = "CONFIRMING")
     private boolean confirming;
     
+    @Column(name = "CON_ANTICIPO")
+    private boolean conAnticipo;
+    
+    @Column(name = "ANTICIPO")
+    private Double anticipo;
+    
     public Orden() {
     }
 
