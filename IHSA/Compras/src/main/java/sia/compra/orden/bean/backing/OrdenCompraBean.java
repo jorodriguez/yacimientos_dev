@@ -16,6 +16,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 
 import javax.faces.event.AjaxBehaviorEvent;
@@ -41,7 +43,6 @@ import sia.compra.sistema.bean.backing.ContarBean;
 import sia.constantes.Constantes;
 import sia.constantes.TipoRequisicion;
 import sia.excepciones.SIAException;
-import sia.inventarios.service.ArticuloImpl;
 import sia.inventarios.service.InvArticuloCampoImpl;
 import sia.modelo.Convenio;
 import sia.modelo.CvConvenioArticulo;
@@ -202,6 +203,9 @@ public class OrdenCompraBean implements Serializable {
     private Map<Integer, Boolean> filasSeleccionadas = new HashMap<>();
     private boolean seleccionarTodo;
     private int idCategoriaSelccionada = -1;
+    @Getter
+    @Setter
+    private int idCatSel;
     private int idOrdenSeleccionada = -1;
     private OcOrdenEts etsOcOrden;
     private List<SelectItem> listaCategoriaEts;
@@ -225,6 +229,8 @@ public class OrdenCompraBean implements Serializable {
     @Getter
     @Setter
     private ConvenioArticuloVo convenioArticuloVo;
+    @Getter
+    DocumentoAnexo documentoAnexo;
 
     //
     @PostConstruct
@@ -1766,6 +1772,7 @@ public class OrdenCompraBean implements Serializable {
         }
     }
 
+
     /*
      * ********************** CARGA DE ETS DESDE REQUISICION******************
      */
@@ -1781,24 +1788,12 @@ public class OrdenCompraBean implements Serializable {
             boolean addArchivo = validadorNombreArchivo.isNombreValido(fileInfo.getFileName());
 
             if (addArchivo) {
-                DocumentoAnexo documentoAnexo = new DocumentoAnexo(fileInfo.getContent());
+                documentoAnexo = new DocumentoAnexo(fileInfo.getContent());
                 documentoAnexo.setTipoMime(fileInfo.getContentType());
                 documentoAnexo.setNombreBase(fileInfo.getFileName());
                 documentoAnexo.setRuta(getUploadDirectoryOrden());
 
                 almacenDocumentos.guardarDocumento(documentoAnexo);
-
-                SiAdjunto adj = servicioSiAdjuntoImpl.save(documentoAnexo.getNombreBase(),
-                        new StringBuilder()
-                                .append(documentoAnexo.getRuta())
-                                .append(File.separator).append(documentoAnexo.getNombreBase()).toString(),
-                        fileInfo.getContentType(), fileInfo.getSize(), sesion.getUsuarioConectado().getId());
-                if (adj != null) {
-                    servicioOcOrdenEts.crearOcOrdenEts(getOrdenActual().getId(), getIdCategoriaSelccionada(), adj, sesion.getUsuarioConectado());
-                }
-                //traerEspecificacionTecnica();
-                ordenEtsPorCategoria();
-                FacesUtilsBean.addInfoMessage("El archivo fue agregado correctamente.");
             } else {
                 FacesUtilsBean.addErrorMessage(new StringBuilder()
                         .append("No se permiten los siguientes caracteres especiales en el nombre del Archivo: ")
@@ -1807,7 +1802,6 @@ public class OrdenCompraBean implements Serializable {
             }
 
             fileInfo.delete();
-
         } catch (IOException e) {
             LOGGER.fatal(this, "+ + + ERROR + + +", e);
             FacesUtilsBean.addInfoMessage("Ocurrió un problema al cargar el archivo, por favor contacte al equipo de soporte SIA (soportesia@ihsa.mx)");
@@ -1815,6 +1809,30 @@ public class OrdenCompraBean implements Serializable {
             LOGGER.fatal(this, "+ + + ERROR + + +", e);
             FacesUtilsBean.addInfoMessage("Ocurrió un problema al cargar el archivo, por favor contacte al equipo de soporte SIA (soportesia@ihsa.mx)");
         }
+    }
+
+    public void guardarEtsLocal() {
+        try {
+            SiAdjunto adj = servicioSiAdjuntoImpl.save(documentoAnexo.getNombreBase(),
+                    new StringBuilder()
+                            .append(documentoAnexo.getRuta())
+                            .append(File.separator).append(documentoAnexo.getNombreBase()).toString(),
+                    documentoAnexo.getTipoMime(), documentoAnexo.getTamanio(), sesion.getUsuarioConectado().getId());
+            if (adj != null) {
+                servicioOcOrdenEts.crearOcOrdenEts(getOrdenActual().getId(), idCatSel, adj, sesion.getUsuarioConectado());
+            }
+            documentoAnexo = null;
+            //
+            ordenEtsPorCategoria();
+            FacesUtilsBean.addInfoMessage("El archivo fue agregado correctamente.");
+        } catch (SIAException ex) {
+            Logger.getLogger(OrdenCompraBean.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    public void cerrarEtsLocal() {
+        documentoAnexo = null;
+        PrimeFaces.current().executeScript("$(dialogoCargarEts).modal('hide');");
     }
 
     public String getUploadDirectoryOrden() {

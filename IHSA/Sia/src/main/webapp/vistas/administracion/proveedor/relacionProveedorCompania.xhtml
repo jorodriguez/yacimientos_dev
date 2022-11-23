@@ -116,9 +116,9 @@
                             </p:tab>
                             <p:tab title="Contáctos">
                                 <p:commandLink title="Agregar contacto"  rendered="#{proveedorBean.idProveedor gt 0}"
-                                               onclick="mostrarDialogoContacto('dialogoContacto', 'frmAgregarConta', 'btnCerrar', 'btnGuardar');"
+                                               onclick="$(dialogoContacto).modal('show');"
                                                styleClass="btn btn-primary"
-                                               >
+                                               update="frmAgregarConta" process="@this">
                                     <i class="fa fa-plus text-white"/>
                                 </p:commandLink>
                                 <p:dataTable id="dtContactos" size="small" stripedRows="true" showGridlines="true"
@@ -170,23 +170,25 @@
                             </div>
                             <h:form id="frmAgregarConta">
                                 <div class="modal-body">
-                                    <h:panelGrid columns="2">
+                                    <h:panelGrid columns="1">
                                         <h:outputText value="Nombre: *"/>    
-                                        <p:inputText size="50" value="#{proveedorBean.contacto}" required="true" requiredMessage="Es necesario agregar el nombre"/>
+                                        <p:inputText value="#{proveedorBean.contacto}" required="true" requiredMessage="Es necesario agregar el nombre"
+                                                     />
                                         <h:outputText value="Teléfono: "/>    
-                                        <p:inputText size="50" value="#{proveedorBean.telefono}" />
+                                        <p:inputText value="#{proveedorBean.telefono}" />
                                         <h:outputText value="Correo: *"/>    
-                                        <p:inputText  id="correo" size="50" value="#{proveedorBean.correo}" required="true" requiredMessage="Es necesario agregar el correo"
+                                        <p:inputText  id="correo" value="#{proveedorBean.correo}" required="true" requiredMessage="Es necesario agregar el correo"
                                                       />
                                     </h:panelGrid>
                                     <h:outputText value="*Si hay más de un correo, separarlo por comas." style="font-size: small; color: maroon;"/>
                                 </div>
                                 <div class="modal-body">
-                                    <p:commandLink  id="btnGuardar" styleClass="btn btn-info" 
-                                                    action="#{proveedorBean.agregarContacto}"
-                                                    process="@form" update="frmRelPro"/>
-                                    <p:commandButton id="btnCerrar" action="#{proveedorBean.cancelarAgregarContacto}"
-                                                     immediate="true" onclick="$(dialogoContacto).modal('hide');"/>
+                                    <p:commandButton  id="btnGuardar"  value="Guardar"
+                                                      action="#{proveedorBean.agregarContacto}"
+                                                      process="@form" update="frmRelPro"/>
+                                    <p:commandLink id="btnCerrar" action="#{proveedorBean.cancelarAgregarContacto}"
+                                                   immediate="true" onclick="$(dialogoContacto).modal('hide');"
+                                                   value="Cerrar"/>
                                 </div>
                             </h:form>
                         </div>
