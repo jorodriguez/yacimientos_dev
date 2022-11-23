@@ -506,13 +506,14 @@ public class EstanciaBeanModel implements Serializable {
         return this.sgSolicitudEstanciaImpl.totalSgSolicitudEstancia(sesion.getUsuario().getId(), idSgOficina, idEstatus, fromTravel);
     }
 
-//    public void trearSolicitudEstancia() {
-//        try {
-//            listaSolicitud = sgSolicitudEstanciaImpl.trearSolicitudEstanciaPorUsuario(sesion.getUsuario(), getStatus(), Constantes.BOOLEAN_FALSE);
-//        } catch (Exception e) {
-//            UtilLog4j.log.fatal(this, "Ocurrio un error al traer las estancias por solicitud :  :  :  " + e.getMessage());
-//        }
-//    }
+    public void trearSolicitudEstancia() {
+        try {
+            listaSolicitud = sgSolicitudEstanciaImpl.trearSolicitudEstanciaPorOficina(sesion.getOficinaActual().getId(), getStatus(), sesion.getUsuario().getId(), Constantes.BOOLEAN_FALSE);
+        } catch (Exception e) {
+            UtilLog4j.log.fatal(this, "Ocurrio un error al traer las estancias por solicitud :  :  :  " + e.getMessage());
+        }
+    }
+
     public List<SgSolicitudEstanciaVo> findAllSgSolicitudEstanciaByUsuarioAndEstatus(int idEstatus, Boolean fromTravel) {
         return this.sgSolicitudEstanciaImpl.findAll(sesion.getUsuario().getId(), -1, idEstatus, fromTravel, "id", false, false);
     }
@@ -613,6 +614,7 @@ public class EstanciaBeanModel implements Serializable {
                 setListaSolicitud(sgSolicitudEstanciaImpl.trearSolicitudEstanciaPorOficina(sesion.getOficinaActual().getId(), getStatus(), sesion.getUsuario().getId(), Constantes.BOOLEAN_FALSE));
             }
         } catch (Exception e) {
+            System.out.println("Error al traer sol huespedes");
         }
     }
 
@@ -820,20 +822,20 @@ public class EstanciaBeanModel implements Serializable {
         try {
 
             if (this.listaHoteles == null) {
-                
+
                 this.listaHoteles = Collections.emptyList();
 
                 List<SgHotel> lh = sgHotelImpl.getAllHotel(sesion.getOficinaActual().getId());
-                
+
                 this.listaHoteles = lh.stream().map(item -> new SelectItem(item.getId(), item.getProveedor().getNombre())).collect(Collectors.toList());
-                
+
                 /*for (SgHotel sgH : lh) {
                     SelectItem item = new SelectItem(sgH.getId(), sgH.getProveedor().getNombre());
                     l.add(item);
-                }*/                
+                }*/
             }
         } catch (Exception e) {
-            
+
             this.listaHoteles = Collections.emptyList();
         }
         return this.listaHoteles;
