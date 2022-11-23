@@ -426,11 +426,11 @@
                     </div>
                     <div class="modal-footer">
                         <p:commandButton value="#{msgs['sistema.genera.orden.detalle.pasar']}" 
-                                       styleClass="btn btn-primary"
-                                       title="#{msgs['sistema.tooltip.orden.detalle.pasar']}"
-                                       disabled="#{ordenCompraBean.ordenVO eq null}"
-                                       action="#{ordenCompraBean.pasarItemsOrden}"
-                                       process="@form" update="form1:tbOcs">                                
+                                         styleClass="btn btn-primary"
+                                         title="#{msgs['sistema.tooltip.orden.detalle.pasar']}"
+                                         disabled="#{ordenCompraBean.ordenVO eq null}"
+                                         action="#{ordenCompraBean.pasarItemsOrden}"
+                                         process="@form" update="form1:tbOcs">                                
                         </p:commandButton>
                         <p:commandLink id="btnLimpiar" styleClass="btn btn-default" value="Cerrar"  
                                        action="#{ordenCompraBean.limpiar}"
@@ -524,13 +524,27 @@
                     <div class="modal-body panel panel-footer">
                         <div class="row">
                             <div class="col-12 col-xs-12" >
-                                <!-- selectedPanel="#{ordenCompraBean.opcionSeleccionada}" -->
                                 <p:panel  style="width: 100%;">
-                                    <h:panelGroup id="EtsRequisicion">
-                                        <div class="col-12 col-xs-12">
-                                            <div class="table table-responsive">
-                                                <p:dataTable size="small" stripedRows="true" showGridlines="true"  value="#{ordenCompraBean.listaEts}" var="data"
-                                                             styleClass="table table-striped">
+                                    <p:tabView id="tbEtsOcs">
+                                        <p:tab id="tabDesdeReq" title="Desde la requisición">
+                                            <div class="col-12 col-xs-12 input-group" >
+                                                <h:outputText value="Destino del documento :" class="control-label col-12"/>
+                                                <p:selectOneMenu value="#{ordenCompraBean.idCategoriaSelccionada}">
+                                                    <f:selectItems value="#{ordenCompraBean.listaCategoriaEts}" />
+                                                </p:selectOneMenu>                        
+                                                <p:commandButton value="Adjuntar lo seleccionado" 
+                                                                 actionListener="#{ordenCompraBean.guardarSeleccionEts}"
+                                                                 update="form1Ets:dtEts form1:tbOcs" 
+                                                                 process="@this form1Ets:tbEtsOcs:dtEtReq form1Ets:tbEtsOcs:tabDesdeReq"/>
+                                                <p:commandButton 
+                                                    value="Adjuntar todo" 
+                                                    actionListener="#{ordenCompraBean.guardarTodoEts}" 
+                                                    process="@this form1Ets:tbEtsOcs:dtEtReq form1Ets:tbEtsOcs:tabDesdeReq"
+                                                    update="form1Ets:dtEts form1:tbOcs"/>
+                                            </div>
+                                            <div class="col-12 col-xs-12">
+                                                <p:dataTable id="dtEtReq" size="small" stripedRows="true" showGridlines="true" 
+                                                             value="#{ordenCompraBean.listaEts}" var="data">
                                                     <f:facet name="header">
                                                         <h:outputLabel value="Requisición #{ordenCompraBean.ordenVO.requisicion}"/>
                                                     </f:facet>
@@ -554,66 +568,48 @@
                                                     </p:column>
                                                 </p:dataTable> 
                                             </div>
-                                        </div>
-                                        <div class="col-12 col-xs-12" >
-                                            <h:outputText value="Destino del documento :"/>
-                                            <h:selectOneMenu value="#{ordenCompraBean.idCategoriaSelccionada}" styleClass="form-control">
-                                                <f:selectItems value="#{ordenCompraBean.listaCategoriaEts}" />
-                                            </h:selectOneMenu>                        
-                                            <p:commandButton value="Adjuntar lo seleccionado" 
-                                                             action="#{ordenCompraBean.guardarSeleccionEts}"                                                           
-                                                             styleClass="btn btn-default"
-                                                             update="form1Ets"/>
-                                            <p:commandButton 
-                                                value="Adjuntar todo" 
-                                                action="#{ordenCompraBean.guardarTodoEts}" 
-                                                styleClass="btn btn-default"
-                                                update="form1Ets"/>
-                                        </div>
-                                    </h:panelGroup>
-                                    <h:panelGroup id="ETSLocal">
-                                        <div class="col-12 col-xs-12">
-                                            <h:outputText value="Destino :"/>
-                                            <h:selectOneMenu value="#{ordenCompraBean.idCategoriaSelccionada}" styleClass="form-control">
-                                                <f:selectItems value="#{ordenCompraBean.listaCategoriaEts}" />
-                                            </h:selectOneMenu>                       
-                                        </div>
-                                        <div class="col-12 col-xs-12">
-                                            <h:outputText value="No se permiten los siguientes caracteres en el nombre del Archivo:" 
-                                                          rendered="#{ordenCompraBean.idCategoriaSelccionada != -1}"/>
-                                            <h:outputText value="#{ordenCompraBean.simbolos}" 
-                                                          style="color: red;" 
-                                                          rendered="#{ordenCompraBean.idCategoriaSelccionada != -1}"/>
-                                        </div>
-                                        <div class="col-12 col-xs-12">
-                                            <p:fileUpload id="fileEntryComp" 
-                                                          label="Archivo"
-                                                          listener="#{ordenCompraBean.uploadFile}"
-                                                          update="form1Ets"/>
-                                        </div>
-                                    </h:panelGroup>
+                                        </p:tab>
+                                        <p:tab id="tabLocal" title="Local">
+                                            <div class="border">
+                                                <h:outputLabel value="1.Seleccione y cargue (upload) el archivo:" class="col-12"/>
+                                                <div class="col-12 col-xs-12 small">
+                                                    <h:outputText value="Caracteres no permitidos: " />
+                                                    <h:outputText value="#{ordenCompraBean.simbolos}" style="color: red;" />
+                                                </div>
+                                                <p:fileUpload id="fileEntryComp" 
+                                                              label="Archivo" 
+                                                              listener="#{ordenCompraBean.uploadFile}"
+                                                              update="form1Ets:tbEtsOcs:datosFile" process="@this" />
+                                                <p:panel id="datosFile">
+                                                    <h:outputText value="#{ordenCompraBean.documentoAnexo.nombreBase}"
+                                                                  styleClass="text text-primary"/>
+                                                </p:panel>
+                                                <h:outputLabel value="2.Seleccione la categoría:" class="col-12"/>
+                                                <div class="col-12 col-xs-12 input-group">
+                                                    <p:selectOneMenu id="cmbDest" value="#{ordenCompraBean.idCatSel}">
+                                                        <f:selectItems value="#{ordenCompraBean.listaCategoriaEts}" />
+                                                    </p:selectOneMenu>                       
+                                                </div>
+                                                <h:outputLabel value="3.Guardar" class="col-12"/>
+                                                <p:commandButton actionListener="#{ordenCompraBean.guardarEtsLocal}"
+                                                                 value="Guardar" 
+                                                                 process="@this form1Ets:tbEtsOcs:cmbDest form1Ets:tbEtsOcs:datosFile"
+                                                                 update="form1Ets:dtEts form1:tbOcs" />
+                                            </div>
+                                        </p:tab>
+                                    </p:tabView>
                                 </p:panel>
                             </div>
                             <div class="col-12 col-xs-12" >
-                                <p:dataTable size="small" stripedRows="true" showGridlines="true"  
+                                <p:dataTable id="dtEts" size="small" stripedRows="true" showGridlines="true"  
                                              value="#{ordenCompraBean.listaOcOrdenEts}" var="ets">
-                                    <p:column >
-                                        <f:facet name="header"><h:outputLabel value="Categoría"/></f:facet>
+                                    <p:column headerText="Categoría" width="15%">
                                         <h:outputText value="#{ets.categoria}"/>
                                     </p:column>         
-                                    <p:column>
-                                        <f:facet name="header">
-                                            <h:outputLabel value="Nombre"/>
-                                        </f:facet>
+                                    <p:column headerText="Nombre">
                                         <h:outputText value="#{ets.nombreSinUUID}"/>
                                     </p:column>
-                                    <p:column>
-                                        <f:facet name="header" >
-                                            <h:outputLabel value="Tamaño"/>
-                                        </f:facet>
-                                        <h:outputText  value="#{ets.peso}"/>
-                                    </p:column>
-                                    <p:column>                                        
+                                    <p:column width="8%">                                        
                                         <h:outputLink styleClass="btn btn-default"
                                                       id="abrir"
                                                       target="_blank" 
@@ -622,12 +618,12 @@
                                             <h:outputText value=" Abrir"/>
                                         </h:outputLink>                                        
                                     </p:column>
-                                    <p:column>                                                                                    
-                                        <p:commandLink id="eliminar" value="Eliminar"
-                                                       styleClass="btn btn-default"                                                     
+                                    <p:column width="3%">                                                                                    
+                                        <p:commandLink id="eliminar" 
                                                        action="#{ordenCompraBean.eliminarEtsOrden(ets.idEtsOrden)}" 
                                                        title="Click aqui para eliminar el archivo..." 
-                                                       process="@this" update="@form">
+                                                       process="@this" update="@form  form1:tbOcs">
+                                            <span class="fa fa-trash text-danger"/>
                                         </p:commandLink>                                        
                                     </p:column>
                                 </p:dataTable> 
@@ -637,7 +633,7 @@
                     <div class="modal-footer">
                         <p:commandLink  value="Cerrar"
                                         styleClass="btn btn-default"
-                                        onclick="$(dialogoCargarEts).modal('hide');"
+                                        action="#{ordenCompraBean.cerrarEtsLocal}"
                                         title="Cerrar ventana sin modificar..."/>                                    
                     </div>
                 </h:form>
