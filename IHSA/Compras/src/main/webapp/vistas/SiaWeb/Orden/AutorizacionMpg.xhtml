@@ -20,12 +20,11 @@
                         </p:confirmDialog>
                         <div id="divAutoriza" class="btn-group" style="text-align: left;">                            
                             <p:commandLink value="Revisar" 
-                                           styleClass="btn btn-default"
-                                           style="font-weight: bold;"
+                                           styleClass="btn btn-info text-white"                                           
                                            action="#{ordenBean.aprobarOrdenComprasRevisa}"
                                            process="@this  form1:Ordenes" update="form1:Ordenes">
                                 <p:confirm header="Confirmar" message="La operación va a autorizar la(s) OC/S seleccionada(s). ¿Está seguro?" 
-                                           icon="pi pi-exclamation-triangle" />
+                                           icon="pi pi-check" />
                             </p:commandLink>
                             <p:commandLink value="Devolver"
                                            class="btn btn-md btn-default"           
@@ -42,8 +41,7 @@
                                            styleClass="btn btn-default">
                             </p:commandLink>
                             <p:commandLink value="Revisar" 
-                                           styleClass="btn btn-default"
-                                           style="font-weight: bold;"
+                                           styleClass="btn btn-info text-white"                                           
                                            action="#{ordenBean.aprobarOrdenComprasRevisa}"
                                            process="@this" update="form1 frmMenu">
                                 <p:confirmDialog header="Confirmar" message="La operación va a autorizar la(s) OC/S seleccionada(s). ¿Está seguro?"/>
@@ -65,33 +63,43 @@
                         </div>
                     </div>
                     
-                    <div id="divTabla" class="row"> 
-                        <p  style="float: right; color: #E79E19;"><i class="fa fa-asterisk"/>Ordenes con contrato vencido</p>
+                    <div id="divTabla" class="row">                         
                         <div class="table table-responsive">
                             <p:dataTable size="small" stripedRows="true" showGridlines="true" id="Ordenes" rows="15"
                                          value="#{ordenBean.ocs}" var="data" 
-                                         paginator="true"  
-                                         paginatorPosition="bottom" >
-                                <p:column styleClass="#{data.leida eq 'False' ? 'filaConSombra': 'filaSinSombra'}" width="35">
+                                         reflow="true" 
+                                         emptyMessage="Sin registros"
+                                         paginator="true"                                               
+                                         paginatorPosition="bottom"                                         
+                                         rowStyleClass="#{data.leida eq 'False' ? 'filaConSombra': 'filaSinSombra'}"
+                                        >
+                                <f:facet name="header">
+                                    <div class="d-flex justify-content-end ">                                     
+                                        <span class="mb-0" style="color: #E79E19;"><i class="fa fa-asterisk"/>Ordenes con contrato vencido</span>
+                                    </div>
+                                </f:facet>
+                                <p:column  width="35">
                                     <f:facet name="header">
                                         <h:selectBooleanCheckbox  class="todos" onchange="seleccionarGeneral('todos', 'seleccion', 'divAutoriza')"/>
                                     </f:facet>
                                     <h:selectBooleanCheckbox value="#{data.selected}" class="seleccion" 
                                                              onclick="mostrarDiv('divAutoriza');"/>
                                 </p:column>
-                                <p:column styleClass="#{data.leida eq 'False' ? 'filaConSombra': 'filaSinSombra'}" style="width: 9%">
-                                    <h:outputText value="#{data['consecutivo']}" style=" #{data.contratoActivo gt 0  ? 'color: #E79E19' : ''}"/>
+                                <p:column >
+                                     
+                                          <h:outputText styleClass="#{data.errorEnvio eq 'True' ? 'text-danger' : ''}"                                                                                                       value="#{data['consecutivo']}" style=" #{data.contratoActivo gt 0  ? 'color: #E79E19' : ''}"/>                                                                                        
+                                    
                                     <f:facet name="header">
                                         <h:outputText value="Código"/>
                                     </f:facet>
                                 </p:column>
-                                <p:column styleClass="#{data.leida eq 'False' ? 'filaConSombra': 'filaSinSombra'}">
+                                <p:column >
                                     <h:outputText value="#{data['referencia']}" style=" #{data.contratoActivo gt 0  ? 'color: #E79E19' : ''}"/>
                                     <f:facet name="header">
                                         <h:outputText value="Referencia"/>
                                     </f:facet>
                                 </p:column>
-                                <p:column styleClass="#{data.leida eq 'False' ? 'filaConSombra': 'filaSinSombra'}">
+                                <p:column >
                                     <center>
                                         <h:outputText value="#{data['fecha']}" style=" #{data.contratoActivo gt 0  ? 'color: #E79E19' : ''}">
                                             <f:convertDateTime dateStyle="default" type="date"/>
@@ -101,7 +109,7 @@
                                         <h:outputText value="F. Ingreso"/>
                                     </f:facet>
                                 </p:column>
-                                <p:column styleClass="#{data.leida eq 'False' ? 'filaConSombra': 'filaSinSombra'}" style="width: 11%">
+                                <p:column >
                                     <f:facet name="header">
                                         <h:outputText value="Subtotal"/>
                                     </f:facet>
@@ -109,18 +117,18 @@
                                         <f:convertNumber pattern="$ #,##0.00" locale="es-MX"/>
                                     </h:outputText>
                                 </p:column>
-                                <p:column styleClass="#{data.leida eq 'False' ? 'filaConSombra': 'filaSinSombra'}" width="50">
+                                <p:column width="50">
                                     <h:outputText value="#{data['moneda']}" style=" #{data.contratoActivo gt 0  ? 'color: #E79E19' : ''}"/>
                                     <f:facet name="header">
                                         <h:outputText value="$"/>
                                     </f:facet>
                                 </p:column>                                
-                                <p:column styleClass="#{data.leida eq 'False' ? 'filaConSombra': 'filaSinSombra'}">
+                                <p:column >
                                     <h:outputText value="#{data['proveedor']}" style=" #{data.contratoActivo gt 0  ? 'color: #E79E19' : ''}"/>
                                     <f:facet name="header"><h:outputText value="Proveedor"/></f:facet>
                                 </p:column>
                                 <p:column rendered="#{usuarioBean.mapaRoles.get('Revisa contratos')}"
-                                          styleClass="#{data.leida eq 'False' ? 'filaConSombra': 'filaSinSombra'}">
+                                          >
                                     <h:panelGroup  rendered="#{data.contratoVO.id gt 0}"
                                                    >
                                         <p:commandLink value="#{data.contratoVO.numero}" 
@@ -134,7 +142,7 @@
                                     </h:panelGroup>
                                     <f:facet name="header"><h:outputText value="Contrato"/></f:facet>
                                 </p:column>
-                                <p:column headerText="Tabulación" styleClass="#{data.leida eq 'False' ? 'filaConSombra': 'filaSinSombra'}">
+                                <p:column headerText="Tabulación" >
                                     <h:panelGroup  rendered="#{data.adjuntoETS.id gt 0}">
                                         <p:link  href="/Compras/AbrirArchivo?ZWZ2W=#{data.adjuntoETS.id}&amp;ZWZ3W=#{data.adjuntoETS.uuid}"
                                                  target="_blank"
@@ -157,7 +165,7 @@
                                         </ui:repeat>
                                     </h:panelGroup>
                                 </p:column>
-                                <p:column styleClass="#{data.leida eq 'False' ? 'filaConSombra': 'filaSinSombra'}" width="40">
+                                <p:column width="40">
                                     <p:commandLink action="#{ordenBean.seleccionarOrden(data.id)}" 
                                                    title="Clic aquí para ver Items..." 
                                                    style="#{data.errorEnvio eq 'True' ? 'color: red' : 'color : blue'}"                                                   
