@@ -90,6 +90,7 @@ public class ViajeVO extends Vo {
     private int idViajeVehiculo;
     private boolean tieneRegreso;
     private String idResponsable;
+    private String idResponsableCombo;
     private List<GrPuntoVO> lstRutaDet;
     private int indicePS;
     private String tiempoViaje;
@@ -277,7 +278,35 @@ public class ViajeVO extends Vo {
 
     
     public String toString() {
-        return "ViajeVO{" + "codigo=" + codigo + ", fechaSalida=" + fechaSalida + ", horaSalida=" + horaSalida + ", fechaRegreso=" + fechaRegreso + ", horaRegreso=" + horaRegreso + ", fechaProgramada=" + fechaProgramada + ", horaProgramada=" + horaProgramada + ", responsable=" + responsable + ", siAdjunto=" + siAdjunto + ", status=" + status + ", terrestre=" + terrestre + ", autobus=" + autobus + ", vehiculoPropio=" + vehiculoPropio + ", vehiculoEmpresa=" + vehiculoEmpresa + ", oficina=" + oficina + ", origen=" + origen + ", adjunto=" + adjunto + ", ruta=" + ruta + ", idRuta=" + idRuta + ", idAdjunto=" + idAdjunto + ", uuid=" + uuid + ", idItinerario=" + idItinerario + ", idUsuario=" + idUsuario + ", tipo=" + tipo + ", viajeIda=" + viajeIda + ", destinoRuta=" + destinoRuta + ", sgViaje=" + sgViaje + ", idNoticia=" + idNoticia + ", cancelado=" + cancelado + ", idEstatus=" + idEstatus + ", estatus=" + estatus + ", isTerrestreCiudad=" + isTerrestreCiudad + ", idSgViajeCiudad=" + idSgViajeCiudad + ", idOficinaDestino=" + idOficinaDestino + ", idOficinaOrigen=" + idOficinaOrigen + ", redondo=" + redondo + ", destinoCiudad=" + destinoCiudad + ", estatusAnterior=" + estatusAnterior + ", idTipoEspecifico=" + idTipoEspecifico + ", listaViajeros=" + listaViajeros + ", gerencia=" + gerencia + ", total=" + total + ", viajero=" + viajero + ", destino=" + destino + ", vehiculo=" + vehiculo + ", solicitud=" + solicitud + ", gasto=" + gasto + ", idCampo=" + idCampo + ", tipoRuta=" + tipoRuta + ", vehiculoPlaca=" + vehiculoPlaca + ", responsableTel=" + responsableTel + ", noticia=" + noticia + ", idOpercion=" + idOpercion + ", idViajeMovimiento=" + idViajeMovimiento + ", idOpercionIntercambio=" + idOpercionIntercambio + ", idOpercionRetomarViaje=" + idOpercionRetomarViaje + ", idViajeMovimientoIntercambio=" + idViajeMovimientoIntercambio + ", vehiculoVO=" + vehiculoVO + ", itinerarioCompletoVo=" + itinerarioCompletoVo + ", idViajeVehiculo=" + idViajeVehiculo + ", tieneRegreso=" + tieneRegreso + ", idResponsable=" + idResponsable + ", lstRutaDet=" + lstRutaDet + ", indicePS=" + indicePS + ", tiempoViaje=" + tiempoViaje + ", tiempoViajeValor=" + tiempoViajeValor + ", tiempoViajeReal=" + tiempoViajeReal + ", conChofer=" + conChofer + ", lstTiempoNodos=" + lstTiempoNodos + ", conInter=" + conInter + '}';
+        return "ViajeVO{" + "codigo=" + codigo + ", fechaSalida=" + fechaSalida + ", horaSalida=" + horaSalida + ", fechaRegreso=" + fechaRegreso + ", horaRegreso=" + horaRegreso + ", fechaProgramada=" + fechaProgramada + ", horaProgramada=" + horaProgramada + ", responsable=" + responsable + ", siAdjunto=" + siAdjunto + ", status=" + status + ", terrestre=" + terrestre + ", autobus=" + autobus + ", vehiculoPropio=" + vehiculoPropio + ", vehiculoEmpresa=" + vehiculoEmpresa + ", oficina=" + oficina + ", origen=" + origen + ", adjunto=" + adjunto + ", ruta=" + ruta + ", idRuta=" + idRuta + ", idAdjunto=" + idAdjunto + ", uuid=" + uuid + ", idItinerario=" + idItinerario + ", idUsuario=" + idUsuario + ", tipo=" + tipo + ", viajeIda=" + viajeIda + ", destinoRuta=" + destinoRuta + ", sgViaje=" + sgViaje + ", idNoticia=" + idNoticia + ", cancelado=" + cancelado + ", idEstatus=" + idEstatus + ", estatus=" + estatus + ", isTerrestreCiudad=" + isTerrestreCiudad + ", idSgViajeCiudad=" + idSgViajeCiudad + ", idOficinaDestino=" + idOficinaDestino + ", idOficinaOrigen=" + idOficinaOrigen + ", redondo=" + redondo + ", destinoCiudad=" + destinoCiudad + ", estatusAnterior=" + estatusAnterior + ", idTipoEspecifico=" + idTipoEspecifico + ", listaViajeros=" + listaViajeros + ", gerencia=" + gerencia + ", total=" + total + ", viajero=" + viajero + ", destino=" + destino + ", vehiculo=" + vehiculo + ", solicitud=" + solicitud + ", gasto=" + gasto + ", idCampo=" + idCampo + ", tipoRuta=" + tipoRuta + ", vehiculoPlaca=" + vehiculoPlaca + ", responsableTel=" + responsableTel + ", noticia=" + noticia + ", idOpercion=" + idOpercion + ", idViajeMovimiento=" + idViajeMovimiento + ", idOpercionIntercambio=" + idOpercionIntercambio + ", idOpercionRetomarViaje=" + idOpercionRetomarViaje + ", idViajeMovimientoIntercambio=" + idViajeMovimientoIntercambio + ", vehiculoVO=" + vehiculoVO + ", itinerarioCompletoVo=" + itinerarioCompletoVo + ", idViajeVehiculo=" + idViajeVehiculo + ", tieneRegreso=" + tieneRegreso + ", idResponsable=" + getIdResponsable() + ", lstRutaDet=" + lstRutaDet + ", indicePS=" + indicePS + ", tiempoViaje=" + tiempoViaje + ", tiempoViajeValor=" + tiempoViajeValor + ", tiempoViajeReal=" + tiempoViajeReal + ", conChofer=" + conChofer + ", lstTiempoNodos=" + lstTiempoNodos + ", conInter=" + conInter + '}';
+    }
+
+    /**
+     * @return the idResponsable
+     */
+    public String getIdResponsable() {
+        return idResponsable;
+    }
+
+    /**
+     * @param idResponsable the idResponsable to set
+     */
+    public void setIdResponsable(String idResponsable) {
+        this.idResponsable = idResponsable;
+    }
+
+    /**
+     * @return the idResponsableCombo
+     */
+    public String getIdResponsableCombo() {
+        return idResponsableCombo;
+    }
+
+    /**
+     * @param idResponsableCombo the idResponsableCombo to set
+     */
+    public void setIdResponsableCombo(String idResponsableCombo) {
+        this.idResponsableCombo = idResponsableCombo;
     }
     
 }

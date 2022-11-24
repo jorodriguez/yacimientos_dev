@@ -432,6 +432,7 @@ public class OrdenBean implements Serializable {
         itemsPorOrden();
         notasPorOrden();
         //
+        cargaEtsBean.setOrdenActual(getOrdenActual());
         cargaEtsBean.traerTablaComparativa(ordenActual.getId());
         cargaEtsBean.etsPorOrdenRequisicion();
         //
