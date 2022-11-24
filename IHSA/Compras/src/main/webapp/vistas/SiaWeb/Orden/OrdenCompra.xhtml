@@ -14,14 +14,15 @@
             </ui:define>
             <ui:define name="contenido">
                 <h:form id="form1" >
-                    <div class="row">                        
+                    <div class="row mb-1">                        
                         <div id="divOperacion" class="btn-group col-12" style="text-align: left; display: none;">
-                            <div class="col-12 input-group">
-                                <p:panel id="pnlBotones">
+                            <div class="col-12">
+                                <p:panel id="pnlBotones" styleClass="w-100">
+                                     <div class="btn-group">
                                     <p:commandLink value="Regresar" action="#{ordenCompraBean.iniciarLimpiar}"
                                                    onclick="regresar('divTabla', 'divDatos', 'divOperacion', 'divAutoriza')"
                                                    styleClass="btn btn-default"/>
-                                    <p:commandLink value="Solicitar" styleClass="btn btn-default"           
+                                    <p:commandLink value="Solicitar" styleClass="btn btn-info text-white"           
                                                    action="#{ordenCompraBean.soliciarOCS}"
                                                    title="Clic aquí para modificar orden de compra..." >
                                     </p:commandLink>
@@ -44,7 +45,7 @@
                                                    process="@this" update="frmItemOrden frmItemOrden:pnlAcord"/>
                                     <p:commandLink id="btnAgrearItemConv" action="#{ordenCompraBean.agregarItemConvenio}"
                                                    styleClass="btn btn-default"  title="Clic aquí para agregar item desde convenio. . ."
-                                                   style="display: #{ordenCompraBean.ordenActual.detalleProcesado eq true ? 'block' : 'none'}"
+                                                   style="display: #{ordenCompraBean.ordenActual.detalleProcesado eq true ? 'inline' : 'none'}"
                                                    process="@this" update="frmDialogoItemConvenio">
                                         Agregar Item
                                     </p:commandLink>
@@ -57,9 +58,10 @@
                                                    title="Clic aquí para eliminar orden de compra" 
                                                    styleClass="btn btn-default text-danger"
                                                    action="#{ordenCompraBean.eliminarOrdenConContrato}"
-                                                   style="display: #{ordenCompraBean.ordenActual.conConvenio eq true ? 'block' : 'none'}"
+                                                   style="display: #{ordenCompraBean.ordenActual.conConvenio eq true ? 'inline' : 'none'}"
                                                    process="@this" update="form1 frmMenu">
                                     </p:commandLink>
+                                     </div>
                                 </p:panel>
                             </div>
                         </div>
@@ -67,12 +69,12 @@
                     <div id="divTabla" class="row">  
                         <p:tabView id="tbOcsPrin">
                             <p:tab title="Órdenes sin contrato ( #{ordenCompraBean.listaOrden.size()} )">                  
-                                <div id="divAutoriza" class="btn-group" style="text-align: left;">
+                                <div id="divAutoriza" class="btn-group mb-1" style="text-align: left;">
                                     <p:confirmDialog global="true" showEffect="fade" hideEffect="fade" responsive="true" width="350">
                                         <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no ui-button-flat"/>
                                         <p:commandButton value="Si" type="button" styleClass="ui-confirmdialog-yes" />
                                     </p:confirmDialog>
-                                    <p:commandLink value="Eliminar OC/S" styleClass="btn btn-default" 
+                                    <p:commandLink value="Eliminar OC/S" styleClass="btn btn-default text-danger" 
                                                    action="#{ordenCompraBean.eliminarOrden}"
                                                    title="Clic aquí para eliminar una o más ordenes de compra..."
                                                    process="@this form1:tbOcsPrin:ordenes" update="form1:tbOcsPrin:ordenes">
@@ -82,41 +84,45 @@
                                 </div>
                                 <div class="table table-responsive">
                                     <p:dataTable size="small" stripedRows="true" showGridlines="true" id="ordenes" rows="18" 
-                                                 value="#{ordenCompraBean.listaOrden}"  var="data" 
-                                                 paginator="true"  
-                                                 paginatorPosition="bottom" >
-                                        <f:facet name="header">órdenes pendientes de solicitar</f:facet>
+                                                 value="#{ordenCompraBean.listaOrden}"  var="data"                                                  
+                                                  reflow="true" 
+                                                  emptyMessage="Sin registros"
+                                                  paginator="true"                                                    
+                                                  paginatorPosition="bottom" 
+                                                  rowStyleClass="#{data.leida eq false ? 'filaConSombra': 'filaSinSombra'}"
+                                                 >
+                                        
                                         <p:column width="25">
                                             <f:facet name="header">
                                                 <h:selectBooleanCheckbox  class="todos" onchange="seleccionarGeneral('todos', 'seleccion', 'divAutoriza')"/>
                                             </f:facet>
                                             <h:selectBooleanCheckbox value="#{data.selected}" class="seleccion" onclick="mostrarDiv('divAutoriza');"/>
                                         </p:column>
-                                        <p:column styleClass="#{data.leida eq false ? 'filaConSombra': 'filaSinSombra'}">
+                                        <p:column >
                                             <h:outputText  value="#{data['id']}" />
                                             <f:facet name="header">
                                                 <h:outputText value="Número" />
                                             </f:facet>
                                         </p:column>
-                                        <p:column styleClass="#{data.leida eq false ? 'filaConSombra': 'filaSinSombra'}">
+                                        <p:column >
                                             <h:outputText value="#{data['referencia']}" />
                                             <f:facet name="header">
                                                 <h:outputText value="Referencia"/>
                                             </f:facet>
                                         </p:column>
-                                        <p:column styleClass="#{data.leida eq false ? 'filaConSombra': 'filaSinSombra'}">
+                                        <p:column >
                                             <h:outputText value="#{data['gerencia']}" />
                                             <f:facet name="header">
                                                 <h:outputText value="Gerencia"/>
                                             </f:facet>
                                         </p:column>
-                                        <p:column styleClass="#{data.leida eq false ? 'filaConSombra': 'filaSinSombra'}">
+                                        <p:column >
                                             <h:outputText value="#{data['proveedor']}" />
                                             <f:facet name="header">
                                                 <h:outputText value="Proveedor"/>
                                             </f:facet>
                                         </p:column>
-                                        <p:column styleClass="#{data.leida eq false ? 'filaConSombra': 'filaSinSombra'}"
+                                        <p:column 
                                                   width="60" headerText="Dev.">
                                             <h:outputText value="#{data['devuelta'] eq false ? 'No' : 'Si' }" />
                                         </p:column>
@@ -126,7 +132,7 @@
                                                 <h:outputText value="Requisición"/>
                                             </f:facet>
                                         </p:column>
-                                        <p:column styleClass="#{data.leida eq false ? 'filaConSombra': 'filaSinSombra'}">
+                                        <p:column >
                                             <center>
                                                 <h:outputText   value="#{data['fecha']}" >
                                                     <f:convertDateTime dateStyle="default" pattern="dd/MM/yyyy" type="date"/>
@@ -136,7 +142,7 @@
                                                 <h:outputText value="Creada"/>
                                             </f:facet>
                                         </p:column> 
-                                        <p:column styleClass="#{data.leida eq false ? 'filaConSombra': 'filaSinSombra'}">
+                                        <p:column >
                                             <h:outputText value="#{data['total']}" >
                                                 <f:convertNumber pattern="$ #,##0.00" locale="es-MX"/>
                                             </h:outputText>
@@ -144,58 +150,75 @@
                                                 <h:outputText value="Monto Total"/>
                                             </f:facet>
                                         </p:column>
-                                        <p:column styleClass="#{data.leida eq false ? 'filaConSombra': 'filaSinSombra'}" width="40">
+                                        <p:column  width="40">
                                             <h:outputText value="#{data.tipo}" />
                                         </p:column>
-                                        <p:column styleClass="#{data.leida eq false ? 'filaConSombra': 'filaSinSombra'}"  width="80">
-                                            <p:commandLink value="#{msgs['sistema.solicitar']}" 
+                                        <p:column width="80">                                            
+                                            <p:commandLink styleClass="d-none d-md-inline d-lx-inline"
+                                                           value="#{msgs['sistema.solicitar']}" 
                                                            action="#{ordenCompraBean.solicitarOrden(data.id)}" 
                                                            title="Clic aquí para solicitar la orden de compra a un proveedor..." >
                                                 <f:param name="idOrden" value="#{data.id}"/>
-                                            </p:commandLink>
+                                            </p:commandLink>                                            
+                                            <p:commandLink styleClass="d-xs-block d-md-none d-lx-none btn btn-block btn-info text-white"
+                                                           value="#{msgs['sistema.solicitar']}" 
+                                                           action="#{ordenCompraBean.solicitarOrden(data.id)}" 
+                                                           title="Clic aquí para solicitar la orden de compra a un proveedor..." >
+                                                <f:param name="idOrden" value="#{data.id}"/>
+                                            </p:commandLink>                                            
                                         </p:column>
-                                        <p:column styleClass="#{data.leida eq false ? 'filaConSombra': 'filaSinSombra'}"
-                                                  width="50">
-                                            <p:commandLink action="#{ordenCompraBean.seleccionarOrden(data.id)}"
+                                        <p:column width="50">
+                                            <p:commandLink styleClass="d-none d-md-inline d-lx-inline"
+                                                            action="#{ordenCompraBean.seleccionarOrden(data.id)}"
                                                            title="Clic aquí para ver Ítems..." process="@this" 
                                                            update="form1:tbOcs form1:lblOcs form1:pnlBotones"
                                                            >
-                                                <i class="fa fa-eye text-primary fa-2x"/>
-                                            </p:commandLink>
-                                        </p:column>
+                                                <i class="fa fa-eye text-primary "/>
+                                            </p:commandLink>                                                                                         
+                                            <p:commandLink styleClass="d-xs-block d-md-none d-lx-none btn btn-block btn-outline-secondary "
+                                                            action="#{ordenCompraBean.seleccionarOrden(data.id)}"
+                                                           title="Clic aquí para ver Ítems..." process="@this" 
+                                                           update="form1:tbOcs form1:lblOcs form1:pnlBotones"
+                                                           >
+                                                Ver detalle
+                                            </p:commandLink>                                                                                         
+                                        </p:column>                                      
                                     </p:dataTable>
                                 </div>
                             </p:tab>
                             <p:tab id="tbOcsCon" title="Órdenes con contrato ( #{ordenCompraBean.listaConContrato.size()} )">
                                 <p:dataTable size="small" stripedRows="true" showGridlines="true" id="ordenesConContrato" rows="18" value="#{ordenCompraBean.listaConContrato}"  var="data" 
-                                             paginator="true"  
-                                             paginatorPosition="bottom" >
-                                    <f:facet name="header">Órdenes pendientes de solicitar</f:facet>
-                                    <p:column styleClass="#{data.leida eq false ? 'filaConSombra': 'filaSinSombra'}">
+                                             reflow="true" 
+                                                  emptyMessage="Sin registros"
+                                                  paginator="true"                                                    
+                                                  paginatorPosition="bottom" 
+                                                  rowStyleClass="#{data.leida eq false ? 'filaConSombra': 'filaSinSombra'}">
+                                    
+                                    <p:column >
                                         <h:outputText  value="#{data['id']}" />
                                         <f:facet name="header">
                                             <h:outputText value="Número" />
                                         </f:facet>
                                     </p:column>
-                                    <p:column styleClass="#{data.leida eq false ? 'filaConSombra': 'filaSinSombra'}">
+                                    <p:column >
                                         <h:outputText value="#{data['referencia']}" />
                                         <f:facet name="header">
                                             <h:outputText value="Referencia"/>
                                         </f:facet>
                                     </p:column>
-                                    <p:column styleClass="#{data.leida eq false ? 'filaConSombra': 'filaSinSombra'}">
+                                    <p:column >
                                         <h:outputText value="#{data['gerencia']}" />
                                         <f:facet name="header">
                                             <h:outputText value="Gerencia"/>
                                         </f:facet>
                                     </p:column>
-                                    <p:column styleClass="#{data.leida eq false ? 'filaConSombra': 'filaSinSombra'}">
+                                    <p:column >
                                         <h:outputText value="#{data['proveedor']}" />
                                         <f:facet name="header">
                                             <h:outputText value="Proveedor"/>
                                         </f:facet>
                                     </p:column>
-                                    <p:column styleClass="#{data.leida eq false ? 'filaConSombra': 'filaSinSombra'}">
+                                    <p:column >
                                         <center>
                                             <h:outputText value="#{data['devuelta']  eq false ? 'No' : 'Si' }" />
                                         </center>
@@ -203,13 +226,13 @@
                                             <h:outputText value="Dev."/>
                                         </f:facet>
                                     </p:column>
-                                    <p:column styleClass="#{data.leida eq false ? 'filaConSombra': 'filaSinSombra'}">
+                                    <p:column >
                                         <h:outputText value="#{data['consecutivo']}" />
                                         <f:facet name="header">
                                             <h:outputText value="Requisición"/>
                                         </f:facet>
                                     </p:column>
-                                    <p:column styleClass="#{data.leida eq false ? 'filaConSombra': 'filaSinSombra'}">
+                                    <p:column >
                                         <center>
                                             <h:outputText   value="#{data['fecha']}" >
                                                 <f:convertDateTime dateStyle="default" pattern="dd/MM/yyyy" type="date"/>
@@ -219,7 +242,7 @@
                                             <h:outputText value="Creada"/>
                                         </f:facet>
                                     </p:column> 
-                                    <p:column styleClass="#{data.leida eq false ? 'filaConSombra': 'filaSinSombra'}">
+                                    <p:column >
                                         <h:outputText value="#{data['total']}" >
                                             <f:convertNumber pattern="$ #,##0.00" locale="es-MX"/>
                                         </h:outputText>
@@ -227,21 +250,34 @@
                                             <h:outputText value="Monto Total"/>
                                         </f:facet>
                                     </p:column>
-                                    <p:column styleClass="#{data.leida eq false ? 'filaConSombra': 'filaSinSombra'}" width="40">
+                                    <p:column  width="40">
                                         <h:outputText value="#{data.tipo}" />
                                     </p:column>
-                                    <p:column styleClass="#{data.leida eq false ? 'filaConSombra': 'filaSinSombra'}" width="80">
-                                        <p:commandLink value="#{msgs['sistema.solicitar']}" 
+                                    <p:column  width="80">
+                                        <p:commandLink  styleClass="d-none d-md-inline d-lx-inline" 
+                                                        value="#{msgs['sistema.solicitar']}" 
+                                                       action="#{ordenCompraBean.solicitarOrden(data.id)}" 
+                                                       title="Clic aquí para solicitar la orden de compra a un proveedor..." >
+                                        </p:commandLink>
+                                        <p:commandLink  styleClass="d-xs-block d-md-none d-lx-none btn btn-block btn-info text-white"
+                                                        value="#{msgs['sistema.solicitar']}" 
                                                        action="#{ordenCompraBean.solicitarOrden(data.id)}" 
                                                        title="Clic aquí para solicitar la orden de compra a un proveedor..." >
                                         </p:commandLink>
                                     </p:column>
-                                    <p:column styleClass="#{data.leida eq false ? 'filaConSombra': 'filaSinSombra'}" width="50">
-                                        <p:commandLink action="#{ordenCompraBean.seleccionarOrden(data.id)}"                                                         
+                                    <p:column  width="50">
+                                        <p:commandLink styleClass="d-none d-md-inline d-lx-inline"  action="#{ordenCompraBean.seleccionarOrden(data.id)}"                                                         
                                                        title="Clic aquí para ver Ítems..."
                                                        process="@this" update="form1 form1:tbOcs form1:lblOcs  form1:pnlBotones">
-                                            <f:ajax render="form1:pnlBotones"/>
-                                            <i class="fa fa-eye text-primary fa-2x"/>
+                                            <!--<f:ajax render="form1:pnlBotones"/>-->
+                                            <i class="fa fa-eye text-primary "/>
+                                        </p:commandLink>
+                                        <p:commandLink styleClass="d-xs-inline d-md-none d-lx-none btn btn-outline-info btn-block"  
+                                                       action="#{ordenCompraBean.seleccionarOrden(data.id)}"                                                         
+                                                       title="Clic aquí para ver Ítems..."
+                                                       process="@this" update="form1 form1:tbOcs form1:lblOcs  form1:pnlBotones">
+                                            <!--<f:ajax render="form1:pnlBotones"/>-->
+                                                    Ver Detalle                                            
                                         </p:commandLink>
                                     </p:column>
                                 </p:dataTable>
