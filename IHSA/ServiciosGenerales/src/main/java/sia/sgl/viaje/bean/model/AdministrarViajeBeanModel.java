@@ -539,14 +539,14 @@ public class AdministrarViajeBeanModel implements Serializable {
      * @return the redondoSencillo
      */
     public boolean isRedondoSencillo() {
-        return redondoSencillo;
+        return this.redondoSencillo;
     }
 
     /**
      * @param redondoSencillo the redondoSencillo to set
      */
     public void setRedondoSencillo(boolean redondoSencillo) {
-        redondoSencillo = redondoSencillo;
+        this.redondoSencillo = redondoSencillo;
     }
 
     public void traerResponsableVehiculo() {
@@ -583,7 +583,7 @@ public class AdministrarViajeBeanModel implements Serializable {
 
     public void cambiarResponsable() {
         //cambiar por javaScript
-        UsuarioVO usuarioVO = usuarioImpl.findByName(viajeVO.getIdResponsable());
+        UsuarioVO usuarioVO = usuarioImpl.findByName(viajeVO.getIdResponsableCombo());
         getViajeVO().setResponsable(usuarioVO.getNombre());
         getViajeVO().setIdResponsable(usuarioVO.getId());
         setTieneResponsable(Constantes.TRUE);
@@ -656,13 +656,13 @@ public class AdministrarViajeBeanModel implements Serializable {
             if (getIdVehiculo() == -1) {
                 FacesUtils.addErrorMessage("Favor de seleccionar un vehiculo");
             } else {
-                if (getViajeVO().getIdResponsable() == null || getViajeVO().getIdResponsable().equals("")) {
+                if (getViajeVO().getIdResponsable() == null || "".equals(getViajeVO().getIdResponsable())) {
                     FacesUtils.addErrorMessage("Nose a selecionado un reponsable del viaje");
                 } else {
                     if (getViajeVO().getIdRuta() < 1) {
                         FacesUtils.addErrorMessage("Favor de selecionar un destino");
                     } else {
-                        UsuarioVO uRes = usuarioImpl.findByName(viajeVO.getIdResponsable());
+                        UsuarioVO uRes = usuarioImpl.findByName(viajeVO.getResponsable());
                         SgViaje v = sgViajeImpl.guardarViajeEmergenteVO(
                                 sesion.getUsuario().getId(), null, getViajeVO().getFechaProgramada(),
                                 Constantes.CERO, Constantes.CERO, getIdVehiculo(), uRes.getId(),
