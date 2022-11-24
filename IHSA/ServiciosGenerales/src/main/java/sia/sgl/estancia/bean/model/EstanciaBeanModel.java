@@ -182,10 +182,10 @@ public class EstanciaBeanModel implements Serializable {
     @Getter
     @Setter
     private List<SgSolicitudEstanciaVo> listaSolicitud;
-    private DataModel listaDetalleSolicitud = null;
-    private DataModel staffDataModel;
-    private DataModel habitacionesStaffDataModel;
-    private DataModel numHabitacionesDisponiblesByStaffDataModel;
+    private List<DetalleEstanciaVO> listaDetalleSolicitud;
+    private List<SgStaff> staffDataModel;
+    private List<SgStaffHabitacion> habitacionesStaffDataModel;
+    private List<Integer> numHabitacionesDisponiblesByStaffDataModel;
     private List<SgHuespedHotelServicioVo> lista;
     private List<SgHotelTipoEspecificoVo> serviciosHotelFacturaEmpresa;
     private DataModel listaEstancia;
@@ -345,11 +345,19 @@ public class EstanciaBeanModel implements Serializable {
     }
 
     public String goToAsignarHabitacion(SgSolicitudEstanciaVo estVo) {
-        //Limpiando variables
-        setSgSolicitudEstanciaVo(estVo);
-        setListaDetalleSolicitud(null);
-        //Dándole memoria a Solicitud de Estancia
-        return "/vistas/sgl/estancia/asignarHabitacion";
+        String returnVal =  "/vistas/sgl/estancia/asignarHabitacion.xhtml";
+        try {
+            //Limpiando variables
+            setSgSolicitudEstanciaVo(estVo);
+            setListaDetalleSolicitud(null);
+            getDetalleSolicitudEstanciaBySolicitudEstancia();
+            //Dándole memoria a Solicitud de Estancia
+//            return "/vistas/sgl/estancia/asignarHabitacion.xhtml";
+        } catch (Exception ex) {
+            Logger.getLogger(EstanciaBeanModel.class.getName()).log(Level.SEVERE, null, ex);
+            returnVal = "";
+        }
+        return returnVal;
     }
 
     /**
@@ -538,7 +546,7 @@ public class EstanciaBeanModel implements Serializable {
 
     public void getDetalleSolicitudEstanciaBySolicitudEstancia() throws SIAException, Exception {
         if (this.sgSolicitudEstanciaVo != null && this.listaDetalleSolicitud == null) {
-            this.listaDetalleSolicitud = new ListDataModel(sgDetalleSolicitudEstanciaImpl.getAllIntegrantesBySolicitud(this.sgSolicitudEstanciaVo.getId(), null, null, false));
+            setListaDetalleSolicitud(sgDetalleSolicitudEstanciaImpl.getAllIntegrantesBySolicitud(this.sgSolicitudEstanciaVo.getId(), null, null, false));
         }
     }
 
@@ -609,9 +617,9 @@ public class EstanciaBeanModel implements Serializable {
      */
     public void trearSolicitudEstanciaParaRegistro() {
         try {
-            if (getListaSolicitud() == null) {
+            if (getListaSolicitud() == null || getListaSolicitud().isEmpty()) {
                 log("Oficina : " + sesion.getOficinaActual().getId());
-                setListaSolicitud(sgSolicitudEstanciaImpl.trearSolicitudEstanciaPorOficina(sesion.getOficinaActual().getId(), getStatus(), sesion.getUsuario().getId(), Constantes.BOOLEAN_FALSE));
+                setListaSolicitud(sgSolicitudEstanciaImpl.trearSolicitudEstanciaPorOficina(sesion.getOficinaActual().getId(), Constantes.ESTATUS_SOLICITUD_ESTANCIA_SOLICITADA, sesion.getUsuario().getId(), Constantes.BOOLEAN_FALSE));
             }
         } catch (Exception e) {
             System.out.println("Error al traer sol huespedes");
@@ -619,12 +627,12 @@ public class EstanciaBeanModel implements Serializable {
     }
 
     public void traerDetalleSolicitud() throws SIAException, Exception {
-        listaDetalleSolicitud = new ListDataModel(sgDetalleSolicitudEstanciaImpl.getAllIntegrantesBySolicitud(this.sgSolicitudEstanciaVo.getId(), null, null, false));
+        setListaDetalleSolicitud(sgDetalleSolicitudEstanciaImpl.getAllIntegrantesBySolicitud(this.sgSolicitudEstanciaVo.getId(), null, null, false));
     }
 
-    public DataModel traerDetalleSolicitudRegistro() {
+    public List<DetalleEstanciaVO> traerDetalleSolicitudRegistro() {
         try {
-            setListaDetalleSolicitud(new ListDataModel(sgDetalleSolicitudEstanciaImpl.getAllIntegrantesBySolicitud(this.sgSolicitudEstanciaVo.getId(), null, null, false)));
+            setListaDetalleSolicitud(sgDetalleSolicitudEstanciaImpl.getAllIntegrantesBySolicitud(this.sgSolicitudEstanciaVo.getId(), null, null, false));
         } catch (Exception e) {
             UtilLog4j.log.fatal(this, "Ocurrio en error al traer el detalle de la solicitud de registro : :: : : " + e.getMessage());
         }
@@ -750,7 +758,7 @@ public class EstanciaBeanModel implements Serializable {
     public void getStaffByOficina() {
 //        log("EstanciaBeanModel.getStaffByOficina()");
         try {
-            staffDataModel = new ListDataModel(this.staffService.getAllStaffWithAvailableRoomsByOficinaList(this.sesion.getOficinaActual().getId()));
+            setStaffDataModel(this.staffService.getAllStaffWithAvailableRoomsByOficinaList(this.sesion.getOficinaActual().getId()));
         } catch (Exception ex) {
             Logger.getLogger(EstanciaBeanModel.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -771,22 +779,20 @@ public class EstanciaBeanModel implements Serializable {
         getStaffByOficina();
         List<Integer> habitacionesDisponibles = new ArrayList<Integer>();
 
-        Iterator iter = this.staffDataModel.iterator();
-        while (iter.hasNext()) {
-            SgStaff staff = (SgStaff) iter.next();
+        
+        for(SgStaff staffAux : staffDataModel) {            
             //Traigo todas las habitaciones de cada Staff y averiguo cuántas están desocupadas usando su atributo  'ocupada'
-            List<SgStaffHabitacion> habitaciones = habitacionStaffService.getAllHabitacionesByStaff(staff, Constantes.NO_ELIMINADO);
+            List<SgStaffHabitacion> habitaciones = habitacionStaffService.getAllHabitacionesByStaff(staffAux, Constantes.NO_ELIMINADO);
             int cont = 0;
             for (SgStaffHabitacion hab : habitaciones) {
                 if (!hab.isOcupada()) {
                     cont++;
                 }
             }
-            log("El Staff " + staff.getNombre() + " tiene " + cont + " habitaciones disponibles");
+            log("El Staff " + staffAux.getNombre() + " tiene " + cont + " habitaciones disponibles");
             habitacionesDisponibles.add(cont);
-        }
-        ListDataModel<Integer> habitacionesDisponiblesListDataModel = new ListDataModel<Integer>(habitacionesDisponibles);
-        this.numHabitacionesDisponiblesByStaffDataModel = (habitacionesDisponiblesListDataModel != null) ? (DataModel) habitacionesDisponiblesListDataModel : null;
+        }        
+        setNumHabitacionesDisponiblesByStaffDataModel(habitacionesDisponibles);
     }
 
     /**
@@ -797,9 +803,8 @@ public class EstanciaBeanModel implements Serializable {
      */
     public List<SgStaffHabitacion> getHabitacionesByStaff(SgStaff staff) {
         log("EstanciaBeanModel.getHabitacionesByStaff()");
-        List<SgStaffHabitacion> habitaciones = habitacionStaffService.getAllHabitacionesByStaffAndOcupadoList(staff, null, false);
-        ListDataModel<SgStaffHabitacion> habitacionesListDataModel = new ListDataModel<SgStaffHabitacion>(habitaciones);
-        this.habitacionesStaffDataModel = (habitacionesListDataModel != null) ? (DataModel) habitacionesListDataModel : null;
+        List<SgStaffHabitacion> habitaciones = habitacionStaffService.getAllHabitacionesByStaffAndOcupadoList(staff, null, false);        
+        setHabitacionesStaffDataModel(habitaciones);
         return habitaciones;
     }
 
@@ -1520,14 +1525,14 @@ public class EstanciaBeanModel implements Serializable {
     /**
      * @return the listaDetalleSolicitud
      */
-    public DataModel getListaDetalleSolicitud() {
-        return listaDetalleSolicitud;
+    public List<DetalleEstanciaVO> getListaDetalleSolicitud() {
+        return this.listaDetalleSolicitud;
     }
 
     /**
      * @param listaDetalleSolicitud the listaDetalleSolicitud to set
      */
-    public void setListaDetalleSolicitud(DataModel listaDetalleSolicitud) {
+    public void setListaDetalleSolicitud(List<DetalleEstanciaVO> listaDetalleSolicitud) {
         this.listaDetalleSolicitud = listaDetalleSolicitud;
     }
 
@@ -1663,21 +1668,21 @@ public class EstanciaBeanModel implements Serializable {
     /**
      * @return the staffDataModel
      */
-    public DataModel getStaffDataModel() {
+    public List<SgStaff> getStaffDataModel() {
         return staffDataModel;
     }
 
     /**
      * @param staffDataModel the staffDataModel to set
      */
-    public void setStaffDataModel(DataModel staffDataModel) {
+    public void setStaffDataModel(List<SgStaff> staffDataModel) {
         this.staffDataModel = staffDataModel;
     }
 
     /**
      * @return the habitacionesDisponiblesByStaffDataModel
      */
-    public DataModel getNumHabitacionesDisponiblesByStaffDataModel() {
+    public List<Integer>  getNumHabitacionesDisponiblesByStaffDataModel() {
         return numHabitacionesDisponiblesByStaffDataModel;
     }
 
@@ -1685,7 +1690,7 @@ public class EstanciaBeanModel implements Serializable {
      * @param habitacionesDisponiblesByStaffDataModel the
      * habitacionesDisponiblesByStaffDataModel to set
      */
-    public void setNumHabitacionesDisponiblesByStaffDataModel(DataModel numHabitacionesDisponiblesByStaffDataModel) {
+    public void setNumHabitacionesDisponiblesByStaffDataModel(List<Integer>  numHabitacionesDisponiblesByStaffDataModel) {
         this.numHabitacionesDisponiblesByStaffDataModel = numHabitacionesDisponiblesByStaffDataModel;
     }
 
@@ -1706,14 +1711,14 @@ public class EstanciaBeanModel implements Serializable {
     /**
      * @return the habitacionesStaffDataModel
      */
-    public DataModel getHabitacionesStaffDataModel() {
+    public List<SgStaffHabitacion> getHabitacionesStaffDataModel() {
         return habitacionesStaffDataModel;
     }
 
     /**
      * @param habitacionesStaffDataModel the habitacionesStaffDataModel to set
      */
-    public void setHabitacionesStaffDataModel(DataModel habitacionesStaffDataModel) {
+    public void setHabitacionesStaffDataModel(List<SgStaffHabitacion> habitacionesStaffDataModel) {
         this.habitacionesStaffDataModel = habitacionesStaffDataModel;
     }
 
