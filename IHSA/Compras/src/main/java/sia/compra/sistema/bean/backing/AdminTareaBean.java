@@ -88,12 +88,11 @@ public class AdminTareaBean implements Serializable {
     @Getter
     @Setter
     private TabView tabView;
-    
 
     @PostConstruct
     public void iniciar() {
         tabSeleccionada = 0;
-         tabView = new TabView();
+        tabView = new TabView();
         listaProyecto = proyectoOtImpl.getListaProyectosOtPorCampo(sesion.getUsuarioConectado().getApCampo().getId(), sesion.getUsuarioConectado().getApCampo().getCompania().getRfc(), null, false);
     }
 
@@ -152,7 +151,7 @@ public class AdminTareaBean implements Serializable {
         this.setTareasTemp(new HashMap<>());
     }
 
-    public void uploadFile(FileUploadEvent event) {
+    public void uploadFile() {
         List<CampoVo> ltemp = new ArrayList<>();
         for (CampoVo campoVo : listaCampo) {
             if (campoVo.isSelected()) {
@@ -161,20 +160,23 @@ public class AdminTareaBean implements Serializable {
         }
         if (!ltemp.isEmpty()) {
             try {
-                fileInfo = event.getFile();
-                SiAdjunto adj;
-                File file = new File("/tmp/" + fileInfo.getFileName());
-                try (OutputStream os = new FileOutputStream(file)) {
-                    os.write(fileInfo.getContent());
-                    setTareasTemp(ocTareaImpl.cargarTareas(file, sesion.getUsuarioConectado().getId(), ltemp));                    
-                    Files.deleteIfExists(file.toPath());
-                } catch (IOException ex) {
-                    UtilLog4j.log.error(ex);
+                if (fileInfo != null) {
+                    File file = new File("/tmp/" + fileInfo.getFileName());
+                    try ( OutputStream os = new FileOutputStream(file)) {
+                        os.write(fileInfo.getContent());
+                        setTareasTemp(ocTareaImpl.cargarTareas(file, sesion.getUsuarioConectado().getId(), ltemp));
+                        Files.deleteIfExists(file.toPath());
+                    } catch (IOException ex) {
+                        UtilLog4j.log.error(ex);
+                    }
+                    listaProyecto = proyectoOtImpl.getListaProyectosOtPorCampo(sesion.getUsuarioConectado().getApCampo().getId(), sesion.getUsuarioConectado().getApCampo().getCompania().getRfc(), null, false);
+                    //
+                    String jsMetodo = ";activarTab('tbArt',0, 'divDatos', 'divTabla', 'divOperacion', 'divAutoriza');";
+                    PrimeFaces.current().executeScript(jsMetodo);
+                    FacesUtilsBean.addInfoMessage("Se agregaron las tareas.");
+                    fileInfo.delete();
                 }
-                listaProyecto = proyectoOtImpl.getListaProyectosOtPorCampo(sesion.getUsuarioConectado().getApCampo().getId(), sesion.getUsuarioConectado().getApCampo().getCompania().getRfc(), null, false);
-                PrimeFaces.current().executeScript(";quitarAareaBlockCSS();");
-//                FacesUtilsBean.addInfoMessage("Se agregaron las tareas.");
-            } catch (Exception e) {
+            } catch (IOException e) {
                 UtilLog4j.log.error(e);
                 FacesUtilsBean.addErrorMessage("Ocurrió un problema al cargar el archivo, por favor contacte al equipo de soporte SIA (soportesia@ihsa.mx)");
             }
@@ -219,7 +221,7 @@ public class AdminTareaBean implements Serializable {
 
     public void seleccionarGerencia(OcTareaVo event) {
         tareaVo = new OcTareaVo();
-        tareaVo =  event;
+        tareaVo = event;
         tabSeleccionada = 2;
         System.out.println("Proy: " + proyectoOtVo.getId() + "Ger; " + tareaVo.getIdGerencia());
         listaTipoTarea = ocTareaImpl.traerTipoTareaPorGerenciaOt(tareaVo.getIdGerencia(), proyectoOtVo.getId());
@@ -250,7 +252,7 @@ public class AdminTareaBean implements Serializable {
         tareaVo = new OcTareaVo();
         tareaVo = event;
         tabSeleccionada = 3;
-   //     System.out.println("Proy: " + proyectoOtVo.getId() + " Gerencia; " + tareaVo.getIdGerencia() + " Tipo tarea; " + tareaVo.getIdUnidadCosto());
+        //     System.out.println("Proy: " + proyectoOtVo.getId() + " Gerencia; " + tareaVo.getIdGerencia() + " Tipo tarea; " + tareaVo.getIdUnidadCosto());
         listaTarea = ocTareaImpl.traerTarea(tareaVo.getIdGerencia(), proyectoOtVo.getId(), tareaVo.getIdUnidadCosto());
         String jsMetodo = ";pintarOpaa();";
         PrimeFaces.current().executeScript(jsMetodo);
