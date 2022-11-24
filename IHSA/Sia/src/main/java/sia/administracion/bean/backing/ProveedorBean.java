@@ -183,8 +183,15 @@ public class ProveedorBean implements Serializable {
     }
 
     public void agregarRelacion() {
-        proveedorCompaniaImpl.buscarRelacionProveedorCompania(getIdProveedor(), getRfcCompania());
-        FacesUtils.addErrorMessage("Ya existe la relación entre el proveedor y la compania");
+        
+        if (proveedorCompaniaImpl.buscarRelacionProveedorCompania(getIdProveedor(), getRfcCompania())) {
+            FacesUtils.addErrorMessage("Ya existe la relación entre el proveedor y la compania");
+        } else {
+            proveedorCompaniaImpl.guardarRelacionProveedor(getIdProveedor(), getRfcCompania(), getNumeroReferencia(), sesion.getUsuarioVo().getId());
+            setLista((proveedorCompaniaImpl.traerCompaniaPorProveedor(getIdProveedor())));
+            FacesUtils.addInfoMessage("Se agrego la relación entre proveedor y la compania.'");
+        }
+        
     }
 
     public void enviarArchivos() {
