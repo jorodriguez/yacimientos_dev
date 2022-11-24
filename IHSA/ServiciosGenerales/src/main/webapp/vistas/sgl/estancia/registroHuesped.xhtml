@@ -281,134 +281,139 @@
                     </p:dialog>                    
                 </h:form>   
                 <h:form id="frmRegHuespedStaff">
-                    <p:dialog widgetVar="dlgRegHuesped" modal="true" header="Registro de huésped"
-                              width="60%">
-                        <div class="row">
-                            <div class="4">
-                                <div class="input-group">
-                                    <h:outputLabel value="#{msgs['sgl.solicitudEstancia.solicito']}: " class="col-12"/>
-                                    <div class="col-12">
-                                        <h:outputText id="gerenteSolicitante" value="#{estanciaBean.sgSolicitudEstanciaVo.nombre}" />
-                                    </div>
+                    <div class="modal fade" data-backdrop="static" id="dlgRegHuesped" data-keyboard="false">
+                        <div class="modal-dialog modal-lg">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h4 class="modal-title">Tareas</h4>
                                 </div>
-                                <div class="input-group">
-                                    <h:outputLabel value="#{msgs['sgl.solicitudEstancia.gerenciaSolicitante']}:"  class="col-12"/>
-                                    <div class="col-12">
-                                        <h:outputText id="gerenciaSolicitante" value="#{estanciaBean.sgSolicitudEstanciaVo.nombreGerencia}" />
-                                    </div>
+                                <div class="modal-body">
+                                    <div class="row">
+                                        <div class="4">
+                                            <div class="input-group">
+                                                <h:outputLabel value="#{msgs['sgl.solicitudEstancia.solicito']}: " class="col-12"/>
+                                                <div class="col-12">
+                                                    <h:outputText id="gerenteSolicitante" value="#{estanciaBean.sgSolicitudEstanciaVo.nombre}" />
+                                                </div>
+                                            </div>
+                                            <div class="input-group">
+                                                <h:outputLabel value="#{msgs['sgl.solicitudEstancia.gerenciaSolicitante']}:"  class="col-12"/>
+                                                <div class="col-12">
+                                                    <h:outputText id="gerenciaSolicitante" value="#{estanciaBean.sgSolicitudEstanciaVo.nombreGerencia}" />
+                                                </div>
 
-                                </div>                                    
-                            </div>
-                            <div class="4">
-                                <div class="input-group">
-                                    <h:outputLabel value="#{msgs['sgl.solicitudViaje.oficina.destino']}: " class="col-12"/>
-                                    <div class="col-12">
-                                        <h:outputText id="nombreOficinaDestino" value="#{estanciaBean.sgSolicitudEstanciaVo.nombreSgOficina}" />
+                                            </div>                                    
+                                        </div>
+                                        <div class="4">
+                                            <div class="input-group">
+                                                <h:outputLabel value="#{msgs['sgl.solicitudViaje.oficina.destino']}: " class="col-12"/>
+                                                <div class="col-12">
+                                                    <h:outputText id="nombreOficinaDestino" value="#{estanciaBean.sgSolicitudEstanciaVo.nombreSgOficina}" />
+                                                </div>
+                                            </div>
+                                            <div class="input-group">
+                                                <h:outputLabel value="#{msgs['sgl.solicitudViaje.motivo']}: " class="col-12"/>
+                                                <div class="col-12">
+                                                    <h:outputText id="motivoEstancia" value="#{estanciaBean.sgSolicitudEstanciaVo.nombreSgMotivo}" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="4">
+                                            <div class="input-group">
+                                                <h:outputLabel value="#{msgs['sgl.staff.contrato.fechaInicio']}: "  class="col-12"/>
+                                                <div class="col-12">
+                                                    <h:outputText id="fInicioEstancia" value="#{estanciaBean.sgSolicitudEstanciaVo.inicioEstancia}" >
+                                                        <f:convertDateTime pattern="dd/MM/yyyy" type="date" />
+                                                    </h:outputText>
+                                                </div>
+                                            </div>
+                                            <div class="input-group">
+                                                <h:outputLabel value="#{msgs['sgl.generales.fechas.fechaFin']}: " class="col-12"/>
+                                                <div class="col-12">
+                                                    <h:outputText id="fFinEstancia" value="#{estanciaBean.sgSolicitudEstanciaVo.finEstancia}" >
+                                                        <f:convertDateTime pattern="dd/MM/yyyy" type="date" />
+                                                    </h:outputText> 
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
+                                    <div class="row">
+                                        <div class="input-group">
+                                            <h:outputLabel value="Huésped: " class="col-12"/>
+                                            <div class="col-12">
+                                                <h:outputText value="#{estanciaBean.sgDetalleSolicitudEstancia.usuario}" rendered="#{estanciaBean.sgDetalleSolicitudEstancia.idInvitado == 0}" styleClass="fNegrita12" />
+                                                <h:outputText value="#{estanciaBean.sgDetalleSolicitudEstancia.invitado}" rendered="#{estanciaBean.sgDetalleSolicitudEstancia.idInvitado gt 0}" styleClass="fNegrita12" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <h:panelGrid columns="2"  id="pnlRegHues">
+                                        <h:outputLabel value="#{msgs['sgl.solicitudEstancia.tipoHuesped']}:* " />
+                                        <p:selectOneMenu id="tipoHuesped" 
+                                                         value="#{estanciaBean.idTipoEspecifico}" >
+                                            <f:selectItem id="siTipoHuesped" itemLabel="#{msgs['sistema.seleccionar']} #{msgs['sgl.solicitudEstancia.tipoHuesped']}..." itemValue="-1"/>
+                                            <f:selectItems value="#{estanciaBean.listaTiposHuespedes}"/>
+                                            <p:ajax listener="#{estanciaBean.validateTipoHuesped}" update="frmRegHuespedStaff:pnlRegHues"/>
+                                        </p:selectOneMenu>
+                                        <h:outputLabel value="#{msgs['sgl.generales.fechas.fechaIngreso']}:* " />
+                                        <p:datePicker value="#{estanciaBean.fechaIngresoHuesped}" id="fechaIngresoStaff"
+                                                      disabled="#{estanciaBean.disabledAux}"   pattern="dd/MM/yyyy"
+                                                      />
+                                        <h:outputLabel value="#{msgs['sgl.generales.fechas.fechaSalida']}:*" rendered="#{!estanciaBean.flag}"/>
+                                        <p:datePicker value="#{estanciaBean.fechaSalidaHuesped}" id="fechaSalidaHuespedStaff"
+                                                      pattern="dd/MM/yyyy" rendered="#{!estanciaBean.flag}"
+                                                      />
+                                        <h:outputText value="Mensaje:" rendered="#{estanciaBean.flag}"/>
+                                        <h:outputText value="#{msgs['sgl.solicitudEstancia.msg.fechaPropuestaPeriodoPrueba']} " 
+                                                      rendered="#{estanciaBean.flag}" />
+                                        <h:outputLabel value="#{msgs['sgl.generales.fechas.salidaPropuesta']}:*" rendered="#{estanciaBean.flag}" />
+                                        <p:datePicker value="#{estanciaBean.fechaSalidaPropuesta}" id="fechaSalidaHuespedStaffPropuesta"
+                                                      disabled="#{estanciaBean.disabledAux}"  pattern="dd/MM/yyyyy"
+                                                      rendered="#{estanciaBean.flag}" />
+                                        <h:outputLabel value="#{msgs['sgl.solicitudEstancia.diasEstancia']}:" />
+                                        <h:outputText id="diasEstancia" value="#{estanciaBean.sgSolicitudEstanciaVo.diasEstancia}" />
+                                        <h:outputLabel value="Staff: *" />
+                                        <p:selectOneMenu id="tipo" value="#{estanciaBean.idStaff}"  
+                                                         >
+                                            <f:selectItem itemLabel="#{msgs['sistema.seleccionar']} #{msgs['sgl.staff']}..." itemValue="-1" />
+                                            <f:selectItems value="#{estanciaBean.staffListSelectItem}" />
+                                            <p:ajax listener="#{estanciaBean.llenarHabitacionesByStaff}" update="frmRegHuespedStaff:dataGridHabitacionesStaff"/>
+                                        </p:selectOneMenu>
+                                        <h:outputLabel value="#{msgs['sgl.solicitudEstancia.habitacionSeleccionada']}:* " />
+                                        <h:outputText id="habSeleccionada" value="#{estanciaBean.habitacion.nombre} | #{estanciaBean.habitacion.numeroHabitacion}" style="font-size: 13px; font-weight: bold" />
+                                    </h:panelGrid>
+
+                                    <p:dataTable showGridlines="true" size="small"  id="dataGridHabitacionesStaff"
+                                                 value="#{estanciaBean.habitacionesStaffDataModel}"
+                                                 var="data"
+                                                 scrollable="true"
+                                                 >
+                                        <p:column headerText="#{msgs['sgl.staff.habitacion']}" width="10%">
+                                            <h:outputText value="#{data.nombre}" />
+                                        </p:column>                                 
+                                        <p:column style="text-align: center;" headerText="#{msgs['sgl.staff.habitacion.numeroHabitacion']}"
+                                                  width="5%">
+                                            <h:outputText value="#{data.numeroHabitacion}" />
+                                        </p:column>   
+                                        <p:column headerText="#{msgs['sgl.solicitudEstancia.habitacion.asignar']}" >
+                                            <p:commandLink value="#{msgs['sistema.seleccionar']} #{msgs['sgl.staff.habitacion']}" 
+                                                           action="#{estanciaBean.seleccionarHabitacion(data)}"
+                                                           process="@this" update="frmRegHuespedStaff:habSeleccionada"/>
+                                        </p:column>
+                                        <p:column width="4%" headerText="#{msgs['sgl.solicitudEstancia.habitacion.ocupada']}">
+                                            <h:outputText value="#{data.ocupada eq 'True' ? msgs['sistema.si'] : msgs['sistema.no']}" />
+                                        </p:column>                                     
+                                    </p:dataTable>      
                                 </div>
-                                <div class="input-group">
-                                    <h:outputLabel value="#{msgs['sgl.solicitudViaje.motivo']}: " class="col-12"/>
-                                    <div class="col-12">
-                                        <h:outputText id="motivoEstancia" value="#{estanciaBean.sgSolicitudEstanciaVo.nombreSgMotivo}" />
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="4">
-                                <div class="input-group">
-                                    <h:outputLabel value="#{msgs['sgl.staff.contrato.fechaInicio']}: "  class="col-12"/>
-                                    <div class="col-12">
-                                        <h:outputText id="fInicioEstancia" value="#{estanciaBean.sgSolicitudEstanciaVo.inicioEstancia}" >
-                                            <f:convertDateTime pattern="dd/MM/yyyy" type="date" />
-                                        </h:outputText>
-                                    </div>
-                                </div>
-                                <div class="input-group">
-                                    <h:outputLabel value="#{msgs['sgl.generales.fechas.fechaFin']}: " class="col-12"/>
-                                    <div class="col-12">
-                                        <h:outputText id="fFinEstancia" value="#{estanciaBean.sgSolicitudEstanciaVo.finEstancia}" >
-                                            <f:convertDateTime pattern="dd/MM/yyyy" type="date" />
-                                        </h:outputText> 
-                                    </div>
+                                <div class="modal-footer">
+                                    <p:commandButton value="#{msgs['sistema.guardar']}" action="#{estanciaBean.registrarHuespedStaff}" 
+                                                     process="@form" update="frmRegHuesped frmDatosSolEst"/>
+                                    <p:commandLink value="#{msgs['sistema.cancelar']}" 
+                                                   immediate="true" styleClass="btn btn-default"
+                                                   onclick="$(dlgRegHuesped).modal('hide');"/>
                                 </div>
                             </div>
                         </div>
-                        <div class="row">
-                            <div class="input-group">
-                                <h:outputLabel value="Huésped: " class="col-12"/>
-                                <div class="col-12">
-                                    <h:outputText value="#{estanciaBean.sgDetalleSolicitudEstancia.usuario}" rendered="#{estanciaBean.sgDetalleSolicitudEstancia.idInvitado == 0}" styleClass="fNegrita12" />
-                                    <h:outputText value="#{estanciaBean.sgDetalleSolicitudEstancia.invitado}" rendered="#{estanciaBean.sgDetalleSolicitudEstancia.idInvitado gt 0}" styleClass="fNegrita12" />
-                                </div>
-                            </div>
-                        </div>
-                        <h:panelGrid columns="2"  id="pnlRegHues">
-                            <h:outputLabel value="#{msgs['sgl.solicitudEstancia.tipoHuesped']}:* " />
-                            <p:selectOneMenu id="tipoHuesped" 
-                                             value="#{estanciaBean.idTipoEspecifico}" >
-                                <f:selectItem id="siTipoHuesped" itemLabel="#{msgs['sistema.seleccionar']} #{msgs['sgl.solicitudEstancia.tipoHuesped']}..." itemValue="-1"/>
-                                <f:selectItems value="#{estanciaBean.listaTiposHuespedes}"/>
-                                <p:ajax listener="#{estanciaBean.validateTipoHuesped}" update="frmRegHuespedStaff:pnlRegHues"/>
-                            </p:selectOneMenu>
-                            <h:outputLabel value="#{msgs['sgl.generales.fechas.fechaIngreso']}:* " />
-                            <p:datePicker value="#{estanciaBean.fechaIngresoHuesped}" id="fechaIngresoStaff"
-                                          disabled="#{estanciaBean.disabledAux}"   pattern="dd/MM/yyyy"
-                                          />
-                            <h:outputLabel value="#{msgs['sgl.generales.fechas.fechaSalida']}:*" rendered="#{!estanciaBean.flag}"/>
-                            <p:datePicker value="#{estanciaBean.fechaSalidaHuesped}" id="fechaSalidaHuespedStaff"
-                                          pattern="dd/MM/yyyy" rendered="#{!estanciaBean.flag}"
-                                          />
-                            <h:outputText value="#{msgs['sgl.solicitudEstancia.msg.fechaPropuestaPeriodoPrueba']} " rendered="#{estanciaBean.flag}" />
-                            <h:outputLabel value="#{msgs['sgl.generales.fechas.salidaPropuesta']}:*" rendered="#{estanciaBean.flag}" />
-                            <p:datePicker value="#{estanciaBean.fechaSalidaPropuesta}" id="fechaSalidaHuespedStaffPropuesta"
-                                          disabled="#{estanciaBean.disabledAux}"  pattern="dd/MM/yyyyy"
-                                          rendered="#{estanciaBean.flag}" />
-                            <h:outputLabel value="#{msgs['sgl.solicitudEstancia.diasEstancia']}:" />
-                            <h:outputText value="#{msgs['sgl.solicitudEstancia.msg.diasIlimitados']}" 
-                                          rendered="#{estanciaBean.idTipoEspecifico eq 17}" />
-                            <h:outputLabel value="Staff: *" />
-                            <p:selectOneMenu id="tipo" value="#{estanciaBean.idStaff}"  
-                                             >
-                                <f:selectItem itemLabel="#{msgs['sistema.seleccionar']} #{msgs['sgl.staff']}..." itemValue="-1" />
-                                <f:selectItems value="#{estanciaBean.staffListSelectItem}" />
-                            </p:selectOneMenu>
-                            <h:outputLabel value="#{msgs['sgl.solicitudEstancia.habitacionSeleccionada']}:* " />
-                            <h:outputText value="#{estanciaBean.habitacion.nombre} | #{estanciaBean.habitacion.numeroHabitacion}" style="font-size: 13px; font-weight: bold" />
-                        </h:panelGrid>
-
-                        <p:dataTable showGridlines="true" size="small"  id="dataGridHabitacionesStaff"
-                                     value="#{estanciaBean.habitacionesStaffDataModel}"
-                                     var="data"
-                                     scrollable="true"
-                                     >
-                            <p:column>
-                                <f:facet name="header">
-                                    <h:outputText value="#{msgs['sgl.staff.habitacion']}"/>
-                                </f:facet>
-                                <h:outputText value="#{data.nombre}" />
-                            </p:column>                                 
-                            <p:column style="text-align: center;">
-                                <f:facet name="header">
-                                    <h:outputText value="#{msgs['sgl.staff.habitacion.numeroHabitacion']}" />
-                                </f:facet>
-                                <h:outputText value="#{data.numeroHabitacion}" />
-                            </p:column>   
-                            <p:column width="10%" headerText="#{msgs['sgl.solicitudEstancia.habitacion.asignar']}" >
-                                <p:commandLink value="#{msgs['sistema.seleccionar']} #{msgs['sgl.staff.habitacion']}" 
-                                               action="#{estanciaBean.seleccionarHabitacion(data)}"
-                                               process="@this" update="frmRegHuespedStaff:dataGridHabitacionesStaff"/>
-                            </p:column>
-                            <p:column width="4%" headerText="#{msgs['sgl.solicitudEstancia.habitacion.ocupada']}">
-                                <h:outputText value="#{data.ocupada eq 'True' ? msgs['sistema.si'] : msgs['sistema.no']}" />
-                            </p:column>                                     
-                        </p:dataTable>                                
-                        <f:facet name="footer">
-                            <p:commandButton value="#{msgs['sistema.guardar']}" action="#{estanciaBean.registrarHuespedStaff}" 
-                                             process="@form" update="frmRegHuesped"/>
-                            <p:commandLink value="#{msgs['sistema.cancelar']}" 
-                                           immediate="true" styleClass="btn btn-default"
-                                           onclick="PF('dlgRegHuesped').hide();"/>
-                        </f:facet>
-                    </p:dialog>
+                    </div>
                 </h:form>
 
             </ui:define>
