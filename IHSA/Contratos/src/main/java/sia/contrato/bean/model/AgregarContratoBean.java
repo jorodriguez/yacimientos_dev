@@ -143,7 +143,7 @@ public class AgregarContratoBean implements Serializable {
         List<ContratoVO> cts = convenioServicioRemoto.traerConvenioMaestroPorRfcProveedor(cad[0].trim(), sesion.getUsuarioSesion().getIdCampo());
         listaContratos.clear();
         cts.stream().forEach(ct -> {
-            listaContratos.add(new SelectItem(ct.getId(), (ct.getCodigo()+" - "+ct.getNombre())));
+            listaContratos.add(new SelectItem(ct.getId(), (ct.getNumero()+" - "+ct.getNombre())));
         });
     }
 
