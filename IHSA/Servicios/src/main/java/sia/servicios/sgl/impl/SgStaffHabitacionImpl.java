@@ -86,12 +86,11 @@ public class SgStaffHabitacionImpl extends AbstractFacade<SgStaffHabitacion> {
     }
 
     
-    public List<SgStaffHabitacion> getAllHabitacionesByStaffAndOcupadoList(SgStaff staff, Boolean ocupada, boolean eliminada) {
+    public List<SgStaffHabitacion> getAllHabitacionesByStaffAndOcupadoList(int idStaff, Boolean ocupada, boolean eliminada) {
         UtilLog4j.log.info(this, "SgStaffHabitacionImpl.getAllHabitacionesByStaffAndOcupadoList()");
 
         List<SgStaffHabitacion> habitacionesList = null;
 
-        if (staff != null) {
             try {
                 String q = "SELECT h FROM SgStaffHabitacion h WHERE h.eliminado = :estado AND h.sgStaff.id = :idStaff " + (ocupada != null ? " AND h.ocupada = :ocupada" : " ") + " ORDER BY h.id ASC";
 
@@ -100,7 +99,7 @@ public class SgStaffHabitacionImpl extends AbstractFacade<SgStaffHabitacion> {
                     query.setParameter("ocupada", ((ocupada) ? Constantes.ELIMINADO : Constantes.NO_ELIMINADO));
                 }
                 query.setParameter("estado", ((eliminada) ? Constantes.ELIMINADO : Constantes.NO_ELIMINADO));
-                query.setParameter("idStaff", staff.getId());
+                query.setParameter("idStaff", idStaff);
 
                 habitacionesList = query.getResultList();
             } catch (Exception e) {
@@ -109,13 +108,10 @@ public class SgStaffHabitacionImpl extends AbstractFacade<SgStaffHabitacion> {
             }
 
             if (habitacionesList != null) {
-                UtilLog4j.log.info(this, "Se encontraron " + habitacionesList.size() + " habitaciones ocupadas [" + ocupada + "] para el Staff " + staff.getNombre());
+                UtilLog4j.log.info(this, "Se encontraron " + habitacionesList.size() + " habitaciones ocupadas [" + ocupada + "] para el Staff {}" + idStaff);
                 return habitacionesList;
             } else {
                 return habitacionesList;
             }
-        } else {
-            return habitacionesList;
-        }
     }
 }
