@@ -264,6 +264,12 @@
                                                action="#{estanciaBean.goToRegistroStaff(data)}"  
                                                rendered="#{data.registrado eq 'False' and data.cancelado eq 'False'}"
                                                process="@this" update="frmRegHuespedStaff"/>
+                            </p:column>                            
+                            <p:column>
+                                <p:commandLink value="#{msgs['sgl.registroHuespedes.registroHotel']}" 
+                                               action="#{estanciaBean.goToRegistroRegistroHotel(data)}"  
+                                               rendered="#{data.registrado eq 'False' and data.cancelado eq 'False'}"
+                                               process="@this" update="popupRegistroHuespedHotel"/>
                             </p:column>                                  
                             <p:column>
                                 <p:commandLink value="#{msgs['sistema.cancelar']}" action="#{estanciaBean.cancelarSolicitudRegistroHuesped(data.idDetalleEstancia)}" 
@@ -412,6 +418,143 @@
                                                    onclick="$(dlgRegHuesped).modal('hide');"/>
                                 </div>
                             </div>
+                        </div>
+                    </div>
+                </h:form>
+
+                <!-- Registro en Hotel -->
+                <h:form id="popupRegistroHuespedHotel" >
+                    <div class="modal fade" data-backdrop="static" id="dlgRegHuespedHotel" data-keyboard="false">
+                        <div class="modal-dialog modal-lg">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h4 class="modal-title">Registro de huéspedes</h4>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="row">
+                                        <div class="col-4">
+                                            <div class="input-group">                                                
+                                                <h:outputLabel value="Solicitó: "  class="col-12"/>
+                                                <div class="col-12">
+                                                    <h:outputText id="gerenteSolicitanter" value="#{estanciaBean.sgSolicitudEstanciaVo.nombre}" />
+                                                </div>
+                                            </div>
+                                            <div class="input-group"> 
+                                                <h:outputLabel value="Gerencia solicitante: "  class="col-12"/>
+                                                <div class="col-12">
+                                                    <h:outputText id="gerenciaSolicitante" value="#{estanciaBean.sgSolicitudEstanciaVo.nombreGerencia}" />
+                                                </div>
+                                            </div>
+                                            <div class="input-group"> 
+                                                <h:outputLabel value="Oficina Destino: "   class="col-12"/>
+                                                <div class="col-12">
+                                                    <h:outputText id="nombreOficinaDestino" value="#{estanciaBean.sgSolicitudEstanciaVo.nombreSgOficina}" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-4">
+                                            <div class="input-group"> 
+                                                <h:outputLabel value="Motivo: "   class="col-12"/>
+                                                <div class="col-12">
+                                                    <h:outputText id="motivoEstancia" value="#{estanciaBean.sgSolicitudEstanciaVo.nombreSgMotivo}" />
+                                                </div>
+                                            </div>
+                                            <div class="input-group"> 
+                                                <h:outputLabel value="Fecha Inicio: "  class="col-12"/>
+                                                <div class="col-12">
+                                                    <h:outputText id="fInicioEstancia" value="#{estanciaBean.sgSolicitudEstanciaVo.inicioEstancia}" >
+                                                        <f:convertDateTime pattern="dd/MM/yyyy" type="date" />
+                                                    </h:outputText>
+                                                </div>
+                                            </div>
+                                        </div>  
+                                        <div class="col-4">
+                                            <div class="input-group"> 
+                                                <h:outputLabel value="Fecha Fin: "   class="col-12"/>
+                                                <div class="col-12">
+                                                    <h:outputText  value="#{estanciaBean.sgSolicitudEstanciaVo.finEstancia}" >
+                                                        <f:convertDateTime pattern="dd/MM/yyyy" type="date" />
+                                                    </h:outputText>
+                                                </div>
+                                            </div>
+                                            <div class="input-group"> 
+                                                <h:outputLabel value="Días estancia: "   class="col-12"/>
+                                                <div class="col-12">
+                                                    <h:outputText id="diasEstancia" value="#{estanciaBean.sgSolicitudEstanciaVo.diasEstancia}" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <h:panelGrid columns="2">
+                                        <h:outputLabel value="Huésped: " />
+                                        <h:outputText value="#{estanciaBean.sgDetalleSolicitudEstancia.usuario}" rendered="#{estanciaBean.sgDetalleSolicitudEstancia.idInvitado == 0}" styleClass="fNegrita12"/>
+                                        <h:outputText value="#{estanciaBean.sgDetalleSolicitudEstancia.invitado}" rendered="#{estanciaBean.sgDetalleSolicitudEstancia.idInvitado != 0}" styleClass="fNegrita12" />
+                                    </h:panelGrid>
+                                    <h:panelGrid columns="2" id="pnlDatosRegHotel" >
+                                        <h:outputLabel value="Tipo de Huésped:* " />
+                                        <p:selectOneMenu id="tipoHuespedHotel" value="#{estanciaBean.idTipoEspecifico}">
+                                            <f:selectItem itemLabel="Seleccione . . . " itemValue="-1"/>
+                                            <f:selectItems value="#{estanciaBean.tiposHuespedesForHotel}"/>
+                                            <p:ajax listener="#{estanciaBean.validateTipoHuesped}" update="popupRegistroHuespedHotel:pnlDatosRegHotel" />
+                                        </p:selectOneMenu>
+                                        <h:outputLabel value="Fecha ingreso:* " />
+                                        <p:datePicker value="#{estanciaBean.fechaIngresoHuesped}" id="fechaIngresoHuespedHotel"
+                                                      pattern="dd/MM/yyyy" 
+                                                      />
+                                        <h:outputLabel value="Fecha Salida:* " />
+                                        <p:datePicker  value="#{estanciaBean.fechaSalidaHuesped}" id="fechaSalidaHuespedHotel"
+                                                       readonly="#{estanciaBean.disabled}" />
+                                        <h:outputLabel value="Mensaje: " rendered="#{estanciaBean.flag}" />
+                                        <h:outputText value="La fecha de salida de la Solicitud de Estancia no corresponde a un Periodo de Prueba de 90 días. Se propone la siguiente: "
+                                                      styleClass="textoAzul"  rendered="#{estanciaBean.flag}" />
+                                        <h:outputLabel value="Fecha Salida Propuesta:*"/>
+                                        <p:datePicker value="#{estanciaBean.fechaSalidaPropuesta}" id="fechaSalidaHuespedHotelPropuesta"
+                                                      disabled="#{estanciaBean.disabledAux}"  />
+                                        <h:outputLabel value="#{msgs['sgl.solicitudEstancia.diasEstancia']}:" />
+                                        <h:outputLabel value="Hotel:*"  />
+                                        <p:selectOneMenu id="hotelSom" 
+                                                         value="#{estanciaBean.idHotel}" >
+                                            <f:selectItem itemLabel="Seleccione Hotel..." itemValue="-1"/>
+                                            <f:selectItems value="#{estanciaBean.listaHoteles}"/>
+                                            <p:ajax listener="#{estanciaBean.chargeServiciosHotelFacturaEmpresaValueChangeListener}" 
+                                                    update="popupRegistroHuespedHotel:pnlServHotel"/>
+                                        </p:selectOneMenu>
+                                        <h:outputLabel value="Tipo Habitación:* "  />
+                                        <p:selectOneMenu id="tipoHabitacion" 
+                                                         value="#{estanciaBean.idHabitacion}"
+                                                         styleClass="form-control">
+                                            <f:selectItem itemLabel="Seleccione Tipo de Habitación..." itemValue="-1"/>
+                                            <f:selectItems value="#{estanciaBean.listaHabitacionHotel}"/>
+                                        </p:selectOneMenu>
+                                        <h:outputLabel value=" # Reservación* "  />
+                                        <p:inputText value="#{estanciaBean.sgHuespedHotel.numeroHabitacion}" id="numResrvacion"/>
+                                    </h:panelGrid>
+                                    <h:panelGrid  id="pnlServHotel" rendered="#{estanciaBean.idHotel gt 0}">
+                                        <f:facet name="header"><h:outputText value="#{msgs['sgl.estancia.mensaje.seleccionarServicios']}" /></f:facet>
+                                        <p:dataTable showGridlines="true" size="small"  id="dataGridHotelServiciosFacturaEmpresa"
+                                                     value="#{estanciaBean.serviciosHotelFacturaEmpresa}"
+                                                     var="data"
+                                                     scrollable="true"
+                                                     scrollHeight="120px"
+                                                     >
+                                            <p:column width="3%">
+                                                <p:selectBooleanCheckbox value="#{data.facturadoEmpresa}"/>
+                                            </p:column>  
+                                            <p:column>
+                                                <h:outputText value="#{data.nombreSgTipoEspecifico}" />
+                                            </p:column>
+                                        </p:dataTable>
+                                    </h:panelGrid>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <p:commandButton value="#{msgs['sistema.guardar']}"
+                                             actionListener="#{estanciaBean.registrarHuespedHotel}"
+                                             process="@form" update="frmRegHuesped frmDatosSolEst" />
+                            <p:commandLink value="#{msgs['sistema.cancelar']}" action="#{estanciaBean.backToAsignarHabitacionFromRegistroHotel()}" 
+                                           immediate="true" styleClass="btn btn-default" />
                         </div>
                     </div>
                 </h:form>

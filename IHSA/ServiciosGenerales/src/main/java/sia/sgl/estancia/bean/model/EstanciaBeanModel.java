@@ -10,12 +10,10 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
@@ -169,7 +167,12 @@ public class EstanciaBeanModel implements Serializable {
     private List<SelectItem> listaSelectItemInvitado;
     private List<SelectItem> listaUsuariosAlta;
     private List<SelectItem> staffListSelectItem;
+    @Getter
+    @Setter
     private List<SelectItem> listaHoteles;
+    @Getter
+    @Setter
+    private List<SelectItem> listaHabitacionHotel;
 
     //private List<SelectItem> gerenciaSelectItem;
     //private List<SelectItem> sgOficinaSelectItem;
@@ -279,6 +282,8 @@ public class EstanciaBeanModel implements Serializable {
         this.staffListSelectItem = new ArrayList();
         serviciosHotelFacturaEmpresa = new ArrayList();
         listaTiposHuespedes = new ArrayList();
+        listaHabitacionHotel = new ArrayList();
+        listaHoteles = new ArrayList();
         if (siUsuarioRolImpl.buscarRolPorUsuarioModulo(sesion.getUsuario().getId(), Constantes.MODULO_SGYL, "7", Constantes.AP_CAMPO_DEFAULT)) {
             setGerenciaCapacitacion(this.gerenciaImpl.findByNameAndCompania("Capacitación", "IHI070320FI3", false));
             setIdGerencia(getGerenciaCapacitacion().getId());
@@ -815,22 +820,13 @@ public class EstanciaBeanModel implements Serializable {
         this.sgSolicitudEstanciaVo = (this.sgSolicitudEstanciaVo != null ? sgSolicitudEstanciaImpl.buscarEstanciaPorId(this.sgSolicitudEstanciaVo.getId()) : null);
     }
 
-    public List<SelectItem> listaHabitacion() {
-        if (getIdHotel() > 0) {
-            List<SelectItem> l = new ArrayList<SelectItem>();
-            try {
-                List<SgHotelHabitacion> lh = sgHotelHabitacionImpl.findAllHabitacionesToHotel(getSgHotel());
-                for (SgHotelHabitacion sgHabitacion : lh) {
-                    BigDecimal precio = sgHabitacion.getPrecio();
-                    precio = precio.setScale(2, RoundingMode.HALF_UP);
-                    SelectItem item = new SelectItem(sgHabitacion.getId(), sgHabitacion.getSgTipoEspecifico().getNombre() + " || " + precio);
-                    l.add(item);
-                }
-            } catch (Exception e) {
-            }
-            return l;
-        } else {
-            return null;
+    public void listaHabitacion() {
+        List<SgHotelHabitacion> lh = sgHotelHabitacionImpl.findAllHabitacionesPorIdHotel(idHotel);
+        for (SgHotelHabitacion sgHabitacion : lh) {
+            BigDecimal precio = sgHabitacion.getPrecio();
+            precio = precio.setScale(2, RoundingMode.HALF_UP);
+            SelectItem item = new SelectItem(sgHabitacion.getId(), sgHabitacion.getSgTipoEspecifico().getNombre() + " || " + precio);
+            listaHabitacionHotel.add(item);
         }
     }
 
@@ -892,36 +888,56 @@ public class EstanciaBeanModel implements Serializable {
         return l;
     }
 
-    public boolean registrarHuespedHotel() {
-        boolean v;
+    public void goToRegistroRegistroHotel(DetalleEstanciaVO detEstVo) {
+        setServiciosHotelFacturaEmpresa(null);
+        setSgDetalleSolicitudEstancia(detEstVo);
+        setFlag(false);
+        setDisabled(true);
+        setDisabledAux(true);
+        setPopUp(true);
+        setSubirArchivoPop(false);
+        setSgHuespedHotel(new SgHuespedHotel());
+        //
+        llenarListaHoteles();
+        PrimeFaces.current().executeScript("$(dlgRegHuespedHotel).modal('show');");
+        PrimeFaces.current().executeScript("PF('dlgSolEst').hide()");
+    }
 
+    private void llenarListaHoteles() {
+        List<SgHotel> hoteles = sgHotelImpl.getAllHotel(sesion.getOficinaActual().getId());
+        hoteles.stream().forEach(h -> {
+            listaHoteles.add(new SelectItem(h.getId(), h.getProveedor().getNombre()));
+        });
+    }
+
+    public void registrarHuespedHotel() {
         try {
             if (this.fechaSalidaPropuesta != null) {
                 this.sgHuespedHotel.setFechaIngreso(this.getFechaIngresoHuesped());
                 this.sgHuespedHotel.setFechaSalida(fechaSalidaPropuesta);
                 this.sgHuespedHotel.setSgTipoEspecifico(this.tipoEspecifico);
-                v = sgHuespedHotelImpl.guardarHuespedHotel(sesion.getUsuario().getId(), getSgHuespedHotel(), sgDetalleSolicitudEstancia.getIdDetalleEstancia(),
+                sgHuespedHotelImpl.guardarHuespedHotel(sesion.getUsuario().getId(), getSgHuespedHotel(), sgDetalleSolicitudEstancia.getIdDetalleEstancia(),
                         sgDetalleSolicitudEstancia.getIdInvitado() != 0 ? sgDetalleSolicitudEstancia.getIdInvitado() : 0,
                         sgDetalleSolicitudEstancia.getIdInvitado() != 0 ? sgDetalleSolicitudEstancia.getInvitado() : "",
                         sgDetalleSolicitudEstancia.getIdInvitado() == 0 ? sgDetalleSolicitudEstancia.getUsuario() : "",
                         sgDetalleSolicitudEstancia.getTipoDetalle(), sgDetalleSolicitudEstancia.getCorreoUsuario(),
                         getIdHotel(), getIdHabitacion(), getSgSolicitudEstanciaVo().getId(), getSgTipo(), getIdTipoEspecifico(), "");
-                if (v) {
-                    tipoEspecificoService.ponerUsadoTipoEspecifico(getIdTipoEspecifico(), sesion.getUsuario());
-                }
+
+                tipoEspecificoService.ponerUsadoTipoEspecifico(getIdTipoEspecifico(), sesion.getUsuario());
+
             } else {
                 this.sgHuespedHotel.setFechaIngreso(this.getFechaIngresoHuesped());
                 this.sgHuespedHotel.setFechaSalida(getFechaSalidaHuesped());
                 this.sgHuespedHotel.setSgTipoEspecifico(this.tipoEspecifico);
-                v = sgHuespedHotelImpl.guardarHuespedHotel(sesion.getUsuario().getId(), getSgHuespedHotel(), sgDetalleSolicitudEstancia.getIdDetalleEstancia(),
+                sgHuespedHotelImpl.guardarHuespedHotel(sesion.getUsuario().getId(), getSgHuespedHotel(), sgDetalleSolicitudEstancia.getIdDetalleEstancia(),
                         sgDetalleSolicitudEstancia.getIdInvitado() != 0 ? sgDetalleSolicitudEstancia.getIdInvitado() : 0,
                         sgDetalleSolicitudEstancia.getIdInvitado() != 0 ? sgDetalleSolicitudEstancia.getInvitado() : "",
                         sgDetalleSolicitudEstancia.getIdInvitado() == 0 ? sgDetalleSolicitudEstancia.getUsuario() : "",
                         sgDetalleSolicitudEstancia.getTipoDetalle(), sgDetalleSolicitudEstancia.getCorreoUsuario(),
                         getIdHotel(), getIdHabitacion(), getSgSolicitudEstanciaVo().getId(), getSgTipo(), getIdTipoEspecifico(), "");
-                if (v) {
-                    tipoEspecificoService.ponerUsadoTipoEspecifico(getIdTipoEspecifico(), sesion.getUsuario());
-                }
+
+                tipoEspecificoService.ponerUsadoTipoEspecifico(getIdTipoEspecifico(), sesion.getUsuario());
+
             }
 
             //Guardar los Servicios facturados por la empresa
@@ -938,13 +954,39 @@ public class EstanciaBeanModel implements Serializable {
                 this.sgHuespedHotelServicioImpl.save(getSgHuespedHotel().getId(), vo.getIdSgTipoEspecifico(), false, this.sesion.getUsuario().getId());
             }
             sgSolicitudEstanciaVo = sgSolicitudEstanciaImpl.buscarEstanciaPorId(sgSolicitudEstanciaVo.getId());
+
+            PrimeFaces.current().executeScript("$(dlgRegHuesped).modal('hide');");
+        PrimeFaces.current().executeScript("PF('dlgSolEst').show()");
         } catch (Exception e) {
-            v = false;
             log(e.getMessage());
-            e.printStackTrace();
-            return v;
         }
-        return v;
+    }
+
+    public void backToAsignarHabitacionFromRegistroHotel() {
+        setPopUp(false);
+        setDisabled(false);
+        setFlag(false);
+        setMensaje("");
+        setIdStaff(-1);
+        setIdHotel(-1);
+        setIdHabitacion(-1);
+        setIdTipoEspecifico(-1);
+        setHabitacion(null);
+        setTipoEspecifico(null);
+        setSgHuespedHotel(null);
+        setFechaIngresoHuesped(null);
+        setFechaSalidaHuesped(null);
+        setFechaSalidaPropuesta(null);
+        setHabitacionesStaffDataModel(null);
+        setSgDetalleSolicitudEstancia(null);
+        this.setServiciosHotelFacturaEmpresa(null);
+        //
+        PrimeFaces.current().executeScript("$(dlgRegHuesped).modal('show');");
+    }
+
+    public void chargeServiciosHotelFacturaEmpresaValueChangeListener() {
+        setServiciosHotelFacturaEmpresa((getallServiciosHotelFacturaEmpresa()));
+        listaHabitacion();
     }
 
     public void registrarHuespedStaff() {
