@@ -13,27 +13,27 @@
             </ui:define>
             <ui:define name="contenido">
                 <h:form id="form1">                    
-                    <div class="row">
+                    <div class="row pb-1">
                         <p:confirmDialog global="true" showEffect="fade" hideEffect="fade" responsive="true" width="350">
                             <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no ui-button-flat"/>
                             <p:commandButton value="Si" type="button" styleClass="ui-confirmdialog-yes" />
                         </p:confirmDialog>
-                        <div id="divAutoriza" class="btn-group" style="text-align: left;">                            
+                        <div id="divAutoriza" class="btn-group " style="text-align: left;">                            
                             <p:commandLink value="Revisar" 
                                            styleClass="btn btn-info text-white"                                           
                                            action="#{ordenBean.aprobarOrdenComprasRevisa}"
-                                           process="@this  form1:Ordenes" update="form1:Ordenes">
+                                           process="@this  form1:Ordenes" update="form1:Ordenes frmMenu">
                                 <p:confirm header="Confirmar" message="La operación va a autorizar la(s) OC/S seleccionada(s). ¿Está seguro?" 
                                            icon="pi pi-check" />
                             </p:commandLink>
                             <p:commandLink value="Devolver"
                                            class="btn btn-md btn-default"           
                                            action="#{ordenBean.inicioDevolverOrdenCompras}"
-                                           update="frmDevsOCS" process="@this form1:Ordenes"/>
+                                           update="frmDevsOCS" process="@this form1:Ordenes frmMenu"/>
                             <p:commandLink value="Cancelar"
                                            class="btn btn-md btn-default"                         
                                            action="#{ordenBean.inicioCancelarOrdenCompras}"
-                                           update="frmCancelVarOCS" process="@this form1:Ordenes"/> 
+                                           update="frmCancelVarOCS" process="@this form1:Ordenes frmMenu"/> 
                         </div>
                         <div id="divOperacion" class="btn-group" style="text-align: left; display: none;">                            
                             <p:commandLink value="Regresar" action="#{ordenBean.iniciarLimpiar}"
@@ -43,8 +43,8 @@
                             <p:commandLink value="Revisar" 
                                            styleClass="btn btn-info text-white"                                           
                                            action="#{ordenBean.aprobarOrdenComprasRevisa}"
-                                           process="@this" update="form1 frmMenu">
-                                <p:confirmDialog header="Confirmar" message="La operación va a autorizar la(s) OC/S seleccionada(s). ¿Está seguro?"/>
+                                           process="@this " update="form1 frmMenu">
+                                <p:confirmDialog header="Confirmar" message="La operación va a autorizar la(s) OC/S seleccionada(s). ¿Está seguro?" />
                             </p:commandLink>
                             <p:commandLink 
                                 title="Clic aquí para cancelar la orden de compra..." value="Cancelar"
@@ -86,8 +86,13 @@
                                                              onclick="mostrarDiv('divAutoriza');"/>
                                 </p:column>
                                 <p:column >
-                                     
-                                          <h:outputText styleClass="#{data.errorEnvio eq 'True' ? 'text-danger' : ''}"                                                                                                       value="#{data['consecutivo']}" style=" #{data.contratoActivo gt 0  ? 'color: #E79E19' : ''}"/>                                                                                        
+                                    <ui:fragment rendered="#{data.errorEnvio eq 'True'}">
+                                        <i class="fa fa-info-circle text-danger ml-1" title="Sucedió un detalle al procesar la orden por favor porngase en contacto con el equipo de soporte" />
+                                    </ui:fragment>
+                                    
+                                          <h:outputText styleClass="#{data.errorEnvio eq 'True' ? 'text-danger' : ''}"                                                                                                       
+                                                        value="#{data['consecutivo']}" 
+                                                        style=" #{data.contratoActivo gt 0  ? 'color: #E79E19' : ''}"/>                                                                                        
                                     
                                     <f:facet name="header">
                                         <h:outputText value="Código"/>
@@ -125,7 +130,7 @@
                                 </p:column>                                
                                 <p:column >
                                     <h:outputText value="#{data['proveedor']}" style=" #{data.contratoActivo gt 0  ? 'color: #E79E19' : ''}"/>
-                                    <f:facet name="header"><h:outputText value="Proveedor"/></f:facet>
+                                    <f:facet name="header"><h:outputText value="Proveedor"/></f:facet>                                    
                                 </p:column>
                                 <p:column rendered="#{usuarioBean.mapaRoles.get('Revisa contratos')}"
                                           >
