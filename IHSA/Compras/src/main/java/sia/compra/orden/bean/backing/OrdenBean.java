@@ -449,6 +449,7 @@ public class OrdenBean implements Serializable {
         //
         noticiaActual = new CoNoticia();
         //        
+        formatosEntradaOrden();
     }
 
     public String llenarNombreSocio() {
@@ -952,7 +953,7 @@ public class OrdenBean implements Serializable {
 
     public void formatosEntradaOrden() {
         try {
-            formatosEntrada = new ArrayList<OrdenFormatoVo>();
+            formatosEntrada = new ArrayList<>();
             if (ordenActual != null) {
                 formatosEntrada = invOrdenFormatoImpl.traerPorCompra(getOrdenActual().getConsecutivo());
             } else {

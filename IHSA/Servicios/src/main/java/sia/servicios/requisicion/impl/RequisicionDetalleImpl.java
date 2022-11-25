@@ -215,7 +215,7 @@ public class RequisicionDetalleImpl {
         o.setPresupuestoCodigo(objects[26] != null ? (String) objects[26] : "");
         o.setAnioPresupuesto((Integer) (objects[27]) != null ? (Integer) (objects[27]) : 0);
         o.setTotalInventario(objects[28] != null ? ((BigDecimal) objects[28]).doubleValue() : 0);
-        o.setUsuarioBeneficiado(objects[29] != null ? (String) objects[29] : "");
+        o.setUsuarioBeneficiado(objects[30] != null ? (String) objects[30] : "");
         return o;
     }
 
