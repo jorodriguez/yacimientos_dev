@@ -1,6 +1,5 @@
 package sia.archivador;
 
-import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
@@ -13,6 +12,7 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.tika.Tika;
 import sia.constantes.Constantes;
 import sia.excepciones.SIAException;
 
@@ -89,9 +89,9 @@ public class DocumentoAnexo {
         setPrettySize(calculatePrettySize());
 
         try {
-            BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(getContenido()));
-            setTipoMime(URLConnection.guessContentTypeFromStream(bis));
-        } catch (IOException e) {
+            //setTipoMime(URLConnection.guessContentTypeFromStream(new ByteArrayInputStream(getContenido())));
+            setTipoMime(new Tika().detect(getContenido()));
+        } catch (Exception e) {
             log.warn("*** While getting MIME type.", e);
         }
     }

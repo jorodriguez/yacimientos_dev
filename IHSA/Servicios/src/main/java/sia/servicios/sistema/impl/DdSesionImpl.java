@@ -71,7 +71,7 @@ public class DdSesionImpl extends AbstractFacade<DdSesion> {
         
         try {
             retVal = 
-                    dbCtx.fetchOne("SELECT * FROM dd_sesion WHERE sesion_id = ? ", sesionId)
+                    dbCtx.fetchOne("SELECT * FROM dd_sesion WHERE sesion_id = ? ORDER BY fecha_inicio DESC LIMIT 1", sesionId)
                             .into(DdSesion.class);
         } catch (DataAccessException e) {
             log.warn(this, "*** Al recuperar la sesion {0}", new Object[]{sesionId}, e);

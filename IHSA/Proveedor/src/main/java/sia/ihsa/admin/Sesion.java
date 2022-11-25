@@ -170,7 +170,7 @@ public class Sesion implements Serializable {
         //registrar salida normal del sistema
         sesionImpl.registrarSalida(FacesUtilsBean.getHttpSession(false).getId(), proveedorVo.getRfc());
 
-//        FacesUtilsBean.getHttpSession(false).invalidate();
+        FacesUtilsBean.getHttpSession(false).invalidate();
         proveedorVo = null;
         companiaVoSesion = null;
         return "/principal.xhtml?faces-redirect=true";
