@@ -361,7 +361,8 @@ public class SgSolicitudEstanciaImpl extends AbstractFacade<SgSolicitudEstancia>
         }
     }
 
-    public boolean cancelarSolicitudEstancia(Usuario usuario, SgSolicitudEstanciaVo sgSolicitudEstancia, String mensaje, boolean notificar, boolean enviarCorreo) {
+    public boolean cancelarSolicitudEstancia(Usuario usuario, SgSolicitudEstanciaVo sgSolicitudEstancia, String mensaje,
+            boolean notificar, boolean enviarCorreo) {
         //Envia correo de cancelacion de solicitud
         boolean v;
         try {

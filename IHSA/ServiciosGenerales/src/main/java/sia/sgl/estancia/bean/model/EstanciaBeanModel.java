@@ -238,7 +238,6 @@ public class EstanciaBeanModel implements Serializable {
     private boolean disabledAux;
     private boolean conCorreo = true;
     private int idInVitado;
-    private List<DetalleSolicitudVO> listaDetalleEstancia;
     @Getter
     @Setter
     private List<SelectItem> listaTiposHuespedes;
@@ -314,18 +313,12 @@ public class EstanciaBeanModel implements Serializable {
         }
     }
 
-    public void eliminarSE(SgSolicitudEstanciaVo est) {
-        setConCorreo(Constantes.FALSE);
-        cancelarSolicitudEstancia(est);
-
-    }
-
     public void cancelarSolicitudEstancia(SgSolicitudEstanciaVo event) {
         setSgSolicitudEstanciaVo(event);
         //Valida si no se han agregado usuarioa staff y hotel
         DataModel<SgHuespedHotel> lh = traerRegistroHospedadosHotel();
         DataModel<SgHuespedStaff> ls = traerHospedadosStaff();
-        setListaDetalleSolicitud(traerDetalleSolicitudRegistro());
+        traerDetalleSolicitud();
         if (ls.getRowCount() < 1 && lh.getRowCount() < 1) {
             setEliminarPop(true);
             PrimeFaces.current().executeScript("PF('dlgCanSol').show();");
@@ -594,8 +587,7 @@ public class EstanciaBeanModel implements Serializable {
         }
         setListaEstancia(new ListDataModel(findAllSgSolicitudEstanciaByUsuarioAndEstatus(Constantes.ESTATUS_SOLICITUD_ESTANCIA_PENDIENTE, false)));
         PrimeFaces.current().executeScript("PF('dlgSolEst').hide();");
-        this.mensaje = "Se ha cancelado la asignación de habitación del Huésped "
-                + (this.sgDetalleSolicitudEstancia.getIdInvitado() == 0 ? this.sgDetalleSolicitudEstancia.getUsuario() : this.sgDetalleSolicitudEstancia.getInvitado());
+        this.mensaje = "Se ha cancelado la asignación de habitación del Huésped ";
     }
 
     public void goToRegistroStaff(DetalleEstanciaVO detVo) {
@@ -636,17 +628,8 @@ public class EstanciaBeanModel implements Serializable {
         }
     }
 
-    public void traerDetalleSolicitud() throws SIAException, Exception {
+    public void traerDetalleSolicitud() {
         setListaDetalleSolicitud(sgDetalleSolicitudEstanciaImpl.getAllIntegrantesBySolicitud(this.sgSolicitudEstanciaVo.getId(), Boolean.FALSE, Boolean.FALSE, false));
-    }
-
-    public List<DetalleEstanciaVO> traerDetalleSolicitudRegistro() {
-        try {
-            setListaDetalleSolicitud(sgDetalleSolicitudEstanciaImpl.getAllIntegrantesBySolicitud(this.sgSolicitudEstanciaVo.getId(), null, null, false));
-        } catch (Exception e) {
-            UtilLog4j.log.fatal(this, "Ocurrio en error al traer el detalle de la solicitud de registro : :: : : " + e.getMessage());
-        }
-        return getListaDetalleSolicitud();
     }
 
     public List<SgHuespedHotelServicioVo> getAllServiciosFacturaEmpresa() {
@@ -874,20 +857,6 @@ public class EstanciaBeanModel implements Serializable {
         }
     }
 
-    public List<SelectItem> getTiposHuespedesForHotel() {
-//        log("EstanciaBeanModel.getTiposHuespedesForHotel()");
-        this.sgTipo = buscarTipo();
-        List<SelectItem> l = new ArrayList<>();
-        List<SgTipoTipoEspecifico> lh = sgTipoTipoEspecificoImpl.traerPorTipo(getSgTipo(), Constantes.NO_ELIMINADO);
-        for (SgTipoTipoEspecifico sgTipoTipoEspecifico : lh) {
-            if (sgTipoTipoEspecifico.getSgTipoEspecifico().getId() != 17) {
-                SelectItem item = new SelectItem(sgTipoTipoEspecifico.getSgTipoEspecifico().getId(), sgTipoTipoEspecifico.getSgTipoEspecifico().getNombre());
-                l.add(item);
-            }
-        }
-        return l;
-    }
-
     public void goToRegistroRegistroHotel(DetalleEstanciaVO detEstVo) {
         setServiciosHotelFacturaEmpresa(null);
         setSgDetalleSolicitudEstancia(detEstVo);
@@ -904,6 +873,7 @@ public class EstanciaBeanModel implements Serializable {
     }
 
     private void llenarListaHoteles() {
+        listaHoteles = new ArrayList<>();
         List<SgHotel> hoteles = sgHotelImpl.getAllHotel(sesion.getOficinaActual().getId());
         hoteles.stream().forEach(h -> {
             listaHoteles.add(new SelectItem(h.getId(), h.getProveedor().getNombre()));
@@ -949,14 +919,19 @@ public class EstanciaBeanModel implements Serializable {
             }
 
             //Guardar los servicios proveídos por el hotel
-            List<SgHotelTipoEspecificoVo> list2 = this.sgHotelTipoEspecificoImpl.getAllSgHotelTipoEspecificoBySgHotelAndProvided(getSgHotel().getId(), true, "id", true, false);
+            List<SgHotelTipoEspecificoVo> list2 = this.sgHotelTipoEspecificoImpl.getAllSgHotelTipoEspecificoBySgHotelAndProvided(idHotel, true, "id", true, false);
             for (SgHotelTipoEspecificoVo vo : list2) {
                 this.sgHuespedHotelServicioImpl.save(getSgHuespedHotel().getId(), vo.getIdSgTipoEspecifico(), false, this.sesion.getUsuario().getId());
             }
-            sgSolicitudEstanciaVo = sgSolicitudEstanciaImpl.buscarEstanciaPorId(sgSolicitudEstanciaVo.getId());
+            if (listaDetalleSolicitud != null && listaDetalleSolicitud.size() == 1) {
+                sgSolicitudEstanciaImpl.finalizaSolicitud(sgSolicitudEstanciaVo.getId(), sesion.getUsuario().getId());
+                PrimeFaces.current().executeScript("PF('dlgSolEst').hide()");
+            } else {
+                traerDetalleSolicitud();
+                PrimeFaces.current().executeScript("PF('dlgSolEst').show()");
+            }
+            PrimeFaces.current().executeScript("$(dlgRegHuespedHotel).modal('hide');");
 
-            PrimeFaces.current().executeScript("$(dlgRegHuesped).modal('hide');");
-        PrimeFaces.current().executeScript("PF('dlgSolEst').show()");
         } catch (Exception e) {
             log(e.getMessage());
         }
@@ -981,7 +956,7 @@ public class EstanciaBeanModel implements Serializable {
         setSgDetalleSolicitudEstancia(null);
         this.setServiciosHotelFacturaEmpresa(null);
         //
-        PrimeFaces.current().executeScript("$(dlgRegHuesped).modal('show');");
+        PrimeFaces.current().executeScript("$(dlgRegHuesped).modal('hide');");
     }
 
     public void chargeServiciosHotelFacturaEmpresaValueChangeListener() {
@@ -1013,13 +988,17 @@ public class EstanciaBeanModel implements Serializable {
                             sgDetalleSolicitudEstancia.getIdInvitado() == 0 ? sgDetalleSolicitudEstancia.getUsuario() : "",
                             sgDetalleSolicitudEstancia.getTipoDetalle(), sgDetalleSolicitudEstancia.getCorreoUsuario(), this.sgTipo, this.tipoEspecifico, this.habitacion, this.getFechaIngresoHuesped(), null, sesion.getUsuario().getId());
                 }
-                sgSolicitudEstanciaVo = sgSolicitudEstanciaImpl.buscarEstanciaPorId(sgSolicitudEstanciaVo.getId());
                 //
                 setListaEstancia(new ListDataModel(findAllSgSolicitudEstanciaByUsuarioAndEstatus(Constantes.ESTATUS_SOLICITUD_ESTANCIA_PENDIENTE, false)));
                 //
-                traerDetalleSolicitud();
+                if (listaDetalleSolicitud.size() == 1) {
+                    sgSolicitudEstanciaImpl.finalizaSolicitud(sgSolicitudEstanciaVo.getId(), sesion.getUsuario().getId());
+                    PrimeFaces.current().executeScript("PF('dlgSolEst').hide()");
+                } else {
+                    traerDetalleSolicitud();
+                    PrimeFaces.current().executeScript("PF('dlgSolEst').show()");
+                }
                 PrimeFaces.current().executeScript("$(dlgRegHuesped).modal('hide')");
-                PrimeFaces.current().executeScript("PF('dlgSolEst').show()");
             }
         } catch (SIAException siae) {
             log(siae.getMensajeParaProgramador());
@@ -1036,6 +1015,19 @@ public class EstanciaBeanModel implements Serializable {
     public boolean cancelarSolicitudEstancia() {
         boolean v = sgSolicitudEstanciaImpl.cancelarSolicitudEstancia(sesion.getUsuario(), getSgSolicitudEstanciaVo(), getMensaje(),
                 Constantes.TRUE, isConCorreo());
+
+        //Recargar lista de Solicitudes
+        log("DEspues de cancelar la solicitud:  " + getSgSolicitudEstanciaVo().getId());
+        this.listaSolicitud = (sgSolicitudEstanciaImpl.trearSolicitudEstanciaPorOficina(sesion.getOficinaActual().getId(), Constantes.ESTATUS_SOLICITUD_ESTANCIA_SOLICITADA, sesion.getUsuario().getId(), Constantes.NO_ELIMINADO));
+        return v;
+    }
+
+    public boolean eliminarSolicitudEstancia(SgSolicitudEstanciaVo est) {
+        mensaje = "Eliminado por el analista de Servicios Generales";
+        sgSolicitudEstanciaVo = est;
+        boolean v = sgSolicitudEstanciaImpl.cancelarSolicitudEstancia(sesion.getUsuario(),
+                getSgSolicitudEstanciaVo(), getMensaje(),
+                Constantes.FALSE, Constantes.FALSE);
 
         //Recargar lista de Solicitudes
         log("DEspues de cancelar la solicitud:  " + getSgSolicitudEstanciaVo().getId());
@@ -2268,20 +2260,6 @@ public class EstanciaBeanModel implements Serializable {
      */
     public void setIdInVitado(int idInVitado) {
         this.idInVitado = idInVitado;
-    }
-
-    /**
-     * @return the listaDetalleEstancia
-     */
-    public List<DetalleSolicitudVO> getListaDetalleEstancia() {
-        return listaDetalleEstancia;
-    }
-
-    /**
-     * @param listaDetalleEstancia the listaDetalleEstancia to set
-     */
-    public void setListaDetalleEstancia(List<DetalleSolicitudVO> listaDetalleEstancia) {
-        this.listaDetalleEstancia = listaDetalleEstancia;
     }
 
     /**
