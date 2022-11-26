@@ -246,4 +246,16 @@ public class SgHotelHabitacionImpl extends AbstractFacade<SgHotelHabitacion>{
             return false;
         }
     }
+    
+    public List<SgHotelHabitacion> findAllHabitacionesPorIdHotel(int  idHotel) {
+        UtilLog4j.log.info(this,"Entrando a traer habitaciones de un hotel");
+        List<SgHotelHabitacion> listReturn = null;
+        try {
+            listReturn = em.createQuery("SELECT hh FROM SgHotelHabitacion hh "
+                    + " WHERE hh.sgHotel.id = :idHotel AND hh.eliminado = :eliminado ORDER BY hh.id DESC ").setParameter("idHotel", idHotel).setParameter("eliminado", Constantes.BOOLEAN_FALSE).getResultList();
+        } catch (Exception e) {
+            UtilLog4j.log.fatal(this,e.getMessage());
+        }
+        return listReturn;
+    }
 }

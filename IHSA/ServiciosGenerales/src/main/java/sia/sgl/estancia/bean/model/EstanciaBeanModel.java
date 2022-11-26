@@ -10,12 +10,10 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
@@ -169,7 +167,12 @@ public class EstanciaBeanModel implements Serializable {
     private List<SelectItem> listaSelectItemInvitado;
     private List<SelectItem> listaUsuariosAlta;
     private List<SelectItem> staffListSelectItem;
+    @Getter
+    @Setter
     private List<SelectItem> listaHoteles;
+    @Getter
+    @Setter
+    private List<SelectItem> listaHabitacionHotel;
 
     //private List<SelectItem> gerenciaSelectItem;
     //private List<SelectItem> sgOficinaSelectItem;
@@ -235,7 +238,6 @@ public class EstanciaBeanModel implements Serializable {
     private boolean disabledAux;
     private boolean conCorreo = true;
     private int idInVitado;
-    private List<DetalleSolicitudVO> listaDetalleEstancia;
     @Getter
     @Setter
     private List<SelectItem> listaTiposHuespedes;
@@ -279,6 +281,8 @@ public class EstanciaBeanModel implements Serializable {
         this.staffListSelectItem = new ArrayList();
         serviciosHotelFacturaEmpresa = new ArrayList();
         listaTiposHuespedes = new ArrayList();
+        listaHabitacionHotel = new ArrayList();
+        listaHoteles = new ArrayList();
         if (siUsuarioRolImpl.buscarRolPorUsuarioModulo(sesion.getUsuario().getId(), Constantes.MODULO_SGYL, "7", Constantes.AP_CAMPO_DEFAULT)) {
             setGerenciaCapacitacion(this.gerenciaImpl.findByNameAndCompania("Capacitación", "IHI070320FI3", false));
             setIdGerencia(getGerenciaCapacitacion().getId());
@@ -309,18 +313,12 @@ public class EstanciaBeanModel implements Serializable {
         }
     }
 
-    public void eliminarSE(SgSolicitudEstanciaVo est) {
-        setConCorreo(Constantes.FALSE);
-        cancelarSolicitudEstancia(est);
-
-    }
-
     public void cancelarSolicitudEstancia(SgSolicitudEstanciaVo event) {
         setSgSolicitudEstanciaVo(event);
         //Valida si no se han agregado usuarioa staff y hotel
         DataModel<SgHuespedHotel> lh = traerRegistroHospedadosHotel();
         DataModel<SgHuespedStaff> ls = traerHospedadosStaff();
-        setListaDetalleSolicitud(traerDetalleSolicitudRegistro());
+        traerDetalleSolicitud();
         if (ls.getRowCount() < 1 && lh.getRowCount() < 1) {
             setEliminarPop(true);
             PrimeFaces.current().executeScript("PF('dlgCanSol').show();");
@@ -589,8 +587,7 @@ public class EstanciaBeanModel implements Serializable {
         }
         setListaEstancia(new ListDataModel(findAllSgSolicitudEstanciaByUsuarioAndEstatus(Constantes.ESTATUS_SOLICITUD_ESTANCIA_PENDIENTE, false)));
         PrimeFaces.current().executeScript("PF('dlgSolEst').hide();");
-        this.mensaje = "Se ha cancelado la asignación de habitación del Huésped "
-                + (this.sgDetalleSolicitudEstancia.getIdInvitado() == 0 ? this.sgDetalleSolicitudEstancia.getUsuario() : this.sgDetalleSolicitudEstancia.getInvitado());
+        this.mensaje = "Se ha cancelado la asignación de habitación del Huésped ";
     }
 
     public void goToRegistroStaff(DetalleEstanciaVO detVo) {
@@ -631,17 +628,8 @@ public class EstanciaBeanModel implements Serializable {
         }
     }
 
-    public void traerDetalleSolicitud() throws SIAException, Exception {
+    public void traerDetalleSolicitud() {
         setListaDetalleSolicitud(sgDetalleSolicitudEstanciaImpl.getAllIntegrantesBySolicitud(this.sgSolicitudEstanciaVo.getId(), Boolean.FALSE, Boolean.FALSE, false));
-    }
-
-    public List<DetalleEstanciaVO> traerDetalleSolicitudRegistro() {
-        try {
-            setListaDetalleSolicitud(sgDetalleSolicitudEstanciaImpl.getAllIntegrantesBySolicitud(this.sgSolicitudEstanciaVo.getId(), null, null, false));
-        } catch (Exception e) {
-            UtilLog4j.log.fatal(this, "Ocurrio en error al traer el detalle de la solicitud de registro : :: : : " + e.getMessage());
-        }
-        return getListaDetalleSolicitud();
     }
 
     public List<SgHuespedHotelServicioVo> getAllServiciosFacturaEmpresa() {
@@ -815,22 +803,13 @@ public class EstanciaBeanModel implements Serializable {
         this.sgSolicitudEstanciaVo = (this.sgSolicitudEstanciaVo != null ? sgSolicitudEstanciaImpl.buscarEstanciaPorId(this.sgSolicitudEstanciaVo.getId()) : null);
     }
 
-    public List<SelectItem> listaHabitacion() {
-        if (getIdHotel() > 0) {
-            List<SelectItem> l = new ArrayList<SelectItem>();
-            try {
-                List<SgHotelHabitacion> lh = sgHotelHabitacionImpl.findAllHabitacionesToHotel(getSgHotel());
-                for (SgHotelHabitacion sgHabitacion : lh) {
-                    BigDecimal precio = sgHabitacion.getPrecio();
-                    precio = precio.setScale(2, RoundingMode.HALF_UP);
-                    SelectItem item = new SelectItem(sgHabitacion.getId(), sgHabitacion.getSgTipoEspecifico().getNombre() + " || " + precio);
-                    l.add(item);
-                }
-            } catch (Exception e) {
-            }
-            return l;
-        } else {
-            return null;
+    public void listaHabitacion() {
+        List<SgHotelHabitacion> lh = sgHotelHabitacionImpl.findAllHabitacionesPorIdHotel(idHotel);
+        for (SgHotelHabitacion sgHabitacion : lh) {
+            BigDecimal precio = sgHabitacion.getPrecio();
+            precio = precio.setScale(2, RoundingMode.HALF_UP);
+            SelectItem item = new SelectItem(sgHabitacion.getId(), sgHabitacion.getSgTipoEspecifico().getNombre() + " || " + precio);
+            listaHabitacionHotel.add(item);
         }
     }
 
@@ -878,50 +857,57 @@ public class EstanciaBeanModel implements Serializable {
         }
     }
 
-    public List<SelectItem> getTiposHuespedesForHotel() {
-//        log("EstanciaBeanModel.getTiposHuespedesForHotel()");
-        this.sgTipo = buscarTipo();
-        List<SelectItem> l = new ArrayList<>();
-        List<SgTipoTipoEspecifico> lh = sgTipoTipoEspecificoImpl.traerPorTipo(getSgTipo(), Constantes.NO_ELIMINADO);
-        for (SgTipoTipoEspecifico sgTipoTipoEspecifico : lh) {
-            if (sgTipoTipoEspecifico.getSgTipoEspecifico().getId() != 17) {
-                SelectItem item = new SelectItem(sgTipoTipoEspecifico.getSgTipoEspecifico().getId(), sgTipoTipoEspecifico.getSgTipoEspecifico().getNombre());
-                l.add(item);
-            }
-        }
-        return l;
+    public void goToRegistroRegistroHotel(DetalleEstanciaVO detEstVo) {
+        setServiciosHotelFacturaEmpresa(null);
+        setSgDetalleSolicitudEstancia(detEstVo);
+        setFlag(false);
+        setDisabled(true);
+        setDisabledAux(true);
+        setPopUp(true);
+        setSubirArchivoPop(false);
+        setSgHuespedHotel(new SgHuespedHotel());
+        //
+        llenarListaHoteles();
+        PrimeFaces.current().executeScript("$(dlgRegHuespedHotel).modal('show');");
+        PrimeFaces.current().executeScript("PF('dlgSolEst').hide()");
     }
 
-    public boolean registrarHuespedHotel() {
-        boolean v;
+    private void llenarListaHoteles() {
+        listaHoteles = new ArrayList<>();
+        List<SgHotel> hoteles = sgHotelImpl.getAllHotel(sesion.getOficinaActual().getId());
+        hoteles.stream().forEach(h -> {
+            listaHoteles.add(new SelectItem(h.getId(), h.getProveedor().getNombre()));
+        });
+    }
 
+    public void registrarHuespedHotel() {
         try {
             if (this.fechaSalidaPropuesta != null) {
                 this.sgHuespedHotel.setFechaIngreso(this.getFechaIngresoHuesped());
                 this.sgHuespedHotel.setFechaSalida(fechaSalidaPropuesta);
                 this.sgHuespedHotel.setSgTipoEspecifico(this.tipoEspecifico);
-                v = sgHuespedHotelImpl.guardarHuespedHotel(sesion.getUsuario().getId(), getSgHuespedHotel(), sgDetalleSolicitudEstancia.getIdDetalleEstancia(),
+                sgHuespedHotelImpl.guardarHuespedHotel(sesion.getUsuario().getId(), getSgHuespedHotel(), sgDetalleSolicitudEstancia.getIdDetalleEstancia(),
                         sgDetalleSolicitudEstancia.getIdInvitado() != 0 ? sgDetalleSolicitudEstancia.getIdInvitado() : 0,
                         sgDetalleSolicitudEstancia.getIdInvitado() != 0 ? sgDetalleSolicitudEstancia.getInvitado() : "",
                         sgDetalleSolicitudEstancia.getIdInvitado() == 0 ? sgDetalleSolicitudEstancia.getUsuario() : "",
                         sgDetalleSolicitudEstancia.getTipoDetalle(), sgDetalleSolicitudEstancia.getCorreoUsuario(),
                         getIdHotel(), getIdHabitacion(), getSgSolicitudEstanciaVo().getId(), getSgTipo(), getIdTipoEspecifico(), "");
-                if (v) {
-                    tipoEspecificoService.ponerUsadoTipoEspecifico(getIdTipoEspecifico(), sesion.getUsuario());
-                }
+
+                tipoEspecificoService.ponerUsadoTipoEspecifico(getIdTipoEspecifico(), sesion.getUsuario());
+
             } else {
                 this.sgHuespedHotel.setFechaIngreso(this.getFechaIngresoHuesped());
                 this.sgHuespedHotel.setFechaSalida(getFechaSalidaHuesped());
                 this.sgHuespedHotel.setSgTipoEspecifico(this.tipoEspecifico);
-                v = sgHuespedHotelImpl.guardarHuespedHotel(sesion.getUsuario().getId(), getSgHuespedHotel(), sgDetalleSolicitudEstancia.getIdDetalleEstancia(),
+                sgHuespedHotelImpl.guardarHuespedHotel(sesion.getUsuario().getId(), getSgHuespedHotel(), sgDetalleSolicitudEstancia.getIdDetalleEstancia(),
                         sgDetalleSolicitudEstancia.getIdInvitado() != 0 ? sgDetalleSolicitudEstancia.getIdInvitado() : 0,
                         sgDetalleSolicitudEstancia.getIdInvitado() != 0 ? sgDetalleSolicitudEstancia.getInvitado() : "",
                         sgDetalleSolicitudEstancia.getIdInvitado() == 0 ? sgDetalleSolicitudEstancia.getUsuario() : "",
                         sgDetalleSolicitudEstancia.getTipoDetalle(), sgDetalleSolicitudEstancia.getCorreoUsuario(),
                         getIdHotel(), getIdHabitacion(), getSgSolicitudEstanciaVo().getId(), getSgTipo(), getIdTipoEspecifico(), "");
-                if (v) {
-                    tipoEspecificoService.ponerUsadoTipoEspecifico(getIdTipoEspecifico(), sesion.getUsuario());
-                }
+
+                tipoEspecificoService.ponerUsadoTipoEspecifico(getIdTipoEspecifico(), sesion.getUsuario());
+
             }
 
             //Guardar los Servicios facturados por la empresa
@@ -931,20 +917,52 @@ public class EstanciaBeanModel implements Serializable {
                     this.sgHuespedHotelServicioImpl.save(getSgHuespedHotel().getId(), vo.getIdSgTipoEspecifico(), true, this.sesion.getUsuario().getId());
                 }
             }
+            setListaEstancia(new ListDataModel(findAllSgSolicitudEstanciaByUsuarioAndEstatus(Constantes.ESTATUS_SOLICITUD_ESTANCIA_PENDIENTE, false)));
 
             //Guardar los servicios proveídos por el hotel
-            List<SgHotelTipoEspecificoVo> list2 = this.sgHotelTipoEspecificoImpl.getAllSgHotelTipoEspecificoBySgHotelAndProvided(getSgHotel().getId(), true, "id", true, false);
+            List<SgHotelTipoEspecificoVo> list2 = this.sgHotelTipoEspecificoImpl.getAllSgHotelTipoEspecificoBySgHotelAndProvided(idHotel, true, "id", true, false);
             for (SgHotelTipoEspecificoVo vo : list2) {
                 this.sgHuespedHotelServicioImpl.save(getSgHuespedHotel().getId(), vo.getIdSgTipoEspecifico(), false, this.sesion.getUsuario().getId());
             }
-            sgSolicitudEstanciaVo = sgSolicitudEstanciaImpl.buscarEstanciaPorId(sgSolicitudEstanciaVo.getId());
+            if (listaDetalleSolicitud != null && listaDetalleSolicitud.size() == 1) {
+                sgSolicitudEstanciaImpl.finalizaSolicitud(sgSolicitudEstanciaVo.getId(), sesion.getUsuario().getId());
+                PrimeFaces.current().executeScript("PF('dlgSolEst').hide()");
+            } else {
+                traerDetalleSolicitud();
+                PrimeFaces.current().executeScript("PF('dlgSolEst').show()");
+            }
+            PrimeFaces.current().executeScript("$(dlgRegHuespedHotel).modal('hide');");
+
         } catch (Exception e) {
-            v = false;
             log(e.getMessage());
-            e.printStackTrace();
-            return v;
         }
-        return v;
+    }
+
+    public void backToAsignarHabitacionFromRegistroHotel() {
+        setPopUp(false);
+        setDisabled(false);
+        setFlag(false);
+        setMensaje("");
+        setIdStaff(-1);
+        setIdHotel(-1);
+        setIdHabitacion(-1);
+        setIdTipoEspecifico(-1);
+        setHabitacion(null);
+        setTipoEspecifico(null);
+        setSgHuespedHotel(null);
+        setFechaIngresoHuesped(null);
+        setFechaSalidaHuesped(null);
+        setFechaSalidaPropuesta(null);
+        setHabitacionesStaffDataModel(null);
+        setSgDetalleSolicitudEstancia(null);
+        this.setServiciosHotelFacturaEmpresa(null);
+        //
+        PrimeFaces.current().executeScript("$(dlgRegHuesped).modal('hide');");
+    }
+
+    public void chargeServiciosHotelFacturaEmpresaValueChangeListener() {
+        setServiciosHotelFacturaEmpresa((getallServiciosHotelFacturaEmpresa()));
+        listaHabitacion();
     }
 
     public void registrarHuespedStaff() {
@@ -971,13 +989,17 @@ public class EstanciaBeanModel implements Serializable {
                             sgDetalleSolicitudEstancia.getIdInvitado() == 0 ? sgDetalleSolicitudEstancia.getUsuario() : "",
                             sgDetalleSolicitudEstancia.getTipoDetalle(), sgDetalleSolicitudEstancia.getCorreoUsuario(), this.sgTipo, this.tipoEspecifico, this.habitacion, this.getFechaIngresoHuesped(), null, sesion.getUsuario().getId());
                 }
-                sgSolicitudEstanciaVo = sgSolicitudEstanciaImpl.buscarEstanciaPorId(sgSolicitudEstanciaVo.getId());
                 //
                 setListaEstancia(new ListDataModel(findAllSgSolicitudEstanciaByUsuarioAndEstatus(Constantes.ESTATUS_SOLICITUD_ESTANCIA_PENDIENTE, false)));
                 //
-                traerDetalleSolicitud();
+                if (listaDetalleSolicitud.size() == 1) {
+                    sgSolicitudEstanciaImpl.finalizaSolicitud(sgSolicitudEstanciaVo.getId(), sesion.getUsuario().getId());
+                    PrimeFaces.current().executeScript("PF('dlgSolEst').hide()");
+                } else {
+                    traerDetalleSolicitud();
+                    PrimeFaces.current().executeScript("PF('dlgSolEst').show()");
+                }
                 PrimeFaces.current().executeScript("$(dlgRegHuesped).modal('hide')");
-                PrimeFaces.current().executeScript("PF('dlgSolEst').show()");
             }
         } catch (SIAException siae) {
             log(siae.getMensajeParaProgramador());
@@ -994,6 +1016,19 @@ public class EstanciaBeanModel implements Serializable {
     public boolean cancelarSolicitudEstancia() {
         boolean v = sgSolicitudEstanciaImpl.cancelarSolicitudEstancia(sesion.getUsuario(), getSgSolicitudEstanciaVo(), getMensaje(),
                 Constantes.TRUE, isConCorreo());
+
+        //Recargar lista de Solicitudes
+        log("DEspues de cancelar la solicitud:  " + getSgSolicitudEstanciaVo().getId());
+        this.listaSolicitud = (sgSolicitudEstanciaImpl.trearSolicitudEstanciaPorOficina(sesion.getOficinaActual().getId(), Constantes.ESTATUS_SOLICITUD_ESTANCIA_SOLICITADA, sesion.getUsuario().getId(), Constantes.NO_ELIMINADO));
+        return v;
+    }
+
+    public boolean eliminarSolicitudEstancia(SgSolicitudEstanciaVo est) {
+        mensaje = "Eliminado por el analista de Servicios Generales";
+        sgSolicitudEstanciaVo = est;
+        boolean v = sgSolicitudEstanciaImpl.cancelarSolicitudEstancia(sesion.getUsuario(),
+                getSgSolicitudEstanciaVo(), getMensaje(),
+                Constantes.FALSE, Constantes.FALSE);
 
         //Recargar lista de Solicitudes
         log("DEspues de cancelar la solicitud:  " + getSgSolicitudEstanciaVo().getId());
@@ -2226,20 +2261,6 @@ public class EstanciaBeanModel implements Serializable {
      */
     public void setIdInVitado(int idInVitado) {
         this.idInVitado = idInVitado;
-    }
-
-    /**
-     * @return the listaDetalleEstancia
-     */
-    public List<DetalleSolicitudVO> getListaDetalleEstancia() {
-        return listaDetalleEstancia;
-    }
-
-    /**
-     * @param listaDetalleEstancia the listaDetalleEstancia to set
-     */
-    public void setListaDetalleEstancia(List<DetalleSolicitudVO> listaDetalleEstancia) {
-        this.listaDetalleEstancia = listaDetalleEstancia;
     }
 
     /**

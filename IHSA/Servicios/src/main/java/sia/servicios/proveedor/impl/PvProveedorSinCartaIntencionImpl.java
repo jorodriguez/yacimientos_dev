@@ -117,7 +117,6 @@ public class PvProveedorSinCartaIntencionImpl extends AbstractFacade<PvProveedor
             ProveedorSinCartaIntencionVo voProvCampo = this.buscarProveedorCampo(campoId, proveedorId);            
             ret = (voProvCampo != null && voProvCampo.getId() > 0);                    
         } catch (Exception e) {
-            UtilLog4j.log.error(e);
             ret = false;
         }
         return ret;

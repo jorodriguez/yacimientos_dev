@@ -1711,6 +1711,8 @@ public class OrdenBean implements Serializable {
             //
             ContarBean contarBean = (ContarBean) FacesUtilsBean.getManagedBean("contarBean");
             contarBean.llenarOcsSinAutoComprasLicita();
+            //
+            llenarCompras();
         } catch (Exception e) {
             LOGGER.fatal(this, e.getMessage());
             FacesUtilsBean.addInfoMessage(ERR_UNEXPECTED);

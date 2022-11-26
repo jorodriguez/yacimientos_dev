@@ -25,7 +25,7 @@
                             <p:commandLink styleClass="btn btn-default"
                                            value="Autorizar"
                                            action="#{ordenBean.autorizarLicitacion}"
-                                           process="@this  form1:Ordenes" update="@form">
+                                           process="@this  form1:Ordenes" update="form1 frmMenu">
                                 <p:confirm header="Confirmar" message="La operación va a autorizar la(s) OC/S seleccionada(s). ¿Está seguro?" 
                                            icon="pi pi-exclamation-triangle"/>
                             </p:commandLink>                                
@@ -64,16 +64,14 @@
                                             process="@this" update="frmNotasOCS"/>                            
                         </div>
                     </div>
-                    
+
                     <div id="divTabla" class="row"> 
                         <p  style="float: right; color: #E79E19;"><i class="fa fa-asterisk"/>Ordenes con contrato vencido</p>
                         <div scope="colgroup" colspan="7"  style="font-weight: normal;"><span>Licitaciones pendientes de autorizar</span></div>
                         <div class="table table-responsive">                            
-                            <p:dataTable size="small" stripedRows="true" showGridlines="true" id="Ordenes"   value="#{ordenBean.ordenesAutorizaLicitacion}" var="data"                                                                              
-                                         styleClass="table table-striped" rows="20" 
-                                         paginator="true"  
-                                         paginatorPosition="bottom" 
-                                         style="font-size: 1em; width: 100%" >
+                            <p:dataTable size="small" stripedRows="true" showGridlines="true" id="Ordenes"   
+                                         value="#{ordenBean.ocs}" var="data"                                                                              
+                                         rows="20"  paginator="true"   paginatorPosition="bottom" >
                                 <p:column styleClass="#{data.leida eq 'False' ? 'filaConSombra': 'filaSinSombra'}">
                                     <f:facet name="header">
                                         <h:selectBooleanCheckbox  class="todos" 
@@ -82,19 +80,15 @@
                                     </f:facet>
                                     <h:selectBooleanCheckbox value="#{data.selected}" class="seleccion"/>
                                 </p:column>
-                                <p:column styleClass="#{data.leida eq 'False' ? 'filaConSombra': 'filaSinSombra'}" style="width: 9%">
+                                <p:column styleClass="#{data.leida eq 'False' ? 'filaConSombra': 'filaSinSombra'}" 
+                                          style="width: 9%" headerText="Código">
                                     <h:outputText value="#{data['consecutivo']}"
                                                   style="#{data['superaMonto'] eq 'True' ? 'color: maroon;' : ''}"/>
-                                    <f:facet name="header">
-                                        <h:outputText value="Código"/>
-                                    </f:facet>
                                 </p:column>
-                                <p:column styleClass="#{data.leida eq 'False' ? 'filaConSombra': 'filaSinSombra'}">
+                                <p:column styleClass="#{data.leida eq 'False' ? 'filaConSombra': 'filaSinSombra'}"
+                                          headerText="Referencia">
                                     <h:outputText value="#{data['referencia']}"
                                                   style="#{data['superaMonto'] eq 'True' ? 'color: maroon;' : ''}"/>
-                                    <f:facet name="header">
-                                        <h:outputText value="Referencia"/>
-                                    </f:facet>
                                 </p:column>
                                 <p:column styleClass="#{data.leida eq 'False' ? 'filaConSombra': 'filaSinSombra'}">
                                     <h:outputText value="#{data['requisicion']}" style="#{data['superaMonto'] eq 'True' ? 'color: maroon;' : ''}"/>
@@ -120,22 +114,6 @@
                                         <f:convertNumber pattern="$ #,##0.00" locale="es-MX"/>
                                     </h:outputText>
                                 </p:column>
-                                <!--<p:column styleClass="#{data.leida eq 'False' ? 'filaConSombra': 'filaSinSombra'}">
-                                    <f:facet name="header">
-                                        <h:outputText value="I.V.A."/>
-                                    </f:facet>
-                                    <h:outputText value="#{data['iva']}" style="#{data['superaMonto'] eq 'True' ? 'color: maroon;' : ''}" >
-                                        <f:convertNumber pattern="#,##0.00" locale="es-MX"/>
-                                    </h:outputText>
-                                </p:column>
-                                <p:column styleClass="#{data.leida eq 'False' ? 'filaConSombra': 'filaSinSombra'}">
-                                    <h:outputText value="#{data['total']}" style="#{data['superaMonto'] eq 'True' ? 'color: maroon;' : ''}" >
-                                        <f:convertNumber pattern="#,##0.00" locale="es-MX"/>
-                                    </h:outputText>
-                                    <f:facet name="header">
-                                        <h:outputText value="Monto Total" />
-                                    </f:facet>
-                                </p:column>-->
                                 <p:column styleClass="#{data.leida eq 'False' ? 'filaConSombra': 'filaSinSombra'}">
                                     <h:outputText value="#{data['moneda']}"
                                                   style="#{data['superaMonto'] eq 'True' ? 'color: maroon;' : ''}"/>
@@ -162,24 +140,20 @@
                                         <h:outputLabel value="#{data.contratoVO.numero}"/>
                                     </h:panelGroup>
                                 </p:column>
-                                <p:column headerText="Tabulación" styleClass="#{data.leida eq 'False' ? 'filaConSombra': 'filaSinSombra'}">
-                                    <h:panelGroup  rendered="#{data.adjuntoETS.id gt 0}">
+                                <p:column headerText="Tabulación" 
+                                          styleClass="#{data.leida eq 'False' ? 'filaConSombra': 'filaSinSombra'}">
+                                    <h:panelGroup  rendered="#{data.adjuntoETS.id gt 0}" styleClass="text text-center">
                                         <p:link  href="/Compras/AbrirArchivo?ZWZ2W=#{data.adjuntoETS.id}&amp;ZWZ3W=#{data.adjuntoETS.uuid}"
-                                                 target="_blank"
-                                                 value="">
-                                            <h:graphicImage url="/sia/resources/img/Documento.gif" 
-                                                            style="cursor: pointer;"
-                                                            title="Abrir la tabla #{data.adjuntoETS.nombre}"/>
+                                                 target="_blank" title="Abrir la tabla #{data.adjuntoETS.nombre}">
+                                            <span class="fa fa-file" />
                                         </p:link>
                                     </h:panelGroup>
                                     <h:panelGroup  rendered="#{data.adjuntoETS.id eq 0}">
                                         <ui:repeat value="#{data.listaETS}" var="lista" >
                                             <div align="left">
                                                 <p:link  href="/Compras/AbrirArchivo?ZWZ2W=#{lista.id}&amp;ZWZ3W=#{lista.uuid}"
-                                                         target="_blank"
-                                                         value="" style="margin: 0px; padding: 0px;">
-                                                    <h:graphicImage url="/sia/resources/img/Documento.gif" style="cursor: pointer;"
-                                                                    title="Abrir la tabla #{lista.nombre}"/>
+                                                         target="_blank" title="Abrir la tabla #{lista.nombre}">
+                                                    <i class="fa fa-file"/>
                                                 </p:link>
                                             </div>
                                         </ui:repeat>
@@ -196,7 +170,7 @@
                         </div>
                     </div>
 
-                    
+
                     <div id="divDatos" style="display: none;" class="row">
                         <div class="col-5" style="padding-top: 5px; z-index: 999;">
                             <h:outputText value="Información de la OC/S: "/>
