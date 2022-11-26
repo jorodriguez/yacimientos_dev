@@ -917,6 +917,7 @@ public class EstanciaBeanModel implements Serializable {
                     this.sgHuespedHotelServicioImpl.save(getSgHuespedHotel().getId(), vo.getIdSgTipoEspecifico(), true, this.sesion.getUsuario().getId());
                 }
             }
+            setListaEstancia(new ListDataModel(findAllSgSolicitudEstanciaByUsuarioAndEstatus(Constantes.ESTATUS_SOLICITUD_ESTANCIA_PENDIENTE, false)));
 
             //Guardar los servicios proveídos por el hotel
             List<SgHotelTipoEspecificoVo> list2 = this.sgHotelTipoEspecificoImpl.getAllSgHotelTipoEspecificoBySgHotelAndProvided(idHotel, true, "id", true, false);
