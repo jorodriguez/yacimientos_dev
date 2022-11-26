@@ -1914,9 +1914,8 @@ F
                 //Verifica por compania
                 requisicionActual.setConsecutivo(folioBean.getFolio("REQUISICION_CONSECUTIVO", requisicionActual.getApCampo().getId()));
             }
-            if (Constantes.RFC_MPG.equals(requisicionActual.getCompania().getRfc())
-                    && !TipoRequisicion.AF.equals(requisicionActual.getTipo())) {
-                requisicionActual.setEstatus(estatusBean.getPorId(Constantes.REQUISICION_SOLICITADA)); // 10 = Solicitada para MPG
+            if (TipoRequisicion.AF.equals(requisicionActual.getTipo())) {
+                requisicionActual.setEstatus(estatusBean.getPorId(Constantes.REQUISICION_VISTO_BUENO)); // 10 = Solicitada para MPG
             } else {
                 requisicionActual.setEstatus(estatusBean.getPorId(Constantes.REQUISICION_VISTO_BUENO_C)); // 25 = Visto Bueno or costo
             }
