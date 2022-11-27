@@ -13,26 +13,27 @@
                 Administrar roles
             </ui:define>
             <ui:define name="contenido">
-                <div class="row">
-                    <h:form id="frmRolContrato">
+                <div class="row">                    
                         <div class="row">
                             <h:outputText value="Esta opción solo agrega y muestra los roles por módulo con las opciones de agregarlos y quitarlos. "
                                           style="color: red; font-weight:  bold; float: right;"/>
                         </div>
+                    <div class="col-12">
                         <p:tabView id="tbRoles">
                             <p:tab title="Roles Modulos"  >
+                                <h:form id="frmRolAgregar">
                                 <p:panel id="pnlAdd">
                                     <h:panelGrid columns="2">
-                                        <h:outputLabel value="Módulo"/>
+                                        <h:outputLabel value="Campo"/>
                                         <p:selectOneMenu value="#{rolBean.idCampo}" >
                                             <f:selectItems value="#{rolBean.campos}"/>
-                                            <p:ajax listener="#{rolBean.cambiarSeleccionCampo}" update="frmRolContrato:tbRoles:cmbRolAdd frmRolContrato:tbRoles:cmbModuloAdd"/>
+                                            <p:ajax listener="#{rolBean.cambiarSeleccionCampo}" update="frmRolAgregar:cmbRolAdd frmRolAgregar:cmbModuloAdd"/>
                                         </p:selectOneMenu>
                                         <h:outputLabel value="Módulo"/>
                                         <p:selectOneMenu value="#{rolBean.idModulo}" id="cmbModuloAdd">
                                             <f:selectItem itemLabel="Seleccione . . . " itemValue="-1"/>
                                             <f:selectItems value="#{rolBean.modulos}"/>
-                                            <p:ajax listener="#{rolBean.cambiarModulo}" update="frmRolContrato:tbRoles:cmbRolAdd"/>
+                                            <p:ajax listener="#{rolBean.cambiarModulo}" update="frmRolAgregar:cmbRolAdd"/>
                                         </p:selectOneMenu>
 
                                         <h:outputLabel value="Rol"/>
@@ -48,26 +49,28 @@
                                         <h:outputLabel value="Rol principal"/>
                                         <p:selectBooleanCheckbox value="#{rolBean.principal}"/>
                                         <p:commandLink value="Guardar" styleClass="btn btn-primary text-white" 
-                                                       action="#{rolBean.guardarUsuarioRol}" process="frmRolContrato:tbRoles:pnlAdd" 
-                                                       update="frmRolContrato:tbRoles frmRolContrato:dtRolUser"/>
+                                                       action="#{rolBean.guardarUsuarioRol}" process="frmRolAgregar:pnlAdd" update="frmRolAgregar:pnlAdd" 
+                                                       />
                                     </h:panelGrid>
                                 </p:panel>
                                 <h:messages errorClass="errorMessage" infoClass="infoMessage" styleClass="textoMensajeError"/>
                                 <hr/>
+                                </h:form>
                             </p:tab>
                             <p:tab title="Consulta">
+                                <h:form id="frmRolConsulta">
                                 <p:panel id="pnlDatos">
                                     <h:panelGrid columns="2" >
                                         <h:outputLabel value="Campo"/>
                                         <p:selectOneMenu value="#{rolBean.idCampo}"  >
                                             <f:selectItems value="#{rolBean.campos}"/>
-                                            <p:ajax listener="#{rolBean.cambiarSeleccionCampo}" update="frmRolContrato:tbRoles:cmbRol frmRolContrato:tbRoles:cmbModulo"/>
+                                            <p:ajax listener="#{rolBean.cambiarSeleccionCampo}" update="frmRolConsulta:cmbRol frmRolConsulta:cmbModulo"/>
                                         </p:selectOneMenu>
                                         <h:outputLabel value="Módulo"/>
                                         <p:selectOneMenu id="cmbModulo" value="#{rolBean.idModulo}" >
                                             <f:selectItem itemLabel="Seleccione . . . " itemValue="-1"/>
                                             <f:selectItems value="#{rolBean.modulos}"/>
-                                            <p:ajax listener="#{rolBean.cambiarModulo}" update="frmRolContrato:tbRoles:cmbRol"/>
+                                            <p:ajax listener="#{rolBean.cambiarModulo}" update="frmRolConsulta:cmbRol"/>
                                         </p:selectOneMenu>
                                         <h:outputLabel value="Rol"/>
                                         <p:selectOneMenu id="cmbRol" value="#{rolBean.idRol}">
@@ -77,28 +80,30 @@
                                         <h:outputLabel value="Rol principal"/>
                                         <p:selectBooleanCheckbox value="#{rolBean.principal}"/>
                                         <p:commandLink value="Buscar" styleClass="btn btn-primary text-white" action="#{rolBean.buscarRol}"
-                                                       process="@this frmRolContrato:tbRoles:pnlDatos" update="frmRolContrato:dtRolUser"/>
+                                                       process="@this frmRolConsulta:pnlDatos" update="frmRolConsulta:dtRolUser"/>
                                     </h:panelGrid>
                                 </p:panel>
-                            </p:tab>
-                        </p:tabView>
 
-                        <p:dataTable size="small" stripedRows="true" showGridlines="true" id="dtRolUser" 
-                                     value="#{rolBean.lista}" var="lr" rows="20" paginator="true" paginatorAlwaysVisible="true">
-                            <p:column>
-                                <f:facet name="header">
-                                    <h:outputLabel value="Usuario"/>
-                                </f:facet>
-                                <h:outputText value="#{lr.usuario}"/>
-                            </p:column>
-                            <p:column>
-                                <p:commandLink value="Eliminar" action="#{rolBean.eliminarUsuarioRol(lr.idUsuarioRol)}" 
-                                               process="@this" update="frmRolContrato:dtRolUser"
-                                               >
-                                </p:commandLink>
-                            </p:column>
-                        </p:dataTable>
-                    </h:form>
+                                <div class="col-12">
+                                    <p:dataTable size="small" stripedRows="true" showGridlines="true" id="dtRolUser" 
+                                                 value="#{rolBean.lista}" var="lr" rows="20" paginator="true" paginatorAlwaysVisible="true">
+                                        <p:column>
+                                            <f:facet name="header">
+                                                <h:outputLabel value="Usuario"/>
+                                            </f:facet>
+                                            <h:outputText value="#{lr.usuario}"/>
+                                        </p:column>
+                                        <p:column>
+                                            <p:commandLink value="Eliminar" action="#{rolBean.eliminarUsuarioRol(lr.idUsuarioRol, lr.idRol)}" process="@this" update="dtRolUser">
+                                            </p:commandLink>
+                                        </p:column>
+                                    </p:dataTable>
+                                </div>    
+                                    
+                                    </h:form>
+                            </p:tab>
+                        </p:tabView>                    
+                        </div>
                 </div>
             </ui:define>
         </ui:composition>

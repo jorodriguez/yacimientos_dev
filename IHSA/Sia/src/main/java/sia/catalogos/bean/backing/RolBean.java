@@ -185,6 +185,7 @@ public class RolBean implements Serializable {
                             setIdRol(-1);
                             setNombreUsuario("");
                             buscarRol();
+                            FacesUtils.addInfoMessage("Se agregó correctamente el nuevo rol.");
                         }
                     } else {
                         FacesUtils.addErrorMessage("Ya existe el usuario con el rol seleccionado");
@@ -205,9 +206,9 @@ public class RolBean implements Serializable {
         return uvo == null;
     }
 
-    public void eliminarUsuarioRol(int idUrol) {
+    public void eliminarUsuarioRol(int idUrol, int idrol) {
         siUsuarioRolImpl.eliminarUsuarioRol(idUrol, sesion.getUsuario().getId());
-        lista = siUsuarioRolImpl.traerUsuarioPorRolModulo(idUrol, getIdModulo(), getIdCampo());
+        lista = siUsuarioRolImpl.traerUsuarioPorRolModulo(idrol, getIdModulo(), getIdCampo());
     }
 
 }
