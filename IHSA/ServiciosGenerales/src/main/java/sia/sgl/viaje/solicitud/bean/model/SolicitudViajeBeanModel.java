@@ -754,7 +754,7 @@ public class SolicitudViajeBeanModel implements Serializable {
                 }
                 if (getVehiculoVO() != null) {
                     setTieneVehiculo(Constantes.TRUE);
-                    setconChofer(Constantes.FALSE);
+                    //setconChofer(Constantes.FALSE);
                     setListVehiculoVO(sgVehiculoImpl.traerVehiculoPorUsuarioAsignado(sesion.getUsuario().getId()));
                 } else {
                     setconChofer(Constantes.TRUE);

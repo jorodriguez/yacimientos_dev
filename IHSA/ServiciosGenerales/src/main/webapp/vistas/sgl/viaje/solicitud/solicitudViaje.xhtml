@@ -138,7 +138,7 @@
                                                                             var tipo = document.getElementById('tipoVehiculo');
                                                                             if (d == true) {
                                                                                 ejecutarBoton('finalizarSolicitud', 'vehiculoAsignado');
-                                                                                 $('#tipoVehiculo').bootstrapSwitch('labelText', 'Con Conductor');
+                                                                                $('#tipoVehiculo').bootstrapSwitch('labelText', 'Con Conductor');
                                                                                 $(tipo).attr("value", "False");
                                                                             } else {
                                                                                 $('#tipoVehiculo').bootstrapSwitch('labelText', 'Vehiculo Asignado');
@@ -185,7 +185,7 @@
                                                                     <input type="checkbox" name="tipoVehiculo"  data-on-text="Vehiculo Asignado" data-off-text="Con Conductor" id="tipoVehiculo" 
                                                                            onchange="vehiculoAsignado()" class="form-control" data-label-width="0" data-on-color="primary" data-off-color="primary" data-handle-width="130"/>
                                                                 </div>
-                                                                <div class="col-md-6" id="comboVehiculo" style="display: #{solicitudViajeBean.conChofer ? 'block' : 'none'}">
+                                                                <div class="col-md-6" id="comboVehiculo" style="display: #{!solicitudViajeBean.conChofer ? 'block' : 'none'}">
                                                                     <div class="col-md-2"><labe>Vehiculo:</labe></div>
                                                                     <div class="col-md-10" style="display: #{solicitudViajeBean.cambiarVehiculo ? 'block' : 'none'}">
 
@@ -199,14 +199,16 @@
                                                                     <div class="col-md-10" style="display: #{!solicitudViajeBean.cambiarVehiculo ? 'block': 'none'};">
                                                                         <label class="col-8">#{solicitudViajeBean.vehiculoActual}</label>
                                                                         <div id="confVehiculo" class="col-4">
-                                                                            <p:commandLink   title="Editar Vehiculo" styleClass="col-6" 
+                                                                            <!-- p:commandLink   title="Editar Vehiculo" styleClass="col-6" 
                                                                                              actionListener="#{solicitudViajeBean.editarVehiculo()}">                                                                                
                                                                                  <span class="fa fa-edit" style="color: #777;"/>
-                                                                            </p:commandLink>
-                                                                            <p:commandLink  actionListener="#{solicitudViajeBean.confirVehiculoActual()}" styleClass="col-6" 
-                                                                                            title="confirmar Vehiculo">                                                                                
-                                                                                <span class="fa fa-check" style="color: #{solicitudViajeBean.confirVehiculo ? 'green;': '#777;'}"/>
-                                                                            </p:commandLink>
+                                                                            </p:commandLink -->
+                                                                            <ui:fragment id="frConfVeh" rendered="#{!solicitudViajeBean.confirVehiculo}">
+                                                                                <p:commandLink  actionListener="#{solicitudViajeBean.confirVehiculoActual()}" styleClass="col-6" 
+                                                                                                title="confirmar Vehiculo" process="@this" update="frConfVeh">                                                                                
+                                                                                    <span class="fa fa-check" style="color: #{solicitudViajeBean.confirVehiculo ? 'green;': '#777;'}"/>
+                                                                                </p:commandLink>
+                                                                            </ui:fragment>
                                                                         </div>
                                                                     </div>
                                                                 </div>
