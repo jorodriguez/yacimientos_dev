@@ -1729,9 +1729,9 @@ public class SolicitudViajeBean implements Serializable {
                     // reiniciarComponentes();
                     solicitudViajeBeanModel.setPanelSV(Constantes.TRUE);
                     PrimeFaces.current().executeScript(";$(modalFinalizar).modal('hide');");
-                } else {
-                    solicitudViajeBeanModel.cargarVehiculo();
+                } else {                    
                     if (isConfirVehiculo()) {
+                        solicitudViajeBeanModel.cargarVehiculo();
                         solicitado = solicitudViajeBeanModel.solicitarViaje();
                         //InicializarComponentes();
                         // reiniciarComponentes();
