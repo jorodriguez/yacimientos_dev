@@ -50,7 +50,7 @@ import sia.util.UtilLog4j;
  */
 //Stateless (name = "Inventarios_ArticuloService")
 @Stateless
-public class ArticuloImpl extends AbstractFacade<InvArticulo>  implements ArticuloRemote{
+public class ArticuloImpl extends AbstractFacade<InvArticulo> implements ArticuloRemote {
 
     private static final int MAXIMO_RESULTADOS = 100;
 
@@ -69,7 +69,7 @@ public class ArticuloImpl extends AbstractFacade<InvArticulo>  implements Articu
     InvArticuloCampoImpl invArticuloCampoRemote;
 
     @Inject
-    ApCampoImpl  apCampoRemote;
+    ApCampoImpl apCampoRemote;
 
     @Inject
     private FolioImpl folioRemote;
@@ -81,19 +81,16 @@ public class ArticuloImpl extends AbstractFacade<InvArticulo>  implements Articu
         super(InvArticulo.class);
     }
 
-    
     @Override
     protected EntityManager getEntityManager() {
         return em;
     }
 
-    
     @Override
     public List<ArticuloVO> buscarPorFiltros(ArticuloVO filtro, Integer campo) {
         return buscarPorFiltros(filtro, null, null, null, false, campo);
     }
 
-    
     @Override
     public List<ArticuloVO> buscarPorFiltros(ArticuloVO filtro, Integer inicio, Integer tamanioPagina, String campoOrdenar,
             boolean esAscendente, Integer idCampo) {
@@ -130,7 +127,6 @@ public class ArticuloImpl extends AbstractFacade<InvArticulo>  implements Articu
         return typedQuery.getResultList();
     }
 
-    
     @Override
     public int contarPorFiltros(ArticuloVO filtro, Integer idCampo) {
         CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
@@ -146,7 +142,6 @@ public class ArticuloImpl extends AbstractFacade<InvArticulo>  implements Articu
         return ((Long) getEntityManager().createQuery(query).getSingleResult()).intValue();
     }
 
-    
     @Override
     public ArticuloVO buscar(Integer id) throws SIAException {
         //InvArticuloCampo artCampo = invArticuloCampoRemote.find(id);
@@ -167,13 +162,11 @@ public class ArticuloImpl extends AbstractFacade<InvArticulo>  implements Articu
                 unidadId, unidadNombre, false, articulo.getCodigoInt(), articulo.getCategorias());
     }
 
-    
     @Override
     public ArticuloVO buscar(Integer id, Integer campo) throws SIAException {
         return this.obtenerArticulos(id, campo);
     }
 
-    
     @Override
     public int guardarArticulo(ArticuloVO articuloVO, String sesion, List<CampoVo> listaCampo,
             List<CategoriaVo> categorias, String numParte) throws SIAException {
@@ -252,7 +245,6 @@ public class ArticuloImpl extends AbstractFacade<InvArticulo>  implements Articu
         return newArticuloID;
     }
 
-    
     @Override
     public void actualizar(ArticuloVO articuloVO, String username, int campo) throws SIAException {
         try {
@@ -281,7 +273,6 @@ public class ArticuloImpl extends AbstractFacade<InvArticulo>  implements Articu
         }
     }
 
-    
     @Override
     public void eliminar(Integer id, String username, Integer campo) throws SIAException {
         try {
@@ -353,7 +344,6 @@ public class ArticuloImpl extends AbstractFacade<InvArticulo>  implements Articu
      * @param campo
      * @return
      */
-    
     @Override
     public List<InventarioVO> buscarInventarios(Integer articuloId, Integer campo) {
         InventarioVO filtro = new InventarioVO();
@@ -362,7 +352,6 @@ public class ArticuloImpl extends AbstractFacade<InvArticulo>  implements Articu
         return inventarioService.buscarPorFiltros(filtro, campo);
     }
 
-    
     @Override
     public ArticuloInventarioVO buscarArticuloConInventarios(String codigo, Integer campo) {
         //buscar articulo por codigo utilizando el método por filtros
@@ -409,7 +398,6 @@ public class ArticuloImpl extends AbstractFacade<InvArticulo>  implements Articu
         query.where(predicates.toArray(new Predicate[0]));
     }
 
-    
     @Override
     public List<ArticuloVO> obtenerArticulos(String codigo, int campoID, int categoriaID, String codigosCategorias) {
 
@@ -455,7 +443,6 @@ public class ArticuloImpl extends AbstractFacade<InvArticulo>  implements Articu
         return lstArticulos;
     }
 
-    
     @Override
     public List<ArticuloVO> obtenerArticulosUsuario(String codigo, int categoriaID, String codigosCategorias, String usuarioID) {
         List<ArticuloVO> lstArticulos = new ArrayList<>();
@@ -516,7 +503,6 @@ public class ArticuloImpl extends AbstractFacade<InvArticulo>  implements Articu
         return lstArticulos;
     }
 
-    
     @Override
     public List<SelectItem> obtenerArticulosItems(String texto, String codigo, int campoID, int categoriaID, String codigosCategorias) {
         List<SelectItem> lstArticulos = new ArrayList<SelectItem>();
@@ -592,7 +578,6 @@ public class ArticuloImpl extends AbstractFacade<InvArticulo>  implements Articu
         return lstArticulos;
     }
 
-    
     @Override
     public List<SelectItem> obtenerArticulosItemsUsuario(String texto, String codigo, int categoriaID, String codigosCategorias, String usuarioID) {
         List<SelectItem> lstArticulos = new ArrayList<SelectItem>();
@@ -660,7 +645,6 @@ public class ArticuloImpl extends AbstractFacade<InvArticulo>  implements Articu
         return lstArticulos;
     }
 
-    
     @Override
     public ArticuloVO obtenerArticulos(int articuloID, int campoID) {
         ArticuloVO articulo = null;
@@ -714,7 +698,6 @@ public class ArticuloImpl extends AbstractFacade<InvArticulo>  implements Articu
         return articulo;
     }
 
-    
     @Override
     public void crear(ArticuloVO articuloVO, String username, int campo) throws SIAException {
         try {
@@ -751,7 +734,6 @@ public class ArticuloImpl extends AbstractFacade<InvArticulo>  implements Articu
         }
     }
 
-    
     @Override
     public List<ArticuloVO> articulosFrecuentes(String usr, int campoID) {
         List<ArticuloVO> lstArticulos = new ArrayList<ArticuloVO>();
@@ -799,7 +781,6 @@ public class ArticuloImpl extends AbstractFacade<InvArticulo>  implements Articu
         return lstArticulos;
     }
 
-    
     @Override
     public void cambiarArticulo(String id, List<ArticuloVO> listaCambiarArticulos, List<CategoriaVo> listaCambiarSeleccionada) {
         for (ArticuloVO listaCambiarArticulo : listaCambiarArticulos) {
@@ -815,7 +796,6 @@ public class ArticuloImpl extends AbstractFacade<InvArticulo>  implements Articu
         }
     }
 
-    
     @Override
     public String construirCodigo(List<CategoriaVo> categorias) {
         String cod = "";
@@ -856,7 +836,6 @@ public class ArticuloImpl extends AbstractFacade<InvArticulo>  implements Articu
         return cats;
     }
 
-    
     @Override
     public List<ArticuloVO> articulosFrecuentesOrden(String usr, int campoID) {
         List<ArticuloVO> lstArticulos = new ArrayList<ArticuloVO>();
@@ -907,7 +886,6 @@ public class ArticuloImpl extends AbstractFacade<InvArticulo>  implements Articu
         return lstArticulos;
     }
 
-    
     @Override
     public boolean existeArticuloConCodigo(String codigo, int campo) {
         ArticuloVO filtro = new ArticuloVO();
@@ -915,7 +893,6 @@ public class ArticuloImpl extends AbstractFacade<InvArticulo>  implements Articu
         return !buscarPorFiltros(filtro, campo).isEmpty();
     }
 
-    
     @Override
     public List<SelectItem> obtenerCategorias(int campoID) {
         List<SelectItem> lstCategorias = new ArrayList<SelectItem>();
@@ -1024,7 +1001,6 @@ public class ArticuloImpl extends AbstractFacade<InvArticulo>  implements Articu
         return lstCategorias;
     }
 
-    
     @Override
     public InvArticulo buscarPorNombre(String nombre, int unidadID) {
         InvArticulo retVal = null;
@@ -1044,7 +1020,6 @@ public class ArticuloImpl extends AbstractFacade<InvArticulo>  implements Articu
         return retVal;
     }
 
-    
     @Override
     public InvArticulo buscarPorCodigoInterno(String codigoInt, int unidadID) {
         InvArticulo retVal = null;
@@ -1065,7 +1040,6 @@ public class ArticuloImpl extends AbstractFacade<InvArticulo>  implements Articu
         return retVal;
     }
 
-    
     @Override
     public List<ArticuloVO> buscarArticuloSinCategoriaPorGenero(String sesion) {
         List<ArticuloVO> retVal;
@@ -1105,7 +1079,6 @@ public class ArticuloImpl extends AbstractFacade<InvArticulo>  implements Articu
         return retVal;
     }
 
-    
     @Override
     public void agregarCategoriaArticulo(String id, List<ArticuloVO> latemp, List<CategoriaVo> categorias) {
         for (ArticuloVO articuloVO : latemp) {
@@ -1124,8 +1097,7 @@ public class ArticuloImpl extends AbstractFacade<InvArticulo>  implements Articu
             }
         }
     }
-    
-     
+
     @Override
     public InvArticulo buscarPorCodigo(String codigo, int unidadID) {
         InvArticulo retVal = null;
@@ -1146,5 +1118,36 @@ public class ArticuloImpl extends AbstractFacade<InvArticulo>  implements Articu
         return retVal;
     }
 
-    
+    @Override
+    public List<ArticuloVO> obtenerArticulosPorPalabra(String palabra, int campoID) {
+
+        List<ArticuloVO> lstArticulos = new ArrayList<>();
+        StringBuilder sb = new StringBuilder();
+        //                   0      1              2                        3         4
+        sb.append(" select a.ID, a.CODIGO, a.CODIGO_EAN13 AS codigo_barras, a.NOMBRE, a.DESCRIPCION, "
+                // 5                      6                          7       
+                + " a.UNIDAD AS unidad_id, u.NOMBRE as unidad_nombre, ac.AP_CAMPO AS campo_id, "
+                // 8                         9                10                         11
+                + "c.NOMBRE as campo_nombre, ac.ID AS id_rel, a.codigo_int AS num_parte, a.categorias "
+                + " from INV_ARTICULO_CAMPO ac "
+                + " inner join INV_ARTICULO a on a.ID = ac.INV_ARTICULO and a.ELIMINADO = 'False' and a.NOMBRE is not null ");
+        sb.append(" inner join AP_CAMPO c on c.ID = ac.AP_CAMPO and c.ELIMINADO = 'False' ");
+        if (campoID > 0) {
+            sb.append(" and ac.AP_CAMPO = ").append(campoID);
+        }
+        sb.append(" inner join SI_UNIDAD u on u.id = a.UNIDAD and u.ELIMINADO = 'False' "
+                + " where ac.ELIMINADO = 'False' ");
+            sb.append(" and upper(a.nombre) like  upper('%").append(palabra).append("%') ");
+        sb.append(" order by a.NOMBRE ");
+
+        try {
+            lstArticulos
+                    = dbCtx.fetch(sb.toString()).into(ArticuloVO.class);
+        } catch (DataAccessException e) {
+            LOGGER.fatal(this, e);
+        }
+
+        return lstArticulos;
+    }
+
 }

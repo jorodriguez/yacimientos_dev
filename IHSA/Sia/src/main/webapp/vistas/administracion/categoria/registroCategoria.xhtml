@@ -25,38 +25,30 @@
                             </div>
                         </div>
                         <div class="col-12 col-xs-12">
-                            <div class="card card-header">
-                                <div class="form-group">
+                            <p:panel id="pnlCategorias">
+                                <div class="input-group">
                                     <div class="col-10">
                                         <ui:repeat value="#{categoriaBean.categoriasSeleccionadas}" var="data"
                                                    varStatus="indice">
                                             <p:commandLink  action="#{categoriaBean.traerSubcategoria(indice.index)}"
                                                             styleClass="text text-primary"
-                                                            process="@this" update="frmCategoria:dtCategorias">
-                                                <i class="fa fa-arrow-right"
-                                                   style="display: #{categoriaBean.categoriasSeleccionadas.size() gt 0} ? 'block' : 'none'"></i>
+                                                            process="@this" update="frmCategoria:pnlCategorias frmCategoria:dtCategorias frmCategoria:dtArticulos">
+                                                <span class="fa fa-arrow-right"
+                                                      style="display: #{categoriaBean.categoriasSeleccionadas.size() gt 0} ? 'block' : 'none'"></span>
                                                 #{data.nombre} 
                                             </p:commandLink>
                                         </ui:repeat>
                                     </div>
                                     <div class="col-2">
-                                        <!-- p:commandLink styleClass="btn btn-success"						       
-                                                       rendered="#{categoriaBean.mostrarArticulos}"
-                                                       title="Agregar artículo"                                                       
+                                        <p:commandLink styleClass="btn btn-success"				       
+                                                       rendered="#{categoriaBean.mostrarArticulos}"					                                                                                                                     
                                                        action="#{categoriaBean.abrirPopUpArticulo}"
                                                        process="@this" update="frmAgregarArticulo">
-                                            <i class="fa fa-plus-square-o"></i>
-                                        </p:commandLink -->
-                                        
-                                        <p:commandLink styleClass="btn btn-success"						                                                                                                                     
-                                                       action="#{categoriaBean.abrirPopUpArticulo}"
-                                                       process="@this" update="frmAgregarArticulo">
-                                            <i class="fa fa-plus text-white"></i>
+                                            <span class="fa fa-plus text-white"></span>
                                         </p:commandLink>
-                                        
                                     </div>
                                 </div>
-                            </div>
+                            </p:panel>
                         </div>
                         <div class="col-12 col-xs-12">	
                             <ui:fragment rendered="#{categoriaBean.listaArticulos.size() lt 1}">
@@ -87,14 +79,13 @@
                                             <p:dataTable id="dtCategorias" size="small" stripedRows="true" showGridlines="true" 
                                                          value="#{categoriaBean.listaCategoría}" var="data"
                                                          rendered="#{categoriaBean.listaCategoría.size() gt 0}"
-                                                         rowStyleClass="table table-bordered table-striped"
                                                          rows="20" paginator="true"  
                                                          paginatorPosition="bottom" 
                                                          selectionMode="single"
                                                          selection="#{categoriaBean.categoriaTempVo}" rowKey="#{data.id}"
                                                          >
                                                 <p:ajax event="rowSelect" listener="#{categoriaBean.seleccionarCategoria}"
-                                                        update="frmCategoria:dtArticulos frmCategoria:dtCategorias"/>
+                                                        update="frmCategoria:pnlCategorias frmCategoria:dtArticulos frmCategoria:dtCategorias"/>
                                                 <p:column headerText="Nombre" style="text-align: left;">
                                                     <h:outputText value="#{data.nombre}"/>
                                                 </p:column>
@@ -113,8 +104,14 @@
                                     </div>
                                 </div>
                                 <div class="form-group col-12">
+                                    <p:autoComplete completeMethod="#{categoriaBean.completarArticulo}" value="#{categoriaBean.articulo}"
+                                                    minQueryLength="4"  size="80" placeholder="Artículos" 
+                                                    >
+                                        <p:ajax update="frmCategoria:dtArticulos"/>
+                                    </p:autoComplete>
                                     <h:outputText
-                                        value="#{categoriaBean.articulosResultadoBqda.size()} Artículos"/>
+                                        value="#{categoriaBean.articulosResultadoBqda.size()} Artículos"
+                                        class="col-12"/>
                                 </div>  
                                 <div class="form-group col-12">
                                     <div class="col-12" id="tablaResBusquedaAv">
@@ -160,13 +157,14 @@
                                             </div>
                                             <div class="card card-body">
                                                 <div class="col-6 col-xs-6">
-                                                    <!--rowSelectListener="#{categoriaBean.seleccionarCategoriaAgregar}"-->
                                                     <p:dataTable size="small" stripedRows="true" showGridlines="true" 
                                                                  value="#{categoriaBean.listaCategoría}" var="data"
                                                                  rows="10" paginator="true"  
                                                                  paginatorPosition="bottom" 
-                                                                 selectionMode="single"
-                                                                 >
+                                                                 selectionMode="single" rowKey="#{data.id}"
+                                                                 selection="#{categoriaBean.categoriaTempVo}">
+                                                <p:ajax event="rowSelect" listener="#{categoriaBean.seleccionarCategoriaAgregar}"
+                                                        update="frmCategoria:dtActTemp"/>
                                                         <p:column headerText="Nombre" filterBy="#{data.nombre}" filterMatchMode="contains">
                                                             <h:outputText value="#{data.nombre}"/>
                                                         </p:column>
@@ -176,7 +174,7 @@
                                                     </p:dataTable>
                                                 </div>
                                                 <div class="col-6 col-xs-6">					
-                                                    <p:dataTable size="small" stripedRows="true" showGridlines="true" 
+                                                    <p:dataTable id="dtActTemp" size="small" stripedRows="true" showGridlines="true" 
                                                                  value="#{categoriaBean.listaCategoriaTemporal}" var="data"
                                                                  rows="10" paginator="true" 
                                                                  paginatorPosition="bottom" 
@@ -224,7 +222,8 @@
                                                             <i class="fa fa-exchange text-default"></i>
                                                         </p:commandLink>
                                                     </div>
-                                                    <p:dataTable size="small" stripedRows="true" showGridlines="true" value="#{categoriaBean.listaArticulos}" var="data"
+                                                    <p:dataTable size="small" stripedRows="true" showGridlines="true" 
+                                                                 value="#{categoriaBean.listaArticulos}" var="data"
                                                                  rowStyleClass="table table-bordered table-striped"
                                                                  rows="15" paginator="true"  
                                                                  paginatorPosition="bottom" 
@@ -397,7 +396,7 @@
                                 <h4 class="modal-title">Registrar artículo</h4>
                             </div>
                             <h:form id="frmAgregarArticulo">
-                                <div class="modal-body card card-body">
+                                <div class="modal-body">
                                     <div class="col-12">
                                         <ui:repeat value="#{categoriaBean.categoriasSeleccionadas}" var="data"
                                                    varStatus="indice">
@@ -408,36 +407,36 @@
                                         </ui:repeat>
                                     </div>
                                     <div class="input-group col-12">
-                                        <div class="form-group col-12">
-                                            <div class="col-2">
+                                        <div class="input-group col-12">
+                                            <div class="col-12">
                                                 Artículo:
                                             </div>
-                                            <div class="col-8">
+                                            <div class="col-12">
                                                 <h:inputTextarea id="txtArticulo" value="#{categoriaBean.articulo}" styleClass="form-control"/>                                                
                                             </div>
                                         </div>
-                                        <div class="form-group col-12">
-                                            <div class="col-2">
+                                        <div class="input-group col-12">
+                                            <div class="col-12">
                                                 No. Parte:
                                             </div>
-                                            <div class="col-8">
+                                            <div class="col-12">
                                                 <p:inputText id="txtNoParte" value="#{categoriaBean.numParte}" styleClass="form-control"/>
                                             </div>
                                         </div>
-                                        <div class="form-group col-12">
-                                            <div class="col-2">
+                                        <div class="input-group col-12">
+                                            <div class="col-12">
                                                 Unidad:
                                             </div>
-                                            <div class="col-4">
+                                            <div class="col-12">
                                                 <p:selectOneMenu value="#{categoriaBean.idUnidad}" styleClass="form-control">
                                                     <f:selectItems value="#{categoriaBean.unidad}"/>
                                                 </p:selectOneMenu>
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="form-group col-6">
+                                    <div class="form-group">
                                         <h:dataTable value="#{categoriaBean.listaCampo}" var="data"
-                                                     styleClass="table table-striped table-bordered">
+                                                     >
                                             <f:facet name="header">Proyectos</f:facet>
                                             <h:column>
                                                 <p:selectBooleanCheckbox value="#{data.selected}"
@@ -489,7 +488,6 @@
                                                             <div class="visible col-1"></div>
                                                             <h:outputText value="Usuario " class="col-2 col-xs-12 control-label" style="text-align: right;"/>
                                                             <div class="col-6 col-xs-12">
-                                                                <!--textChangeListener="#{categoriaBean.usuarioListener}"-->
                                                                 <p:autoComplete  id="userSelect"
                                                                                  value="#{categoriaBean.usuarioNotificar}">
                                                                     <f:selectItems value="#{categoriaBean.listaUsuario}" />

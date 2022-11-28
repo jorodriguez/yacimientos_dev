@@ -163,7 +163,9 @@ public class GrRutasZonasImpl extends AbstractFacade<GrRutasZonas> {
                 rutaZona.setActiva(!(Boolean) obj[4]);
                 rutaZona.setZona(castMapa(obj, conSemaforo));
                 rutaZona.setIdPunto((Integer) obj[14] == null ? 0 : (Integer) obj[14]);
-                rutaZona.setPunto(grPuntoRemote.getPunto(rutaZona.getIdPunto()));
+                if (rutaZona.getIdPunto() > 0) {
+                    rutaZona.setPunto(grPuntoRemote.getPunto(rutaZona.getIdPunto()));
+                }
                 rutaZona.setSecuencia((String) obj[15]);
                 rutaZona.setCancelasn((Boolean) obj[16]);
                 rutaZona.setCodigo(obj[17] == null ? Constantes.VACIO : (String) obj[17]);
