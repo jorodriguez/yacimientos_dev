@@ -354,12 +354,13 @@
                         <div class="row">
                             <div class="col-8">	
                                 <div class="table table-bordered table-striped table-responsive">
-                                    <p:dataTable value="#{contratoBean.contratoVo.proveedorVo.todoContactos}" var="data"                                                   
-                                                 style="font-size: small;" lazy="true"
+                                    <p:dataTable id="dtContProv" value="#{contratoBean.contratoVo.proveedorVo.todoContactos}" var="data"                                                   
                                                  size="small" showGridlines="true" selection="#{contratoBean.contactoProveedorVO}"
                                                  selectionMode="single" rowKey="#{data.idContactoProveedor}"
                                                  >
-                                        <p:ajax event="rowSelect" update="@form" listener="#{contratoBean.seleccionarContactoPara}"/>
+                                        <p:ajax event="rowSelect" update="frmFormalizar:dtCorreoPara frmFormalizar:dtCorreoCopia frmFormalizar:dtContProv" 
+                                                listener="#{contratoBean.seleccionarContactoPara}"
+                                                />
                                         <f:facet name="header" >Contactos</f:facet>
                                         <p:column headerText="Tipo de contacto" style="text-align: left;">
                                             <h:outputText value="#{data.tipoContactoTxt}"/>
@@ -386,9 +387,9 @@
                                     <p:column headerText="Nombre" style="text-align: left;">
                                         <h:outputText value="#{data.nombre}"/>
                                     </p:column>
-                                    <p:column style="text-align: left;">
+                                    <p:column style="text-align: left;" width="3%">
                                         <p:commandLink action="#{contratoBean.quitarUsuarioPara(index)}" immediate="true"
-                                                       process="@this" update="frmAdmin:tabView">
+                                                       process="@this" update="frmFormalizar:dtCorreoPara frmFormalizar:dtContProv">
                                             <i class="fa fa-trash text text-danger"/>
                                         </p:commandLink>
                                     </p:column>
@@ -403,10 +404,13 @@
                                     <p:ajax listener="#{contratoBean.traerEmpleadoPorGerencia}" update="frmFormalizar:dtGer"/>
                                 </p:selectOneMenu>
                                 <p:dataTable id="dtGer" value="#{contratoBean.listaUsuarioGerencia}" var="data" 
-                                             style="text-align:  left; font-size: small;"
+                                             style="text-align:  left;"
                                              size="small" showGridlines="true"
                                              selectionMode="single"
                                              rowKey="#{data.id}" selection="#{contratoBean.usuarioVo}">
+                                    <p:ajax event="rowSelect" update="frmFormalizar:dtCorreoCopia frmFormalizar:dtGer" 
+                                            listener="#{contratoBean.seleccionarContactoCopia}"
+                                            />
                                     <p:column headerText="Nombre">
                                         <h:outputText value="#{data.nombre}"/>
                                     </p:column>
@@ -420,7 +424,7 @@
                                     <p:column style="text-align: left;">
                                         <h:outputText value="#{data.nombre}"/>
                                     </p:column>
-                                    <p:column style="text-align: left;">
+                                    <p:column style="text-align: left;" width="3%">
                                         <p:commandLink action="#{contratoBean.quitarUsuarioCopia(index)}" 
                                                        process="@this" update="frmFormalizar:dtCorreoCopia">
                                             <span class="fa fa-trash text text-danger"/>

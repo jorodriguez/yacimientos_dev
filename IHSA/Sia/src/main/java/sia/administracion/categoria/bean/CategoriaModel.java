@@ -28,6 +28,7 @@ import sia.excepciones.SIAException;
 import sia.inventarios.service.ArticuloRemote;
 import sia.inventarios.service.InvArticuloCampoImpl;
 import sia.inventarios.service.SatArticuloImpl;
+import sia.modelo.ApCampo;
 import sia.modelo.InvArticulo;
 import sia.modelo.Usuario;
 import sia.modelo.campo.usuario.puesto.vo.CampoUsuarioPuestoVo;
@@ -196,6 +197,9 @@ public class CategoriaModel implements Serializable {
                     categoriasSeleccionadas.remove(i);
                 }
             }
+            categoriaVo = siRelCategoriaLocal.traerCategoriaPorCategoria(c.getId(), null, this.getIdBloque());
+
+            listaCategoría = categoriaVo.getListaCategoria();
         }
 
         if (categoriasSeleccionadas.size() < 3) {
@@ -207,8 +211,10 @@ public class CategoriaModel implements Serializable {
                             ? getCategoriasSeleccionadas().subList(1, getCategoriasSeleccionadas().size())
                             : new ArrayList<>()));
         } else {
+            setMostrarArticulos(true);
             verArticulos();
         }
+        articulo = "";
 
     }
 
@@ -276,6 +282,7 @@ public class CategoriaModel implements Serializable {
 
     public void seleccionarCategoria(SelectEvent<CategoriaVo> event) {
         try {
+            articulo = "";
             CategoriaVo con = (CategoriaVo) event.getObject();
             //out.println("Categoría selec:" + con.getNombre());
             //setCategoriaVo(con);
@@ -295,6 +302,7 @@ public class CategoriaModel implements Serializable {
                                 ? getCategoriasSeleccionadas().subList(1, getCategoriasSeleccionadas().size())
                                 : new ArrayList<>()));
             }
+            mostrarArticulos = categoriasSeleccionadas.size() >= 3;
         } catch (Exception e) {
             UtilLog4j.log.error(e);
         }
@@ -303,6 +311,7 @@ public class CategoriaModel implements Serializable {
     public void cerrarCambiarArticulos() {
         setArticuloVO(null);
     }
+
     public void seleccionarResultadoBA(SelectEvent event) {
         try {
             articuloVO = (ArticuloVO) event.getObject();
@@ -314,19 +323,29 @@ public class CategoriaModel implements Serializable {
         }
     }
 
-    public void seleccionarArticulo(ArticuloVO vvo) {
+    public List<String> completarArticulo(String query) {
+        List<ArticuloVO> arts = articuloImpl.obtenerArticulosPorPalabra(query, idBloque);
+        List<String> ars = new ArrayList<>();
+        if (arts != null) {
+            articulosResultadoBqda = new ArrayList<>();
+            arts.stream().forEach(at -> {
+                articulosResultadoBqda.add(at);
+                ars.add(at.getNumParte() + " / " + at.getNombre());
+            });
+        }
+        return ars;
     }
 
     public void guardarArticulo() throws SIAException {
         // guardar articulo
-        List<CampoVo> ltemp = new ArrayList<CampoVo>();
+        List<CampoVo> ltemp = new ArrayList<>();
         for (CampoUsuarioPuestoVo listaCampoUsuario : getListaCampo()) {
             if (listaCampoUsuario.isSelected()) {
                 ltemp.add(new CampoVo(listaCampoUsuario.getIdCampo(), listaCampoUsuario.getCampo()));
                 listaCampoUsuario.setSelected(false);
             }
         }
-        if (ltemp.size() > 0) {
+        if (!ltemp.isEmpty()) {
             articuloVO = new ArticuloVO();
             articuloVO.setNombre(articulo);
             //articuloVO.setCampoID(listaCampoUsuario.getIdCampo());
@@ -358,7 +377,6 @@ public class CategoriaModel implements Serializable {
                         ? this.getCategoriasSeleccionadas().subList(2, this.getCategoriasSeleccionadas().size())
                         : new ArrayList<>()
                 ));
-        //
     }
 
     public void cerrarVerArticulos() {
