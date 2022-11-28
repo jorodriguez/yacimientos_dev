@@ -153,8 +153,6 @@ public class CartaIntencionBean implements Serializable {
             llenarCartas();
             items = new ArrayList<OrdenDetalleVO>();
             PrimeFaces.current().executeScript("$(dialogoDatosCompra).modal('hide');");
-        } else {
-            FacesUtilsBean.addErrorMessage("Es necesario agregar el archivo REPSE");
         }
     }
 
