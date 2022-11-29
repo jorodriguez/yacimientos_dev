@@ -571,6 +571,11 @@ public class RecepcionRequisicionBean implements Serializable {
         }
     }
 
+    private void llenarRequisicionesRecibidas() {
+        listaRequisiciones = (requisicionServicioRemoto.traerRequisicionesSinContrato(this.usuarioBean.getUsuarioConectado().getId(), Constantes.REQUISICION_ASIGNADA, usuarioBean.getUsuarioConectado().getApCampo().getId()));
+        listaRequisicionContrato = requisicionServicioRemoto.traerRequisicionesArticuloContrato(this.usuarioBean.getUsuarioConectado().getId(), Constantes.REQUISICION_ASIGNADA, usuarioBean.getUsuarioConectado().getApCampo().getId());
+    }
+
     public void generarOCSConvenio() {
 
         if (!requisicionesConContratoSeleccionadas.isEmpty()) {
@@ -642,7 +647,7 @@ public class RecepcionRequisicionBean implements Serializable {
                 FacesUtilsBean.addInfoMessage("La orden de compra se generó correctamente...");
                 //Limpiar listas
                 setOrdenActual(null);
-                
+
                 PrimeFaces.current().executeScript(";regresar('divTabla', 'divDatos', 'divOperacion', 'divAutoriza');");
             } catch (Exception e) {
                 UtilLog4j.log.fatal(this, e.getMessage(), e);
@@ -652,6 +657,7 @@ public class RecepcionRequisicionBean implements Serializable {
             setRequisicionActual(null);
             PrimeFaces.current().executeScript(";alertaGeneral('No es posible generar la OC/S sin items.');");
         }
+        llenarRequisicionesRecibidas();
 
         ContarBean contarBean = (ContarBean) FacesUtilsBean.getManagedBean("contarBean");
         contarBean.llenarOcsSinSolicitar();
@@ -690,11 +696,15 @@ public class RecepcionRequisicionBean implements Serializable {
                         mostrarOpcion = false;
                         cambiarRequisicion(0);
                         PrimeFaces.current().executeScript(";regresar('divTabla', 'divDatos', 'divOperacion', 'divAutoriza');");
+                    } else {
+                        listaItems = (requisicionServicioRemoto.getItemsAnalistaNativa(requisicionActual.getId(), false));
                     }
                     FacesUtilsBean.addInfoMessage("La orden de compra se generó correctamente...");
-                    listaItems = (requisicionServicioRemoto.getItemsAnalistaNativa(requisicionActual.getId(), false));
                 }
                 actualizar = true;
+                //
+                llenarRequisicionesRecibidas();
+                //
                 ContarBean contarBean = (ContarBean) FacesUtilsBean.getManagedBean("contarBean");
                 contarBean.llenarOcsSinSolicitar();
                 contarBean.llenarRecReq();
@@ -703,7 +713,7 @@ public class RecepcionRequisicionBean implements Serializable {
             }
 
         } else {
-            FacesUtilsBean.addInfoMessage("Seleccione al menos un Ítem .  .  .");
+            FacesUtilsBean.addErrorMessage("Seleccione al menos un Ítem .  .  .");
         }
 
     }
