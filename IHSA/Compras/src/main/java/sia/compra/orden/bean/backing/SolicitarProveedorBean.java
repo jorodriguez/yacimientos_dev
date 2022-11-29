@@ -105,14 +105,14 @@ public class SolicitarProveedorBean implements Serializable {
 
     }
 
-    public void cargarDatosProveedor(UploadedFile fileInfo) throws NamingException {
+    public void cargarDatosProveedor() throws NamingException {
         boolean valid = true;
         ValidadorNombreArchivo validadorNombreArchivo = new ValidadorNombreArchivo();
         if (fileInfo.getFileName().endsWith(".xlsx")) {
             boolean addArchivo = validadorNombreArchivo.isNombreValido(fileInfo.getFileName());
             try {
                 if (addArchivo) {
-                    cargarDatos(fileInfo);
+                    cargarDatos();
                     PrimeFaces.current().executeScript(";$(registroProv).modal('hide');;");
                 } else {
                     FacesUtilsBean.addErrorMessage(new StringBuilder()
@@ -133,16 +133,16 @@ public class SolicitarProveedorBean implements Serializable {
         }
     }
 
-    public void cargarDatos(UploadedFile uploadedFile) {
+    public void cargarDatos() {
         try {
-            File file = new File("/tmp/" + uploadedFile.getFileName());
+            File file = new File("/tmp/" + fileInfo.getFileName());
             try (OutputStream os = new FileOutputStream(file)) {
-                os.write(uploadedFile.getContent());
+                os.write(fileInfo.getContent());
             }
 
             int idP = proveedorImpl.cargarDatosProveedor(usuarioBean.getUsuarioConectado().getId(), file, usuarioBean.getCompania().getRfc());
             setIdProveedor(idP);
-            Files.deleteIfExists(file.toPath());
+           // Files.deleteIfExists(file.toPath());
             //.println("idProve: " + idP);
             switch (idP) {
                 case Constantes.MENOS_UNO:
@@ -261,7 +261,7 @@ public class SolicitarProveedorBean implements Serializable {
         try {
             fileInfo = event.getFile();
             if (tipoDoctoSubir == Constantes.UNO) {
-                cargarDatosProveedor(fileInfo);
+                cargarDatosProveedor();
                 FacesUtilsBean.addInfoMessage("Se agregaron los datos del proveedor. ");
             } else {
                 DocumentoAnexo documentoAnexo = new DocumentoAnexo(fileInfo.getContent());
