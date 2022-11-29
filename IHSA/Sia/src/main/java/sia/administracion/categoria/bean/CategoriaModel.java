@@ -14,6 +14,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJBException;
+import javax.faces.event.ValueChangeEvent;
 
 import javax.faces.model.SelectItem;
 import javax.faces.view.ViewScoped;
@@ -316,25 +317,16 @@ public class CategoriaModel implements Serializable {
         try {
             articuloVO = (ArticuloVO) event.getObject();
             llenarDatosCambiarArticulo();
+            articulo = "";
             PrimeFaces.current().executeScript(";$(dialogoAgregarArticuloCampo).modal('show');;");
         } catch (Exception e) {
             UtilLog4j.log.fatal(this, e);
             FacesUtils.addErrorMessage("Ocurrió una excepción, favor de comunicar a sia@ihsa.mx");
         }
     }
-    
 
-    public List<String> completarArticulo(String query) {
-        List<ArticuloVO> arts = articuloImpl.obtenerArticulosPorPalabra(query, idBloque);
-        List<String> ars = new ArrayList<>();
-        if (arts != null) {
-            articulosResultadoBqda = new ArrayList<>();
-            arts.stream().forEach(at -> {
-                articulosResultadoBqda.add(at);
-                ars.add(at.getNumParte() + " / " + at.getNombre());
-            });
-        }
-        return ars;
+    public void completarArticulo(ValueChangeEvent event) {
+        articulosResultadoBqda = articuloImpl.obtenerArticulosPorPalabra(event.getNewValue().toString(), idBloque);
     }
 
     public void guardarArticulo() throws SIAException {
