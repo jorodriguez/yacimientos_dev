@@ -141,6 +141,7 @@ public class ProveedorAdminModel implements Serializable {
     public List<String> completarProveedor(String cadena) {
         List<String> proveedores = new ArrayList<>();
         List<ProveedorVo> pvrs = proveedorImpl.traerProveedorPorParteNombre(cadena, sesion.getUsuarioSesion().getId(), ProveedorEnum.ACTIVO.getId());
+                          pvrs.addAll(proveedorImpl.traerProveedorPorParteNombre(cadena, sesion.getUsuarioSesion().getId(), ProveedorEnum.REGISTRADO.getId()));
         pvrs.stream().forEach(p -> {
             proveedores.add(p.getNombre());
         });
