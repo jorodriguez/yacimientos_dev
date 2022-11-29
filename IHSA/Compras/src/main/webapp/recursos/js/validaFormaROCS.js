@@ -1234,10 +1234,11 @@ function graficaRequisicion(datos, dias) {
                 point: {
                     events: {
                         click: function () {
-                            var comprador = this.category
-                            $("#frmRep\\:tbReportes\\:" + "hidenTitulo").val('Requisiciones asignadas');
-                            $("#frmRep\\:tbReportes\\:" + "hidenComprador").val(comprador);
-                            $("#frmRep\\:tbReportes\\:btnBuscarPorComprador").click();
+                            
+                            var comprador = this.category                            
+                            $("#frmRep\\:tbReportes\\:" + "hidenTitulo").val('Requisiciones asignadas');                            
+                            $("#frmRep\\:tbReportes\\:" + "hdComprador").val(comprador);                            
+                            $("#frmRep\\:tbReportes\\:btnBuscarPorComprador").click();                            
                         }
                     }
                 },
@@ -1274,10 +1275,10 @@ function graficaRequisicion(datos, dias) {
                 },
                 point: {
                     events: {
-                        click: function () {
+                        click: function () {                            
                             var comprador = this.category
                             $("#frmRep\\:tbReportes\\:" + "hidenTitulo").val('Ocs sin solicitar');
-                            $("#frmRep\\:tbReportes\\:" + "hidenComprador").val(comprador);
+                            $("#frmRep\\:tbReportes\\:" + "hdComprador").val(comprador);
                             $("#frmRep\\:tbReportes\\:btnBuscarOCSPorComprador").click();
                         }
                     }
