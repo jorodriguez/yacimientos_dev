@@ -35,6 +35,7 @@ import sia.modelo.Usuario;
 import sia.modelo.campo.usuario.puesto.vo.CampoUsuarioPuestoVo;
 import sia.modelo.campo.vo.CampoVo;
 import sia.modelo.sistema.vo.CategoriaVo;
+import sia.modelo.usuario.vo.UsuarioVO;
 import sia.modelo.vo.GeneralVo;
 import sia.modelo.vo.inventarios.ArticuloVO;
 import sia.notificaciones.requisicion.impl.NotificacionRequisicionImpl;
@@ -146,7 +147,7 @@ public class CategoriaModel implements Serializable {
         llenarUnidad(siUnidadImpl.traerUnidad());
         listaCampoUsuario();
         listaCategoría = invArticuloCampoImpl.traerCategoriaArticulo();
-        //////////////////        
+        //////////////////   
     }
 
     public void imprimirArticulosCategoria() {
@@ -285,25 +286,25 @@ public class CategoriaModel implements Serializable {
         try {
             articulo = "";
             CategoriaVo con = (CategoriaVo) event.getObject();
-            //out.println("Categoría selec:" + con.getNombre());
-            //setCategoriaVo(con);
             //
             categoriaVo = siRelCategoriaImpl.traerCategoriaPorCategoria(con.getId(), getSoloCodigos(categoriasSeleccionadas), sesion.getUsuarioVo().getIdCampo());
-            //.out.println("Categoría rec: " + categoriaVo.getNombre() + " cats: " + categoriaVo.getListaCategoria());
             listaCategoría = categoriaVo.getListaCategoria();
             //
-            //.out.println("Seleccionadas : " + categoriasSeleccionadas.size());
-            //llenarCategoria(getSoloCodigos(getCategoriasSeleccionadas()));
             categoriasSeleccionadas.add(categoriaVo);
-            if (getCategoriasSeleccionadas() != null && getCategoriasSeleccionadas().size() > 1) {
-                setArticuloTx("");
-                articulosResultadoBqda = articuloImpl.obtenerArticulos(
-                        null, sesion.getUsuarioVo().getIdCampo(),
-                        0, getCodigos(getCategoriasSeleccionadas().size() > 1
-                                ? getCategoriasSeleccionadas().subList(1, getCategoriasSeleccionadas().size())
-                                : new ArrayList<>()));
+            if (listaCategoría == null || listaCategoría.isEmpty()) {
+                verArticulos();
+                setMostrarArticulos(true);
+            } else {
+                if (getCategoriasSeleccionadas() != null && getCategoriasSeleccionadas().size() > 1) {
+                    setArticuloTx("");
+                    articulosResultadoBqda = articuloImpl.obtenerArticulos(
+                            null, sesion.getUsuarioVo().getIdCampo(),
+                            0, getCodigos(getCategoriasSeleccionadas().size() > 1
+                                    ? getCategoriasSeleccionadas().subList(1, getCategoriasSeleccionadas().size())
+                                    : new ArrayList<>()));
+                }
+                mostrarArticulos = false;
             }
-            mostrarArticulos = categoriasSeleccionadas.size() >= 3;
         } catch (Exception e) {
             UtilLog4j.log.error(e);
         }
@@ -325,11 +326,12 @@ public class CategoriaModel implements Serializable {
         }
     }
 
-    public void completarArticulo(ValueChangeEvent event) {
-        articulosResultadoBqda = articuloImpl.obtenerArticulosPorPalabra(event.getNewValue().toString(), idBloque);
+    public List<String> completarArticulos(String cadena) {
+        articulosResultadoBqda = articuloImpl.obtenerArticulosPorPalabra(cadena, idBloque);
+        return new ArrayList<>();
     }
 
-    public void guardarArticulo() throws SIAException {
+    public void guardarArticulo() {
         // guardar articulo
         List<CampoVo> ltemp = new ArrayList<>();
         for (CampoUsuarioPuestoVo listaCampoUsuario : getListaCampo()) {
@@ -351,15 +353,14 @@ public class CategoriaModel implements Serializable {
             try {
                 setNewArticuloID(articuloImpl.guardarArticulo(articuloVO, sesion.getUsuario().getId(), ltemp, categoriasSeleccionadas, getNumParte().trim()));
                 //articulo = "";
+                verArticulos();
+                PrimeFaces.current().executeScript(";enviarNotificacionNuevoItem();");
                 FacesUtils.addInfoMessage("El artículo fue registrado en el catálogo correctamente.");
             } catch (EJBException e) {
                 LOGGER.info(this, "", e);
-                throw new SIAException("NoParte");
             } catch (SIAException e) {
                 LOGGER.info(this, "", e);
             }
-        } else {
-            throw new SIAException("NoCampos");
         }
         articulo = "";
     }
@@ -396,19 +397,28 @@ public class CategoriaModel implements Serializable {
         return codigosTxt;
     }
 
+    public void seleccionarCategoriaCambio(SelectEvent event) {
+        CategoriaVo c = (CategoriaVo) event.getObject();
+        traerSubCategoriaCambiar(c.getId());
+    }
+
+    public void inicioEditarArticulo(int ind) {
+        if (validaEditarArticulo(ind)) {
+            FacesUtils.addInfoMessage("El artículo no se puede modificar.");
+        } else {
+            getListaArticulos().get(ind).setEditar(Boolean.TRUE);
+        }
+    }
+
     public void editarArticulo(int idAvo, String art) throws SIAException {
         ArticuloVO avo = articuloImpl.buscar(getListaArticulos().get(idAvo).getId(), this.getIdBloque());
-        /*
-	 articulo.setCodigo(articuloVO.getCodigo());
-	 articulo.setNombre(articuloVO.getNombre());
-	 articulo.setDescripcion(articuloVO.getDescripcion());
-	 articulo.setUnidad(new SiUnidad(articuloVO.getUnidadId()));
-         */
         if (avo != null) {
             avo.setNombre(getListaArticulos().get(idAvo).getNombre());
             avo.setDescripcion(getListaArticulos().get(idAvo).getNombre());
+            avo.setIdMoneda(sesion.getUsuario().getApCampo().getCompania().getMoneda().getId());
             articuloImpl.actualizar(avo, sesion.getUsuario().getId(), this.getIdBloque());
         }
+        listaArticulos.get(idAvo).setEditar(Boolean.FALSE);
     }
 
     public boolean validaEditarArticulo(int idArt) {
@@ -419,13 +429,14 @@ public class CategoriaModel implements Serializable {
         articuloImpl.eliminar(getListaArticulos().get(id).getIdRel(), sesion.getUsuario().getId(), this.getIdBloque());
     }
 
-    public void seleccinarArticulos() {
-        listaCambiarArticulos = new ArrayList<ArticuloVO>();
+    public void seleccionarArticulos() {
+        listaCambiarArticulos = new ArrayList<>();
         for (ArticuloVO listaArticulo : listaArticulos) {
             if (listaArticulo.isSelected()) {
                 listaCambiarArticulos.add(listaArticulo);
             }
         }
+        llenarCategoriaCambiar();
     }
 
     public void llenarCategoriaCambiar() {
@@ -462,6 +473,7 @@ public class CategoriaModel implements Serializable {
         listaCategoriaCambiar = new ArrayList<>();
         listaCambiarSeleccionada = new ArrayList<>();
         verArticulos();
+        PrimeFaces.current().executeScript("$(dialogoCambiarArticulos).modal('hide');");
     }
 
     public void llenarDatosCambiarArticulo() {
@@ -470,7 +482,7 @@ public class CategoriaModel implements Serializable {
     }
 
     public void agregarArticuloCampo() {
-        List<CampoVo> ltemp = new ArrayList<CampoVo>();
+        List<CampoVo> ltemp = new ArrayList<>();
         for (CampoVo campovo : listaNoCampoPorArticulo) {
             if (campovo.isSelected()) {
                 ltemp.add(campovo);
@@ -739,21 +751,18 @@ public class CategoriaModel implements Serializable {
         this.listaUsuario = listaUsuario;
     }
 
-    public void setListaUsuario(String text) {
-        setListaUsuario(traerUsuario(text, 0));
-    }
-
-    public List<SelectItem> traerUsuario(String cadena, int apCampo) {
-        List<SelectItem> list = new ArrayList<SelectItem>();
+    public List<String> traerUsuario(String cadena) {
         try {
-            if (!Strings.isNullOrEmpty(cadena) && cadena.length() > 2) {
-                list = soporteListas.regresaUsuarioActivo(cadena, apCampo);
-            }
+            List<String> list = new ArrayList<>();
+            List<UsuarioVO> users = apCampoUsuarioRhPuestoImpl.traerUsurioPorParteNombre(cadena, idBloque);
+            users.stream().forEach((var u) -> {
+                list.add(u.getNombre());
+            });
+            return list;
         } catch (Exception e) {
             LOGGER.info(this, "", e);
-            list = Collections.emptyList();
+            return Collections.EMPTY_LIST;
         }
-        return list;
     }
 
     /**
@@ -775,13 +784,14 @@ public class CategoriaModel implements Serializable {
             if (this.usuarioNotificar != null && !this.usuarioNotificar.isEmpty()) {
                 Usuario usr = usuarioImpl.buscarPorNombre(this.usuarioNotificar);
                 if (usr != null && this.newArticuloID > 0) {
-                    InvArticulo articulo = articuloImpl.find(this.newArticuloID);
+                    InvArticulo artVo = articuloImpl.find(this.newArticuloID);
                     notificacionRequisicionImpl.envioNotificacionAltaArticulo(
                             usr.getEmail(), "", "", " Notificación de registro de artículo ",
-                            articulo, sesion.getUsuario().getApCampo().getCompania().getNombre(), this.getCategoriasSeleccionadas());
+                            artVo, sesion.getUsuario().getApCampo().getCompania().getNombre(), this.getCategoriasSeleccionadas());
                 }
             }
-        } catch (RuntimeException e) {
+            PrimeFaces.current().executeScript("$(dialogoNotificarNuevoItem).modal('hide');");
+        } catch (Exception e) {
             LOGGER.warn(this, "", e);
         }
     }
