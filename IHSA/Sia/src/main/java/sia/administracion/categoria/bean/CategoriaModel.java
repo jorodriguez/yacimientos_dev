@@ -322,6 +322,7 @@ public class CategoriaModel implements Serializable {
             FacesUtils.addErrorMessage("Ocurrió una excepción, favor de comunicar a sia@ihsa.mx");
         }
     }
+    
 
     public List<String> completarArticulo(String query) {
         List<ArticuloVO> arts = articuloImpl.obtenerArticulosPorPalabra(query, idBloque);

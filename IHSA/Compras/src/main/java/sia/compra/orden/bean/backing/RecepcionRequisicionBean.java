@@ -642,6 +642,7 @@ public class RecepcionRequisicionBean implements Serializable {
                 FacesUtilsBean.addInfoMessage("La orden de compra se generó correctamente...");
                 //Limpiar listas
                 setOrdenActual(null);
+                
                 PrimeFaces.current().executeScript(";regresar('divTabla', 'divDatos', 'divOperacion', 'divAutoriza');");
             } catch (Exception e) {
                 UtilLog4j.log.fatal(this, e.getMessage(), e);

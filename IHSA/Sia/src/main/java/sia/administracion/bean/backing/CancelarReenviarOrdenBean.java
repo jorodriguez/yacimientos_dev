@@ -264,7 +264,7 @@ public class CancelarReenviarOrdenBean implements Serializable {
         return cancelar;
     }
 
-    private void completarDevolucionOrden() {
+    public void completarDevolucionOrden() {
         try {
             if (getMotivoDev().length() > 10) {
                 if (ordenServicioRemoto.devolverOrden(getOrden(), getUsuarioSolicita(), sesion.getUsuario().getId(), getMotivoDev())) {
@@ -275,7 +275,7 @@ public class CancelarReenviarOrdenBean implements Serializable {
                     setOrden(null);
                     setUsuarioSolicita("");
                     setConsecutivo("");
-                    //toggleMostrarDev();
+                    PrimeFaces.current().executeScript("PF('dlgDevOcs').hide();");
                 } else {
                     FacesUtils.addInfoMessage("Ha ocurrido un problema en la aplicación, por favor contacte al equipo de soporte de SIA (soportesia@ihsa.mx).");
                 }

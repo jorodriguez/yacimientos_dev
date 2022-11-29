@@ -23,7 +23,7 @@
                             </p:selectOneMenu>
                         </div>                                        
                     </div>
-                    <div class="input-group mt-2" >	
+                    <div class="col-12 input-group mt-2" >	
                         <h:outputText class="col-2 col-xs-12 control-label" style="text-align: right;" value="OC/S"/>                                    
                         <div class="col-4 col-xs-12">
                             <p:inputText id="inpText" styleClass="form-control" value="#{cancelarReenviarOrdenBean.consecutivo}" 
@@ -55,12 +55,12 @@
                         <ui:fragment rendered="#{cancelarReenviarOrdenBean.orden.autorizacionesOrden.estatus.id != 100}">                                
                             <div class="col-12 col-xs-12" style="margin-top: 10px;">
                                 <!--p:commandButton value="Cancelar OC/S y devolver requisición"
-                                                   action="#{cancelarReenviarOrdenBean.cancelarOrdenCompraDR}"
-                                                   rendered="#{cancelarReenviarOrdenBean.orden != null and cancelarReenviarOrdenBean.orden.autorizacionesOrden.estatus.id >= 155}" 
+                                                   action="{cancelarReenviarOrdenBean.cancelarOrdenCompraDR}"
+                                                   rendered="{cancelarReenviarOrdenBean.orden != null and cancelarReenviarOrdenBean.orden.autorizacionesOrden.estatus.id >= 155}" 
                                                    styleClass="btn btn-default"/>
                                 <p:commandButton value="Cancelar OC/S y requisición"
-                                                   action="#{cancelarReenviarOrdenBean.cancelarOrdenCompraSDR}"
-                                                   rendered="#{cancelarReenviarOrdenBean.orden != null and cancelarReenviarOrdenBean.orden.autorizacionesOrden.estatus.id >= 155}"
+                                                   action="{cancelarReenviarOrdenBean.cancelarOrdenCompraSDR}"
+                                                   rendered="{cancelarReenviarOrdenBean.orden != null and cancelarReenviarOrdenBean.orden.autorizacionesOrden.estatus.id >= 155}"
                                                    styleClass="btn btn-default"/ -->
                                 <p:commandButton value="Reenviar OC/S al proveedor"
                                                  action="#{cancelarReenviarOrdenBean.reeviarOrden}"
@@ -73,7 +73,9 @@
                                 <p:commandButton value="Devolver OC/S"
                                                  action="#{cancelarReenviarOrdenBean.devolverOrdenCompra}"
                                                  rendered="#{cancelarReenviarOrdenBean.orden != null and cancelarReenviarOrdenBean.orden.autorizacionesOrden.estatus.id gt 100 and cancelarReenviarOrdenBean.orden.autorizacionesOrden.estatus.id lt 155}"
-                                                 styleClass="btn btn-primary text-white" process="@form" update="@form"/>
+                                                 styleClass="btn btn-primary text-white" process="@this" 
+                                                 update="frmDevOcs"
+                                                 oncomplete="PF('dlgDevOcs').show();"/>
                             </div>
                         </ui:fragment>
 
@@ -270,41 +272,35 @@
                         </div>
                     </ui:fragment>
                 </h:form>                        
-                <h:form rendered="#{not empty sesion.usuario}" >
+                <h:form id="frmDevOcs" rendered="#{not empty sesion.usuario}" >
                     <p:dialog widgetVar="dlgDevOcs"
-                              visible="#{cancelarReenviarOrdenBean.mostrarDev}"
-                              draggable="false" modal="true">
-                        <f:facet name="header">
-                            <h:panelGroup>                                
-                                <h:outputText  value="Devolución de OC/S"
-                                               style="float: left; padding: 4px;text-align: center; vertical-align: middle;font: 11px;color: #484848; font-weight: bold;"/>
-                            </h:panelGroup>
-                        </f:facet>
-                        <f:facet name="body">
-                            <h:panelGroup>
-                                <p:panelGrid columns="3">
-                                    <h:outputText value=" "/>                                   
-                                    <h:outputText value="Solicita"/>       
-                                    <!--listValue="#{cancelarReenviarOrdenBean.listaSelect}"-->
-                                    <p:autoComplete id="userSelectDevolver" immediate="true"  
-                                                    value="#{cancelarReenviarOrdenBean.usuarioSolicita}" 
-                                                    valueChangeListener="#{cancelarReenviarOrdenBean.usuarioListener}">
-                                        <f:facet name="selectInputText">
-                                            <p:panelGrid columns="2" style="margin-bottom: 2px; background-color: white;">
-                                                <h:outputText id="autoCompleteUsurOpDevolver" value="#{userOp.usuario}" />
-                                            </p:panelGrid>
-                                        </f:facet>
-                                    </p:autoComplete > 
-                                    <h:outputText value=" "/>                                   
-                                    <h:outputText value="Motivo devolución"/>
-                                    <p:inputTextarea value="#{cancelarReenviarOrdenBean.motivoDev}" cols="65" rows="3"/>
-                                    <p:commandButton value="Enviar" styleClass="btn btn-default" action="#{cancelarReenviarOrdenBean.completarDevolucionOrden}"/>
-                                    <p:commandButton value="Cancelar" styleClass="btn btn-default" action="#{cancelarReenviarOrdenBean.toggleMostrarDev}" title="Cerrar ventana..." immediate="true"/>
+                              draggable="false" modal="true"
+                              header="Devolución de OC/S">
+                        <h:panelGroup>
+                            <p:panelGrid columns="3">
+                                <h:outputText value=" "/>                                   
+                                <h:outputText value="Solicita"/>       
+                                <p:autoComplete id="userSelectDevolver" immediate="true"  
+                                                value="#{cancelarReenviarOrdenBean.usuarioSolicita}" 
+                                                completeMethod="#{cancelarReenviarOrdenBean.usuarioListener}"
+                                                minQueryLength="4" size="40">
+                                </p:autoComplete > 
+                                <h:outputText value=" "/>                                   
+                                <h:outputText value="Motivo devolución"/>
+                                <p:inputTextarea value="#{cancelarReenviarOrdenBean.motivoDev}" cols="65" rows="3"
+                                                 required="true" requiredMessage="Agregar un motivo"
+                                                 placeholder="Agregue el motico, al menos 10 caracteres"/>
+                                <f:facet name="footer">
+                                    <p:commandButton value="Enviar" process="@form" update="frmTareaOCS"
+                                                     action="#{cancelarReenviarOrdenBean.completarDevolucionOrden}"/>
+                                    <p:commandLink value="Cancelar" 
+                                                   title="Cerrar ventana..." immediate="true"
+                                                   onclick="PF('dlgDevOcs').hide()"/>
+                                </f:facet>
 
-                                </p:panelGrid>
-                                <h:messages style="color: maroon; font-size: x-small; font-weight: normal;"/>
-                            </h:panelGroup>
-                        </f:facet>
+                            </p:panelGrid>
+                            <h:messages style="color: maroon; font-size: x-small; font-weight: normal;"/>
+                        </h:panelGroup>
                     </p:dialog>
                 </h:form>
             </ui:define>
