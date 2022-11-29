@@ -245,11 +245,15 @@ public class ContarBean implements Serializable {
     }
 
     public void llenarReqSinAsignar() {
-        mapaTotal.put("reqsinAsignar", requisicionImpl.getTotalRequisicionesSinAsignar(
+        System.out.println("@@@ llenarReqSinAsignar------");
+        long nuevoContador = requisicionImpl.getTotalRequisicionesSinAsignar(
                 usuarioBean.getUsuarioConectado().getId(),
                 usuarioBean.getUsuarioConectado().getApCampo().getId(),
                 Constantes.REQUISICION_APROBADA,
-                Constantes.ROL_ASIGNA_REQUISICION));
+                Constantes.ROL_ASIGNA_REQUISICION);
+        long contadorAnt =  mapaTotal.get("reqsinAsignar");
+        System.out.println("@@Contador ante "+contadorAnt+" contador nuevo "+nuevoContador);
+        mapaTotal.put("reqsinAsignar",nuevoContador );
     }
 
     public void llenarRecReq() {

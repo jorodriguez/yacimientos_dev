@@ -28,8 +28,11 @@ import static sia.constantes.Constantes.RUTA_SGL_MODULO;
 import sia.modelo.orden.vo.OrdenView;
 import sia.modelo.sgl.vo.AccesosDirectosView;
 import sia.modelo.sgl.vo.SolicitudViajeView;
+import sia.modelo.usuario.vo.UsuarioVO;
 import sia.servicios.orden.impl.OrdenImpl;
 import sia.servicios.sgl.viaje.impl.SgSolicitudViajeImpl;
+import sia.servicios.sistema.impl.SiModuloImpl;
+import sia.servicios.sistema.vo.SiModuloVo;
 import sia.sistema.bean.support.FacesUtils;
 
 /**
@@ -79,7 +82,14 @@ public class PrincipalViewBean implements Serializable {
     @Getter
     @Setter
     private Boolean modalBusqueda;
+    
+    @Inject
+    private SiModuloImpl siModuloImpl;
 
+    @Getter
+    @Setter
+     private List<SiModuloVo> listaModulos;
+    
     private enum BusquedaEnum {
         REQUISICION, ORDEN, PEDIDO, VIAJE
     };
@@ -91,6 +101,7 @@ public class PrincipalViewBean implements Serializable {
     public void iniciar() {
         System.out.println("@Postconstruc");
         //loaders
+        this.iniciarInformacionModulos();        
         this.cargarListas();
         this.modalBusqueda = false;
     }
@@ -250,5 +261,15 @@ public class PrincipalViewBean implements Serializable {
     public String getUrlCrearSolicitudViaje() {
         return "/vistas/sgl/viaje/solicitud/solicitudViaje.xhtml";
     }
+    
+    /********* pantalla principal *************/
+    
+     public void iniciarInformacionModulos() {
+        
+        listaModulos = siModuloImpl.getModulosUsuario(sesion.getUsuarioVo().getId(), 0);
+        
+    }
+
+    
 
 }

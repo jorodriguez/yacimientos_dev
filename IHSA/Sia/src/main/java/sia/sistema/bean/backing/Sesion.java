@@ -127,7 +127,7 @@ public class Sesion implements Serializable {
     private boolean visible = true;
 
     private String rfcCompania;
-    private List<SiModuloVo> listaModulo;
+    //private List<SiModuloVo> listaModulo;
 
     @Getter
     @Setter
@@ -181,8 +181,8 @@ public class Sesion implements Serializable {
                         setUsuarioVoAlta(null);
                         setIdCampo(usuarioVo.getIdCampo());
                         setRfcCompania(usuarioVo.getRfcEmpresa());
-                        //
-                        taerPendiente();
+                        // SE PASO A UNA VIEW principalView
+//                        taerPendiente();
 
                         accion = "/principal.xhtml?faces-redirect=true";
                         setU(Constantes.VACIO);
@@ -326,19 +326,18 @@ public class Sesion implements Serializable {
         return usuarioImpl.encriptar(text);
     }
 
-    public void taerPendiente() {
+   /* public void taerPendiente() {
         if (usuarioVo != null) {
             listaModulo = traerModulo(usuarioVo, 0);
         }
     }
-
-    public List<SiModuloVo> traerModulo(UsuarioVO usuario, int moduloID) {
-        return siModuloImpl.getModulosUsuario(usuario.getId(), moduloID);
-    }
-
     public List<SiModuloVo> getListaModulos() {
         return listaModulo;
     }
+     public List<SiModuloVo> traerModulo(UsuarioVO usuario, int moduloID) {
+        return siModuloImpl.getModulosUsuario(usuario.getId(), moduloID);
+    }
+    */
 
     public String getYear() {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy");

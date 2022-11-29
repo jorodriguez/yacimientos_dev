@@ -291,7 +291,7 @@ public class UsuarioBean implements Serializable {
      * @param
      */
     public void siaGo() {
-        eliminarSesionActual();
+       eliminarSesionActual();
         redireccionar(Constantes.URL_REL_SIA_PRINCIPAL);
     }
 

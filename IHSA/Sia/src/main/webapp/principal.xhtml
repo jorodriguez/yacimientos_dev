@@ -104,9 +104,10 @@
         </style>
 
     </h:head>
-    <h:body class="g-sidenav-show bg-gray-100" >
+    <h:body id="body" class="g-sidenav-show bg-gray-100" >
         <c:if test="#{not empty sesion.usuario}">
-           
+            
+          
             <div class="position-absolute w-100 min-height-300 top-0" style="background-image: url('#{sesion.usuarioVo.urlImagen}'); background-position-y: 50%;">
                 <span class="mask bg-secondary opacity-4"></span>
             </div>
@@ -121,8 +122,17 @@
                 </div>
                 <hr class="horizontal dark mt-0"></hr>               
                 <h:form>
+                      <!--<p:ajaxStatus onstart="PF('statusDialog').show()"                               
+                              onsuccess="PF('statusDialog').hide()" />
+
+                <p:dialog id="dlgProcesando" widgetVar="statusDialog" modal="true" draggable="false"  
+                          appendTo="body"
+                          closable="false" resizable="false" showHeader="false">
+                    <img src="/resources/img/loader.svg" class="d-flex justify-content-center m-2" width="140px"  alt="Procesando . . . "  />                    
+                </p:dialog>-->
+           
                     <div class="collapse navbar-collapse  w-auto h-auto" id="sidenav-collapse-main">
-                        <ui:repeat value="#{sesion.listaModulos}" var="modulo">                        
+                        <ui:repeat value="#{principalViewBean.listaModulos}" var="modulo" >                        
                             <ul class="navbar-nav">                            
                                 <ui:fragment rendered="${modulo.ruta == null and modulo.rutaServlet != null and modulo.mapOpcion.size() gt 0}">                                
 
@@ -158,7 +168,7 @@
                                                                 <div class="d-flex align-items-center ms-1 ">                                                                
                                                                     <div class="d-flex flex-column">                                                                    
                                                                         <span class="ms-1 text-xs text-secondary opacity-10" title="#{opc.total} #{opc.nombre} en #{entry.key}"> 
-                                                                            #{opc.nombre}                                                                             
+                                                                            #{opc.nombre}                                                                       
                                                                         </span>                                                                    
                                                                     </div>
                                                                 </div>
@@ -289,7 +299,7 @@
                 <div class="container-fluid py-4">
                     <h:form>
                         <div class="row mt-2">
-                            <ui:repeat value="#{sesion.listaModulos}" var="modulo" >                                                                                                            
+                            <ui:repeat value="#{principalViewBean.listaModulos}" var="modulo" >                                         
                                 <ui:fragment rendered="#{modulo.ruta == null and modulo.rutaServlet != null}">
                                     <div class="col-lg-3 col-md-6 col-12 mt-2  h-75 " >                                        
                                         <h:outputLink value="#{sesion.sustituirArrancarModulo(modulo.rutaServlet)}"
@@ -323,7 +333,7 @@
                                 </ui:fragment>                                                              
                             </ui:repeat>
 
-                            <ui:repeat value="#{sesion.listaModulos}" var="modulo">                                
+                            <ui:repeat value="#{principalViewBean.listaModulos}" var="modulo">                                
                                 <ui:fragment rendered="#{modulo.ruta != null and modulo.rutaServlet == null}">
                                     <div class="col-lg-3 col-md-6 col-12 mt-2  h-75" >                                                             
                                         <p:commandLink action="#{sesion.sustituirArrancarModulo(modulo.ruta)}"
@@ -331,7 +341,7 @@
                                                        ajax="false"
                                                        style="text-decoration: none;"                                                                
                                                        rendered="#{modulo.ruta != null and modulo.rutaServlet == null}">
-                                            <div class="card  border-0 pe-3 ps-3 m-1  bg-gray-100">                                                       
+                                            <div class="card  border-0 pe-3 ps-3 m-1  bg-gray-100" >                                                       
                                                 <div class="card-body p-0 shadow">
                                                     <div class="row ">
                                                         <div class="col-4 mt-1 p-2 d-flex justify-content-center" style="background-color: #{modulo.bgIcono}">
@@ -343,7 +353,7 @@
                                                             <div class="numbers">                                                    
                                                                 <p class="text-white text-sm mb-0 text-uppercase font-weight-bold opacity-7 w-100 wrapper pt-1"
                                                                    style=" width: 150px;white-space: nowrap;overflow: hidden;text-overflow: ellipsis;">
-                                                                    #{modulo.nombre}
+                                                                    #{modulo.nombre} 
                                                                 </p>
 
                                                                 <hr class="horizontal bg-white m-1" />
@@ -368,7 +378,7 @@
 
                 <!-- modulos -->
                 <div class="container-fluid pt-3 pb-3">                    
-                    <ui:repeat value="#{sesion.listaModulos}" var="modulo">
+                    <ui:repeat value="#{principalViewBean.listaModulos}" var="modulo">
                         <div class="row ">
                             <ui:fragment rendered="${modulo.ruta == null and modulo.rutaServlet != null and modulo.mapOpcion.size() gt 0}">                                
                                 <div class="card h-100 ">
