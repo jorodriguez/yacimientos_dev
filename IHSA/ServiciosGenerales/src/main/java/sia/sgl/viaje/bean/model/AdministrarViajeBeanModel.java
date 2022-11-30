@@ -717,8 +717,8 @@ public class AdministrarViajeBeanModel implements Serializable {
         setEmpleadoEmergente("");
     }
 
-    public void selecionarSolicitud(int idSol) {
-        llenarlistaViajerosPorSolicitud(idSol);
+    public void selecionarSolicitud(SolicitudViajeVO solViVOl) {
+        llenarlistaViajerosPorSolicitud(solViVOl);
     }
 
     public void addAndOrRemoveViajeros() throws SIAException {
@@ -1144,8 +1144,9 @@ public class AdministrarViajeBeanModel implements Serializable {
         cargarSolicitudesYViajes();
     }
 
-    public void llenarlistaViajerosPorSolicitud(int idSol) {
-        listaViajerosSolicitud = sgViajeroImpl.getAllViajerosList(idSol, true);
+    public void llenarlistaViajerosPorSolicitud(SolicitudViajeVO solViVO) {
+        setListaViajerosSolicitud(solViVO.getViajeros());
+//        listaViajerosSolicitud = sgViajeroImpl.getAllViajerosList(idSol, true);
     }
 
     /**

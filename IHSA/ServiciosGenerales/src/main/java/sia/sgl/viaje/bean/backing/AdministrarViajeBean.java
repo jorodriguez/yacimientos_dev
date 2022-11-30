@@ -433,8 +433,8 @@ public class AdministrarViajeBean implements Serializable {
         PrimeFaces.current().executeScript(metodo);
     }
 
-    public void selecionarSolicitud(int idSol) {
-        administrarViajeBeanModel.llenarlistaViajerosPorSolicitud(idSol);
+    public void selecionarSolicitud(SolicitudViajeVO solViVO) {
+        administrarViajeBeanModel.llenarlistaViajerosPorSolicitud(solViVO);
     }
 
     public void moverViajeAPorSalir(int idV) {
