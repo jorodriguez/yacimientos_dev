@@ -2974,7 +2974,7 @@ public class OrdenImpl extends AbstractFacade<Orden> {
             setValueExcelFormulas(fileExcel, wb, 0, i, 12);
             if (orden.getFechaEntrega() != null) {
                 SimpleDateFormat fs = new SimpleDateFormat("dd/MM/yyyy");
-                setValueExcel(fileExcel, fs.format(orden.getFechaEntrega()), 0, i, 16);//Fecha entrega
+                setValueExcel(fileExcel, fs.format(orden.getFechaEntrega()), 0, i, 24);//Fecha entrega
             }
 
         } else {
@@ -3071,7 +3071,7 @@ public class OrdenImpl extends AbstractFacade<Orden> {
             setValueExcelFormulas(fileExcel, wb, 0, i, 12);
             if (orden.getFechaEntrega() != null) {
                 SimpleDateFormat fs = new SimpleDateFormat("dd/MM/yyyy");
-                setValueExcel(fileExcel, fs.format(orden.getFechaEntrega()), 0, i, 16);//Fecha entrega
+                setValueExcel(fileExcel, fs.format(orden.getFechaEntrega()), 0, i, 24);//Fecha entrega
             }
 
         } else {
@@ -3171,7 +3171,7 @@ public class OrdenImpl extends AbstractFacade<Orden> {
             }
             setValueExcel(fileExcel, "ProyCode", 0, 21, 16);//Etiqueta ProyCode
         } else {
-            setValueExcel(fileExcel, "Fecha de entrega", 0, 21, 16);//Etiqueta ProyCode
+            //setValueExcel(fileExcel, "Fecha de entrega", 0, 21, 16);//Etiqueta ProyCode
         }
         setValueExcelFormulas(fileExcel, wb, 0, 6, 13);
         if (orden.getOcTerminoPago() != null) {
@@ -3204,6 +3204,9 @@ public class OrdenImpl extends AbstractFacade<Orden> {
         setValueExcel(fileExcel, "REPSE", 0, 1, 5);//Etiqueta Archivo REPSE
 
         setValueExcel(fileExcel, orden.isRepse() ? "1" : "0", 0, 1, 6);//Valor Archivo REPSE
+        
+        setValueExcel(fileExcel, (orden.isEsOc() ? "Pedido" : (orden.getConsecutivo().startsWith("SC") ? "Subcontrato" : "Servicios")), 0, 1, 4);//Valor Tipo Compra
+        setValueExcel(fileExcel, orden.getCompania().getRfc(), 0, 9, 4);//Empresa asigna compra
 
     }
 
