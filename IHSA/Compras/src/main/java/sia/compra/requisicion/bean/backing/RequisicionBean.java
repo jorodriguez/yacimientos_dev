@@ -2315,6 +2315,11 @@ F
                                 .append(requiError.toString()).append(". Por favor notifique el problema a: soportesia@ihsa.mx").toString());
             }
             llenarRequisiciones();
+            
+            //probar para 
+            ContarBean contarBean = (ContarBean) FacesUtilsBean.getManagedBean("contarBean");
+            contarBean.llenarReqSinAsignar();
+            
             String jsMetodo = ";limpiarTodos();";
             PrimeFaces.current().executeScript(jsMetodo);
         } catch (IllegalArgumentException e) {
