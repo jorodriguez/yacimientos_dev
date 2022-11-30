@@ -130,15 +130,6 @@ public class CategoriaBean implements Serializable {
             categoriaModel.guardarArticulo();
             categoriaModel.verArticulos();
             PrimeFaces.current().executeScript(";enviarNotificacionNuevoItem();");
-        } catch (SIAException e) {
-            if ("NoParte".equals(e.getMessage())) {
-                FacesUtils.addErrorMessage("El No. Parte ya existe en el catálogo de articulos del Sia.");
-                PrimeFaces.current().executeScript(";$(registrarArticulo).modal('show');mostrarDiv('registrarArticulo');");
-            } else if ("NoCampos".equals(e.getMessage())) {
-                FacesUtils.addErrorMessage("Se requiere se seleccione al menos un proyecto.");
-                PrimeFaces.current().executeScript(";$(registrarArticulo).modal('show');mostrarDiv('registrarArticulo');");
-
-            }
         } catch (Exception e) {
             Logger.getLogger(CategoriaBean.class.getName()).log(Level.SEVERE, null, e);
             FacesUtils.addErrorMessage("Ocurrió una excepción, favor de comunicar a sia@ihsa.mx");
@@ -201,7 +192,7 @@ public class CategoriaBean implements Serializable {
     }
 
     public void seleccinarArticulos() {
-        categoriaModel.seleccinarArticulos();
+        categoriaModel.seleccionarArticulos();
         categoriaModel.llenarCategoriaCambiar();
     }
 
@@ -499,9 +490,6 @@ public class CategoriaBean implements Serializable {
         categoriaModel.setListaUsuario(listaUsuario);
     }
 
-    public void usuarioListener(String texto) {
-        categoriaModel.setListaUsuario(texto);
-    }
 
     public void enviarNotificacionAltaArticulo() {
         try {

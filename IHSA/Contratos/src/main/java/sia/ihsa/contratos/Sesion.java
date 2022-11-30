@@ -86,11 +86,17 @@ public class Sesion implements Serializable {
     }
 
     public void siaGo() {
+        eliminarSesionActual();
         redireccionar(Constantes.URL_REL_SIA_PRINCIPAL);
     }
 
-    public String direccionar() {       
+    private void eliminarSesionActual() {
+        LOGGER.info(this, "@eliminarSesionActual");
+        menu = null;
+        this.usuarioSesion = null;
+    }
 
+    public String direccionar() {
         return getPaginaInicio();
     }
 

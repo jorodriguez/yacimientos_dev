@@ -1123,11 +1123,8 @@ public class ArticuloImpl extends AbstractFacade<InvArticulo> implements Articul
 
         List<ArticuloVO> lstArticulos = new ArrayList<>();
         StringBuilder sb = new StringBuilder();
-        //                   0      1              2                        3         4
         sb.append(" select a.ID, a.CODIGO, a.CODIGO_EAN13 AS codigo_barras, a.NOMBRE, a.DESCRIPCION, "
-                // 5                      6                          7       
                 + " a.UNIDAD AS unidad_id, u.NOMBRE as unidad_nombre, ac.AP_CAMPO AS campo_id, "
-                // 8                         9                10                         11
                 + "c.NOMBRE as campo_nombre, ac.ID AS id_rel, a.codigo_int AS num_parte, a.categorias "
                 + " from INV_ARTICULO_CAMPO ac "
                 + " inner join INV_ARTICULO a on a.ID = ac.INV_ARTICULO and a.ELIMINADO = 'False' and a.NOMBRE is not null ");
@@ -1135,10 +1132,11 @@ public class ArticuloImpl extends AbstractFacade<InvArticulo> implements Articul
         if (campoID > 0) {
             sb.append(" and ac.AP_CAMPO = ").append(campoID);
         }
-        sb.append(" inner join SI_UNIDAD u on u.id = a.UNIDAD and u.ELIMINADO = 'False' "
-                + " where ac.ELIMINADO = 'False' ");
-            sb.append(" and upper(a.nombre) like  upper('%").append(palabra).append("%') ");
-        sb.append(" order by a.NOMBRE ");
+        sb.append(" inner join SI_UNIDAD u on u.id = a.UNIDAD and u.ELIMINADO = 'False' ")
+                .append(" where ac.ELIMINADO = false ")
+                .append(" and ( upper(a.nombre) like  upper('%").append(palabra).append("%') ")
+                .append(" or upper(a.codigo_int) like  upper('%").append(palabra).append("%') ) ")
+                .append(" order by a.NOMBRE ");
 
         try {
             lstArticulos
