@@ -1117,6 +1117,26 @@ public class ArticuloImpl extends AbstractFacade<InvArticulo> implements Articul
 
         return retVal;
     }
+    
+    @Override
+    public InvArticulo buscarPorCodigoInt(String codigo, int unidadID) {
+        InvArticulo retVal = null;
+
+        try {
+            String consulta
+                    = "SELECT * from INV_ARTICULO where upper(replace(codigo_int, '''' , '')) = upper(?) and unidad = ? and ELIMINADO = false ";
+
+            retVal
+                    = (InvArticulo) em.createNativeQuery(consulta, InvArticulo.class)
+                            .setParameter(1, codigo)
+                            .setParameter(2, unidadID)
+                            .getSingleResult();
+        } catch (Exception e) {
+            LOGGER.info(this, "", e);
+        }
+
+        return retVal;
+    }
 
     @Override
     public List<ArticuloVO> obtenerArticulosPorPalabra(String palabra, int campoID) {

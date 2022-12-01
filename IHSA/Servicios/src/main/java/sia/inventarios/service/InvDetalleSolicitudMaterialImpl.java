@@ -14,6 +14,7 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import sia.constantes.Constantes;
+import sia.modelo.InvArticulo;
 import sia.modelo.InvDetalleSolicitudMaterial;
 import sia.modelo.InvSolicitudMaterial;
 import sia.modelo.Usuario;
@@ -92,7 +93,11 @@ public class InvDetalleSolicitudMaterialImpl extends AbstractFacade<InvDetalleSo
     public void guardar(int idSolicitud, DetalleSolicitudMaterialAlmacenVo dsmav, String sesion) {
         InvDetalleSolicitudMaterial detalleSolicitudMaterial = new InvDetalleSolicitudMaterial();
         detalleSolicitudMaterial.setInvSolicitudMaterial(new InvSolicitudMaterial(idSolicitud));
-        detalleSolicitudMaterial.setInvArticulo(articuloRemote.buscarPorCodigo(dsmav.getCodigoArt(), dsmav.getIdUnidad()));
+        InvArticulo articulo = articuloRemote.buscarPorCodigoInt(dsmav.getCodigoArt(), dsmav.getIdUnidad());
+        if(articulo == null || articulo.getId() == 0){
+            articulo = articuloRemote.buscarPorCodigo(dsmav.getCodigoArt(), dsmav.getIdUnidad());
+        }
+        detalleSolicitudMaterial.setInvArticulo(articulo);
         detalleSolicitudMaterial.setReferencia(dsmav.getReferencia());
         detalleSolicitudMaterial.setCantidad(dsmav.getCantidad());
         detalleSolicitudMaterial.setGenero(new Usuario(sesion));
