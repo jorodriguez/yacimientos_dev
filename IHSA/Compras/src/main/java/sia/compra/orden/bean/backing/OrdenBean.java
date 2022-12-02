@@ -1593,7 +1593,7 @@ public class OrdenBean implements Serializable {
                     }
                 }
                 mostrarMensaje(aprobadasSB.toString(), noAprobadasSB.toString());
-                mostrar = false;
+                mostrar = false;                
                 //Linea para recargar la lista de OC/S
                 String jsMetodo = JS_METHOD_LIMPIAR_TODOS;
                 PrimeFaces.current().executeScript(jsMetodo);
@@ -1627,6 +1627,9 @@ public class OrdenBean implements Serializable {
             //
             ContarBean contarBean = (ContarBean) FacesUtilsBean.getManagedBean("contarBean");
             contarBean.llenarOcsSinAutorizaCompras();
+            
+            llenarCompras();
+            
         } catch (Exception e) {
             LOGGER.fatal(this, e.getMessage());
             FacesUtilsBean.addInfoMessage(ERR_UNEXPECTED);
