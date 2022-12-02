@@ -1122,7 +1122,7 @@ public class ProveedorServicioImpl extends AbstractFacade<Proveedor> {
                 + " from PROVEEDOR p  \n"
                 + "     inner join PV_PROVEEDOR_COMPANIA pc  on  pc.proveedor = p.id \n"
                 + " where p.status = ?1 "
-                + " and upper(p.nombre) like UPPER('%" + nombre + "%')"
+                + " and upper(p.rfc||p.nombre) like UPPER('%" + nombre + "%')"
                 + " and pc.COMPANIA in  (SELECT ca.COMPANIA from AP_CAMPO_USUARIO_RH_PUESTO  ca \n"
                 + "                         inner join AP_CAMPO a on 	ca.AP_CAMPO = a.id \n"
                 + "                 	where ca.usuario = ?2 and ca.ELIMINADO = false ) \n"
@@ -1280,7 +1280,7 @@ public class ProveedorServicioImpl extends AbstractFacade<Proveedor> {
         return em.createNativeQuery("SELECT p.rfc || ' / ' || p.nombre FROM pv_proveedor_compania pc"
                 + "     inner join proveedor p on pc.proveedor = p.id"
                 + " WHERE p.status = " + status
-                + " AND  upper(p.nombre) LIKE '" + cadena.toUpperCase() + "%'"
+                + " AND  upper(p.rfc||p.nombre) LIKE '%" + cadena.toUpperCase() + "%'"
                 + " and pc.compania = '" + rfcCompania + "' "
                 + " and pc.eliminado = false ORDER BY p.nombre ASC").getResultList();
     }

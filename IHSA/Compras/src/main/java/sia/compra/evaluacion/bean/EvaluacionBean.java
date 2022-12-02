@@ -134,11 +134,7 @@ public class EvaluacionBean implements Serializable{
                         File evaPDF = siaPDFImpl.getPDF(eval, usuarioBean.getUsuarioConectado(), true);
                         notificacionEvaluacionImpl.notificacionRespuestaEvaluacion(
                                 siUsuarioRolImpl.traerCorreosPorCodigoRolList("" + Constantes.ROL_ADMINISTRA_CONTRATO, usuarioBean.getUsuarioConectado().getApCampo().getId()),
-                                "", "", "Evaluación del proveedor para el contrato " + getVo().getConvenioCodigo(), eval, evaPDF);
-
-                        this.iniciar();
-                        ContarBean contarBean = (ContarBean) FacesUtilsBean.getManagedBean("contarBean");
-                        contarBean.llenarEvaluador();
+                                "", "", "Evaluación del proveedor para el contrato " + getVo().getConvenioCodigo(), eval, evaPDF);                                               
                         FacesUtilsBean.addInfoMessage("Se guardo correctamente la evaluación y fue enviada al solicitante.");
                         PrimeFaces.current().executeScript(";regresar('divTabla', 'divDatos', 'divOperacion', 'divAutoriza');");
                     } else {
@@ -150,8 +146,11 @@ public class EvaluacionBean implements Serializable{
 
             } catch (Exception ex) {
                 Logger.getLogger(EvaluacionBean.class.getName()).log(Level.SEVERE, null, ex);
-            }
-
+            }finally{
+                    ContarBean contarBean = (ContarBean) FacesUtilsBean.getManagedBean("contarBean");
+                    contarBean.llenarEvaluador();                        
+                    this.iniciar();
+            }               
         }
     }
 

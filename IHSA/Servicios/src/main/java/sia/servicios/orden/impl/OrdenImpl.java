@@ -2974,7 +2974,7 @@ public class OrdenImpl extends AbstractFacade<Orden> {
             setValueExcelFormulas(fileExcel, wb, 0, i, 12);
             if (orden.getFechaEntrega() != null) {
                 SimpleDateFormat fs = new SimpleDateFormat("dd/MM/yyyy");
-                setValueExcel(fileExcel, fs.format(orden.getFechaEntrega()), 0, i, 16);//Fecha entrega
+                setValueExcel(fileExcel, fs.format(orden.getFechaEntrega()), 0, i, 24);//Fecha entrega
             }
 
         } else {
@@ -3007,7 +3007,7 @@ public class OrdenImpl extends AbstractFacade<Orden> {
             setValueExcelFormulas(fileExcel, wb, 0, i, 13);
         }
         //Agregar el usuario beneficiado
-        setValueExcel(fileExcel, linea.getUsuarioBeneficiado(), 0, i, 17);//usuario beneficiado
+        setValueExcel(fileExcel, linea.getUsuarioBeneficiado(), 0, i, 16);//usuario beneficiado
 
         if (linea.getArtDescripcion().length() <= 250) {
             setValueExcel(fileExcel, linea.getArtDescripcion(), 0, i, 3);//Descripción
@@ -3071,7 +3071,11 @@ public class OrdenImpl extends AbstractFacade<Orden> {
             setValueExcelFormulas(fileExcel, wb, 0, i, 12);
             if (orden.getFechaEntrega() != null) {
                 SimpleDateFormat fs = new SimpleDateFormat("dd/MM/yyyy");
-                setValueExcel(fileExcel, fs.format(orden.getFechaEntrega()), 0, i, 16);//Fecha entrega
+                setValueExcel(fileExcel, fs.format(orden.getFechaEntrega()), 0, i, 24);//Fecha entrega
+            }
+                        
+            if(i == 22){
+                setValueExcel(fileExcel, linea.getCodeTarea(), 0, 6, 8);//Tarea Encabezado(6,8)
             }
 
         } else {
@@ -3120,7 +3124,7 @@ public class OrdenImpl extends AbstractFacade<Orden> {
             }
         }
         //Agregar el usuario beneficiado
-        setValueExcel(fileExcel, linea.getUsuarioBeneficiado(), 0, i, 17);//usuario beneficiado
+        setValueExcel(fileExcel, linea.getUsuarioBeneficiado(), 0, i, 16);//usuario beneficiado
         if (linea.getArtDescripcion().length() <= 250) {
             setValueExcel(fileExcel, linea.getArtDescripcion(), 0, i, 3);//Descripción
         } else {
@@ -3171,14 +3175,14 @@ public class OrdenImpl extends AbstractFacade<Orden> {
             }
             setValueExcel(fileExcel, "ProyCode", 0, 21, 16);//Etiqueta ProyCode
         } else {
-            setValueExcel(fileExcel, "Fecha de entrega", 0, 21, 16);//Etiqueta ProyCode
+            //setValueExcel(fileExcel, "Fecha de entrega", 0, 21, 16);//Etiqueta ProyCode
         }
         setValueExcelFormulas(fileExcel, wb, 0, 6, 13);
         if (orden.getOcTerminoPago() != null) {
             setValueExcel(fileExcel, orden.getOcTerminoPago().getCodigo(), 0, 8, 4);//Términos de Pago(8,4)
-            String codigoStr = orden.getOcTerminoPago().getCodigo().replaceAll("D", "");
-            int codigoInt = Integer.parseInt(codigoStr);
-            setValueExcel(fileExcel, codigoInt, 0, 8, 6);//Términos de Pago(8,4)
+            //String codigoStr = orden.getOcTerminoPago().getCodigo().replaceAll("D", "");
+            //int codigoInt = Integer.parseInt(codigoStr);
+            setValueExcel(fileExcel, orden.getOcTerminoPago().getCodigoCobra(), 0, 8, 6);//Términos de Pago(8,4)
             //setValueExcelFormulas(fileExcel, 0, 8, 6);
             setValueExcelFormulas(fileExcel, wb, 0, 8, 13);
         }
@@ -3204,7 +3208,12 @@ public class OrdenImpl extends AbstractFacade<Orden> {
         setValueExcel(fileExcel, "REPSE", 0, 1, 5);//Etiqueta Archivo REPSE
 
         setValueExcel(fileExcel, orden.isRepse() ? "1" : "0", 0, 1, 6);//Valor Archivo REPSE
-
+        
+        setValueExcel(fileExcel, (orden.isEsOc() ? "Pedido" : (orden.getConsecutivo().startsWith("SC") ? "Subcontrato" : "Servicios")), 0, 1, 4);//Valor Tipo Compra
+        setValueExcel(fileExcel, orden.getCompania().getRfc(), 0, 9, 4);//Empresa asigna compra
+        
+        setValueExcel(fileExcel, orden.getProyectoOt().getCuentaContable(), 0, 6, 6);//ProyectoOt Encabezado(6,6)
+        
     }
 
     public List<OrdenVO> ordenesPorCondicionPago(int condicionPago, int bloque) {
