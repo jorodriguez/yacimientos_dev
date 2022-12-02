@@ -3007,7 +3007,7 @@ public class OrdenImpl extends AbstractFacade<Orden> {
             setValueExcelFormulas(fileExcel, wb, 0, i, 13);
         }
         //Agregar el usuario beneficiado
-        setValueExcel(fileExcel, linea.getUsuarioBeneficiado(), 0, i, 17);//usuario beneficiado
+        setValueExcel(fileExcel, linea.getUsuarioBeneficiado(), 0, i, 16);//usuario beneficiado
 
         if (linea.getArtDescripcion().length() <= 250) {
             setValueExcel(fileExcel, linea.getArtDescripcion(), 0, i, 3);//Descripción
@@ -3124,7 +3124,7 @@ public class OrdenImpl extends AbstractFacade<Orden> {
             }
         }
         //Agregar el usuario beneficiado
-        setValueExcel(fileExcel, linea.getUsuarioBeneficiado(), 0, i, 17);//usuario beneficiado
+        setValueExcel(fileExcel, linea.getUsuarioBeneficiado(), 0, i, 16);//usuario beneficiado
         if (linea.getArtDescripcion().length() <= 250) {
             setValueExcel(fileExcel, linea.getArtDescripcion(), 0, i, 3);//Descripción
         } else {

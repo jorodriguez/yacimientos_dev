@@ -1058,7 +1058,7 @@ public class OrdenBean implements Serializable {
                 //mostrar los mensajes de error
                 mostrarMensaje(aprobadasSB.toString(), noAprobadasSB.toString());
                 mostrar = false;
-
+                llenarCompras();
                 setOrdenActual(null);
                 String jsMetodo = JS_METHOD_REGRESAR_DIV_AUTORIZA;
                 PrimeFaces.current().executeScript(jsMetodo);
