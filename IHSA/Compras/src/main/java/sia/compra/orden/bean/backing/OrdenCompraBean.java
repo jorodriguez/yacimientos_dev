@@ -992,7 +992,7 @@ public class OrdenCompraBean implements Serializable {
 
     public void seleccionarActividad(AjaxBehaviorEvent event) {
         if (event != null) {
-            if (getOrdenActual().getTipo().toString().equals(TipoRequisicion.PS.toString())) {
+            if (getOrdenActual().getTipo().equals(TipoRequisicion.PS.toString())) {
                 llenarProyecto();
                 getItemActual().getProyectoOt().setId(Constantes.CERO);
                 getItemActual().getOcUnidadCosto().setId(Constantes.CERO);

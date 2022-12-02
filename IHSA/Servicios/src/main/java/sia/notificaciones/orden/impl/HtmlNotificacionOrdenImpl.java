@@ -1690,7 +1690,7 @@ public class HtmlNotificacionOrdenImpl extends CodigoHtml {
                     sb.append("<div>");
                     sb.append("<strong><span style=\"font-size: -1; font-family: Arial, Helvetica, sans-serif;\">Tarea</span></strong>");
                     sb.append("</div>");
-                    sb.append("<div><span style=\"font-size: -1; font-family: Arial, Helvetica, sans-serif;\">").append(orden.getTipo().equals(TipoRequisicion.PS) ? validarNullHtml(Lista.getNombreTarea()) : "Activo Fijo").append("</span>");
+                    sb.append("<div><span style=\"font-size: -1; font-family: Arial, Helvetica, sans-serif;\">").append(orden.getTipo().equals(TipoRequisicion.PS.name()) ? validarNullHtml(Lista.getNombreTarea()) : "Activo Fijo").append("</span>");
                     sb.append("</div>");
                     sb.append("</div>");
                     sb.append("</td>");

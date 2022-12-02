@@ -2775,7 +2775,7 @@ public class OrdenImpl extends AbstractFacade<Orden> {
                 XSSFWorkbook wb = new XSSFWorkbook(pkg);
                 XSSFSheet myWorksheet = wb.getSheetAt(0);
 
-                if (TipoRequisicion.AF.equals(orden.getTipo())) {
+                if (TipoRequisicion.AF.name().equals(orden.getTipo())) {
                     cargarExcelAF(myWorksheet, wb, orden, i);
                 } else {
                     cargarExcelPS(myWorksheet, wb, orden, i);
@@ -2805,7 +2805,7 @@ public class OrdenImpl extends AbstractFacade<Orden> {
                 XSSFWorkbook wb = new XSSFWorkbook(pkg);
                 XSSFSheet myWorksheet = wb.getSheetAt(0);
 
-                if (TipoRequisicion.AF.equals(orden.getTipo())) {
+                if (TipoRequisicion.AF.name().equals(orden.getTipo())) {
                     cargarExcelAF(myWorksheet, wb, orden, i);
                 } else {
                     cargarExcelPS(myWorksheet, wb, orden, i);
@@ -2833,7 +2833,7 @@ public class OrdenImpl extends AbstractFacade<Orden> {
             OPCPackage pkg = OPCPackage.open(input_document);
             XSSFWorkbook wb = new XSSFWorkbook(pkg);
             XSSFSheet my_worksheet = wb.getSheetAt(0);
-            if (TipoRequisicion.AF.equals(orden.getTipo())) {
+            if (TipoRequisicion.AF.name().equals(orden.getTipo())) {
                 cargarExcelAF(my_worksheet, wb, orden, i);
             } else if (TipoRequisicion.PS.name().equals(orden.getTipo())) {
                 cargarExcelPS(my_worksheet, wb, orden, i);
@@ -4696,7 +4696,7 @@ public class OrdenImpl extends AbstractFacade<Orden> {
             items = itemsPorOrdenCompra(ordenId);
         }
         notificacionesOrdenRemote.enviarNotificacionTarea(orden, contactos, items);
-        if (TipoRequisicion.AF.equals(orden.getTipo())) {
+        if (TipoRequisicion.AF.name().equals(orden.getTipo())) {
             notificacionesOrdenRemote.enviarNotificacionCotabilidad(orden, contactos, items);
         }
         //
