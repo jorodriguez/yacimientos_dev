@@ -3073,6 +3073,10 @@ public class OrdenImpl extends AbstractFacade<Orden> {
                 SimpleDateFormat fs = new SimpleDateFormat("dd/MM/yyyy");
                 setValueExcel(fileExcel, fs.format(orden.getFechaEntrega()), 0, i, 24);//Fecha entrega
             }
+                        
+            if(i == 22){
+                setValueExcel(fileExcel, linea.getCodeTarea(), 0, 6, 8);//Tarea Encabezado(6,8)
+            }
 
         } else {
             if (orden.getApCampo().getAlmacen() != null && !orden.getApCampo().getAlmacen().isEmpty()) {
@@ -3176,9 +3180,9 @@ public class OrdenImpl extends AbstractFacade<Orden> {
         setValueExcelFormulas(fileExcel, wb, 0, 6, 13);
         if (orden.getOcTerminoPago() != null) {
             setValueExcel(fileExcel, orden.getOcTerminoPago().getCodigo(), 0, 8, 4);//Términos de Pago(8,4)
-            String codigoStr = orden.getOcTerminoPago().getCodigo().replaceAll("D", "");
-            int codigoInt = Integer.parseInt(codigoStr);
-            setValueExcel(fileExcel, codigoInt, 0, 8, 6);//Términos de Pago(8,4)
+            //String codigoStr = orden.getOcTerminoPago().getCodigo().replaceAll("D", "");
+            //int codigoInt = Integer.parseInt(codigoStr);
+            setValueExcel(fileExcel, orden.getOcTerminoPago().getCodigoCobra(), 0, 8, 6);//Términos de Pago(8,4)
             //setValueExcelFormulas(fileExcel, 0, 8, 6);
             setValueExcelFormulas(fileExcel, wb, 0, 8, 13);
         }
@@ -3207,7 +3211,9 @@ public class OrdenImpl extends AbstractFacade<Orden> {
         
         setValueExcel(fileExcel, (orden.isEsOc() ? "Pedido" : (orden.getConsecutivo().startsWith("SC") ? "Subcontrato" : "Servicios")), 0, 1, 4);//Valor Tipo Compra
         setValueExcel(fileExcel, orden.getCompania().getRfc(), 0, 9, 4);//Empresa asigna compra
-
+        
+        setValueExcel(fileExcel, orden.getProyectoOt().getCuentaContable(), 0, 6, 6);//ProyectoOt Encabezado(6,6)
+        
     }
 
     public List<OrdenVO> ordenesPorCondicionPago(int condicionPago, int bloque) {

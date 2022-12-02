@@ -38,7 +38,7 @@ public class OcTerminoPago implements Serializable {
     @Column(name = "NOMBRE")
     private String nombre;
     @Size(max = 12)
-    @Column(name = "CODIGO  ")
+    @Column(name = "CODIGO")
     private String codigo;
     @Column(name = "FECHA_GENERO")
     @Temporal(TemporalType.DATE)
@@ -64,6 +64,9 @@ public class OcTerminoPago implements Serializable {
     @JoinColumn(name = "COMPANIA", referencedColumnName = "RFC")
     @ManyToOne
     private Compania compania;
+    @Size(max = 3)
+    @Column(name = "CODIGOCOBRA")
+    private String codigoCobra;
 
     public OcTerminoPago() {
     }
