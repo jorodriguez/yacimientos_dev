@@ -45,8 +45,9 @@
                 </script>
                 <div class="row">
                     <h:form id="frmPrincipal">
-                        <p:tabView id="tbPrincipal" rendered="#{!proveedorBean.bloquearFacturas and !(proveedorBean.mapaInicial.size() eq 0)}" >
-                            <p:tab id="tabOrdenes" title="#{msgs['sia.orden.asignadas']} ( #{proveedorBean.mapaTotales.get('totalOCS')} )"  >
+                        <p:tabView id="tbPrincipal" >
+                            <p:tab id="tabOrdenes" title="#{msgs['sia.orden.asignadas']} ( #{proveedorBean.mapaTotales.get('totalOCS')} )" 
+                                   rendered="#{!proveedorBean.bloquearFacturas and !(proveedorBean.mapaInicial.size() eq 0)}">
                                 <div class="row" 
                                      data-hint='Seleccione una de las órdenes pulsando en el engrane azul en la última columna de cada renglón.'>                                    
                                     <div class="col-5">                                        
@@ -126,7 +127,8 @@
                                     <h4 style="color: blue;">#{msgs['sia.factura.mensaje.pendiente']} </h4>
                                 </div>
                             </p:tab>
-                            <p:tab id="tabEnviadas" title="#{msgs['sia.factura.enviadas']}( #{proveedorBean.mapaTotales.get('totalFacint')} ) " >
+                            <p:tab id="tabEnviadas" title="#{msgs['sia.factura.enviadas']}( #{proveedorBean.mapaTotales.get('totalFacint')} ) " 
+                                   rendered="#{!proveedorBean.bloquearFacturas and !(proveedorBean.mapaInicial.size() eq 0)}">
                                 <div class="row">
                                     <div class="input-group col-6">
                                         <div class="col-2">
@@ -177,7 +179,8 @@
                                     </p:dataTable>
                                 </div>
                             </p:tab>
-                            <p:tab id="tabDevueltas" title="#{msgs['sia.factura.devueltas']}( #{proveedorBean.mapaTotales.get('totalFacturaRechazada')} )" >
+                            <p:tab id="tabDevueltas" title="#{msgs['sia.factura.devueltas']}( #{proveedorBean.mapaTotales.get('totalFacturaRechazada')} )" 
+                                   >
                                 <div class="row">
                                     <div class="input-group col-6">
                                         <div class="col-2">
@@ -234,6 +237,21 @@
                                 </div>
                             </p:tab>
                             <p:tab id="tabComplentoPago" title="#{msgs['sia.factura.complemento.pago']} ( #{proveedorBean.mapaTotales.get('totalCXP')} )" >
+                                <div class="row">
+                                    <div class="input-group col-6">
+                                        <div class="col-2">
+                                            <h4>#{msgs['sia.bloque.nombre']}:</h4>
+                                        </div>
+                                        <div class="col-10">
+                                            <h:selectOneMenu value="#{proveedorBean.campoRecCXP}" 
+                                                             class="form-control">
+                                                <f:selectItems value="#{proveedorBean.selectCampo.get('facturaCXPCombo')}"/>
+                                                <p:ajax process="@this" update="frmPrincipal:tbPrincipal"
+                                                        listener="#{proveedorBean.seleccionarCampoCXP}"/>
+                                            </h:selectOneMenu>
+                                        </div>
+                                    </div>
+                                </div>
                                 <p:dataTable id="histFacturaCXP" value="#{proveedorBean.mapaInicial.get('facturaCXP')}" var="dataFacProc"
                                              paginator="true" rows="20" paginatorPosition="bottom"  size="small" showGridlines="true">
                                     <p:column headerText="#{msgs['sia.orden']}">

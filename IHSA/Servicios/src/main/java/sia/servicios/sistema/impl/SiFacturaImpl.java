@@ -77,8 +77,8 @@ import sia.util.ValidadorFactura;
  *
  * @author ihsa
  */
-@Stateless 
-public class SiFacturaImpl extends AbstractFacade<SiFactura>{
+@Stateless
+public class SiFacturaImpl extends AbstractFacade<SiFactura> {
 
     private static final UtilLog4j LOGGER = UtilLog4j.log;
 
@@ -110,13 +110,11 @@ public class SiFacturaImpl extends AbstractFacade<SiFactura>{
         super(SiFactura.class);
     }
 
-    
     @Override
     protected EntityManager getEntityManager() {
         return em;
     }
 
-    
     public SiFactura guardarFactura(FacturaVo facturaVo, String sesion, List<OrdenDetalleVO> partidas, String tipoCompra) {
         SiFactura siFactura = new SiFactura();
         siFactura.setProveedor(new Proveedor(facturaVo.getIdProveedor()));
@@ -162,7 +160,6 @@ public class SiFacturaImpl extends AbstractFacade<SiFactura>{
         return siFactura;
     }
 
-    
     public void modificarFactura(FacturaVo facturaVo, String sesion) {
         SiFactura siFactura = find(facturaVo.getId());
         siFactura.setMoneda(new Moneda(facturaVo.getIdMoneda()));
@@ -181,7 +178,6 @@ public class SiFacturaImpl extends AbstractFacade<SiFactura>{
 
     }
 
-    
     public void eliminarFactura(int facturaVo, int status, String sesion) {
         SiFactura siFactura = find(facturaVo);
         //
@@ -198,7 +194,6 @@ public class SiFacturaImpl extends AbstractFacade<SiFactura>{
         autorizacionesOrdenRemote.cambiarStatusOrden(siFactura.getOrden().getId(), sesion, OrdenEstadoEnum.POR_RECIBIR_FACTURA.getId());
     }
 
-    
     public void agregarArchivo(int factura, int adjunto, String sesion) {
         SiFactura siFactura = find(factura);
         siFactura.setSiAdjunto(new SiAdjunto(adjunto));
@@ -210,7 +205,6 @@ public class SiFacturaImpl extends AbstractFacade<SiFactura>{
         //log
     }
 
-    
     public void quitarArchivo(int factura, String sesion) {
         try {
             SiFactura siFactura = find(factura);
@@ -232,7 +226,6 @@ public class SiFacturaImpl extends AbstractFacade<SiFactura>{
 
     }
 
-    
     public FacturaVo buscarFactura(int factura) {
         FacturaVo retVal = null;
 
@@ -258,7 +251,6 @@ public class SiFacturaImpl extends AbstractFacade<SiFactura>{
         return retVal;
     }
 
-    
     public List<FacturaVo> traerFacturaPorOrden(int idCompra, int status) {
         List<FacturaVo> retVal = null;
 
@@ -286,7 +278,6 @@ public class SiFacturaImpl extends AbstractFacade<SiFactura>{
         return retVal;
     }
 
-    
     public double totalPorOrden(int idOrden) {
         String c = " SELECT COALESCE(sum(f.subtotal), 0)  AS total FROM si_factura  f \n"
                 + " WHERE f.orden =  ? "
@@ -359,7 +350,6 @@ public class SiFacturaImpl extends AbstractFacade<SiFactura>{
                 + "      LEFT JOIN si_adjunto adj ON fac.SI_ADJUNTO = adj.ID \n";
     }
 
-    
     public void actualizarFactura(FacturaVo facturaVo, String sesion) {
         try {
 
@@ -384,7 +374,6 @@ public class SiFacturaImpl extends AbstractFacade<SiFactura>{
      * @param proveedor
      * @return
      */
-    
     public long totalFacturaPorStatusCampo(int status, int campo, int proveedor) {
         long retVal = 0;
         StringBuilder sql = new StringBuilder(300);
@@ -422,7 +411,6 @@ public class SiFacturaImpl extends AbstractFacade<SiFactura>{
         return retVal;
     }
 
-    
     public List<FacturaVo> traerFacturaPorStatus(int status, int campo, int proveedor, String compania) {
         List<FacturaVo> retVal = null;
         List<Object> paramValues = new ArrayList<>();
@@ -461,7 +449,6 @@ public class SiFacturaImpl extends AbstractFacade<SiFactura>{
         return retVal;
     }
 
-    
     public int cargarFactura(FacturaVo facturaVo, File file, String sesion, String referencia, String pedido, String tipoCompra) {
         int retVal = 0;
 
@@ -563,7 +550,6 @@ public class SiFacturaImpl extends AbstractFacade<SiFactura>{
         return null;
     }
 
-    
     public boolean validaTipoComprobante(Comprobante comprobante, CTipoDeComprobante tipoComprobante) {
         return comprobante.getTipoDeComprobante().equals(tipoComprobante);
 
@@ -591,7 +577,6 @@ public class SiFacturaImpl extends AbstractFacade<SiFactura>{
      * @param pedido
      * @return
      */
-    
     public boolean validaNavCode(File file, String pedido) {
         //
         boolean encontrado = false;
@@ -615,7 +600,6 @@ public class SiFacturaImpl extends AbstractFacade<SiFactura>{
         return encontrado;
     }
 
-    
     public boolean validaRFC(File file, String rfc) {
         //
         boolean encontrado = false;
@@ -639,7 +623,6 @@ public class SiFacturaImpl extends AbstractFacade<SiFactura>{
         return encontrado;
     }
 
-    
     public boolean validaFacturaFolio(File file, String folio) {
         //
         boolean encontrado = false;
@@ -663,35 +646,30 @@ public class SiFacturaImpl extends AbstractFacade<SiFactura>{
         return encontrado;
     }
 
-    
     public void aceptarFactura(String sesion, List<FacturaVo> lTemp, String correoSesion, int estatusOrg, int estatusFinal) {
         for (FacturaVo facturaVo : lTemp) {
             siFacturaStatusLocal.aceptarFactura(sesion, facturaVo, correoSesion, estatusOrg, estatusFinal);
         }
     }
 
-    
     public void aceptarFacturaAvanzia(String sesion, List<FacturaVo> lTemp, String correoSesion, int estatusOrg, int estatusFinal) {
         for (FacturaVo facturaVo : lTemp) {
             siFacturaStatusLocal.aceptarFacturaAvanzia(sesion, facturaVo, correoSesion, estatusOrg, estatusFinal);
         }
     }
 
-    
     public void aceptarCCN(String sesion, List<FacturaVo> lTemp, String correoSesion, int estatusOrg, int estatusFinal) {
         for (FacturaVo facturaVo : lTemp) {
             siFacturaStatusLocal.aceptarCCN(sesion, facturaVo, correoSesion, estatusOrg, estatusFinal);
         }
     }
 
-    
     public void pagarFactura(String sesion, List<FacturaVo> lTemp, String correoSesion, int estatusOrg, int estatusFinal) {
         for (FacturaVo facturaVo : lTemp) {
             siFacturaStatusLocal.pagarFactura(sesion, facturaVo, correoSesion, estatusOrg, estatusFinal);
         }
     }
 
-    
     public void marcarLeida(String sesion, FacturaVo facturaVo) {
         SiFactura factura = find(facturaVo.getId());
         factura.setModifico(new Usuario(sesion));
@@ -703,7 +681,6 @@ public class SiFacturaImpl extends AbstractFacade<SiFactura>{
         edit(factura);
     }
 
-    
     public FacturaVo buscarPorOrden(int orden, int status) {
 
         FacturaVo retVal = null;
@@ -728,7 +705,6 @@ public class SiFacturaImpl extends AbstractFacade<SiFactura>{
         return retVal;
     }
 
-    
     public List<FacturaVo> traerFacturaDevuelta(int status, int campo, int idProveedor, String compania) {
         List<FacturaVo> retVal = null;
         List paramValues = new ArrayList<>();
@@ -772,7 +748,6 @@ public class SiFacturaImpl extends AbstractFacade<SiFactura>{
         return retVal;
     }
 
-    
     public boolean validaMoneda(Comprobante comprobante, String moneda) {
 
         return comprobante.getMoneda().name().equals(moneda);
@@ -794,7 +769,6 @@ public class SiFacturaImpl extends AbstractFacade<SiFactura>{
         return comprobante.getMoneda().name().equals(moneda);
     }
 
-    
     public boolean validaUsoCfdi(Comprobante comprobante, String cfdi) {
         boolean retVal = true;
 
@@ -847,7 +821,6 @@ public class SiFacturaImpl extends AbstractFacade<SiFactura>{
      * @param folioFiscal
      * @return
      */
-    
     public boolean validaFolioFiscal(File file, String folioFiscal) {
         //
         boolean encontrado = false;
@@ -871,7 +844,6 @@ public class SiFacturaImpl extends AbstractFacade<SiFactura>{
         return encontrado;
     }
 
-    
     public boolean validaClaveProducto(File file, String claveNoPermitida) {
         //
         boolean encontrado = false;
@@ -894,7 +866,6 @@ public class SiFacturaImpl extends AbstractFacade<SiFactura>{
         return encontrado;
     }
 
-    
     public List<FacturaVo> traerNotaCredito(int idFactura) {
 
         List<FacturaVo> lf = null;
@@ -912,7 +883,7 @@ public class SiFacturaImpl extends AbstractFacade<SiFactura>{
         if (lf == null) {
             lf = Collections.emptyList();
         } else {
-            for(int i = 0; i < lf.size(); i++){
+            for (int i = 0; i < lf.size(); i++) {
                 lf.get(i).setSoportesNC(siFacturaAdjuntoLocal.traerSoporteFactura(lf.get(i).getId(), Constantes.BOOLEAN_FALSE, "'PDF (Nota Credito)', 'XML (Nota Credito)'"));
                 lf.get(i).setSoportesNCSize(lf.get(i).getSoportesNC().size());
             }
@@ -935,7 +906,6 @@ public class SiFacturaImpl extends AbstractFacade<SiFactura>{
                 + "      INNER JOIN moneda m ON fac.moneda = m.id \n";
     }
 
-    
     public FacturaVo buscarNotaCredito(int factura) {
         FacturaVo retVal = null;
 
@@ -956,7 +926,6 @@ public class SiFacturaImpl extends AbstractFacade<SiFactura>{
         return retVal;
     }
 
-    
     public List<FacturaVo> traerTotalesPorCompania(String compania, int anio, int monedaId) {
         List<FacturaVo> lista = null;
 
@@ -992,7 +961,6 @@ public class SiFacturaImpl extends AbstractFacade<SiFactura>{
         return lista;
     }
 
-    
     public boolean validaFolioFiscalUUID(File file) {
 
         boolean v = false;
@@ -1068,7 +1036,6 @@ public class SiFacturaImpl extends AbstractFacade<SiFactura>{
         return retVal;
     }
 
-    
     public void guardarPoliza(String sesion, FacturaVo facturaVo) {
         SiFactura factura = find(facturaVo.getId());
         factura.setModifico(new Usuario(sesion));
@@ -1080,7 +1047,6 @@ public class SiFacturaImpl extends AbstractFacade<SiFactura>{
         edit(factura);
     }
 
-    
     public void guardarPolizaPago(String sesion, FacturaVo facturaVo) {
         SiFactura factura = find(facturaVo.getId());
         factura.setModifico(new Usuario(sesion));
@@ -1092,7 +1058,6 @@ public class SiFacturaImpl extends AbstractFacade<SiFactura>{
         edit(factura);
     }
 
-    
     public void guardarCXPXml(String sesion, FacturaVo facturaVo, SiAdjunto cxp) {
         SiFactura factura = find(facturaVo.getId());
         factura.setModifico(new Usuario(sesion));
@@ -1104,7 +1069,6 @@ public class SiFacturaImpl extends AbstractFacade<SiFactura>{
         edit(factura);
     }
 
-    
     public void borrarCXPXml(String sesion, FacturaVo facturaVo) {
 
         SiFactura factura = find(facturaVo.getId());
@@ -1117,7 +1081,6 @@ public class SiFacturaImpl extends AbstractFacade<SiFactura>{
         edit(factura);
     }
 
-    
     public void guardarCXPPdf(String sesion, FacturaVo facturaVo, SiAdjunto cxp) {
         SiFactura factura = find(facturaVo.getId());
         factura.setModifico(new Usuario(sesion));
@@ -1129,7 +1092,6 @@ public class SiFacturaImpl extends AbstractFacade<SiFactura>{
         edit(factura);
     }
 
-    
     public void guardarComprobante(String sesion, FacturaVo facturaVo, SiAdjunto cp) {
         SiFactura factura = find(facturaVo.getId());
         factura.setModifico(new Usuario(sesion));
@@ -1141,7 +1103,6 @@ public class SiFacturaImpl extends AbstractFacade<SiFactura>{
         edit(factura);
     }
 
-    
     public boolean isEnviarCNH(int facturaID) {
         boolean enviar = false;
         try {
@@ -1187,7 +1148,6 @@ public class SiFacturaImpl extends AbstractFacade<SiFactura>{
      * @param compania
      * @return
      */
-    
     public long totalFacturaDevueltas(int status, int campo, int proveedor, String compania) {
         long retVal = 0;
 
@@ -1237,7 +1197,6 @@ public class SiFacturaImpl extends AbstractFacade<SiFactura>{
         return retVal;
     }
 
-    
     public long totalFacturaPorStatusCompania(int status, String compania, int proveedor) {
 
         long retVal = 0;
@@ -1275,7 +1234,6 @@ public class SiFacturaImpl extends AbstractFacade<SiFactura>{
         return retVal;
     }
 
-    
     public long totalFacturaDevueltasPorCompania(int status, String compania, int proveedor) {
         StringBuilder sql = new StringBuilder(800);
         sql.append("SELECT count(fac.*) \n"
@@ -1317,7 +1275,6 @@ public class SiFacturaImpl extends AbstractFacade<SiFactura>{
         return (long) qry.getSingleResult();
     }
 
-    
     public List<FacturaVo> facturasPorOrden(int idCompra) {
         List<FacturaVo> retVal = null;
 
@@ -1349,7 +1306,6 @@ public class SiFacturaImpl extends AbstractFacade<SiFactura>{
         return retVal;
     }
 
-    
     public List<FacturaVo> traerFacturaPorStatusFecha(int status, int campo, int proveedor, Date inicio, Date fin) {
         List<FacturaVo> retVal = null;
         List<Object> paramValues = new ArrayList<>();
@@ -1389,7 +1345,6 @@ public class SiFacturaImpl extends AbstractFacade<SiFactura>{
         return retVal;
     }
 
-    
     public void eliminarNotaCredito(int facturaVo, int status, String sesion) {
         SiFactura siFactura = find(facturaVo);
         //
@@ -1412,7 +1367,6 @@ public class SiFacturaImpl extends AbstractFacade<SiFactura>{
      * @return <code>true</code> en caso de que sea válido el comprobante,
      * <code>false</code> en caso contrario.
      */
-    
     public boolean validarSAT(File file) {
         return ValidadorFactura.verificarEstatusSAT(file);
     }
@@ -1421,7 +1375,6 @@ public class SiFacturaImpl extends AbstractFacade<SiFactura>{
         return ValidadorFactura.verificarEstatusFactura4(file);
     }
 
-    
     public List<FacturaVo> traerFacturaActualPorFolioStatus(String folio, int status) {
         List<FacturaVo> retVal = null;
 
@@ -1446,7 +1399,6 @@ public class SiFacturaImpl extends AbstractFacade<SiFactura>{
         return retVal;
     }
 
-    
     public Comprobante getComprobanteFromFile(File file) throws SIAException {
         try {
             return ValidadorFactura.getComprobanteFromFile(file);
@@ -1455,7 +1407,6 @@ public class SiFacturaImpl extends AbstractFacade<SiFactura>{
         }
     }
 
-    
     public mx.grupocorasa.sat.cfd._40.Comprobante getComprobanteFromFileFactura4(File file) throws SIAException {
         try {
             return ValidadorFactura.getComprobanteFromStreamFactura4(file);
@@ -1464,7 +1415,6 @@ public class SiFacturaImpl extends AbstractFacade<SiFactura>{
         }
     }
 
-    
     public void validarFactura(File file, OrdenVO compraVo) {
 
         try {
@@ -1548,7 +1498,6 @@ public class SiFacturaImpl extends AbstractFacade<SiFactura>{
 
     }
 
-    
     public void validarCXP(File file, FacturaVo facturaVo) {
 
         try {
@@ -1603,7 +1552,6 @@ public class SiFacturaImpl extends AbstractFacade<SiFactura>{
 
     }
 
-    
     public void validarXmlNotaCred(File file, FacturaVo facturaVo) {
         try {
             if (revisarVersionFactura(file).startsWith(VERSION_FACTURA)) {
@@ -1634,7 +1582,6 @@ public class SiFacturaImpl extends AbstractFacade<SiFactura>{
         }
     }
 
-    
     public List<SelectItem> traerProveedorPorStatusFacturas(String cadena, int status, int campo) {
         List<SelectItem> retVal = null;
         List<Object> paramValues = new ArrayList<>();
@@ -1671,7 +1618,6 @@ public class SiFacturaImpl extends AbstractFacade<SiFactura>{
         return retVal;
     }
 
-    
     public List<FacturaVo> traerFacturaPorStatusFecha(int status, int campo, String rfcProveedor, Date inicio, Date fin) {
         List<FacturaVo> retVal = null;
         List<Object> paramValues = new ArrayList<>();
@@ -1711,7 +1657,6 @@ public class SiFacturaImpl extends AbstractFacade<SiFactura>{
         return retVal;
     }
 
-    
     public List<FacturaVo> traerFacturaPorProveedor(int proveedor, Date inicio, Date fin, String folio, int estatus) {
         List<FacturaVo> retVal = null;
         List<Object> paramValues = new ArrayList<>();
@@ -1747,7 +1692,6 @@ public class SiFacturaImpl extends AbstractFacade<SiFactura>{
         return retVal;
     }
 
-    
     public List<FacturaVo> traerFacturaCXP(int proveedor, String compania, int campo) {
         List<FacturaVo> retVal = null;
         List<Object> paramValues = new ArrayList<>();
@@ -1785,7 +1729,62 @@ public class SiFacturaImpl extends AbstractFacade<SiFactura>{
         return retVal;
     }
 
-    
+    public List<SelectItem> traerFacturaCXPCompania(int proveedor, String compania, int campo) {
+        List<SelectItem> retVal = null;
+        List<Object> paramValues = new ArrayList<>();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
+        StringBuilder sql = new StringBuilder(200);
+        
+
+        sql.append(" SELECT cam.id as \"value\", cam.nombre as \"label\" "
+                + " FROM si_factura fac "
+                + " INNER JOIN oc_factura_status fe ON fe.si_factura = fac.id and fe.actual = true"
+                + " INNER JOIN oc_uso_cfdi uso ON fac.oc_uso_cfdi = uso.id"
+                + " INNER JOIN estatus e ON fe.estatus = e.id"
+                + " INNER JOIN orden o ON fac.orden = o.id "
+                + " inner join oc_termino_pago tp on tp.id = o.oc_termino_pago "
+                + " INNER JOIN ap_campo cam ON o.ap_campo = cam.id "
+                + " INNER JOIN compania com ON o.compania = com.rfc "
+                + " INNER JOIN proveedor p ON o.proveedor = p.id "
+                + " INNER JOIN moneda m ON o.moneda = m.id "
+                + " INNER JOIN ap_campo ca ON fac.ap_campo = ca.id "
+                + " INNER JOIN gerencia ge ON o.gerencia = ge.id "
+                + " LEFT JOIN si_adjunto adj ON fac.SI_ADJUNTO = adj.ID ")
+                .append("WHERE p.id = ").append(proveedor);
+
+        if (campo > 0) {
+            sql.append(" and fac.ap_campo = ").append(campo);
+        }
+
+        if (compania != null && !compania.isEmpty()) {
+            sql.append(" and cam.compania = '").append(compania).append("' ");
+        }
+
+//        paramValues.add(proveedor);
+        sql.append("  AND fe.actual = true AND fe.estatus = 750 \n"
+                + "  AND fe.eliminado  = false \n"
+                + "  AND fac.eliminado = false "
+                + "  AND (fac.complemento_pago is null or fac.complemento_pago_pdf is null) ");
+        
+        sql.append(" group by \"value\", \"label\" ");
+
+        //out.println("sql: " + sql);
+        try {
+            //out.println("cons: " + sql);
+            retVal = dbCtx.fetch(sql.toString()).into(SelectItem.class);
+        } catch (DataAccessException e) {
+            LOGGER.warn(this, e);
+        }
+
+        if (retVal == null) {
+            retVal = Collections.emptyList();
+        } else {
+            retVal.add(0, new SelectItem(Constantes.CERO, "Todas . . . "));            
+        }
+
+        return retVal;
+    }
+
     public List<FacturaVo> traerFacturaPAGO(int proveedor, String compania, int campo) {
         List<FacturaVo> retVal = null;
         List<Object> paramValues = new ArrayList<>();
@@ -1822,7 +1821,6 @@ public class SiFacturaImpl extends AbstractFacade<SiFactura>{
         return retVal;
     }
 
-    
     public List<FacturaVo> traerFacturas(int idCampo, List<FiltroVo> filtros) {
         List<FacturaVo> retVal = null;
         StringBuilder sql = new StringBuilder(200);
@@ -1910,19 +1908,16 @@ public class SiFacturaImpl extends AbstractFacade<SiFactura>{
         return q;
     }
 
-    
     public Date fechaPrimerFactura(int idCampo) {
         String c = "select  min(sf.fecha_genero) from si_factura sf where sf.ap_campo  = " + idCampo + " and sf.eliminado  = false";
         return (Date) em.createNativeQuery(c).getSingleResult();
     }
 
-    
     public Date fechaUltimaFactura(int idCampo) {
         String c = "select  max(sf.fecha_genero) from si_factura sf where sf.ap_campo  = " + idCampo + " and sf.eliminado  = false";
         return (Date) em.createNativeQuery(c).getSingleResult();
     }
 
-    
     public List<Vo> proveedores(int idCampo) {
         String c = "select  p.id, p.nombre from si_factura sf \n"
                 + "	inner join proveedor p  on sf.proveedor = p.id \n"
@@ -1941,7 +1936,6 @@ public class SiFacturaImpl extends AbstractFacade<SiFactura>{
         return vos;
     }
 
-    
     public List<Vo> gerencias(int idCampo) {
         String c = "select  g.id, g.nombre from si_factura sf \n"
                 + "	inner join orden o on sf.orden  = o.id \n"
@@ -1959,7 +1953,6 @@ public class SiFacturaImpl extends AbstractFacade<SiFactura>{
         return vos;
     }
 
-    
     public boolean requiereNC(int idFactura) {
         StringBuilder sql = new StringBuilder(800);
 
@@ -1977,7 +1970,6 @@ public class SiFacturaImpl extends AbstractFacade<SiFactura>{
         return (boolean) qry.getSingleResult();
     }
 
-    
     public List<FacturaVo> traerTotalFacturaContenido(String rfcCompania, int anio) {
         String c = "select  proveedor, facturado, contenido ,\n"
                 + "		round(((contenido * 100 )/ facturado),2) as Porcentaje		 from ( \n"

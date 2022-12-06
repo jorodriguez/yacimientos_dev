@@ -1428,13 +1428,15 @@ public class AutorizacionesOrdenImpl extends AbstractFacade<AutorizacionesOrden>
                     + " ao.fecha_autorizo_compras, "
                     + " ao.fecha_aceptacion_carta,  "
                     + " ao.fecha_revisa_repse,  "
-                    + " e.nombre "
+                    + " e.nombre, "
+                    + " u.nombre " 
                     + " from orden a  "
                     + " inner join ap_campo c on c.id = a.ap_campo "
                     + " inner join proveedor p on p.id = a.proveedor "
                     + " inner join moneda m on m.id = a.moneda "
                     + " inner join autorizaciones_orden ao on ao.orden = a.id  "
                     + " inner join estatus e on e.id =ao.estatus "
+                    + " inner join usuario u on u.id = a.analista "
                     + " where a.eliminado = false "
                     + " and a.ap_campo in (" + campo + ") "
                     + " and ao.estatus > 140 and ao.estatus < 170 ";
@@ -1494,6 +1496,7 @@ public class AutorizacionesOrdenImpl extends AbstractFacade<AutorizacionesOrden>
         o.setFechaAceptaCarta((Date) objects[11]);
         o.setFechaRevisaRepse((Date) objects[12]);
         o.setEstatus((String) objects[13]);
+        o.setAnalista((String) objects[14]);
 
         return o;
     }

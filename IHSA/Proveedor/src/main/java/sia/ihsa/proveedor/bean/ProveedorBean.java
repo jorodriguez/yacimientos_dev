@@ -113,6 +113,7 @@ public class ProveedorBean implements Serializable {
     private int campo;
     private int campoEnv;
     private int campoRec;
+    private int campoRecCXP;
     private String codigoOrden;
     private Map<String, List<SelectItem>> selectCampo;
     private List<FacturaVo> facturas;
@@ -240,6 +241,9 @@ public class ProveedorBean implements Serializable {
         }
 
         selectCampo.put("rechazada", lista);
+        
+        
+        selectCampo.put("facturaCXPCombo",siFacturaImpl.traerFacturaCXPCompania(sesion.getProveedorVo().getIdProveedor(), null, 0));
         //
         traerFacturaPorProveedor();
     }
@@ -343,7 +347,7 @@ public class ProveedorBean implements Serializable {
                 "facturaCliente",
                 siFacturaImpl.traerFacturaPorStatus(
                         FacturaEstadoEnum.ENVIADA_CLIENTE.getId(),
-                        campo,
+                        campoEnv,
                         sesion.getProveedorVo().getIdProveedor(),
                         sesion.getCompaniaVoSesion().getRfcCompania()
                 )
@@ -355,9 +359,20 @@ public class ProveedorBean implements Serializable {
                 "facturaRechazada",
                 siFacturaImpl.traerFacturaDevuelta(
                         FacturaEstadoEnum.CREADA.getId(),
-                        campo,
+                        campoRec,
                         sesion.getProveedorVo().getIdProveedor(),
                         sesion.getCompaniaVoSesion().getRfcCompania()
+                )
+        );
+    }
+    
+    public void seleccionarCampoCXP() {
+        mapaInicial.put(
+                "facturaCXP",
+                siFacturaImpl.traerFacturaCXP(
+                        sesion.getProveedorVo().getIdProveedor(),
+                        sesion.getCompaniaVoSesion().getRfcCompania(),
+                       campoRecCXP 
                 )
         );
     }
@@ -959,5 +974,19 @@ public class ProveedorBean implements Serializable {
 
     public String getBloquearFacturasMsg() {
         return Configurador.bloquearFacturasMsg();
+    }
+
+    /**
+     * @return the campoRecCXP
+     */
+    public int getCampoRecCXP() {
+        return campoRecCXP;
+    }
+
+    /**
+     * @param campoRecCXP the campoRecCXP to set
+     */
+    public void setCampoRecCXP(int campoRecCXP) {
+        this.campoRecCXP = campoRecCXP;
     }
 }

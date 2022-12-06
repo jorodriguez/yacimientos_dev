@@ -2976,6 +2976,10 @@ public class OrdenImpl extends AbstractFacade<Orden> {
                 SimpleDateFormat fs = new SimpleDateFormat("dd/MM/yyyy");
                 setValueExcel(fileExcel, fs.format(orden.getFechaEntrega()), 0, i, 24);//Fecha entrega
             }
+            
+            if(i == 22 && linea.getCodeTarea() != null && !linea.getCodeTarea().isEmpty()){
+                setValueExcel(fileExcel, linea.getCodeTarea(), 0, 6, 8);//Tarea Encabezado(6,8)
+            }
 
         } else {
             if (orden.getApCampo().getAlmacen() != null && !orden.getApCampo().getAlmacen().isEmpty()) {
