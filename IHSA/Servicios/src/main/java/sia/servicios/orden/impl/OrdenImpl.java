@@ -2976,9 +2976,13 @@ public class OrdenImpl extends AbstractFacade<Orden> {
                 SimpleDateFormat fs = new SimpleDateFormat("dd/MM/yyyy");
                 setValueExcel(fileExcel, fs.format(orden.getFechaEntrega()), 0, i, 24);//Fecha entrega
             }
-            
-            if(i == 22 && linea.getCodeTarea() != null && !linea.getCodeTarea().isEmpty()){
-                setValueExcel(fileExcel, linea.getCodeTarea(), 0, 6, 8);//Tarea Encabezado(6,8)
+
+            if (i == 22) {
+                if ("C".equals(orden.getApCampo().getTipo()) && linea.getCodigoSubTarea() != null && !linea.getCodigoSubTarea().isEmpty() && linea.getIdpresupuesto() > 0) {
+                    setValueExcel(fileExcel, (linea.getIdpresupuesto()+""+linea.getCodigoSubTarea()), 0, 6, 8);//Tarea Encabezado(6,8)
+                } else if (linea.getCodeTarea() != null && !linea.getCodeTarea().isEmpty()) {
+                    setValueExcel(fileExcel, linea.getCodeTarea(), 0, 6, 8);//Tarea Encabezado(6,8)
+                }
             }
 
         } else {
@@ -3077,9 +3081,13 @@ public class OrdenImpl extends AbstractFacade<Orden> {
                 SimpleDateFormat fs = new SimpleDateFormat("dd/MM/yyyy");
                 setValueExcel(fileExcel, fs.format(orden.getFechaEntrega()), 0, i, 24);//Fecha entrega
             }
-                        
-            if(i == 22){
-                setValueExcel(fileExcel, linea.getCodeTarea(), 0, 6, 8);//Tarea Encabezado(6,8)
+
+            if (i == 22) {
+                if ("C".equals(orden.getApCampo().getTipo()) && linea.getCodigoSubTarea() != null && !linea.getCodigoSubTarea().isEmpty() && linea.getIdpresupuesto() > 0) {
+                    setValueExcel(fileExcel, (linea.getIdpresupuesto()+""+linea.getCodigoSubTarea()), 0, 6, 8);//Tarea Encabezado(6,8)
+                } else if (linea.getCodeTarea() != null && !linea.getCodeTarea().isEmpty()) {
+                    setValueExcel(fileExcel, linea.getCodeTarea(), 0, 6, 8);//Tarea Encabezado(6,8)
+                }
             }
 
         } else {
@@ -3212,12 +3220,12 @@ public class OrdenImpl extends AbstractFacade<Orden> {
         setValueExcel(fileExcel, "REPSE", 0, 1, 5);//Etiqueta Archivo REPSE
 
         setValueExcel(fileExcel, orden.isRepse() ? "1" : "0", 0, 1, 6);//Valor Archivo REPSE
-        
+
         setValueExcel(fileExcel, (orden.isEsOc() ? "Pedido" : (orden.getConsecutivo().startsWith("SC") ? "Subcontrato" : "Servicios")), 0, 1, 4);//Valor Tipo Compra
         setValueExcel(fileExcel, orden.getCompania().getRfc(), 0, 9, 4);//Empresa asigna compra
-        
+
         setValueExcel(fileExcel, orden.getProyectoOt().getCuentaContable(), 0, 6, 6);//ProyectoOt Encabezado(6,6)
-        
+
     }
 
     public List<OrdenVO> ordenesPorCondicionPago(int condicionPago, int bloque) {

@@ -1167,9 +1167,9 @@ public class AdministrarViajeBeanModel implements Serializable {
         SgViaje sgViaje = sgViajeImpl.find(getViajeVO().getId());
         sgViaje.setFechaProgramada(getViajeVO().getFechaProgramada());
         SimpleDateFormat tiempo = new SimpleDateFormat("h:mma");
-        Date horaSali = tiempo.parse(getHoraSalida());
+//        Date horaSali = tiempo.parse(getHoraSalida());
         Calendar fechaCompleta = Calendar.getInstance();
-        fechaCompleta.setTime(horaSali);
+        fechaCompleta.setTime(getViajeVO().getHoraSalida());
         Calendar fs = Calendar.getInstance();
         fs.setTime(getViajeVO().getFechaProgramada());
         fechaCompleta.set(Calendar.YEAR, fs.get(Calendar.YEAR));
