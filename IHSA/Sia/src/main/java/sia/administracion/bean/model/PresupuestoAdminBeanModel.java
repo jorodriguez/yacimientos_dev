@@ -164,6 +164,7 @@ public class PresupuestoAdminBeanModel implements Serializable{
     }
 
     public void inicia() {
+        this.partidaDisplay = new PresupuestoDetVO();
         setIdCampo(getSesion().getUsuario().getApCampo().getId());
         cargarPresupuestos();
     }

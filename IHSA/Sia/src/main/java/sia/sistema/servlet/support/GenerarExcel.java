@@ -25,6 +25,7 @@ import sia.servicios.requisicion.impl.OcPresupuestoImpl;
 import sia.servicios.requisicion.impl.OcPresupuestoMovimientosImpl;
 import sia.servicios.sistema.impl.SiParametroImpl;
 import sia.sistema.bean.backing.Sesion;
+import sia.sistema.bean.support.FacesUtils;
 import sia.util.UtilLog4j;
 
 /**
@@ -40,6 +41,9 @@ public class GenerarExcel extends HttpServlet {
     private OcPresupuestoImpl ocPresupuestoImpl;
     @Inject
     private OcPresupuestoMovimientosImpl ocPresupuestoMovimientosImpl;
+    @Inject
+    private Sesion sesion;
+
 
     static Logger log = Logger.getLogger(GenerarExcel.class.getName());
 
@@ -89,8 +93,7 @@ public class GenerarExcel extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         File fileExcel = null;
-        try {
-            Sesion sesion = (Sesion) request.getSession().getAttribute("sesion");
+        try {            
             if (sesion != null) {
                 if (sesion.getUsuario() != null) {
                     String presID = request.getParameter("ZWZ2W");

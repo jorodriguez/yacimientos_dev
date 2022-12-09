@@ -1176,11 +1176,11 @@ public class ContratoBean implements Serializable {
                     );
                     contratoVo.getProveedorVo().setLstDocsProveedor(pvClasificacionArchivoImpl.traerArchivoPorProveedorOid(contratoVo.getProveedorVo().getIdProveedor(), 0));
                 } else {
-                    ProveedorAdminModel proveedorBean = (ProveedorAdminModel) FacesUtils.getManagedBean(FacesContext.getCurrentInstance(), "proveedorBean");
+                    ProveedorAdminModel proveedorBean = (ProveedorAdminModel) FacesUtils.getManagedBean(FacesContext.getCurrentInstance(), "proveedorAdminBean");
                     proveedorBean.subirArchivo(path.toFile());
                 }
-
-                PrimeFaces.current().ajax().update("frmAdmin:tabViewProv");
+                String mtdUpdate = "frmRevisaProveedor:tabViewProv:dtDoctosProv";                
+                PrimeFaces.current().ajax().update(mtdUpdate);
             } else if (isSubirContrato()) {
                 documentoAnexo.setNombreBase(fileUpload.getFileName());
                 documentoAnexo.setRuta(getSubDirectorioDocumento());
@@ -1223,6 +1223,8 @@ public class ContratoBean implements Serializable {
 
                 agregarAdjuntoDocumento();
                 contratoVo.setListaConvenioDocumento(cvConvenioDocumentoImpl.traerDoctosPorConveni(contratoVo.getId(), null, null));
+                String mtdUpdateCrt = "frmAdmin:tabView";                
+                PrimeFaces.current().ajax().update(mtdUpdateCrt);
             }
 
             fileUpload.delete();

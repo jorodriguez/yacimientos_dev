@@ -6,6 +6,7 @@
 package sia.modelo.presupuesto.vo;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
@@ -78,7 +79,7 @@ public class PresupuestoDetVO {
     private BigDecimal montoNuevo;
     private BigDecimal montoActual;
 
-    private List<MontosPresupuestoVO> montos;
+    private List<MontosPresupuestoVO> montos = new ArrayList<>();
     private OcActividadVO newProys;
 
     private String otsTexto;

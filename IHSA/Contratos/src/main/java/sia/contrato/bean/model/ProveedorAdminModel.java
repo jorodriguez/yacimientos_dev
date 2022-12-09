@@ -31,6 +31,7 @@ import sia.archivador.AlmacenDocumentos;
 import sia.archivador.DocumentoAnexo;
 import sia.archivador.ProveedorAlmacenDocumentos;
 import sia.constantes.Constantes;
+import sia.contrato.bean.backing.ContratoBean;
 import sia.contrato.bean.soporte.FacesUtils;
 import sia.ihsa.contratos.Sesion;
 import sia.modelo.ContactoProveedor;
@@ -141,7 +142,7 @@ public class ProveedorAdminModel implements Serializable {
     public List<String> completarProveedor(String cadena) {
         List<String> proveedores = new ArrayList<>();
         List<ProveedorVo> pvrs = proveedorImpl.traerProveedorPorParteNombre(cadena, sesion.getUsuarioSesion().getId(), ProveedorEnum.ACTIVO.getId());
-                          pvrs.addAll(proveedorImpl.traerProveedorPorParteNombre(cadena, sesion.getUsuarioSesion().getId(), ProveedorEnum.REGISTRADO.getId()));
+        pvrs.addAll(proveedorImpl.traerProveedorPorParteNombre(cadena, sesion.getUsuarioSesion().getId(), ProveedorEnum.REGISTRADO.getId()));
         pvrs.stream().forEach(p -> {
             proveedores.add(p.getNombre());
         });
@@ -291,7 +292,7 @@ public class ProveedorAdminModel implements Serializable {
         }
     }
 
-        public void guardarNuevaCuenta() {
+    public void guardarNuevaCuenta() {
         try {
             boolean guardar = saveNuevaCuenta();
             actualizarCuentas();
@@ -534,7 +535,7 @@ public class ProveedorAdminModel implements Serializable {
         try {
             this.setDocProveedor(new ProveedorDocumentoVO());
             this.getDocProveedor().setId(idDocProv);
-            PrimeFaces.current().executeScript(";abrirDialogoModal(dialogoAgregarArchivoDoctoProv);");
+            PrimeFaces.current().executeScript(";abrirDialogoModal(dialogoAgregarArchivoDoctoProvPRO);");
             this.setDocProveedor(this.buscarDoctosConvePorId());
         } catch (Exception e) {
             UtilLog4j.log.fatal(this, e);
@@ -544,9 +545,13 @@ public class ProveedorAdminModel implements Serializable {
 
     public void quitarArchivoDocumento(int idDocProv) {
         try {
-            this.setDocProveedor(new ProveedorDocumentoVO());
-            this.getDocProveedor().setId(idDocProv);
+            ProveedorBean proveedorBean = (ProveedorBean) FacesUtils.getManagedBean("proveedorBean");
+            proveedorBean.setDocProveedor(new ProveedorDocumentoVO());
+            proveedorBean.getDocProveedor().setId(idDocProv);
+            proveedorBean.eliminarArchivoDocumento();
             traerArchivosProveedor();
+            String mtdUpdate = "frmRevisaProveedor:tabViewProv:dtDoctosProv";
+            PrimeFaces.current().ajax().update(mtdUpdate);
         } catch (Exception e) {
             UtilLog4j.log.fatal(this, e);
             FacesUtils.addErrorMessage("Ocurrió una excepción, favor de comunicar a sia@ihsa.mx");
@@ -568,9 +573,12 @@ public class ProveedorAdminModel implements Serializable {
 
     public void agregarArchivoDocto(int idDocProv) {
         try {
+            ContratoBean contarBean = (ContratoBean) FacesUtils.getManagedBean("contratoBean");
             this.setDocProveedor(new ProveedorDocumentoVO());
             this.getDocProveedor().setId(idDocProv);
             this.setDocProveedor(this.buscarDoctosConvePorId());
+            contarBean.setDocProveedor(this.getDocProveedor());
+            contarBean.setSubirProveedor(true);
             String metodo = "";
             metodo = ";abrirDialogoModal(adjuntarArchivo);";
             PrimeFaces.current().executeScript(metodo);
