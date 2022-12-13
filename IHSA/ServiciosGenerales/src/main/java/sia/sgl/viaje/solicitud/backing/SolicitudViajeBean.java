@@ -1441,6 +1441,11 @@ public class SolicitudViajeBean implements Serializable {
         //solicitudViajeBeanModel.llenarInvitadoJson();
     }
 
+    public void abrirAddInvitado() {
+                        PrimeFaces.current().executeScript(";$(modalCrearInvitado).modal('show');");
+
+    }
+    
     public void addViajero() {
         String tel = FacesUtils.getRequestParameter("telfonoNew");
 

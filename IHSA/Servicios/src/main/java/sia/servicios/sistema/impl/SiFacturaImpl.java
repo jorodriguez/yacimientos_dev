@@ -319,7 +319,7 @@ public class SiFacturaImpl extends AbstractFacade<SiFactura> {
                 + " , fac.complemento_pago_pdf \n"
                 + " , tp.nombre as termino_pago \n"
                 + " , fac.acepta_avanzia \n"
-                + " , coalesce((select acepta_avanzia from si_factura where si_factura = fac.id order by acepta_avanzia limit 1), true) as acepta_avanzia_nc\n"
+                + " , coalesce((select acepta_avanzia from si_factura where si_factura = fac.id and eliminado = false order by acepta_avanzia limit 1), true) as acepta_avanzia_nc\n"
                 + "FROM si_factura fac \n"
                 + "      INNER JOIN oc_factura_status fe ON fe.si_factura = fac.id and fe.actual = true\n"
                 + "      INNER JOIN oc_uso_cfdi uso ON fac.oc_uso_cfdi = uso.id\n"
