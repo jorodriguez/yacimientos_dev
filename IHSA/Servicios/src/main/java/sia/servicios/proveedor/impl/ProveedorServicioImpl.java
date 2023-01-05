@@ -856,16 +856,21 @@ public class ProveedorServicioImpl extends AbstractFacade<Proveedor> {
                 proveedor.setEliminado(Constantes.NO_ELIMINADO);
 
                 edit(proveedor);
-                // Registro notarial
-                pvRegistroFiscalRemote.guardar(proveedor.getId(), proveedorVo, sesion);
-                // Registro cuentas
-                cuentaBancoProveedorRemote.guardar(proveedor.getId(), proveedorVo.getCuentas(), sesion, rfcEmporesa);
-                // Registro contactos
-                contactoProveedorRemote.guardar(proveedor.getId(), proveedorVo.getContactos(), sesion);
-                // proveedor compania
-                pvProveedorCompaniaRemote.guardarRelacionProveedor(proveedor.getId(), rfcEmporesa, "00", sesion);
-                // guardar el proveeedor como usuario
-                guardarComoUsuario(proveedor, sesion);
+
+                proveedor = traerProveedorPorRfc(proveedorVo.getRfc());
+
+                if (proveedor != null && proveedor.getId() != null && proveedor.getId() > 0) {
+                    // Registro notarial
+                    pvRegistroFiscalRemote.guardar(proveedor.getId(), proveedorVo, sesion);
+                    // Registro cuentas
+                    cuentaBancoProveedorRemote.guardar(proveedor.getId(), proveedorVo.getCuentas(), sesion, rfcEmporesa);
+                    // Registro contactos
+                    contactoProveedorRemote.guardar(proveedor.getId(), proveedorVo.getContactos(), sesion);
+                    // proveedor compania
+                    pvProveedorCompaniaRemote.guardarRelacionProveedor(proveedor.getId(), rfcEmporesa, "00", sesion);
+                    // guardar el proveeedor como usuario
+                    guardarComoUsuario(proveedor, sesion);
+                }
                 return proveedor.getId();
             } catch (Exception ex) {
                 UtilLog4j.log.error(ex);

@@ -169,7 +169,7 @@ public class SolicitarMaterialBean implements Serializable {
 
     public List<InventarioVO> completarArticulo(String cadenaDigitada) {
         articulos.clear();
-        return inventarios.stream().filter(inv -> inv.getArticuloNombre().toLowerCase().contains(cadenaDigitada.toLowerCase())).collect(Collectors.toList());
+        return inventarios.stream().filter(inv -> inv.getBusquedaArticulo().toLowerCase().contains(cadenaDigitada.toLowerCase())).collect(Collectors.toList());
 
     }
 

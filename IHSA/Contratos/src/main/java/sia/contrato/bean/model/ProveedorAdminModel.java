@@ -7,8 +7,10 @@ package sia.contrato.bean.model;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.Serializable;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -191,7 +193,7 @@ public class ProveedorAdminModel implements Serializable {
                             FacesUtils.addErrorMessage("Proveedor vetado por Grupo Cobra ");
                             throw new Exception("Proveedor vetado por Grupo Cobra ");
                         }
-
+                        cargarDatos(fileInfo);
                         //
                     } catch (Exception ex) {
                         UtilLog4j.log.fatal(this, "Ocurrio un error al guardar el archivo . . . . . " + ex.getMessage());
@@ -219,6 +221,37 @@ public class ProveedorAdminModel implements Serializable {
         }
     }
 
+    
+    public void cargarDatos(UploadedFile upFile) {
+        try {
+            File file = new File("/tmp/" + upFile.getFileName());
+            try (OutputStream os = new FileOutputStream(file)) {
+                os.write(upFile.getContent());
+            }
+
+            int idP = proveedorImpl.cargarDatosProveedor(sesion.getUsuarioSesion().getId(), file,sesion.getRfcEmpresa());
+            setIdProveedor(idP);
+           // Files.deleteIfExists(file.toPath());
+            //.println("idProve: " + idP);
+            switch (idP) {
+                case Constantes.MENOS_UNO:
+                    FacesUtils.addErrorMessage("El proveedor seleccionado está vetado por Grupo Cobra");
+                    break;
+                case Constantes.CERO:
+                    FacesUtils.addErrorMessage("Hay un problema en los datos del proveedor, favor de revisar las fechas (dd/MM/yyyy) y CLABE que no pase de 18 digitos.");
+                    break;
+                default:
+                    proveedor = proveedorImpl.traerProveedor(idP, sesion.getRfcEmpresa());
+                    proveedor.setTipoProveedor(Constantes.CERO);
+                    break;
+            }
+
+        } catch (IOException e) {
+            UtilLog4j.log.error(e);
+        }
+    }
+    
+    
     public void guardarProveedorDG() {
         try {
             saveProveedorDG();

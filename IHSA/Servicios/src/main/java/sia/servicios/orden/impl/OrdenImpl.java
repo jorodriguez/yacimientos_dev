@@ -4339,7 +4339,8 @@ public class OrdenImpl extends AbstractFacade<Orden> {
                 .append("     inner join autorizaciones_orden ao on ao.orden = o.id \n")
                 .append(" where o.proveedor = ? ");
         if (statusIncial > 0 && statusFinal > 0) {
-            c.append(" and ao.estatus between ").append(statusIncial).append(" and ").append(statusFinal);
+            //c.append(" and ao.estatus between ").append(statusIncial).append(" and ").append(statusFinal);
+            c.append(" and ((ao.estatus between ").append(statusIncial).append(" and ").append(statusFinal).append(" ) or (ao.estatus = 145)) ");            
         }
         c.append(" and o.eliminado = false  GROUP by o.compania, c.nombre \n")
                 .append(" union \n")

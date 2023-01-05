@@ -82,4 +82,16 @@ public class InventarioVO extends Vo {
         this.puntoDeReorden = puntoDeReorden;
         this.fechaUltimaRevision = fechaUltimaRevision;
     }
+    
+    public String getBusquedaArticulo(){
+        String ret = "";
+        if(this.articuloNombre != null){
+            ret = ret+this.articuloNombre;
+        }
+        if(this.codigoInt != null){
+            ret =  ret+this.codigoInt;
+        }
+        
+        return ret;    
+    }
 }
