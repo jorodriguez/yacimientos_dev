@@ -29,6 +29,8 @@ public class GenOrderUUID extends HttpServlet {
 
     @Inject
     private OrdenImpl ordenRmt;
+    @Inject
+    UsuarioBean usuarioBean;
     
     static Logger log = Logger.getLogger(GenOrderUUID.class.getName());
 
@@ -47,7 +49,6 @@ public class GenOrderUUID extends HttpServlet {
         try {
             // Verificar si hay una sesion iniciada
              StringBuilder msg = new StringBuilder();
-            UsuarioBean usuarioBean = (UsuarioBean) request.getSession().getAttribute("usuarioBean");
             if ((usuarioBean != null) && (usuarioBean.getUsuarioConectado() != null)) {
                 String anio = request.getParameter("Anio");
                 String estatus = request.getParameter("Estatus");

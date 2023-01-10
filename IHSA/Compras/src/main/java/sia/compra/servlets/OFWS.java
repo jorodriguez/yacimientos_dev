@@ -39,6 +39,8 @@ public class OFWS extends HttpServlet {
     private ProveedorAlmacenDocumentos proveedorAlmacenDocumentos;
     @Inject
     private UsuarioImpl usuarioServicioImpl;
+    @Inject
+    UsuarioBean usuarioBean;
 
     private final static UtilLog4j LOGGER = UtilLog4j.log;
 
@@ -59,10 +61,9 @@ public class OFWS extends HttpServlet {
 	AlmacenDocumentos almacenDocumentos = proveedorAlmacenDocumentos.getAlmacenDocumentos();
 	try {
 	    // Verificar si hay una sesion iniciada
-	    UsuarioBean usuarioBean = (UsuarioBean) request.getSession().getAttribute("usuarioBean");
 	    if (usuarioBean == null || usuarioBean.getUsuarioConectado() == null) {
 		Usuario usuario;
-		usuario = usuarioServicioImpl.find(request.getParameter("Z4BX2").toString());
+		usuario = usuarioServicioImpl.find(request.getParameter("Z4BX2"));
 		if (usuario == null) {
 		    response.sendRedirect(Configurador.urlSia() + "Sia");
 		    error = true;

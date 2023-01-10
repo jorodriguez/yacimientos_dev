@@ -106,8 +106,6 @@ public class FacturaBean implements Serializable {
         //
         facturaVo.setDetalleFactura(siFacturaDetalleImpl.detalleFactura(facturaVo.getId()));
         //
-        PrimeFaces.current().executeScript("$(dialogoDatosFactura).modal('show');");
-        //
         siFacturaImpl.marcarLeida(usuarioBean.getUsuarioConectado().getId(), facturaVo);
         facturaVo.setLeida(Constantes.BOOLEAN_TRUE);
         //
@@ -123,6 +121,8 @@ public class FacturaBean implements Serializable {
         facAdVo.getAdjuntoVo().setNombre(facturaVo.getCodigoOrden());
         //
         listaArchivosFactura.add(facAdVo);
+        //
+        PrimeFaces.current().executeScript("$(dialogoDatosFactura).modal('show');");
     }
 
     public void seleccionarFacturaPago(SelectEvent event) {

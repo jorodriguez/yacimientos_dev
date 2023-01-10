@@ -37,6 +37,8 @@ public class OFWSS extends HttpServlet {
     private UsuarioImpl usuarioServicioImpl;
     @Inject
     private ProveedorAlmacenDocumentos proveedorAlmacenDocumentos;
+    @Inject
+    UsuarioBean usuarioBean;
 
     private final static UtilLog4j LOGGER = UtilLog4j.log;
 
@@ -61,7 +63,6 @@ public class OFWSS extends HttpServlet {
 	
         try {
 	    // Verificar si hay una sesion iniciada
-	    UsuarioBean usuarioBean = (UsuarioBean) request.getSession().getAttribute("usuarioBean");
 	    if (usuarioBean == null || usuarioBean.getUsuarioConectado() == null) {
 		newSession = true;
                 
