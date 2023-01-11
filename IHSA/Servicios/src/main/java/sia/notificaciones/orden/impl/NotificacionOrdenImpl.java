@@ -39,7 +39,7 @@ import sia.util.UtilLog4j;
  *
  * @author mluis
  */
-@Stateless 
+@Stateless
 public class NotificacionOrdenImpl extends Estilos {
 
     @Inject
@@ -64,7 +64,6 @@ public class NotificacionOrdenImpl extends Estilos {
     private SiUsuarioRolImpl usuarioRolRemote;
     //
 
-    
     public boolean pruebaCorreo() {
         return this.enviarCorreo.enviarCorreoIhsa("mluis@ihsa.mx", "", "", "Prueba de sistema", this.cuerpoMensajePruebaIhsa());
     }
@@ -88,19 +87,16 @@ public class NotificacionOrdenImpl extends Estilos {
         return cuerpoCorreo;
     }
 
-    
     public boolean envioMailDireccionGeneralMontoAlto(String correoDireccion, String correoSia, List<OrdenVO> lor, double totalAcumulado, String inicio, String fin) {
         return enviarCorreo.enviarCorreoIhsa(correoDireccion, correoSia, "", "Notificación Monto acumulado OC/S", html.mensajeNotificacionMontoDireccion(lor, totalAcumulado, inicio, fin), parametrosSistema.find(1).getLogo());
     }
 
-    
     public boolean sendMailNotificaOrdenSuperaMonto(String correoNotificaOrden, String correo, List<OrdenCorreoVo> listaCorreo, boolean mostrarEstatus) {
         String asunto = "Reporte de OC/S  (Monto acumulado) ";
         return enviarCorreo.enviarCorreoIhsa(correoNotificaOrden, "", correo, asunto + Constantes.FMT_TextDateLarge.format(new Date()),
                 html.mensajeNotificacionMontoAcumulado(listaCorreo, asunto, mostrarEstatus), parametrosSistema.find(1).getLogo());
     }
 
-    
     public boolean sendMailNotificaOrdenPorAutorizar(String correoNotificaOrden, String correo, List<OrdenCorreoVo> loAuto, List<OrdenCorreoVo> listaCorreo, boolean mostrarEstatus) {
         String asunto = "Reporte de OC/S - ";
         return enviarCorreo.enviarCorreoIhsa(
@@ -116,7 +112,6 @@ public class NotificacionOrdenImpl extends Estilos {
         );
     }
 
-    
     public boolean enviarNotificacionOrdenSolicitada(Orden orden, String asunto, List<ContactoOrdenVo> contactos, List<OrdenDetalleVO> items) {
         try {
             return enviarCorreo.enviarCorreoIhsa(
@@ -131,14 +126,12 @@ public class NotificacionOrdenImpl extends Estilos {
         }
     }
 
-    
     public boolean enviarNotificacionAprobarOrden(String para, String cc, Orden orden, String asunto, List<ContactoOrdenVo> contactos, List<OrdenDetalleVO> items) {
         return enviarCorreo.enviarCorreoIhsa(para, "", "", asunto,
                 html.msjNotificacionAprobarOrden(orden, contactos, items),
                 orden.getCompania().getLogo(), orden.getCompania().getLogoEsr());
     }
 
-    
     public boolean enviarNotificacionNotaOrden(String para, String cc, String cco, Orden orden, String asunto, String autor, String nota, List<ContactoOrdenVo> contactos) {
         return enviarCorreo.enviarCorreoIhsa(
                 para,
@@ -150,7 +143,6 @@ public class NotificacionOrdenImpl extends Estilos {
                 orden.getCompania().getLogoEsr());
     }
 
-    
     public boolean enviarNotificacionDevolverOrden(String para, String cc, String cco, Orden orden, String asunto, List<ContactoOrdenVo> contactos, OrdenSiMovimiento movimiento, List<OrdenDetalleVO> items) {
         boolean enviado = enviarCorreo.enviarCorreoIhsa(
                 para,
@@ -171,7 +163,6 @@ public class NotificacionOrdenImpl extends Estilos {
         return enviado;
     }
 
-    
     public boolean enviarNotificacionCancelarOrden(String para, String cc, String cco, Orden orden, String asunto, AutorizacionesOrden autorizacionesOrden, List<ContactoOrdenVo> contactos, List<OrdenDetalleVO> items) {
         return enviarCorreo.enviarCorreoIhsa(
                 para, cc, cco, asunto,
@@ -180,7 +171,6 @@ public class NotificacionOrdenImpl extends Estilos {
                 orden.getCompania().getLogoEsr());
     }
 
-    
     public boolean enviarNotificacionOrden(String para, String conCopia, String copiasOcultas, Orden orden, String asunto, List<ContactoOrdenVo> contactos, List<OrdenDetalleVO> items) {
         return enviarCorreo.enviarCorreoIhsa(para, conCopia, copiasOcultas, asunto,
                 html.msjNotificacionOrden(orden, contactos, items),
@@ -188,7 +178,6 @@ public class NotificacionOrdenImpl extends Estilos {
                 orden.getCompania().getLogoEsr());
     }
 
-    
     public boolean enviarNotificacionOrdenProveedor(Orden orden, List<ContactoOrdenVo> contactos, File pdf, File pdfCG, List<OrdenDetalleVO> items) {
         boolean retorno = false;
 
@@ -251,7 +240,6 @@ public class NotificacionOrdenImpl extends Estilos {
         return retorno;
     }
 
-    
     public boolean enviarNotificacionOrdenAnalista(Orden orden) {
         boolean enviado = false;
         try {
@@ -268,7 +256,6 @@ public class NotificacionOrdenImpl extends Estilos {
         return enviado;
     }
 
-    
     public boolean enviarNotificacionTarea(Orden orden, List<ContactoOrdenVo> contactos, List<OrdenDetalleVO> items) {
         boolean retorno = false;
         StringBuilder para = new StringBuilder();
@@ -297,7 +284,6 @@ public class NotificacionOrdenImpl extends Estilos {
         return mails.toString();
     }
 
-    
     public boolean enviarNotificacionCotabilidad(Orden orden, List<ContactoOrdenVo> contactos, List<OrdenDetalleVO> items) {
         boolean retorno = false;
         try {
@@ -321,17 +307,18 @@ public class NotificacionOrdenImpl extends Estilos {
                 destinatarios.append(lista.getCorreo());
             } else {
                 String newCorreo = lista.getCorreo().trim();
-                int ascii = newCorreo.codePointAt(newCorreo.length() - 1);
-                if (ascii < 65 || (ascii > 90 && ascii < 97) || ascii > 122) {
-                    lista.setCorreo(newCorreo.substring(Constantes.CERO, newCorreo.length() - 1));
+                if (newCorreo != null && newCorreo.length() > 0) {
+                    int ascii = newCorreo.codePointAt(newCorreo.length() - 1);
+                    if (ascii < 65 || (ascii > 90 && ascii < 97) || ascii > 122) {
+                        lista.setCorreo(newCorreo.substring(Constantes.CERO, newCorreo.length() - 1));
+                    }
+                    destinatarios.append(",").append(lista.getCorreo());
                 }
-                destinatarios.append(",").append(lista.getCorreo());
             }
         }
         return destinatarios.toString();
     }
 
-    
     public boolean reenviarNotificacionOrdenProveedor(Orden orden, List<ContactoOrdenVo> contactos, File pdf, File pdfCG) {
         StringBuilder c = new StringBuilder();
         StringBuilder copiasOcultas = new StringBuilder();
@@ -361,7 +348,6 @@ public class NotificacionOrdenImpl extends Estilos {
                 orden.getCompania().getLogo(), orden.getCompania().getLogoEsr(), pdf, pdfCG, orden.getCompania().getSiglas());
     }
 
-    
     public boolean enviarNotificacionCambioOrden(String para, String cc, String cco, List<OrdenVO> lo, String nombreAprobara, String nombreTiene, String rfcEmpresa, String status) {
         boolean retorno = false;
         Compania c = companiaServicioRemoto.find(rfcEmpresa);
@@ -375,7 +361,6 @@ public class NotificacionOrdenImpl extends Estilos {
         return retorno;
     }
 
-    
     public void enviarExcepcionSIA(String para, String cc, String asunto, String compras, String opcion, String mensaje) {
         enviarCorreo.enviarCorreoIhsa(para, buscarCorreo(Constantes.ROL_DESARROLLO_SISTEMA), "", asunto, htmlNotificaSistemaLocal.mensajeNotificaError(asunto, mensaje), siParametroRemote.find(1).getLogo());
     }
@@ -399,12 +384,10 @@ public class NotificacionOrdenImpl extends Estilos {
 
     }
 
-    
     public void enviarExcepcionDesarrollo(String asunto, String compras, String opcion, String mensaje) {
         enviarCorreo.enviarCorreoIhsa(buscarCorreo(Constantes.ROL_DESARROLLO_SISTEMA), "", "", asunto, htmlNotificaSistemaLocal.mensajeExcepcion(asunto, compras, opcion, mensaje), siParametroRemote.find(1).getLogo());
     }
 
-    
     public void enviarNotificacionOrdenSinAutorizar(String correoGerencia, List<OrdenVO> listaOrden, String campo) {
         String asunto = "OC/S pendientes de autorizar ( " + campo + " )";
         enviarCorreo.enviarCorreoIhsa(correoGerencia, "", "", asunto,
@@ -412,7 +395,6 @@ public class NotificacionOrdenImpl extends Estilos {
                 parametrosSistema.find(1).getLogo());
     }
 
-    
     public void enviarNotificacionValidarPresupuesto(String correoGerencia, String partidas, String campo) {
         String asunto = "Validación de presupoesto para el bloque " + campo;
         enviarCorreo.enviarCorreoIhsa(correoGerencia, "", "", asunto,
@@ -420,7 +402,6 @@ public class NotificacionOrdenImpl extends Estilos {
                 parametrosSistema.find(1).getLogo());
     }
 
-    
     public void enviarNotificacionValidarContrato(String correoGerencia, String contrato, String campo) {
         String asunto = "Validación de contrato para el bloque " + campo;
         enviarCorreo.enviarCorreoIhsa(correoGerencia, "", "", asunto,
@@ -428,13 +409,11 @@ public class NotificacionOrdenImpl extends Estilos {
                 parametrosSistema.find(1).getLogo());
     }
 
-    
     public void enviarNotificacionFormatoEntrada(String para, List<OrdenFormatoVo> formatos) {
         String asunto = "Formatos de entrada almacén";
         enviarCorreo.enviarCorreoIhsa(para, "", "", asunto, html.msjFormatoEntrada(asunto, formatos), parametrosSistema.find(1).getLogo());
     }
 
-    
     public boolean enviarNotificacionRecepcionOrden(String para, String conCopia, String copiasOcultas, Orden orden, String asunto, List<OrdenDetalleVO> items, boolean isCompleta) {
         return enviarCorreo.enviarCorreoIhsa(para, conCopia, copiasOcultas, asunto,
                 html.msjNotificacionRecepcionOrden(orden, items, isCompleta),
@@ -442,7 +421,6 @@ public class NotificacionOrdenImpl extends Estilos {
                 orden.getCompania().getLogoEsr());
     }
 
-    
     public boolean enviarCartaIntencion(Orden orden, List<ContactoOrdenVo> listaContactosOrden, List<OrdenDetalleVO> items) {
         return enviarCorreo.enviarCorreoIhsa(getDestinatariosOrden(listaContactosOrden), orden.getAnalista().getEmail(), "", "Carta de Intención",
                 html.mensajeCartaIntencion(orden, items),
@@ -450,7 +428,6 @@ public class NotificacionOrdenImpl extends Estilos {
                 orden.getCompania().getLogoEsr());
     }
 
-    
     public boolean rechazarRepse(Orden orden, List<OrdenDetalleVO> items, String destinatariosOrden, String correoSesion, String motivo) {
         String correoCopia = usuarioRolRemote.traerCorreosPorCodigoRolList(Constantes.COD_ROL_ORDEN_REPSE, orden.getApCampo().getId());
         return enviarCorreo.enviarCorreoIhsa(destinatariosOrden, orden.getAnalista().getEmail(), correoCopia, "REPSE - Rechazada ",
@@ -459,7 +436,6 @@ public class NotificacionOrdenImpl extends Estilos {
                 orden.getCompania().getLogoEsr());
     }
 
-    
     public boolean enviarCorreoAceptarCartaIntencion(Orden orden, List<OrdenDetalleVO> items, String asunto) {
         String correo = usuarioRolRemote.traerCorreosPorCodigoRolList(Constantes.COD_ROL_ORDEN_REPSE, orden.getApCampo().getId());
         return enviarCorreo.enviarCorreoIhsa(correo, "", "", asunto,
@@ -468,7 +444,6 @@ public class NotificacionOrdenImpl extends Estilos {
                 orden.getCompania().getLogoEsr());
     }
 
-    
     public boolean enviarMensajeRechazoCartaIntencion(Orden orden, List<OrdenDetalleVO> items, String asunto, String motivo) {
         return enviarCorreo.enviarCorreoIhsa(orden.getAnalista().getEmail(), "", "", asunto,
                 html.mensajeRechazarCarta(orden, items, motivo),
