@@ -32,6 +32,8 @@ public class GenUUID extends HttpServlet {
 
     @Inject
     private SiAdjuntoImpl servicioSiAdjuntoImpl;
+    @Inject
+    UsuarioBean usuarioBean;
 
     static Logger log = Logger.getLogger(AbrirArchivo.class.getName());
 
@@ -49,7 +51,6 @@ public class GenUUID extends HttpServlet {
 	try {
 	    // Verificar si hay una sesion iniciada
 	    StringBuilder msg = new StringBuilder();
-	    UsuarioBean usuarioBean = (UsuarioBean) request.getSession().getAttribute("usuarioBean");
 	    if ((usuarioBean != null) && (usuarioBean.getUsuarioConectado() != null)) {
 		response.setContentType("text/html");
 		PrintWriter out = response.getWriter();

@@ -21,6 +21,8 @@ import sia.servicios.convenio.impl.ConvenioImpl;
 public class VerConvenio extends HttpServlet {
     @Inject
     private ConvenioImpl convenioServicioImpl;
+    @Inject
+    UsuarioBean usuarioBean;
 
     /** 
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
@@ -33,7 +35,6 @@ public class VerConvenio extends HttpServlet {
             throws ServletException, IOException {
         try {
             // utilizar un managedbean
-            UsuarioBean usuarioBean = (UsuarioBean) request.getSession().getAttribute("usuarioBean");
             if (usuarioBean != null) {
              // si el managed bean usuario es diferente de null podemos verificar si ya inicio sesion    
                 if (usuarioBean.getUsuarioConectado() != null) {
