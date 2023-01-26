@@ -8,7 +8,7 @@ import java.util.Date;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import lector.constantes.Constantes;
-import lector.correo.impl.CodigoHtml;
+import lector.correo.service.CodigoHtml;
 import lector.modelo.SiPlantillaHtml;
 
 /**

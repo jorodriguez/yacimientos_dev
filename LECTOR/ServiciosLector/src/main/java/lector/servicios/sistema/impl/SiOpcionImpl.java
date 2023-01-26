@@ -15,23 +15,18 @@ import lector.constantes.Constantes;
 import lector.modelo.SiOpcion;
 import lector.servicios.sistema.vo.MenuSiOpcionVo;
 import lector.servicios.sistema.vo.SiOpcionVo;
-import lector.sistema.AbstractFacade;
+import lector.sistema.AbstractImpl;
 import lector.util.UtilLog4j;
 
 /**
  *
  */
 @Stateless
-public class SiOpcionImpl extends AbstractFacade<SiOpcion> {
+public class SiOpcionImpl extends AbstractImpl<SiOpcion> {
 
     private final static UtilLog4j LOGGER = UtilLog4j.log;
     @PersistenceContext(unitName =  Constantes.PERSISTENCE_UNIT)
     private EntityManager em;
-
-    @Override
-    protected EntityManager getEntityManager() {
-        return em;
-    }
 
     public SiOpcionImpl() {
         super(SiOpcion.class);

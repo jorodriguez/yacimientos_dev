@@ -21,7 +21,7 @@ import lector.dominio.vo.AdjuntoVO;
 import lector.excepciones.SIAException;
 import lector.modelo.SiAdjunto;
 import lector.modelo.Usuario;
-import lector.sistema.AbstractFacade;
+import lector.sistema.AbstractImpl;
 import lector.util.UtilLog4j;
 
 /**
@@ -29,7 +29,7 @@ import lector.util.UtilLog4j;
  * @author sluis
  */
 @Stateless 
-public class SiAdjuntoImpl extends AbstractFacade<SiAdjunto>{
+public class SiAdjuntoImpl extends AbstractImpl<SiAdjunto>{
 
     @PersistenceContext(unitName =  Constantes.PERSISTENCE_UNIT)
     private EntityManager em;
@@ -40,11 +40,6 @@ public class SiAdjuntoImpl extends AbstractFacade<SiAdjunto>{
     String beforeEvent;
 
     
-    @Override
-    protected EntityManager getEntityManager() {
-        return em;
-    }
-
     public SiAdjuntoImpl() {
         super(SiAdjunto.class);
     }

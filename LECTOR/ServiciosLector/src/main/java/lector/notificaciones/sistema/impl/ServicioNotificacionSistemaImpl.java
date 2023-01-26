@@ -7,7 +7,7 @@ package lector.notificaciones.sistema.impl;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import lector.constantes.Constantes;
-import lector.correo.impl.EnviarCorreoImpl;
+import lector.correo.service.EnviarCorreoImpl;
 import lector.servicios.sistema.impl.SiParametroImpl;
 import lector.servicios.sistema.impl.SiUsuarioRolImpl;
 

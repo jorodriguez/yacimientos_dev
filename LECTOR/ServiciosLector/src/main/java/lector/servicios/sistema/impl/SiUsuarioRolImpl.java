@@ -21,7 +21,7 @@ import lector.modelo.SiUsuarioRol;
 import lector.modelo.Usuario;
 import lector.modelo.usuario.vo.UsuarioVO;
 import lector.servicios.catalogos.impl.UsuarioImpl;
-import lector.sistema.AbstractFacade;
+import lector.sistema.AbstractImpl;
 import lector.util.UtilLog4j;
 
 /**
@@ -29,21 +29,14 @@ import lector.util.UtilLog4j;
  * @author mluis
  */
 @Stateless 
-public class SiUsuarioRolImpl extends AbstractFacade<SiUsuarioRol>{
+public class SiUsuarioRolImpl extends AbstractImpl<SiUsuarioRol>{
 
-    @PersistenceContext(unitName =  Constantes.PERSISTENCE_UNIT)
-    private EntityManager em;
     @Inject
     private UsuarioImpl usuarioRemote;
     @Inject
     private SiRolImpl siRolRemote;
 
     
-    @Override
-    protected EntityManager getEntityManager() {
-        return em;
-    }
-
     public SiUsuarioRolImpl() {
         super(SiUsuarioRol.class);
     }

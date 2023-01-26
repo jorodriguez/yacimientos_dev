@@ -9,22 +9,14 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import lector.constantes.Constantes;
 import lector.modelo.SiParametro;
-import lector.sistema.AbstractFacade;
+import lector.sistema.AbstractImpl;
 
 /**
  *
  */
 @Stateless 
-public class SiParametroImpl extends AbstractFacade<SiParametro> {
-    @PersistenceContext(unitName =  Constantes.PERSISTENCE_UNIT)
-    private EntityManager em;
-
+public class SiParametroImpl extends AbstractImpl<SiParametro> {
     
-    @Override
-    protected EntityManager getEntityManager() {
-        return em;
-    }
-
     public SiParametroImpl() {
         super(SiParametro.class);
     }

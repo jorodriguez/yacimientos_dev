@@ -13,7 +13,7 @@ import java.text.SimpleDateFormat;
 import java.util.Locale;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
-import lector.correo.impl.EnviarCorreoImpl;
+import lector.correo.service.EnviarCorreoImpl;
 import lector.modelo.Usuario;
 import lector.servicios.catalogos.impl.UsuarioImpl;
 import lector.servicios.sistema.impl.SiParametroImpl;

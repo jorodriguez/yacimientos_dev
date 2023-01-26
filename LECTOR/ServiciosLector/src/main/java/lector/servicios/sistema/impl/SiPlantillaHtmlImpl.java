@@ -9,7 +9,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import lector.constantes.Constantes;
 import lector.modelo.SiPlantillaHtml;
-import lector.sistema.AbstractFacade;
+import lector.sistema.AbstractImpl;
 
 
 /**
@@ -17,16 +17,8 @@ import lector.sistema.AbstractFacade;
  * @author hacosta
  */
 @Stateless 
-public class SiPlantillaHtmlImpl extends AbstractFacade<SiPlantillaHtml>{
-    @PersistenceContext(unitName =  Constantes.PERSISTENCE_UNIT)
-    private EntityManager em;
-
+public class SiPlantillaHtmlImpl extends AbstractImpl<SiPlantillaHtml>{
     
-    @Override
-    protected EntityManager getEntityManager() {
-        return em;
-    }
-
     public SiPlantillaHtmlImpl() {
         super(SiPlantillaHtml.class);
     }

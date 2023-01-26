@@ -13,7 +13,7 @@ import lector.constantes.Constantes;
 import lector.dominio.vo.RolVO;
 import lector.modelo.SiModulo;
 import lector.modelo.SiRol;
-import lector.sistema.AbstractFacade;
+import lector.sistema.AbstractImpl;
 import lector.util.UtilLog4j;
 
 /**
@@ -21,16 +21,8 @@ import lector.util.UtilLog4j;
  * @author mluis
  */
 @Stateless 
-public class SiRolImpl extends AbstractFacade<SiRol>{
+public class SiRolImpl extends AbstractImpl<SiRol>{
 
-    @PersistenceContext(unitName =  Constantes.PERSISTENCE_UNIT)
-    private EntityManager em;
-
-    
-    @Override
-    protected EntityManager getEntityManager() {
-        return em;
-    }
 
     public SiRolImpl() {
         super(SiRol.class);

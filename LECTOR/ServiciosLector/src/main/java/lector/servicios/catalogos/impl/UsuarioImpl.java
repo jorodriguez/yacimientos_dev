@@ -36,7 +36,7 @@ import lector.modelo.usuario.vo.UsuarioVO;
 import lector.notificaciones.sistema.impl.ServicioNotificacionSistemaImpl;
 import lector.notificaciones.usuario.impl.ServicioNotificacionUsuarioImpl;
 import lector.servicios.sistema.impl.SiUsuarioRolImpl;
-import lector.sistema.AbstractFacade;
+import lector.sistema.AbstractImpl;
 import lector.util.UtilLog4j;
 import lector.util.UtilSia;
 import lombok.extern.slf4j.Slf4j;
@@ -46,7 +46,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Stateless
 @Slf4j
-public class UsuarioImpl extends AbstractFacade<Usuario> {
+public class UsuarioImpl extends AbstractImpl<Usuario> {
 
     private static final String CONSULTA
             = "SELECT u.id, u.nombre, u.clave, u.email,  u.destinatarios, u.telefono, u.extension, "
@@ -59,12 +59,6 @@ public class UsuarioImpl extends AbstractFacade<Usuario> {
             + "  (select o.nombre from sg_oficina o where o.id = u.sg_oficina)"
             + " FROM usuario u ";
 
-    @PersistenceContext(unitName = "Lector-ServiciosPU")
-    private EntityManager em;
-
-    @Inject
-    DSLContext dslCtx;
-
     private final static UtilLog4j LOGGER = UtilLog4j.log;
     
      @Inject
@@ -74,14 +68,6 @@ public class UsuarioImpl extends AbstractFacade<Usuario> {
     private ServicioNotificacionUsuarioImpl notificacionUsuarioRemote;
     @Inject
     private SiUsuarioRolImpl siUsuarioRolRemote;
-
-    @Inject
-    DSLContext dbCtx;
-
-    @Override
-    protected EntityManager getEntityManager() {
-        return em;
-    }
 
     public UsuarioImpl() {
         super(Usuario.class);
@@ -1611,7 +1597,7 @@ public class UsuarioImpl extends AbstractFacade<Usuario> {
     }
 
     public List<UsuarioVO> obtenerListaUsuarios() {
-        CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
+        CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
         CriteriaQuery qry = criteriaBuilder.createQuery();
         Root<Usuario> usuario = qry.from(Usuario.class);
         qry.select(
@@ -1622,12 +1608,12 @@ public class UsuarioImpl extends AbstractFacade<Usuario> {
                         usuario.get("email")
                 )
         );
-        return getEntityManager().createQuery(qry).getResultList();
+        return em.createQuery(qry).getResultList();
     }
 
     public List<UsuarioVO> obtenerListaUsuarios(Integer rol) {
 
-        CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
+        CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
         CriteriaQuery qry = criteriaBuilder.createQuery();
         Root<Usuario> usuario = qry.from(Usuario.class);
 
@@ -1650,7 +1636,7 @@ public class UsuarioImpl extends AbstractFacade<Usuario> {
                         criteriaBuilder.nullLiteral(Collection.class))
         );
 
-        return getEntityManager().createQuery(qry).getResultList();
+        return em.createQuery(qry).getResultList();
     }
 
     public Usuario login(String username, String passwordHash) {
@@ -1755,7 +1741,7 @@ public class UsuarioImpl extends AbstractFacade<Usuario> {
 
         try {
             usuarios
-                    = dslCtx.fetch(sql, false, false, false, true, idCampo, false).into(UsuarioVO.class);
+                    = dbCtx.fetch(sql, false, false, false, true, idCampo, false).into(UsuarioVO.class);
         } catch (DataAccessException e) {
             log.warn("*** Al recuperar usuarios sin curso ...", e);
 
@@ -1797,7 +1783,7 @@ public class UsuarioImpl extends AbstractFacade<Usuario> {
                 + "AND interno = true AND activo = true AND eliminado = false";
 
         try {
-            Record recusuario = dslCtx.fetchOne(sql, usuarioId, usuarioId);
+            Record recusuario = dbCtx.fetchOne(sql, usuarioId, usuarioId);
 
             if (recusuario != null) {
                 retVal = recusuario.into(Usuario.class);
@@ -1818,7 +1804,7 @@ public class UsuarioImpl extends AbstractFacade<Usuario> {
                 + " AND eliminado = false";
 
         try {
-            Record recUsuario = dslCtx.fetchOne(sql, usuarioId, usuarioId);
+            Record recUsuario = dbCtx.fetchOne(sql, usuarioId, usuarioId);
 
             if (recUsuario != null) {
                 retVal = recUsuario.into(Usuario.class);

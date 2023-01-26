@@ -7,7 +7,7 @@ package lector.notificaciones.sistema.impl;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import lector.constantes.Configurador;
-import lector.correo.impl.CodigoHtml;
+import lector.correo.service.CodigoHtml;
 import lector.modelo.SiPlantillaHtml;
 import lector.servicios.sistema.impl.SiPlantillaHtmlImpl;
 

@@ -46,6 +46,7 @@ public class SiaFilter implements Filter {
                     || reqURI.endsWith(".css")
                     || reqURI.endsWith(".ico")
                     || reqURI.endsWith(".jpg")
+                    || reqURI.endsWith(".jpeg")
                     || reqURI.endsWith(".svg")
                     || reqURI.endsWith(".png")
                     || reqURI.endsWith(".gif")
@@ -59,7 +60,7 @@ public class SiaFilter implements Filter {
             if ((ses != null && ses.getAttribute(Sesion.USER) != null)
                     || reqURI.contains("/loginEnter.xhtml")
                     || isResource) {
-                System.out.println("chain to login");
+                System.out.println(" proceder con request");
                 chain.doFilter(request, response);
             } else {
                 System.out.println("Redirect to login");

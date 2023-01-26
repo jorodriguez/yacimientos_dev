@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package lector.correo.impl;
+package lector.correo.service;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;

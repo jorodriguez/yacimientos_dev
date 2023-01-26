@@ -18,17 +18,15 @@ import lector.modelo.SiRelRolOpcion;
 import lector.modelo.SiRol;
 import lector.modelo.Usuario;
 import lector.servicios.sistema.vo.SiOpcionVo;
-import lector.sistema.AbstractFacade;
+import lector.sistema.AbstractImpl;
 
 /**
  *
  * @author nlopez
  */
 @Stateless 
-public class SiRelRolOpcionImpl extends AbstractFacade<SiRelRolOpcion>{
+public class SiRelRolOpcionImpl extends AbstractImpl<SiRelRolOpcion>{
 
-    @PersistenceContext(unitName =  Constantes.PERSISTENCE_UNIT)
-    private EntityManager em;
     //
     @Inject
     private SiOpcionImpl siOpcionRemote;
@@ -40,10 +38,6 @@ public class SiRelRolOpcionImpl extends AbstractFacade<SiRelRolOpcion>{
     }
 
     
-    @Override
-    protected EntityManager getEntityManager() {
-	return em;
-    }
 
     /**
      * Creo: NLopez

@@ -68,11 +68,11 @@ public class AbrirArchivo extends HttpServlet {
         try {
             //  Sesion sesion = (Sesion) request.getSession().getAttribute("sesion");
             if (sesion == null) {
-                response.sendRedirect(Configurador.urlSia() + "Sia");
+                response.sendRedirect(Configurador.urlSia() + "WebLector");
             } else {
                 // si el managed bean usuario es diferente de null podemos verificar si ya inicio sesion
                 if (sesion.getUsuario() == null) {
-                    response.sendRedirect(Configurador.urlSia() + "Sia");
+                    response.sendRedirect(Configurador.urlSia() + "WebLector");
                 } else {
                     // si inicio sesion buscar el convenio q viene en el parametro del servlet
                     String SAId = request.getParameter("ZWZ2W");
@@ -105,7 +105,7 @@ public class AbrirArchivo extends HttpServlet {
 
 			 response.setContentLength(data.length);*/
 
-                        LOGGER.info("ETS URL : " + almacenDocumentos.getRaizAlmacen());
+                        LOGGER.info(" URL : " + almacenDocumentos.getRaizAlmacen());
 
                         DocumentoAnexo documento = almacenDocumentos.cargarDocumento(ets.getUrl());
 

@@ -42,11 +42,13 @@ public class ProveedorAlmacenDocumentos {
         parametros = parametrosSistema.find(1);
 
         if (ALM_SIS_ARCH.equals(parametros.getTipoAlmacenAdjuntos())) {
-            LOGGER.info(this, "Utilizando sistema de archivos como almacén de documentos.");
+            //LOGGER.info(this, "Utilizando sistema de archivos como almacén de documentos.");
+            System.out.println("Utilizando sistema de archivos como almacén de documentos");
             almacen = new AlmacenSistemaArchivos();
             almacen.setRaizAlmacen(parametrosSistema.find(1).getUploadDirectory());
         } else if (ALM_ALFRESCO.equals(parametros.getTipoAlmacenAdjuntos())) {
             LOGGER.info(this, "Utilizando Alfresco como almacén de documentos.");
+            System.out.println("Utilizando Alfresco como almacén de documentos");
             almacen = new AlmacenAlfresco(buildProperties());
         } else {
             throw new IllegalArgumentException("Tipo de almacén de documentos desconocido.");

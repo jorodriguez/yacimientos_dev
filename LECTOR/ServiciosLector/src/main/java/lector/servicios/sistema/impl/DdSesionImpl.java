@@ -15,7 +15,7 @@ import javax.persistence.TransactionRequiredException;
 import lector.constantes.Constantes;
 import lector.modelo.DdSesion;
 import lector.modelo.sistema.vo.Sesion;
-import lector.sistema.AbstractFacade;
+import lector.sistema.AbstractImpl;
 import lector.util.UtilLog4j;
 import org.jooq.DSLContext;
 import org.jooq.exception.DataAccessException;
@@ -25,27 +25,14 @@ import org.jooq.exception.DataAccessException;
  * @author mrojas
  */
 @Stateless 
-public class DdSesionImpl extends AbstractFacade<DdSesion> {
+public class DdSesionImpl extends AbstractImpl<DdSesion> {
 
     private static final UtilLog4j log = UtilLog4j.log;
     
     
-    @Inject
-    private DSLContext dbCtx;
-    
-    @PersistenceContext(unitName =  Constantes.PERSISTENCE_UNIT)
-    private EntityManager em;
-
-    
-    @Override
-    protected EntityManager getEntityManager() {
-        return em;
-    }
-
     public DdSesionImpl() {
         super(DdSesion.class);
     }
-
     
     public void create(DdSesion entity) {
         em.persist(entity);
