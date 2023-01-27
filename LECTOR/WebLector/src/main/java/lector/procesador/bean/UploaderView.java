@@ -9,14 +9,17 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import lector.sistema.bean.backing.*;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Serializable;
 import java.net.URL;
+import java.util.Base64;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
+import javax.faces.event.ActionEvent;
 import javax.inject.Inject;
 
 import javax.faces.view.ViewScoped;
@@ -71,6 +74,9 @@ public class UploaderView implements Serializable {
     private UploadedFile fileInfo;
     
     @Getter   @Setter
+    private byte[] fileContent;
+    
+    @Getter   @Setter
     List<Item> listaItems;
     
 
@@ -83,61 +89,52 @@ public class UploaderView implements Serializable {
         //loaders
     }
     
+    
+    
     public void subirAdjunto(FileUploadEvent event) {
         System.out.println("@subirAdjunto");
-        
-        
+
         ValidadorNombreArchivo validadorNombreArchivo = new ValidadorNombreArchivo();
-        
+
         try {
 
             AlmacenDocumentos almacenDocumentos = proveedorAlmacenDocumentos.getAlmacenDocumentos();
-            
+
             fileInfo = event.getFile();
-                       
-            
+
             boolean addArchivo = validadorNombreArchivo.isNombreValido(fileInfo.getFileName());
 
             if (addArchivo) {
-                
+
                 System.out.println("--proceder a verificar");
-                
+
                 DocumentoAnexo documentoAnexo = new DocumentoAnexo(fileInfo.getContent());
                 documentoAnexo.setTipoMime(fileInfo.getContentType());
                 documentoAnexo.setRuta("credenciales");
                 documentoAnexo.setNombreBase(fileInfo.getFileName());
                 almacenDocumentos.guardarDocumento(documentoAnexo);
-                
-                System.out.println("nombre archivo "+fileInfo.getFileName());
-                System.out.println("content type"+fileInfo.getContentType());
-                System.out.println("content "+fileInfo.getContent().length);
-                
-                //String path = parametrosSistemaServicioRemoto.find(1).getUploadDirectory();
-                
-                //String url = almacenDocumentos.getRaizAlmacen() + documentoAnexo.getRuta()+"/"+documentoAnexo.getNombreBase();
-                
-                //System.out.println("PATH "+path.get);
-                //System.out.println("URL "+url);
-                
-                //listaTexto = lectorService.getTexto(fileInfo.getContent());
-                //listaTexto = lectorService.getTexto(new URL("https://res.cloudinary.com/dwttlkcmu/image/upload/v1674658258/samples/mingo_yhlwbs.jpg"));
-                //listaTexto = lectorService.getTexto("/home/jorodriguez/Descargas/mingo.jpeg");
-                
-//                 listaItems = lectorService.getTextoAlt("https://res.cloudinary.com/dwttlkcmu/image/upload/v1674658258/samples/mingo_yhlwbs.jpg");
 
-                listaItems = lectorService.getTextoData(fileInfo.getContent());
-                 
-                 //listaTexto = lectorService.getTexto();
+                System.out.println("nombre archivo " + fileInfo.getFileName());
+                System.out.println("content type" + fileInfo.getContentType());
+                System.out.println("content " + fileInfo.getContent().length);
+   
+                //-------- DESCOMENTAR listaItems = lectorService.getTextoData(fileInfo.getContent());
                 
+                this.fileContent = fileInfo.getContent();
+                
+                this.originalImageFile = null;
+                this.croppedImage = null;
+
+                if (fileInfo != null && fileInfo.getContent() != null && fileInfo.getContent().length > 0 && fileInfo.getFileName() != null) {
+                    this.originalImageFile = fileInfo;
+                    FacesMessage msg = new FacesMessage("Successful", this.originalImageFile.getFileName() + " is uploaded.");
+                    FacesContext.getCurrentInstance().addMessage(null, msg);
+                }
+
+                //listaTexto = lectorService.getTexto();
                 System.out.println("realizado ");
-                
-                /*for(Item item : listaTexto){
-                    System.out.println(item.getEtiqueta()+ " "+item.getValor());
-                }*/
-                
+
                 //doit updload
-                
-                
                 /*
                 
                 SiAdjunto adj = adjuntoImpl.save(documentoAnexo.getNombreBase(),
@@ -145,7 +142,6 @@ public class UploaderView implements Serializable {
                                 .append(documentoAnexo.getRuta())
                                 .append(File.separator).append(documentoAnexo.getNombreBase()).toString(),
                 fileInfo.getContentType(), fileInfo.getSize(), sesion.getUsuarioConectado().getId());                              */
-
             } else {
                 FacesUtils.addErrorMessage(new StringBuilder()
                         .append("No se permiten los siguientes caracteres especiales en el nombre del Archivo: ")
@@ -156,14 +152,77 @@ public class UploaderView implements Serializable {
             fileInfo.delete();
 
         } catch (IOException | SIAException e) {
-            System.out.println(" error al cargar "+e);
+            System.out.println(" error al cargar " + e);
             FacesUtils.addInfoMessage("Ocurrió un problema al cargar el archivo, por favor contacte al equipo de soporte SIA (soport@gmail.mx)");
         }
+
     }
+
     
-     public String uploadDirectoryTicket() {
-        return new StringBuilder().append("credenciales/").append(sesion.getUsuario().getId()).toString();
+     public void listenerAdjunto(FileUploadEvent event) {
+         System.out.println("Listener ");
+         this.fileInfo = event.getFile();
+     }
+
+    
+    public boolean subirArchivo() {
+
+        if (fileInfo == null) {
+            FacesUtils.addErrorMessage("Seleccione un archivo.");
+            return false;
+        }
+
+        ValidadorNombreArchivo validadorNombreArchivo = new ValidadorNombreArchivo();
+
+        try {
+
+            AlmacenDocumentos almacenDocumentos = proveedorAlmacenDocumentos.getAlmacenDocumentos();
+
+            boolean addArchivo = validadorNombreArchivo.isNombreValido(fileInfo.getFileName());
+
+            if (addArchivo) {
+
+                System.out.println("--proceder a verificar");
+
+                DocumentoAnexo documentoAnexo = new DocumentoAnexo(fileInfo.getContent());
+                documentoAnexo.setTipoMime(fileInfo.getContentType());
+                documentoAnexo.setRuta("credenciales");
+                documentoAnexo.setNombreBase(fileInfo.getFileName());
+                almacenDocumentos.guardarDocumento(documentoAnexo);
+
+                System.out.println("nombre archivo " + fileInfo.getFileName());
+                System.out.println("content type" + fileInfo.getContentType());
+                System.out.println("content " + fileInfo.getContent().length);
+
+                listaItems = lectorService.getTextoData(fileInfo.getContent());               
+             
+                //listaTexto = lectorService.getTexto();
+                System.out.println("uploado *** ok");
+                /*               
+                SiAdjunto adj = adjuntoImpl.save(documentoAnexo.getNombreBase(),
+                        new StringBuilder()
+                                .append(documentoAnexo.getRuta())
+                                .append(File.separator).append(documentoAnexo.getNombreBase()).toString(),
+                fileInfo.getContentType(), fileInfo.getSize(), sesion.getUsuarioConectado().getId());                              */
+            } else {
+                FacesUtils.addErrorMessage(new StringBuilder()
+                        .append("No se permiten los siguientes caracteres especiales en el nombre del Archivo: ")
+                        .append(validadorNombreArchivo.getCaracteresNoValidos())
+                        .toString());
+            }
+
+            fileInfo.delete();
+            fileInfo = null;
+            
+            return true;
+
+        } catch (IOException | SIAException e) {
+            System.out.println(" error al cargar " + e);
+            FacesUtils.addInfoMessage("Ocurrió un problema al cargar el archivo");
+            return false;
+        }
     }
+
     
 
      public void handleFileUpload(FileUploadEvent event) {
@@ -235,6 +294,7 @@ public class UploaderView implements Serializable {
     }
     
     
+    
     public CroppedImage getCroppedImage() {
         return croppedImage;
     }
@@ -246,6 +306,9 @@ public class UploaderView implements Serializable {
     public UploadedFile getOriginalImageFile() {
         return originalImageFile;
     }
-     
+
+    public String getImageContentsAsBase64() {
+            return Base64.getEncoder().encodeToString(fileContent);
+    }
 
 }

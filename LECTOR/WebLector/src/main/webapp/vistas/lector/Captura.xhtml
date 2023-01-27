@@ -1,0 +1,103 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                template="./../../WEB-INF/facelets/templates/templatePrincipal.xhtml"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:h="http://xmlns.jcp.org/jsf/html">
+
+    <ui:define name="menu">
+        menu
+    </ui:define>
+
+    <ui:define name="tituloPagina">
+
+    </ui:define>
+
+    <ui:define name="contenido">
+        <style>
+            .ui-fileupload-buttonbar{
+                background-color: transparent !important;
+                border-color: transparent !important;
+            }
+            .ui-fileupload-content{
+                background-color: transparent !important;
+                border-color: transparent !important;
+            }
+        </style>
+        <div class="container">            
+            <h:form id="formUpload" enctype="multipart/form-data">
+                <div class="row">
+                    <div class="col-sm-12 col-md-4 col-lg-4">
+                        <div class="card border-0 mr-2 ">                            
+                            <div class="card-body border-0 d-flex justify-content-center">                                
+                                <ui:fragment rendered="#{uploaderView.fileInfo eq null}">
+                                    <img class="card-img-top" src="/resources/img/credencial_placeholder.png"/>
+                                </ui:fragment>
+                                <ui:fragment rendered="#{uploaderView.fileInfo ne null}">
+                                    <img src="data:image/png;base64,#{uploaderView.imageContentsAsBase64}" />
+                                </ui:fragment>
+                            </div>
+                            <div class="card-footer text-center ">   
+                                File
+                                <p:fileUpload value="#{uploaderView.fileInfo}"
+                                              chooseButtonStyleClass="rounded-button ui-button-secondary ui-button-outlined"
+                                              label="Foto"
+                                              styleClass="p-0 m-0"                                                
+                                              messageTemplate=""                                                                                                
+                                              chooseIcon="pi pi-cloud-upload"
+                                              chooseButtonTitle="Foto"
+                                              cancelLabel="Cancelar"
+                                              cancelButtonTitle="Cancelar"                
+                                              cancelButtonStyleClass="ui-button-secondary ui-button-flat" 
+                                              uploadButtonStyleClass=""
+                                              mode="simple"                                                
+                                              update="@form" 
+                                              process="@form"   
+                                              skinSimple="true">
+                                              <p:ajax update="@form" event="change" />
+                                </p:fileUpload>                            
+                                
+                                esto es una prueba                               
+                                
+                                <!--<ui:fragment rendered="#{uploaderView.fileInfo ne null}">
+                                    <br/>-->
+                                
+                                <p:commandButton value="Subirr" 
+                                                 ajax="false" action="#{uploaderView.subirArchivo()}" styleClass="mt-3 ui-button-outlined block"/>
+                                <!--</ui:fragment>-->
+
+                                <!--<small class="text-muted">Captura</small>-->
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-12 col-md-4 col-lg-4">
+
+                    </div>                    
+                </div>                        
+            </h:form>
+
+            <p:dataTable 
+                id="data"
+                size="small" stripedRows="true" showGridlines="true" rows="20" 
+                styleClass="table table-bordered table-striped"
+                value="#{uploaderView.listaItems}" var="currentRow" 
+                >										     				    
+                <p:column>
+                    <f:facet name="header">
+                        <h:outputText value=""/>
+                    </f:facet>                                                
+                    <h:outputText value="#{currentRow.posicion}" />
+                </p:column>
+                <p:column>
+                    <h:outputText value="#{currentRow.etiqueta}" />
+                </p:column>
+                <p:column>
+                    <h:outputText value="#{currentRow.valor}" />
+                </p:column>
+            </p:dataTable>                         
+        </div>
+    </ui:define>
+
+</ui:composition>
