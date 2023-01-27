@@ -20,6 +20,7 @@ import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
+import javax.faces.event.ValueChangeEvent;
 import javax.inject.Inject;
 
 import javax.faces.view.ViewScoped;
@@ -70,7 +71,7 @@ public class UploaderView implements Serializable {
     
     private UploadedFile originalImageFile;
     
-    @Getter   @Setter
+    @Getter   
     private UploadedFile fileInfo;
     
     @Getter   @Setter
@@ -231,10 +232,12 @@ public class UploaderView implements Serializable {
         this.originalImageFile = null;
         this.croppedImage = null;
         
-        UploadedFile file = event.getFile();
+        this.fileInfo = event.getFile();
         
-        if (file != null && file.getContent() != null && file.getContent().length > 0 && file.getFileName() != null) {
-            this.originalImageFile = file;
+        this.fileContent = fileInfo.getContent();
+        
+        if (fileInfo != null && fileInfo.getContent() != null && fileInfo.getContent().length > 0 && fileInfo.getFileName() != null) {
+            this.originalImageFile = fileInfo;
             FacesMessage msg = new FacesMessage("Successful", this.originalImageFile.getFileName() + " is uploaded.");
             FacesContext.getCurrentInstance().addMessage(null, msg);
         }
@@ -293,6 +296,11 @@ public class UploaderView implements Serializable {
                 .build();
     }
     
+    public void changeFoto(ValueChangeEvent valuchangeevent){
+                System.out.println("@@changeFoto");
+                
+    }
+    
     
     
     public CroppedImage getCroppedImage() {
@@ -306,7 +314,16 @@ public class UploaderView implements Serializable {
     public UploadedFile getOriginalImageFile() {
         return originalImageFile;
     }
-
+    
+    
+    public void setFileInfo(UploadedFile uploadedFile ) {
+        this.fileInfo = uploadedFile;
+        if(fileInfo != null){
+            this.fileContent = this.fileInfo.getContent();
+        }
+    }   
+    
+    
     public String getImageContentsAsBase64() {
             return Base64.getEncoder().encodeToString(fileContent);
     }
