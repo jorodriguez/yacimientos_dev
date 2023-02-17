@@ -13,7 +13,6 @@ import lector.modelo.SiPlantillaHtml;
 
 /**
  *
- * @author ihsa
  */
 @Stateless 
 public class HtmlNotificaSistemaImpl extends CodigoHtml{
@@ -46,7 +45,7 @@ public class HtmlNotificaSistemaImpl extends CodigoHtml{
         cuerpoCorreo.append(plantilla.getInicio());
         cuerpoCorreo.append(getTitulo(asunto));
         cuerpoCorreo.append("<p> El día de hoy <b>").append(Constantes.FMT_ddMMyyy.format(new Date()));
-        cuerpoCorreo.append(" </b> a las <b>").append(Constantes.FMT_HHmmss.format(new Date())).append("</b>, se registró").append(" una excepción en el SIA.");
+        cuerpoCorreo.append(" </b> a las <b>").append(Constantes.FMT_HHmmss.format(new Date())).append("</b>, se registró").append(" una excepción en el Sistema.");
         cuerpoCorreo.append(" </p><br/><br/>");
         cuerpoCorreo.append("   Mensaje: <b>").append(mensaje).append("</b>");
         cuerpoCorreo.append(" ");

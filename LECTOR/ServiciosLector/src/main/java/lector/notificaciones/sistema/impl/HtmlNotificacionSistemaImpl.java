@@ -37,8 +37,8 @@ public class HtmlNotificacionSistemaImpl extends CodigoHtml {
                 .append("<b>")
                 .append(clave)
                 .append("</b>")
-                .append("<p>").append("<a target=\"_blank\" href=\"").append(Configurador.urlSia()).append("Sia\">")
-                .append("Clic aquí para ir al SIA</a></p>")
+                .append("<p>").append("<a target=\"_blank\" href=\"").append(Configurador.urlSistema()).append("Sia\">")
+                .append("Clic aquí para ir al Sistema</a></p>")
                 .append("<p>Por seguridad y comodidad le recomendamos cambiar su contraseña.").append("</p>")
                 .append("Gracias, <br/> El equipo del SIA.")
                 .append(plantilla.getFin());
@@ -53,7 +53,7 @@ public class HtmlNotificacionSistemaImpl extends CodigoHtml {
         //titulo principal en el correo
         this.cuerpoCorreo.append(this.getTitulo("Cambio de contraseña"));
         this.cuerpoCorreo.append("<br/><p>Estimado, ");
-        this.cuerpoCorreo.append("".concat(nombre).concat("</p><br/> Ha cambiado su contraseña para ingreso al SIA, puede acceder al sistema de inmediato."));
+        this.cuerpoCorreo.append("".concat(nombre).concat("</p><br/> Ha cambiado su contraseña para ingreso al Sistema, puede acceder al sistema de inmediato."));
         this.cuerpoCorreo.append("<Br/><Br/> Gracias, <Br/> El equipo del SIA.");
         this.cuerpoCorreo.append(plantilla.getFin());
         return this.cuerpoCorreo;

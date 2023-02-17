@@ -12,7 +12,6 @@ import org.apache.chemistry.opencmis.client.api.Folder;
 
 /**
  *
- * @author mrojas
  */
 @Builder
 @Getter

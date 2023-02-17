@@ -1,4 +1,4 @@
-package lector.modelo.usuario.vo;
+package lector.dominio.modelo.usuario.vo;
 
 import java.io.Serializable;
 import java.util.*;

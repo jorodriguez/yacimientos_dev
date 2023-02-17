@@ -10,7 +10,7 @@ package lector.excepciones;
  * 
  * @author esapien
  */
-public class MissingRequiredValuesException extends SIAException {
+public class MissingRequiredValuesException extends LectorException {
     
     /**
      * 

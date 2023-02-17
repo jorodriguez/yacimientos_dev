@@ -21,7 +21,6 @@ import lector.util.UtilLog4j;
  * Proveedor de almacén de documentos. Administra y devuelve el acceso adecuado
  * al tipo de almacenamiento que se esté utilizando.
  *
- * @author mrojas
  */
 @Stateless
 public class ProveedorAlmacenDocumentos {
@@ -42,7 +41,6 @@ public class ProveedorAlmacenDocumentos {
         parametros = parametrosSistema.find(1);
 
         if (ALM_SIS_ARCH.equals(parametros.getTipoAlmacenAdjuntos())) {
-            //LOGGER.info(this, "Utilizando sistema de archivos como almacén de documentos.");
             System.out.println("Utilizando sistema de archivos como almacén de documentos");
             almacen = new AlmacenSistemaArchivos();
             almacen.setRaizAlmacen(parametrosSistema.find(1).getUploadDirectory());

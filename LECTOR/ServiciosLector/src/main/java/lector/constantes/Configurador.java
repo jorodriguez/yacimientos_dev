@@ -14,21 +14,19 @@ import lector.util.UtilLog4j;
 
 /**
  *
- * @author ihsa
  */
 public final class Configurador {
 
     private final static UtilLog4j LOGGER = UtilLog4j.log;
-    private final static String CONF_FILE = "/etc/sia.properties";
+    private final static String CONF_FILE = "/etc/lector.properties";
     private final static String DEFAULT_URL = "http://domain.mx";
-    private final static String DEFAULT_CORREO = "soporte@domain.mx";
     
     
     private Configurador() {
     }
     
-    public static String urlSia() {
-        final String retVal = getProperty("sia.url");
+    public static String urlSistema() {
+        final String retVal = getProperty("sistema.url");
         return (retVal == null ? DEFAULT_URL : retVal);
     }
     
@@ -55,7 +53,7 @@ public final class Configurador {
                 try {
                     fis.close();
                 } catch (IOException ex) {
-                    LOGGER.warn("No fue posible cerrar el archivo /etc/sia.properties", ex);
+                    LOGGER.warn("No fue posible cerrar el archivo properties", ex);
                 }
             }
         }
@@ -63,8 +61,4 @@ public final class Configurador {
         return retVal;
     }
     
-    public static String notificacionRecepcionFacturas() {
-        final String retVal = getProperty("sia.recepcion.factura");
-        return (retVal == null ? DEFAULT_CORREO : retVal);
-    }
 }

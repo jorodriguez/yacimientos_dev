@@ -42,11 +42,7 @@ public class EnviarCorreoImpl {
     private UsuarioImpl usuarioServicioImpl;
 
     @Resource(name = "mail/gmail")
-    private Session sesionGmail;
-    @Resource(name = "mail/ihsa")
-    private Session sesionIhsa;
-    @Resource(name = "mail/ihsaAvz")
-    private Session sesionIhsaAvz;
+    private Session sesionGmail;    
 
     private final static Logger LOGGER = Logger.getLogger(EnviarCorreoImpl.class.getName());
 
@@ -81,7 +77,7 @@ public class EnviarCorreoImpl {
                     || !Strings.isNullOrEmpty(mailMessage.getCc())
                     || !Strings.isNullOrEmpty(mailMessage.getCco())) {
 
-                final Usuario usrSIA = usuarioServicioImpl.find(MailMessage.USUARIO_SIA);
+                final Usuario usrSIA = usuarioServicioImpl.find(MailMessage.USUARIO_SISTEMA);
 
                 if (usrSIA != null && !Strings.isNullOrEmpty(usrSIA.getEmail())) {
                     if (Strings.isNullOrEmpty(mailMessage.getCco())) {
@@ -139,7 +135,7 @@ public class EnviarCorreoImpl {
             GenNrStats.saveNrData("EMAIL");
 
             NewRelicEvent event = new NewRelicEvent();
-            event.setSystem("SIA");
+            event.setSystem("SISTEMA");
             event.setClassName(EnviarCorreoImpl.class.getName());
             event.setMethod("enviar");
             event.setEventName("before-Transport-send");
@@ -259,7 +255,7 @@ public class EnviarCorreoImpl {
      */
     
     @Trace(dispatcher = true)
-    public boolean enviarCorreoIhsa(
+    public boolean enviarCorreo(
             final Set<String> para, final Set<String> cc, final Set<String> cco,
             final String asunto, final String mensaje, final byte[] logoSia) {
 
@@ -267,16 +263,10 @@ public class EnviarCorreoImpl {
         final String strCc = getCadenaCorreos(cc);
         final String strCco = getCadenaCorreos(cco);
 
-        return enviarCorreoIhsa(strPara, strCc, strCco, asunto, new StringBuilder(mensaje), logoSia);
+        return EnviarCorreoImpl.this.enviarCorreo(strPara, strCc, strCco, asunto, new StringBuilder(mensaje), logoSia);
 
     }
 
-    /**
-     * Convierte el Set de correos a una cadena separados por coma.
-     *
-     * @param correos El Set de correos a unir
-     * @return Una cadena de texto con los correos
-     */
     private String getCadenaCorreos(final Set<String> correos) {
         String retVal = Constantes.VACIO;
 
@@ -289,33 +279,33 @@ public class EnviarCorreoImpl {
     }
 
     
-    public boolean enviarCorreoIhsa(final String para, final String cc, final String cco,
+    public boolean enviarCorreo(final String para, final String cc, final String cco,
             final String asunto, final StringBuilder mensaje) {
 
-        return enviarCorreoIhsa(para, cc, cco, asunto, mensaje, null);
+        return EnviarCorreoImpl.this.enviarCorreo(para, cc, cco, asunto, mensaje, null);
     }
 
     
     @Trace(dispatcher = true)
-    public boolean enviarCorreoIhsa(final String para, final String cc, final String cco,
+    public boolean enviarCorreo(final String para, final String cc, final String cco,
             final String asunto, final StringBuilder mensaje, final byte[] logoSia) {
 
-        return enviarCorreoIhsa(para, cc, cco, asunto, logoSia, null, mensaje);
+        return EnviarCorreoImpl.this.enviarCorreo(para, cc, cco, asunto, logoSia, null, mensaje);
 
     }
 
     
     @Trace(dispatcher = true)
-    public boolean enviarCorreoIhsa(final String para, final String cc, final String cco,
+    public boolean enviarCorreo(final String para, final String cc, final String cco,
             final String asunto, final StringBuilder mensaje, final byte[] logoCompany,
             final byte[] logoEsr) {
 
-        return enviarCorreoIhsa(para, cc, cco, asunto, mensaje, logoCompany, logoEsr, null, null, null);
+        return EnviarCorreoImpl.this.enviarCorreo(para, cc, cco, asunto, mensaje, logoCompany, logoEsr, null, null, null);
     }
 
     
     @Trace(dispatcher = true)
-    public boolean enviarCorreoIhsa(final String para, final String cc, final String cco,
+    public boolean enviarCorreo(final String para, final String cc, final String cco,
             final String asunto, final StringBuilder mensaje, final byte[] logoCompany,
             final byte[] logoEsr, final File pdf, final File pdfCG, final String compSiglas) {
 
@@ -323,7 +313,7 @@ public class EnviarCorreoImpl {
         boolean retVal = false;
 
         try {
-            mailMessage.setSesion(sesionIhsa);
+            mailMessage.setSesion(sesionGmail);
             mailMessage.setPara(para);
             mailMessage.setCc(cc);
             mailMessage.setCco(cco);
@@ -349,7 +339,7 @@ public class EnviarCorreoImpl {
 
     
     @Trace(dispatcher = true)
-    public boolean enviarCorreoIhsa(final String para, final String cc, final String cco,
+    public boolean enviarCorreo(final String para, final String cc, final String cco,
             final String asunto, final StringBuilder mensaje, final byte[] logoCompany,
             final byte[] logoEsr, final File archivo1, final File archivo2, final File archivo3, String compSiglas) {
 
@@ -357,7 +347,7 @@ public class EnviarCorreoImpl {
         boolean retVal = false;
 
         try {
-            mailMessage.setSesion(sesionIhsa);
+            mailMessage.setSesion(sesionGmail);
             mailMessage.setPara(para);
             mailMessage.setCc(cc);
             mailMessage.setCco(cco);
@@ -387,13 +377,13 @@ public class EnviarCorreoImpl {
     }
 
     
-    public boolean enviarCorreoIhsa(final String para, final String cc, final String cco,
+    public boolean enviarCorreo(final String para, final String cc, final String cco,
             final String asunto, final byte[] logoSia, final byte[] logoWarning, final StringBuilder mensaje) {
         final MailMessage mailMessage = new MailMessage();
         boolean retVal = false;
 
         try {
-            mailMessage.setSesion(sesionIhsa);
+            mailMessage.setSesion(sesionGmail);
             mailMessage.setPara(para);
             mailMessage.setCc(cc);
             mailMessage.setCco(cco);
@@ -416,13 +406,13 @@ public class EnviarCorreoImpl {
     }
 
     
-    public boolean enviarCorreoIhsa(final String para, final String cc, final String cco,
+    public boolean enviarCorreo(final String para, final String cc, final String cco,
             final String asunto, final byte[] logoSia, final byte[] logoWarning, final StringBuilder mensaje, final File pdf) {
         final MailMessage mailMessage = new MailMessage();
         boolean retVal = false;
 
         try {
-            mailMessage.setSesion(sesionIhsa);
+            mailMessage.setSesion(sesionGmail);
             mailMessage.setPara(para);
             mailMessage.setCc(cc);
             mailMessage.setCco(cco);
@@ -446,37 +436,4 @@ public class EnviarCorreoImpl {
 
     }
 
-    
-    @Trace(dispatcher = true)
-    public boolean enviarCorreoAvz(final String para, final String cc, final String cco,
-            final String asunto, final StringBuilder mensaje, final byte[] logoCompany,
-            final byte[] logoEsr, final File archivoXML, final File archivoPDF) {
-
-        final MailMessage mailMessage = new MailMessage();
-        boolean retVal = false;
-
-        try {
-            mailMessage.setSesion(sesionIhsaAvz);
-            mailMessage.setPara(para);
-            mailMessage.setCc(cc);
-            mailMessage.setCco(cco);
-            mailMessage.setAsunto(asunto);
-            mailMessage.setTextoMensaje(mensaje.toString());
-
-            prepararCorreo(mailMessage);
-
-            mailMessage.addLogoCompany(logoCompany);
-            mailMessage.addLogoESR(logoEsr);
-            mailMessage.addArchivoPortal1(archivoXML);
-            mailMessage.addArchivoPortal2(archivoPDF);
-            
-            retVal = enviar(mailMessage);
-
-        } catch (MessagingException ex) {
-            LOGGER.log(Level.SEVERE, null, ex);
-            limpiarElementos(mailMessage);
-        }
-
-        return retVal;
-    }
 }

@@ -16,7 +16,6 @@ import lector.servicios.sistema.impl.SiParametroImpl;
 
 /**
  * Configuration for Alfresco access. Should be loaded from database.
- * @author mrojas
  */
 //Singleton
 //@Startup
@@ -57,24 +56,6 @@ public class Config {
             
             LOGGER.log(Level.FINE, "Propiedades : {0}", properties.toString());
             
-//            config.setProperty("site", "alfresco-api-demo");
-//            config.setProperty("folder_name", "ETS");
-            //config.setProperty("host", "http://localhost:8080/alfresco");
-            
-            
-            /*InputStream in = Config.class.getClassLoader().getResourceAsStream("config.properties");
-            try {
-                config.load(in);
-            } catch (IOException ioe) {
-                LOGGER.log(Level.SEVERE, null, ioe);
-            } finally {
-                try {
-                    in.close();
-                } catch (IOException ex) {
-                    LOGGER.log(Level.SEVERE, null, ex);
-                }
-            }*/
-
         }
         return properties;
     }

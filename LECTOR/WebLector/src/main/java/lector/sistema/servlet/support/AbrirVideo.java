@@ -70,7 +70,7 @@ public class AbrirVideo {//extends HttpServlet {
                 }
             } // si usuarioConectado es null el usuario no a iniciado sesion
             else {
-                response.sendRedirect(Configurador.urlSia() + "Sia");
+                response.sendRedirect(Configurador.urlSistema() + "Sia");
             }
         } catch (IOException e) {
             UtilLog4j.log.error(e);

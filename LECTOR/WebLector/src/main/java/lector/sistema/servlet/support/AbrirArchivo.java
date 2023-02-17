@@ -20,7 +20,7 @@ import lector.archivador.DocumentoAnexo;
 import lector.archivador.ProveedorAlmacenDocumentos;
 import lector.constantes.Configurador;
 import lector.dominio.vo.AdjuntoVO;
-import lector.excepciones.SIAException;
+import lector.excepciones.LectorException;
 import lector.servicios.sistema.impl.SiAdjuntoImpl;
 import lector.servicios.sistema.impl.SiParametroImpl;
 import lector.sistema.bean.backing.Sesion;
@@ -68,11 +68,11 @@ public class AbrirArchivo extends HttpServlet {
         try {
             //  Sesion sesion = (Sesion) request.getSession().getAttribute("sesion");
             if (sesion == null) {
-                response.sendRedirect(Configurador.urlSia() + "WebLector");
+                response.sendRedirect(Configurador.urlSistema() + "WebLector");
             } else {
                 // si el managed bean usuario es diferente de null podemos verificar si ya inicio sesion
                 if (sesion.getUsuario() == null) {
-                    response.sendRedirect(Configurador.urlSia() + "WebLector");
+                    response.sendRedirect(Configurador.urlSistema() + "WebLector");
                 } else {
                     // si inicio sesion buscar el convenio q viene en el parametro del servlet
                     String SAId = request.getParameter("ZWZ2W");
@@ -119,7 +119,7 @@ public class AbrirArchivo extends HttpServlet {
                     }
                 } // si usuarioConectado es null el usuario no a iniciado sesion
             } // si el managed bean usuario es null ni si quiera a entrado a la aplicacion
-        } catch (SIAException e) {
+        } catch (LectorException e) {
             LOGGER.error("File : " + fullFilePath, e);
             error = true;
         } catch (IOException e) {

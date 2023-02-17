@@ -16,7 +16,7 @@ import java.util.List;
  *
  * @author b75ckd35th
  */
-public class EmailNotFoundException extends SIAException {
+public class EmailNotFoundException extends LectorException {
 
 //    private List<Usuario> usuarios = new ArrayList<Usuario>();
     private List<String> usuarios = new ArrayList<String>();

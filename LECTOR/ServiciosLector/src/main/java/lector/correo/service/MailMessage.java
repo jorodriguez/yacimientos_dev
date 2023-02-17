@@ -24,7 +24,6 @@ import javax.mail.util.ByteArrayDataSource;
 
 /**
  *
- * @author mrojas
  */
 public class MailMessage {
     private Session sesion;
@@ -64,10 +63,10 @@ public class MailMessage {
      */
     private MimeMessage mensaje;
 
-    public final static String USUARIO_SIA = "SIA";
+    public final static String USUARIO_SISTEMA = "SISTEMA";
     public final static String TAG_LOGO_COMPANY = "<logoCompany>";
     public final static String TAG_LOGO_ESR = "<logoEsr>";
-    public final static String TAG_LOGO_SIA = "<logoSia>";
+    public final static String TAG_LOGO_SISTEMA = "<logoSistema>";
     public final static String TAG_LOGO_WARNING = "<logoWarning>";
     
     
@@ -102,7 +101,7 @@ public class MailMessage {
         mensaje.setSubject(asunto, "utf-8");
             
         // Emisor del mensaje
-        mensaje.setFrom(new InternetAddress(sesion.getProperty("mail.from"), USUARIO_SIA));
+        mensaje.setFrom(new InternetAddress(sesion.getProperty("mail.from"), USUARIO_SISTEMA));
         
         // Cuerpo del correo
         texto.setContent(textoMensaje, "text/html; charset=utf-8");
@@ -131,14 +130,14 @@ public class MailMessage {
         mpRelated.removeBodyPart(partLogoWarning);
         mensaje.removeHeader(TAG_LOGO_COMPANY);
         mensaje.removeHeader(TAG_LOGO_ESR);
-        mensaje.removeHeader(TAG_LOGO_SIA);
+        mensaje.removeHeader(TAG_LOGO_SISTEMA);
         mensaje.removeHeader(TAG_LOGO_WARNING);
     }
     
     public void addLogoSia(final byte[] logoSiaBA) throws MessagingException {
         if(logoSiaBA != null) {
             partLogoSia.setDataHandler(buildDataHandler(logoSiaBA));
-            partLogoSia.setHeader("Content-ID", TAG_LOGO_SIA);
+            partLogoSia.setHeader("Content-ID", TAG_LOGO_SISTEMA);
             mpRelated.addBodyPart(partLogoSia);
         }
     }

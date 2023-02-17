@@ -28,11 +28,11 @@ import javax.inject.Named;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import lector.constantes.Constantes;
+import lector.dominio.modelo.usuario.vo.UsuarioVO;
 import lector.dominio.vo.UsuarioRolVo;
 import lector.modelo.SiUsuarioRol;
 import lector.modelo.Usuario;
-import lector.modelo.usuario.vo.UsuarioGerenciaVo;
-import lector.modelo.usuario.vo.UsuarioVO;
+import lector.modelo.usuario.vo.UsuarioGerenciaDto;
 import lector.servicios.catalogos.impl.UsuarioImpl;
 import lector.servicios.sistema.impl.SiOpcionImpl;
 import lector.servicios.sistema.vo.MenuSiOpcionVo;
@@ -83,7 +83,7 @@ public class UsuarioBean implements Serializable {
     private UsuarioVO usuarioVO; //para la sesion
     @Getter
     @Setter
-    private UsuarioGerenciaVo usuarioGerenciaVo;
+    private UsuarioGerenciaDto usuarioGerenciaVo;
     @Getter
     @Setter
     private DataModel lista;

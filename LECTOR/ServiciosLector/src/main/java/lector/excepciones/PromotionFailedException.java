@@ -10,7 +10,7 @@ package lector.excepciones;
  * 
  * @author esapien
  */
-public class PromotionFailedException extends SIAException {
+public class PromotionFailedException extends LectorException {
     
 
     public PromotionFailedException(String mensaje) {

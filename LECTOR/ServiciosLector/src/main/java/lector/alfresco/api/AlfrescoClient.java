@@ -40,16 +40,12 @@ import lector.alfresco.api.model.ContainerList;
 import lector.alfresco.api.model.NetworkEntry;
 import lector.alfresco.api.model.NetworkList;
 import lector.archivador.DocumentoAnexo;
-import lector.excepciones.SIAException;
+import lector.excepciones.LectorException;
 import lector.util.UtilLog4j;
 
 
 /**
- * Cliente para gestor de contenidos Alfresco. Contiene la funcionalidad
- * necesaria para agregar y eliminar documentos en estructuras de "directorios"
- * gerárquicos.
  *
- * @author mrojas
  */
 public class AlfrescoClient {
 
@@ -81,9 +77,9 @@ public class AlfrescoClient {
      * Permite subir un archivo al gestor documenta.
      *
      * @param documento El documento que vamos a cargar al repositorio
-     * @throws lector.excepciones.SIAException
+     * @throws lector.excepciones.LectorException
      */
-    public void uploadFile(DocumentoAnexo documento) throws SIAException {
+    public void uploadFile(DocumentoAnexo documento) throws LectorException {
 
         LOGGER.info(this,"*** Uploading file to Alfresco repository ...");
         LOGGER.info(this,"*** Path : {0}, Name : {1}, Type : {2}",
@@ -111,7 +107,7 @@ public class AlfrescoClient {
         } catch (IOException ex) {
             LOGGER.error(this,"Saving file : {0}", new Object[]{documento.getNombreBase()}, ex);
 
-            throw new SIAException("Error al guardar el archivo " + documento.getNombreBase() + " : " + ex.getMessage());
+            throw new LectorException("Error al guardar el archivo " + documento.getNombreBase() + " : " + ex.getMessage());
         }
 
     }
@@ -277,9 +273,9 @@ public class AlfrescoClient {
      *
      * @param fullObjectPath La ruta completa del objeto, incluyento su nombre.
      * @return El objeto recuperado si existe, null en caso contrario.
-     * @throws SIAException
+     * @throws LectorException
      */
-    public byte[] getObjectFromPath(String fullObjectPath) throws SIAException {
+    public byte[] getObjectFromPath(String fullObjectPath) throws LectorException {
         byte[] retVal = null;
         CmisObject document = null;
 
@@ -287,7 +283,7 @@ public class AlfrescoClient {
             Folder folder = (Folder) getCmisSession().getObject(getRootFolderId(getSite()));
             document = getObject(folder, fullObjectPath);
         } catch (IOException e) {
-            throw new SIAException(e);
+            throw new LectorException(e);
         }
 
         if (document != null) {

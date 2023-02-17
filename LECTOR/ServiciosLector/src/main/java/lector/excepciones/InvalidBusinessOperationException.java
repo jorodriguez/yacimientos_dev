@@ -15,7 +15,7 @@ package lector.excepciones;
  * 
  * @author esapien
  */
-public class InvalidBusinessOperationException extends SIAException {
+public class InvalidBusinessOperationException extends LectorException {
 
     public InvalidBusinessOperationException() {
     }

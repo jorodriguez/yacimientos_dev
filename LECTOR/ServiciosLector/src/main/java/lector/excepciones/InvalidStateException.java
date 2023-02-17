@@ -14,7 +14,7 @@ package lector.excepciones;
  *
  * @author esapien
  */
-public class InvalidStateException extends SIAException {
+public class InvalidStateException extends LectorException {
 
     public InvalidStateException(String mensaje) {
         super(mensaje);

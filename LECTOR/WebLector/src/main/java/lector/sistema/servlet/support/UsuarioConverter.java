@@ -12,7 +12,7 @@ import javax.faces.convert.ConverterException;
 import javax.faces.convert.FacesConverter;
 import javax.inject.Inject;
 import javax.inject.Named;
-import lector.modelo.usuario.vo.UsuarioVO;
+import lector.dominio.modelo.usuario.vo.UsuarioVO;
 import lector.servicios.catalogos.impl.UsuarioImpl;
 
 /**

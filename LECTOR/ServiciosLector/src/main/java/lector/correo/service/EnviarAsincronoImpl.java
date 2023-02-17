@@ -38,16 +38,14 @@ public class EnviarAsincronoImpl {
     @Inject
     private UsuarioImpl usuarioServicioImpl;
 //
-    @Resource(name = "mail/ihsa")
-    private Session sesionIhsa;
+    //@Resource(name = "mail/sending_resource")
+    private Session sesionEmail;
     //
     private Multipart mpRelated = new MimeMultipart("related");
-    private BodyPart texto = new MimeBodyPart();
-    private MimeBodyPart logoCompany = new MimeBodyPart();
-    private MimeBodyPart logoEsr = new MimeBodyPart();
-    private MimeBodyPart ordenPDF = new MimeBodyPart();
-    private MimeBodyPart ordenPDFCG = new MimeBodyPart();
-    private MimeBodyPart logoSia = new MimeBodyPart();
+    private final BodyPart texto = new MimeBodyPart();
+    private final MimeBodyPart logoCompany = new MimeBodyPart();
+    private final MimeBodyPart logoSecundario = new MimeBodyPart();       
+    private final MimeBodyPart logo = new MimeBodyPart();
     TreeSet noDuplicados = new TreeSet();
     private MimeMessage mensaje; // new MimeMessage(sesion);
 
@@ -59,26 +57,21 @@ public class EnviarAsincronoImpl {
         for (String lista : listaDirecciones) {
             noDuplicados.add(lista.trim());
         }
-//        log("Lista no duplicada ");
-//        for (Iterator it = noDuplicados.iterator(); it.hasNext();) {
-//            String l = (String) it.next();            
-//            log("-------*   "+l);           
-//        }        
         return noDuplicados;
     }
 
     
     public Future<Boolean> enviarCorreoIhsa(String para, String cc, String cco, String asunto, StringBuilder mensaje, byte[] logoCompany, byte[] logoEsr) throws Exception {
-        prepararCorreo(sesionIhsa, para, cc, cco, asunto, mensaje);
+        prepararCorreo(sesionEmail, para, cc, cco, asunto, mensaje);
         procesarLogos(logoCompany, logoEsr);
         Future<Boolean> v = enviar();
         return new AsyncResult<Boolean>(v.get());
     }
 
     
-    public Future<Boolean> enviarCorreoIhsa(String para, String cc, String cco, String asunto, StringBuilder mensaje, byte[] logoSia) {
-        prepararCorreo(sesionIhsa, para, cc, cco, asunto, mensaje);
-        procesarLogos(logoSia);
+    public Future<Boolean> enviarCorreoIhsa(String para, String cc, String cco, String asunto, StringBuilder mensaje, byte[] logoSistema) {
+        prepararCorreo(sesionEmail, para, cc, cco, asunto, mensaje);
+        procesarLogos(logoSistema);
         enviar();
         return new AsyncResult<Boolean>(true);
     }
@@ -92,7 +85,7 @@ public class EnviarAsincronoImpl {
             this.mensaje.setSubject(asunto, "utf-8");
             try {
                 // Emisor del mensaje
-                this.mensaje.setFrom(new InternetAddress(sesion.getProperty("mail.from"), "SIA"));
+                this.mensaje.setFrom(new InternetAddress(sesion.getProperty("mail.from"), "SISTEMA"));
 
             } catch (UnsupportedEncodingException ex) {
                 Logger.getLogger(EnviarCorreoImpl.class.getName()).log(Level.SEVERE, null, ex);
@@ -101,12 +94,12 @@ public class EnviarAsincronoImpl {
             StringBuilder ccoSB = new StringBuilder();
             ccoSB.append(cco);
             if ((para != null && para.isEmpty()) || (cc != null && cc.isEmpty()) || (cco != null && cco.isEmpty())) {
-                Usuario usrSIA = this.usuarioServicioImpl.find("SIA");
-                if (usrSIA != null && usrSIA.getEmail() != null && !usrSIA.getEmail().isEmpty()) {
+                Usuario usuarioSistema = this.usuarioServicioImpl.find(1);
+                if (usuarioSistema != null && usuarioSistema.getEmail() != null && !usuarioSistema.getEmail().isEmpty()) {
                     if (cco == null || cco.isEmpty()) {
-                        ccoSB.append(usrSIA.getEmail());
+                        ccoSB.append(usuarioSistema.getEmail());
                     } else {
-                        ccoSB.append(",").append(usrSIA.getEmail());
+                        ccoSB.append(",").append(usuarioSistema.getEmail());
                     }
                 }
             }
@@ -182,11 +175,11 @@ public class EnviarAsincronoImpl {
             //-- limpiar todo
             this.mpRelated.removeBodyPart(this.texto);
             this.mpRelated.removeBodyPart(this.logoCompany);
-            this.mpRelated.removeBodyPart(this.logoEsr);
-            this.mpRelated.removeBodyPart(this.logoSia);
+            this.mpRelated.removeBodyPart(this.logoSecundario);
+            this.mpRelated.removeBodyPart(this.logo);
             this.mensaje.removeHeader("<logoCompany>");
             this.mensaje.removeHeader("<logoEsr>");
-            this.mensaje.removeHeader("<logoSia>");
+            this.mensaje.removeHeader("<logoSistema>");
         } catch (MessagingException ex) {
             Logger.getLogger(EnviarCorreoImpl.class.getName()).log(Level.SEVERE, null, ex);
             System.err.println(ex.getMessage());
@@ -205,9 +198,9 @@ public class EnviarAsincronoImpl {
             if (logoEsr != null) {
                 // Procesar logo esr
                 DataSource dslogoEsr = new ByteArrayDataSource(logoEsr, "application/octet-stream");
-                this.logoEsr.setDataHandler(new DataHandler(dslogoEsr));
-                this.logoEsr.setHeader("Content-ID", "<logoEsr>");
-                this.mpRelated.addBodyPart(this.logoEsr);
+                this.logoSecundario.setDataHandler(new DataHandler(dslogoEsr));
+                this.logoSecundario.setHeader("Content-ID", "<logoEsr>");
+                this.mpRelated.addBodyPart(this.logoSecundario);
             }
 
         } catch (MessagingException ex) {
@@ -217,42 +210,14 @@ public class EnviarAsincronoImpl {
         }
     }
 
-    private void procesarAdjuntos(byte[] logoCompany, byte[] logoEsr, File pdf, File pdfCG, String compSiglas) {
+    private void procesarLogos(byte[] logoSistema) {
         try {
-            // Procesar logo company
-            procesarLogos(logoCompany, logoEsr);
-
-            if (pdf != null) {
-                DataSource PDFfile = new FileDataSource(pdf);
-                this.ordenPDF.setDataHandler(new DataHandler(PDFfile));
-                this.ordenPDF.setFileName(PDFfile.getName());
-                this.mpRelated.addBodyPart(this.ordenPDF);
-            }
-
-            if (pdfCG != null) {
-                DataSource PDFfileCG = new FileDataSource(pdfCG);
-                this.ordenPDFCG.setDataHandler(new DataHandler(PDFfileCG));
-                StringBuilder fname = new StringBuilder();
-                fname.append("CondicionesGenerales").append(compSiglas).append(".pdf");
-                this.ordenPDFCG.setFileName(fname.toString());
-                this.mpRelated.addBodyPart(this.ordenPDFCG);
-            }
-
-        } catch (MessagingException ex) {
-            this.limpiarElementos();
-            Logger.getLogger(EnviarCorreoImpl.class.getName()).log(Level.SEVERE, null, ex);
-            System.err.println(ex.getMessage());
-        }
-    }
-
-    private void procesarLogos(byte[] logoSia) {
-        try {
-            // Procesar logo Sia
-            if (logoSia != null) {
-                DataSource dslogoSia = new ByteArrayDataSource(logoSia, "application/octet-stream");
-                this.logoSia.setDataHandler(new DataHandler(dslogoSia));
-                this.logoSia.setHeader("Content-ID", "<logoSia>");
-                this.mpRelated.addBodyPart(this.logoSia);
+            // Procesar logo 
+            if (logoSistema != null) {
+                DataSource dslogoSistema = new ByteArrayDataSource(logoSistema, "application/octet-stream");
+                this.logo.setDataHandler(new DataHandler(dslogoSistema));
+                this.logo.setHeader("Content-ID", "<logoSia>");
+                this.mpRelated.addBodyPart(this.logo);
             }
         } catch (MessagingException ex) {
             this.limpiarElementos();

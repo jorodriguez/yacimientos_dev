@@ -15,7 +15,7 @@ package lector.excepciones;
  * 
  * @author esapien
  */
-public class UnavailableItemException extends SIAException {
+public class UnavailableItemException extends LectorException {
 
     public UnavailableItemException() {
     }

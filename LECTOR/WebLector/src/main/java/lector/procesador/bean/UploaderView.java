@@ -28,7 +28,7 @@ import javax.inject.Named;
 import lector.archivador.AlmacenDocumentos;
 import lector.archivador.DocumentoAnexo;
 import lector.archivador.ProveedorAlmacenDocumentos;
-import lector.excepciones.SIAException;
+import lector.excepciones.LectorException;
 import lector.modelo.SiAdjunto;
 import lector.servicios.sistema.impl.SiParametroImpl;
 import lector.sistema.bean.support.FacesUtils;
@@ -152,7 +152,7 @@ public class UploaderView implements Serializable {
 
             fileInfo.delete();
 
-        } catch (IOException | SIAException e) {
+        } catch (IOException | LectorException e) {
             System.out.println(" error al cargar " + e);
             FacesUtils.addInfoMessage("Ocurrió un problema al cargar el archivo, por favor contacte al equipo de soporte SIA (soport@gmail.mx)");
         }
@@ -217,7 +217,7 @@ public class UploaderView implements Serializable {
             
             return true;
 
-        } catch (IOException | SIAException e) {
+        } catch (IOException | LectorException e) {
             System.out.println(" error al cargar " + e);
             FacesUtils.addInfoMessage("Ocurrió un problema al cargar el archivo");
             return false;

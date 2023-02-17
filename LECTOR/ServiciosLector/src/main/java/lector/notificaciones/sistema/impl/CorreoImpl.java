@@ -27,34 +27,17 @@ public class CorreoImpl {
 
     //Servicios
     @Inject
-    private EnviarCorreoImpl enviarCorreoRemote;
-    @Inject
-    private SiPlantillaHtmlImpl plantillaHtmlRemote;
-    @Inject
-    private SiParametroImpl siParametroRemote;
-    @Inject
-    private UsuarioImpl usuarioRemote;
-    //Clases
-    private DecimalFormat formatoMoneda = new DecimalFormat("###,###,###.##");
-    private SimpleDateFormat formatoFecha = new SimpleDateFormat("dd/MM/yyyy");
-    private SimpleDateFormat formatoHora = new SimpleDateFormat("hh:mm a");
-    private SimpleDateFormat formatoFechaLargo = new SimpleDateFormat("dd 'de' MMMMM 'de' yyyy", new Locale("es", "ES"));
-    private String s, f, f1;//, cuerpoMensaje = "";
-    private Integer a;
-    private String copiasOcultas = "";
+    private EnviarCorreoImpl enviarCorreoRemote;    
+    private String s;
 
     
     @Deprecated
     public boolean enviarCorreo(String para, String conCopia, String copiasOcultas, String asunto, boolean formatoHTML, StringBuilder cuerpoDelMensaje, boolean debug) {
-	return this.enviarCorreoRemote.enviarCorreoIhsa(para, conCopia, copiasOcultas, asunto, cuerpoDelMensaje);
+	return this.enviarCorreoRemote.enviarCorreo(para, conCopia, copiasOcultas, asunto, cuerpoDelMensaje);
     }
 
     private boolean enviar(String para, String conCopia, String copiasOcultas, String asunto, StringBuilder mensaje) {
-	return this.enviarCorreoRemote.enviarCorreoIhsa(para, conCopia, copiasOcultas, asunto, mensaje);
-    }
-
-    private boolean enviarOrden(String de, String para, String conCopia, String copiasOcultas, String asunto, StringBuilder mensaje, byte[] logo) {
-	return this.enviarCorreoRemote.enviarCorreoIhsa(para, conCopia, copiasOcultas, asunto, mensaje, logo, null);
+	return this.enviarCorreoRemote.enviarCorreo(para, conCopia, copiasOcultas, asunto, mensaje);
     }
 
     public boolean enviarClave(Usuario para) {

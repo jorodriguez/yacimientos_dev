@@ -11,7 +11,7 @@ package lector.excepciones;
  *
  * @author esapien
  */
-public class InvalidPermissionsException extends SIAException {
+public class InvalidPermissionsException extends LectorException {
 
     public InvalidPermissionsException(String mensaje) {
         super(mensaje);

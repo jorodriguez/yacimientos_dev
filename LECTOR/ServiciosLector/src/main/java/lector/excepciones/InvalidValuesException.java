@@ -8,7 +8,7 @@ package lector.excepciones;
  * 
  * @author esapien
  */
-public class InvalidValuesException extends SIAException {
+public class InvalidValuesException extends LectorException {
     
     public InvalidValuesException() {
     }

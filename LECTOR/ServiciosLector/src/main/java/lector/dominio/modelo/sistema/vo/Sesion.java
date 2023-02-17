@@ -1,4 +1,4 @@
-package lector.modelo.sistema.vo;
+package lector.dominio.modelo.sistema.vo;
 
 import lombok.Builder;
 import lombok.Getter;

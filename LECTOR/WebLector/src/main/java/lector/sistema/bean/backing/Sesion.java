@@ -20,9 +20,9 @@ import javax.inject.Named;
 
 import com.google.api.client.util.Strings;
 import lector.constantes.Constantes;
+import lector.dominio.modelo.usuario.vo.UsuarioVO;
 import lector.dominio.vo.UsuarioRolVo;
 import lector.modelo.Usuario;
-import lector.modelo.usuario.vo.UsuarioVO;
 import lector.servicios.catalogos.impl.UsuarioImpl;
 import lector.servicios.sistema.impl.SiUsuarioRolImpl;
 import lector.servicios.sistema.vo.MenuSiOpcionVo;

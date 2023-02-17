@@ -18,7 +18,7 @@ import javax.persistence.Query;
 import lector.archivador.ProveedorAlmacenDocumentos;
 import lector.constantes.Constantes;
 import lector.dominio.vo.AdjuntoVO;
-import lector.excepciones.SIAException;
+import lector.excepciones.LectorException;
 import lector.modelo.SiAdjunto;
 import lector.modelo.Usuario;
 import lector.sistema.AbstractImpl;
@@ -26,7 +26,6 @@ import lector.util.UtilLog4j;
 
 /**
  *
- * @author sluis
  */
 @Stateless 
 public class SiAdjuntoImpl extends AbstractImpl<SiAdjunto>{
@@ -203,27 +202,27 @@ public class SiAdjuntoImpl extends AbstractImpl<SiAdjunto>{
     }
 
     
-    public SiAdjunto save(String fileName, String absolutePath, String contentType, String tipo, long size, String idUsuario) throws SIAException {
+    public SiAdjunto save(String fileName, String absolutePath, String contentType, String tipo, long size, String idUsuario) throws LectorException {
         UtilLog4j.log.info(this, "SiAdjuntoImpl.save(String fileName, String absolutePath, String contentType, long size, String idUsuario)");
         UUID uuid = UUID.randomUUID();
         return this.save(fileName, absolutePath, contentType, tipo, size, idUsuario, uuid.toString());
     }
 
     
-    public SiAdjunto save(String fileName, String absolutePath, String contentType, long size, String idUsuario) throws SIAException {
+    public SiAdjunto save(String fileName, String absolutePath, String contentType, long size, String idUsuario) throws LectorException {
         UtilLog4j.log.info(this, "SiAdjuntoImpl.save(String fileName, String absolutePath, String contentType, long size, String idUsuario)");
         UUID uuid = UUID.randomUUID();
         return this.save(fileName, absolutePath, contentType, size, idUsuario, uuid.toString());
     }
 
     
-    public SiAdjunto save(String fileName, String absolutePath, String contentType, long size, String idUsuario, String uuid) throws SIAException {
+    public SiAdjunto save(String fileName, String absolutePath, String contentType, long size, String idUsuario, String uuid) throws LectorException {
         UtilLog4j.log.info(this, "SiAdjuntoImpl.save(String fileName, String absolutePath, String contentType, long size, String idUsuario, String uuid)");
         return this.save(fileName, absolutePath, contentType, null, size, idUsuario, uuid);
     }
 
     
-    public SiAdjunto save(String fileName, String absolutePath, String contentType, String tipo, long size, String idUsuario, String uuid) throws SIAException {
+    public SiAdjunto save(String fileName, String absolutePath, String contentType, String tipo, long size, String idUsuario, String uuid) throws LectorException {
         UtilLog4j.log.info(this, "SiAdjuntoImpl.save(String fileName, String absolutePath, String contentType, long size, String idUsuario, String uuid)");
 
         SiAdjunto adjunto = null;
@@ -247,7 +246,7 @@ public class SiAdjuntoImpl extends AbstractImpl<SiAdjunto>{
             super.create(adjunto);
 
         } else {
-            throw new SIAException(SiAdjuntoImpl.class.getName(), "save()",
+            throw new LectorException(SiAdjuntoImpl.class.getName(), "save()",
                     "Faltan parámetros para poder guardar el adjunto",
                     ("Parámetros: fileName: " + fileName
                     + "absolutePath" + absolutePath
@@ -262,7 +261,7 @@ public class SiAdjuntoImpl extends AbstractImpl<SiAdjunto>{
     }
 
     
-    public SiAdjunto update(SiAdjunto adjunto, String idUsuario) throws SIAException {
+    public SiAdjunto update(SiAdjunto adjunto, String idUsuario) throws LectorException {
         UtilLog4j.log.info(this, "SiAdjuntoImpl.update()");
 
         String antesEvento = super.find(adjunto.getId()).toString();
@@ -278,7 +277,7 @@ public class SiAdjuntoImpl extends AbstractImpl<SiAdjunto>{
     }
 
     
-    public SiAdjunto delete(SiAdjunto adjunto, String idUsuario) throws SIAException {
+    public SiAdjunto delete(SiAdjunto adjunto, String idUsuario) throws LectorException {
         UtilLog4j.log.info(this, "SiAdjuntoImpl.delete()");
 
         if (adjunto != null) {
@@ -290,7 +289,7 @@ public class SiAdjuntoImpl extends AbstractImpl<SiAdjunto>{
             adjunto.setGenero(new Usuario(idUsuario));
             super.edit(adjunto);
         } else {
-            throw new SIAException(SiAdjuntoImpl.class.getName(), "save()",
+            throw new LectorException(SiAdjuntoImpl.class.getName(), "save()",
                     "Faltan parámetros para poder guardar el adjunto",
                     ("Parámetros: adjunto: " + (adjunto != null ? adjunto.getId() : null)
                     + "idUsuario" + idUsuario));
@@ -496,7 +495,7 @@ public class SiAdjuntoImpl extends AbstractImpl<SiAdjunto>{
                 archivo.setFechaModifico(new Date());
                 archivo.setHoraModifico(new Date());
                 edit(archivo);
-            } catch (SIAException ex) {
+            } catch (LectorException ex) {
                 Logger.getLogger(SiAdjuntoImpl.class.getName()).log(Level.SEVERE, null, ex);
             }
         } else {

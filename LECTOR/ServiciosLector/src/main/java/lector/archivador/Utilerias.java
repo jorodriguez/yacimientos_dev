@@ -17,7 +17,6 @@ import lector.util.UtilLog4j;
 /**
  * Utilerias para archivos anexos.
  *
- * @author mrojas
  */
 public class Utilerias {
 

@@ -16,7 +16,7 @@ package lector.excepciones;
  *
  * @author b75ckd35th
  */
-public class ItemUsedBySystemException extends SIAException {
+public class ItemUsedBySystemException extends LectorException {
 
     /**
      * Nombre del elemento que ya existe y que provoca la excepción

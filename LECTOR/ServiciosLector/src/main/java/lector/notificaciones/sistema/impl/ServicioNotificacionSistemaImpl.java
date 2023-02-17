@@ -6,7 +6,6 @@ package lector.notificaciones.sistema.impl;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
-import lector.constantes.Constantes;
 import lector.correo.service.EnviarCorreoImpl;
 import lector.servicios.sistema.impl.SiParametroImpl;
 import lector.servicios.sistema.impl.SiUsuarioRolImpl;
@@ -23,27 +22,25 @@ public class ServicioNotificacionSistemaImpl{
     private SiParametroImpl parametrosSistema;
     @Inject
     private EnviarCorreoImpl enviarCorreo;
-    @Inject
-    private SiUsuarioRolImpl usuarioRolRemote;
 
     
     public boolean enviarClave(String nombre, String correo, String clave, String idUsuario) {
-        return this.enviarCorreo.enviarCorreoIhsa(correo, "", "", "Contraseña de usuario", this.html.getHtmlClaveUsuario(nombre, clave, idUsuario), parametrosSistema.find(1).getLogo());
+        return this.enviarCorreo.enviarCorreo(correo, "", "", "Contraseña de usuario", this.html.getHtmlClaveUsuario(nombre, clave, idUsuario), parametrosSistema.find(1).getLogo());
     }
 
     
     public boolean enviarClaveIhsa(String nombre, String correo, String clave) {
-        return this.enviarCorreo.enviarCorreoIhsa(correo, "", "", "Contraseña de usuario", this.html.getHtmlClaveUsuario(nombre), parametrosSistema.find(1).getLogo());
+        return this.enviarCorreo.enviarCorreo(correo, "", "", "Contraseña de usuario", this.html.getHtmlClaveUsuario(nombre), parametrosSistema.find(1).getLogo());
     }
 
     
-    public boolean enviarCorreoCambioClaveIhsa(String nombre, String correo) {
-        return this.enviarCorreo.enviarCorreoIhsa(correo, "siaihsa@ihsa.mx", "", "Cambio de contraseña", this.html.getHtmlClaveUsuario(nombre), parametrosSistema.find(1).getLogo());
+    public boolean enviarCorreoCambioClave(String nombre, String correo) {
+        return this.enviarCorreo.enviarCorreo(correo, "", "", "Cambio de contraseña", this.html.getHtmlClaveUsuario(nombre), parametrosSistema.find(1).getLogo());
     }
 
     
     public boolean enviarReinicioClave(String nombre, String email, String clave, String idUsuario) {
-        return this.enviarCorreo.enviarCorreoIhsa(email, "siaihsa@ihsa.mx", "", "Contraseña de usuario", this.html.getHtmlClaveUsuario(nombre, clave, idUsuario), parametrosSistema.find(1).getLogo());
+        return this.enviarCorreo.enviarCorreo(email, "", "", "Contraseña de usuario", this.html.getHtmlClaveUsuario(nombre, clave, idUsuario), parametrosSistema.find(1).getLogo());
     }
 
     

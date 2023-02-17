@@ -26,14 +26,7 @@ public class Constantes {
     public static final String COMILLA_DOBLE = "\"";
     public static final String COMA_COMILLAS_SIMPLES = "','";
     public static final int CERO = 0;
-    public static final int MENOS_UNO = -1;
-    public static final String CORREO_TODO_IHSA = "Todoihsa@ihsa.mx";
     public static final String NEGRO = "Negro";
-    public static final String HTML_NBSP = "&nbsp;";
-    public static final String RUTA_PUBLICA_SEMAFORO_AMARILLO = Configurador.urlSia() + "resources/img/Amarillo.png";
-    public static final String RUTA_PUBLICA_SEMAFORO_NEGRO = Configurador.urlSia() + "resources/img/Negro.png";
-    public static final String RUTA_PUBLICA_SEMAFORO_ROJO = Configurador.urlSia() + "resources/img/Rojo.png";
-    public static final String RUTA_PUBLICA_SEMAFORO_VERDE = Configurador.urlSia() + "resources/img/Verde.png";
     // caracteres especiales para depurar cadenas antes de su guardardo en base de datos
     public static final String CARACTER_WORD_COMILLA_DOBLE_ABRE = "“";
     public static final String CARACTER_WORD_COMILLA_DOBLE_CIERRA = "”";
@@ -41,63 +34,30 @@ public class Constantes {
     // File sizes used to generate formatted label
     public static final long MEGABYTE_LENGTH_BYTES = 1048000l;
     public static final long KILOBYTE_LENGTH_BYTES = 1024l;
-    /**
-     * Valor : 1 Utilizar para uso general por ejemplo : if(fila ==
-     * Constantes.UNO)..
-     */
-    public static final int UNO = 1;
-    /**
-     * Valor : 2 Utilizar para uso general por ejemplo : if(fila ==
-     * Constantes.UNO)..
-     */
-    public static final int DOS = 2;
     public static final boolean NO_ELIMINADO = BOOLEAN_FALSE;
     public static final boolean ELIMINADO = BOOLEAN_TRUE;
-    /**
-     * Usado para un objeto u elemento que ha sido modificado True
-     */
-    public static final boolean MODIFICADO = BOOLEAN_TRUE;
-    /**
-     * Usado para un objeto u elemento que no ha sido modificado nunca desde su
-     * creacion False
-     */
-    public static final boolean NO_MODIFICADO = BOOLEAN_FALSE;
-    /**
-     * Tipo de Elemento Ayuda (usado para diferenciar los archivos en la tabla
-     * Adjunto)
-     */
-    /**
-     * Correo de ejemplo: ejemplo@ihsa.mx
-     */
     public static final String CORREO_EJEMPLO = "ejemplo@ihsa.mx";
-    public static final int PLANTILLA_HTML_NOTIFICACION_SIA_LOGO_IZQUIERDA_ID = 1;
+    public static final int PLANTILLA_HTML_NOTIFICACION_LOGO_IZQUIERDA_ID = 1;
     public static final int PLANTILLA_HTML_FORMATO_REQUISICIONES_ID = 2;
     public static final int PLANTILLA_HTML_FORMATO_ORDENES_COMPRA_SERVICIO_ID = 3;
     public static final int PLANTILLA_HTML_FORMATO_CONTROL_DE_OFICIOS = 4;
        
-    public static final int ROL_ADMIN_SIA = 33;
-
-    public static final String EXPANDED_ICON = "./xmlhttp/css/xp/css-images/tree_folder_close.gif";
-    /**
-     * Icono de hoja (archivo) en componente ice:tree
-     */
-    public static final String LEAF_ICON = "./xmlhttp/css/xp/css-images/tree_document.gif";
     /**
      * Icono de vídeo wmv
      */
     public static final String ICON_VIDEO_WMV = "./resources/imagenes/icon_video_wmv.png";
     /**
-     * Icono de vídeo wmv para SiaWeb
+     * Icono de vídeo wmv para 
      */
-    public static final String ICON_VIDEO_WMV_SIAWEB = "./resources/SiaWeb/Imagenes/icon_video_wmv.png";
+    public static final String ICON_VIDEO_WMV_WEB = "./resources/SiaWeb/Imagenes/icon_video_wmv.png";
     /**
      * Icono de archivo pdf
      */
     public static final String ICON_PDF = "./resources/imagenes/icon_pdf.png";
     /**
-     * Icono de archivo pdf para SiaWeb
+     * Icono de archivo pdf para 
      */
-    public static final String ICON_PDF_SIAWEB = "./resources/SiaWeb/Imagenes/icon_pdf.png";
+    public static final String ICON_PDF_WEB = "./resources/Imagenes/icon_pdf.png";
     /**
      * Extensión de archivo .pdf
      */
@@ -128,12 +88,6 @@ public class Constantes {
     public static final String CONTENT_TYPE_WMV = "video/x-ms-wmv";
 
     /**
-     * URLs relativos para procesos de redireccionamiento.
-     */
-    public static final String URL_REL_SIA_SIGN_OUT = "/Sia/SingOut";
-    public static final String URL_REL_SIA_PRINCIPAL = "/Sia";
-    
-    /**
      * Path para docroot para deployments con ruta raíz en domain1/
      */
     public static final String PATH_SERVIDOR_DOCROOT = "docroot/";
@@ -158,7 +112,6 @@ public class Constantes {
      * Se usa para ordenar de forma DESCENDENTE los querys
      */
     public static final String ORDER_BY_DESC = "DESC";
-    public static final String ORDENAR_POR_ID = "ID";
     /**
      * Formato para fecha - dd/MM/yyyy Ejemplo: 19/08/2012
      */
@@ -200,11 +153,9 @@ public class Constantes {
      */
     public static final DecimalFormat formatoMoneda = new DecimalFormat("###,###,###.##");
 
-    public static final String USUARIO_PRUEBA = "PRUEBA";
 
     public static final String[] MESES = {"Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"};
-    public static final String DATASOURCE_CONTEXT = "jdbc/__siaPool";
-
+    
     public static final String RUTA_LOCAL_FILES = "/local/files/";
 
     public static final SimpleDateFormat FMT_dd_MM_yyyy = new SimpleDateFormat("dd-MM-yyyy");    

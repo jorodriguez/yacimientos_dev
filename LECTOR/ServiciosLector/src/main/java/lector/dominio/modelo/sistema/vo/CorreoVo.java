@@ -1,6 +1,6 @@
 
 
-package lector.modelo.sistema.vo;
+package lector.dominio.modelo.sistema.vo;
 
 import java.util.Set;
 import lombok.Getter;
@@ -9,7 +9,6 @@ import lombok.Setter;
 /**
  * Contiene los elementos para el envío de un correo.
  *
- * @author esapien
  */
 @Getter
 @Setter

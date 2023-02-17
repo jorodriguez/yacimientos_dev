@@ -7,22 +7,16 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import javax.ejb.Stateless;
-import javax.inject.Inject;
 import javax.persistence.EntityExistsException;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import javax.persistence.TransactionRequiredException;
-import lector.constantes.Constantes;
+import lector.dominio.modelo.sistema.vo.Sesion;
 import lector.modelo.DdSesion;
-import lector.modelo.sistema.vo.Sesion;
 import lector.sistema.AbstractImpl;
 import lector.util.UtilLog4j;
-import org.jooq.DSLContext;
 import org.jooq.exception.DataAccessException;
 
 /**
  * Administración de datos de registro de sesiones de usuarios.
- * @author mrojas
  */
 @Stateless 
 public class DdSesionImpl extends AbstractImpl<DdSesion> {

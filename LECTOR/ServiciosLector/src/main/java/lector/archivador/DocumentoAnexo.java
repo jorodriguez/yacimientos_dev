@@ -1,9 +1,7 @@
 package lector.archivador;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
-import java.net.URLConnection;
 import java.nio.file.Files;
 import java.text.DecimalFormat;
 import java.util.UUID;
@@ -14,13 +12,12 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.tika.Tika;
 import lector.constantes.Constantes;
-import lector.excepciones.SIAException;
+import lector.excepciones.LectorException;
 
 /**
  * Documento para anexar a un repositorio de documentos, ya sea en un sistema de archivos físico o
  * en un sistema de administración de contenidos.
  *
- * @author mrojas
  */
 @Getter
 @Setter
@@ -34,18 +31,18 @@ public class DocumentoAnexo {
     private String uuid;
     private String prettySize;
 
-    public DocumentoAnexo(byte[] contenido) throws SIAException {
+    public DocumentoAnexo(byte[] contenido) throws LectorException {
         if (contenido == null) {
-            throw new SIAException("El contenido para el documento anexo está vacío.");
+            throw new LectorException("El contenido para el documento anexo está vacío.");
         } else {
             this.contenido = contenido;
             extraerInfo();
         }
     }
 
-    public DocumentoAnexo(File file) throws IOException, SIAException {
+    public DocumentoAnexo(File file) throws IOException, LectorException {
         if (file == null) {
-            throw new SIAException("El contenido para el documento anexo es nulo.");
+            throw new LectorException("El contenido para el documento anexo es nulo.");
         } else {
             extraerInfo(file);
         }

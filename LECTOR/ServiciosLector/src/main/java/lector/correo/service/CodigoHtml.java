@@ -7,9 +7,7 @@ package lector.correo.service;
 import java.io.Serializable;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Locale;
-import lector.constantes.Constantes;
 
 /**
  *
@@ -27,30 +25,12 @@ public class CodigoHtml implements Serializable {
     protected SimpleDateFormat formatoFechaLargo = new SimpleDateFormat("dd 'de' MMMMM 'de' yyyy", new Locale("es", "ES"));
     
     //FIXME : las constantes deben estar en mayúsculas
-    protected static final int Plantilla_LogoSIA = 1;
-    protected static final int Plantilla_Requisicion = 2;
-    protected static final int Plantilla_OrdenCompra = 3;
-
+    protected static final int plantilla_LogoSIA = 1;
+    
     private StringBuilder encabezadoHtml, inicioHtml, finHtml = new StringBuilder("");
-    private String autor = "Sistema Integral de Administración";
-    private String descripcion = "Notificaciones, Sistema Integral de Administración";
-    private boolean conEstilo = false;
-    private String estiloCentrado;
-    private String botonConfirmar = "margin:10px;background-color:#0895d6;border:1px solid #999;color:#fff;cursor:pointer;font-size:15px;font-weight:bold;text-decoration: none;";
-    private String botonCancelar = "margin:10px;background-color:#d8e1e6; border:1px solid #999;color:#fff;cursor:pointer;font-size:15px;font-weight:bold;text-decoration: none;";
-    private String estiloTitulo = "border: 1px solid #b5b5b5; font:Arial, Helvetica, sans-serif; font-size:13px; font-weight: bold;text-align: center;";
-    private String estiloContenido = "border: 1px solid #b5b5b5; font:Arial, Helvetica, sans-serif; font-size:13px;";
-    private String estiloTituloTabla = "align=\"center\" style=\"font-family:Georgia, 'Times New Roman', Times, serif; font-weight:bold; color:#FFFFFF; font-size:12px; background-color:#0099FF;\"";
-
-    /**
-     *
-     * \n Nueva línea \t Tabulador \' Comilla simple \" Comilla doble \\ Barra
-     * invertida
-     *
-     */
-    /**
-     * @return the encabezadoHtml
-     */
+    private String autor = "Sistema";
+    private String descripcion = "Notificaciones";
+    
     public StringBuilder getEncabezadoHtml() {
 	this.encabezadoHtml.append("<!DOCTYPE html>");
 	this.encabezadoHtml.append("<html lang=\"es\">");
@@ -61,10 +41,9 @@ public class CodigoHtml implements Serializable {
 	this.encabezadoHtml.append("\"/>");
 	this.encabezadoHtml.append("<meta name=\"description\" content=\" ");
 	this.encabezadoHtml.append(this.descripcion);
-	this.encabezadoHtml.append("\"/>");
-	if (conEstilo) {
+	this.encabezadoHtml.append("\"/>");	
 	    this.encabezadoHtml.append("<style type=\"text/css\">");
-	}
+	
 
 	return encabezadoHtml;
     }
@@ -104,9 +83,7 @@ public class CodigoHtml implements Serializable {
      *
      */
     public StringBuilder getInicioHtml() {
-	if (conEstilo) {
-	    this.inicioHtml.append("</style>");
-	}
+        this.inicioHtml.append("</style>");
 	this.inicioHtml.append("</head>");
 	this.inicioHtml.append("<body>");
 	return this.inicioHtml;
@@ -138,37 +115,6 @@ public class CodigoHtml implements Serializable {
 	return html.toString();
     }
     
-    protected String getMsgH3(String msg) {
-	StringBuilder html = new StringBuilder();
-	html.delete(0, this.cuerpoCorreo.length());
-
-	html.append("<h3 style= \"text-decoration:none; border-bottom: 1px dotted #b5b5b5; color: #004181;padding:0px 12px 0px 12px;\"> ");
-	html.append(msg);
-	html.append("</h3>");
-	
-	html.append("</td>");
-	html.append("</tr>");
-
-	return html.toString();
-    }
-
-    protected String getTituloRojo(String titulo) {
-	StringBuilder html = new StringBuilder();
-	html.delete(0, this.cuerpoCorreo.length());
-//        html.append("<article>");
-	html.append("<header>");
-	html.append("<h3 style= \"text-decoration:none; border-bottom: 1px dotted #b5b5b5; color:Red;padding:0px 12px 0px 12px;\"> ");
-	html.append(titulo);
-	html.append("</h3>");
-	html.append("</header>");
-	html.append("</td>");
-	html.append("</tr>");
-	html.append("<tr>");
-	html.append("<td colspan= \"2\">");
-
-	return html.toString();
-    }
-
     public void limpiarCuerpoCorreo() {
 	this.cuerpoCorreo.delete(0, this.cuerpoCorreo.length());
 	this.f.delete(0, this.f.length());
@@ -192,55 +138,6 @@ public class CodigoHtml implements Serializable {
      */
     public void setDescripcion(String descripcion) {
 	this.descripcion = descripcion;
-    }
-
-    /**
-     * @param conEstilo the conEstilo to set
-     */
-    public void setConEstilo(boolean conEstilo) {
-	this.conEstilo = conEstilo;
-    }
-
-    /**
-     * @return the estiloContenido
-     */
-    public String getEstiloContenido() {
-	return estiloContenido;
-    }
-
-    /**
-     * @param estiloContenido the estiloContenido to set
-     */
-    public void setEstiloContenido(String estiloContenido) {
-	this.estiloContenido = estiloContenido;
-    }
-
-    /**
-     * @return the estiloTitulo
-     */
-    public String getEstiloTitulo() {
-	return estiloTitulo;
-    }
-
-    /**
-     * @param estiloTitulo the estiloTitulo to set
-     */
-    public void setEstiloTitulo(String estiloTitulo) {
-	this.estiloTitulo = estiloTitulo;
-    }
-
-    /**
-     * @return the botonConfirmar
-     */
-    public String getBotonConfirmar() {
-	return botonConfirmar;
-    }
-
-    /**
-     * @param botonConfirmar the botonConfirmar to set
-     */
-    public void setBotonConfirmar(String botonConfirmar) {
-	this.botonConfirmar = botonConfirmar;
     }
 
     public String validarNullHtml(String objeto) {
@@ -289,50 +186,7 @@ public class CodigoHtml implements Serializable {
 	}
     }
 
-    public String getInicioPlantilaAsignacion() {
-	StringBuilder inicioPlantilla = new StringBuilder();
-	inicioPlantilla.append("");
-	inicioPlantilla.append("<!DOCTYPE html>");
-	inicioPlantilla.append("<html>");
-	inicioPlantilla.append("<head>");
-	inicioPlantilla.append("<meta charset=\"utf-8\" />");
-	inicioPlantilla.append("<meta name=\"author\" content=\"jcarranza\"/>");
-	inicioPlantilla.append("<meta name=\"description\" content=\"Requsición\"/>");
-	inicioPlantilla.append("<title>Notificación</title>");
-	inicioPlantilla.append("</head>");
-	inicioPlantilla.append("<body style=\"font-family:Verdana,Arial,lucida,sans-serif; font-size:12px; margin:10px auto\" fpstyle=\"1\" ocsi=\"1\">");
-	inicioPlantilla.append("<br>");
-	inicioPlantilla.append("<br>");
-	inicioPlantilla.append("<br>");
-	inicioPlantilla.append("<br>");
-	inicioPlantilla.append("<table width=\"95%\" cellspacing=\"0\" cellpadding=\"0\" align=\"center\">");
-	inicioPlantilla.append("@@1@@");
-	inicioPlantilla.append("<tr>");
-	inicioPlantilla.append("<td colspan=\"3\">");
-	inicioPlantilla.append("<table width=\"95%\" border=\"0\" align=\"center\" style=\"background-color:#fefefe; border:1px solid #A8CEF0; padding:0px 5px 5px 5px; word-spacing:2px\">");
-	inicioPlantilla.append("<tr>");
-	inicioPlantilla.append("<td colspan=\"3\">");
-	inicioPlantilla.append("<center><br>");
-	inicioPlantilla.append("<br>");
-	inicioPlantilla.append("<table width=\"95%\" style=\"font-family:Gill,Helvetica,sans-serif; font-size:12px\">");
-	inicioPlantilla.append("<tr>");
-	inicioPlantilla.append("<td style=\"text-align:center; width:15%;\"> <img src='cid:logoCompany' width='95px' height='45px;'  />  </td>");
-	inicioPlantilla.append("<td style=\"text-align:center; width:70%;\"><h4>@@2@@</h4></td>");
-	inicioPlantilla.append("<td style=\"text-align:center; width:15%;\"> <img src='cid:logoEsr' width='95px' height='45px;' />  </td>");
-	inicioPlantilla.append("</tr>");
-	inicioPlantilla.append("</table>");
-	inicioPlantilla.append("</center>");
-	inicioPlantilla.append("</td>");
-	inicioPlantilla.append("</tr>");
-	return inicioPlantilla.toString();
-    }
 
-    /**
-     * @return the estiloTituloTabla
-     */
-    public String getEstiloTituloTabla() {
-	return estiloTituloTabla;
-    } 
     public String getEncabezado() {
         return encabezado;
     }
@@ -345,18 +199,5 @@ public class CodigoHtml implements Serializable {
         return htmlPie;
     }
 
-    /**
-     * @return the botonCancelar
-     */
-    public String getBotonCancelar() {
-        return botonCancelar;
-    }
-
-    /**
-     * @param botonCancelar the botonCancelar to set
-     */
-    public void setBotonCancelar(String botonCancelar) {
-        this.botonCancelar = botonCancelar;
-    }
 
 }

@@ -11,7 +11,7 @@ package lector.excepciones;
  * 
  * @author esapien
  */
-public class InvalidFileTypeException extends SIAException {
+public class InvalidFileTypeException extends LectorException {
 
     public InvalidFileTypeException() {
     }

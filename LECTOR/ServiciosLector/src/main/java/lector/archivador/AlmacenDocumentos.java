@@ -1,20 +1,19 @@
 package lector.archivador;
 
-import lector.excepciones.SIAException;
+import lector.excepciones.LectorException;
 
 /**
  * Almacén de documentos anexos.
- * @author mrojas
  */
 public abstract class AlmacenDocumentos {
     
     private String raizAlmacen = "/";
     
-    public abstract void guardarDocumento(DocumentoAnexo documento) throws SIAException;
-    public abstract void borrarDocumento(DocumentoAnexo documento) throws SIAException;
-    public abstract void borrarDocumento(String rutaCompleta) throws SIAException;
-    public abstract DocumentoAnexo cargarDocumento(String rutaCompleta) throws SIAException;
-    public abstract void moverDocumento(DocumentoAnexo documento, String nuevaRuta) throws SIAException;
+    public abstract void guardarDocumento(DocumentoAnexo documento) throws LectorException;
+    public abstract void borrarDocumento(DocumentoAnexo documento) throws LectorException;
+    public abstract void borrarDocumento(String rutaCompleta) throws LectorException;
+    public abstract DocumentoAnexo cargarDocumento(String rutaCompleta) throws LectorException;
+    public abstract void moverDocumento(DocumentoAnexo documento, String nuevaRuta) throws LectorException;
     
     public String getRaizAlmacen() {
         return raizAlmacen;
