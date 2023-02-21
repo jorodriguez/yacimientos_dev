@@ -190,20 +190,10 @@ public class Sesion implements Serializable {
         usuarioVo.setNombre(u.getNombre());
         usuarioVo.setClave(u.getClave());
         usuarioVo.setPuesto("Puesto");
-        usuarioVo.setMail(u.getEmail());
-        usuarioVo.setDestinatarios(u.getDestinatarios());
-        usuarioVo.setRfc(u.getRfc());
+        usuarioVo.setMail(u.getEmail());                
         usuarioVo.setTelefono(u.getTelefono());
-        usuarioVo.setExtension(u.getExtension());
-        usuarioVo.setCelular(u.getCelular());
         usuarioVo.setSexo(u.getSexo());
         
-        usuarioVo.setActivo(u.isActivo());
-        usuarioVo.setPregunta(u.getPreguntaSecreta());
-        usuarioVo.setRespuesta(u.getRespuestaPreguntaSecreta());
-        
-        usuarioVo.setFechaIngreso(u.getFechaIngreso());
-
         usuarioVo.setAdministraTI(false);
         
         listaMenu = null;

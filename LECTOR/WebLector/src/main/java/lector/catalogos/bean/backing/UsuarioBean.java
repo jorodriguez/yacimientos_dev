@@ -152,7 +152,7 @@ public class UsuarioBean implements Serializable {
 
     }
 
-    public List<MenuSiOpcionVo> taerListaMenu(Integer modulo, String usrID, int campo) {
+    public List<MenuSiOpcionVo> taerListaMenu(Integer modulo, Integer usrID, int campo) {
         listaMenu = new ArrayList<>();
 
         try {
@@ -197,7 +197,7 @@ public class UsuarioBean implements Serializable {
 
     }
 
-    public List<UsuarioRolVo> traerRolesPorUsuario(String idUsuario, int modulo, int idCamp) {
+    public List<UsuarioRolVo> traerRolesPorUsuario(Integer idUsuario, int modulo, int idCamp) {
         List<UsuarioRolVo> ur = null;
         try {
             //ur = SiUsuarioRol.traerRolPorUsuarioModulo(idUsuario, modulo, idCamp);

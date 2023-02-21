@@ -189,7 +189,7 @@ public class SiOpcionImpl extends AbstractImpl<SiOpcion> {
 
     }
 
-    public List<MenuSiOpcionVo> getListaMenu(int idSiModulo, String usrID, int campo) {
+    public List<MenuSiOpcionVo> getListaMenu(int idSiModulo, Integer usrID, int campo) {
         StringBuilder q = new StringBuilder();
         q.append(" select a.ID, a.SI_MODULO, ro.SI_ROL, a.NOMBRE, aa.ID, aa.SI_MODULO, aa.SI_OPCION, aa.NOMBRE, aa.PAGINA, aa.ESTATUS_CONTAR ,aa.POSICION, aa.PAGINALISTENER ")
                 .append(" from SI_REL_ROL_OPCION ro  ")
@@ -204,7 +204,7 @@ public class SiOpcionImpl extends AbstractImpl<SiOpcion> {
         if (idSiModulo > 0) {
             q.append(" and a.SI_MODULO =  ").append(idSiModulo);
         }
-        if (usrID != null && !usrID.isEmpty()) {
+        if (usrID != null) {
             q.append(" and ur.USUARIO = '").append(usrID).append("'");
         }
 

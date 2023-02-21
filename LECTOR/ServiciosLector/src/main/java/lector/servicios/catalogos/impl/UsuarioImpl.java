@@ -309,7 +309,7 @@ public class UsuarioImpl extends AbstractImpl<Usuario> {
         return v;
     }
 
-    public boolean cambioContrasenia(String usuario, String c, String confirmarPassword) {
+    public boolean cambioContrasenia(Integer usuario, String c, String confirmarPassword) {
         boolean v;
         Usuario u = find(usuario);
 
@@ -388,7 +388,7 @@ public class UsuarioImpl extends AbstractImpl<Usuario> {
         return retVal;
     }
 
-    public boolean reinicioClave(String sesion, String idUser) {
+    public boolean reinicioClave(Integer sesion, Integer idUser) {
         boolean v;
         Usuario usuario = find(idUser);
         int clave = generaClave();
