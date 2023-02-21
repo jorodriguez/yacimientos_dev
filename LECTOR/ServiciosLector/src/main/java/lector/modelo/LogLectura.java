@@ -6,7 +6,6 @@ package lector.modelo;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.List;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -17,7 +16,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -27,8 +25,8 @@ import javax.persistence.TemporalType;
  * @author jorodriguez
  */
 @Entity
-@Table(name = "si_adjunto")
-public class SiAdjunto implements Serializable {
+@Table(name = "log_lectura")
+public class LogLectura implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -36,18 +34,11 @@ public class SiAdjunto implements Serializable {
     @Basic(optional = false)
     @Column(name = "id")
     private Integer id;
-    @Column(name = "uuid")
-    private String uuid;
-    @Column(name = "nombre")
-    private String nombre;
-    @Column(name = "descripcion")
-    private String descripcion;
-    @Column(name = "tipo_archivo")
-    private String tipoArchivo;
-    @Column(name = "peso")
-    private String peso;
-    @Column(name = "url")
-    private String url;
+    @Column(name = "foto")
+    private String foto;
+    @Basic(optional = false)
+    @Column(name = "lectura")
+    private String lectura;
     @Basic(optional = false)
     @Column(name = "fecha_genero")
     @Temporal(TemporalType.TIMESTAMP)
@@ -57,8 +48,6 @@ public class SiAdjunto implements Serializable {
     private Date fechaModifico;
     @Column(name = "eliminado")
     private Boolean eliminado;
-    @OneToMany(mappedBy = "siAdjunto")
-    private List<Usuario> usuarioList;
     @JoinColumn(name = "c_cuenta", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private CCuenta cCuenta;
@@ -68,16 +57,20 @@ public class SiAdjunto implements Serializable {
     @JoinColumn(name = "modifico", referencedColumnName = "id")
     @ManyToOne
     private Usuario modifico;
+    @JoinColumn(name = "usuario", referencedColumnName = "id")
+    @ManyToOne(optional = false)
+    private Usuario usuario;
 
-    public SiAdjunto() {
+    public LogLectura() {
     }
 
-    public SiAdjunto(Integer id) {
+    public LogLectura(Integer id) {
         this.id = id;
     }
 
-    public SiAdjunto(Integer id, Date fechaGenero) {
+    public LogLectura(Integer id, String lectura, Date fechaGenero) {
         this.id = id;
+        this.lectura = lectura;
         this.fechaGenero = fechaGenero;
     }
 
@@ -89,52 +82,20 @@ public class SiAdjunto implements Serializable {
         this.id = id;
     }
 
-    public String getUuid() {
-        return uuid;
+    public String getFoto() {
+        return foto;
     }
 
-    public void setUuid(String uuid) {
-        this.uuid = uuid;
+    public void setFoto(String foto) {
+        this.foto = foto;
     }
 
-    public String getNombre() {
-        return nombre;
+    public String getLectura() {
+        return lectura;
     }
 
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
-    }
-
-    public String getDescripcion() {
-        return descripcion;
-    }
-
-    public void setDescripcion(String descripcion) {
-        this.descripcion = descripcion;
-    }
-
-    public String getTipoArchivo() {
-        return tipoArchivo;
-    }
-
-    public void setTipoArchivo(String tipoArchivo) {
-        this.tipoArchivo = tipoArchivo;
-    }
-
-    public String getPeso() {
-        return peso;
-    }
-
-    public void setPeso(String peso) {
-        this.peso = peso;
-    }
-
-    public String getUrl() {
-        return url;
-    }
-
-    public void setUrl(String url) {
-        this.url = url;
+    public void setLectura(String lectura) {
+        this.lectura = lectura;
     }
 
     public Date getFechaGenero() {
@@ -161,14 +122,6 @@ public class SiAdjunto implements Serializable {
         this.eliminado = eliminado;
     }
 
-    public List<Usuario> getUsuarioList() {
-        return usuarioList;
-    }
-
-    public void setUsuarioList(List<Usuario> usuarioList) {
-        this.usuarioList = usuarioList;
-    }
-
     public CCuenta getCCuenta() {
         return cCuenta;
     }
@@ -193,6 +146,14 @@ public class SiAdjunto implements Serializable {
         this.modifico = modifico;
     }
 
+    public Usuario getUsuario() {
+        return usuario;
+    }
+
+    public void setUsuario(Usuario usuario) {
+        this.usuario = usuario;
+    }
+
     @Override
     public int hashCode() {
         int hash = 0;
@@ -203,10 +164,10 @@ public class SiAdjunto implements Serializable {
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof SiAdjunto)) {
+        if (!(object instanceof LogLectura)) {
             return false;
         }
-        SiAdjunto other = (SiAdjunto) object;
+        LogLectura other = (LogLectura) object;
         if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }
@@ -215,7 +176,7 @@ public class SiAdjunto implements Serializable {
 
     @Override
     public String toString() {
-        return "mx.ihsa.mavenproject1.SiAdjunto[ id=" + id + " ]";
+        return "mx.ihsa.mavenproject1.LogLectura[ id=" + id + " ]";
     }
     
 }

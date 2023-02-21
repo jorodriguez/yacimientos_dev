@@ -9,8 +9,6 @@ import java.util.Date;
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import lector.constantes.Constantes;
 import lector.dominio.vo.SiRelRolOpcionVO;
 import lector.modelo.SiOpcion;
@@ -81,7 +79,6 @@ public class SiRelRolOpcionImpl extends AbstractImpl<SiRelRolOpcion>{
 	           SiRelRolOpcion rolOpcion = find(relRolOpcion.id);
 
 	    rolOpcion.setEliminado(Constantes.BOOLEAN_FALSE);
-	    rolOpcion.setHoraModifico(new Date());
 	    rolOpcion.setFechaModifico(new Date());
 
 	    edit(rolOpcion);
@@ -95,7 +92,6 @@ public class SiRelRolOpcionImpl extends AbstractImpl<SiRelRolOpcion>{
 	    rro.setSiOpcion(o);
 	    rro.setEliminado(Constantes.BOOLEAN_FALSE);
 	    rro.setFechaGenero(new Date());
-	    rro.setHoraGenero(new Date());
 	    rro.setGenero(new Usuario(Constantes.USUARIO_DEFAULT));
 	    rro.setModifico(new Usuario(Constantes.USUARIO_DEFAULT));
 	    create(rro);

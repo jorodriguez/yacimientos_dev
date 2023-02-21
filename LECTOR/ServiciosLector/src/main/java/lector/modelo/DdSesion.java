@@ -1,3 +1,7 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
 package lector.modelo;
 
 import java.io.Serializable;
@@ -8,51 +12,29 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.Lob;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.SequenceGenerator;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
-import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
- * @author mrojas
+ * @author jorodriguez
  */
 @Entity
 @Table(name = "dd_sesion")
-@SequenceGenerator(sequenceName = "dd_sesion_id_seq", name = "dd_sesion_seq", allocationSize = 1)
-@XmlRootElement
-@NamedQueries({
-    @NamedQuery(name = "DdSesion.findAll", query = "SELECT d FROM DdSesion d")
-    , @NamedQuery(name = "DdSesion.findById", query = "SELECT d FROM DdSesion d WHERE d.id = :id")
-    , @NamedQuery(name = "DdSesion.findBySesionId", query = "SELECT d FROM DdSesion d WHERE d.sesionId = :sesionId")
-    , @NamedQuery(name = "DdSesion.findByFechaInicio", query = "SELECT d FROM DdSesion d WHERE d.fechaInicio = :fechaInicio")
-    , @NamedQuery(name = "DdSesion.findByFechaFin", query = "SELECT d FROM DdSesion d WHERE d.fechaFin = :fechaFin")
-    , @NamedQuery(name = "DdSesion.findByPuntoAcceso", query = "SELECT d FROM DdSesion d WHERE d.puntoAcceso = :puntoAcceso")
-    , @NamedQuery(name = "DdSesion.findByFechaGenero", query = "SELECT d FROM DdSesion d WHERE d.fechaGenero = :fechaGenero")
-    , @NamedQuery(name = "DdSesion.findByHoraGenero", query = "SELECT d FROM DdSesion d WHERE d.horaGenero = :horaGenero")
-    , @NamedQuery(name = "DdSesion.findByFechaModifico", query = "SELECT d FROM DdSesion d WHERE d.fechaModifico = :fechaModifico")
-    , @NamedQuery(name = "DdSesion.findByHoraModifico", query = "SELECT d FROM DdSesion d WHERE d.horaModifico = :horaModifico")
-    , @NamedQuery(name = "DdSesion.findByEliminado", query = "SELECT d FROM DdSesion d WHERE d.eliminado = :eliminado")})
 public class DdSesion implements Serializable {
-
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
+    @Column(name = "id")
     private Integer id;
     @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 64)
     @Column(name = "sesion_id")
     private String sesionId;
     @Basic(optional = false)
-    @NotNull
     @Column(name = "fecha_inicio")
     @Temporal(TemporalType.TIMESTAMP)
     private Date fechaInicio;
@@ -60,44 +42,29 @@ public class DdSesion implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date fechaFin;
     @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 64)
     @Column(name = "punto_acceso")
     private String puntoAcceso;
     @Basic(optional = false)
-    @NotNull
     @Column(name = "datos_cliente")
     private String datosCliente;
     @Basic(optional = false)
-    @NotNull
     @Column(name = "fecha_genero")
-    @Temporal(TemporalType.DATE)
+    @Temporal(TemporalType.TIMESTAMP)
     private Date fechaGenero;
-    @Basic(optional = false)
-    @NotNull
-    @Column(name = "hora_genero")
-    @Temporal(TemporalType.TIME)
-    private Date horaGenero;
     @Column(name = "fecha_modifico")
-    @Temporal(TemporalType.DATE)
+    @Temporal(TemporalType.TIMESTAMP)
     private Date fechaModifico;
-    @Column(name = "hora_modifico")
-    @Temporal(TemporalType.TIME)
-    private Date horaModifico;
-    @Basic(optional = false)
-    @NotNull
-    private boolean eliminado;
-    
-    @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 20)
-    @Column(name = "genero")
-    private String genero;
-    
-    
-    @Column(name = "modifico")
-    private String modifico;
-    
+    @Column(name = "eliminado")
+    private Boolean eliminado;
+    @JoinColumn(name = "c_cuenta", referencedColumnName = "id")
+    @ManyToOne(optional = false)
+    private CCuenta cCuenta;
+    @JoinColumn(name = "genero", referencedColumnName = "id")
+    @ManyToOne(optional = false)
+    private Usuario genero;
+    @JoinColumn(name = "modifico", referencedColumnName = "id")
+    @ManyToOne
+    private Usuario modifico;
 
     public DdSesion() {
     }
@@ -106,15 +73,13 @@ public class DdSesion implements Serializable {
         this.id = id;
     }
 
-    public DdSesion(Integer id, String sesionId, Date fechaInicio, String puntoAcceso, String datosCliente, Date fechaGenero, Date horaGenero, boolean eliminado) {
+    public DdSesion(Integer id, String sesionId, Date fechaInicio, String puntoAcceso, String datosCliente, Date fechaGenero) {
         this.id = id;
         this.sesionId = sesionId;
         this.fechaInicio = fechaInicio;
         this.puntoAcceso = puntoAcceso;
         this.datosCliente = datosCliente;
         this.fechaGenero = fechaGenero;
-        this.horaGenero = horaGenero;
-        this.eliminado = eliminado;
     }
 
     public Integer getId() {
@@ -157,7 +122,7 @@ public class DdSesion implements Serializable {
         this.puntoAcceso = puntoAcceso;
     }
 
-    public Object getDatosCliente() {
+    public String getDatosCliente() {
         return datosCliente;
     }
 
@@ -173,14 +138,6 @@ public class DdSesion implements Serializable {
         this.fechaGenero = fechaGenero;
     }
 
-    public Date getHoraGenero() {
-        return horaGenero;
-    }
-
-    public void setHoraGenero(Date horaGenero) {
-        this.horaGenero = horaGenero;
-    }
-
     public Date getFechaModifico() {
         return fechaModifico;
     }
@@ -189,52 +146,46 @@ public class DdSesion implements Serializable {
         this.fechaModifico = fechaModifico;
     }
 
-    public Date getHoraModifico() {
-        return horaModifico;
-    }
-
-    public void setHoraModifico(Date horaModifico) {
-        this.horaModifico = horaModifico;
-    }
-
-    public boolean getEliminado() {
+    public Boolean getEliminado() {
         return eliminado;
     }
 
-    public void setEliminado(boolean eliminado) {
+    public void setEliminado(Boolean eliminado) {
         this.eliminado = eliminado;
     }
 
-    
-    public String getGenero() {
+    public CCuenta getCCuenta() {
+        return cCuenta;
+    }
+
+    public void setCCuenta(CCuenta cCuenta) {
+        this.cCuenta = cCuenta;
+    }
+
+    public Usuario getGenero() {
         return genero;
     }
 
-    public void setGenero(String genero) {
+    public void setGenero(Usuario genero) {
         this.genero = genero;
     }
 
-    public String getModifico() {
+    public Usuario getModifico() {
         return modifico;
     }
 
-    public void setModifico(String modifico) {
+    public void setModifico(Usuario modifico) {
         this.modifico = modifico;
     }
-    
-    
-    
-    
-    
 
-    
+    @Override
     public int hashCode() {
         int hash = 0;
         hash += (id != null ? id.hashCode() : 0);
         return hash;
     }
 
-    
+    @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof DdSesion)) {
@@ -247,9 +198,9 @@ public class DdSesion implements Serializable {
         return true;
     }
 
-    
+    @Override
     public String toString() {
-        return "sia.modelo.DdSesion[ id=" + id + " ]";
+        return "mx.ihsa.mavenproject1.DdSesion[ id=" + id + " ]";
     }
     
 }

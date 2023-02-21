@@ -11,6 +11,7 @@ import javax.persistence.EntityExistsException;
 import javax.persistence.TransactionRequiredException;
 import lector.dominio.modelo.sistema.vo.Sesion;
 import lector.modelo.DdSesion;
+import lector.modelo.Usuario;
 import lector.sistema.AbstractImpl;
 import lector.util.UtilLog4j;
 import org.jooq.exception.DataAccessException;
@@ -70,10 +71,9 @@ public class DdSesionImpl extends AbstractImpl<DdSesion> {
             ddSesion.setDatosCliente(sesion.getDatosCliente());
             ddSesion.setFechaInicio(Timestamp.valueOf(LocalDateTime.now()));
             ddSesion.setPuntoAcceso(sesion.getPuntoAcceso());
-            ddSesion.setGenero(sesion.getGenero());
+            ddSesion.setGenero(new Usuario(sesion.getGenero()));
             ddSesion.setFechaGenero(Date.valueOf(LocalDate.now()));
-            ddSesion.setHoraGenero(Time.valueOf(LocalTime.now()));
-
+            
             create(ddSesion);
         } catch (EntityExistsException | TransactionRequiredException e) {
             log.warn(this, "*** Al guardar los datos de la sesion: {0}", new Object[]{sesion}, e);
@@ -81,7 +81,7 @@ public class DdSesionImpl extends AbstractImpl<DdSesion> {
     }
     
     
-    public void registrarSalida(String sesionId, String usuario) {
+    public void registrarSalida(String sesionId, Integer usuario) {
         DdSesion sesion = findBySesionId(sesionId);
         
         if(sesion == null) {
@@ -89,10 +89,9 @@ public class DdSesionImpl extends AbstractImpl<DdSesion> {
         } else {
             try {
                 sesion.setFechaFin(Timestamp.valueOf(LocalDateTime.now()));
-                sesion.setModifico(usuario);
+                sesion.setModifico(new Usuario(usuario));
                 sesion.setFechaModifico(Date.valueOf(LocalDate.now()));
-                sesion.setHoraModifico(Time.valueOf(LocalTime.now()));
-
+                
                 edit(sesion);
             } catch(IllegalArgumentException | TransactionRequiredException e) {
                 log.warn(this, "*** No fue posible registrar la salida de la sesión {0}", new Object[]{sesionId}, e);

@@ -16,7 +16,7 @@ public class Sesion {
     private int id;
     private String sesionId;
     private String datosCliente;
-    private String genero;
-    private String modifico;
+    private Integer genero;
+    private Integer modifico;
     private String puntoAcceso;
 }

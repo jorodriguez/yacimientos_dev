@@ -1,83 +1,82 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package lector.modelo;
 
 import java.io.Serializable;
-import java.util.Collection;
 import java.util.Date;
-import javax.persistence.*;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+import java.util.List;
+import javax.persistence.Basic;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 /**
  *
- * @author sluis
+ * @author jorodriguez
  */
 @Entity
-@Table(name = "SI_OPCION")
-@SequenceGenerator(sequenceName = "si_opcion_id_seq", name = "si_opcion_seq", allocationSize = 1)
-@NamedQueries({
-    @NamedQuery(name = "SiOpcion.findAll", query = "SELECT s FROM SiOpcion s")})
+@Table(name = "si_opcion")
 public class SiOpcion implements Serializable {
-    
+
     private static final long serialVersionUID = 1L;
     @Id
-@GeneratedValue(generator =  "si_opcion_seq", strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
-    
-    @Column(name = "ID")
+    @Column(name = "id")
     private Integer id;
-    @Size(max = 64)
-    @Column(name = "NOMBRE")
+    @Column(name = "nombre")
     private String nombre;
-    @Size(max = 256)
-    @Column(name = "PAGINA")
+    @Column(name = "pagina")
     private String pagina;
-    @Size(max = 256)
-    @Column(name = "PAGINALISTENER")
-    private String paginaListener;
-    
-    @Column(name = "ELIMINADO")
-    private boolean eliminado;
-    
-    @Column(name = "ESTATUS_CONTAR")
-    private Integer estatusContar;
-    
-    @JoinColumn(name = "GENERO", referencedColumnName = "ID" )
-    @ManyToOne
-    private Usuario genero;
-
-    @Column(name =     "FECHA_GENERO")
-    @Temporal(TemporalType.DATE)
-    private Date fechaGenero;
-    @Column(name =     "HORA_GENERO")
-    @Temporal(TemporalType.TIME)
-    private Date horaGenero;
-    @Column(name =     "FECHA_MODIFICO")
-    @Temporal(TemporalType.DATE)
-    private Date fechaModifico;
-    @Column(name =     "HORA_MODIFICO")
-    @Temporal(TemporalType.TIME)
-    private Date horaModifico;
-    @Column(name = "POSICION")
+    @Column(name = "posicion")
     private Integer posicion;
-    
-    @JoinColumn(name = "MODIFICO", referencedColumnName = "ID")
+    @Column(name = "paginalistener")
+    private String paginalistener;
+    @Column(name = "icono")
+    private String icono;
+    @Basic(optional = false)
+    @Column(name = "fecha_genero")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date fechaGenero;
+    @Column(name = "fecha_modifico")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date fechaModifico;
+    @Column(name = "eliminado")
+    private Boolean eliminado;
+    @JoinColumn(name = "si_modulo", referencedColumnName = "id")
+    @ManyToOne
+    private SiModulo siModulo;
+    @JoinColumn(name = "si_opcion", referencedColumnName = "id")
+    @ManyToOne
+    private SiModulo siOpcion;
+    @JoinColumn(name = "genero", referencedColumnName = "id")
+    @ManyToOne(optional = false)
+    private Usuario genero;
+    @JoinColumn(name = "modifico", referencedColumnName = "id")
     @ManyToOne
     private Usuario modifico;
-    @OneToMany(mappedBy = "siOpcion")
-    private Collection<SiOpcion> siOpcionCollection;
-    @JoinColumn(name = "SI_OPCION", referencedColumnName = "ID")
-    @ManyToOne
-    private SiOpcion siOpcion;
-    
+
     public SiOpcion() {
     }
 
     public SiOpcion(Integer id) {
         this.id = id;
+    }
+
+    public SiOpcion(Integer id, Date fechaGenero) {
+        this.id = id;
+        this.fechaGenero = fechaGenero;
     }
 
     public Integer getId() {
@@ -104,6 +103,30 @@ public class SiOpcion implements Serializable {
         this.pagina = pagina;
     }
 
+    public Integer getPosicion() {
+        return posicion;
+    }
+
+    public void setPosicion(Integer posicion) {
+        this.posicion = posicion;
+    }
+
+    public String getPaginalistener() {
+        return paginalistener;
+    }
+
+    public void setPaginalistener(String paginalistener) {
+        this.paginalistener = paginalistener;
+    }
+
+    public String getIcono() {
+        return icono;
+    }
+
+    public void setIcono(String icono) {
+        this.icono = icono;
+    }
+
     public Date getFechaGenero() {
         return fechaGenero;
     }
@@ -112,20 +135,36 @@ public class SiOpcion implements Serializable {
         this.fechaGenero = fechaGenero;
     }
 
-    public Date getHoraGenero() {
-        return horaGenero;
+    public Date getFechaModifico() {
+        return fechaModifico;
     }
 
-    public void setHoraGenero(Date horaGenero) {
-        this.horaGenero = horaGenero;
+    public void setFechaModifico(Date fechaModifico) {
+        this.fechaModifico = fechaModifico;
     }
 
-    public boolean isEliminado() {
+    public Boolean getEliminado() {
         return eliminado;
     }
 
-    public void setEliminado(boolean eliminado) {
+    public void setEliminado(Boolean eliminado) {
         this.eliminado = eliminado;
+    }
+
+    public SiModulo getSiModulo() {
+        return siModulo;
+    }
+
+    public void setSiModulo(SiModulo siModulo) {
+        this.siModulo = siModulo;
+    }
+
+    public SiModulo getSiOpcion() {
+        return siOpcion;
+    }
+
+    public void setSiOpcion(SiModulo siOpcion) {
+        this.siOpcion = siOpcion;
     }
 
     public Usuario getGenero() {
@@ -136,15 +175,23 @@ public class SiOpcion implements Serializable {
         this.genero = genero;
     }
 
+    public Usuario getModifico() {
+        return modifico;
+    }
 
-    
+    public void setModifico(Usuario modifico) {
+        this.modifico = modifico;
+    }
+
+
+    @Override
     public int hashCode() {
         int hash = 0;
         hash += (id != null ? id.hashCode() : 0);
         return hash;
     }
 
-    
+    @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof SiOpcion)) {
@@ -157,87 +204,9 @@ public class SiOpcion implements Serializable {
         return true;
     }
 
-    
+    @Override
     public String toString() {
-        return "sia.modelo.SiOpcion[ id=" + id + " ]";
+        return "mx.ihsa.mavenproject1.SiOpcion[ id=" + id + " ]";
     }
-
-
-    public Date getFechaModifico() {
-        return fechaModifico;
-    }
-
-    public void setFechaModifico(Date fechaModifico) {
-        this.fechaModifico = fechaModifico;
-    }
-
-    public Date getHoraModifico() {
-        return horaModifico;
-    }
-
-    public void setHoraModifico(Date horaModifico) {
-        this.horaModifico = horaModifico;
-    }
-
-    public Integer getPosicion() {
-        return posicion;
-    }
-
-    public void setPosicion(Integer posicion) {
-        this.posicion = posicion;
-    }
-
-    public Usuario getModifico() {
-        return modifico;
-    }
-
-    public void setModifico(Usuario modifico) {
-        this.modifico = modifico;
-    }
-
-    public Collection<SiOpcion> getSiOpcionCollection() {
-        return siOpcionCollection;
-    }
-
-    public void setSiOpcionCollection(Collection<SiOpcion> siOpcionCollection) {
-        this.siOpcionCollection = siOpcionCollection;
-    }
-
-    public SiOpcion getSiOpcion() {
-        return siOpcion;
-    }
-
-    public void setSiOpcion(SiOpcion siOpcion) {
-        this.siOpcion = siOpcion;
-    }
-
-
-    /**
-     * @return the estatusContar
-     */
-    public Integer getEstatusContar() {
-        return estatusContar;
-    }
-
-    /**
-     * @param estatusContar the estatusContar to set
-     */
-    public void setEstatusContar(Integer estatusContar) {
-        this.estatusContar = estatusContar;
-    }
-
-    /**
-     * @return the paginaListener
-     */
-    public String getPaginaListener() {
-        return paginaListener;
-    }
-
-    /**
-     * @param paginaListener the paginaListener to set
-     */
-    public void setPaginaListener(String paginaListener) {
-        this.paginaListener = paginaListener;
-    }
-
+    
 }

@@ -146,19 +146,10 @@ public class UsuarioImpl extends AbstractImpl<Usuario> {
         vo.setId(u.getId());
         vo.setNombre(u.getNombre());
         vo.setClave(u.getClave());
-        vo.setMail(u.getEmail());
-        vo.setDestinatarios(u.getDestinatarios());
-        vo.setRfc(u.getRfc());
-        vo.setTelefono(u.getTelefono());
-        vo.setExtension(u.getExtension());
-        vo.setCelular(u.getCelular());
+        vo.setMail(u.getEmail());                
+        vo.setTelefono(u.getTelefono());        
         vo.setSexo(u.getSexo());
-        vo.setActivo(u.isActivo());
-        vo.setPregunta(u.getPreguntaSecreta());
-        vo.setRespuesta(u.getRespuestaPreguntaSecreta());
-        vo.setFechaIngreso(u.getFechaIngreso());
-
-        vo.setAdministraTI(false);
+                
         return vo;
     }
 
@@ -201,31 +192,21 @@ public class UsuarioImpl extends AbstractImpl<Usuario> {
         boolean v = false;
         try {
             Usuario usuario = new Usuario();
-            usuario.setId(usuarioVO.getId().toUpperCase());
+            usuario.setId(usuarioVO.getId());
             usuario.setNombre(fixName(usuarioVO.getNombre()));
             usuario.setClave(usuarioVO.getClave());
-
             usuario.setEmail(usuarioVO.getMail());
-            usuario.setDestinatarios(usuarioVO.getMail());
+            
             //
             usuario.setTelefono(usuarioVO.getTelefono());
-            usuario.setExtension(usuarioVO.getExtension());
-            usuario.setSexo(usuarioVO.getSexo());
-            usuario.setCelular(usuarioVO.getCelular());
-            usuario.setFechanacimiento(usuarioVO.getFechaNacimiento());
-            usuario.setRfc(usuarioVO.getRfc());
-            usuario.setPreguntaSecreta(usuarioVO.getPregunta());
-            usuario.setRespuestaPreguntaSecreta(usuarioVO.getRespuesta());
+            
+            usuario.setSexo(usuarioVO.getSexo());            
             usuario.setFoto("/resources/imagenes/usuarios/usuario.png");
-            usuario.setActivo(Constantes.BOOLEAN_TRUE);
-
+            
             usuario.setGenero(find(sesion));
             usuario.setFechaGenero(new Date());
-            usuario.setHoraGenero(new Date());
             usuario.setEliminado(Constantes.NO_ELIMINADO);
-            usuario.setInterno(usuarioVO.isInterno());
             this.create(usuario);
-
 
             v = true;
         } catch (Exception e) {
@@ -242,11 +223,8 @@ public class UsuarioImpl extends AbstractImpl<Usuario> {
             Usuario usuario = this.find(usuarioVO.getId());
             usuario.setNombre(fixName(usuarioVO.getNombre()));
             usuario.setEmail(usuarioVO.getMail());
-            usuario.setDestinatarios(usuarioVO.getDestinatarios());
             usuario.setTelefono(usuarioVO.getTelefono());
-            usuario.setExtension(usuarioVO.getExtension());
             usuario.setSexo(usuarioVO.getSexo());
-            usuario.setCelular(usuarioVO.getCelular());
             edit(usuario);
             v = true;
         } catch (Exception e) {
@@ -260,13 +238,9 @@ public class UsuarioImpl extends AbstractImpl<Usuario> {
         try {
             Usuario usuario = find(idUser);
             usuario.setClave(encriptar(String.valueOf(generaClave())));
-            usuario.setActivo(Constantes.BOOLEAN_FALSE);
             usuario.setEliminado(Constantes.ELIMINADO);
-            usuario.setPreguntaSecreta(null);
-            usuario.setRespuestaPreguntaSecreta(null);
             usuario.setModifico(find(sesion));
             usuario.setFechaModifico(new Date());
-            usuario.setHoraModifico(new Date());
             edit(usuario);
         } catch (NoSuchAlgorithmException ex) {
             LOGGER.fatal(ex);
@@ -275,11 +249,9 @@ public class UsuarioImpl extends AbstractImpl<Usuario> {
 
     public void activarUsuario(String sesion, UsuarioVO usuarioVo) {
         Usuario usuario = find(usuarioVo.getId());
-        usuario.setActivo(Constantes.BOOLEAN_TRUE);
         usuario.setEliminado(Constantes.NO_ELIMINADO);
         usuario.setModifico(find(sesion));
         usuario.setFechaModifico(new Date());
-        usuario.setHoraModifico(new Date());
         this.edit(usuario);
     }
 
@@ -356,14 +328,9 @@ public class UsuarioImpl extends AbstractImpl<Usuario> {
         Usuario usuario = find(idUser);
         usuario.setNombre(fixName(nombre));
         usuario.setEmail(correo);
-        usuario.setDestinatarios(destinatarios);
-        usuario.setRfc(rfc);
         usuario.setTelefono(telefono);
-        usuario.setExtension(ext);
-        usuario.setCelular(celular);
         usuario.setModifico(usuario);
         usuario.setFechaModifico(new Date());
-        usuario.setHoraModifico(new Date());
 
         v = false; //this.notificacionSistemaRemote.enviarCorreoCambioClaveIhsa(usuario.getNombre(), usuario.getEmail());
         if (v) {
@@ -437,7 +404,6 @@ public class UsuarioImpl extends AbstractImpl<Usuario> {
                 usuario.setClave(encriptar(String.valueOf(clave)));
                 usuario.setModifico(find(sesion));
                 usuario.setFechaModifico(new Date());
-                usuario.setHoraModifico(new Date());
                 edit(usuario);
             } catch (NoSuchAlgorithmException ex) {
                 log.error("", ex);
@@ -456,14 +422,9 @@ public class UsuarioImpl extends AbstractImpl<Usuario> {
         Usuario usuario = find(idUser);
         usuario.setNombre(fixName(nombre));
         usuario.setEmail(correo);
-        usuario.setDestinatarios(destinatarios);
-        usuario.setRfc(rfc);
         usuario.setTelefono(telefono);
-        usuario.setExtension(ext);
-        usuario.setCelular(celular);
         usuario.setModifico(usuario);
         usuario.setFechaModifico(new Date());
-        usuario.setHoraModifico(new Date());
         edit(usuario);
     }
 
@@ -553,7 +514,7 @@ public class UsuarioImpl extends AbstractImpl<Usuario> {
         UsuarioVO v = null;
         try {
             v = new UsuarioVO();
-            v.setId((String) objects[0]);
+            v.setId((Integer) objects[0]);
             v.setNombre((String) objects[1]);
             v.setClave((String) objects[2]);
             v.setMail((String) objects[3]);
@@ -666,7 +627,7 @@ public class UsuarioImpl extends AbstractImpl<Usuario> {
 
         for (Object[] objects : result) {
             vo = new UsuarioVO();
-            vo.setId((String) objects[0]);
+            vo.setId((Integer) objects[0]);
             vo.setNombre((String) objects[1]);
             list.add(vo);
         }
@@ -698,34 +659,16 @@ public class UsuarioImpl extends AbstractImpl<Usuario> {
 
         try {
             Usuario usuario = new Usuario();
-            usuario.setId(usuarioVO.getId().toUpperCase());
-
+            usuario.setId(usuarioVO.getId());
             usuario.setNombre(fixName(usuarioVO.getNombre()));
-            usuario.setFechaIngreso(usuarioVO.getFechaIngreso());
-            //
-            usuario.setGafete(usuarioVO.getGafete().equals("si") ? Constantes.BOOLEAN_TRUE : Constantes.BOOLEAN_FALSE);
             usuario.setClave(usuarioVO.getClave());
-            usuario.setRequiereCorreo(Constantes.BOOLEAN_FALSE);
-
             usuario.setEmail(usuarioVO.getMail());
-
-
-            usuario.setDestinatarios(usuarioVO.getMail());
             usuario.setTelefono(usuarioVO.getTelefono());
-            usuario.setExtension(usuarioVO.getExtension());
             usuario.setSexo(usuarioVO.getSexo());
-            usuario.setCelular(usuarioVO.getCelular());
-            usuario.setFechanacimiento(usuarioVO.getFechaNacimiento());
-            usuario.setRfc(usuarioVO.getRfc());
-            usuario.setPreguntaSecreta(usuarioVO.getPregunta());
-            usuario.setRespuestaPreguntaSecreta(usuarioVO.getRespuesta());
             usuario.setFoto("/resources/imagenes/usuarios/usuario.png");
-            usuario.setActivo(Constantes.BOOLEAN_TRUE);
             usuario.setGenero(find(sesion));
             usuario.setFechaGenero(new Date());
-            usuario.setHoraGenero(new Date());
             usuario.setEliminado(Constantes.NO_ELIMINADO);
-            usuario.setInterno(Constantes.BOOLEAN_TRUE);
 
             //Pone el rol general
             this.create(usuario);
@@ -747,9 +690,9 @@ public class UsuarioImpl extends AbstractImpl<Usuario> {
         try {
             Usuario usuario = find(idUsuarioBaja);
             if (usuario != null) {
-                usuario.setMotivoBaja(motivo);
+                /*usuario.setMotivoBaja(motivo);
                 usuario.setFechaBaja(new Date());
-                usuario.setHoraBaja(new Date());
+                usuario.setHoraBaja(new Date());*/
                 edit(usuario);
                 //Log
                 retVal = true;
@@ -874,7 +817,7 @@ public class UsuarioImpl extends AbstractImpl<Usuario> {
         for (Object[] obj : resultado) {
             UsuarioVO vo = new UsuarioVO();
 
-            vo.setId(String.valueOf(obj[0]));
+            vo.setId((Integer) obj[0]);
             vo.setNombre(String.valueOf(obj[1]));
             vo.setMail(String.valueOf(obj[2]));
 
@@ -929,7 +872,7 @@ public class UsuarioImpl extends AbstractImpl<Usuario> {
         for (Object[] obj : resultado) {
             UsuarioVO vo = new UsuarioVO();
 
-            vo.setId(String.valueOf(obj[0]));
+            vo.setId((Integer )obj[0]);
             vo.setNombre(String.valueOf(obj[1]));
             vo.setMail(String.valueOf(obj[2]));
             vo.setIdCampo(Integer.valueOf(obj[3].toString()));
@@ -1161,7 +1104,7 @@ public class UsuarioImpl extends AbstractImpl<Usuario> {
     private UsuarioVO castUsuarioVO(Object[] objects) {
         UsuarioVO vo = new UsuarioVO();
         try {
-            vo.setId((String) objects[0]);
+            vo.setId((Integer) objects[0]);
             vo.setNombre((String) objects[1]);
             vo.setIdPuesto((Integer) objects[2]);
             vo.setPuesto((String) objects[3]);
@@ -1314,7 +1257,7 @@ public class UsuarioImpl extends AbstractImpl<Usuario> {
     private UsuarioVO castUsuarioParaRol(Object[] objects) {
         UsuarioVO vo = new UsuarioVO();
         try {
-            vo.setId((String) objects[0]);
+            vo.setId((Integer) objects[0]);
             vo.setNombre((String) objects[1]);
             vo.setIdCampo((Integer) objects[2]);
             vo.setCampo((String) objects[3]);
@@ -1358,7 +1301,7 @@ public class UsuarioImpl extends AbstractImpl<Usuario> {
     private UsuarioVO castUsuarioParaUnRol(Object[] objects) {
         UsuarioVO vo = new UsuarioVO();
         try {
-            vo.setId((String) objects[0]);
+            vo.setId((Integer) objects[0]);
             vo.setNombre((String) objects[1]);
             vo.setMail((String) objects[2]);
         } catch (Exception e) {
@@ -1404,7 +1347,7 @@ public class UsuarioImpl extends AbstractImpl<Usuario> {
     private UsuarioVO castUsuarioParaResponsableGerencia(Object[] objects) {
         UsuarioVO vo = new UsuarioVO();
         try {
-            vo.setId((String) objects[0]);
+            vo.setId((Integer) objects[0]);
             vo.setNombre((String) objects[1]);
             vo.setMail((String) objects[2]);
             vo.setRfcEmpresa((String) objects[3]);
@@ -1579,14 +1522,8 @@ public class UsuarioImpl extends AbstractImpl<Usuario> {
 
             usuario.setNombre(usuarioVO.getNombre());
             usuario.setEmail(usuarioVO.getMail());
-            usuario.setDestinatarios(usuarioVO.getMail());
             usuario.setTelefono(usuarioVO.getTelefono());
-            usuario.setCelular(usuarioVO.getCelular());
-            usuario.setExtension(usuarioVO.getExtension());
             usuario.setSexo(usuarioVO.getSexo());
-            usuario.setFechanacimiento(usuarioVO.getFechaNacimiento());
-            usuario.setDestinatarios(usuarioVO.getDestinatarios());
-            usuario.setFechaIngreso(usuarioVO.getFechaIngreso());
             edit(usuario);
         } catch (Exception e) {
             LOGGER.error(this, "Ocurrio una excepcion al modificar el usuario  : : : : : " + e.getMessage(), e);

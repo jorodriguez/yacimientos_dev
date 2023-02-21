@@ -1,51 +1,73 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package lector.modelo;
 
 import java.io.Serializable;
-import javax.persistence.*;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+import java.util.Date;
+import javax.persistence.Basic;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
+import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 /**
  *
- * @author sluis
+ * @author jorodriguez
  */
 @Entity
-@Table(name = "SI_PARAMETRO")
-@SequenceGenerator(sequenceName = "si_parametro_id_seq", name = "si_parametro_seq", allocationSize = 1)
-@NamedQueries({
-    @NamedQuery(name = "SiParametro.findAll", query = "SELECT s FROM SiParametro s")})
+@Table(name = "si_parametro")
 public class SiParametro implements Serializable {
+
     private static final long serialVersionUID = 1L;
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
-    
-    @Column(name = "ID")
+    @Column(name = "id")
     private Integer id;
-    // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
-    @Column(name = "DIFERENCIA_ORDEN_REQUISICION")
-    private Double diferenciaOrdenRequisicion;
-    @Size(max = 100)
-    @Column(name = "UPLOAD_DIRECTORY")
+    @Column(name = "upload_directory")
     private String uploadDirectory;
     @Lob
-    @Column(name = "LOGO")
+    @Column(name = "logo")
     private byte[] logo;
+    @Basic(optional = false)
     @Column(name = "tipo_almacen_adjuntos")
     private String tipoAlmacenAdjuntos;
     @Column(name = "gest_doc_url_base")
     private String gestDocUrlBase;
+    @Column(name = "gest_doc_prop_adic")
+    private String gestDocPropAdic;
     @Column(name = "gest_doc_usuario")
     private String gestDocUsuario;
     @Column(name = "gest_doc_clave")
     private String gestDocClave;
-    @Column(name = "gest_doc_prop_adic")
-    private String gestDocPropAdic;
     @Column(name = "directorio_usuarios")
     private String directorioUsuarios;
+    @Basic(optional = false)
+    @Column(name = "fecha_genero")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date fechaGenero;
+    @Column(name = "fecha_modifico")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date fechaModifico;
+    @Column(name = "eliminado")
+    private Boolean eliminado;
+    @JoinColumn(name = "genero", referencedColumnName = "id")
+    @ManyToOne(optional = false)
+    private Usuario genero;
+    @JoinColumn(name = "modifico", referencedColumnName = "id")
+    @ManyToOne
+    private Usuario modifico;
 
     public SiParametro() {
     }
@@ -54,20 +76,18 @@ public class SiParametro implements Serializable {
         this.id = id;
     }
 
+    public SiParametro(Integer id, String tipoAlmacenAdjuntos, Date fechaGenero) {
+        this.id = id;
+        this.tipoAlmacenAdjuntos = tipoAlmacenAdjuntos;
+        this.fechaGenero = fechaGenero;
+    }
+
     public Integer getId() {
         return id;
     }
 
     public void setId(Integer id) {
         this.id = id;
-    }
-
-    public Double getDiferenciaOrdenRequisicion() {
-        return diferenciaOrdenRequisicion;
-    }
-
-    public void setDiferenciaOrdenRequisicion(Double diferenciaOrdenRequisicion) {
-        this.diferenciaOrdenRequisicion = diferenciaOrdenRequisicion;
     }
 
     public String getUploadDirectory() {
@@ -85,8 +105,7 @@ public class SiParametro implements Serializable {
     public void setLogo(byte[] logo) {
         this.logo = logo;
     }
-    
-    
+
     public String getTipoAlmacenAdjuntos() {
         return tipoAlmacenAdjuntos;
     }
@@ -102,7 +121,15 @@ public class SiParametro implements Serializable {
     public void setGestDocUrlBase(String gestDocUrlBase) {
         this.gestDocUrlBase = gestDocUrlBase;
     }
-    
+
+    public String getGestDocPropAdic() {
+        return gestDocPropAdic;
+    }
+
+    public void setGestDocPropAdic(String gestDocPropAdic) {
+        this.gestDocPropAdic = gestDocPropAdic;
+    }
+
     public String getGestDocUsuario() {
         return gestDocUsuario;
     }
@@ -118,31 +145,63 @@ public class SiParametro implements Serializable {
     public void setGestDocClave(String gestDocClave) {
         this.gestDocClave = gestDocClave;
     }
-    
-    public String getGestDocPropAdic() {
-        return gestDocPropAdic;
-    }
 
-    public void setGestDocPropAdic(String gestDocPropAdic) {
-        this.gestDocPropAdic = gestDocPropAdic;
-    }
-    
     public String getDirectorioUsuarios() {
         return directorioUsuarios;
     }
-    
+
     public void setDirectorioUsuarios(String directorioUsuarios) {
         this.directorioUsuarios = directorioUsuarios;
     }
 
-    
+    public Date getFechaGenero() {
+        return fechaGenero;
+    }
+
+    public void setFechaGenero(Date fechaGenero) {
+        this.fechaGenero = fechaGenero;
+    }
+
+    public Date getFechaModifico() {
+        return fechaModifico;
+    }
+
+    public void setFechaModifico(Date fechaModifico) {
+        this.fechaModifico = fechaModifico;
+    }
+
+    public Boolean getEliminado() {
+        return eliminado;
+    }
+
+    public void setEliminado(Boolean eliminado) {
+        this.eliminado = eliminado;
+    }
+
+    public Usuario getGenero() {
+        return genero;
+    }
+
+    public void setGenero(Usuario genero) {
+        this.genero = genero;
+    }
+
+    public Usuario getModifico() {
+        return modifico;
+    }
+
+    public void setModifico(Usuario modifico) {
+        this.modifico = modifico;
+    }
+
+    @Override
     public int hashCode() {
         int hash = 0;
         hash += (id != null ? id.hashCode() : 0);
         return hash;
     }
 
-    
+    @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof SiParametro)) {
@@ -155,9 +214,9 @@ public class SiParametro implements Serializable {
         return true;
     }
 
-    
+    @Override
     public String toString() {
-        return "sia.modelo.SiParametro[ id=" + id + " ]";
+        return "mx.ihsa.mavenproject1.SiParametro[ id=" + id + " ]";
     }
     
 }

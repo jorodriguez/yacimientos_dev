@@ -24,7 +24,7 @@ public class ServicioNotificacionSistemaImpl{
     private EnviarCorreoImpl enviarCorreo;
 
     
-    public boolean enviarClave(String nombre, String correo, String clave, String idUsuario) {
+    public boolean enviarClave(String nombre, String correo, String clave, Integer idUsuario) {
         return this.enviarCorreo.enviarCorreo(correo, "", "", "Contraseña de usuario", this.html.getHtmlClaveUsuario(nombre, clave, idUsuario), parametrosSistema.find(1).getLogo());
     }
 
@@ -39,7 +39,7 @@ public class ServicioNotificacionSistemaImpl{
     }
 
     
-    public boolean enviarReinicioClave(String nombre, String email, String clave, String idUsuario) {
+    public boolean enviarReinicioClave(String nombre, String email, String clave, Integer idUsuario) {
         return this.enviarCorreo.enviarCorreo(email, "", "", "Contraseña de usuario", this.html.getHtmlClaveUsuario(nombre, clave, idUsuario), parametrosSistema.find(1).getLogo());
     }
 

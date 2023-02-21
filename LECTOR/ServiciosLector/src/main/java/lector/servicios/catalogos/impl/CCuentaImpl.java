@@ -6,15 +6,12 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import lector.constantes.Constantes;
-import lector.dominio.vo.CompaniaVo;
 import org.jooq.DSLContext;
-import lector.modelo.Compania;
+import lector.modelo.CCuenta;
 import lector.util.UtilLog4j;
 
-/**
- */
 @Stateless 
-public class CompaniaImpl {
+public class CCuentaImpl {
 
     @PersistenceContext(unitName = Constantes.PERSISTENCE_UNIT )
     private EntityManager em;
@@ -23,48 +20,48 @@ public class CompaniaImpl {
     DSLContext dbCtx;
 
     
-    public void create(Compania compania) {
-        em.persist(compania);
+    public void create(CCuenta ccuenta) {
+        em.persist(ccuenta);
     }
 
     
-    public void edit(Compania compania) {
-        em.merge(compania);
+    public void edit(CCuenta ccuenta) {
+        em.merge(ccuenta);
     }
 
     
-    public void remove(Compania compania) {
-        em.remove(em.merge(compania));
+    public void remove(CCuenta ccuenta) {
+        em.remove(em.merge(ccuenta));
     }
 
     
-    public Compania find(Object id) {
-        return em.find(Compania.class, id);
+    public CCuenta find(Object id) {
+        return em.find(CCuenta.class, id);
     }
 
     
-    public List<Compania> findAll() {
-        return em.createQuery("select object(o) from Compania as o").getResultList();
+    public List<CCuenta> findAll() {
+        return em.createQuery("select object(o) from CCuenta as o").getResultList();
     }
 
     
-    public List<Compania> getAll() {
-        return dbCtx.fetch("SELECT * FROM Compania where eliminado = false").into(Compania.class);
+    public List<CCuenta> getAll() {
+        return dbCtx.fetch("SELECT * FROM CCuenta where eliminado = false").into(CCuenta.class);
     }
 
     
-    public Compania buscarPorNombre(Object nombreCompañia) {
-        return (Compania) em.createQuery("SELECT c FROM Compania c WHERE c.nombre = :nombre")
+    public CCuenta buscarPorNombre(Object nombreCompañia) {
+        return (CCuenta) em.createQuery("SELECT c FROM CCuenta c WHERE c.nombre = :nombre")
                 .setParameter("nombre", nombreCompañia)
                 .getSingleResult();
 
     }
 
-    public byte[] traeLogo(String rfcCompania) {
+    public byte[] traeLogo(String rfcCCuenta) {
         try {
             String sb = " select a.rfc, a.logo "
                     + " from COMPANIA a "
-                    + " where a.rfc = '" + rfcCompania + "' "
+                    + " where a.rfc = '" + rfcCCuenta + "' "
                     + " AND a.ELIMINADO =  'False' ";
 
             Object[] c = (Object[]) em.createNativeQuery(sb).getSingleResult();
@@ -76,9 +73,9 @@ public class CompaniaImpl {
     }
 
     
-    public Compania buscarPorRFC(String rfcCompañia) {
+    public CCuenta buscarPorRFC(String rfcCompañia) {
         try {
-            return (Compania) em.createQuery("SELECT c FROM Compania c WHERE c.rfc = :nombre", Compania.class)
+            return (CCuenta) em.createQuery("SELECT c FROM CCuenta c WHERE c.rfc = :nombre", CCuenta.class)
                     .setParameter("nombre", rfcCompañia)
                     .getSingleResult();
         } catch (Exception e) {
@@ -87,12 +84,12 @@ public class CompaniaImpl {
     }
 
     
-    public CompaniaVo traerPorRFC(String rfcCompañia) {
+    /*public CCuentaVo traerPorRFC(String rfcCompañia) {
         try {
-            String c = "SELECT c.rfc, c.nombre, c.requisito_factura FROM Compania c WHERE c.rfc = ? ";
+            String c = "SELECT c.rfc, c.nombre, c.requisito_factura FROM CCuenta c WHERE c.rfc = ? ";
             Object[] obj = (Object[]) em.createNativeQuery(c).setParameter(1, rfcCompañia).getSingleResult();
-            CompaniaVo com = new CompaniaVo();
-            com.setRfcCompania((String) obj[0]);
+            CCuentaVo com = new CCuentaVo();
+            com.setRfcCCuenta((String) obj[0]);
             com.setNombre((String) obj[1]);
             com.setRequisitoFactura((String) obj[2]);
             return com;
@@ -101,5 +98,5 @@ public class CompaniaImpl {
             return null;
         }
     }
-
+*/
 }

@@ -11,7 +11,7 @@ public class Constantes {
     
     public static final String PERSISTENCE_UNIT = "Lector-ServiciosPU";
     
-    public static final String USUARIO_DEFAULT ="DEF";
+    public static final Integer USUARIO_DEFAULT =1;
 
     public static final boolean BOOLEAN_TRUE = true;
     public static final boolean BOOLEAN_FALSE = false;

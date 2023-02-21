@@ -1,299 +1,222 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package lector.modelo;
 
 import java.io.Serializable;
-import java.util.Collection;
 import java.util.Date;
-import javax.persistence.*;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
-import lector.constantes.Constantes;
+import java.util.List;
+import javax.persistence.Basic;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 /**
  *
- * @author sluis
+ * @author jorodriguez
  */
 @Entity
-@Table(name = "SI_MODULO")
-@SequenceGenerator(sequenceName = "si_modulo_id_seq", name = "si_modulo_seq", allocationSize = 1)
-@NamedQueries({
-    @NamedQuery(name = "SiModulo.findAll", query = "SELECT s FROM SiModulo s")})
+@Table(name = "si_modulo")
 public class SiModulo implements Serializable {
 
-    @Column(name = "HORA_GENERO")
-    @Temporal(TemporalType.TIME)
-    private Date horaGenero;
-    @Column(name = "FECHA_GENERO")
-    @Temporal(TemporalType.DATE)
-    private Date fechaGenero;
-    @Column(name = "FECHA_MODIFICO")
-    @Temporal(TemporalType.DATE)
-    private Date fechaModifico;
-    @Column(name = "HORA_MODIFICO")
-    @Temporal(TemporalType.TIME)
-    private Date horaModifico;
-    
     private static final long serialVersionUID = 1L;
     @Id
-    @GeneratedValue(generator = "si_modulo_seq", strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
-
-    @Column(name = "ID")
+    @Column(name = "id")
     private Integer id;
-    @Size(max = 32)
-    @Column(name = "NOMBRE")
+    @Column(name = "nombre")
     private String nombre;
-    @Size(max = 64)
-    @Column(name = "RUTA")
+    @Column(name = "ruta")
     private String ruta;
-    @NotNull
-    @JoinColumn(name = "GENERO", referencedColumnName = "ID")
-    @ManyToOne
+    @Column(name = "icono")
+    private String icono;
+    @Column(name = "rutaservlet")
+    private String rutaservlet;
+    @Column(name = "tooltip")
+    private String tooltip;
+    @Column(name = "extralinkrender")
+    private String extralinkrender;
+    @Basic(optional = false)
+    @Column(name = "fecha_genero")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date fechaGenero;
+    @Column(name = "fecha_modifico")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date fechaModifico;
+    @Column(name = "eliminado")
+    private Boolean eliminado;
+    @OneToMany(mappedBy = "siModulo")
+    private List<SiOpcion> siOpcionList;
+    @OneToMany(mappedBy = "siOpcion")
+    private List<SiOpcion> siOpcionList1;
+    @JoinColumn(name = "genero", referencedColumnName = "id")
+    @ManyToOne(optional = false)
     private Usuario genero;
-    @JoinColumn(name = "MODIFICO", referencedColumnName = "ID")
+    @JoinColumn(name = "modifico", referencedColumnName = "id")
     @ManyToOne
     private Usuario modifico;
-
-    @Column(name = "ELIMINADO")
-    private boolean eliminado;
-    @Size(max = 128)
-    @Column(name = "ICONO")
-    private String icono;
-    @Size(max = 128)
-    @Column(name = "RUTASERVLET")
-    private String rutaServlet;
-    @Size(max = 128)
-    @Column(name = "TOOLTIP")
-    private String toolTip;
-    @Size(max = 128)
-    @Column(name = "EXTRALINKRENDER")
-    private String extraLinkRender;
 
     public SiModulo() {
     }
 
-    /**
-     * @return the id
-     */
+    public SiModulo(Integer id) {
+        this.id = id;
+    }
+
+    public SiModulo(Integer id, Date fechaGenero) {
+        this.id = id;
+        this.fechaGenero = fechaGenero;
+    }
+
     public Integer getId() {
         return id;
     }
 
-    /**
-     * @param id the id to set
-     */
     public void setId(Integer id) {
         this.id = id;
     }
 
-    /**
-     * @return the nombre
-     */
     public String getNombre() {
         return nombre;
     }
 
-    /**
-     * @param nombre the nombre to set
-     */
     public void setNombre(String nombre) {
         this.nombre = nombre;
     }
 
-    /**
-     * @return the ruta
-     */
     public String getRuta() {
         return ruta;
     }
 
-    /**
-     * @param ruta the ruta to set
-     */
     public void setRuta(String ruta) {
         this.ruta = ruta;
     }
 
-    /**
-     * @return the genero
-     */
-    public Usuario getGenero() {
-        return genero;
-    }
-
-    /**
-     * @param genero the genero to set
-     */
-    public void setGenero(Usuario genero) {
-        this.genero = genero;
-    }
-
-    /**
-     * @return the fechaGenero
-     */
-    public Date getFechaGenero() {
-        return fechaGenero;
-    }
-
-    /**
-     * @param fechaGenero the fechaGenero to set
-     */
-    public void setFechaGenero(Date fechaGenero) {
-        this.fechaGenero = fechaGenero;
-    }
-
-    /**
-     * @return the horaGenero
-     */
-    public Date getHoraGenero() {
-        return horaGenero;
-    }
-
-    /**
-     * @param horaGenero the horaGenero to set
-     */
-    public void setHoraGenero(Date horaGenero) {
-        this.horaGenero = horaGenero;
-    }
-
-    /**
-     * @return the modifico
-     */
-    public Usuario getModifico() {
-        return modifico;
-    }
-
-    /**
-     * @param modifico the modifico to set
-     */
-    public void setModifico(Usuario modifico) {
-        this.modifico = modifico;
-    }
-
-    /**
-     * @return the fechaModifico
-     */
-    public Date getFechaModifico() {
-        return fechaModifico;
-    }
-
-    /**
-     * @param fechaModifico the fechaModifico to set
-     */
-    public void setFechaModifico(Date fechaModifico) {
-        this.fechaModifico = fechaModifico;
-    }
-
-    /**
-     * @return the horaModifico
-     */
-    public Date getHoraModifico() {
-        return horaModifico;
-    }
-
-    /**
-     * @param horaModifico the horaModifico to set
-     */
-    public void setHoraModifico(Date horaModifico) {
-        this.horaModifico = horaModifico;
-    }
-
-    /**
-     * @return the eliminado
-     */
-    public boolean isEliminado() {
-        return eliminado;
-    }
-
-    /**
-     * @param eliminado the eliminado to set
-     */
-    public void setEliminado(boolean eliminado) {
-        this.eliminado = eliminado;
-    }
-
-    public int hashCode() {
-        int hash = 0;
-        hash += (getId() != null ? getId().hashCode() : 0);
-        return hash;
-    }
-
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(this.getClass().getName())
-                .append("{")
-                .append("id=").append(getId())
-                .append(", nombre=").append(getNombre())
-                .append(", ruta=").append(getRuta())
-                .append(", genero=").append(getGenero() != null ? getGenero().getId() : null)
-                .append(", fechaGenero=").append(getFechaGenero() != null ? (Constantes.FMT_ddMMyyy.format(getFechaGenero())) : null)
-                .append(", horaGenero=").append(getHoraGenero() != null ? (Constantes.FMT_HHmmss.format(getHoraGenero())) : null)
-                .append(", modifico=").append(getModifico() != null ? getModifico().getId() : null)
-                .append(", fechaModifico=").append(getFechaModifico() != null ? (Constantes.FMT_ddMMyyy.format(getFechaModifico())) : null)
-                .append(", horaModifico=").append(getHoraModifico() != null ? (Constantes.FMT_HHmmss.format(getHoraModifico())) : null)
-                .append(", eliminado=").append(isEliminado())
-                .append("}");
-        return sb.toString();
-    }
-
-
-    /**
-     * @return the icono
-     */
     public String getIcono() {
         return icono;
     }
 
-    /**
-     * @param icono the icono to set
-     */
     public void setIcono(String icono) {
         this.icono = icono;
     }
 
-    /**
-     * @return the rutaServlet
-     */
-    public String getRutaServlet() {
-        return rutaServlet;
+    public String getRutaservlet() {
+        return rutaservlet;
     }
 
-    /**
-     * @param rutaServlet the rutaServlet to set
-     */
-    public void setRutaServlet(String rutaServlet) {
-        this.rutaServlet = rutaServlet;
+    public void setRutaservlet(String rutaservlet) {
+        this.rutaservlet = rutaservlet;
     }
 
-    /**
-     * @return the toolTip
-     */
-    public String getToolTip() {
-        return toolTip;
+    public String getTooltip() {
+        return tooltip;
     }
 
-    /**
-     * @param toolTip the toolTip to set
-     */
-    public void setToolTip(String toolTip) {
-        this.toolTip = toolTip;
+    public void setTooltip(String tooltip) {
+        this.tooltip = tooltip;
     }
 
-    /**
-     * @return the extraLinkRender
-     */
-    public String getExtraLinkRender() {
-        return extraLinkRender;
+    public String getExtralinkrender() {
+        return extralinkrender;
     }
 
-    /**
-     * @param extraLinkRender the extraLinkRender to set
-     */
-    public void setExtraLinkRender(String extraLinkRender) {
-        this.extraLinkRender = extraLinkRender;
+    public void setExtralinkrender(String extralinkrender) {
+        this.extralinkrender = extralinkrender;
     }
 
+    public Date getFechaGenero() {
+        return fechaGenero;
+    }
+
+    public void setFechaGenero(Date fechaGenero) {
+        this.fechaGenero = fechaGenero;
+    }
+
+    public Date getFechaModifico() {
+        return fechaModifico;
+    }
+
+    public void setFechaModifico(Date fechaModifico) {
+        this.fechaModifico = fechaModifico;
+    }
+
+    public Boolean getEliminado() {
+        return eliminado;
+    }
+
+    public void setEliminado(Boolean eliminado) {
+        this.eliminado = eliminado;
+    }
+
+    public List<SiOpcion> getSiOpcionList() {
+        return siOpcionList;
+    }
+
+    public void setSiOpcionList(List<SiOpcion> siOpcionList) {
+        this.siOpcionList = siOpcionList;
+    }
+
+    public List<SiOpcion> getSiOpcionList1() {
+        return siOpcionList1;
+    }
+
+    public void setSiOpcionList1(List<SiOpcion> siOpcionList1) {
+        this.siOpcionList1 = siOpcionList1;
+    }
+
+    public Usuario getGenero() {
+        return genero;
+    }
+
+    public void setGenero(Usuario genero) {
+        this.genero = genero;
+    }
+
+    public Usuario getModifico() {
+        return modifico;
+    }
+
+    public void setModifico(Usuario modifico) {
+        this.modifico = modifico;
+    }
+
+
+    @Override
+    public int hashCode() {
+        int hash = 0;
+        hash += (id != null ? id.hashCode() : 0);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        // TODO: Warning - this method won't work in the case the id fields are not set
+        if (!(object instanceof SiModulo)) {
+            return false;
+        }
+        SiModulo other = (SiModulo) object;
+        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "mx.ihsa.mavenproject1.SiModulo[ id=" + id + " ]";
+    }
+    
 }

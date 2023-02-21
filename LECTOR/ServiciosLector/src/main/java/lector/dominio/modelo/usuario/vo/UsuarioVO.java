@@ -15,7 +15,7 @@ import lombok.Setter;
 @Setter
 public class UsuarioVO implements Serializable {
 
-    private String id;
+    private Integer id;
     private String nombre;
     private String clave;
     private String puesto;
@@ -63,7 +63,7 @@ public class UsuarioVO implements Serializable {
     public UsuarioVO() {
     }
 
-    public UsuarioVO(String id) {
+    public UsuarioVO(Integer id) {
 	this.id = id;
     }
 
@@ -89,14 +89,14 @@ public class UsuarioVO implements Serializable {
 	return hash;
     }
 
-    public UsuarioVO(String id, String nombre, String email, List<UsuarioRolVo> roles) {
+    public UsuarioVO(Integer id, String nombre, String email, List<UsuarioRolVo> roles) {
 	this.id = id;
 	this.nombre = nombre;
 	this.mail = email;
 	this.roles = roles;
     }
 
-    public UsuarioVO(String id, String nombre, String email) {
+    public UsuarioVO(Integer id, String nombre, String email) {
 	this.id = id;
 	this.nombre = nombre;
 	this.mail = email;

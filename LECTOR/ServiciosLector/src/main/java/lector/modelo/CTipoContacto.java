@@ -8,6 +8,7 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -27,8 +28,8 @@ import javax.persistence.TemporalType;
  * @author jorodriguez
  */
 @Entity
-@Table(name = "si_adjunto")
-public class SiAdjunto implements Serializable {
+@Table(name = "c_tipo_contacto")
+public class CTipoContacto implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -36,18 +37,9 @@ public class SiAdjunto implements Serializable {
     @Basic(optional = false)
     @Column(name = "id")
     private Integer id;
-    @Column(name = "uuid")
-    private String uuid;
+    @Basic(optional = false)
     @Column(name = "nombre")
     private String nombre;
-    @Column(name = "descripcion")
-    private String descripcion;
-    @Column(name = "tipo_archivo")
-    private String tipoArchivo;
-    @Column(name = "peso")
-    private String peso;
-    @Column(name = "url")
-    private String url;
     @Basic(optional = false)
     @Column(name = "fecha_genero")
     @Temporal(TemporalType.TIMESTAMP)
@@ -57,11 +49,6 @@ public class SiAdjunto implements Serializable {
     private Date fechaModifico;
     @Column(name = "eliminado")
     private Boolean eliminado;
-    @OneToMany(mappedBy = "siAdjunto")
-    private List<Usuario> usuarioList;
-    @JoinColumn(name = "c_cuenta", referencedColumnName = "id")
-    @ManyToOne(optional = false)
-    private CCuenta cCuenta;
     @JoinColumn(name = "genero", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private Usuario genero;
@@ -69,15 +56,16 @@ public class SiAdjunto implements Serializable {
     @ManyToOne
     private Usuario modifico;
 
-    public SiAdjunto() {
+    public CTipoContacto() {
     }
 
-    public SiAdjunto(Integer id) {
+    public CTipoContacto(Integer id) {
         this.id = id;
     }
 
-    public SiAdjunto(Integer id, Date fechaGenero) {
+    public CTipoContacto(Integer id, String nombre, Date fechaGenero) {
         this.id = id;
+        this.nombre = nombre;
         this.fechaGenero = fechaGenero;
     }
 
@@ -89,52 +77,12 @@ public class SiAdjunto implements Serializable {
         this.id = id;
     }
 
-    public String getUuid() {
-        return uuid;
-    }
-
-    public void setUuid(String uuid) {
-        this.uuid = uuid;
-    }
-
     public String getNombre() {
         return nombre;
     }
 
     public void setNombre(String nombre) {
         this.nombre = nombre;
-    }
-
-    public String getDescripcion() {
-        return descripcion;
-    }
-
-    public void setDescripcion(String descripcion) {
-        this.descripcion = descripcion;
-    }
-
-    public String getTipoArchivo() {
-        return tipoArchivo;
-    }
-
-    public void setTipoArchivo(String tipoArchivo) {
-        this.tipoArchivo = tipoArchivo;
-    }
-
-    public String getPeso() {
-        return peso;
-    }
-
-    public void setPeso(String peso) {
-        this.peso = peso;
-    }
-
-    public String getUrl() {
-        return url;
-    }
-
-    public void setUrl(String url) {
-        this.url = url;
     }
 
     public Date getFechaGenero() {
@@ -159,22 +107,6 @@ public class SiAdjunto implements Serializable {
 
     public void setEliminado(Boolean eliminado) {
         this.eliminado = eliminado;
-    }
-
-    public List<Usuario> getUsuarioList() {
-        return usuarioList;
-    }
-
-    public void setUsuarioList(List<Usuario> usuarioList) {
-        this.usuarioList = usuarioList;
-    }
-
-    public CCuenta getCCuenta() {
-        return cCuenta;
-    }
-
-    public void setCCuenta(CCuenta cCuenta) {
-        this.cCuenta = cCuenta;
     }
 
     public Usuario getGenero() {
@@ -203,10 +135,10 @@ public class SiAdjunto implements Serializable {
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof SiAdjunto)) {
+        if (!(object instanceof CTipoContacto)) {
             return false;
         }
-        SiAdjunto other = (SiAdjunto) object;
+        CTipoContacto other = (CTipoContacto) object;
         if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }
@@ -215,7 +147,7 @@ public class SiAdjunto implements Serializable {
 
     @Override
     public String toString() {
-        return "mx.ihsa.mavenproject1.SiAdjunto[ id=" + id + " ]";
+        return "mx.ihsa.mavenproject1.CTipoContacto[ id=" + id + " ]";
     }
     
 }

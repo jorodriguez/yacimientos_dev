@@ -44,7 +44,7 @@ public class SiAdjuntoImpl extends AbstractImpl<SiAdjunto>{
     }
 
     
-    public int saveSiAdjunto(String fileName, String contentType, String absolutePath, long size, String idUsuario) {
+    public int saveSiAdjunto(String fileName, String contentType, String absolutePath, String size, Integer idUsuario) {
         UtilLog4j.log.info(this, "SiAdjuntoImpl.saveSiAdjunto()");
 
         SiAdjunto siAdjunto = new SiAdjunto();
@@ -54,8 +54,7 @@ public class SiAdjuntoImpl extends AbstractImpl<SiAdjunto>{
         siAdjunto.setUrl(absolutePath);
         siAdjunto.setPeso(size);
         siAdjunto.setGenero(new Usuario(idUsuario));
-        siAdjunto.setFechaGenero(new Date());
-        siAdjunto.setHoraGenero(new Date());
+        siAdjunto.setFechaGenero(new Date());        
         siAdjunto.setEliminado(Constantes.NO_ELIMINADO);
         UUID uuid = UUID.randomUUID();
         siAdjunto.setUuid(uuid.toString());
@@ -66,8 +65,8 @@ public class SiAdjuntoImpl extends AbstractImpl<SiAdjunto>{
     }
 
     
-    public int saveSiAdjunto(AdjuntoVO vo, String idUsuario) {
-        //String fileName, String contentType, String absolutePath, long size, String idUsuario) {
+    public int saveSiAdjunto(AdjuntoVO vo, Integer idUsuario) {
+
         UtilLog4j.log.info(this, "SiAdjuntoImpl.saveSiAdjunto()");
         int ret = 0;
         if (vo != null
@@ -80,10 +79,9 @@ public class SiAdjuntoImpl extends AbstractImpl<SiAdjunto>{
             siAdjunto.setNombre(vo.getNombre());
             siAdjunto.setTipoArchivo(vo.getTipoArchivo());
             siAdjunto.setUrl(vo.getUrl());
-            siAdjunto.setPeso(vo.getTamanio());
+            siAdjunto.setPeso( String.valueOf(vo.getTamanio()));
             siAdjunto.setGenero(new Usuario(idUsuario));
-            siAdjunto.setFechaGenero(new Date());
-            siAdjunto.setHoraGenero(new Date());
+            siAdjunto.setFechaGenero(new Date());            
             siAdjunto.setEliminado(Constantes.NO_ELIMINADO);
             UUID uuid = UUID.randomUUID();
             siAdjunto.setUuid(uuid.toString());
@@ -96,7 +94,7 @@ public class SiAdjuntoImpl extends AbstractImpl<SiAdjunto>{
     }
 
     
-    public void delete(int idSiAdjunto, String idUsuario) {
+    public void delete(int idSiAdjunto, Integer idUsuario) {
         UtilLog4j.log.info(this, "SiAdjuntoImpl.delete()");
 
         SiAdjunto siAdjunto = find(idSiAdjunto);
@@ -104,7 +102,6 @@ public class SiAdjuntoImpl extends AbstractImpl<SiAdjunto>{
 
         siAdjunto.setModifico(new Usuario(idUsuario));
         siAdjunto.setFechaModifico(new Date());
-        siAdjunto.setHoraModifico(new Date());
         siAdjunto.setEliminado(Constantes.ELIMINADO);
 
         edit(siAdjunto);
@@ -127,26 +124,23 @@ public class SiAdjuntoImpl extends AbstractImpl<SiAdjunto>{
     }
 
     
-    public boolean guardarArchivo(String genero, int elemento, String absolutePath, String fileName, String contentType, long size, int modulo, String tipo) {
+    public boolean guardarArchivo(Integer genero,String absolutePath, String fileName, String contentType, long size, int modulo, String tipo) {
         UUID uuid = UUID.randomUUID();
-        return this.guardarArchivo(genero, elemento, absolutePath, fileName, contentType, size, modulo, tipo, uuid.toString());
+        return this.guardarArchivo(genero, absolutePath, fileName, contentType, size, modulo, tipo, uuid.toString());
     }
 
     
-    public boolean guardarArchivo(String genero, int elemento, String absolutePath, String fileName, String contentType, long size, int modulo, String tipo, String uuid) {
+    public boolean guardarArchivo(Integer genero, String absolutePath, String fileName, String contentType, long size, int modulo, String tipo, String uuid) {
         boolean v = false;
         try {
             SiAdjunto siAdjunto = new SiAdjunto();
-            siAdjunto.setGenero(new Usuario(genero));
-            siAdjunto.setIdElemento(elemento);
+            siAdjunto.setGenero(new Usuario(genero));            
             siAdjunto.setUrl(absolutePath);
             siAdjunto.setNombre(fileName);
             siAdjunto.setTipoArchivo(contentType);
-            siAdjunto.setPeso(size);
-            siAdjunto.setFechaGenero(new Date());
-            siAdjunto.setHoraGenero(new Date());
-            siAdjunto.setEliminado(false);
-            siAdjunto.setTipoElemento(tipo);
+            siAdjunto.setPeso( String.valueOf(size));
+            siAdjunto.setFechaGenero(new Date());            
+            siAdjunto.setEliminado(false);            
             siAdjunto.setUuid(uuid);
             this.create(siAdjunto);
             v = true;
@@ -173,7 +167,7 @@ public class SiAdjuntoImpl extends AbstractImpl<SiAdjunto>{
     }
 
     
-    public SiAdjunto guardarArchivoDevolverArchivo(String genero, Integer elemento, String absolutePath, String fileName, String contentType, long size, int modulo, String tipo) {
+    public SiAdjunto guardarArchivoDevolverArchivo(Integer genero, Integer elemento, String absolutePath, String fileName, String contentType, long size, int modulo, String tipo) {
         UtilLog4j.log.info(this, "SiAdjuntoImpl.guardarArchivoDevolverArchivo()");
 
         SiAdjunto retVal = null;
@@ -181,15 +175,12 @@ public class SiAdjuntoImpl extends AbstractImpl<SiAdjunto>{
         try {
             SiAdjunto siAdjunto = new SiAdjunto();
             siAdjunto.setGenero(new Usuario(genero));
-            siAdjunto.setIdElemento(elemento);
             siAdjunto.setUrl(absolutePath);
             siAdjunto.setNombre(fileName);
             siAdjunto.setTipoArchivo(contentType);
-            siAdjunto.setPeso(size);
+            siAdjunto.setPeso(String.valueOf(size));
             siAdjunto.setFechaGenero(new Date());
-            siAdjunto.setHoraGenero(new Date());
             siAdjunto.setEliminado(false);
-            siAdjunto.setTipoElemento(tipo);
             UUID uuid = UUID.randomUUID();
             siAdjunto.setUuid(uuid.toString());
             this.create(siAdjunto);
@@ -202,27 +193,27 @@ public class SiAdjuntoImpl extends AbstractImpl<SiAdjunto>{
     }
 
     
-    public SiAdjunto save(String fileName, String absolutePath, String contentType, String tipo, long size, String idUsuario) throws LectorException {
+    public SiAdjunto save(String fileName, String absolutePath, String contentType, String tipo, long size, Integer idUsuario) throws LectorException {
         UtilLog4j.log.info(this, "SiAdjuntoImpl.save(String fileName, String absolutePath, String contentType, long size, String idUsuario)");
         UUID uuid = UUID.randomUUID();
-        return this.save(fileName, absolutePath, contentType, tipo, size, idUsuario, uuid.toString());
+        return save(fileName, absolutePath, contentType, tipo, size, idUsuario, uuid.toString());
     }
 
     
-    public SiAdjunto save(String fileName, String absolutePath, String contentType, long size, String idUsuario) throws LectorException {
+    public SiAdjunto save(String fileName, String absolutePath, String contentType, long size, Integer idUsuario) throws LectorException {
         UtilLog4j.log.info(this, "SiAdjuntoImpl.save(String fileName, String absolutePath, String contentType, long size, String idUsuario)");
         UUID uuid = UUID.randomUUID();
-        return this.save(fileName, absolutePath, contentType, size, idUsuario, uuid.toString());
+        return save(fileName, absolutePath, contentType, size, idUsuario, uuid.toString());
     }
 
     
-    public SiAdjunto save(String fileName, String absolutePath, String contentType, long size, String idUsuario, String uuid) throws LectorException {
+    public SiAdjunto save(String fileName, String absolutePath, String contentType, long size, Integer idUsuario, String uuid) throws LectorException {
         UtilLog4j.log.info(this, "SiAdjuntoImpl.save(String fileName, String absolutePath, String contentType, long size, String idUsuario, String uuid)");
-        return this.save(fileName, absolutePath, contentType, null, size, idUsuario, uuid);
+        return save(fileName, absolutePath, contentType, null, size, idUsuario, uuid);
     }
 
     
-    public SiAdjunto save(String fileName, String absolutePath, String contentType, String tipo, long size, String idUsuario, String uuid) throws LectorException {
+    public SiAdjunto save(String fileName, String absolutePath, String contentType, String tipo, long size, Integer idUsuario, String uuid) throws LectorException {
         UtilLog4j.log.info(this, "SiAdjuntoImpl.save(String fileName, String absolutePath, String contentType, long size, String idUsuario, String uuid)");
 
         SiAdjunto adjunto = null;
@@ -233,17 +224,13 @@ public class SiAdjuntoImpl extends AbstractImpl<SiAdjunto>{
             adjunto.setNombre(fileName);
             adjunto.setUrl(absolutePath);
             adjunto.setTipoArchivo(contentType);
-            adjunto.setPeso(size);
+            adjunto.setPeso(String.valueOf(size));
             adjunto.setFechaGenero(new Date());
-            adjunto.setHoraGenero(new Date());
             adjunto.setEliminado(Constantes.NO_ELIMINADO);
             adjunto.setGenero(new Usuario(idUsuario));
             adjunto.setUuid(uuid);
-            if (tipo != null && !tipo.isEmpty()) {
-                adjunto.setTipoElemento(tipo);
-            }
 
-            super.create(adjunto);
+            create(adjunto);
 
         } else {
             throw new LectorException(SiAdjuntoImpl.class.getName(), "save()",
@@ -261,14 +248,11 @@ public class SiAdjuntoImpl extends AbstractImpl<SiAdjunto>{
     }
 
     
-    public SiAdjunto update(SiAdjunto adjunto, String idUsuario) throws LectorException {
+    public SiAdjunto update(SiAdjunto adjunto, Integer idUsuario) throws LectorException {
         UtilLog4j.log.info(this, "SiAdjuntoImpl.update()");
 
-        String antesEvento = super.find(adjunto.getId()).toString();
-
         adjunto.setModifico(new Usuario(idUsuario));
-        adjunto.setFechaModifico(new Date());
-        adjunto.setHoraModifico(new Date());
+        adjunto.setFechaModifico(new Date());        
         super.edit(adjunto);
 
         UtilLog4j.log.info(this, "SiAdjunto UPDATED SUCCESSFULLY");
@@ -277,14 +261,13 @@ public class SiAdjuntoImpl extends AbstractImpl<SiAdjunto>{
     }
 
     
-    public SiAdjunto delete(SiAdjunto adjunto, String idUsuario) throws LectorException {
+    public SiAdjunto delete(SiAdjunto adjunto, Integer idUsuario) throws LectorException {
         UtilLog4j.log.info(this, "SiAdjuntoImpl.delete()");
 
         if (adjunto != null) {
             String antesEvento = super.find(adjunto.getId()).toString();
 
             adjunto.setFechaGenero(new Date());
-            adjunto.setHoraGenero(new Date());
             adjunto.setEliminado(Constantes.ELIMINADO);
             adjunto.setGenero(new Usuario(idUsuario));
             super.edit(adjunto);
@@ -301,7 +284,7 @@ public class SiAdjuntoImpl extends AbstractImpl<SiAdjunto>{
     }
 
     
-    public void eliminarArchivo(SiAdjunto archivo, String idUsuario, boolean estado) {
+    public void eliminarArchivo(SiAdjunto archivo, Integer idUsuario, boolean estado) {
         UtilLog4j.log.info(this, "SiAdjuntoImpl.eliminarArchivo()");
         if (archivo == null) {
             UtilLog4j.log.info(this, "El archivo adjunto que intentas eliminar no existe.");
@@ -309,9 +292,8 @@ public class SiAdjuntoImpl extends AbstractImpl<SiAdjunto>{
             archivo.setGenero(new Usuario(idUsuario));
             archivo.setEliminado(estado);
             archivo.setFechaGenero(new Date());
-            archivo.setHoraGenero(new Date());
-
-            super.edit(archivo);
+            
+            edit(archivo);
         }
     }
 
@@ -482,7 +464,7 @@ public class SiAdjuntoImpl extends AbstractImpl<SiAdjunto>{
     }
 
     
-    public void eliminarArchivo(int idAdjunto, String sesion) {
+    public void eliminarArchivo(int idAdjunto, Integer sesion) {
         UtilLog4j.log.info(this, "SiAdjuntoImpl.eliminarArchivo()");
         SiAdjunto archivo = find(idAdjunto);
         if (archivo != null) {
@@ -493,7 +475,6 @@ public class SiAdjuntoImpl extends AbstractImpl<SiAdjunto>{
                 archivo.setModifico(new Usuario(sesion));
                 archivo.setEliminado(Constantes.ELIMINADO);
                 archivo.setFechaModifico(new Date());
-                archivo.setHoraModifico(new Date());
                 edit(archivo);
             } catch (LectorException ex) {
                 Logger.getLogger(SiAdjuntoImpl.class.getName()).log(Level.SEVERE, null, ex);

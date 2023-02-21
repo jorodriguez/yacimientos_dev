@@ -1,54 +1,65 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package lector.modelo;
 
 import java.io.Serializable;
 import java.util.Date;
-import javax.persistence.*;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
-import javax.xml.bind.annotation.XmlRootElement;
+import javax.persistence.Basic;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 /**
  *
- * @author hacosta
+ * @author jorodriguez
  */
 @Entity
-@Table(name = "SI_PLANTILLA_HTML")
-@SequenceGenerator(sequenceName = "si_plantilla_html_id_seq", name = "si_plantilla_html_seq", allocationSize = 1)
-@XmlRootElement
-@NamedQueries({
-    @NamedQuery(name = "SiPlantillaHtml.findAll", query = "SELECT s FROM SiPlantillaHtml s")})
+@Table(name = "si_plantilla_html")
 public class SiPlantillaHtml implements Serializable {
+
     private static final long serialVersionUID = 1L;
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
-    
-    @Column(name = "ID")
+    @Column(name = "id")
     private Integer id;
-    @Column(name = "FECHA_GENERO")
-    @Temporal(TemporalType.DATE)
-    private Date fechaGenero;
-    @Column(name = "HORA_GENERO")
-    @Temporal(TemporalType.TIME)
-    private Date horaGenero;
-    @Size(max = 20)
-    @Column(name = "NOMBRE")
+    @Column(name = "nombre")
     private String nombre;
-    @Size(max = 150)
-    @Column(name = "DESCRIPCION")
+    @Column(name = "descripcion")
     private String descripcion;
-    @Lob    
-    @Column(name = "INICIO")
+    @Column(name = "inicio")
     private String inicio;
-    @Lob    
-    @Column(name = "FIN")
+    @Column(name = "fin")
     private String fin;
-    @JoinColumn(name = "GENERO", referencedColumnName = "ID")
-    @ManyToOne
+    @Basic(optional = false)
+    @Column(name = "fecha_genero")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date fechaGenero;
+    @Column(name = "fecha_modifico")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date fechaModifico;
+    @Column(name = "eliminado")
+    private Boolean eliminado;
+    @JoinColumn(name = "c_cuenta", referencedColumnName = "id")
+    @ManyToOne(optional = false)
+    private CCuenta cCuenta;
+    @JoinColumn(name = "genero", referencedColumnName = "id")
+    @ManyToOne(optional = false)
     private Usuario genero;
+    @JoinColumn(name = "modifico", referencedColumnName = "id")
+    @ManyToOne
+    private Usuario modifico;
 
     public SiPlantillaHtml() {
     }
@@ -57,28 +68,17 @@ public class SiPlantillaHtml implements Serializable {
         this.id = id;
     }
 
+    public SiPlantillaHtml(Integer id, Date fechaGenero) {
+        this.id = id;
+        this.fechaGenero = fechaGenero;
+    }
+
     public Integer getId() {
         return id;
     }
 
     public void setId(Integer id) {
         this.id = id;
-    }
-
-    public Date getFechaGenero() {
-        return fechaGenero;
-    }
-
-    public void setFechaGenero(Date fechaGenero) {
-        this.fechaGenero = fechaGenero;
-    }
-
-    public Date getHoraGenero() {
-        return horaGenero;
-    }
-
-    public void setHoraGenero(Date horaGenero) {
-        this.horaGenero = horaGenero;
     }
 
     public String getNombre() {
@@ -113,6 +113,38 @@ public class SiPlantillaHtml implements Serializable {
         this.fin = fin;
     }
 
+    public Date getFechaGenero() {
+        return fechaGenero;
+    }
+
+    public void setFechaGenero(Date fechaGenero) {
+        this.fechaGenero = fechaGenero;
+    }
+
+    public Date getFechaModifico() {
+        return fechaModifico;
+    }
+
+    public void setFechaModifico(Date fechaModifico) {
+        this.fechaModifico = fechaModifico;
+    }
+
+    public Boolean getEliminado() {
+        return eliminado;
+    }
+
+    public void setEliminado(Boolean eliminado) {
+        this.eliminado = eliminado;
+    }
+
+    public CCuenta getCCuenta() {
+        return cCuenta;
+    }
+
+    public void setCCuenta(CCuenta cCuenta) {
+        this.cCuenta = cCuenta;
+    }
+
     public Usuario getGenero() {
         return genero;
     }
@@ -121,14 +153,22 @@ public class SiPlantillaHtml implements Serializable {
         this.genero = genero;
     }
 
-    
+    public Usuario getModifico() {
+        return modifico;
+    }
+
+    public void setModifico(Usuario modifico) {
+        this.modifico = modifico;
+    }
+
+    @Override
     public int hashCode() {
         int hash = 0;
         hash += (id != null ? id.hashCode() : 0);
         return hash;
     }
 
-    
+    @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof SiPlantillaHtml)) {
@@ -141,9 +181,9 @@ public class SiPlantillaHtml implements Serializable {
         return true;
     }
 
-    
+    @Override
     public String toString() {
-        return "sia.modelo.SiPlantillaHtml[ id=" + id + " ]";
+        return "mx.ihsa.mavenproject1.SiPlantillaHtml[ id=" + id + " ]";
     }
     
 }

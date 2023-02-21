@@ -51,7 +51,7 @@ public class SiUsuarioRolImpl extends AbstractImpl<SiUsuarioRol>{
      * @throws java.lang.Exception
      */
     
-    public UsuarioRolVo findUsuarioRolVO(Integer rolId, String usuario, int idCampo) throws Exception {
+    public UsuarioRolVo findUsuarioRolVO(Integer rolId, Integer usuario, int idCampo) throws Exception {
         clearQuery();
         UsuarioRolVo retVal = null;
 
@@ -120,7 +120,7 @@ public class SiUsuarioRolImpl extends AbstractImpl<SiUsuarioRol>{
      * @param idCampo
      */
     
-    public void guardar(RolVO rol, String usuario, boolean principal, int idCampo) {
+    public void guardar(RolVO rol, Integer usuario, boolean principal, int idCampo) {
         Usuario user = new Usuario(usuario);
         SiRol r = siRolRemote.find(rol.getId());
 
@@ -129,10 +129,9 @@ public class SiUsuarioRolImpl extends AbstractImpl<SiUsuarioRol>{
         ur.setGenero(new Usuario(Constantes.USUARIO_DEFAULT));
         ur.setSiRol(r);
         ur.setModifico(new Usuario(Constantes.USUARIO_DEFAULT));
-        ur.setEliminado(Constantes.BOOLEAN_FALSE);
-        ur.setPrincipal(principal);
+        ur.setEliminado(Constantes.BOOLEAN_FALSE);        
         ur.setFechaGenero(new Date());
-        ur.setHoraGenero(new Date());
+        
 
         create(ur);
     }
@@ -148,7 +147,7 @@ public class SiUsuarioRolImpl extends AbstractImpl<SiUsuarioRol>{
      * @return
      */
     
-    public boolean guardarUsuarioRol(int idRol, String nombreUsuario, boolean principal, String idSesion, int idCampo) {
+    public boolean guardarUsuarioRol(int idRol, String nombreUsuario, boolean principal, Integer idSesion, int idCampo) {
         boolean v;
         try {
             SiUsuarioRol ur = new SiUsuarioRol();
@@ -156,9 +155,7 @@ public class SiUsuarioRolImpl extends AbstractImpl<SiUsuarioRol>{
             ur.setUsuario(usuarioRemote.buscarPorNombre(nombreUsuario));
             ur.setGenero(new Usuario(idSesion));
             ur.setFechaGenero(new Date());
-            ur.setHoraGenero(new Date());
             ur.setEliminado(Constantes.BOOLEAN_FALSE);
-            ur.setPrincipal(principal);
             create(ur);
             v = true;
         } catch (Exception e) {
@@ -178,8 +175,6 @@ public class SiUsuarioRolImpl extends AbstractImpl<SiUsuarioRol>{
 
         ur.setModifico(new Usuario(Constantes.USUARIO_DEFAULT));
         ur.setFechaModifico(new Date());
-        ur.setHoraModifico(new Date());
-        ur.setPrincipal(Constantes.BOOLEAN_FALSE);
         edit(ur);
 
         UsuarioRolVo urn = findUsuarioRolVO(usuario.getRolId(), usuario.getId(), idCampo);
@@ -188,8 +183,6 @@ public class SiUsuarioRolImpl extends AbstractImpl<SiUsuarioRol>{
 
         urnu.setModifico(new Usuario(Constantes.USUARIO_DEFAULT));
         urnu.setFechaModifico(new Date());
-        urnu.setHoraModifico(new Date());
-        urnu.setPrincipal(Constantes.BOOLEAN_TRUE);
         edit(urnu);
     }
 
@@ -418,13 +411,11 @@ public class SiUsuarioRolImpl extends AbstractImpl<SiUsuarioRol>{
     }
 
     
-    public void eliminarUsuarioRol(int idUr, String idSesion) {
+    public void eliminarUsuarioRol(int idUr, Integer idSesion) {
         SiUsuarioRol ur = find(idUr);
         String ae = ur.toString();
         ur.setModifico(new Usuario(idSesion));
         ur.setFechaModifico(new Date());
-        ur.setHoraModifico(new Date());
-        ur.setPrincipal(Constantes.BOOLEAN_FALSE);
         ur.setEliminado(Constantes.ELIMINADO);
         edit(ur);
     }
@@ -484,15 +475,13 @@ public class SiUsuarioRolImpl extends AbstractImpl<SiUsuarioRol>{
     }
 
     
-    public int guardar(int rol, String usuario, boolean principal, int idCampo, String sesion) {
+    public int guardar(int rol, Integer usuario, boolean principal, int idCampo, Integer sesion) {
         SiUsuarioRol ur = new SiUsuarioRol();
         ur.setUsuario(new Usuario(usuario));
         ur.setGenero(new Usuario(sesion));
         ur.setSiRol(new SiRol(rol));
         ur.setEliminado(Constantes.NO_ELIMINADO);
-        ur.setPrincipal(principal ? Constantes.BOOLEAN_TRUE : Constantes.BOOLEAN_FALSE);
         ur.setFechaGenero(new Date());
-        ur.setHoraGenero(new Date());
 
         create(ur);
         //
@@ -591,16 +580,14 @@ public class SiUsuarioRolImpl extends AbstractImpl<SiUsuarioRol>{
     }
 
     
-    public void guardarUsuarioRol(String codigoRol, String idUsuario, int idCampo, String sesion) {
+    public void guardarUsuarioRol(String codigoRol, Integer idUsuario, int idCampo, Integer sesion) {
         SiUsuarioRol ur = new SiUsuarioRol();
         SiRol rol = siRolRemote.buscarPorCodigo(codigoRol);
         ur.setUsuario(new Usuario(idUsuario));
         ur.setGenero(new Usuario(sesion));
         ur.setSiRol(rol);
         ur.setEliminado(Constantes.NO_ELIMINADO);
-        ur.setPrincipal(Constantes.BOOLEAN_FALSE);
         ur.setFechaGenero(new Date());
-        ur.setHoraGenero(new Date());
 
         create(ur);
     }

@@ -1,131 +1,170 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package lector.modelo;
 
 import java.io.Serializable;
-import java.util.Collection;
 import java.util.Date;
 import javax.persistence.Basic;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.OneToMany;
-import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-import javax.validation.constraints.Size;
-import javax.xml.bind.annotation.XmlRootElement;
-import lombok.Getter;
-import lombok.Setter;
-import lector.constantes.Constantes;
 
 /**
  *
- * @author hacosta
+ * @author jorodriguez
  */
 @Entity
-@Table(name = "SI_ROL")
-@SequenceGenerator(sequenceName = "si_rol_id_seq", name = "si_rol_seq", allocationSize = 1)
-@XmlRootElement
-@NamedQueries({
-    @NamedQuery(name = "SiRol.findAll", query = "SELECT s FROM SiRol s"),
-    @NamedQuery(name = "SiRol.findByCode", query = "SELECT s FROM SiRol s where s.codigo = ?1 and s.eliminado = false")
-})
-@Setter
-@Getter
+@Table(name = "si_rol")
 public class SiRol implements Serializable {
 
-    @Column(name = "FECHA_GENERO")
-    @Temporal(TemporalType.DATE)
-    private Date fechaGenero;
-    @Column(name = "HORA_GENERO")
-    @Temporal(TemporalType.TIME)
-    private Date horaGenero;
-    @Column(name = "FECHA_MODIFICO")
-    @Temporal(TemporalType.DATE)
-    private Date fechaModifico;
-    @Column(name = "HORA_MODIFICO")
-    @Temporal(TemporalType.TIME)
-    private Date horaModifico;    
-    @JoinColumn(name = "MODIFICO", referencedColumnName = "ID")
-    @ManyToOne
-    private Usuario modifico;
-    @JoinColumn(name = "SI_MODULO", referencedColumnName = "ID")
     private static final long serialVersionUID = 1L;
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
-    
-    @Column(name = "ID")
+    @Column(name = "id")
     private Integer id;
-    @Size(max = 25)
-    @Column(name = "NOMBRE")
+    @Column(name = "nombre")
     private String nombre;
-    
-    @Column(name = "ELIMINADO")
-    private boolean eliminado;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "siRol")
-    private Collection<SiUsuarioRol> siUsuarioRolCollection;
-    @OneToMany(mappedBy = "siRol")
-    private Collection<SiRelRolOpcion> siRelRolOpcionCollection;
-    @JoinColumn(name = "GENERO", referencedColumnName = "ID")
-    @ManyToOne
-    private Usuario genero;
-    @Size(max = 25)
-    @Column(name = "CODIGO")
+    @Basic(optional = false)
+    @Column(name = "codigo")
     private String codigo;
+    @Basic(optional = false)
+    @Column(name = "fecha_genero")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date fechaGenero;
+    @Column(name = "fecha_modifico")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date fechaModifico;
+    @Column(name = "eliminado")
+    private Boolean eliminado;
+    @JoinColumn(name = "si_modulo", referencedColumnName = "id")
+    @ManyToOne(optional = false)
+    private SiModulo siModulo;
+    @JoinColumn(name = "genero", referencedColumnName = "id")
+    @ManyToOne(optional = false)
+    private Usuario genero;
+    @JoinColumn(name = "modifico", referencedColumnName = "id")
+    @ManyToOne
+    private Usuario modifico;
 
     public SiRol() {
     }
 
-    public SiRol(int id) {
-	this.id = id;
+    public SiRol(Integer id) {
+        this.id = id;
     }
 
-    
+    public SiRol(Integer id, String codigo, Date fechaGenero) {
+        this.id = id;
+        this.codigo = codigo;
+        this.fechaGenero = fechaGenero;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public String getNombre() {
+        return nombre;
+    }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+
+    public String getCodigo() {
+        return codigo;
+    }
+
+    public void setCodigo(String codigo) {
+        this.codigo = codigo;
+    }
+
+    public Date getFechaGenero() {
+        return fechaGenero;
+    }
+
+    public void setFechaGenero(Date fechaGenero) {
+        this.fechaGenero = fechaGenero;
+    }
+
+    public Date getFechaModifico() {
+        return fechaModifico;
+    }
+
+    public void setFechaModifico(Date fechaModifico) {
+        this.fechaModifico = fechaModifico;
+    }
+
+    public Boolean getEliminado() {
+        return eliminado;
+    }
+
+    public void setEliminado(Boolean eliminado) {
+        this.eliminado = eliminado;
+    }
+
+
+    public SiModulo getSiModulo() {
+        return siModulo;
+    }
+
+    public void setSiModulo(SiModulo siModulo) {
+        this.siModulo = siModulo;
+    }
+
+    public Usuario getGenero() {
+        return genero;
+    }
+
+    public void setGenero(Usuario genero) {
+        this.genero = genero;
+    }
+
+    public Usuario getModifico() {
+        return modifico;
+    }
+
+    public void setModifico(Usuario modifico) {
+        this.modifico = modifico;
+    }
+
+    @Override
     public int hashCode() {
-	int hash = 0;
-	hash += (id != null ? id.hashCode() : 0);
-	return hash;
+        int hash = 0;
+        hash += (id != null ? id.hashCode() : 0);
+        return hash;
     }
 
-    
+    @Override
     public boolean equals(Object object) {
-	// TODO: Warning - this method won't work in the case the id fields are not set
-	if (!(object instanceof SiRol)) {
-	    return false;
-	}
-	SiRol other = (SiRol) object;
-	if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
-	    return false;
-	}
-	return true;
+        // TODO: Warning - this method won't work in the case the id fields are not set
+        if (!(object instanceof SiRol)) {
+            return false;
+        }
+        SiRol other = (SiRol) object;
+        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+            return false;
+        }
+        return true;
     }
 
-    
+    @Override
     public String toString() {
-	StringBuilder sb = new StringBuilder();
-	sb.append(getClass().getSimpleName());
-	sb.append("{");
-	sb.append("id=").append(id);
-	sb.append(", nombre").append(nombre != null ? nombre : null);
-	sb.append(", codigo").append(codigo != null ? codigo : null);
-	sb.append(", genero=").append(this.genero != null ? this.genero.getId() : null);
-	sb.append(", fechaGenero=").append(this.fechaGenero != null ? (Constantes.FMT_ddMMyyy.format(this.fechaGenero)) : null);
-	sb.append(", horaGenero=").append(this.horaGenero != null ? (Constantes.FMT_HHmmss.format(this.horaGenero)) : null);
-	sb.append(", modifico=").append(this.modifico != null ? this.modifico.getId() : null);
-	sb.append(", fechaModifico=").append(this.fechaModifico != null ? (Constantes.FMT_ddMMyyy.format(this.fechaModifico)) : null);
-	sb.append(", horaModifico=").append(this.horaModifico != null ? (Constantes.FMT_HHmmss.format(this.horaModifico)) : null);
-	sb.append(", eliminado=").append(this.eliminado);
-	sb.append("}");
-
-	return sb.toString();
+        return "mx.ihsa.mavenproject1.SiRol[ id=" + id + " ]";
     }
+    
 }

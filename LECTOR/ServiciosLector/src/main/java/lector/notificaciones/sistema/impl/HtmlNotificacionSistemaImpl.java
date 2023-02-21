@@ -21,7 +21,7 @@ public class HtmlNotificacionSistemaImpl extends CodigoHtml {
     private SiPlantillaHtmlImpl plantillaHtml;
 
     
-    public StringBuilder getHtmlClaveUsuario(String nombre, String clave, String idUsuario) {
+    public StringBuilder getHtmlClaveUsuario(String nombre, String clave, Integer idUsuario) {
         SiPlantillaHtml plantilla = this.plantillaHtml.find(1);
         this.limpiarCuerpoCorreo();
         this.cuerpoCorreo.append(plantilla.getInicio())

@@ -1,4 +1,7 @@
-
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
 package lector.modelo;
 
 import java.io.Serializable;
@@ -13,90 +16,156 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
-import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-import javax.xml.bind.annotation.XmlRootElement;
-import lombok.Getter;
-import lombok.Setter;
 
 /**
  *
- * @author hacosta
+ * @author jorodriguez
  */
 @Entity
-@Table(name = "SI_USUARIO_ROL")
-@SequenceGenerator(sequenceName = "si_usuario_rol_id_seq", name = "si_usuario_rol_seq", allocationSize = 1)
-@XmlRootElement
-@NamedQueries({
-    @NamedQuery(name = "SiUsuarioRol.findAll", query = "SELECT s FROM SiUsuarioRol s")})
-@Getter
-@Setter
+@Table(name = "si_usuario_rol")
 public class SiUsuarioRol implements Serializable {
-    
-    @Id
-    @GeneratedValue(generator =  "si_usuario_rol_seq", strategy = GenerationType.SEQUENCE)
-    @Basic(optional = false)    
-    @Column(name = "ID")
-    private Integer id;
 
-
-    @Column(name = "FECHA_GENERO")
-    @Temporal(TemporalType.DATE)
-    private Date fechaGenero;
-    @Column(name = "HORA_GENERO")
-    @Temporal(TemporalType.TIME)
-    private Date horaGenero;
-    @Column(name = "FECHA_MODIFICO")
-    @Temporal(TemporalType.DATE)
-    private Date fechaModifico;
-    @Column(name = "HORA_MODIFICO")
-    @Temporal(TemporalType.TIME)
-    private Date horaModifico;
-    @JoinColumn(name = "MODIFICO", referencedColumnName = "ID")
-    @ManyToOne
-    private Usuario modifico;
     private static final long serialVersionUID = 1L;
-    
-    
-    @Column(name = "ELIMINADO")
-    private boolean eliminado;
-    @JoinColumn(name = "GENERO", referencedColumnName = "ID")
-    @ManyToOne
-    private Usuario genero;
-    @JoinColumn(name = "USUARIO", referencedColumnName = "ID")
-    @ManyToOne
-    private Usuario usuario;
-    @JoinColumn(name = "SI_ROL", referencedColumnName = "ID")
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Basic(optional = false)
+    @Column(name = "id")
+    private Integer id;
+    @Basic(optional = false)
+    @Column(name = "fecha_genero")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date fechaGenero;
+    @Column(name = "fecha_modifico")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date fechaModifico;
+    @Column(name = "eliminado")
+    private Boolean eliminado;
+    @JoinColumn(name = "c_cuenta", referencedColumnName = "id")
+    @ManyToOne(optional = false)
+    private CCuenta cCuenta;
+    @JoinColumn(name = "si_rol", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private SiRol siRol;
-    
-    @Column(name = "IS_PRINCIPAL")
-    private boolean principal;
+    @JoinColumn(name = "genero", referencedColumnName = "id")
+    @ManyToOne(optional = false)
+    private Usuario genero;
+    @JoinColumn(name = "modifico", referencedColumnName = "id")
+    @ManyToOne
+    private Usuario modifico;
+    @JoinColumn(name = "usuario", referencedColumnName = "id")
+    @ManyToOne(optional = false)
+    private Usuario usuario;
 
     public SiUsuarioRol() {
     }
 
-    public SiUsuarioRol(int id) {
-	this.id = id;
+    public SiUsuarioRol(Integer id) {
+        this.id = id;
     }
 
-    
+    public SiUsuarioRol(Integer id, Date fechaGenero) {
+        this.id = id;
+        this.fechaGenero = fechaGenero;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public Date getFechaGenero() {
+        return fechaGenero;
+    }
+
+    public void setFechaGenero(Date fechaGenero) {
+        this.fechaGenero = fechaGenero;
+    }
+
+    public Date getFechaModifico() {
+        return fechaModifico;
+    }
+
+    public void setFechaModifico(Date fechaModifico) {
+        this.fechaModifico = fechaModifico;
+    }
+
+    public Boolean getEliminado() {
+        return eliminado;
+    }
+
+    public void setEliminado(Boolean eliminado) {
+        this.eliminado = eliminado;
+    }
+
+    public CCuenta getCCuenta() {
+        return cCuenta;
+    }
+
+    public void setCCuenta(CCuenta cCuenta) {
+        this.cCuenta = cCuenta;
+    }
+
+    public SiRol getSiRol() {
+        return siRol;
+    }
+
+    public void setSiRol(SiRol siRol) {
+        this.siRol = siRol;
+    }
+
+    public Usuario getGenero() {
+        return genero;
+    }
+
+    public void setGenero(Usuario genero) {
+        this.genero = genero;
+    }
+
+    public Usuario getModifico() {
+        return modifico;
+    }
+
+    public void setModifico(Usuario modifico) {
+        this.modifico = modifico;
+    }
+
+    public Usuario getUsuario() {
+        return usuario;
+    }
+
+    public void setUsuario(Usuario usuario) {
+        this.usuario = usuario;
+    }
+
+    @Override
     public int hashCode() {
-	int hash = 0;
-	hash += (id != null ? id.hashCode() : 0);
-	return hash;
+        int hash = 0;
+        hash += (id != null ? id.hashCode() : 0);
+        return hash;
     }
 
-    
+    @Override
     public boolean equals(Object object) {
-	// TODO: Warning - this method won't work in the case the id fields are not set
-	if (!(object instanceof SiUsuarioRol)) {
-	    return false;
-	}
-	SiUsuarioRol other = (SiUsuarioRol) object;
-	return !((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id)));
+        // TODO: Warning - this method won't work in the case the id fields are not set
+        if (!(object instanceof SiUsuarioRol)) {
+            return false;
+        }
+        SiUsuarioRol other = (SiUsuarioRol) object;
+        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+            return false;
+        }
+        return true;
     }
 
+    @Override
+    public String toString() {
+        return "mx.ihsa.mavenproject1.SiUsuarioRol[ id=" + id + " ]";
+    }
+    
 }
