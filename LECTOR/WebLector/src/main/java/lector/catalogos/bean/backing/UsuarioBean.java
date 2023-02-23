@@ -148,15 +148,17 @@ public class UsuarioBean implements Serializable {
     
 
     public void llenarMenu() {
-        listaMenu.addAll(taerListaMenu(1, sesion.getUsuarioVo().getId(), sesion.getUsuarioVo().getIdCampo()));
+        listaMenu.addAll(
+                taerListaMenuUsuarioSesion()
+        );
 
     }
 
-    public List<MenuSiOpcionVo> taerListaMenu(Integer modulo, Integer usrID, int campo) {
+    public List<MenuSiOpcionVo> taerListaMenuUsuarioSesion() {
         listaMenu = new ArrayList<>();
 
         try {
-            listaMenu.addAll(makeItems(siOpcionImpl.getListaMenu(modulo, usrID, campo)));
+            listaMenu.addAll(makeItems(siOpcionImpl.getListaMenu(sesion.getUsuarioSesion())));
         } catch (Exception e) {
             LOGGER.error(e);
         }
@@ -183,7 +185,7 @@ public class UsuarioBean implements Serializable {
     public List<SiOpcionVo> getListaSubMenus() {
         Collection<SiOpcionVo> s = new HashSet<>();
         try {
-            for (UsuarioRolVo rol : traerRolesPorUsuario(sesion.getUsuarioVo().getId(), 0, sesion.getUsuarioVo().getIdCampo())) {
+            for (UsuarioRolVo rol : traerRolesPorUsuario()) {
                 s.addAll(taerOpcionesByRol(1, rol.getIdRol()));
             }
         } catch (Exception e) {
@@ -197,7 +199,7 @@ public class UsuarioBean implements Serializable {
 
     }
 
-    public List<UsuarioRolVo> traerRolesPorUsuario(Integer idUsuario, int modulo, int idCamp) {
+    public List<UsuarioRolVo> traerRolesPorUsuario() {
         List<UsuarioRolVo> ur = null;
         try {
             //ur = SiUsuarioRol.traerRolPorUsuarioModulo(idUsuario, modulo, idCamp);
@@ -210,86 +212,13 @@ public class UsuarioBean implements Serializable {
 
 
     public void buscarId() {
-        String[] cad = sesion.getUsuarioVo().getMail().split("@");
+        String[] cad = sesion.getUsuarioSesion().getEmail().split("@");
         Usuario us = buscarPorId(cad[0].toUpperCase());
         if (us != null) {
             FacesUtils.addInfoMessage("Ya existe un usuario con el ID " + cad[0]);
         }
     }
 
-/*
-    public String guardarUsuarioNuevoIngreso(String param) {
-        boolean v;
-        if (!this.validateTextHastNotPunctuation(getNombre())) {
-            if (!this.validateTextHastNotPunctuation(getPrimerApellido())) {
-                if (!this.validateTextHastNotPunctuation(getSegundoApellido())) {
-                    if (getUsuarioVOAlta().getIdCampo() > 0) {
-                        if (getUsuarioVOAlta().getIdOficina() > 0) {
-                            if (getIdGerencia() > 0) {
-                                if (verificaPuesto()) {
-                                    //if (!getUsuarioVOAlta().getIdJefe().isEmpty()) {
-                                    if (getUsuarioVOAlta().getFechaIngreso() != null) {
-                                        UtilLog4j.log.info(this, "nombre puesto: " + getRhPuestoVo().getNombre());
-                                        if (getUsuarioVOAlta().getIdNomina() > 0) {
-                                            if (validaMail(getUsuarioVOAlta().getMail())) {
-                                                try {
-                                                    v = this.guardarUsuarioNuevoIngreso();//sesion.getUsuarioVo().getId(), getUsuarioVOAlta(), getIdGerencia());
-                                                } catch (Exception e) {
-                                                    FacesUtils.addErrorMessage("frmUser:error", "Ocurrió un error al guardar el Usuario");
-                                                    v = false;
-                                                    LOGGER.warn(this, "", e);
-                                                }
-                                                if (v) {
-                                                    this.limpiar();
-                                                    setListaPuestos(null);
-                                                    traerListaMateriales();
-                                                    if (param != null && !param.isEmpty() && "AD".equals(param)) {
-                                                        FacesUtils.addInfoMessage("El usuario se guardo exitosamente. ");
-                                                        cancelarNuevoIngreso();
-                                                        return "/vistas/recursos/altaNuevoIngresoAdmin.xhtml?faces-redirect=true";
-                                                    } else {
-                                                        Env.setContext(sesion.getCtx(), "USER_NAME", usuarioVOAlta.getNombre());
-                                                        return "/vistas/recursos/solicitudMaterialEmpleado.xhtml?faces-redirect=true";
-                                                    }
-                                                } else {
-                                                    FacesUtils.addInfoMessage("frmUser:error", "Ocurrio un error . . .  + + + ");
-                                                }
-                                            } else {
-                                                FacesUtils.addInfoMessage("Mail no válido");
-                                            }
-                                        } else {
-                                            FacesUtils.addInfoMessage("frmUser:error", "Seleccione la nomina");
-                                        }
-                                    } else {
-                                        FacesUtils.addInfoMessage("frmUser:error", "Seleccione la fecha de ingreso");
-                                    }
-//                                    } else {
-//                                        FacesUtils.addInfoMessage("frmUser:error", "Seleccione el jefe");
-//                                    }
-                                } else {
-                                    FacesUtils.addInfoMessage("frmUser:error", "Seleccione el puesto");
-                                }
-                            } else {
-                                FacesUtils.addInfoMessage("frmUser:error", "Seleccione alguna gerencia");
-                            }
-                        } else {
-                            FacesUtils.addInfoMessage("frmUser:error", "Seleccione la oficina");
-                        }
-                    } else {
-                        FacesUtils.addErrorMessage("frmUser:error", "Campo es requerido");
-                    }
-                } else {
-                    FacesUtils.addErrorMessage("frmUser:error", FacesUtils.getKeyResourceBundle("sia.Usuario.segundoApellido.valida.false"));
-                }
-            } else {
-                FacesUtils.addErrorMessage("frmUser:error", FacesUtils.getKeyResourceBundle("sia.Usuario.primerApellido.valida.false"));
-            }
-        } else {
-            FacesUtils.addErrorMessage("frmUser:error", FacesUtils.getKeyResourceBundle("sia.Usuario.nombre.valida.false"));
-        }
-
-        return "";
-    }*/
 
     public String encriptar(String text) throws NoSuchAlgorithmException {
         //LOGGER.info(this, "Text: ");
@@ -310,59 +239,11 @@ public class UsuarioBean implements Serializable {
         return m.find();
     }
 
-    public boolean verificarModificacionMail() {
+  /*  public boolean verificarModificacionMail() {
         return servicioUsuario.find(usuarioVOAlta.getId())
                 .getEmail().equals(usuarioVOAlta.getMail());
     }
-
-
-    /*
-    public String guardarUsuario() throws NoSuchAlgorithmException {
-        boolean v;
-        String[] cad = getUsuarioVOAlta().getMail().split("@");
-        String posibleId = this.removeSpecialCharactersReplacingWithASCII(cad[0]);
-
-        int errors = 0;
-
-        if (!this.validaMail(getUsuarioVOAlta().getMail()) || this.validateTextHastNotPunctuation(posibleId)) {
-            FacesUtils.addInfoMessage("frmUser:error", "Mail no válido");
-            FacesUtils.addInfoMessage("frmUser:error", FacesUtils.getKeyResourceBundle("sia.Usuario.email.msg.noValido.caracteresEspeciale"));
-            errors++;
-        }
-        if (getUsuarioVOAlta().getIdCampo() <= 0) {
-            FacesUtils.addInfoMessage("frmUser:error", "Campo es requerido");
-            errors++;
-        }
-        if (this.validateTextHastNotPunctuation(getUsuarioVOAlta().getNombre())) {
-            FacesUtils.addErrorMessage("frmUser:error", FacesUtils.getKeyResourceBundle("sia.Usuario.nombre.valida.false"));
-            errors++;
-        }
-        if (!this.validaMail(getUsuarioVOAlta().getDestinatarios()) || this.validateTextHastNotPunctuation(getUsuarioVOAlta().getDestinatarios())) {
-            FacesUtils.addInfoMessage("frmUser:error", "Destinatarios no válido");
-            FacesUtils.addInfoMessage("frmUser:error", FacesUtils.getKeyResourceBundle("sia.Usuario.email.msg.noValido.caracteresEspeciale"));
-            errors++;
-        }
-
-        if (errors == 0) {
-            getUsuarioVOAlta().setId(posibleId);
-            if (this.traerIdUsuario(getUsuarioVOAlta().getId().toUpperCase()) == null) {
-                getUsuarioVOAlta().setClave(encriptar(getUsuarioVOAlta().getClave()));
-                v = servicioUsuario.guardarNuevoUsuario(sesion.getUsuarioVo().getId(), getUsuarioVOAlta(), getIdGerencia());
-                if (v) {
-//                    this.soporteProveedor.setUsuario(null);
-//                    soporteProveedor.setPuestoVo(null);
-                    setUsuarioVOAlta(null);
-                    this.limpiar();
-                    return "consultaUsuario";
-                } else {
-                    FacesUtils.addInfoMessage("frmUser:error", FacesUtils.getKeyResourceBundle("sistema.msg.error.guardar"));
-                }
-            } else {
-                FacesUtils.addInfoMessage("frmUser:error", "El id " + getUsuarioVOAlta().getId() + " ya existe, por favor elija otro");
-            }
-        }
-        return "";
-    }*/
+*/
 
     public String cancelarNuevoIngreso() {
         setU("");
@@ -386,8 +267,6 @@ public class UsuarioBean implements Serializable {
             getUsuarioVOAlta().setNombre(u.getNombre());
             getUsuarioVOAlta().setClave(u.getClave());
 
-            getUsuarioVOAlta().setMail(u.getMail());
-
 
             getUsuarioVOAlta().setDestinatarios(u.getDestinatarios());
             getUsuarioVOAlta().setRfc(u.getRfc());
@@ -396,20 +275,13 @@ public class UsuarioBean implements Serializable {
             getUsuarioVOAlta().setCelular(u.getCelular());
             getUsuarioVOAlta().setSexo(u.getSexo());
             //
-            getUsuarioVOAlta().setIdCampo(u.getIdCampo());
             getUsuarioVOAlta().setCampo(u.getCampo());
             getUsuarioVOAlta().setActivo(u.isActivo());
             getUsuarioVOAlta().setPregunta(u.getPregunta());
             getUsuarioVOAlta().setRespuesta(u.getRespuesta());
             //Otros 5
-            getUsuarioVOAlta().setFechaIngreso(u.getFechaIngreso());
             getUsuarioVOAlta().setFechaNacimiento(u.getFechaNacimiento());
-                getUsuarioVOAlta().setOficina(u.getOficina());
-                getUsuarioVOAlta().setIdOficina(u.getIdOficina());
 
-            if (u.getIdNomina() != 0) {
-                getUsuarioVOAlta().setIdNomina(u.getIdNomina());
-            }
 
         }
     }
@@ -418,7 +290,6 @@ public class UsuarioBean implements Serializable {
 
     public String agregarUsuario() {
         setUsuarioVOAlta(new UsuarioVO());
-        getUsuarioVOAlta().setGafete("si");
         return "/vistas/recursos/altaNuevoIngresoRH.xhtml?faces-redirect=true";
     }
 
@@ -427,20 +298,6 @@ public class UsuarioBean implements Serializable {
         this.eiminarUsuario();
         this.setUsuarioVOAlta(null);
         setU("");
-//        this.mostrarTitulo = true;
-    }
-
-
-
-    public void buscarUsuarioConsulta() {
-        UsuarioVO usuaroiSel = buscarPorNombre(getU());
-        if (usuaroiSel != null) {
-            llenarUsuarioVOAlta(usuaroiSel);
-
-            UtilLog4j.log.info(this, "Usr:{0}", new Object[]{getUsuarioVOAlta().getNombre()});
-        } else {
-            UtilLog4j.log.info(this, "No se encontro el usuario");
-        }
     }
 
     public void limpiarVar() {
@@ -479,10 +336,6 @@ public class UsuarioBean implements Serializable {
         return servicioUsuario.find(idUsuario);
     }
 
-    public UsuarioVO buscarPorNombre(String userName) {
-        return servicioUsuario.findByName(userName);
-    }
-
     //Validaciones
     public boolean validaMail(String correo) {
         String[] mails = correo.split(",");
@@ -516,7 +369,7 @@ public class UsuarioBean implements Serializable {
 
     public String reinicioClave() {
         boolean v;
-        v = servicioUsuario.reinicioClave(sesion.getUsuarioVo().getId(), usuarioVOAlta.getId());
+        v = servicioUsuario.reinicioClave(sesion.getUsuarioSesion().getId(), usuarioVOAlta.getId());
         if (v) {
             FacesUtils.addInfoMessage("Se envio la clave al usuario");
             setUsuarioVOAlta(null);

@@ -18,20 +18,20 @@ import lector.servicios.catalogos.impl.UsuarioImpl;
 /**
  *
  */
-@Named
-@FacesConverter(value = "usuarioConverter", managed = true)
-public class UsuarioConverter implements Converter<UsuarioVO> {
+//@Named
+//@FacesConverter(value = "usuarioConverter", managed = true)
+public class UsuarioConverter{// implements Converter<UsuarioVO> {
 
     @Inject
     private UsuarioImpl usuarioImpl;
 
-    @Override
+  /*  @Override
     public UsuarioVO getAsObject(FacesContext context, UIComponent component, String value) {
-        if (value != null && value.trim().length() > 0) {
+        if (value != null) {
             try {
-                return usuarioImpl.findById((value));
+                return usuarioImpl.findById(Integer.parseInt(value));
             } catch (NumberFormatException e) {
-                throw new ConverterException(new FacesMessage(FacesMessage.SEVERITY_ERROR, "Conversion Error", "Artículo no encontrado."));
+                throw new ConverterException(new FacesMessage(FacesMessage.SEVERITY_ERROR, "Conversion Error", "Usuario no encontrado."));
             }
         } else {
             return null;
@@ -45,6 +45,6 @@ public class UsuarioConverter implements Converter<UsuarioVO> {
         } else {
             return null;
         }
-    }
+    }*/
 
 }

@@ -1,9 +1,3 @@
---
--- PostgreSQL database dump
---
-
--- Dumped from database version 11.5
--- Dumped by pg_dump version 11.5
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -15,65 +9,6 @@ SET check_function_bodies = false;
 SET xmloption = content;
 SET client_min_messages = warning;
 SET row_security = off;
-
---
--- Name: logging; Type: SCHEMA; Schema: -; Owner: ihsa
---
-
-CREATE SCHEMA logging;
-
-
-ALTER SCHEMA logging OWNER TO ihsa;
-
---
--- Name: reporting; Type: SCHEMA; Schema: -; Owner: ihsa
---
-
-CREATE SCHEMA reporting;
-
-
-ALTER SCHEMA reporting OWNER TO ihsa;
-
---
--- Name: pg_stat_statements; Type: EXTENSION; Schema: -; Owner: 
---
-
-CREATE EXTENSION IF NOT EXISTS pg_stat_statements WITH SCHEMA public;
-
-
---
--- Name: EXTENSION pg_stat_statements; Type: COMMENT; Schema: -; Owner: 
---
-
-COMMENT ON EXTENSION pg_stat_statements IS 'track execution statistics of all SQL statements executed';
-
-
---
--- Name: pg_trgm; Type: EXTENSION; Schema: -; Owner: 
---
-
-CREATE EXTENSION IF NOT EXISTS pg_trgm WITH SCHEMA public;
-
-
---
--- Name: EXTENSION pg_trgm; Type: COMMENT; Schema: -; Owner: 
---
-
-COMMENT ON EXTENSION pg_trgm IS 'text similarity measurement and index searching based on trigrams';
-
-
---
--- Name: unaccent; Type: EXTENSION; Schema: -; Owner: 
---
-
-CREATE EXTENSION IF NOT EXISTS unaccent WITH SCHEMA public;
-
-
---
--- Name: EXTENSION unaccent; Type: COMMENT; Schema: -; Owner: 
---
-
-COMMENT ON EXTENSION unaccent IS 'text search dictionary that removes accents';
 
 
 --
@@ -1440,6 +1375,7 @@ CREATE SEQUENCE public.co_noticia_si_adjunto_id_seq
 
 
 ALTER TABLE public.co_noticia_si_adjunto_id_seq OWNER TO ihsa;
+
 
 --
 -- Name: co_noticia_si_adjunto_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: ihsa

@@ -22,6 +22,7 @@ import com.google.api.client.util.Strings;
 import lector.constantes.Constantes;
 import lector.dominio.modelo.usuario.vo.UsuarioVO;
 import lector.dominio.vo.UsuarioRolVo;
+import lector.excepciones.LectorException;
 import lector.modelo.Usuario;
 import lector.servicios.catalogos.impl.UsuarioImpl;
 import lector.servicios.sistema.impl.SiUsuarioRolImpl;
@@ -54,11 +55,10 @@ public class Sesion implements Serializable {
     private Properties ctx;
 
     @Inject
-    private UsuarioImpl usuarioImpl;        
-        
+    private UsuarioImpl usuarioImpl;
+
     @Inject
     private SiUsuarioRolImpl siUsuarioRol;
-    
 
     //-- Atributos
     public static final String CREATE_OPERATION = FacesUtils.getKeyResourceBundle("sistema.crear"); //genera el objeto
@@ -67,15 +67,13 @@ public class Sesion implements Serializable {
 //se fija el objeto a modificar
     private TreeMap<String, Boolean> controladorPopups = new TreeMap<>();
     private final Calendar calendario = Calendar.getInstance();
-    
-    @Getter
-    private final Date fecha = calendario.getTime();
-    
-    private Usuario usuario;
 
     @Getter
+    private final Date fecha = calendario.getTime();
+   
+    @Getter
     @Setter
-    private UsuarioVO usuarioVo;
+    private UsuarioVO usuarioSesion;
 
     @Getter
     @Setter
@@ -92,17 +90,17 @@ public class Sesion implements Serializable {
     @Getter
     @Setter
     private String u;
-    
+
     @Getter
     @Setter
     private String c;
-    
+
     private boolean olvidoClave;
     private boolean visible = true;
 
     private String rfcCompania;
     //private List<SiModuloVo> listaModulo;
-    
+
     @Getter
     @Setter
     private List<MenuSiOpcionVo> listaMenu;
@@ -112,108 +110,68 @@ public class Sesion implements Serializable {
     private DataModel lista;
 
     public String login() {
-        
+
         String accion = Constantes.VACIO;
 
         try {
-            // Checamos si existe el usuario
-            if (Strings.isNullOrEmpty(getC())) {
-                FacesUtils.addInfoMessage("Es necesario introducir la contraseña.");
-            } else {
-                usuario = usuarioImpl.find(getU());                
+                usuarioSesion = usuarioImpl.login(getU(), getC());
 
-                if (usuario == null) {
-                    FacesUtils.addInfoMessage("Usuario no encontrado.");
-                    setUsuarioVo(null);
-                    setUsuarioVoAlta(null);
-                    setUsuario(null);
-                    accion = Constantes.VACIO;
-                    setU(Constantes.VACIO);
-                    setC(Constantes.VACIO);
-                } else {
-                    
-                    System.out.println("Encontrado");
-                    
-                    if (autenticarSIA()) {                    
-                        olvidoClave = false;
-                        
-                        llenarUsuarioVO(usuario);
+                accion = "/main.xhtml?faces-redirect=true";
 
-                        accion = "/main.xhtml?faces-redirect=true";
-                        setU(Constantes.VACIO);
-                        setC(Constantes.VACIO);
-                        log.info("USUARIO CONECTADO : {}", usuario.getId());
+                log.info("USUARIO CONECTADO : {}", usuarioSesion.getEmail());
 
-                        SessionUtils.setAttribute(USER, usuario);
+                SessionUtils.setAttribute(USER, usuarioSesion);
 
-                        ctx = new Properties();
-                        
-                        subirValoresContexto();
+                ctx = new Properties();
 
-                    } else {
-                        FacesUtils.addInfoMessage("Usuario o contraseña es incorrecta.");
-                        setUsuarioVoAlta(null);
-                        setUsuarioVo(null);
-                        setUsuario(null);
-                        this.olvidoClave = true;
-                        accion = Constantes.VACIO;
-                    }
-
-                }
-            }
-        } catch (NoSuchAlgorithmException e) {
+                subirValoresContexto();
+            
+        } catch (LectorException e) {
             log.error(Constantes.VACIO, e);
-
-            setUsuario(null);
-            setUsuarioVo(null);
-            setUsuarioVoAlta(null);
-            FacesUtils.addInfoMessage("Ocurrió una excepción, favor de contactar con el equipo de Soporte Técnico.");
+            setUsuarioSesion(null);
+            FacesUtils.addInfoMessage(e.getMessage());
+        } finally {
+            setU(Constantes.VACIO);
+            setC(Constantes.VACIO);
         }
-        
-        System.out.println("Accion = "+accion);
+
+        System.out.println("Accion = " + accion);
 
         return accion;
     }
 
-    
     private void subirValoresContexto() {
         Env.setContext(ctx, Env.SESSION_ID, SessionUtils.getSession().getId());
         Env.setContext(ctx, Env.CLIENT_INFO, SessionUtils.getClientInfo(SessionUtils.getRequest()));
         //Env.setContext(ctx, Env.PUNTO_ENTRADA, "Sia");
     }
-    
-    
-    private void llenarUsuarioVO(Usuario u) {
+
+    /*private void llenarUsuarioVO(Usuario u) {
         //Traer puesto del usuario
         setUsuarioVo(new UsuarioVO());
         usuarioVo.setId(u.getId());
         usuarioVo.setNombre(u.getNombre());
         usuarioVo.setClave(u.getClave());
         usuarioVo.setPuesto("Puesto");
-        usuarioVo.setMail(u.getEmail());                
+        usuarioVo.setEmail(u.getEmail());
         usuarioVo.setTelefono(u.getTelefono());
         usuarioVo.setSexo(u.getSexo());
-        
-        usuarioVo.setAdministraTI(false);
-        
+
         listaMenu = null;
-    }
-   
+    }*/
 
     public UsuarioRolVo traerRolPrincipal(String idUsuario, int idCamp) {
         //return siUsuarioRol.traerRolPrincipal(idUsuario, Constantes.MODULO_SGYL, idCamp);
         return null;
     }
 
-    
-    private boolean autenticarSIA() throws NoSuchAlgorithmException {
+    /*private boolean autenticarSIA() throws NoSuchAlgorithmException {
         return getUsuario().getId().equals(getU())
                 && this.getUsuario().getClave().equals(encriptar(getC()));
     }
-
     public String encriptar(String text) throws NoSuchAlgorithmException {
         return usuarioImpl.encriptar(text);
-    }
+    }*/
 
     public String getYear() {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy");
@@ -230,14 +188,14 @@ public class Sesion implements Serializable {
     }
 
     public String getArrancarModulo(int campo, String pagina) {
-        return usuarioVo.getId()
+        return usuarioSesion.getId()
                 + "&ZWZ4W="
-                + usuarioVo.getClave()
+                + usuarioSesion.getClave()
                 + "&ZWZCA=" + campo
                 + "&ZWZPA=" + pagina;
     }
 
-    public String sustituirArrancarModuloPorCampo(String url, int campo, String pagina) {   
+    public String sustituirArrancarModuloPorCampo(String url, int campo, String pagina) {
         String resultado;
         if (url == null) {
             resultado = Constantes.VACIO;
@@ -246,8 +204,6 @@ public class Sesion implements Serializable {
         }
         return resultado;
     }
-    
-    
 
     public String sustituirArrancarModulo(String url) {
         String resultado;
@@ -260,28 +216,19 @@ public class Sesion implements Serializable {
     }
 
     public void cerrarSesionExterno() {
-        usuario = null;
+        usuarioSesion = null;
         setU(Constantes.VACIO);
         setC(Constantes.VACIO);
-
-        setUsuarioVoAlta(null);
-        setUsuarioVo(null);
-
     }
 
     public void cerrarSesion() {
-        log.info("CERRO SESION : {}", usuario.getId());
-        usuario = null;
+        log.info("CERRO SESION : {}", usuarioSesion.getId());
+        usuarioSesion = null;
         setU(Constantes.VACIO);
         setC(Constantes.VACIO);
-        setUsuarioVo(null);
-        setUsuarioVoAlta(null);
         ctx = null;
-        
         PrimeFaces.current().executeScript(";refrescar();");
     }
-
-
 
     public String mostrarDatosUsuario() {
         return "/vistas/administracion/usuario/datosUsuario";
@@ -305,26 +252,6 @@ public class Sesion implements Serializable {
         }
     }
 
-    /**
-     * @return the usuario
-     */
-    public Usuario getUsuario() {
-        return usuario;
-    }
-
-    /**
-     * @param usuario the usuario to set
-     */
-    public void setUsuario(Usuario usuario) {
-        this.usuario = usuario;
-
-        visible = this.usuario == null;
-
-    }
-
-
-
-    
     
     /**
      * @return the olvidoClave

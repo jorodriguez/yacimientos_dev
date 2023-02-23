@@ -17,7 +17,7 @@ import org.jooq.impl.DefaultConfiguration;
 
 /**
  *
- * @author mrojas
+ * @author 
  */
 @ApplicationScoped
 public class Resources {

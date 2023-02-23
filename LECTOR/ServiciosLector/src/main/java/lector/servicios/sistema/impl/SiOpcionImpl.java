@@ -12,6 +12,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import lector.constantes.Constantes;
+import lector.dominio.modelo.usuario.vo.UsuarioVO;
 import lector.modelo.SiOpcion;
 import lector.servicios.sistema.vo.MenuSiOpcionVo;
 import lector.servicios.sistema.vo.SiOpcionVo;
@@ -189,8 +190,10 @@ public class SiOpcionImpl extends AbstractImpl<SiOpcion> {
 
     }
 
-    public List<MenuSiOpcionVo> getListaMenu(int idSiModulo, Integer usrID, int campo) {
+    public List<MenuSiOpcionVo> getListaMenu(UsuarioVO usuario) {
+        
         StringBuilder q = new StringBuilder();
+        
         q.append(" select a.ID, a.SI_MODULO, ro.SI_ROL, a.NOMBRE, aa.ID, aa.SI_MODULO, aa.SI_OPCION, aa.NOMBRE, aa.PAGINA, aa.ESTATUS_CONTAR ,aa.POSICION, aa.PAGINALISTENER ")
                 .append(" from SI_REL_ROL_OPCION ro  ")
                 .append("	inner join SI_USUARIO_ROL ur on ur.SI_ROL = ro.SI_ROL and ur.ELIMINADO = 'False' ")
@@ -200,17 +203,7 @@ public class SiOpcionImpl extends AbstractImpl<SiOpcion> {
                 .append(" where ELIMINADO = 'False'  ")
                 .append(" and SI_ROL = ro.SI_ROL) ");
 
-        q.append(" where ro.ELIMINADO = 'False' ");
-        if (idSiModulo > 0) {
-            q.append(" and a.SI_MODULO =  ").append(idSiModulo);
-        }
-        if (usrID != null) {
-            q.append(" and ur.USUARIO = '").append(usrID).append("'");
-        }
-
-        if (campo > 0) {
-            q.append(" and ur.AP_CAMPO = ").append(campo);
-        }
+        q.append(" where ro.ELIMINADO = 'False' ");       
 
         q.append(" and a.POSICION = 0 ")
                 .append(" group by a.ID, a.SI_MODULO, ro.SI_ROL, a.NOMBRE, aa.ID, aa.SI_MODULO, aa.SI_OPCION, aa.NOMBRE, aa.PAGINA, aa.ESTATUS_CONTAR ,aa.POSICION, aa.PAGINALISTENER ")

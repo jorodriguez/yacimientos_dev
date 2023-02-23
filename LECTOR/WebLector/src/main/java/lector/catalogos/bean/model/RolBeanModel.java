@@ -58,7 +58,7 @@ public class RolBeanModel implements Serializable{
 
     public void guardarUsuarioRol() {
 	boolean v;
-	v = siUsuarioRolImpl.guardarUsuarioRol(getIdRol(), getNombreUsuario(), isPrincipal(), sesion.getUsuario().getId(), getIdCampo());
+	v =  true;//siUsuarioRolImpl.guardarUsuarioRol(getIdRol(), getNombreUsuario(), isPrincipal(), sesion.getUsuario().getId(), getIdCampo());
 	if (v) {
 	    setIdModulo(-1);
 	    setIdRol(-1);
@@ -76,7 +76,7 @@ public class RolBeanModel implements Serializable{
     }
 
     public void eliminarUsuarioRol(int idUr) {
-	siUsuarioRolImpl.eliminarUsuarioRol(idUr, sesion.getUsuario().getId());
+	//siUsuarioRolImpl.eliminarUsuarioRol(idUr, sesion.getUsuario().getId());
 	lista = siUsuarioRolImpl.traerUsuarioPorRolModulo(getIdRol(), getIdModulo(), getIdCampo());
     }
     //

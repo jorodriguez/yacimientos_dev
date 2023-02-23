@@ -9,10 +9,8 @@ import java.util.Date;
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
-import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.NonUniqueResultException;
-import javax.persistence.PersistenceContext;
 import lector.constantes.Constantes;
 import lector.dominio.modelo.usuario.vo.UsuarioVO;
 import lector.dominio.vo.RolVO;
@@ -137,7 +135,6 @@ public class SiUsuarioRolImpl extends AbstractImpl<SiUsuarioRol>{
     }
 
     /**
-     * Creo: mluis
      *
      * @param idRol
      * @param nombreUsuario

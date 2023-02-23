@@ -10,8 +10,6 @@ import java.io.InputStream;
 import javax.inject.Inject;
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import lector.constantes.Configurador;
@@ -51,7 +49,7 @@ public class AbrirVideo {//extends HttpServlet {
             System.out.println("Dentro del servlet Abrir video");
             sesion = (lector.sistema.bean.backing.Sesion) request.getSession().getAttribute("sesion");
 
-            if (sesion.getUsuario() != null) {
+            if (sesion.getUsuarioSesion()!= null) {
                 SiAdjunto adjunto = servicioSiAdjuntoImpl.find(Integer.parseInt(request.getParameter("a")));
                 String path = this.parametrosSistemaServicioRemoto.find(1).getUploadDirectory();
                 if (adjunto != null) {

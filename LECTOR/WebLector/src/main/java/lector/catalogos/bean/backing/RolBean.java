@@ -146,7 +146,7 @@ public class RolBean implements Serializable {
             if (getIdRol() > 0) {
                 if (!getNombreUsuario().isEmpty()) {
                     if (buscarUsuarioRol()) {
-                        boolean v = siUsuarioRolImpl.guardarUsuarioRol(getIdRol(), getNombreUsuario(), isPrincipal(), sesion.getUsuario().getId(), getIdCampo());
+                        boolean v = siUsuarioRolImpl.guardarUsuarioRol(getIdRol(), getNombreUsuario(), isPrincipal(), sesion.getUsuarioSesion().getId(), getIdCampo());
                         if (v) {
                             setIdModulo(-1);
                             setIdRol(-1);

@@ -3,6 +3,7 @@ package lector.dominio.modelo.usuario.vo;
 import java.io.Serializable;
 import java.util.*;
 import lector.dominio.vo.UsuarioRolVo;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -21,7 +22,7 @@ public class UsuarioVO implements Serializable {
     private String puesto;
     private String pregunta;
     private String respuesta;
-    private String mail;
+    private String email;
     private String destinatarios;
     private String telefono;
     private String extension;
@@ -29,39 +30,51 @@ public class UsuarioVO implements Serializable {
     private String campo;
     private String urlImagen;
     private String sexo;
-    private Date fechaNacimiento;
-    private boolean selected;
-    private boolean liberaUsuarios;
-    private int idCampo;
-    private int idPuesto;
+    private Date fechaNacimiento;    
     private String celular;
-    private String gerencia;
-    private int idGerencia;
     private String foto;
     private boolean activo;
     private String genero;
-    //
-    private int idOficina;
-    private String oficina;
-    private int idNomina;
-    private String idJefe;
-    private String nombreJefe;
-    private Date fechaIngreso;
-    private String gafete;
-    private boolean usuarioInSessionGerente;
-    //para privilegios que corresponden  a ti
-    private boolean administraTI;
-    private boolean flag;
-    private boolean requiereConfiguracionCorreo;
     private String rolPrincipal;
     private int rolId;
-    private String rfcEmpresa;    
+    private int cCuenta;    
     private Map<Integer, String> mapaRol = new HashMap<>();
     private List<UsuarioRolVo> roles = new ArrayList<>();    
-    private boolean interno;
-    
+        
     public UsuarioVO() {
     }
+
+    @Builder
+    public UsuarioVO(Integer id, String nombre, String clave, String puesto, String pregunta, String respuesta, String email, String destinatarios, String telefono, String extension, String rfc, String campo, String urlImagen, String sexo, Date fechaNacimiento, String celular, String foto, boolean activo, String genero, String rolPrincipal, int rolId, int cCuenta) {
+        this.id = id;
+        this.nombre = nombre;
+        this.clave = clave;
+        this.puesto = puesto;
+        this.pregunta = pregunta;
+        this.respuesta = respuesta;
+        this.email = email;
+        this.destinatarios = destinatarios;
+        this.telefono = telefono;
+        this.extension = extension;
+        this.rfc = rfc;
+        this.campo = campo;
+        this.urlImagen = urlImagen;
+        this.sexo = sexo;
+        this.fechaNacimiento = fechaNacimiento;
+        this.celular = celular;
+        this.foto = foto;
+        this.activo = activo;
+        this.genero = genero;
+        this.rolPrincipal = rolPrincipal;
+        this.rolId = rolId;
+        this.cCuenta = cCuenta;
+    }
+
+    
+    
+   
+    
+    
 
     public UsuarioVO(Integer id) {
 	this.id = id;
@@ -92,13 +105,13 @@ public class UsuarioVO implements Serializable {
     public UsuarioVO(Integer id, String nombre, String email, List<UsuarioRolVo> roles) {
 	this.id = id;
 	this.nombre = nombre;
-	this.mail = email;
+	this.email = email;
 	this.roles = roles;
     }
 
     public UsuarioVO(Integer id, String nombre, String email) {
 	this.id = id;
 	this.nombre = nombre;
-	this.mail = email;
+	this.email = email;
     }
 }

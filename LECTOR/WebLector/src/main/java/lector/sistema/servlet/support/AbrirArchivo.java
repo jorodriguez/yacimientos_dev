@@ -71,7 +71,7 @@ public class AbrirArchivo extends HttpServlet {
                 response.sendRedirect(Configurador.urlSistema() + "WebLector");
             } else {
                 // si el managed bean usuario es diferente de null podemos verificar si ya inicio sesion
-                if (sesion.getUsuario() == null) {
+                if (sesion.getUsuarioSesion() == null) {
                     response.sendRedirect(Configurador.urlSistema() + "WebLector");
                 } else {
                     // si inicio sesion buscar el convenio q viene en el parametro del servlet
