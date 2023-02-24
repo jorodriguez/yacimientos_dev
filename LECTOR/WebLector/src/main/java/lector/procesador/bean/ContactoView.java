@@ -6,34 +6,31 @@
 package lector.procesador.bean;
 
 import java.io.ByteArrayInputStream;
-import java.io.File;
 import lector.sistema.bean.backing.*;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.Serializable;
-import java.net.URL;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.Map;
+import java.util.Set;
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
-import javax.faces.event.ActionEvent;
 import javax.faces.event.ValueChangeEvent;
 import javax.inject.Inject;
 
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
-import lector.archivador.AlmacenDocumentos;
 import lector.archivador.DocumentoAnexo;
 import lector.archivador.ProveedorAlmacenDocumentos;
+import lector.constantes.Constantes;
+import lector.dominio.modelo.usuario.vo.UsuarioVO;
 import lector.excepciones.LectorException;
-import lector.modelo.SiAdjunto;
 import lector.servicios.sistema.impl.SiParametroImpl;
 import lector.sistema.bean.support.FacesUtils;
 import lector.util.ValidadorNombreArchivo;
-import lector.vision.Item;
+import lector.vision.InformacionCredencialDto;
 import lector.vision.Item;
 import lector.vision.api.service.LectorService;
 import lombok.Getter;
@@ -43,14 +40,14 @@ import org.primefaces.model.CroppedImage;
 import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
 import org.primefaces.model.file.UploadedFile;
-
+import static lector.constantes.Constantes.Etiquetas.*;
 /**
  *
  * @author jorodriguez
  */
 @Named
 @ViewScoped
-public class UploaderView implements Serializable {
+public class ContactoView implements Serializable {
 
     @Inject
     private Sesion sesion;
@@ -78,21 +75,27 @@ public class UploaderView implements Serializable {
     private byte[] fileContent;
     
     @Getter   @Setter
-    List<Item> listaItems;
+    private List<Item> listaItems;
     
+    @Getter  
+    private InformacionCredencialDto informacionCredencialDto;
 
-    public UploaderView() {
+    @Getter  @Setter
+    private UsuarioVO usuarioDto;
+
+    public ContactoView() {
     }
 
     @PostConstruct
     public void iniciar() {
         System.out.println("@Postconstruc"+this.getClass().getCanonicalName());
         //loaders
+        usuarioDto = new UsuarioVO();
     }
     
     
     
-    public void subirAdjunto(FileUploadEvent event) {
+  /*  public void subirAdjunto(FileUploadEvent event) {
         System.out.println("@subirAdjunto");
 
         ValidadorNombreArchivo validadorNombreArchivo = new ValidadorNombreArchivo();
@@ -113,7 +116,7 @@ public class UploaderView implements Serializable {
                 documentoAnexo.setTipoMime(fileInfo.getContentType());
                 documentoAnexo.setRuta("credenciales");
                 documentoAnexo.setNombreBase(fileInfo.getFileName());
-                almacenDocumentos.guardarDocumento(documentoAnexo);
+                //almacenDocumentos.guardarDocumento(documentoAnexo);
 
                 System.out.println("nombre archivo " + fileInfo.getFileName());
                 System.out.println("content type" + fileInfo.getContentType());
@@ -136,13 +139,7 @@ public class UploaderView implements Serializable {
                 System.out.println("realizado ");
 
                 //doit updload
-                /*
                 
-                SiAdjunto adj = adjuntoImpl.save(documentoAnexo.getNombreBase(),
-                        new StringBuilder()
-                                .append(documentoAnexo.getRuta())
-                                .append(File.separator).append(documentoAnexo.getNombreBase()).toString(),
-                fileInfo.getContentType(), fileInfo.getSize(), sesion.getUsuarioConectado().getId());                              */
             } else {
                 FacesUtils.addErrorMessage(new StringBuilder()
                         .append("No se permiten los siguientes caracteres especiales en el nombre del Archivo: ")
@@ -157,7 +154,7 @@ public class UploaderView implements Serializable {
             FacesUtils.addInfoMessage("Ocurrió un problema al cargar el archivo, por favor contacte al equipo de soporte SIA (soport@gmail.mx)");
         }
 
-    }
+    }*/
 
     
      public void listenerAdjunto(FileUploadEvent event) {
@@ -173,32 +170,31 @@ public class UploaderView implements Serializable {
             return false;
         }
 
-        ValidadorNombreArchivo validadorNombreArchivo = new ValidadorNombreArchivo();
+        final ValidadorNombreArchivo validadorNombreArchivo = new ValidadorNombreArchivo();
 
         try {
 
-            AlmacenDocumentos almacenDocumentos = proveedorAlmacenDocumentos.getAlmacenDocumentos();
+            //AlmacenDocumentos almacenDocumentos = proveedorAlmacenDocumentos.getAlmacenDocumentos();
 
             boolean addArchivo = validadorNombreArchivo.isNombreValido(fileInfo.getFileName());
 
             if (addArchivo) {
 
-                System.out.println("--proceder a verificar");
-
-                DocumentoAnexo documentoAnexo = new DocumentoAnexo(fileInfo.getContent());
+                final DocumentoAnexo documentoAnexo = new DocumentoAnexo(fileInfo.getContent());
                 documentoAnexo.setTipoMime(fileInfo.getContentType());
                 documentoAnexo.setRuta("credenciales");
                 documentoAnexo.setNombreBase(fileInfo.getFileName());
-                almacenDocumentos.guardarDocumento(documentoAnexo);
+                //almacenDocumentos.guardarDocumento(documentoAnexo);
+               
+                //listaItems = lectorService.getTextoData(fileInfo.getContent());               
 
-                System.out.println("nombre archivo " + fileInfo.getFileName());
-                System.out.println("content type" + fileInfo.getContentType());
-                System.out.println("content " + fileInfo.getContent().length);
-
-                listaItems = lectorService.getTextoData(fileInfo.getContent());               
-             
-                //listaTexto = lectorService.getTexto();
-                System.out.println("uploado *** ok");
+                informacionCredencialDto = lectorService.getInformacionCredencial(documentoAnexo);
+                
+                cargarValoresUsuario();
+                               
+                                
+                System.out.println("upload *** ok");
+                
                 /*               
                 SiAdjunto adj = adjuntoImpl.save(documentoAnexo.getNombreBase(),
                         new StringBuilder()
@@ -223,7 +219,54 @@ public class UploaderView implements Serializable {
             return false;
         }
     }
+    
+    private void cargarValoresUsuario(){
+        if(informacionCredencialDto == null){
+            throw new NullPointerException("Es null informacionCredencialDto");
+        }
+        
+        usuarioDto = UsuarioVO.builder()
+                .nombre(gettingValorEtiqueta(NOMBRE))
+                .domicilio(gettingValorEtiqueta(DOMICILIO))
+                .claveElector(gettingValorEtiqueta(CLAVE_DE_ELECTOR))
+                .curp(gettingValorEtiqueta(CURP))
+                .sexo(gettingValorEtiqueta(SEXO))
+                .estado(gettingValorEtiqueta(ESTADO))
+                .municipio(gettingValorEtiqueta(MUNICIPIO))             
+                .localidad(gettingValorEtiqueta(LOCALIDAD))
+                .activo(true)
+                .genero(sesion.getUsuarioSesion().getId())                
+                .build();                
+                
+        String valor = gettingValorEtiqueta(VIGENCIA);       
+        
+        usuarioDto.setVigencia(
+                   castToInt(valor)
+        );      
+        
+        valor = gettingValorEtiqueta(EMISION);                       
+        usuarioDto.setAnioEmision(
+                    castToInt(valor)
+        );
+                    
+    }
+    
+    private Integer castToInt(String val){
+        try{
+            return Integer.parseInt(val);
+        }catch(Exception e){
+            return 0;
+        }
+    }
 
+    
+    private String gettingValorEtiqueta(Constantes.Etiquetas etiqueta){
+        
+        Item item = informacionCredencialDto.getEtiquetasDetectadas().get(NOMBRE);
+        
+        return item == null ? "NO ENCONTRADO" : item.getValor();
+        
+    }
     
 
      public void handleFileUpload(FileUploadEvent event) {
@@ -296,6 +339,12 @@ public class UploaderView implements Serializable {
                 .build();
     }
     
+    
+    public List<Map.Entry<String, Item>> getEtiquetas() {
+                Set<Map.Entry<String, Item>> productSet = informacionCredencialDto.getEtiquetasDetectadas().entrySet();
+    return new ArrayList<Map.Entry<String, Item>>(productSet);
+}
+    
     public void changeFoto(ValueChangeEvent valuchangeevent){
                 System.out.println("@@changeFoto");
                 
@@ -325,7 +374,8 @@ public class UploaderView implements Serializable {
     
     
     public String getImageContentsAsBase64() {
-            return Base64.getEncoder().encodeToString(fileContent);
+        
+            return  fileContent != null ? Base64.getEncoder().encodeToString(fileContent) : null;
     }
 
 }

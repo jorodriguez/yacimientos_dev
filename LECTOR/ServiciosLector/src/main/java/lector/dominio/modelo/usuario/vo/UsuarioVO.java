@@ -18,26 +18,36 @@ public class UsuarioVO implements Serializable {
 
     private Integer id;
     private String nombre;
+    private String domicilio;    
     private String clave;
-    private String puesto;
-    private String pregunta;
-    private String respuesta;
+    private String claveElector;
+    private String curp;
+    private String estado;
+    private String municipio;
+    private String localidad;
+    private String seccion;
+    private Integer anioEmision;
+    private int vigencia;
+    private Date fechaNacimiento;    
+    private String sexo;
+    
     private String email;
     private String destinatarios;
     private String telefono;
-    private String extension;
-    private String rfc;
-    private String campo;
+    private String extension;    
     private String urlImagen;
-    private String sexo;
-    private Date fechaNacimiento;    
+    
+    private String pregunta;
+    private String respuesta;
+    
     private String celular;
     private String foto;
     private boolean activo;
-    private String genero;
+    private Integer genero;
     private String rolPrincipal;
     private int rolId;
     private int cCuenta;    
+    
     private Map<Integer, String> mapaRol = new HashMap<>();
     private List<UsuarioRolVo> roles = new ArrayList<>();    
         
@@ -45,22 +55,28 @@ public class UsuarioVO implements Serializable {
     }
 
     @Builder
-    public UsuarioVO(Integer id, String nombre, String clave, String puesto, String pregunta, String respuesta, String email, String destinatarios, String telefono, String extension, String rfc, String campo, String urlImagen, String sexo, Date fechaNacimiento, String celular, String foto, boolean activo, String genero, String rolPrincipal, int rolId, int cCuenta) {
+    public UsuarioVO(Integer id, String nombre, String domicilio, String clave, String claveElector, String curp, String estado, String municipio, String localidad, String seccion, Integer anioEmision, int vigencia, Date fechaNacimiento, String sexo, String email, String destinatarios, String telefono, String extension, String urlImagen, String pregunta, String respuesta, String celular, String foto, boolean activo, Integer genero, String rolPrincipal, int rolId, int cCuenta) {
         this.id = id;
         this.nombre = nombre;
+        this.domicilio = domicilio;
         this.clave = clave;
-        this.puesto = puesto;
-        this.pregunta = pregunta;
-        this.respuesta = respuesta;
+        this.claveElector = claveElector;
+        this.curp = curp;
+        this.estado = estado;
+        this.municipio = municipio;
+        this.localidad = localidad;
+        this.seccion = seccion;
+        this.anioEmision = anioEmision;
+        this.vigencia = vigencia;
+        this.fechaNacimiento = fechaNacimiento;
+        this.sexo = sexo;
         this.email = email;
         this.destinatarios = destinatarios;
         this.telefono = telefono;
         this.extension = extension;
-        this.rfc = rfc;
-        this.campo = campo;
         this.urlImagen = urlImagen;
-        this.sexo = sexo;
-        this.fechaNacimiento = fechaNacimiento;
+        this.pregunta = pregunta;
+        this.respuesta = respuesta;
         this.celular = celular;
         this.foto = foto;
         this.activo = activo;
@@ -69,11 +85,12 @@ public class UsuarioVO implements Serializable {
         this.rolId = rolId;
         this.cCuenta = cCuenta;
     }
+    
+    
 
     
-    
-   
-    
+     
+      
     
 
     public UsuarioVO(Integer id) {

@@ -11,9 +11,10 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.Stateless;
+import lector.archivador.DocumentoAnexo;
 import lector.process.ItemNative;
 import static lector.process.Lector.getTexto;
-import lector.vision.Item;
+import lector.vision.InformacionCredencialDto;
 import static lector.vision.ToolsStr.*;
 
 /**
@@ -24,7 +25,7 @@ import static lector.vision.ToolsStr.*;
 public class LectorService {//extends AbstractImpl<SiParametro>{
 
   
-    public List<Item> getTextoAlt(String filePath) {
+    public InformacionCredencialDto getTextoAlt(String filePath) {
         
         try {
            
@@ -35,26 +36,43 @@ public class LectorService {//extends AbstractImpl<SiParametro>{
            
         } catch (IOException ex) {
             Logger.getLogger(LectorService.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        
-        return Collections.emptyList();
+            return null;
+        }      
         
     }
     
-      public List<Item> getTextoData(byte[] data) {
+     /*public InformacionCredencialDto getTextoData(byte[] data) {
         
         try {
            
             final List<ItemNative> listaItemTexto = getTexto(data);
-                       
-            
+                                   
             return detectarEtiquetas(listaItemTexto);
            
         } catch (IOException ex) {
             Logger.getLogger(LectorService.class.getName()).log(Level.SEVERE, null, ex);
-        }
+            return null;
+        }            
         
-        return Collections.emptyList();
+    }*/
+      
+      public InformacionCredencialDto getInformacionCredencial(DocumentoAnexo documento) {
+        
+        try {
+           
+            final List<ItemNative> listaItemTexto = getTexto(documento.getContenido());
+                                   
+             InformacionCredencialDto info = detectarEtiquetas(listaItemTexto);
+             
+             //ToFIx
+             info.setImagen(documento);
+             
+             return info;
+           
+        } catch (IOException ex) {
+            Logger.getLogger(LectorService.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        }             
         
     }
  

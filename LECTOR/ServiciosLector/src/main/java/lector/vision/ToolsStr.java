@@ -2,16 +2,12 @@
  */
 package lector.vision;
 
-import java.io.IOException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.Map;
+import lector.dominio.modelo.usuario.vo.UsuarioVO;
 import lector.process.ItemNative;
-
+import static lector.constantes.Constantes.ETIQUETAS_INE;
 
 
 /**
@@ -22,7 +18,7 @@ public class ToolsStr {
 
     private static final String LABEL_NOT_FOUND = "NO_ENCONTRADO";
     
-    private static final List<String> ETIQUETAS_INE =  Arrays.asList("NOMBRE","DOMICILIO","CLAVE DE ELECTOR","CURP","AÑO DE REGISTRO","FECHA DE NACIMIENTO","SECCIÓN","VIGENCIA","SEXO","ESTADO","MUNICIPIO","LOCALIDAD","EMISIÓN");
+    
     
   /*  public static List<Item> getTextoImagen(String filePath){        
         System.out.println("@getTextoImagen filepath");
@@ -77,8 +73,10 @@ public class ToolsStr {
     }*/
     
         
-    public static List<Item> detectarEtiquetas(List<ItemNative> listaItemTexto){    
+    /*public static List<Item> detectarEtiquetas(List<ItemNative> listaItemTexto){    
+        
         System.out.println("@procesarTextoImagen");
+        
         try {
             
             if(listaItemTexto.isEmpty()){
@@ -120,6 +118,53 @@ public class ToolsStr {
             return Collections.emptyList();
         }
         
+    }     */
+    
+    public static InformacionCredencialDto detectarEtiquetas(List<ItemNative> listaItemTexto){    
+        
+        System.out.println("@procesarTextoImagen");
+            
+            if(listaItemTexto.isEmpty()){
+                return null;
+            }           
+            
+            final Map<String,Item> etiquetas = new HashMap<>();
+            
+            String textoCompleto = listaItemTexto.get(0).getValor();
+            
+            String cadenaLimpia = prepararCadena(textoCompleto);
+            
+            for(String etiqueta : ETIQUETAS_INE){
+             
+                cadenaLimpia = marcarEtiquetas(etiqueta, cadenaLimpia);                
+            }
+            
+            int pos = 0;
+            
+            for (String etiqueta : ETIQUETAS_INE) {
+
+                String valor = obtenerValor(etiqueta, cadenaLimpia);
+
+                Item item = new Item();
+                item.setEtiqueta(etiqueta);
+                item.setPosicion(pos++);
+                item.setValor(valor);
+                
+                etiquetas.put(etiqueta, item);
+                
+                System.out.println(item.getPosicion() + " " + item.getEtiqueta() + "=" + item.getValor());
+                
+            }
+            
+            InformacionCredencialDto info = 
+                        InformacionCredencialDto
+                                .builder()
+                                .etiquetasDetectadas(etiquetas)
+                                .metadatoLectura(textoCompleto)
+                                .usuarioDto(new UsuarioVO())
+                                .build();                            
+            
+            return info;
     }     
      
     
