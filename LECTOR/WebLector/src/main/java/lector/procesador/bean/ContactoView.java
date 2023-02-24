@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Base64;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -221,9 +222,29 @@ public class ContactoView implements Serializable {
     }
     
     private void cargarValoresUsuario(){
+        
+        System.out.println("@cargarValoresUsuario");
+        
         if(informacionCredencialDto == null){
+            
             throw new NullPointerException("Es null informacionCredencialDto");
         }
+        
+        System.out.println("Valores etiquetas");
+        
+        /*for (Map.Entry<String, Item> entry : informacionCredencialDto.getEtiquetasDetectadas().entrySet()) {
+            Object key = entry.getKey();
+            Item val = entry.getValue();
+            System.out.println("key "+key);
+            System.out.println("key "+val.getValor());            
+            
+        }*/
+        
+        
+        
+        /*for(int i=0; i < informacionCredencialDto.getEtiquetasDetectadas().size();i++){
+            informacionCredencialDto.getEtiquetasDetectadas().get()
+        }*/
         
         usuarioDto = UsuarioVO.builder()
                 .nombre(gettingValorEtiqueta(NOMBRE))
@@ -260,9 +281,16 @@ public class ContactoView implements Serializable {
     }
 
     
-    private String gettingValorEtiqueta(Constantes.Etiquetas etiqueta){
+    private String gettingValorEtiqueta(Constantes.Etiquetas etiqueta){        
+        System.out.println("@gettingValorEtiqueta");
         
-        Item item = informacionCredencialDto.getEtiquetasDetectadas().get(NOMBRE);
+        System.out.println("Etiqueta "+etiqueta.name());
+        
+        
+        
+        Item item = informacionCredencialDto.getEtiquetasDetectadas().get(etiqueta.name());
+        
+        System.out.println("item "+item);
         
         return item == null ? "NO ENCONTRADO" : item.getValor();
         
@@ -341,8 +369,16 @@ public class ContactoView implements Serializable {
     
     
     public List<Map.Entry<String, Item>> getEtiquetas() {
-                Set<Map.Entry<String, Item>> productSet = informacionCredencialDto.getEtiquetasDetectadas().entrySet();
-    return new ArrayList<Map.Entry<String, Item>>(productSet);
+        
+        Set<Map.Entry<String, Item>> setList = Collections.emptySet();
+                
+        if(informacionCredencialDto != null && informacionCredencialDto.getEtiquetasDetectadas() != null){
+            
+            setList = informacionCredencialDto.getEtiquetasDetectadas().entrySet();
+            
+        }
+        
+    return new ArrayList<Map.Entry<String, Item>>(setList);
 }
     
     public void changeFoto(ValueChangeEvent valuchangeevent){

@@ -267,26 +267,20 @@ public class UsuarioBean implements Serializable {
             getUsuarioVOAlta().setNombre(u.getNombre());
             getUsuarioVOAlta().setClave(u.getClave());
 
-
-            getUsuarioVOAlta().setDestinatarios(u.getDestinatarios());
-            getUsuarioVOAlta().setRfc(u.getRfc());
+            getUsuarioVOAlta().setDestinatarios(u.getDestinatarios());            
             getUsuarioVOAlta().setTelefono(u.getTelefono());
             getUsuarioVOAlta().setExtension(u.getExtension());
             getUsuarioVOAlta().setCelular(u.getCelular());
             getUsuarioVOAlta().setSexo(u.getSexo());
-            //
-            getUsuarioVOAlta().setCampo(u.getCampo());
+            //            
             getUsuarioVOAlta().setActivo(u.isActivo());
             getUsuarioVOAlta().setPregunta(u.getPregunta());
             getUsuarioVOAlta().setRespuesta(u.getRespuesta());
             //Otros 5
             getUsuarioVOAlta().setFechaNacimiento(u.getFechaNacimiento());
 
-
         }
     }
-
-
 
     public String agregarUsuario() {
         setUsuarioVOAlta(new UsuarioVO());
@@ -295,8 +289,8 @@ public class UsuarioBean implements Serializable {
 
 
     public void eiminarUsuario() {
-        this.eiminarUsuario();
-        this.setUsuarioVOAlta(null);
+        eiminarUsuario();
+        setUsuarioVOAlta(null);
         setU("");
     }
 

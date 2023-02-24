@@ -8,7 +8,8 @@
                 xmlns:h="http://xmlns.jcp.org/jsf/html">
 
     <ui:define name="tituloPagina">
-        Captura
+        <img styleClass="sinBorde" title="#{msgs['cabecera.paginaCompania']}" 
+                 src="/resources/imagenes/logo.png" alt="logo" width="50"/> Captura
     </ui:define>
 
     <ui:define name="contenido">
@@ -178,7 +179,7 @@
                 </div>                
                 <div class="col-sm-12 col-md-6 col-lg-6">
                     <h:form id="formUpload" enctype="multipart/form-data">
-                        <p:accordionPanel widgetVar="basic" multiple="true" styleClass="bg-gray"  >                                   
+                        <p:accordionPanel id="panel-credencial" widgetVar="basic" multiple="true" styleClass="bg-gray"  >                                   
                             <p:tab title="Credencial" >
                                 <div class="row">
                                     <div class="card border-0 mr-2 w-100 ">                            
@@ -211,40 +212,67 @@
                                                           >
                                             </p:fileUpload>                                                
 
-                                            <p:commandButton value="Procesar"                                                              
-                                                             ajax="false" 
+                                            <p:commandButton id="boton-procesar"
+                                                             value="Procesar"       
+                                                             onstart="PF('bui-procesar').show()"
+                                                             oncomplete="PF('bui-procesar').show()"
+                                                             process="@form"
+                                                             update="@form form-send frm-registro"
                                                              icon="pi pi-cog"
-                                                             action="#{contactoView.subirArchivo()}" 
+                                                             action="#{contactoView.subirArchivo()}"                                                              
                                                              styleClass="mt-3 ui-button-outlined block">                                                
                                             </p:commandButton>
                                         </div>
                                     </div>
                                 </div>   
                             </p:tab>
-                            <p:tab title="Datos" >                                
-                                <p:dataTable 
+                            
+                        </p:accordionPanel>
+                             
+                          <p:dataTable 
                                     id="data"
-                                    size="small" stripedRows="true" showGridlines="true" rows="20" 
-                                    styleClass="table table-bordered table-striped"
+                                    size="small"                                     
+                                    stripedRows="true" 
+                                    showGridlines="true" 
+                                    rows="20" 
+                                    styleClass="table table-bordered  table-hover"
                                     value="#{contactoView.etiquetas}" 
-                                    var="currentRow" 
+                                    var="currentRow"                                     
+                                    emptyMessage="Da click en el botón 'Foto' y escanea una credencial"                                    
+                                    rendered="#{contactoView.etiquetas ne null}"
                                     >										     				    
-                                    <p:column>
-                                        <f:facet name="header">
-                                            <h:outputText value=""/>
-                                        </f:facet>                                                
+                                    <p:column>                                        
                                         <h:outputText value="#{currentRow.key}" />
                                     </p:column>
                                     <p:column>
-                                        <h:outputText value="#{currentRow.value}" />
+                                        <h:outputText value="#{currentRow.value.valor}" />
                                     </p:column>                                    
                                 </p:dataTable>   
-                                
-                            </p:tab>
-                        </p:accordionPanel>
+                         
+                         <p:blockUI block="panel-credencial" trigger="panel-credencial:boton-procesar" widgetVar="bui-procesar">
+                                <i class="pi pi-spin pi-spinner" style="font-size: 3rem"></i>
+                        </p:blockUI>
                     </h:form>
                 </div>                
             </div>
+        </div>
+        
+        <div class="card-footer">
+            <h:form id="form-send">
+                <div class="row">
+                    
+                    <p:commandButton ajax="false"                   
+                                     value="Guardar"
+                                     icon="pi pi-save"                                     
+                                     styleClass="mt-3 text-lg ui-button-success btn-lg btn-block">                                                                        
+                    </p:commandButton>
+                    
+                    <p:commandLink value="Cancelar"                                                              
+                                   action="/main.xhtml?faces-redirect=true;"                                   
+                                   styleClass="btn  btn-outline-light btn-lg btn-block">                                                
+                    </p:commandLink>
+                </div>
+            </h:form>
         </div>
 
 
