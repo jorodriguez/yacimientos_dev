@@ -19,6 +19,7 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -125,13 +126,19 @@ public class Usuario implements Serializable {
         this.id = id;
     }
 
-    public Usuario(Integer id, String nombre, String email, String clave, String telefono, Date fechaNacimiento, int estado, String municipio, String seccion, String localidad, int emision, int vigencia, String sexo, Date fechaGenero) {
+    @Builder
+    public Usuario(Integer id, String nombre, String email, String clave, String telefono, Date fechaNacimiento, String domicilio, String curp, String foto, String anioRegistro, Integer anioEmision, int estado, String municipio, String seccion, String localidad, int emision, int vigencia, String sexo, Date fechaGenero, Date fechaModifico, Boolean eliminado, CCuenta cCuenta, CTipoContacto cTipoContacto, SiAdjunto siAdjunto, Usuario genero, Usuario modifico, Usuario registro) {
         this.id = id;
         this.nombre = nombre;
         this.email = email;
         this.clave = clave;
         this.telefono = telefono;
         this.fechaNacimiento = fechaNacimiento;
+        this.domicilio = domicilio;
+        this.curp = curp;
+        this.foto = foto;
+        this.anioRegistro = anioRegistro;
+        this.anioEmision = anioEmision;
         this.estado = estado;
         this.municipio = municipio;
         this.seccion = seccion;
@@ -140,10 +147,15 @@ public class Usuario implements Serializable {
         this.vigencia = vigencia;
         this.sexo = sexo;
         this.fechaGenero = fechaGenero;
+        this.fechaModifico = fechaModifico;
+        this.eliminado = eliminado;
+        this.cCuenta = cCuenta;
+        this.cTipoContacto = cTipoContacto;
+        this.siAdjunto = siAdjunto;
+        this.genero = genero;
+        this.modifico = modifico;
+        this.registro = registro;
     }
-
-  
-
 
     @Override
     public int hashCode() {

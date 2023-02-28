@@ -42,6 +42,7 @@ import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
 import org.primefaces.model.file.UploadedFile;
 import static lector.constantes.Constantes.Etiquetas.*;
+import static lector.util.UtilsProcess.castToInt;
 /**
  *
  * @author jorodriguez
@@ -272,13 +273,7 @@ public class ContactoView implements Serializable {
                     
     }
     
-    private Integer castToInt(String val){
-        try{
-            return Integer.parseInt(val);
-        }catch(Exception e){
-            return 0;
-        }
-    }
+
 
     
     private String gettingValorEtiqueta(Constantes.Etiquetas etiqueta){        

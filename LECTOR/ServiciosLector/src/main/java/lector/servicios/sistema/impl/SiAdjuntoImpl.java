@@ -15,6 +15,8 @@ import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import lector.archivador.AlmacenDocumentos;
+import lector.archivador.DocumentoAnexo;
 import lector.archivador.ProveedorAlmacenDocumentos;
 import lector.constantes.Constantes;
 import lector.dominio.vo.AdjuntoVO;
@@ -23,6 +25,7 @@ import lector.modelo.SiAdjunto;
 import lector.modelo.Usuario;
 import lector.sistema.AbstractImpl;
 import lector.util.UtilLog4j;
+import lector.util.ValidadorNombreArchivo;
 
 /**
  *
@@ -34,7 +37,7 @@ public class SiAdjuntoImpl extends AbstractImpl<SiAdjunto>{
     private EntityManager em;
     
     @Inject
-    private ProveedorAlmacenDocumentos almacenDocumentos;
+    private ProveedorAlmacenDocumentos proveedorDocumentos;
     //
     String beforeEvent;
 
@@ -43,6 +46,31 @@ public class SiAdjuntoImpl extends AbstractImpl<SiAdjunto>{
         super(SiAdjunto.class);
     }
 
+    
+    public SiAdjunto guardarDocumentoAnexoSiAdjunto(DocumentoAnexo documento) throws LectorException{
+        
+        
+        if(documento == null){
+            throw new LectorException("Documento anexo null");
+        }
+        
+        final ValidadorNombreArchivo validador = new ValidadorNombreArchivo();
+          
+        boolean nombreValido = validador.isNombreValido(documento.getNombreBase());
+        
+        if(!nombreValido){
+            throw new LectorException("caracteres no válidos "+validador.getCaracteresNoValidos());
+        }
+        
+        final AlmacenDocumentos almacenDocumentos = proveedorDocumentos.getAlmacenDocumentos();      
+        
+        almacenDocumentos.guardarDocumento(documento);
+
+        //        guardar siAdjunto y retornar
+            
+        return new SiAdjunto();
+    }
+    
     
     public int saveSiAdjunto(String fileName, String contentType, String absolutePath, String size, Integer idUsuario) {
         UtilLog4j.log.info(this, "SiAdjuntoImpl.saveSiAdjunto()");
