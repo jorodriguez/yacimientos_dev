@@ -10,6 +10,7 @@ import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.persistence.NonUniqueResultException;
 import lector.archivador.AlmacenDocumentos;
+import lector.archivador.DocumentoAnexo;
 import lector.archivador.ProveedorAlmacenDocumentos;
 import lector.constantes.Constantes;
 import lector.dominio.modelo.usuario.vo.UsuarioVO;
@@ -33,22 +34,25 @@ public class ContactoImpl extends AbstractImpl<Usuario> {
     @Inject
     private UsuarioImpl usuarioService;
     
+    @Inject
+    private SiAdjuntoImpl siAdjuntoService;
+    
     public ContactoImpl() {
         super(Usuario.class);
     }
 
     public void guardarContacto(InformacionCredencialDto informacionCredencial) throws LectorException {
-
-        final ValidadorNombreArchivo validador = new ValidadorNombreArchivo();
-        
+                
         //  datos del contacto
         final UsuarioVO usuario = informacionCredencial.getUsuarioDto();
+        
+        final DocumentoAnexo documento = informacionCredencial.getImagen();
 
         final Usuario usuarioBuild = buildUsuarioDto(usuario);
 
         usuarioService.create(usuarioBuild);
         
-        
+        siAdjuntoService.guardarDocumentoAnexoSiAdjunto(documento, informacionCredencial.getUsuarioDto().getId());        
            
     } 
 

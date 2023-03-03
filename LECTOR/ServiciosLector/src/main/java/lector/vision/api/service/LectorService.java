@@ -75,5 +75,8 @@ public class LectorService {//extends AbstractImpl<SiParametro>{
         }             
         
     }
+      
+      
+      
  
 }

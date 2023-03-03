@@ -222,6 +222,18 @@ public class ContactoView implements Serializable {
         }
     }
     
+    public void guardar(){
+        
+        if (informacionCredencialDto == null) {
+            FacesUtils.addErrorMessage("Seleccione un archivo.");
+            return;
+        }
+        
+        lectorService.
+        
+        
+    }
+    
     private void cargarValoresUsuario(){
         
         System.out.println("@cargarValoresUsuario");
