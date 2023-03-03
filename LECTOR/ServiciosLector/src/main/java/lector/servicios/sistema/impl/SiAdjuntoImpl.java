@@ -47,11 +47,13 @@ public class SiAdjuntoImpl extends AbstractImpl<SiAdjunto>{
     }
 
     
-    public SiAdjunto guardarDocumentoAnexoSiAdjunto(DocumentoAnexo documento) throws LectorException{
+    public SiAdjunto guardarDocumentoAnexoSiAdjunto(DocumentoAnexo documento, int usuarioSesion) throws LectorException{
         
         
-        if(documento == null){
+        if( documento == null ){
+            
             throw new LectorException("Documento anexo null");
+            
         }
         
         final ValidadorNombreArchivo validador = new ValidadorNombreArchivo();
@@ -66,13 +68,13 @@ public class SiAdjuntoImpl extends AbstractImpl<SiAdjunto>{
         
         almacenDocumentos.guardarDocumento(documento);
 
-        //        guardar siAdjunto y retornar
+        //        guardar siAdjunto y retornar      
             
-        return new SiAdjunto();
+        return  saveSiAdjunto(documento.getNombreBase(),documento.getTipoMime(),documento.getRuta(),documento.getPrettySize(),usuarioSesion);
     }
     
     
-    public int saveSiAdjunto(String fileName, String contentType, String absolutePath, String size, Integer idUsuario) {
+    public SiAdjunto saveSiAdjunto(String fileName, String contentType, String absolutePath, String size, Integer idUsuario) {
         UtilLog4j.log.info(this, "SiAdjuntoImpl.saveSiAdjunto()");
 
         SiAdjunto siAdjunto = new SiAdjunto();
@@ -81,15 +83,12 @@ public class SiAdjuntoImpl extends AbstractImpl<SiAdjunto>{
         siAdjunto.setTipoArchivo(contentType);
         siAdjunto.setUrl(absolutePath);
         siAdjunto.setPeso(size);
-        siAdjunto.setGenero(new Usuario(idUsuario));
-        siAdjunto.setFechaGenero(new Date());        
-        siAdjunto.setEliminado(Constantes.NO_ELIMINADO);
-        UUID uuid = UUID.randomUUID();
-        siAdjunto.setUuid(uuid.toString());
+        siAdjunto.setGenero(new Usuario(idUsuario));        
+        siAdjunto.setUuid(UUID.randomUUID().toString());
         create(siAdjunto);
-        UtilLog4j.log.info(this, "SiAdjunto CREATED SUCCESSFULLY");
+        UtilLog4j.log.info(this, "SiAdjunto");
 
-        return siAdjunto.getId();
+        return siAdjunto;
     }
 
     
@@ -492,7 +491,7 @@ public class SiAdjuntoImpl extends AbstractImpl<SiAdjunto>{
     }
 
     
-    public void eliminarArchivo(int idAdjunto, Integer sesion) {
+    /*public void eliminarArchivo(int idAdjunto, Integer sesion) {
         UtilLog4j.log.info(this, "SiAdjuntoImpl.eliminarArchivo()");
         SiAdjunto archivo = find(idAdjunto);
         if (archivo != null) {
@@ -510,7 +509,7 @@ public class SiAdjuntoImpl extends AbstractImpl<SiAdjunto>{
         } else {
             UtilLog4j.log.info(this, "El archivo adjunto que intentas eliminar es null");
         }
-    }
+    }*/
 
     
     public AdjuntoVO buscarArchivo(int idAdjunto) {

@@ -33,9 +33,6 @@ public class ContactoImpl extends AbstractImpl<Usuario> {
     @Inject
     private UsuarioImpl usuarioService;
     
-  
-    
-
     public ContactoImpl() {
         super(Usuario.class);
     }
@@ -50,12 +47,10 @@ public class ContactoImpl extends AbstractImpl<Usuario> {
         final Usuario usuarioBuild = buildUsuarioDto(usuario);
 
         usuarioService.create(usuarioBuild);
-       
         
-    }
-    
-    
-    
+        
+           
+    } 
 
     public UsuarioRolVo findNombreUsuarioRolVO(int rolId, String nombreUsuario, int idCampo) {
         clearQuery();
