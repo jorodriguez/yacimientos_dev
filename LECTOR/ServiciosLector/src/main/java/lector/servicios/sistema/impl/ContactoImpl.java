@@ -5,6 +5,7 @@
 package lector.servicios.sistema.impl;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -16,12 +17,12 @@ import lector.constantes.Constantes;
 import lector.dominio.modelo.usuario.vo.UsuarioVO;
 import lector.dominio.vo.UsuarioRolVo;
 import lector.excepciones.LectorException;
+import lector.modelo.SiAdjunto;
 import lector.modelo.Usuario;
 import lector.servicios.catalogos.impl.UsuarioImpl;
 import lector.sistema.AbstractImpl;
 import static lector.util.UsuarioIHelp.buildUsuarioDto;
 import lector.util.UtilLog4j;
-import lector.util.ValidadorNombreArchivo;
 import lector.vision.InformacionCredencialDto;
 
 /**
@@ -52,9 +53,27 @@ public class ContactoImpl extends AbstractImpl<Usuario> {
 
         usuarioService.create(usuarioBuild);
         
-        siAdjuntoService.guardarDocumentoAnexoSiAdjunto(documento, informacionCredencial.getUsuarioDto().getId());        
+        if(informacionCredencial.contieneFoto()){
+         
+            final SiAdjunto adjunto =  siAdjuntoService.guardarDocumentoAnexoSiAdjunto(documento, informacionCredencial.getUsuarioDto().getId());        
+        
+            relacionarUsuarioFotoCredencial(usuarioBuild, adjunto);        
+            
+        }
+        
+        //aqui lanzar la notificacion o correo
            
     } 
+    
+    public void relacionarUsuarioFotoCredencial(Usuario usuario,SiAdjunto siAdjunto) {
+          
+        usuario.setSiAdjunto(siAdjunto);
+        usuario.setModifico(siAdjunto.getGenero());
+        usuario.setFechaModifico(new Date());
+        edit(usuario);      
+        
+    }
+    
 
     public UsuarioRolVo findNombreUsuarioRolVO(int rolId, String nombreUsuario, int idCampo) {
         clearQuery();

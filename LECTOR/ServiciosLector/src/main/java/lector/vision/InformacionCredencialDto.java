@@ -48,5 +48,9 @@ public class InformacionCredencialDto {
            
     }
     
+    public boolean contieneFoto(){
+            return this.imagen != null;
+    }
+    
     
 }

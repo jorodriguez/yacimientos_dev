@@ -49,6 +49,8 @@ public class UsuarioVO implements Serializable {
     private int cCuenta;    
     private int cTipoContacto;    
     
+    private boolean conFoto;
+    
     private Map<Integer, String> mapaRol = new HashMap<>();
     private List<UsuarioRolVo> roles = new ArrayList<>();    
         
@@ -56,7 +58,7 @@ public class UsuarioVO implements Serializable {
     }
 
     @Builder
-    public UsuarioVO(Integer id, String nombre, String domicilio, String clave, String claveElector, String curp, String estado, String municipio, String localidad, String seccion, Integer anioEmision, int vigencia, Date fechaNacimiento, String sexo, String email, String destinatarios, String telefono, String extension, String urlImagen, String pregunta, String respuesta, String celular, String foto, boolean activo, Integer genero, String rolPrincipal, int rolId, int cCuenta, int cTipoContacto) {
+    public UsuarioVO(Integer id, String nombre, String domicilio, String clave, String claveElector, String curp, String estado, String municipio, String localidad, String seccion, Integer anioEmision, int vigencia, Date fechaNacimiento, String sexo, String email, String destinatarios, String telefono, String extension, String urlImagen, String pregunta, String respuesta, String celular, String foto, boolean activo, Integer genero, String rolPrincipal, int rolId, int cCuenta, int cTipoContacto, boolean conFoto) {
         this.id = id;
         this.nombre = nombre;
         this.domicilio = domicilio;
@@ -86,8 +88,10 @@ public class UsuarioVO implements Serializable {
         this.rolId = rolId;
         this.cCuenta = cCuenta;
         this.cTipoContacto = cTipoContacto;
+        this.conFoto = conFoto;
     }
-    
+
+   
     
 
     

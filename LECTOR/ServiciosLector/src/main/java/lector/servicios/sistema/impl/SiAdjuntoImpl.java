@@ -67,11 +67,12 @@ public class SiAdjuntoImpl extends AbstractImpl<SiAdjunto>{
         final AlmacenDocumentos almacenDocumentos = proveedorDocumentos.getAlmacenDocumentos();      
         
         almacenDocumentos.guardarDocumento(documento);
-
-        //        guardar siAdjunto y retornar      
-            
+                    
         return  saveSiAdjunto(documento.getNombreBase(),documento.getTipoMime(),documento.getRuta(),documento.getPrettySize(),usuarioSesion);
     }
+    
+
+    
     
     
     public SiAdjunto saveSiAdjunto(String fileName, String contentType, String absolutePath, String size, Integer idUsuario) {

@@ -18,6 +18,7 @@ import java.util.Set;
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
+import javax.faces.event.ActionEvent;
 import javax.faces.event.ValueChangeEvent;
 import javax.inject.Inject;
 
@@ -42,7 +43,9 @@ import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
 import org.primefaces.model.file.UploadedFile;
 import static lector.constantes.Constantes.Etiquetas.*;
+import lector.servicios.sistema.impl.ContactoImpl;
 import static lector.util.UtilsProcess.castToInt;
+
 /**
  *
  * @author jorodriguez
@@ -53,36 +56,41 @@ public class ContactoView implements Serializable {
 
     @Inject
     private Sesion sesion;
-    
+
     private String filename;
-    
+
     @Inject
     private LectorService lectorService;
-    
+
+    @Inject
+    private ContactoImpl contactoService;
+
     @Inject
     private ProveedorAlmacenDocumentos proveedorAlmacenDocumentos;
-    
+
     @Inject
     private SiParametroImpl parametrosSistemaServicioRemoto;
-    
-    
+
     private CroppedImage croppedImage;
-    
+
     private UploadedFile originalImageFile;
-    
-    @Getter   
+
+    @Getter
     private UploadedFile fileInfo;
-    
-    @Getter   @Setter
+
+    @Getter
+    @Setter
     private byte[] fileContent;
-    
-    @Getter   @Setter
+
+    @Getter
+    @Setter
     private List<Item> listaItems;
-    
-    @Getter  
+
+    @Getter
     private InformacionCredencialDto informacionCredencialDto;
 
-    @Getter  @Setter
+    @Getter
+    @Setter
     private UsuarioVO usuarioDto;
 
     public ContactoView() {
@@ -90,14 +98,13 @@ public class ContactoView implements Serializable {
 
     @PostConstruct
     public void iniciar() {
-        System.out.println("@Postconstruc"+this.getClass().getCanonicalName());
+        System.out.println("@Postconstruc" + this.getClass().getCanonicalName());
         //loaders
         usuarioDto = new UsuarioVO();
+
     }
-    
-    
-    
-  /*  public void subirAdjunto(FileUploadEvent event) {
+
+    /*  public void subirAdjunto(FileUploadEvent event) {
         System.out.println("@subirAdjunto");
 
         ValidadorNombreArchivo validadorNombreArchivo = new ValidadorNombreArchivo();
@@ -157,14 +164,11 @@ public class ContactoView implements Serializable {
         }
 
     }*/
+    public void listenerAdjunto(FileUploadEvent event) {
+        System.out.println("Listener ");
+        this.fileInfo = event.getFile();
+    }
 
-    
-     public void listenerAdjunto(FileUploadEvent event) {
-         System.out.println("Listener ");
-         this.fileInfo = event.getFile();
-     }
-
-    
     public boolean subirArchivo() {
 
         if (fileInfo == null) {
@@ -176,8 +180,6 @@ public class ContactoView implements Serializable {
 
         try {
 
-            //AlmacenDocumentos almacenDocumentos = proveedorAlmacenDocumentos.getAlmacenDocumentos();
-
             boolean addArchivo = validadorNombreArchivo.isNombreValido(fileInfo.getFileName());
 
             if (addArchivo) {
@@ -187,16 +189,13 @@ public class ContactoView implements Serializable {
                 documentoAnexo.setRuta("credenciales");
                 documentoAnexo.setNombreBase(fileInfo.getFileName());
                 //almacenDocumentos.guardarDocumento(documentoAnexo);
-               
-                //listaItems = lectorService.getTextoData(fileInfo.getContent());               
 
                 informacionCredencialDto = lectorService.getInformacionCredencial(documentoAnexo);
-                
+
                 cargarValoresUsuario();
-                               
-                                
+
                 System.out.println("upload *** ok");
-                
+
                 /*               
                 SiAdjunto adj = adjuntoImpl.save(documentoAnexo.getNombreBase(),
                         new StringBuilder()
@@ -212,7 +211,7 @@ public class ContactoView implements Serializable {
 
             fileInfo.delete();
             fileInfo = null;
-            
+
             return true;
 
         } catch (IOException | LectorException e) {
@@ -221,30 +220,45 @@ public class ContactoView implements Serializable {
             return false;
         }
     }
-    
-    public void guardar(){
-        
-        if (informacionCredencialDto == null) {
+
+    public void guardar(ActionEvent e) {
+
+        try {
+
+         /*if (informacionCredencialDto == null) {
             FacesUtils.addErrorMessage("Seleccione un archivo.");
             return;
+        }*/
+         
+         if(fileInfo == null){
+             informacionCredencialDto = InformacionCredencialDto
+                                        .builder()
+                                        .usuarioDto(usuarioDto)
+                                        .build();
+         }
+         
+        //validacion de campos
+        contactoService.guardarContacto(informacionCredencialDto);
+
+        } catch (LectorException le) {
+
+            FacesUtils.addErrorMessage(le.getMessage());
+
         }
-        
-        lectorService.
-        
-        
+
     }
-    
-    private void cargarValoresUsuario(){
-        
+
+    private void cargarValoresUsuario() {
+
         System.out.println("@cargarValoresUsuario");
-        
-        if(informacionCredencialDto == null){
-            
+
+        if (informacionCredencialDto == null) {
+
             throw new NullPointerException("Es null informacionCredencialDto");
         }
-        
+
         System.out.println("Valores etiquetas");
-        
+
         /*for (Map.Entry<String, Item> entry : informacionCredencialDto.getEtiquetasDetectadas().entrySet()) {
             Object key = entry.getKey();
             Item val = entry.getValue();
@@ -252,13 +266,9 @@ public class ContactoView implements Serializable {
             System.out.println("key "+val.getValor());            
             
         }*/
-        
-        
-        
-        /*for(int i=0; i < informacionCredencialDto.getEtiquetasDetectadas().size();i++){
+ /*for(int i=0; i < informacionCredencialDto.getEtiquetasDetectadas().size();i++){
             informacionCredencialDto.getEtiquetasDetectadas().get()
         }*/
-        
         usuarioDto = UsuarioVO.builder()
                 .nombre(gettingValorEtiqueta(NOMBRE))
                 .domicilio(gettingValorEtiqueta(DOMICILIO))
@@ -266,54 +276,49 @@ public class ContactoView implements Serializable {
                 .curp(gettingValorEtiqueta(CURP))
                 .sexo(gettingValorEtiqueta(SEXO))
                 .estado(gettingValorEtiqueta(ESTADO))
-                .municipio(gettingValorEtiqueta(MUNICIPIO))             
+                .municipio(gettingValorEtiqueta(MUNICIPIO))
                 .localidad(gettingValorEtiqueta(LOCALIDAD))
                 .activo(true)
-                .genero(sesion.getUsuarioSesion().getId())                
-                .build();                
-                
-        String valor = gettingValorEtiqueta(VIGENCIA);       
-        
+                .genero(sesion.getUsuarioSesion().getId())
+                .conFoto(true)
+                .build();
+
+        String valor = gettingValorEtiqueta(VIGENCIA);
+
         usuarioDto.setVigencia(
-                   castToInt(valor)
-        );      
-        
-        valor = gettingValorEtiqueta(EMISION);                       
-        usuarioDto.setAnioEmision(
-                    castToInt(valor)
+                castToInt(valor)
         );
-                    
+
+        valor = gettingValorEtiqueta(EMISION);
+        usuarioDto.setAnioEmision(
+                castToInt(valor)
+        );
+
     }
-    
 
-
-    
-    private String gettingValorEtiqueta(Constantes.Etiquetas etiqueta){        
+    private String gettingValorEtiqueta(Constantes.Etiquetas etiqueta) {
         System.out.println("@gettingValorEtiqueta");
-        
-        System.out.println("Etiqueta "+etiqueta.name());
-        
-        
-        
-        Item item = informacionCredencialDto.getEtiquetasDetectadas().get(etiqueta.name());
-        
-        System.out.println("item "+item);
-        
-        return item == null ? "NO ENCONTRADO" : item.getValor();
-        
-    }
-    
 
-     public void handleFileUpload(FileUploadEvent event) {
-         System.out.println("@handleFileUpload");
-         
+        System.out.println("Etiqueta " + etiqueta.name());
+
+        Item item = informacionCredencialDto.getEtiquetasDetectadas().get(etiqueta.name());
+
+        System.out.println("item " + item);
+
+        return item == null ? "NO ENCONTRADO" : item.getValor();
+
+    }
+
+    public void handleFileUpload(FileUploadEvent event) {
+        System.out.println("@handleFileUpload");
+
         this.originalImageFile = null;
         this.croppedImage = null;
-        
+
         this.fileInfo = event.getFile();
-        
+
         this.fileContent = fileInfo.getContent();
-        
+
         if (fileInfo != null && fileInfo.getContent() != null && fileInfo.getContent().length > 0 && fileInfo.getFileName() != null) {
             this.originalImageFile = fileInfo;
             FacesMessage msg = new FacesMessage("Successful", this.originalImageFile.getFileName() + " is uploaded.");
@@ -325,8 +330,7 @@ public class ContactoView implements Serializable {
         if (this.croppedImage == null || this.croppedImage.getBytes() == null || this.croppedImage.getBytes().length == 0) {
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error",
                     "Cropping failed."));
-        }
-        else {
+        } else {
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Success",
                     "Cropped successfully."));
         }
@@ -344,8 +348,7 @@ public class ContactoView implements Serializable {
 
                     try {
                         return new ByteArrayInputStream(originalImageFile.getContent());
-                    }
-                    catch (Exception e) {
+                    } catch (Exception e) {
                         e.printStackTrace();
                         return null;
                     }
@@ -365,36 +368,32 @@ public class ContactoView implements Serializable {
 
                     try {
                         return new ByteArrayInputStream(this.croppedImage.getBytes());
-                    }
-                    catch (Exception e) {
+                    } catch (Exception e) {
                         e.printStackTrace();
                         return null;
                     }
                 })
                 .build();
     }
-    
-    
+
     public List<Map.Entry<String, Item>> getEtiquetas() {
-        
+
         Set<Map.Entry<String, Item>> setList = Collections.emptySet();
-                
-        if(informacionCredencialDto != null && informacionCredencialDto.getEtiquetasDetectadas() != null){
-            
+
+        if (informacionCredencialDto != null && informacionCredencialDto.getEtiquetasDetectadas() != null) {
+
             setList = informacionCredencialDto.getEtiquetasDetectadas().entrySet();
-            
+
         }
-        
-    return new ArrayList<Map.Entry<String, Item>>(setList);
-}
-    
-    public void changeFoto(ValueChangeEvent valuchangeevent){
-                System.out.println("@@changeFoto");
-                
+
+        return new ArrayList<Map.Entry<String, Item>>(setList);
     }
-    
-    
-    
+
+    public void changeFoto(ValueChangeEvent valuchangeevent) {
+        System.out.println("@@changeFoto");
+
+    }
+
     public CroppedImage getCroppedImage() {
         return croppedImage;
     }
@@ -406,19 +405,17 @@ public class ContactoView implements Serializable {
     public UploadedFile getOriginalImageFile() {
         return originalImageFile;
     }
-    
-    
-    public void setFileInfo(UploadedFile uploadedFile ) {
+
+    public void setFileInfo(UploadedFile uploadedFile) {
         this.fileInfo = uploadedFile;
-        if(fileInfo != null){
+        if (fileInfo != null) {
             this.fileContent = this.fileInfo.getContent();
         }
-    }   
-    
-    
+    }
+
     public String getImageContentsAsBase64() {
-        
-            return  fileContent != null ? Base64.getEncoder().encodeToString(fileContent) : null;
+
+        return fileContent != null ? Base64.getEncoder().encodeToString(fileContent) : null;
     }
 
 }

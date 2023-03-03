@@ -36,7 +36,7 @@ public interface UsuarioIHelp {
                 .cCuenta(new CCuenta(usuario.getCCuenta()))
                 .cTipoContacto(new CTipoContacto(usuario.getCTipoContacto()))
                 .genero(new Usuario(usuario.getGenero()))
-                .registro(new Usuario(usuario.getGenero()))
+                .registro(new Usuario(usuario.getGenero()))                
                 .build();
         
     }
