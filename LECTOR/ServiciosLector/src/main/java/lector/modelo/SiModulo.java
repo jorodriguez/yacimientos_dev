@@ -5,6 +5,7 @@
 package lector.modelo;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import javax.persistence.Basic;
@@ -22,6 +23,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.xml.bind.annotation.XmlTransient;
+import org.codehaus.jackson.annotate.JsonIgnore;
 
 /**
  *
@@ -30,6 +33,9 @@ import javax.persistence.TemporalType;
 @Entity
 @Table(name = "si_modulo")
 public class SiModulo implements Serializable {
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "siModulo")
+    private Collection<SiRol> siRolCollection;
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -217,6 +223,16 @@ public class SiModulo implements Serializable {
     @Override
     public String toString() {
         return "mx.ihsa.mavenproject1.SiModulo[ id=" + id + " ]";
+    }
+
+    @XmlTransient
+    @JsonIgnore
+    public Collection<SiRol> getSiRolCollection() {
+        return siRolCollection;
+    }
+
+    public void setSiRolCollection(Collection<SiRol> siRolCollection) {
+        this.siRolCollection = siRolCollection;
     }
     
 }

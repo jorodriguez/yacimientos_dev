@@ -225,20 +225,18 @@ public class ContactoView implements Serializable {
 
         try {
 
-         /*if (informacionCredencialDto == null) {
-            FacesUtils.addErrorMessage("Seleccione un archivo.");
-            return;
-        }*/
-         
-         if(fileInfo == null){
-             informacionCredencialDto = InformacionCredencialDto
-                                        .builder()
-                                        .usuarioDto(usuarioDto)
-                                        .build();
-         }
-         
-        //validacion de campos
-        contactoService.guardarContacto(informacionCredencialDto);
+            validarUsuario();
+            
+            if (fileInfo == null) {
+                informacionCredencialDto = InformacionCredencialDto
+                        .builder()
+                        .usuarioDto(usuarioDto)
+                        .build();
+            }
+            
+            
+            //validacion de campos
+            contactoService.guardarContacto(informacionCredencialDto);
 
         } catch (LectorException le) {
 
@@ -246,6 +244,22 @@ public class ContactoView implements Serializable {
 
         }
 
+    }
+    
+    private void validarUsuario(){
+        if(usuarioDto == null){
+            FacesUtils.addErrorMessage("Existió un error al intentar guardar el contacto.");           
+            return;
+        }
+        
+        if(usuarioDto.getNombre().isEmpty() || usuarioDto.getNombre().isEmpty()){
+            FacesUtils.addErrorMessage("Escribe en nombre.");           
+            return;
+        }
+        if(usuarioDto.getDomicilio().isEmpty() || usuarioDto.getDomicilio().isEmpty()){
+            FacesUtils.addErrorMessage("Escribe en nombre.");           
+            return;
+        }
     }
 
     private void cargarValoresUsuario() {

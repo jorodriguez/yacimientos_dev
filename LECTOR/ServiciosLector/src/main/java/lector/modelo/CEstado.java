@@ -7,7 +7,6 @@ package lector.modelo;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Date;
-import java.util.List;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -23,6 +22,9 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import org.codehaus.jackson.annotate.JsonIgnore;
 
@@ -31,11 +33,17 @@ import org.codehaus.jackson.annotate.JsonIgnore;
  * @author jorodriguez
  */
 @Entity
-@Table(name = "c_tipo_contacto")
-public class CTipoContacto implements Serializable {
-
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "cTipoContacto")
-    private Collection<Usuario> usuarioCollection;
+@Table(name = "c_estado")
+@XmlRootElement
+@NamedQueries({
+    @NamedQuery(name = "CEstado.findAll", query = "SELECT c FROM CEstado c"),
+    @NamedQuery(name = "CEstado.findById", query = "SELECT c FROM CEstado c WHERE c.id = :id"),
+    @NamedQuery(name = "CEstado.findByClave", query = "SELECT c FROM CEstado c WHERE c.clave = :clave"),
+    @NamedQuery(name = "CEstado.findByNombre", query = "SELECT c FROM CEstado c WHERE c.nombre = :nombre"),
+    @NamedQuery(name = "CEstado.findByFechaGenero", query = "SELECT c FROM CEstado c WHERE c.fechaGenero = :fechaGenero"),
+    @NamedQuery(name = "CEstado.findByFechaModifico", query = "SELECT c FROM CEstado c WHERE c.fechaModifico = :fechaModifico"),
+    @NamedQuery(name = "CEstado.findByEliminado", query = "SELECT c FROM CEstado c WHERE c.eliminado = :eliminado")})
+public class CEstado implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -44,9 +52,16 @@ public class CTipoContacto implements Serializable {
     @Column(name = "id")
     private Integer id;
     @Basic(optional = false)
+    @NotNull
+    @Column(name = "clave")
+    private int clave;
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 512)
     @Column(name = "nombre")
     private String nombre;
     @Basic(optional = false)
+    @NotNull
     @Column(name = "fecha_genero")
     @Temporal(TemporalType.TIMESTAMP)
     private Date fechaGenero;
@@ -55,22 +70,31 @@ public class CTipoContacto implements Serializable {
     private Date fechaModifico;
     @Column(name = "eliminado")
     private Boolean eliminado;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "cEstado")
+    private Collection<CLocalidad> cLocalidadCollection;
     @JoinColumn(name = "genero", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private Usuario genero;
     @JoinColumn(name = "modifico", referencedColumnName = "id")
     @ManyToOne
     private Usuario modifico;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "cEstado")
+    private Collection<CMunicipio> cMunicipioCollection;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "cEstado")
+    private Collection<CSeccion> cSeccionCollection;
+    @OneToMany(mappedBy = "cEstado")
+    private Collection<Usuario> usuarioCollection;
 
-    public CTipoContacto() {
+    public CEstado() {
     }
 
-    public CTipoContacto(Integer id) {
+    public CEstado(Integer id) {
         this.id = id;
     }
 
-    public CTipoContacto(Integer id, String nombre, Date fechaGenero) {
+    public CEstado(Integer id, int clave, String nombre, Date fechaGenero) {
         this.id = id;
+        this.clave = clave;
         this.nombre = nombre;
         this.fechaGenero = fechaGenero;
     }
@@ -81,6 +105,14 @@ public class CTipoContacto implements Serializable {
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    public int getClave() {
+        return clave;
+    }
+
+    public void setClave(int clave) {
+        this.clave = clave;
     }
 
     public String getNombre() {
@@ -115,6 +147,16 @@ public class CTipoContacto implements Serializable {
         this.eliminado = eliminado;
     }
 
+    @XmlTransient
+    @JsonIgnore
+    public Collection<CLocalidad> getCLocalidadCollection() {
+        return cLocalidadCollection;
+    }
+
+    public void setCLocalidadCollection(Collection<CLocalidad> cLocalidadCollection) {
+        this.cLocalidadCollection = cLocalidadCollection;
+    }
+
     public Usuario getGenero() {
         return genero;
     }
@@ -131,29 +173,24 @@ public class CTipoContacto implements Serializable {
         this.modifico = modifico;
     }
 
-    @Override
-    public int hashCode() {
-        int hash = 0;
-        hash += (id != null ? id.hashCode() : 0);
-        return hash;
+    @XmlTransient
+    @JsonIgnore
+    public Collection<CMunicipio> getCMunicipioCollection() {
+        return cMunicipioCollection;
     }
 
-    @Override
-    public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof CTipoContacto)) {
-            return false;
-        }
-        CTipoContacto other = (CTipoContacto) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
-            return false;
-        }
-        return true;
+    public void setCMunicipioCollection(Collection<CMunicipio> cMunicipioCollection) {
+        this.cMunicipioCollection = cMunicipioCollection;
     }
 
-    @Override
-    public String toString() {
-        return "mx.ihsa.mavenproject1.CTipoContacto[ id=" + id + " ]";
+    @XmlTransient
+    @JsonIgnore
+    public Collection<CSeccion> getCSeccionCollection() {
+        return cSeccionCollection;
+    }
+
+    public void setCSeccionCollection(Collection<CSeccion> cSeccionCollection) {
+        this.cSeccionCollection = cSeccionCollection;
     }
 
     @XmlTransient
@@ -164,6 +201,31 @@ public class CTipoContacto implements Serializable {
 
     public void setUsuarioCollection(Collection<Usuario> usuarioCollection) {
         this.usuarioCollection = usuarioCollection;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 0;
+        hash += (id != null ? id.hashCode() : 0);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        // TODO: Warning - this method won't work in the case the id fields are not set
+        if (!(object instanceof CEstado)) {
+            return false;
+        }
+        CEstado other = (CEstado) object;
+        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "lector.modelo.CEstado[ id=" + id + " ]";
     }
     
 }

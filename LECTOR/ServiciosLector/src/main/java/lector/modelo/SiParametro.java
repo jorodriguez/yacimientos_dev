@@ -29,6 +29,10 @@ import javax.persistence.TemporalType;
 @Table(name = "si_parametro")
 public class SiParametro implements Serializable {
 
+    @Lob
+    @Column(name = "logo")
+    private byte[] logo;
+
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -37,9 +41,6 @@ public class SiParametro implements Serializable {
     private Integer id;
     @Column(name = "upload_directory")
     private String uploadDirectory;
-    @Lob
-    @Column(name = "logo")
-    private byte[] logo;
     @Basic(optional = false)
     @Column(name = "tipo_almacen_adjuntos")
     private String tipoAlmacenAdjuntos;
@@ -98,13 +99,6 @@ public class SiParametro implements Serializable {
         this.uploadDirectory = uploadDirectory;
     }
 
-    public byte[] getLogo() {
-        return logo;
-    }
-
-    public void setLogo(byte[] logo) {
-        this.logo = logo;
-    }
 
     public String getTipoAlmacenAdjuntos() {
         return tipoAlmacenAdjuntos;
@@ -217,6 +211,14 @@ public class SiParametro implements Serializable {
     @Override
     public String toString() {
         return "mx.ihsa.mavenproject1.SiParametro[ id=" + id + " ]";
+    }
+
+    public byte[] getLogo() {
+        return logo;
+    }
+
+    public void setLogo(byte[] logo) {
+        this.logo = logo;
     }
     
 }

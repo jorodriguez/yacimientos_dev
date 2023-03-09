@@ -49,15 +49,14 @@ public class UsuarioImpl extends AbstractImpl<Usuario> {
             + " FROM usuario u ";
 
     private final static UtilLog4j LOGGER = UtilLog4j.log;
-    
-     @Inject
+
+    @Inject
     private ServicioNotificacionSistemaImpl notificacionSistemaRemote;
 
     public UsuarioImpl() {
         super(Usuario.class);
     }
-    
-    
+
     public UsuarioVO login(final String correo, final String pass) throws LectorException {
 
         if (Strings.isNullOrEmpty(correo) || Strings.isNullOrEmpty(pass)) {
@@ -75,47 +74,45 @@ public class UsuarioImpl extends AbstractImpl<Usuario> {
         if (!usuario.getClave().equals(encriptar(pass))) {
             throw new LectorException("El usuario y/0 la clave son incorrectos.");
         }
-        
-        return  castingToUsuarioVo(usuario);
+
+        return castingToUsuarioVo(usuario);
     }
-    
-    private UsuarioVO castingToUsuarioVo(Usuario usuario) {        
-        
-        return  UsuarioVO.builder()
-                                        .id(usuario.getId())
-                                        .nombre(usuario.getNombre())
-                                        .email(usuario.getEmail())
-                                        .cCuenta(usuario.getCCuenta().getId())
-                                        .telefono(usuario.getTelefono())
-                                        .sexo(usuario.getSexo())
-                                          .build();
-                
-                
-        
-        
+
+    private UsuarioVO castingToUsuarioVo(Usuario usuario) {
+
+        return UsuarioVO.builder()
+                .id(usuario.getId())
+                .nombre(usuario.getNombre())
+                .email(usuario.getEmail())
+                .cCuenta(usuario.getCCuenta().getId())
+                .telefono(usuario.getTelefono())
+                .sexo(usuario.getSexo())
+                .estado(usuario.getCEstado() != null ? usuario.getCEstado().getNombre():"")
+                .municipio(usuario.getCMunicipio() != null ? usuario.getCMunicipio().getNombre():"")
+                .localidad(usuario.getCLocalidad() != null ? usuario.getCLocalidad().getNombre():"")
+                .seccion(usuario.getCSeccion() != null ? usuario.getCSeccion().getNombre():"")
+                .build();
+
     }
-   
 
     public Usuario find(String correo) {
-        try {                 
-            return (Usuario) em.createNamedQuery("Usuario.findByCorreo").setParameter(1, correo).getSingleResult();            
+        try {
+            return (Usuario) em.createNamedQuery("Usuario.findByCorreo").setParameter(1, correo).getSingleResult();
         } catch (NoResultException nre) {
-            log.warn("No encontró el correo del usuario {} ",correo, nre);
+            log.warn("No encontró el correo del usuario {} ", correo, nre);
             return null;
         }
     }
-    
-    
+
     public Usuario findById(Integer id) {
-        try {                 
-            return (Usuario) em.createNamedQuery("Usuario.findById").setParameter(1, id).getSingleResult();            
+        try {
+            return (Usuario) em.createNamedQuery("Usuario.findById").setParameter(1, id).getSingleResult();
         } catch (NoResultException nre) {
-            log.warn("No encontró el id del usuario {} ",id, nre);
+            log.warn("No encontró el id del usuario {} ", id, nre);
             return null;
         }
 
     }
-
 
     /**
      * Devuelve el texto con la primera letra mayúscula y las demás en
@@ -173,10 +170,10 @@ public class UsuarioImpl extends AbstractImpl<Usuario> {
         vo.setId(u.getId());
         vo.setNombre(u.getNombre());
         vo.setClave(u.getClave());
-        vo.setEmail(u.getEmail());                
-        vo.setTelefono(u.getTelefono());        
+        vo.setEmail(u.getEmail());
+        vo.setTelefono(u.getTelefono());
         vo.setSexo(u.getSexo());
-                
+
         return vo;
     }
 
@@ -196,11 +193,9 @@ public class UsuarioImpl extends AbstractImpl<Usuario> {
         }
     }
 
-
-    
     public boolean enviarClave(Usuario usuario) {
-        
-      return notificacionSistemaRemote.enviarClave(
+
+        return notificacionSistemaRemote.enviarClave(
                 usuario.getNombre(),
                 usuario.getEmail(),
                 usuario.getClave(),
@@ -223,13 +218,13 @@ public class UsuarioImpl extends AbstractImpl<Usuario> {
             usuario.setNombre(fixName(usuarioVO.getNombre()));
             usuario.setClave(usuarioVO.getClave());
             usuario.setEmail(usuarioVO.getEmail());
-            
+
             //
             usuario.setTelefono(usuarioVO.getTelefono());
-            
-            usuario.setSexo(usuarioVO.getSexo());            
+
+            usuario.setSexo(usuarioVO.getSexo());
             usuario.setFoto("/resources/imagenes/usuarios/usuario.png");
-            
+
             usuario.setGenero(find(sesion));
             usuario.setFechaGenero(new Date());
             usuario.setEliminado(Constantes.NO_ELIMINADO);
@@ -262,12 +257,12 @@ public class UsuarioImpl extends AbstractImpl<Usuario> {
     }
 
     public void eliminarUsuario(String sesion, String idUser) {
-            Usuario usuario = find(idUser);
-            usuario.setClave(encriptar(String.valueOf(generaClave())));
-            usuario.setEliminado(Constantes.ELIMINADO);
-            usuario.setModifico(find(sesion));
-            usuario.setFechaModifico(new Date());
-            edit(usuario);
+        Usuario usuario = find(idUser);
+        usuario.setClave(encriptar(String.valueOf(generaClave())));
+        usuario.setEliminado(Constantes.ELIMINADO);
+        usuario.setModifico(find(sesion));
+        usuario.setFechaModifico(new Date());
+        edit(usuario);
     }
 
     public void activarUsuario(String sesion, UsuarioVO usuarioVo) {
@@ -277,7 +272,6 @@ public class UsuarioImpl extends AbstractImpl<Usuario> {
         usuario.setFechaModifico(new Date());
         this.edit(usuario);
     }
-
 
     public boolean cambioContrasenia(Integer usuario, String c, String confirmarPassword) {
         boolean v;
@@ -311,8 +305,7 @@ public class UsuarioImpl extends AbstractImpl<Usuario> {
         return v;
     }
 
-
-    public String encriptar(String text)  {
+    public String encriptar(String text) {
 
         String retVal = text;
 
@@ -350,10 +343,10 @@ public class UsuarioImpl extends AbstractImpl<Usuario> {
         );
 
         if (v) {
-                usuario.setClave(encriptar(String.valueOf(clave)));
-                usuario.setModifico(find(sesion));
-                usuario.setFechaModifico(new Date());
-                edit(usuario);
+            usuario.setClave(encriptar(String.valueOf(clave)));
+            usuario.setModifico(find(sesion));
+            usuario.setFechaModifico(new Date());
+            edit(usuario);
         }
         return v;
     }
@@ -362,7 +355,6 @@ public class UsuarioImpl extends AbstractImpl<Usuario> {
         int valorEntero = (int) Math.floor(Math.random() * (1000 - 10000 + 1) + 10000);
         return valorEntero;
     }
-
 
     public void modificaUsuarioDatosSinClave(String idUser, String nombre, String correo, String destinatarios, String rfc, String telefono, String ext, String celular) {
         Usuario usuario = find(idUser);
@@ -471,18 +463,16 @@ public class UsuarioImpl extends AbstractImpl<Usuario> {
         for (Object[] obj : resultado) {
             UsuarioVO vo = new UsuarioVO();
 
-            vo.setId((Integer )obj[0]);
+            vo.setId((Integer) obj[0]);
             vo.setNombre(String.valueOf(obj[1]));
             vo.setEmail(String.valueOf(obj[2]));
-            
-            
 
             if (campoActual == 0) {
                 usuarios.add(vo);
             } else {
-                    usuariosList.add(usuarios);
-                    usuarios = new ArrayList<>();
-                    usuarios.add(vo);
+                usuariosList.add(usuarios);
+                usuarios = new ArrayList<>();
+                usuarios.add(vo);
             }
         }
         if (usuarios != null && !usuarios.isEmpty()) {
@@ -493,11 +483,9 @@ public class UsuarioImpl extends AbstractImpl<Usuario> {
 
     }
 
-
-
     public void modificarDatosUsuario(String sesion, UsuarioVO usuarioVO, int idPuesto) {
         try {
-            
+
             var usuario = find(usuarioVO.getId());
 
             usuario.setNombre(usuarioVO.getNombre());
@@ -553,7 +541,6 @@ public class UsuarioImpl extends AbstractImpl<Usuario> {
         return em.createQuery(qry).getResultList();
     }
 
-
     /**
      *
      * @param cadena
@@ -571,9 +558,6 @@ public class UsuarioImpl extends AbstractImpl<Usuario> {
 
         return em.createNativeQuery(sql.toString()).getResultList();
     }
-
-
-
 
     public Usuario buscarPorId(String usuarioId) {
         Usuario retVal = null;

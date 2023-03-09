@@ -5,8 +5,10 @@
 package lector.modelo;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.Date;
 import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -14,9 +16,12 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.xml.bind.annotation.XmlTransient;
+import org.codehaus.jackson.annotate.JsonIgnore;
 
 /**
  *
@@ -25,6 +30,11 @@ import javax.persistence.TemporalType;
 @Entity
 @Table(name = "si_rol")
 public class SiRol implements Serializable {
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "siRol")
+    private Collection<SiRelRolOpcion> siRelRolOpcionCollection;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "siRol")
+    private Collection<SiUsuarioRol> siUsuarioRolCollection;
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -165,6 +175,26 @@ public class SiRol implements Serializable {
     @Override
     public String toString() {
         return "mx.ihsa.mavenproject1.SiRol[ id=" + id + " ]";
+    }
+
+    @XmlTransient
+    @JsonIgnore
+    public Collection<SiRelRolOpcion> getSiRelRolOpcionCollection() {
+        return siRelRolOpcionCollection;
+    }
+
+    public void setSiRelRolOpcionCollection(Collection<SiRelRolOpcion> siRelRolOpcionCollection) {
+        this.siRelRolOpcionCollection = siRelRolOpcionCollection;
+    }
+
+    @XmlTransient
+    @JsonIgnore
+    public Collection<SiUsuarioRol> getSiUsuarioRolCollection() {
+        return siUsuarioRolCollection;
+    }
+
+    public void setSiUsuarioRolCollection(Collection<SiUsuarioRol> siUsuarioRolCollection) {
+        this.siUsuarioRolCollection = siUsuarioRolCollection;
     }
     
 }

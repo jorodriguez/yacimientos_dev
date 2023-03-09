@@ -5,6 +5,7 @@
 package lector.modelo;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import javax.persistence.Basic;
@@ -20,6 +21,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.xml.bind.annotation.XmlTransient;
+import org.codehaus.jackson.annotate.JsonIgnore;
 
 /**
  *
@@ -28,6 +31,15 @@ import javax.persistence.TemporalType;
 @Entity
 @Table(name = "c_cuenta")
 public class CCuenta implements Serializable {
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "cCuenta")
+    private Collection<LogLectura> logLecturaCollection;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "cCuenta")
+    private Collection<SiUsuarioRol> siUsuarioRolCollection;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "cCuenta")
+    private Collection<Usuario> usuarioCollection;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "cCuenta")
+    private Collection<SiAdjunto> siAdjuntoCollection;
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -187,6 +199,46 @@ public class CCuenta implements Serializable {
     @Override
     public String toString() {
         return "mx.ihsa.mavenproject1.CCuenta[ id=" + id + " ]";
+    }
+
+    @XmlTransient
+    @JsonIgnore
+    public Collection<LogLectura> getLogLecturaCollection() {
+        return logLecturaCollection;
+    }
+
+    public void setLogLecturaCollection(Collection<LogLectura> logLecturaCollection) {
+        this.logLecturaCollection = logLecturaCollection;
+    }
+
+    @XmlTransient
+    @JsonIgnore
+    public Collection<SiUsuarioRol> getSiUsuarioRolCollection() {
+        return siUsuarioRolCollection;
+    }
+
+    public void setSiUsuarioRolCollection(Collection<SiUsuarioRol> siUsuarioRolCollection) {
+        this.siUsuarioRolCollection = siUsuarioRolCollection;
+    }
+
+    @XmlTransient
+    @JsonIgnore
+    public Collection<Usuario> getUsuarioCollection() {
+        return usuarioCollection;
+    }
+
+    public void setUsuarioCollection(Collection<Usuario> usuarioCollection) {
+        this.usuarioCollection = usuarioCollection;
+    }
+
+    @XmlTransient
+    @JsonIgnore
+    public Collection<SiAdjunto> getSiAdjuntoCollection() {
+        return siAdjuntoCollection;
+    }
+
+    public void setSiAdjuntoCollection(Collection<SiAdjunto> siAdjuntoCollection) {
+        this.siAdjuntoCollection = siAdjuntoCollection;
     }
     
 }
