@@ -9,9 +9,11 @@ import java.io.ByteArrayInputStream;
 import lector.sistema.bean.backing.*;
 import java.io.IOException;
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -253,13 +255,28 @@ public class ContactoView implements Serializable {
         }
         
         if(usuarioDto.getNombre().isEmpty() || usuarioDto.getNombre().isEmpty()){
-            FacesUtils.addErrorMessage("Escribe en nombre.");           
+            FacesUtils.addErrorMessage("Nombre requerido.");           
             return;
         }
+        
         if(usuarioDto.getDomicilio().isEmpty() || usuarioDto.getDomicilio().isEmpty()){
-            FacesUtils.addErrorMessage("Escribe en nombre.");           
+            FacesUtils.addErrorMessage("Domicilio requerido.");           
             return;
         }
+        
+        if(usuarioDto.getFechaNacimiento() == null){
+            FacesUtils.addErrorMessage("Fecha de nacimiento requerida.");           
+            return;
+        }
+        
+        /*if(usuarioDto.getFechaNacimiento().after(
+                    Date.from(LocalDate.now().minusYears(18))
+        )
+            ){
+            FacesUtils.addErrorMessage("Fecha de nacimiento requerida.");           
+            return;
+         }*/
+        
     }
 
     private void cargarValoresUsuario() {
