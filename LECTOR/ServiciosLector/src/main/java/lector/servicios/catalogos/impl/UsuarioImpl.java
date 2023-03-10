@@ -89,10 +89,13 @@ public class UsuarioImpl extends AbstractImpl<Usuario> {
                 .sexo(usuario.getSexo())
                 .estado(usuario.getCEstado() != null ? usuario.getCEstado().getNombre():"")
                 .cMunicipio(usuario.getCMunicipio() != null ? usuario.getCMunicipio().getId():0)
-                .municipio(usuario.getCMunicipio() != null ? usuario.getClave() +"-"+ usuario.getCMunicipio().getNombre():"")
-                .cLocalidad(usuario.getCLocalidad() != null ? usuario.getId() : "")
-                .localidad(usuario.getCLocalidad() != null ? usuario.getCLocalidad().getClave()+"-"+ usuario.getCLocalidad().getNombre():"")
+                .municipioClave(usuario.getCMunicipio() != null ? usuario.getCMunicipio().getClave() : 0)
+                .municipio(usuario.getCMunicipio() != null ? usuario.getCMunicipio().getNombre():"")
+                .cLocalidad(usuario.getCLocalidad() != null ? usuario.getCLocalidad().getId() : 0)
+                .localidadClave(usuario.getCLocalidad() != null ? usuario.getCLocalidad().getClave() : 0)
+                .localidad(usuario.getCLocalidad() != null ? usuario.getCLocalidad().getNombre():"")
                 .cSeccion(usuario.getCSeccion() != null ? usuario.getCSeccion().getId():0)
+                .SeccionClave(usuario.getCSeccion() != null ? usuario.getCSeccion().getClave() : 0)
                 .seccion(usuario.getCSeccion() != null ? usuario.getCSeccion().getNombre():"")
                 .build();
 

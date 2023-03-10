@@ -47,11 +47,16 @@ public class UsuarioVO implements Serializable {
     private String rolPrincipal;
     private int rolId;
     private int cCuenta;    
-    private int cTipoContacto;    
-    private int cEstado;    
+    private int cTipoContacto;        
+    private int cEstado;        
+    private int estadoClave;   
+    
     private int cMunicipio;    
+    private int municipioClave;    
     private int cLocalidad;    
+    private int localidadClave;    
     private int cSeccion;    
+    private int SeccionClave;    
     
     private boolean conFoto;
     
@@ -62,7 +67,7 @@ public class UsuarioVO implements Serializable {
     }
 
     @Builder
-    public UsuarioVO(Integer id, String nombre, String domicilio, String clave, String claveElector, String curp, String estado, String municipio, String localidad, String seccion, Integer anioEmision, int vigencia, Date fechaNacimiento, String sexo, String email, String destinatarios, String telefono, String extension, String urlImagen, String pregunta, String respuesta, String celular, String foto, boolean activo, Integer genero, String rolPrincipal, int rolId, int cCuenta, int cTipoContacto, int cEstado, int cMunicipio, int cLocalidad, int cSeccion, boolean conFoto) {
+    public UsuarioVO(Integer id, String nombre, String domicilio, String clave, String claveElector, String curp, String estado, String municipio, String localidad, String seccion, Integer anioEmision, int vigencia, Date fechaNacimiento, String sexo, String email, String destinatarios, String telefono, String extension, String urlImagen, String pregunta, String respuesta, String celular, String foto, boolean activo, Integer genero, String rolPrincipal, int rolId, int cCuenta, int cTipoContacto, int cEstado, int estadoClave, int cMunicipio, int municipioClave, int cLocalidad, int localidadClave, int cSeccion, int SeccionClave, boolean conFoto) {
         this.id = id;
         this.nombre = nombre;
         this.domicilio = domicilio;
@@ -93,12 +98,18 @@ public class UsuarioVO implements Serializable {
         this.cCuenta = cCuenta;
         this.cTipoContacto = cTipoContacto;
         this.cEstado = cEstado;
+        this.estadoClave = estadoClave;
         this.cMunicipio = cMunicipio;
+        this.municipioClave = municipioClave;
         this.cLocalidad = cLocalidad;
+        this.localidadClave = localidadClave;
         this.cSeccion = cSeccion;
+        this.SeccionClave = SeccionClave;
         this.conFoto = conFoto;
     }
 
+  
+  
    
 
    

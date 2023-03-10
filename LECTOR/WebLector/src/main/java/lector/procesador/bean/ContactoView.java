@@ -92,6 +92,9 @@ public class ContactoView implements Serializable {
     @Getter
     @Setter
     private UsuarioVO usuarioDto;
+    
+    @Getter @Setter
+    private CLocalidadVo localidadSeleccionada;
 
     public ContactoView() {
     }
@@ -465,18 +468,22 @@ public class ContactoView implements Serializable {
     }
     
     public List<CLocalidadVo> completeLocalidades(String query) {
+        System.out.println("@complete localidades");
         String queryLowerCase = query.toLowerCase();
+        System.out.println("@busquea "+queryLowerCase);
+        
         //List<CLocalidadVo> countries = countryService.getCountries();
-        return listaLocalidades
+        List<CLocalidadVo> lista = listaLocalidades
                     .stream()
-                .filter(
+                    .filter(
                         (t) -> {
-                            return (t.getNombre().toLowerCase().contains(queryLowerCase))
-                                    || 
-                                    (t.getClave().toLowerCase().contains(queryLowerCase));
-                                   
+                            return (t.getNombre().toLowerCase().contains(queryLowerCase));                                  
                           }
-                ).collect(Collectors.toList());
+                    ).collect(Collectors.toList());
+                //.map(CLocalidadVo::getNombre)
+                
+         lista.forEach(e-> System.out.println("nombre "+e.getNombre()+" clave "+e.getClave()));
+         return lista;
     }
 
 }
