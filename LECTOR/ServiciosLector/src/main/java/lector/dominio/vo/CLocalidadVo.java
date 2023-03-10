@@ -4,14 +4,15 @@
  */
 package lector.dominio.vo;
 
-import lombok.Getter;
-import lombok.Setter;
+import java.io.Serializable;
+import java.util.Objects;
+
 
 /**
  *
  * @author jrodriguez
  */
-public class CLocalidadVo extends Vo {
+public class CLocalidadVo implements Serializable,Comparable<CLocalidadVo>{
 
     private Integer id;
     private Integer clave;
@@ -117,6 +118,28 @@ public class CLocalidadVo extends Vo {
      */
     public void setLongitud(String longitud) {
         this.longitud = longitud;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        
+        CLocalidadVo localidad = (CLocalidadVo) o;
+        
+        return id == localidad.id
+                && Objects.equals(nombre, localidad.nombre)
+                && Objects.equals(clave, localidad.clave);
+    }
+
+    
+    @Override
+    public int compareTo(CLocalidadVo o) {        
+       return nombre.compareTo(o.nombre);
     }
 
 

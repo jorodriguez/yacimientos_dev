@@ -277,7 +277,14 @@ public class ContactoView implements Serializable {
             return;
         }
         
-
+        if(usuarioDto.getEmail().isEmpty() || usuarioDto.getEmail().isEmpty()){
+            FacesUtils.addErrorMessage("El correo es requeido.");           
+            return;
+        }
+        if(usuarioDto.getTelefono().isEmpty() || usuarioDto.getTelefono().isEmpty()){
+            FacesUtils.addErrorMessage("El telefono es requeido.");           
+            return;
+        }
         
         /*if(usuarioDto.getFechaNacimiento().after(
                     Date.from(LocalDate.now().minusYears(18))
@@ -470,7 +477,7 @@ public class ContactoView implements Serializable {
     public List<CLocalidadVo> completeLocalidades(String query) {
         System.out.println("@complete localidades");
         String queryLowerCase = query.toLowerCase();
-        System.out.println("@busquea "+queryLowerCase);
+        System.out.println("@busqueda "+queryLowerCase);
         
         //List<CLocalidadVo> countries = countryService.getCountries();
         List<CLocalidadVo> lista = listaLocalidades
@@ -482,7 +489,8 @@ public class ContactoView implements Serializable {
                     ).collect(Collectors.toList());
                 //.map(CLocalidadVo::getNombre)
                 
-         lista.forEach(e-> System.out.println("nombre "+e.getNombre()+" clave "+e.getClave()));
+         //lista.forEach(e-> System.out.println("nombre "+e.getNombre()+" clave "+e.getClave()));
+         
          return lista;
     }
 

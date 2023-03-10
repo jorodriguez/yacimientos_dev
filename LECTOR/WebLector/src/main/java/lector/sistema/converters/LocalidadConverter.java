@@ -11,6 +11,9 @@ import javax.faces.convert.Converter;
 import javax.faces.convert.ConverterException;
 import javax.faces.convert.FacesConverter;
 import javax.inject.Named;
+import lector.dominio.vo.CLocalidadVo;
+import lector.modelo.CLocalidad;
+import lector.procesador.bean.ContactoView;
 
 /**
  *
@@ -18,15 +21,24 @@ import javax.inject.Named;
  */
 @Named
 @FacesConverter(value = "localidadConverter", managed = true)
-public class LocalidadConverter implements Converter<Integer> {
+public class LocalidadConverter implements Converter<CLocalidadVo> {
     
     @Override
-    public Integer getAsObject(FacesContext context, UIComponent component, String value) {
+    public CLocalidadVo getAsObject(FacesContext context, UIComponent component, String value) {
+        
+        System.out.println(" ====> string value "+value);
+        
         if (value != null && value.trim().length() > 0) {
             try {
-                return Integer.parseInt(value);
+                
+                ContactoView view = (ContactoView) context.getExternalContext().getApplicationMap().get("contactoView");
+                
+                return view.getListaLocalidades().stream().filter(e->e.getNombre().equals(value)).findFirst().get();
+                
+                                
             }
             catch (NumberFormatException e) {
+                
                 throw new ConverterException(new FacesMessage(FacesMessage.SEVERITY_ERROR, "Conversion Error", "Not a valid id localidad."));
             }
         }
@@ -36,9 +48,9 @@ public class LocalidadConverter implements Converter<Integer> {
     }
 
     @Override
-    public String getAsString(FacesContext context, UIComponent component, Integer value) {
+    public String getAsString(FacesContext context, UIComponent component, CLocalidadVo value) {
         if (value != null) {
-            return String.valueOf(value);
+            return String.valueOf(value.getId());
         }
         else {
             return null;
