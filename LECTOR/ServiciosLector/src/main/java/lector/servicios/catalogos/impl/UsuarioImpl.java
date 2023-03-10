@@ -88,8 +88,11 @@ public class UsuarioImpl extends AbstractImpl<Usuario> {
                 .telefono(usuario.getTelefono())
                 .sexo(usuario.getSexo())
                 .estado(usuario.getCEstado() != null ? usuario.getCEstado().getNombre():"")
-                .municipio(usuario.getCMunicipio() != null ? usuario.getCMunicipio().getNombre():"")
-                .localidad(usuario.getCLocalidad() != null ? usuario.getCLocalidad().getNombre():"")
+                .cMunicipio(usuario.getCMunicipio() != null ? usuario.getCMunicipio().getId():0)
+                .municipio(usuario.getCMunicipio() != null ? usuario.getClave() +"-"+ usuario.getCMunicipio().getNombre():"")
+                .cLocalidad(usuario.getCLocalidad() != null ? usuario.getId() : "")
+                .localidad(usuario.getCLocalidad() != null ? usuario.getCLocalidad().getClave()+"-"+ usuario.getCLocalidad().getNombre():"")
+                .cSeccion(usuario.getCSeccion() != null ? usuario.getCSeccion().getId():0)
                 .seccion(usuario.getCSeccion() != null ? usuario.getCSeccion().getNombre():"")
                 .build();
 

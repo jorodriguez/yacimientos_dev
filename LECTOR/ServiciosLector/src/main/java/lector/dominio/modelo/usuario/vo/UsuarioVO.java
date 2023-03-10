@@ -48,6 +48,10 @@ public class UsuarioVO implements Serializable {
     private int rolId;
     private int cCuenta;    
     private int cTipoContacto;    
+    private int cEstado;    
+    private int cMunicipio;    
+    private int cLocalidad;    
+    private int cSeccion;    
     
     private boolean conFoto;
     
@@ -58,7 +62,7 @@ public class UsuarioVO implements Serializable {
     }
 
     @Builder
-    public UsuarioVO(Integer id, String nombre, String domicilio, String clave, String claveElector, String curp, String estado, String municipio, String localidad, String seccion, Integer anioEmision, int vigencia, Date fechaNacimiento, String sexo, String email, String destinatarios, String telefono, String extension, String urlImagen, String pregunta, String respuesta, String celular, String foto, boolean activo, Integer genero, String rolPrincipal, int rolId, int cCuenta, int cTipoContacto, boolean conFoto) {
+    public UsuarioVO(Integer id, String nombre, String domicilio, String clave, String claveElector, String curp, String estado, String municipio, String localidad, String seccion, Integer anioEmision, int vigencia, Date fechaNacimiento, String sexo, String email, String destinatarios, String telefono, String extension, String urlImagen, String pregunta, String respuesta, String celular, String foto, boolean activo, Integer genero, String rolPrincipal, int rolId, int cCuenta, int cTipoContacto, int cEstado, int cMunicipio, int cLocalidad, int cSeccion, boolean conFoto) {
         this.id = id;
         this.nombre = nombre;
         this.domicilio = domicilio;
@@ -88,8 +92,14 @@ public class UsuarioVO implements Serializable {
         this.rolId = rolId;
         this.cCuenta = cCuenta;
         this.cTipoContacto = cTipoContacto;
+        this.cEstado = cEstado;
+        this.cMunicipio = cMunicipio;
+        this.cLocalidad = cLocalidad;
+        this.cSeccion = cSeccion;
         this.conFoto = conFoto;
     }
+
+   
 
    
     

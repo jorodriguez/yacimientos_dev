@@ -9,14 +9,13 @@ import java.io.ByteArrayInputStream;
 import lector.sistema.bean.backing.*;
 import java.io.IOException;
 import java.io.Serializable;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
@@ -27,11 +26,9 @@ import javax.inject.Inject;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 import lector.archivador.DocumentoAnexo;
-import lector.archivador.ProveedorAlmacenDocumentos;
 import lector.constantes.Constantes;
 import lector.dominio.modelo.usuario.vo.UsuarioVO;
 import lector.excepciones.LectorException;
-import lector.servicios.sistema.impl.SiParametroImpl;
 import lector.sistema.bean.support.FacesUtils;
 import lector.util.ValidadorNombreArchivo;
 import lector.vision.InformacionCredencialDto;
@@ -45,6 +42,8 @@ import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
 import org.primefaces.model.file.UploadedFile;
 import static lector.constantes.Constantes.Etiquetas.*;
+import lector.dominio.vo.CLocalidadVo;
+import lector.servicios.catalogos.impl.UbicacionesImpl;
 import lector.servicios.sistema.impl.ContactoImpl;
 import static lector.util.UtilsProcess.castToInt;
 
@@ -58,20 +57,15 @@ public class ContactoView implements Serializable {
 
     @Inject
     private Sesion sesion;
-
-    private String filename;
+    
+    @Inject
+    private UbicacionesImpl ubicacionesService;
 
     @Inject
     private LectorService lectorService;
 
     @Inject
     private ContactoImpl contactoService;
-
-    @Inject
-    private ProveedorAlmacenDocumentos proveedorAlmacenDocumentos;
-
-    @Inject
-    private SiParametroImpl parametrosSistemaServicioRemoto;
 
     private CroppedImage croppedImage;
 
@@ -87,6 +81,10 @@ public class ContactoView implements Serializable {
     @Getter
     @Setter
     private List<Item> listaItems;
+    
+    @Getter
+    @Setter
+    private List<CLocalidadVo> listaLocalidades;
 
     @Getter
     private InformacionCredencialDto informacionCredencialDto;
@@ -102,8 +100,15 @@ public class ContactoView implements Serializable {
     public void iniciar() {
         System.out.println("@Postconstruc" + this.getClass().getCanonicalName());
         //loaders
-        usuarioDto = new UsuarioVO();
-
+        usuarioDto = UsuarioVO.builder()
+                        .cCuenta(sesion.getUsuarioSesion().getCCuenta())
+                        .cEstado(sesion.getUsuarioSesion().getCEstado())
+                        .cMunicipio(sesion.getUsuarioSesion().getCMunicipio())
+                        .cLocalidad(sesion.getUsuarioSesion().getCLocalidad())
+                         .build();
+       
+        cargarCatalogoLocalidades();                
+        
     }
 
     /*  public void subirAdjunto(FileUploadEvent event) {
@@ -268,6 +273,8 @@ public class ContactoView implements Serializable {
             FacesUtils.addErrorMessage("Fecha de nacimiento requerida.");           
             return;
         }
+        
+
         
         /*if(usuarioDto.getFechaNacimiento().after(
                     Date.from(LocalDate.now().minusYears(18))
@@ -447,6 +454,29 @@ public class ContactoView implements Serializable {
     public String getImageContentsAsBase64() {
 
         return fileContent != null ? Base64.getEncoder().encodeToString(fileContent) : null;
+    }
+    
+    private void cargarCatalogoLocalidades() {
+        this.listaLocalidades = ubicacionesService.findAllLocalidades(usuarioDto.getCMunicipio());
+    }
+
+    private void cargarCatalogoSeccionesLocalidad() {
+        //this.listaSecciones = ubicacionesService.findAllLocalidades(usuarioDto.getCLocalidad());
+    }
+    
+    public List<CLocalidadVo> completeLocalidades(String query) {
+        String queryLowerCase = query.toLowerCase();
+        //List<CLocalidadVo> countries = countryService.getCountries();
+        return listaLocalidades
+                    .stream()
+                .filter(
+                        (t) -> {
+                            return (t.getNombre().toLowerCase().contains(queryLowerCase))
+                                    || 
+                                    (t.getClave().toLowerCase().contains(queryLowerCase));
+                                   
+                          }
+                ).collect(Collectors.toList());
     }
 
 }
