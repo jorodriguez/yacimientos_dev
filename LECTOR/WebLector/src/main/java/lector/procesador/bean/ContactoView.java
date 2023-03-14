@@ -104,6 +104,11 @@ public class ContactoView implements Serializable {
         System.out.println("@Postconstruc" + this.getClass().getCanonicalName());
         //loaders
         usuarioDto = UsuarioVO.builder()
+                        .nombre("")
+                        .domicilio("")
+                        .fechaNacimiento(null)
+                        .email("")
+                        .telefono("")
                         .cCuenta(sesion.getUsuarioSesion().getCCuenta())
                         .cEstado(sesion.getUsuarioSesion().getCEstado())
                         .cMunicipio(sesion.getUsuarioSesion().getCMunicipio())
@@ -262,7 +267,7 @@ public class ContactoView implements Serializable {
             return;
         }
         
-        if(usuarioDto.getNombre().isEmpty() || usuarioDto.getNombre().isEmpty()){
+        if(usuarioDto.getNombre().isEmpty() ){
             FacesUtils.addErrorMessage("Nombre requerido.");           
             return;
         }

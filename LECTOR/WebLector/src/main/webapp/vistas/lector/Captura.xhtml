@@ -112,8 +112,17 @@
                         </p:blockUI>
                     </h:form>
                 </div> 
+
+
                 <div class="col-sm-12 col-md-8 col-lg-8 ">
                     <h:form id="frm-registro">
+                        <p:panel id="panel">
+                            <h:outputText value="nombre #{contactoView.usuarioDto.nombre}"/>
+                            <h:outputText value="nombre #{contactoView.usuarioDto.domicilio}"/>
+                            <h:outputText value="nombre #{contactoView.usuarioDto.fechaNacimiento}"/>
+                            <h:outputText value="nombre #{contactoView.usuarioDto.sexo}"/>
+                            <h:outputText value="nombre #{contactoView.usuarioDto.CCuenta}"/>
+                        </p:panel>
                         <div class="form-group">
                             <p:outputLabel for="nombre-input" styleClass="block">Nombre <span class="text-red">*</span></p:outputLabel>                                 
                             <div class="ui-input-icon-left w-100 ">
@@ -158,7 +167,9 @@
                         <div class="row ">
                             <div class="col-sm-12 col-md-6 col-lg-6">                                
                                 <div class="form-group">         
-                                    <h:outputLabel id="selccion" value="#{contactoView.localidadSeleccionada eq null}"/>
+
+                                    <h:outputLabel id="selccion" rendered="#{empty contactoView.localidadSeleccionada }"  value="null"/>
+                                    <h:outputLabel id="selccion2" rendered="#{not empty contactoView.localidadSeleccionada }"  value="#{contactoView.localidadSeleccionada.nombre}"/>                                    
 
                                     <p:outputLabel for="localidad-input" styleClass="block">Localidad  <span class="text-red">*</span> </p:outputLabel>                                 
                                     <h:outputText value=" / " class="text-muted" /><p:commandLink value="#{sesion.usuarioSesion.municipioClave}-#{sesion.usuarioSesion.municipio}"/>
@@ -179,7 +190,7 @@
                                                            itemValue="#{loc}"
                                                            />
 
-                                            <p:ajax update="@this selccion" process="@this"/>
+                                            <p:ajax  event="change" update="@this selccion selccion2" process="@this"/>
 
                                             <p:column style="width:10%">
                                                 <f:facet name="header">
@@ -325,30 +336,28 @@
                                 <p:inputText  id="telefono-input" value="#{contactoView.usuarioDto.telefono}" class="form-control" placeholder="Teléfono"/>                                                         
                             </div>              
                         </div>
-                    </h:form>                        
+
+                        <div class="row">
+                            <p:commandButton value="Guardar"
+                                             icon="pi pi-save"                                     
+                                             actionListener="#{contactoView.guardar}"
+                                             styleClass="mt-3 text-lg ui-button-success btn-lg btn-block"
+                                             process="@this frm-registro ">                                                                        
+                            </p:commandButton>
+
+                            <p:commandLink value="Cancelar"                                                              
+                                           action="/main.xhtml?faces-redirect=true;"                                   
+                                           styleClass="btn  btn-outline-light btn-lg btn-block">                                                
+                            </p:commandLink>
+                        </div>    
+
+                    </h:form>
                 </div>                
 
             </div>
         </div>
 
-        <div class="card-footer">
-            <h:form id="form-send">
-                <div class="row">
 
-                    <p:commandButton ajax="false"                   
-                                     value="Guardar"
-                                     icon="pi pi-save"                                     
-                                     actionListener="#{contactoView.guardar(e)}"
-                                     styleClass="mt-3 text-lg ui-button-success btn-lg btn-block">                                                                        
-                    </p:commandButton>
-
-                    <p:commandLink value="Cancelar"                                                              
-                                   action="/main.xhtml?faces-redirect=true;"                                   
-                                   styleClass="btn  btn-outline-light btn-lg btn-block">                                                
-                    </p:commandLink>
-                </div>
-            </h:form>
-        </div>
 
 
 
