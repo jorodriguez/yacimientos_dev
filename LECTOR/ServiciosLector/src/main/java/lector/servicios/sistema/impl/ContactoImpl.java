@@ -10,9 +10,7 @@ import java.util.List;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.persistence.NonUniqueResultException;
-import lector.archivador.AlmacenDocumentos;
 import lector.archivador.DocumentoAnexo;
-import lector.archivador.ProveedorAlmacenDocumentos;
 import lector.constantes.Constantes;
 import lector.dominio.modelo.usuario.vo.UsuarioVO;
 import lector.dominio.vo.UsuarioRolVo;
@@ -43,13 +41,24 @@ public class ContactoImpl extends AbstractImpl<Usuario> {
     }
 
     public void guardarContacto(InformacionCredencialDto informacionCredencial) throws LectorException {
-                
+                        
         //  datos del contacto
         final UsuarioVO usuario = informacionCredencial.getUsuarioDto();
         
         final DocumentoAnexo documento = informacionCredencial.getImagen();
 
         final Usuario usuarioBuild = buildUsuarioDto(usuario);
+        
+        System.out.println("nombre "+usuarioBuild.getNombre());
+        System.out.println("domicilio "+usuarioBuild.getDomicilio());
+        System.out.println("f nac "+usuarioBuild.getFechaNacimiento());
+        System.out.println("sexo "+usuarioBuild.getSexo());
+        System.out.println("localidad "+usuarioBuild.getLocalidad());
+        System.out.println("clocalidd "+usuarioBuild.getCLocalidad().getId());
+        System.out.println("cseccion "+usuarioBuild.getCSeccion().getId());
+        System.out.println("email  "+usuarioBuild.getEmail());
+        System.out.println("tel "+usuarioBuild.getTelefono());
+        System.out.println("genero "+usuarioBuild.getGenero().getId());
 
         usuarioService.create(usuarioBuild);
         

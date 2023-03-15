@@ -2,7 +2,6 @@ package lector.servicios.catalogos.impl;
 
 import com.google.common.base.Strings;
 import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -87,16 +86,18 @@ public class UsuarioImpl extends AbstractImpl<Usuario> {
                 .cCuenta(usuario.getCCuenta().getId())
                 .telefono(usuario.getTelefono())
                 .sexo(usuario.getSexo())
+                .cEstado(usuario.getCEstado() != null ? usuario.getCEstado().getId() : 0)
                 .estado(usuario.getCEstado() != null ? usuario.getCEstado().getNombre():"")
-                .cMunicipio(usuario.getCMunicipio() != null ? usuario.getCMunicipio().getId():0)
-                .municipioClave(usuario.getCMunicipio() != null ? usuario.getCMunicipio().getClave() : 0)
+                .estadoClave(usuario.getCEstado() != null ? usuario.getCEstado().getClave():0)
+                .cMunicipio(usuario.getCMunicipio() != null ? usuario.getCMunicipio().getId() : 0)                
                 .municipio(usuario.getCMunicipio() != null ? usuario.getCMunicipio().getNombre():"")
-                .cLocalidad(usuario.getCLocalidad() != null ? usuario.getCLocalidad().getId() : 0)
-                .localidadClave(usuario.getCLocalidad() != null ? usuario.getCLocalidad().getClave() : 0)
+                .municipioClave(usuario.getCMunicipio() != null ? usuario.getCMunicipio().getClave() : 0)
+                .cLocalidad(usuario.getCLocalidad() != null ? usuario.getCLocalidad().getId() : 0)                
                 .localidad(usuario.getCLocalidad() != null ? usuario.getCLocalidad().getNombre():"")
-                .cSeccion(usuario.getCSeccion() != null ? usuario.getCSeccion().getId():0)
-                .SeccionClave(usuario.getCSeccion() != null ? usuario.getCSeccion().getClave() : 0)
+                .localidadClave(usuario.getCLocalidad() != null ? usuario.getCLocalidad().getClave() : 0)
+                .cSeccion(usuario.getCSeccion() != null ? usuario.getCSeccion().getId():0)                
                 .seccion(usuario.getCSeccion() != null ? usuario.getCSeccion().getNombre():"")
+                .SeccionClave(usuario.getCSeccion() != null ? usuario.getCSeccion().getClave() : 0)
                 .build();
 
     }

@@ -116,6 +116,9 @@
 
                 <div class="col-sm-12 col-md-8 col-lg-8 ">
                     <h:form id="frm-registro">
+                        
+                        <p:focus  context="nombre-input"/>
+                         
                         <p:panel id="panel">
                             <h:outputText value="nombre #{contactoView.usuarioDto.nombre}"/>
                             <h:outputText value="nombre #{contactoView.usuarioDto.domicilio}"/>
@@ -124,37 +127,42 @@
                             <h:outputText value="nombre #{contactoView.usuarioDto.CCuenta}"/>
                         </p:panel>
                         <div class="form-group">
-                            <p:outputLabel for="nombre-input" styleClass="block">Nombre <span class="text-red">*</span></p:outputLabel>                                 
+                            <p:outputLabel for="nombre-input" styleClass="block">Nombre</p:outputLabel>                                 
                             <div class="ui-input-icon-left w-100 ">
                                 <i class="pi pi-user"  />
-                                <p:inputText  id="nombre-input" value="#{contactoView.usuarioDto.nombre}" class="form-control" placeholder="Contacto"/>                                                         
-                            </div>              
+                                <p:inputText  id="nombre-input" value="#{contactoView.usuarioDto.nombre}" class="form-control" placeholder="Contacto" 
+                                              required="true" requiredMessage="Nombre requerido" />                                                                                         
+                            </div>                                          
                         </div>
 
                         <div class="form-group">
-                            <p:outputLabel for="domicilio-input" styleClass="block">Domicilio <span class="text-red">*</span></p:outputLabel>                                 
+                            <p:outputLabel for="domicilio-input" styleClass="block">Domicilio</p:outputLabel>                                 
                             <div class="ui-input-icon-left w-100 ">
                                 <i class="pi pi-map-marker"  />
-                                <p:inputText  id="domicilio-input" value="#{contactoView.usuarioDto.domicilio}" class="form-control" placeholder="Calle, Col, C.P."/>                                                         
+                                <p:inputText  id="domicilio-input" value="#{contactoView.usuarioDto.domicilio}" class="form-control" placeholder="Calle, Col, C.P."
+                                              required="true" requiredMessage="Domicilio requerido"/>                                                                                         
                             </div>              
                         </div>
 
                         <div class="row ">
                             <div class="col-sm-12 col-md-6 col-lg-6">
                                 <div class="form-group">
-                                    <p:outputLabel for="fecha-nacimiento-input" styleClass="block">Fecha Nacimiento <span class="text-red">*</span></p:outputLabel>                                 
+                                    <p:outputLabel for="fecha-nacimiento-input" styleClass="block">Fecha Nacimiento</p:outputLabel>                                 
                                     <div class="ui-input-icon-left w-100 ">
                                         <i class="pi pi-date" />
-                                        <p:datePicker id="fecha-nacimiento-input" value="#{contactoView.usuarioDto.fechaNacimiento}" styleClass="block" monthNavigator="true" yearNavigator="true" showWeek="true"/>                                                        
+                                        <p:datePicker id="fecha-nacimiento-input" value="#{contactoView.usuarioDto.fechaNacimiento}"
+                                                      styleClass="block" monthNavigator="true" yearNavigator="true" showWeek="true"
+                                                      
+                                                      required="true" requiredMessage="Fecha Nacimiento requerido"/>                                                        
                                     </div>              
                                 </div>
                             </div>
                             <div class="col-sm-12 col-md-6 col-lg-6">
                                 <div class="form-group">
-                                    <p:outputLabel for="sexo-input" styleClass="block">Sexo <span class="text-red">*</span></p:outputLabel>                                 
+                                    <p:outputLabel for="sexo-input" styleClass="block">Sexo</p:outputLabel>                                 
                                     <div class="ui-input-icon-left w-100 ">
                                         <i class="pi pi-book"  />
-                                        <p:selectOneRadio id="sexo-input" value="#{contactoView.usuarioDto.sexo}">
+                                        <p:selectOneRadio id="sexo-input" value="#{contactoView.usuarioDto.sexo}" required="true" requiredMessage="Sexo requerido">
                                             <f:selectItem itemLabel="H" itemValue="H"/>
                                             <f:selectItem itemLabel="M" itemValue="M"/>                                            
                                         </p:selectOneRadio>
@@ -167,32 +175,29 @@
                         <div class="row ">
                             <div class="col-sm-12 col-md-6 col-lg-6">                                
                                 <div class="form-group">         
-
-                                    <h:outputLabel id="selccion" rendered="#{empty contactoView.localidadSeleccionada }"  value="null"/>
-                                    <h:outputLabel id="selccion2" rendered="#{not empty contactoView.localidadSeleccionada }"  value="#{contactoView.localidadSeleccionada.nombre}"/>                                    
-
-                                    <p:outputLabel for="localidad-input" styleClass="block">Localidad  <span class="text-red">*</span> </p:outputLabel>                                 
+                                   
+                                    <p:outputLabel for="localidad-input" styleClass="block">Localidad  </p:outputLabel>                                 
                                     <h:outputText value=" / " class="text-muted" /><p:commandLink value="#{sesion.usuarioSesion.municipioClave}-#{sesion.usuarioSesion.municipio}"/>
                                     <div class="ui-input-icon-left w-100 ">
                                         <i class="pi pi-book"  />
 
                                         <p:selectOneMenu id="localidad-input" 
-                                                         value="#{contactoView.localidadSeleccionada}"                                                             
+                                                         value="#{contactoView.usuarioDto.CLocalidad}"                                                             
+                                                         valueChangeListener="#{contactoView.handleChangeLocalidad}"
                                                          panelStyle="width:180px"
-                                                         var="loc"                                                                                    
-                                                         filter="true" 
-                                                         converter="#{localidadConverter}"
-                                                         filterMatchMode="startsWith">
+                                                         var="loc"                                                                                              
+                                                         filter="true"                                                          
+                                                         filterMatchMode="startsWith"
+                                                         required="true" requiredMessage="localidad requerido"
+                                                         >
 
-                                            <f:selectItems value="#{contactoView.listaLocalidades}" 
-                                                           var="loc"       
-                                                           itemLabel="#{loc.nombre}"
-                                                           itemValue="#{loc}"
+                                            <f:selectItems value="#{contactoView.localidadesMap.values()}"
+                                                           var="item" itemValue="#{item.id}" itemLabel="#{item.nombre}"
                                                            />
 
-                                            <p:ajax  event="change" update="@this selccion selccion2" process="@this"/>
+                                            <p:ajax  event="change" update="@this seccion-input label-seccion-input" process="@this"/>
 
-                                            <p:column style="width:10%">
+                                            <!--<p:column style="width:10%">
                                                 <f:facet name="header">
                                                     <h:outputText value="Clave"/>
                                                 </f:facet>
@@ -205,41 +210,38 @@
                                                 </f:facet>
                                                 <h:outputText value="#{loc.nombre}"/>
                                             </p:column>
+                                            -->
 
                                             <f:facet name="footer">
-                                                <h:outputText value="#{contactoView.listaLocalidades.size()} countries"
+                                                <h:outputText value="#{contactoView.localidadesMap.size()} Localidades"
                                                               style="font-weight:bold;" styleClass="py-1 block"/>
                                             </f:facet>
                                         </p:selectOneMenu>
-
-
-                                        <!--<p:autoComplete 
-                                                        value="#{contactoView.localidadSeleccionada}"                                                        
-                                                        completeMethod="#{contactoView.completeLocalidades}"
-                                                        var="loc"                                                            
-                                                        itemLabel="#{loc.nombre}"
-                                                        itemValue="#{loc}"
-                                                        forceSelection="true" 
-                                                        converter="#{localidadConverter}"
-                                                        scrollHeight="250">
-                                             <p:ajax update="@this selccion" process="@this"/>
-                                            <p:column>                                                                        
-                                                <h:outputText style="vertical-align: middle; margin-left: .5rem" value="#{loc.nombre}"/>
-                                                <h:outputText style="vertical-align: middle; margin-left: .5rem" value="#{loc.municipio}"/>
-                                            </p:column>
-                                        </p:autoComplete>
-                                        -->
-
-<!--<p:inputText  id="localidad-input" value="#{contactoView.usuarioDto.localidad}"  class="form-control" placeholder="Localidad"/>                                                         -->
                                     </div>              
                                 </div>
                             </div>
                             <div class="col-sm-12 col-md-6 col-lg-6">
                                 <div class="form-group">
-                                    <p:outputLabel for="seccion-input" styleClass="block">Sección</p:outputLabel>                                 
-                                    <div class="ui-input-icon-left w-100 ">
+                                    <p:outputLabel  id="label-seccion-input" for="seccion-input" styleClass="block">Sección #{contactoView.seccionesItems.size() > 0 ? contactoView.seccionesItems.size():"" }</p:outputLabel>                                 
+                                    <div class="ui-input-icon-left w-100 ">                                        
                                         <i class="pi pi-book"  />
-                                        <p:inputText  id="seccion-input" value="#{contactoView.usuarioDto.seccion}"  class="form-control" placeholder="Sección"/>                                                         
+                                        <!--<p:inputText  id="seccion-input" value="#{contactoView.usuarioDto.seccion}"  class="form-control" placeholder="Sección"/>                                                         -->
+                                         <p:selectOneMenu id="seccion-input" 
+                                                          value="#{contactoView.usuarioDto.CSeccion}"                                                                                                                      
+                                                          panelStyle="width:180px"
+                                                          styleClass="w-100"
+                                                         var="sec"                                                                                    
+                                                         filter="true"                                                          
+                                                         filterMatchMode="startsWith"                                                         
+                                                         >
+
+                                             <f:selectItems value="#{contactoView.seccionesItems}"/>                                          
+                                         
+                                            <f:facet name="footer">
+                                                <h:outputText value="#{contactoView.seccionesItems.size()} Secciones"
+                                                              style="font-weight:bold;" styleClass="py-1 block"/>
+                                            </f:facet>
+                                        </p:selectOneMenu>
                                     </div>              
                                 </div>
                             </div>
@@ -312,14 +314,14 @@
                         </div>
 
                         <div class="form-group">
-                            <p:outputLabel for="correo-input" styleClass="block">Correo <span class="text-red">*</span></p:outputLabel>                                 
+                            <p:outputLabel for="correo-input" styleClass="block">Correo</p:outputLabel>                                 
                             <div class="ui-input-icon-left w-100 ">                            
                                 <i class="pi pi-envelope"  />                            
                                 <p:inputText id="correo-input" 
                                              styleClass="form-control" 
                                              value="#{contactoView.usuarioDto.email}"
                                              type="email" 
-                                             rendered="true"
+                                             required="true"
                                              placeholder="usuario@dominio.com "
                                              requiredMessage="Por favor agrega un correo"
                                              validatorMessage="Formato invalido">                                                 
@@ -330,10 +332,10 @@
                         </div>
 
                         <div class="form-group">
-                            <p:outputLabel for="telefono-input" styleClass="block">Teléfono/Whatsapp <span class="text-red">*</span></p:outputLabel>                                 
+                            <p:outputLabel for="telefono-input" styleClass="block">Teléfono/Whatsapp </p:outputLabel>                                 
                             <div class="ui-input-icon-left w-100 ">
                                 <i class="pi pi-phone"  />
-                                <p:inputText  id="telefono-input" value="#{contactoView.usuarioDto.telefono}" class="form-control" placeholder="Teléfono"/>                                                         
+                                <p:inputText  id="telefono-input" value="#{contactoView.usuarioDto.telefono}" class="form-control" placeholder="Teléfono" required="true" requiredMessage="Teléfono requerido"/>                                                         
                             </div>              
                         </div>
 
@@ -342,7 +344,7 @@
                                              icon="pi pi-save"                                     
                                              actionListener="#{contactoView.guardar}"
                                              styleClass="mt-3 text-lg ui-button-success btn-lg btn-block"
-                                             process="@this frm-registro ">                                                                        
+                                             >                                                                        
                             </p:commandButton>
 
                             <p:commandLink value="Cancelar"                                                              
@@ -438,6 +440,11 @@
             .ui-accordion .ui-accordion-header {
                 background: #C1AD95 !important;
                 border: none !important;
+            }
+            
+            .ui-outputlabel-rfi{
+                color: red !important;
+                
             }
         </style>
 

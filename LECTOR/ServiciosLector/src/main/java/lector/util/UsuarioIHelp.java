@@ -4,8 +4,13 @@
  */
 package lector.util;
 
+import java.util.Date;
 import lector.dominio.modelo.usuario.vo.UsuarioVO;
 import lector.modelo.CCuenta;
+import lector.modelo.CEstado;
+import lector.modelo.CLocalidad;
+import lector.modelo.CMunicipio;
+import lector.modelo.CSeccion;
 import lector.modelo.CTipoContacto;
 import lector.modelo.Usuario;
 import static lector.util.UtilsProcess.castToInt;
@@ -21,12 +26,12 @@ public interface UsuarioIHelp {
         return Usuario.builder()
                 .nombre(usuario.getNombre())
                 .domicilio(usuario.getDomicilio())
-                .clave(usuario.getClave())
+                .clave("")
                 .curp(usuario.getCurp())
-                .estado(castToInt(usuario.getEstado()))
-                .municipio(usuario.getMunicipio())
-                .localidad(usuario.getLocalidad())
-                .seccion(usuario.getSeccion())
+                .estado(usuario.getEstadoClave())
+                .municipio(String.valueOf(usuario.getMunicipioClave()))
+                .localidad(String.valueOf(usuario.getLocalidadClave()))
+                .seccion(String.valueOf(usuario.getSeccionClave()))
                 .emision(usuario.getAnioEmision())
                 .vigencia(usuario.getVigencia())
                 .fechaNacimiento(usuario.getFechaNacimiento())
@@ -34,9 +39,14 @@ public interface UsuarioIHelp {
                 .email(usuario.getEmail())
                 .telefono(usuario.getTelefono())
                 .cCuenta(new CCuenta(usuario.getCCuenta()))
-                .cTipoContacto(new CTipoContacto(usuario.getCTipoContacto()))
+                .cTipoContacto(new CTipoContacto(usuario.getCTipoContacto()))                
+                .cEstado(new CEstado(usuario.getCEstado()))
+                .cMunicipio(new CMunicipio(usuario.getCMunicipio()))
+                .cLocalidad(new CLocalidad(usuario.getCLocalidad()))                
+                .cSeccion(new CSeccion(usuario.getCSeccion()))
                 .genero(new Usuario(usuario.getGenero()))
                 .registro(new Usuario(usuario.getGenero()))                
+                .fechaGenero(new Date())                
                 .build();
         
     }

@@ -7,8 +7,6 @@ package lector.vision;
 import java.util.Map;
 import lector.archivador.DocumentoAnexo;
 import lector.dominio.modelo.usuario.vo.UsuarioVO;
-import lector.excepciones.LectorException;
-import lector.modelo.Usuario;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -33,6 +31,7 @@ public class InformacionCredencialDto {
         this.metadatoLectura = metadatoLectura;
     }
     
+    /*
     public Usuario buildUsuarioModel() throws LectorException{
         
             if(this.usuarioDto == null){
@@ -46,7 +45,7 @@ public class InformacionCredencialDto {
            
            return usuario;
            
-    }
+    }*/
     
     public boolean contieneFoto(){
             return this.imagen != null;

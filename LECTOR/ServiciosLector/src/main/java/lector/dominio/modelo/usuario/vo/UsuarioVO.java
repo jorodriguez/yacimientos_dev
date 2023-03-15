@@ -12,8 +12,7 @@ import lombok.Setter;
  *
  * @author mluis
  */
-@Getter
-@Setter
+@Getter @Setter
 public class UsuarioVO implements Serializable {
 
     private Integer id;
@@ -26,7 +25,7 @@ public class UsuarioVO implements Serializable {
     private String municipio;
     private String localidad;
     private String seccion;
-    private Integer anioEmision;
+    private int anioEmision;
     private int vigencia;
     private Date fechaNacimiento;    
     private String sexo;
@@ -44,6 +43,7 @@ public class UsuarioVO implements Serializable {
     private String foto;
     private boolean activo;
     private Integer genero;
+    private Integer registro;
     private String rolPrincipal;
     private int rolId;
     private int cCuenta;    
@@ -58,6 +58,7 @@ public class UsuarioVO implements Serializable {
     private int cSeccion;    
     private int SeccionClave;    
     
+    
     private boolean conFoto;
     
     private Map<Integer, String> mapaRol = new HashMap<>();
@@ -67,7 +68,7 @@ public class UsuarioVO implements Serializable {
     }
 
     @Builder
-    public UsuarioVO(Integer id, String nombre, String domicilio, String clave, String claveElector, String curp, String estado, String municipio, String localidad, String seccion, Integer anioEmision, int vigencia, Date fechaNacimiento, String sexo, String email, String destinatarios, String telefono, String extension, String urlImagen, String pregunta, String respuesta, String celular, String foto, boolean activo, Integer genero, String rolPrincipal, int rolId, int cCuenta, int cTipoContacto, int cEstado, int estadoClave, int cMunicipio, int municipioClave, int cLocalidad, int localidadClave, int cSeccion, int SeccionClave, boolean conFoto) {
+    public UsuarioVO(Integer id, String nombre, String domicilio, String clave, String claveElector, String curp, String estado, String municipio, String localidad, String seccion, int anioEmision, int vigencia, Date fechaNacimiento, String sexo, String email, String destinatarios, String telefono, String extension, String urlImagen, String pregunta, String respuesta, String celular, String foto, boolean activo, Integer genero, Integer registro, String rolPrincipal, int rolId, int cCuenta, int cTipoContacto, int cEstado, int estadoClave, int cMunicipio, int municipioClave, int cLocalidad, int localidadClave, int cSeccion, int SeccionClave, boolean conFoto) {
         this.id = id;
         this.nombre = nombre;
         this.domicilio = domicilio;
@@ -93,6 +94,7 @@ public class UsuarioVO implements Serializable {
         this.foto = foto;
         this.activo = activo;
         this.genero = genero;
+        this.registro = registro;
         this.rolPrincipal = rolPrincipal;
         this.rolId = rolId;
         this.cCuenta = cCuenta;
@@ -107,17 +109,7 @@ public class UsuarioVO implements Serializable {
         this.SeccionClave = SeccionClave;
         this.conFoto = conFoto;
     }
-
-  
-  
-   
-
-   
     
-
-    
-     
-      
     
 
     public UsuarioVO(Integer id) {
@@ -158,4 +150,5 @@ public class UsuarioVO implements Serializable {
 	this.nombre = nombre;
 	this.email = email;
     }
+
 }

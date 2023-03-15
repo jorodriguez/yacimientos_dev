@@ -15,12 +15,13 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
-import javax.faces.event.ActionEvent;
 import javax.faces.event.ValueChangeEvent;
+import javax.faces.model.SelectItem;
 import javax.inject.Inject;
 
 import javax.faces.view.ViewScoped;
@@ -43,8 +44,10 @@ import org.primefaces.model.StreamedContent;
 import org.primefaces.model.file.UploadedFile;
 import static lector.constantes.Constantes.Etiquetas.*;
 import lector.dominio.vo.CLocalidadVo;
+import lector.dominio.vo.CSeccionVo;
 import lector.servicios.catalogos.impl.UbicacionesImpl;
 import lector.servicios.sistema.impl.ContactoImpl;
+import lector.util.UtilLog4j;
 import static lector.util.UtilsProcess.castToInt;
 
 /**
@@ -57,7 +60,7 @@ public class ContactoView implements Serializable {
 
     @Inject
     private Sesion sesion;
-    
+
     @Inject
     private UbicacionesImpl ubicacionesService;
 
@@ -81,7 +84,7 @@ public class ContactoView implements Serializable {
     @Getter
     @Setter
     private List<Item> listaItems;
-    
+
     @Getter
     @Setter
     private List<CLocalidadVo> listaLocalidades;
@@ -92,9 +95,20 @@ public class ContactoView implements Serializable {
     @Getter
     @Setter
     private UsuarioVO usuarioDto;
-    
-    @Getter @Setter
+
+    @Getter
+    @Setter
     private CLocalidadVo localidadSeleccionada;
+
+    @Getter
+    private List<SelectItem> seccionesItems;
+        
+    private final Function<CSeccionVo, SelectItem> seccionToSelectItem = m -> new SelectItem(m.getId(), m.getNombre());
+    
+    @Getter    
+    private Map<Integer,CLocalidadVo> localidadesMap;
+    
+    private static final UtilLog4j log = UtilLog4j.log;
 
     public ContactoView() {
     }
@@ -104,19 +118,31 @@ public class ContactoView implements Serializable {
         System.out.println("@Postconstruc" + this.getClass().getCanonicalName());
         //loaders
         usuarioDto = UsuarioVO.builder()
-                        .nombre("")
-                        .domicilio("")
-                        .fechaNacimiento(null)
-                        .email("")
-                        .telefono("")
-                        .cCuenta(sesion.getUsuarioSesion().getCCuenta())
-                        .cEstado(sesion.getUsuarioSesion().getCEstado())
-                        .cMunicipio(sesion.getUsuarioSesion().getCMunicipio())
-                        .cLocalidad(sesion.getUsuarioSesion().getCLocalidad())
-                         .build();
-       
-        cargarCatalogoLocalidades();                
-        
+                .nombre("")
+                .domicilio("")
+                .fechaNacimiento(null)
+                .email("")
+                .telefono("")
+                .anioEmision(0)
+                .vigencia(0)
+                .sexo("")                
+                .cCuenta(sesion.getUsuarioSesion().getCCuenta())
+                .cEstado(sesion.getUsuarioSesion().getCEstado())
+                .estado(sesion.getUsuarioSesion().getEstado())
+                .estadoClave(sesion.getUsuarioSesion().getEstadoClave())
+                .cMunicipio(sesion.getUsuarioSesion().getCMunicipio())                
+                .municipio(sesion.getUsuarioSesion().getMunicipio())
+                .municipioClave(sesion.getUsuarioSesion().getMunicipioClave())
+                .cLocalidad(sesion.getUsuarioSesion().getCLocalidad())
+                .localidad(sesion.getUsuarioSesion().getLocalidad())
+                .localidadClave(sesion.getUsuarioSesion().getLocalidadClave())                
+                .genero(sesion.getUsuarioSesion().getId())
+                .registro(sesion.getUsuarioSesion().getId())                
+                .cTipoContacto(2)
+                .build();
+
+        cargarCatalogoLocalidades();
+
     }
 
     /*  public void subirAdjunto(FileUploadEvent event) {
@@ -236,11 +262,18 @@ public class ContactoView implements Serializable {
         }
     }
 
-    public void guardar(ActionEvent e) {
+    public void guardar() {
+        
+        log.info("@Guardar");
+        System.out.println("@guardar");
 
         try {
 
-            validarUsuario();
+            if(!validarUsuario()){
+                System.out.println("Validacion error");
+                return;
+            }
+            
             
             if (fileInfo == null) {
                 informacionCredencialDto = InformacionCredencialDto
@@ -248,49 +281,56 @@ public class ContactoView implements Serializable {
                         .usuarioDto(usuarioDto)
                         .build();
             }
-            
-            
+
             //validacion de campos
             contactoService.guardarContacto(informacionCredencialDto);
 
         } catch (LectorException le) {
-
+             System.out.println("guardar ex"+le.getMessage());
             FacesUtils.addErrorMessage(le.getMessage());
 
         }
 
     }
-    
-    private void validarUsuario(){
-        if(usuarioDto == null){
-            FacesUtils.addErrorMessage("Existió un error al intentar guardar el contacto.");           
-            return;
+
+    private boolean validarUsuario() {
+        
+        log.info("@validarUsuario");
+        
+        System.out.println("@validarUsuario");
+                        
+        if (usuarioDto == null) {
+            FacesUtils.addErrorMessage("Existió un error al intentar guardar el contacto.");
+            return false;
+        }
+
+        if (usuarioDto.getNombre().isEmpty() || usuarioDto.getNombre().isBlank()) {
+            FacesUtils.addErrorMessage("Nombre requerido.");
+            return false;
+        }
+
+        if (usuarioDto.getDomicilio().isEmpty() || usuarioDto.getDomicilio().isBlank()) {
+            FacesUtils.addErrorMessage("Domicilio requerido.");
+            return false;
+        }
+
+        if (usuarioDto.getFechaNacimiento() == null) {
+            FacesUtils.addErrorMessage("Fecha de nacimiento requerida.");
+            return false;
+        }
+
+        if (usuarioDto.getEmail().isEmpty() || usuarioDto.getEmail().isBlank()) {
+            FacesUtils.addErrorMessage("El correo es requeido.");
+            return false;
+        }
+        if (usuarioDto.getTelefono().isEmpty() || usuarioDto.getTelefono().isBlank()) {
+            FacesUtils.addErrorMessage("El telefono es requeido.");
+            return false;          
+            
         }
         
-        if(usuarioDto.getNombre().isEmpty() ){
-            FacesUtils.addErrorMessage("Nombre requerido.");           
-            return;
-        }
-        
-        if(usuarioDto.getDomicilio().isEmpty() || usuarioDto.getDomicilio().isEmpty()){
-            FacesUtils.addErrorMessage("Domicilio requerido.");           
-            return;
-        }
-        
-        if(usuarioDto.getFechaNacimiento() == null){
-            FacesUtils.addErrorMessage("Fecha de nacimiento requerida.");           
-            return;
-        }
-        
-        if(usuarioDto.getEmail().isEmpty() || usuarioDto.getEmail().isEmpty()){
-            FacesUtils.addErrorMessage("El correo es requeido.");           
-            return;
-        }
-        if(usuarioDto.getTelefono().isEmpty() || usuarioDto.getTelefono().isEmpty()){
-            FacesUtils.addErrorMessage("El telefono es requeido.");           
-            return;
-        }
-        
+        return true;
+
         /*if(usuarioDto.getFechaNacimiento().after(
                     Date.from(LocalDate.now().minusYears(18))
         )
@@ -298,12 +338,11 @@ public class ContactoView implements Serializable {
             FacesUtils.addErrorMessage("Fecha de nacimiento requerida.");           
             return;
          }*/
-        
     }
 
     private void cargarValoresUsuario() {
 
-        System.out.println("@cargarValoresUsuario");
+        log.info("@cargarValoresUsuario");
 
         if (informacionCredencialDto == null) {
 
@@ -470,33 +509,43 @@ public class ContactoView implements Serializable {
 
         return fileContent != null ? Base64.getEncoder().encodeToString(fileContent) : null;
     }
-    
-    private void cargarCatalogoLocalidades() {
-        this.listaLocalidades = ubicacionesService.findAllLocalidades(usuarioDto.getCMunicipio());
-    }
 
-    private void cargarCatalogoSeccionesLocalidad() {
-        //this.listaSecciones = ubicacionesService.findAllLocalidades(usuarioDto.getCLocalidad());
+    private void cargarCatalogoLocalidades() {
+        
+        log.info("@cargarCatalogoLocalidades");
+       
+        final List<CLocalidadVo> localidades = ubicacionesService.findAllLocalidades(usuarioDto.getCMunicipio());
+        
+        this.localidadesMap = localidades.stream().collect(Collectors.toMap(CLocalidadVo::getId, Function.identity()));
+        
+        
     }
     
-    public List<CLocalidadVo> completeLocalidades(String query) {
-        System.out.println("@complete localidades");
-        String queryLowerCase = query.toLowerCase();
-        System.out.println("@busqueda "+queryLowerCase);
+    public void handleChangeLocalidad(ValueChangeEvent event){                        
+        System.out.println("handleChangeLocalidad" );
         
-        //List<CLocalidadVo> countries = countryService.getCountries();
-        List<CLocalidadVo> lista = listaLocalidades
-                    .stream()
-                    .filter(
-                        (t) -> {
-                            return (t.getNombre().toLowerCase().contains(queryLowerCase));                                  
-                          }
-                    ).collect(Collectors.toList());
-                //.map(CLocalidadVo::getNombre)
+        System.out.println("handleChangeLocalidad "+event.getNewValue() );
+        
+        final int idLocalidadSelect = (int) event.getNewValue();
+        
+        this.localidadSeleccionada = this.localidadesMap.get(idLocalidadSelect);
+        
+        System.out.println("New selection localidad : "+this.localidadSeleccionada.getId());
+        System.out.println("New selection municipio : "+this.localidadSeleccionada.getMunicipio());
+
+        //Tofix
+        usuarioDto.setLocalidad(
+                    String.valueOf(this.localidadSeleccionada.getClave())
+        );
                 
-         //lista.forEach(e-> System.out.println("nombre "+e.getNombre()+" clave "+e.getClave()));
-         
-         return lista;
+        // cargar las secciones de la localidad seleccionada
+        
+        List<CSeccionVo> secciones = ubicacionesService.findAllSeccionesLocalidad(this.localidadSeleccionada.getId());
+        
+        this.seccionesItems = secciones.stream().map(seccionToSelectItem).collect(Collectors.toList());        
+        
+        
+                
     }
 
 }
