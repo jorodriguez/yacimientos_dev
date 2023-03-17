@@ -125,6 +125,7 @@ public class ContactoView implements Serializable {
     
     
     private void limpiarForma(){
+        
            usuarioDto = UsuarioVO.builder()
                 .nombre("")
                 .domicilio("")
@@ -148,6 +149,12 @@ public class ContactoView implements Serializable {
                 .registro(sesion.getUsuarioSesion().getId())                
                 .cTipoContacto(Constantes.TIPO_CONTACTO)
                 .build();
+           
+           informacionCredencialDto = null;
+           
+           fileContent = null;
+           
+                      
     }
     
     
