@@ -22,6 +22,7 @@ import lector.sistema.AbstractImpl;
 import static lector.util.UsuarioIHelp.buildUsuarioDto;
 import lector.util.UtilLog4j;
 import lector.vision.InformacionCredencialDto;
+import org.jooq.exception.DataAccessException;
 
 /**
  *
@@ -49,17 +50,6 @@ public class ContactoImpl extends AbstractImpl<Usuario> {
 
         final Usuario usuarioBuild = buildUsuarioDto(usuario);
         
-        System.out.println("nombre "+usuarioBuild.getNombre());
-        System.out.println("domicilio "+usuarioBuild.getDomicilio());
-        System.out.println("f nac "+usuarioBuild.getFechaNacimiento());
-        System.out.println("sexo "+usuarioBuild.getSexo());
-        System.out.println("localidad "+usuarioBuild.getLocalidad());
-        System.out.println("clocalidd "+usuarioBuild.getCLocalidad().getId());
-        System.out.println("cseccion "+usuarioBuild.getCSeccion().getId());
-        System.out.println("email  "+usuarioBuild.getEmail());
-        System.out.println("tel "+usuarioBuild.getTelefono());
-        System.out.println("genero "+usuarioBuild.getGenero().getId());
-
         usuarioService.create(usuarioBuild);
         
         if(informacionCredencial.contieneFoto()){
@@ -136,5 +126,29 @@ public class ContactoImpl extends AbstractImpl<Usuario> {
             return null;
         }
     }
+    
+    
+     
+    public boolean findByTelefono(String telefono ) {
+        
+        boolean ret;
+        
+        try {
+            ret = 
+                    dbCtx
+                            .fetchOne("select exists ( select 1 from usuario u where u.telefono = ? and u.eliminado = false)", telefono)
+                            .into(boolean.class);
+            
+        } catch (DataAccessException e) {
+            
+            UtilLog4j.log.warn(this, "*** Al recuperar el telefono del contacto {0}", new Object[]{telefono}, e);
+            return false;
+            
+        }
+        
+        return ret;
+    }
+    
+
 
 }

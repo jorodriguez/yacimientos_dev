@@ -63,12 +63,13 @@ public class ContactoView implements Serializable {
 
     @Inject
     private UbicacionesImpl ubicacionesService;
+    
+    @Inject
+    private ContactoImpl contactoService;
 
     @Inject
     private LectorService lectorService;
 
-    @Inject
-    private ContactoImpl contactoService;
 
     private CroppedImage croppedImage;
 
@@ -117,7 +118,14 @@ public class ContactoView implements Serializable {
     public void iniciar() {
         System.out.println("@Postconstruc" + this.getClass().getCanonicalName());
         //loaders
-        usuarioDto = UsuarioVO.builder()
+        limpiarForma();
+        cargarCatalogoLocalidades();
+
+    }
+    
+    
+    private void limpiarForma(){
+           usuarioDto = UsuarioVO.builder()
                 .nombre("")
                 .domicilio("")
                 .fechaNacimiento(null)
@@ -138,12 +146,11 @@ public class ContactoView implements Serializable {
                 .localidadClave(sesion.getUsuarioSesion().getLocalidadClave())                
                 .genero(sesion.getUsuarioSesion().getId())
                 .registro(sesion.getUsuarioSesion().getId())                
-                .cTipoContacto(2)
+                .cTipoContacto(Constantes.TIPO_CONTACTO)
                 .build();
-
-        cargarCatalogoLocalidades();
-
     }
+    
+    
 
     /*  public void subirAdjunto(FileUploadEvent event) {
         System.out.println("@subirAdjunto");
@@ -274,16 +281,29 @@ public class ContactoView implements Serializable {
                 return;
             }
             
+            if(validarTelefono()){
+                FacesUtils.addErrorMessage("msg_telefono", "El número de télefono ya fue registrado.");
+                FacesUtils.addErrorMessage("El número de télefono ya fue registrado.");
+                System.out.println("Validacion error");
+                return;
+            }
+            
             
             if (fileInfo == null) {
                 informacionCredencialDto = InformacionCredencialDto
                         .builder()
-                        .usuarioDto(usuarioDto)
+                        .usuarioDto(usuarioDto)                        
                         .build();
             }
 
             //validacion de campos
             contactoService.guardarContacto(informacionCredencialDto);
+            
+            limpiarForma();
+            
+            FacesUtils.addInfoMessage("Contacto agregado.");
+            System.out.println("Contacto agregado");
+            log.info("contacto agregado....");
 
         } catch (LectorException le) {
              System.out.println("guardar ex"+le.getMessage());
@@ -329,6 +349,7 @@ public class ContactoView implements Serializable {
             
         }
         
+                       
         return true;
 
         /*if(usuarioDto.getFechaNacimiento().after(
@@ -340,6 +361,12 @@ public class ContactoView implements Serializable {
          }*/
     }
 
+    private boolean validarTelefono(){
+        
+        return contactoService.findByTelefono(usuarioDto.getTelefono());
+        
+    }
+    
     private void cargarValoresUsuario() {
 
         log.info("@cargarValoresUsuario");
@@ -351,17 +378,7 @@ public class ContactoView implements Serializable {
 
         System.out.println("Valores etiquetas");
 
-        /*for (Map.Entry<String, Item> entry : informacionCredencialDto.getEtiquetasDetectadas().entrySet()) {
-            Object key = entry.getKey();
-            Item val = entry.getValue();
-            System.out.println("key "+key);
-            System.out.println("key "+val.getValor());            
-            
-        }*/
- /*for(int i=0; i < informacionCredencialDto.getEtiquetasDetectadas().size();i++){
-            informacionCredencialDto.getEtiquetasDetectadas().get()
-        }*/
-        usuarioDto = UsuarioVO.builder()
+        /*usuarioDto = UsuarioVO.builder()
                 .nombre(gettingValorEtiqueta(NOMBRE))
                 .domicilio(gettingValorEtiqueta(DOMICILIO))
                 .claveElector(gettingValorEtiqueta(CLAVE_DE_ELECTOR))
@@ -371,12 +388,22 @@ public class ContactoView implements Serializable {
                 .municipio(gettingValorEtiqueta(MUNICIPIO))
                 .localidad(gettingValorEtiqueta(LOCALIDAD))
                 .activo(true)
+                .cTipoContacto(Constantes.TIPO_CONTACTO)
                 .genero(sesion.getUsuarioSesion().getId())
+                .registro(sesion.getUsuarioSesion().getId())                
                 .conFoto(true)
-                .build();
-
+                .build();*/
+        
+        limpiarForma();
+        
+        usuarioDto.setNombre(gettingValorEtiqueta(NOMBRE));
+        usuarioDto.setDomicilio(gettingValorEtiqueta(DOMICILIO));
+        usuarioDto.setClaveElector(gettingValorEtiqueta(CLAVE_DE_ELECTOR));
+        usuarioDto.setCurp(gettingValorEtiqueta(CURP));
+        usuarioDto.setSexo(gettingValorEtiqueta(SEXO));
+               
         String valor = gettingValorEtiqueta(VIGENCIA);
-
+        
         usuarioDto.setVigencia(
                 castToInt(valor)
         );
@@ -385,6 +412,9 @@ public class ContactoView implements Serializable {
         usuarioDto.setAnioEmision(
                 castToInt(valor)
         );
+        
+        // -- TO-FIX
+        //--- aqui buscar los ids de estado, municipio, localidad, seccion pero antes validar valores
 
     }
 

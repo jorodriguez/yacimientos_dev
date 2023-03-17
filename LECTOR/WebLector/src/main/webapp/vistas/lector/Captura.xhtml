@@ -9,6 +9,7 @@
 
     <ui:define name="tituloPagina">        
         Captura
+         <p:growl id="growl-sticky"  showDetail="true" sticky="true" />
     </ui:define>
 
     <ui:define name="contenido">
@@ -74,10 +75,10 @@
                                                              onstart="PF('bui-procesar').show()"
                                                              oncomplete="PF('bui-procesar').show()"
                                                              process="@form"
-                                                             update="@form form-send frm-registro"
+                                                             update="@form frm-registro"
                                                              icon="pi pi-cog"
                                                              action="#{contactoView.subirArchivo()}"                                                              
-                                                             rendered="#{contactoView.fileContent ne null}"
+                                                             
                                                              styleClass="mt-3 ui-button-outlined block">                                                
                                             </p:commandButton>
                                         </div>
@@ -118,19 +119,14 @@
                     <h:form id="frm-registro">
                         
                         <p:focus  context="nombre-input"/>
-                         
-                        <p:panel id="panel">
-                            <h:outputText value="nombre #{contactoView.usuarioDto.nombre}"/>
-                            <h:outputText value="nombre #{contactoView.usuarioDto.domicilio}"/>
-                            <h:outputText value="nombre #{contactoView.usuarioDto.fechaNacimiento}"/>
-                            <h:outputText value="nombre #{contactoView.usuarioDto.sexo}"/>
-                            <h:outputText value="nombre #{contactoView.usuarioDto.CCuenta}"/>
-                        </p:panel>
+                                            
                         <div class="form-group">
                             <p:outputLabel for="nombre-input" styleClass="block">Nombre</p:outputLabel>                                 
                             <div class="ui-input-icon-left w-100 ">
                                 <i class="pi pi-user"  />
-                                <p:inputText  id="nombre-input" value="#{contactoView.usuarioDto.nombre}" class="form-control" placeholder="Contacto" 
+                                <p:inputText  id="nombre-input"                                               
+                                              
+                                              value="#{contactoView.usuarioDto.nombre}" class="form-control" placeholder="Contacto" 
                                               required="true" requiredMessage="Nombre requerido" />                                                                                         
                             </div>                                          
                         </div>
@@ -149,11 +145,17 @@
                                 <div class="form-group">
                                     <p:outputLabel for="fecha-nacimiento-input" styleClass="block">Fecha Nacimiento</p:outputLabel>                                 
                                     <div class="ui-input-icon-left w-100 ">
-                                        <i class="pi pi-date" />
-                                        <p:datePicker id="fecha-nacimiento-input" value="#{contactoView.usuarioDto.fechaNacimiento}"
-                                                      styleClass="block" monthNavigator="true" yearNavigator="true" showWeek="true"
-                                                      
-                                                      required="true" requiredMessage="Fecha Nacimiento requerido"/>                                                        
+                                        <i class="pi pi-date" />                                        
+                                        <!--<p:datePicker id="fecha-nacimiento-input" 
+                                                      value="#{contactoView.usuarioDto.fechaNacimiento}"
+                                                      mask="99/99/9999"                                                      
+                                                      styleClass="block" monthNavigator="true" yearNavigator="true" showWeek="true"                                                    
+                                                      required="true" requiredMessage="Fecha Nacimiento requerido"/> -->
+                                        <p:inputMask id="fecha-nacimiento-input" value="#{contactoView.usuarioDto.fechaNacimiento}" 
+                                                        mask="99/99/9999"                                                         
+                                                        required="true" requiredMessage="Fecha Nacimiento requerido">
+                                             <f:convertDateTime pattern="dd/MM/yyyy" />
+                                        </p:inputMask>
                                     </div>              
                                 </div>
                             </div>
@@ -176,23 +178,26 @@
                             <div class="col-sm-12 col-md-6 col-lg-6">                                
                                 <div class="form-group">         
                                    
-                                    <p:outputLabel for="localidad-input" styleClass="block">Localidad  </p:outputLabel>                                 
+                                    <p:outputLabel for="localidad-input" styleClass="block">Localidad  </p:outputLabel>       
+                                    
                                     <h:outputText value=" / " class="text-muted" /><p:commandLink value="#{sesion.usuarioSesion.municipioClave}-#{sesion.usuarioSesion.municipio}"/>
-                                    <div class="ui-input-icon-left w-100 ">
+                                    <div class="ui-input-icon-right w-100 ">
                                         <i class="pi pi-book"  />
 
                                         <p:selectOneMenu id="localidad-input" 
                                                          value="#{contactoView.usuarioDto.CLocalidad}"                                                             
                                                          valueChangeListener="#{contactoView.handleChangeLocalidad}"
-                                                         panelStyle="width:180px"
+                                                          style="width:310px !important;"
                                                          var="loc"                                                                                              
                                                          filter="true"                                                          
-                                                         filterMatchMode="startsWith"
+                                                         filterMatchMode="contains"
+                                                         filterPlaceholder="Filtrar localidades de #{sesion.usuarioSesion.municipio}"
                                                          required="true" requiredMessage="localidad requerido"
+                                                         
                                                          >
 
                                             <f:selectItems value="#{contactoView.localidadesMap.values()}"
-                                                           var="item" itemValue="#{item.id}" itemLabel="#{item.nombre}"
+                                                           var="item" itemValue="#{item.id}" itemLabel="#{item.clave} - #{item.nombre}"
                                                            />
 
                                             <p:ajax  event="change" update="@this seccion-input label-seccion-input" process="@this"/>
@@ -214,25 +219,52 @@
 
                                             <f:facet name="footer">
                                                 <h:outputText value="#{contactoView.localidadesMap.size()} Localidades"
-                                                              style="font-weight:bold;" styleClass="py-1 block"/>
+                                                               styleClass="py-1 block text-muted"/>
+                                                
+                                                <p:commandButton 
+                                                    value="Buscar"
+                                                    icon="pi pi-search"                                                                                  
+                                                    styleClass="mt-3 text-lg ui-button-success"
+                                                    update="@form"
+                                                    >                                                                        
+                                                </p:commandButton>
+                                                
                                             </f:facet>
                                         </p:selectOneMenu>
+                                        <i class="pi pi-search "  onclick="PF('dlg4').show()"  />
+                                         <p:dialog header="Header" widgetVar="dlg4" minHeight="40" width="350" showEffect="fade" minimizable="true" maximizable="true">
+                                             <p:panel>
+                                                 <p:dataTable                                                      
+                                                     size="small"                                     
+                                                     stripedRows="true" 
+                                                     showGridlines="true" 
+                                                     rows="20" 
+                                                     styleClass="table table-bordered  table-hover"
+                                                     value="#{contactoView.listaLocalidades}" 
+                                                     var="currentRow"                                                                                          
+                                                     >										     				    
+                                                     <p:column>                                        
+                                                         <h:outputText value="#{currentRow.clave}" />
+                                                     </p:column>
+                                                     <p:column>
+                                                         <h:outputText value="#{currentRow.nombre}" />
+                                                     </p:column>                                    
+                                                 </p:dataTable> 
+                                             </p:panel>
+                                         </p:dialog>
                                     </div>              
                                 </div>
                             </div>
                             <div class="col-sm-12 col-md-6 col-lg-6">
                                 <div class="form-group">
                                     <p:outputLabel  id="label-seccion-input" for="seccion-input" styleClass="block">Sección #{contactoView.seccionesItems.size() > 0 ? contactoView.seccionesItems.size():"" }</p:outputLabel>                                 
-                                    <div class="ui-input-icon-left w-100 ">                                        
-                                        <i class="pi pi-book"  />
-                                        <!--<p:inputText  id="seccion-input" value="#{contactoView.usuarioDto.seccion}"  class="form-control" placeholder="Sección"/>                                                         -->
+                                    <div class="ui-input-icon-right w-100 ">                                                                                                                        
                                          <p:selectOneMenu id="seccion-input" 
                                                           value="#{contactoView.usuarioDto.CSeccion}"                                                                                                                      
-                                                          panelStyle="width:180px"
-                                                          styleClass="w-100"
+                                                          style="width:310px !important;"
                                                          var="sec"                                                                                    
-                                                         filter="true"                                                          
-                                                         filterMatchMode="startsWith"                                                         
+                                                         filter="true"                                                                                                                  
+                                                         filterMatchMode="contains"                                                         
                                                          >
 
                                              <f:selectItems value="#{contactoView.seccionesItems}"/>                                          
@@ -242,6 +274,15 @@
                                                               style="font-weight:bold;" styleClass="py-1 block"/>
                                             </f:facet>
                                         </p:selectOneMenu>
+                                        <i class="pi pi-search "  />
+                                        <!--<p:commandButton 
+                                             value=""
+                                             icon="pi pi-search"                                                                                  
+                                             styleClass="mt-3 text-lg ui-button-success"
+                                             update="@form"
+                                             >                                                                        
+                                        </p:commandButton>-->
+                                        
                                     </div>              
                                 </div>
                             </div>
@@ -335,15 +376,21 @@
                             <p:outputLabel for="telefono-input" styleClass="block">Teléfono/Whatsapp </p:outputLabel>                                 
                             <div class="ui-input-icon-left w-100 ">
                                 <i class="pi pi-phone"  />
-                                <p:inputText  id="telefono-input" value="#{contactoView.usuarioDto.telefono}" class="form-control" placeholder="Teléfono" required="true" requiredMessage="Teléfono requerido"/>                                                         
+                                <!--<p:inputText  id="telefono-input" value="#{contactoView.usuarioDto.telefono}" class="form-control" placeholder="Teléfono" required="true" requiredMessage="Teléfono requerido"/>                                                         -->
+                                <p:inputMask  id="telefono-input"  value="#{contactoView.usuarioDto.telefono}" mask="(999) 999-9999[ x99999]" required="true" requiredMessage="Teléfono requerido"/>
+                                <p:message id="msg_telefono" for="telefono-input"  />
                             </div>              
                         </div>
 
                         <div class="row">
-                            <p:commandButton value="Guardar"
+                            <p:commandButton id="btn-guardar"
+                                             value="Guardar"
                                              icon="pi pi-save"                                     
                                              actionListener="#{contactoView.guardar}"
+                                             onstart="PF('bui').show()"
+                                             oncomplete="PF('bui').hide()"
                                              styleClass="mt-3 text-lg ui-button-success btn-lg btn-block"
+                                             update="@form"
                                              >                                                                        
                             </p:commandButton>
 
@@ -352,8 +399,14 @@
                                            styleClass="btn  btn-outline-light btn-lg btn-block">                                                
                             </p:commandLink>
                         </div>    
+                        
+                         <p:blockUI block="btn-guardar"                                
+                               widgetVar="bui">
+                            <i class="pi pi-spin pi-spinner" style="font-size: 3rem"></i>
+                        </p:blockUI>
 
                     </h:form>
+                   
                 </div>                
 
             </div>

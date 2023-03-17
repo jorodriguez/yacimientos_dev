@@ -43,10 +43,11 @@ public interface UsuarioIHelp {
                 .cEstado(new CEstado(usuario.getCEstado()))
                 .cMunicipio(new CMunicipio(usuario.getCMunicipio()))
                 .cLocalidad(new CLocalidad(usuario.getCLocalidad()))                
-                .cSeccion(new CSeccion(usuario.getCSeccion()))
+                .cSeccion(usuario.getCSeccion() == 0 ? null : new CSeccion(usuario.getCSeccion()))
                 .genero(new Usuario(usuario.getGenero()))
                 .registro(new Usuario(usuario.getGenero()))                
                 .fechaGenero(new Date())                
+                .eliminado(Boolean.FALSE)
                 .build();
         
     }

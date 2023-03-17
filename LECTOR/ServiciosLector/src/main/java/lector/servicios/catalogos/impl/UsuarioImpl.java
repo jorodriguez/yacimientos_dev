@@ -17,7 +17,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import org.jooq.Record;
 import org.jooq.exception.DataAccessException;
-import lector.constantes.Constantes;
+import static lector.constantes.Constantes.*;
 import lector.modelo.SiRol;
 import lector.modelo.SiUsuarioRol;
 import lector.modelo.Usuario;
@@ -28,6 +28,7 @@ import lector.notificaciones.sistema.impl.ServicioNotificacionSistemaImpl;
 import lector.sistema.AbstractImpl;
 import lector.util.UtilLog4j;
 import lombok.extern.slf4j.Slf4j;
+
 
 /**
  *
@@ -45,7 +46,7 @@ public class UsuarioImpl extends AbstractImpl<Usuario> {
             + "  u.gerencia, u.ap_campo,u.sg_oficina,"
             + "  u.fecha_ingreso,u.sg_empresa,"
             + "  (select o.nombre from sg_oficina o where o.id = u.sg_oficina)"
-            + " FROM usuario u ";
+            + " FROM usuario u  ";
 
     private final static UtilLog4j LOGGER = UtilLog4j.log;
 
@@ -68,6 +69,10 @@ public class UsuarioImpl extends AbstractImpl<Usuario> {
         if (usuario == null) {
             throw new LectorException("Usuario no encontrado.");
 
+        }
+        
+        if (usuario.getCTipoContacto().getId().equals(TIPO_CONTACTO)) {
+            throw new LectorException("No es posible el login, comunicate con el equipo de soporte.");
         }
 
         if (!usuario.getClave().equals(encriptar(pass))) {
@@ -190,12 +195,12 @@ public class UsuarioImpl extends AbstractImpl<Usuario> {
                     "SELECT u FROM Usuario u WHERE "
                     + "u.eliminado = :eliminado and u.activo = :activo and u.nombre = :nombre ")
                     .setParameter("nombre", nombre)
-                    .setParameter("eliminado", Constantes.BOOLEAN_FALSE)
-                    .setParameter("activo", Constantes.BOOLEAN_TRUE)
+                    .setParameter("eliminado", BOOLEAN_FALSE)
+                    .setParameter("activo", BOOLEAN_TRUE)
                     .getResultList()
                     .get(0);
         } catch (Exception e) {
-            log.warn(Constantes.VACIO, e);
+            log.warn(VACIO, e);
             return null;
         }
     }
@@ -212,7 +217,7 @@ public class UsuarioImpl extends AbstractImpl<Usuario> {
 
     public List<Usuario> getActivos() {
         return em.createQuery("SELECT u FROM Usuario u WHERE u.activo = :activo")
-                .setParameter("activo", Constantes.BOOLEAN_TRUE)
+                .setParameter("activo", BOOLEAN_TRUE)
                 .getResultList();
     }
 
@@ -234,7 +239,7 @@ public class UsuarioImpl extends AbstractImpl<Usuario> {
 
             usuario.setGenero(find(sesion));
             usuario.setFechaGenero(new Date());
-            usuario.setEliminado(Constantes.NO_ELIMINADO);
+            usuario.setEliminado(NO_ELIMINADO);
             this.create(usuario);
 
             v = true;
@@ -266,7 +271,7 @@ public class UsuarioImpl extends AbstractImpl<Usuario> {
     public void eliminarUsuario(String sesion, String idUser) {
         Usuario usuario = find(idUser);
         usuario.setClave(encriptar(String.valueOf(generaClave())));
-        usuario.setEliminado(Constantes.ELIMINADO);
+        usuario.setEliminado(ELIMINADO);
         usuario.setModifico(find(sesion));
         usuario.setFechaModifico(new Date());
         edit(usuario);
@@ -274,7 +279,7 @@ public class UsuarioImpl extends AbstractImpl<Usuario> {
 
     public void activarUsuario(String sesion, UsuarioVO usuarioVo) {
         Usuario usuario = find(usuarioVo.getId());
-        usuario.setEliminado(Constantes.NO_ELIMINADO);
+        usuario.setEliminado(NO_ELIMINADO);
         usuario.setModifico(find(sesion));
         usuario.setFechaModifico(new Date());
         this.edit(usuario);
@@ -460,7 +465,7 @@ public class UsuarioImpl extends AbstractImpl<Usuario> {
 
         q.setParameter(1, nombrePermiso);
         q.setParameter(2, moduloId);
-        // q.setParameter(3, Constantes.AP_CAMPO_NEJO); se quita para recuperar todos los campos
+        // q.setParameter(3, AP_CAMPO_NEJO); se quita para recuperar todos los campos
 
         List<Object[]> resultado = q.getResultList();
         List<UsuarioVO> usuarios = new ArrayList<>();
