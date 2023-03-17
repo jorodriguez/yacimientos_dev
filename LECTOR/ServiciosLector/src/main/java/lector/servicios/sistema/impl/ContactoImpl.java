@@ -52,8 +52,13 @@ public class ContactoImpl extends AbstractImpl<Usuario> {
         
         usuarioService.create(usuarioBuild);
         
+        
+        System.out.println("@contieneFoto "+informacionCredencial.contieneFoto());
+        
         if(informacionCredencial.contieneFoto()){
-         
+            
+            System.out.println("@contieneFoto ");
+            
             final SiAdjunto adjunto =  siAdjuntoService.guardarDocumentoAnexoSiAdjunto(documento, informacionCredencial.getUsuarioDto().getId());        
         
             relacionarUsuarioFotoCredencial(usuarioBuild, adjunto);        

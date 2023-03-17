@@ -48,6 +48,8 @@ public class SiAdjuntoImpl extends AbstractImpl<SiAdjunto>{
 
     
     public SiAdjunto guardarDocumentoAnexoSiAdjunto(DocumentoAnexo documento, int usuarioSesion) throws LectorException{
+    
+        System.out.println("@guardarDocumentoAnexoSiAdjunto");
         
         
         if( documento == null ){

@@ -297,6 +297,7 @@ public class ContactoView implements Serializable {
             
             
             if (fileInfo == null) {
+                
                 informacionCredencialDto = InformacionCredencialDto
                         .builder()
                         .usuarioDto(usuarioDto)                        
@@ -430,7 +431,11 @@ public class ContactoView implements Serializable {
 
         System.out.println("Etiqueta " + etiqueta.name());
 
-        Item item = informacionCredencialDto.getEtiquetasDetectadas().get(etiqueta.name());
+        Item item = null;
+        
+        if(informacionCredencialDto != null){
+             item = informacionCredencialDto.getEtiquetasDetectadas().get(etiqueta.name());
+        }               
 
         System.out.println("item " + item);
 
