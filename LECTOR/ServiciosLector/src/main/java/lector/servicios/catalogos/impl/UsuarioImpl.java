@@ -241,6 +241,7 @@ public class UsuarioImpl extends AbstractImpl<Usuario> {
             usuario.setFechaGenero(new Date());
             usuario.setEliminado(NO_ELIMINADO);
             this.create(usuario);
+            
 
             v = true;
         } catch (Exception e) {

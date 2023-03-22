@@ -19,6 +19,7 @@ import lector.modelo.SiAdjunto;
 import lector.modelo.Usuario;
 import lector.servicios.catalogos.impl.UsuarioImpl;
 import lector.sistema.AbstractImpl;
+import lector.util.SenderWhatsapp;
 import static lector.util.UsuarioIHelp.buildUsuarioDto;
 import lector.util.UtilLog4j;
 import lector.vision.InformacionCredencialDto;
@@ -64,6 +65,10 @@ public class ContactoImpl extends AbstractImpl<Usuario> {
             relacionarUsuarioFotoCredencial(usuarioBuild, adjunto);        
             
         }
+        
+        final StringBuilder mensaje = new StringBuilder().append("Hola ").append(usuario.getNombre()).append(" te damos la bienvenida, gracias por confiar en nosotros.");
+        
+        SenderWhatsapp.sendWhatsapp(usuario.getTelefono(), mensaje.toString());
         
         //aqui lanzar la notificacion o correo
            
