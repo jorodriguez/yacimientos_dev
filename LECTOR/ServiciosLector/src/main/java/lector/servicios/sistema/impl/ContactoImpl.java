@@ -19,7 +19,6 @@ import lector.modelo.SiAdjunto;
 import lector.modelo.Usuario;
 import lector.servicios.catalogos.impl.UsuarioImpl;
 import lector.sistema.AbstractImpl;
-import lector.util.SenderWhatsapp;
 import static lector.util.UsuarioIHelp.buildUsuarioDto;
 import lector.util.UtilLog4j;
 import lector.vision.InformacionCredencialDto;
@@ -31,12 +30,17 @@ import org.jooq.exception.DataAccessException;
  */
 @Stateless
 public class ContactoImpl extends AbstractImpl<Usuario> {
+    
+    
 
     @Inject
     private UsuarioImpl usuarioService;
     
     @Inject
     private SiAdjuntoImpl siAdjuntoService;
+    
+    @Inject
+    private WhatsappService whatsappService;
     
     public ContactoImpl() {
         super(Usuario.class);
@@ -52,8 +56,7 @@ public class ContactoImpl extends AbstractImpl<Usuario> {
         final Usuario usuarioBuild = buildUsuarioDto(usuario);
         
         usuarioService.create(usuarioBuild);
-        
-        
+                
         System.out.println("@contieneFoto "+informacionCredencial.contieneFoto());
         
         if(informacionCredencial.contieneFoto()){
@@ -68,9 +71,9 @@ public class ContactoImpl extends AbstractImpl<Usuario> {
         
         final StringBuilder mensaje = new StringBuilder().append("Hola ").append(usuario.getNombre()).append(" te damos la bienvenida, gracias por confiar en nosotros.");
         
-        SenderWhatsapp.sendWhatsapp(usuario.getTelefono(), mensaje.toString());
+        whatsappService.send(usuario.getTelefono(), mensaje.toString(),usuario.getCCuenta());
         
-        //aqui lanzar la notificacion o correo
+        //aqui lanzar  correo
            
     } 
     

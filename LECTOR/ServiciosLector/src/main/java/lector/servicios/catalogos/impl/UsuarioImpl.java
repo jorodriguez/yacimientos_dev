@@ -572,8 +572,9 @@ public class UsuarioImpl extends AbstractImpl<Usuario> {
         return em.createNativeQuery(sql.toString()).getResultList();
     }
 
-    public Usuario buscarPorId(String usuarioId) {
-        Usuario retVal = null;
+    public UsuarioVO buscarPorId(String usuarioId) {
+      
+        UsuarioVO retVal = null;
 
         String sql
                 = "SELECT *  FROM usuario \n"
@@ -581,15 +582,14 @@ public class UsuarioImpl extends AbstractImpl<Usuario> {
                 + " AND eliminado = false";
 
         try {
-            Record recUsuario = dbCtx.fetchOne(sql, usuarioId, usuarioId);
-
-            if (recUsuario != null) {
-                retVal = recUsuario.into(Usuario.class);
-            }
+            return dbCtx.fetchOne(sql, usuarioId, usuarioId).into(UsuarioVO.class);
+           
         } catch (DataAccessException e) {
             LOGGER.error(this, "Usuario : {0}", new Object[]{usuarioId}, e);
         }
 
         return retVal;
     }
+    
+    
 }

@@ -21,4 +21,6 @@ public class SiParametroImpl extends AbstractImpl<SiParametro> {
         super(SiParametro.class);
     }
     
+    
+    
 }

@@ -13,6 +13,8 @@ public class Constantes {
     
     public static final String PERSISTENCE_UNIT = "Lector-ServiciosPU";
     
+    public static final String API_WHATSAPP = "http://localhost:5001/whatsapp/send";
+    
     public static final Integer USUARIO_DEFAULT =1;
     public static final Integer TIPO_USUARIO_ADMIN = 1;
     public static final Integer TIPO_CONTACTO = 2;

@@ -20,6 +20,7 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.validation.constraints.Size;
 
 /**
  *
@@ -32,6 +33,9 @@ public class SiParametro implements Serializable {
     @Lob
     @Column(name = "logo")
     private byte[] logo;
+    @Size(max = 1024)
+    @Column(name = "api_whatsapp")
+    private String apiWhatsapp;
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -219,6 +223,14 @@ public class SiParametro implements Serializable {
 
     public void setLogo(byte[] logo) {
         this.logo = logo;
+    }
+
+    public String getApiWhatsapp() {
+        return apiWhatsapp;
+    }
+
+    public void setApiWhatsapp(String apiWhatsapp) {
+        this.apiWhatsapp = apiWhatsapp;
     }
     
 }

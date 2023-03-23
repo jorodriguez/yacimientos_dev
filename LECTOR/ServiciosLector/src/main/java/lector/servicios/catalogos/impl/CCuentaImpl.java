@@ -38,7 +38,7 @@ public class CCuentaImpl {
     public CCuenta find(Object id) {
         return em.find(CCuenta.class, id);
     }
-
+    
     
     public List<CCuenta> findAll() {
         return em.createQuery("select object(o) from CCuenta as o").getResultList();

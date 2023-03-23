@@ -351,6 +351,7 @@ public class ContactoView implements Serializable {
             FacesUtils.addErrorMessage("El correo es requeido.");
             return false;
         }
+                       
         if (usuarioDto.getTelefono().isEmpty() || usuarioDto.getTelefono().isBlank()) {
             FacesUtils.addErrorMessage("El telefono es requeido.");
             return false;          

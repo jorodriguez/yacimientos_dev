@@ -21,6 +21,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlTransient;
 import org.codehaus.jackson.annotate.JsonIgnore;
 
@@ -31,6 +32,10 @@ import org.codehaus.jackson.annotate.JsonIgnore;
 @Entity
 @Table(name = "c_cuenta")
 public class CCuenta implements Serializable {
+
+    @Size(max = 64)
+    @Column(name = "api_key_whatsapp")
+    private String apiKeyWhatsapp;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "cCuenta")
     private Collection<LogLectura> logLecturaCollection;
@@ -239,6 +244,14 @@ public class CCuenta implements Serializable {
 
     public void setSiAdjuntoCollection(Collection<SiAdjunto> siAdjuntoCollection) {
         this.siAdjuntoCollection = siAdjuntoCollection;
+    }
+
+    public String getApiKeyWhatsapp() {
+        return apiKeyWhatsapp;
+    }
+
+    public void setApiKeyWhatsapp(String apiKeyWhatsapp) {
+        this.apiKeyWhatsapp = apiKeyWhatsapp;
     }
     
 }
