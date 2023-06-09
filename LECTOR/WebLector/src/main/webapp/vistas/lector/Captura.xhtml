@@ -1,0 +1,513 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                template="./../../WEB-INF/facelets/templates/templatePrincipal.xhtml"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:h="http://xmlns.jcp.org/jsf/html">
+
+    <ui:define name="tituloPagina">        
+        Captura
+         <p:growl id="growl-sticky"  showDetail="true" sticky="true" />
+    </ui:define>
+
+    <ui:define name="contenido">
+        <style>
+            .ui-fileupload-buttonbar{
+                background-color: transparent !important;
+                border-color: transparent !important;
+            }
+            .ui-fileupload-content{
+                background-color: transparent !important;
+                border-color: transparent !important;
+            }
+        </style>
+
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><p:commandLink value="#{sesion.usuarioSesion.estado}"/> </li>
+                <li class="breadcrumb-item " aria-current="page"><p:commandLink value="#{sesion.usuarioSesion.municipioClave}-#{sesion.usuarioSesion.municipio}"/></li>
+            </ol>
+        </nav>  
+        <div class="card card-body">
+            <div class="row">
+                <div class="col-sm-12 col-md-8 col-lg-8 ">
+                    <h:form id="frm-registro">
+                        
+                        <p:focus  context="nombre-input"/>
+                                            
+                        <div class="form-group">
+                            <p:outputLabel for="nombre-input" styleClass="block">Nombre</p:outputLabel>                                 
+                            <div class="ui-input-icon-left w-100 ">
+                                <i class="pi pi-user"  />
+                                <p:inputText  id="nombre-input"                                               
+                                              
+                                              value="#{contactoView.usuarioDto.nombre}" class="form-control" placeholder="Contacto" 
+                                              required="true" requiredMessage="Nombre requerido" />                                                                                         
+                            </div>                                          
+                        </div>
+
+                        <div class="form-group">
+                            <p:outputLabel for="domicilio-input" styleClass="block">Domicilio</p:outputLabel>                                 
+                            <div class="ui-input-icon-left w-100 ">
+                                <i class="pi pi-map-marker"  />
+                                <p:inputText  id="domicilio-input" value="#{contactoView.usuarioDto.domicilio}" class="form-control" placeholder="Calle, Col, C.P."
+                                              required="true" requiredMessage="Domicilio requerido"/>                                                                                         
+                            </div>              
+                        </div>
+
+                        <div class="row ">
+                            <div class="col-sm-12 col-md-6 col-lg-6">
+                                <div class="form-group">
+                                    <p:outputLabel for="fecha-nacimiento-input" styleClass="block">Fecha Nacimiento</p:outputLabel>                                 
+                                    <div class="ui-input-icon-left w-100 ">
+                                        <i class="pi pi-date" />                                        
+                                        <!--<p:datePicker id="fecha-nacimiento-input" 
+                                                      value="#{contactoView.usuarioDto.fechaNacimiento}"
+                                                      mask="99/99/9999"                                                      
+                                                      styleClass="block" monthNavigator="true" yearNavigator="true" showWeek="true"                                                    
+                                                      required="true" requiredMessage="Fecha Nacimiento requerido"/> -->
+                                        <p:inputMask id="fecha-nacimiento-input" value="#{contactoView.usuarioDto.fechaNacimiento}" 
+                                                        mask="99/99/9999"                                                         
+                                                        required="true" requiredMessage="Fecha Nacimiento requerido">
+                                             <f:convertDateTime pattern="dd/MM/yyyy" />
+                                        </p:inputMask>
+                                    </div>              
+                                </div>
+                            </div>
+                            <div class="col-sm-12 col-md-6 col-lg-6">
+                                <div class="form-group">
+                                    <p:outputLabel for="sexo-input" styleClass="block">Sexo</p:outputLabel>                                 
+                                    <div class="ui-input-icon-left w-100 ">
+                                        <i class="pi pi-book"  />
+                                        <p:selectOneRadio id="sexo-input" value="#{contactoView.usuarioDto.sexo}" required="true" requiredMessage="Sexo requerido">
+                                            <f:selectItem itemLabel="H" itemValue="H"/>
+                                            <f:selectItem itemLabel="M" itemValue="M"/>                                            
+                                        </p:selectOneRadio>
+
+                                    </div>              
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row ">
+                            <div class="col-sm-12 col-md-6 col-lg-6">                                
+                                <div class="form-group">         
+                                   
+                                    <p:outputLabel for="localidad-input" styleClass="block">Localidad  </p:outputLabel>       
+                                    
+                                    <h:outputText value=" / " class="text-muted" /><p:commandLink value="#{sesion.usuarioSesion.municipioClave}-#{sesion.usuarioSesion.municipio}"/>
+                                    <div class="ui-input-icon-right w-100 ">
+                                        <i class="pi pi-book"  />
+
+                                        <p:selectOneMenu id="localidad-input" 
+                                                         value="#{contactoView.usuarioDto.CLocalidad}"                                                             
+                                                         valueChangeListener="#{contactoView.handleChangeLocalidad}"
+                                                          style="width:310px !important;"
+                                                         var="loc"                                                                                              
+                                                         filter="true"                                                          
+                                                         filterMatchMode="contains"
+                                                         filterPlaceholder="Filtrar localidades de #{sesion.usuarioSesion.municipio}"
+                                                         required="true" requiredMessage="localidad requerido"
+                                                         
+                                                         >
+
+                                            <f:selectItems value="#{contactoView.localidadesMap.values()}"
+                                                           var="item" itemValue="#{item.id}" itemLabel="#{item.clave} - #{item.nombre}"
+                                                           />
+
+                                            <p:ajax  event="change" update="@this seccion-input label-seccion-input" process="@this"/>
+
+                                            <!--<p:column style="width:10%">
+                                                <f:facet name="header">
+                                                    <h:outputText value="Clave"/>
+                                                </f:facet>
+                                                <h:outputText value="#{loc.clave}"/>
+                                            </p:column>
+
+                                            <p:column>
+                                                <f:facet name="header">
+                                                    <h:outputText value="Nombre"/>
+                                                </f:facet>
+                                                <h:outputText value="#{loc.nombre}"/>
+                                            </p:column>
+                                            -->
+
+                                            <f:facet name="footer">
+                                                <h:outputText value="#{contactoView.localidadesMap.size()} Localidades"
+                                                               styleClass="py-1 block text-muted"/>
+                                                
+                                                <p:commandButton 
+                                                    value="Buscar"
+                                                    icon="pi pi-search"                                                                                  
+                                                    styleClass="mt-3 text-lg ui-button-success"
+                                                    update="@form"
+                                                    >                                                                        
+                                                </p:commandButton>
+                                                
+                                            </f:facet>
+                                        </p:selectOneMenu>
+                                        <i class="pi pi-search "  onclick="PF('dlg4').show()"  />
+                                         <p:dialog header="Header" widgetVar="dlg4" minHeight="40" width="350" showEffect="fade" minimizable="true" maximizable="true">
+                                             <p:panel>
+                                                 <p:dataTable                                                      
+                                                     size="small"                                     
+                                                     stripedRows="true" 
+                                                     showGridlines="true" 
+                                                     rows="20" 
+                                                     styleClass="table table-bordered  table-hover"
+                                                     value="#{contactoView.listaLocalidades}" 
+                                                     var="currentRow"                                                                                          
+                                                     >										     				    
+                                                     <p:column>                                        
+                                                         <h:outputText value="#{currentRow.clave}" />
+                                                     </p:column>
+                                                     <p:column>
+                                                         <h:outputText value="#{currentRow.nombre}" />
+                                                     </p:column>                                    
+                                                 </p:dataTable> 
+                                             </p:panel>
+                                         </p:dialog>
+                                    </div>              
+                                </div>
+                            </div>
+                            <div class="col-sm-12 col-md-6 col-lg-6">
+                                <div class="form-group">
+                                    <p:outputLabel  id="label-seccion-input" for="seccion-input" styleClass="block">Sección #{contactoView.seccionesItems.size() > 0 ? contactoView.seccionesItems.size():"" }</p:outputLabel>                                 
+                                    <div class="ui-input-icon-right w-100 ">                                                                                                                        
+                                         <p:selectOneMenu id="seccion-input" 
+                                                          value="#{contactoView.usuarioDto.CSeccion}"                                                                                                                      
+                                                          style="width:310px !important;"
+                                                         var="sec"                                                                                    
+                                                         filter="true"                                                                                                                  
+                                                         filterMatchMode="contains"                                                         
+                                                         >
+
+                                             <f:selectItems value="#{contactoView.seccionesItems}"/>                                          
+                                         
+                                            <f:facet name="footer">
+                                                <h:outputText value="#{contactoView.seccionesItems.size()} Secciones"
+                                                              style="font-weight:bold;" styleClass="py-1 block"/>
+                                            </f:facet>
+                                        </p:selectOneMenu>
+                                        <i class="pi pi-search "  />
+                                        <!--<p:commandButton 
+                                             value=""
+                                             icon="pi pi-search"                                                                                  
+                                             styleClass="mt-3 text-lg ui-button-success"
+                                             update="@form"
+                                             >                                                                        
+                                        </p:commandButton>-->
+                                        
+                                    </div>              
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <div class="row">
+
+                            <!--<div class="col-sm-12 col-md-6 col-lg-6">
+                                <div class="form-group">
+                                    <p:outputLabel for="estado-input" styleClass="block">Estado</p:outputLabel>                                 
+                                    <div class="ui-input-icon-left w-100 ">
+                                        <i class="pi pi-id-card"  />
+                                        <p:inputText  id="estado-input" value="#{contactoView.usuarioDto.estado}" class="form-control" placeholder="Estado"/>                                                         
+                                    </div>                                      
+                                </div>                    
+                            </div>
+                            <div class="col-sm-12 col-md-6 col-lg-6">
+                                <div class="form-group">
+                                    <p:outputLabel for="municipio-input" styleClass="block">Municipio</p:outputLabel>                                 
+                                    <div class="ui-input-icon-left w-100 ">
+                                        <i class="pi pi-book"  />
+                                        <p:inputText  id="municipio-input" value="#{contactoView.usuarioDto.municipio}" class="form-control" placeholder="Municipio"/>                                                         
+                                    </div>              
+                                </div>                        
+                            </div>-->
+                        </div>
+
+
+
+                        <a class="btn btn-link btn-block" data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
+                            Clave Elector y Curp
+                        </a>
+                        <div class="collapse" id="collapseExample">
+                            <div class="row ">
+                                <div class="col-sm-12 col-md-6 col-lg-6">
+                                    <div class="form-group">
+                                        <p:outputLabel for="emision-input" styleClass="block">Emisión</p:outputLabel>                                 
+                                        <div class="ui-input-icon-left w-100 ">
+                                            <i class="pi pi-book"  />
+                                            <p:inputText  id="emision-input" value="#{contactoView.usuarioDto.anioEmision}" class="form-control" placeholder="Emisión"/>                                                         
+                                        </div>              
+                                    </div>
+                                </div>
+                                <div class="col-sm-12 col-md-6 col-lg-6">
+                                    <div class="form-group">
+                                        <p:outputLabel for="vigencia-input" styleClass="block">Vigencia</p:outputLabel>                                 
+                                        <div class="ui-input-icon-left w-100 ">
+                                            <i class="pi pi-book"  />
+                                            <p:inputText  id="vigencia-input"  value="#{contactoView.usuarioDto.vigencia}" class="form-control" placeholder="Vigencia"/>                                                         
+                                        </div>              
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <p:outputLabel for="clave-elector-input" styleClass="block">Clave de elector</p:outputLabel>                                 
+                                <div class="ui-input-icon-left w-100 ">
+                                    <i class="fa fa-hashtag"  />
+                                    <p:inputText  id="clave-elector-input"  value="#{contactoView.usuarioDto.claveElector}" class="form-control" placeholder=""/>                                                         
+                                </div>              
+                            </div>
+
+                            <div class="form-group">
+                                <p:outputLabel for="curp-input" styleClass="block">Curp</p:outputLabel>                                 
+                                <div class="ui-input-icon-left w-100 ">
+                                    <i class="pi pi-book"  />
+                                    <p:inputText  id="curp-input" value="#{contactoView.usuarioDto.curp}" class="form-control" placeholder="Curp"/>                                                         
+                                </div>              
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <p:outputLabel for="correo-input" styleClass="block">Correo</p:outputLabel>                                 
+                            <div class="ui-input-icon-left w-100 ">                            
+                                <i class="pi pi-envelope"  />                            
+                                <p:inputText id="correo-input" 
+                                             styleClass="form-control" 
+                                             value="#{contactoView.usuarioDto.email}"
+                                             type="email" 
+                                             required="true"
+                                             placeholder="usuario@dominio.com "
+                                             requiredMessage="Por favor agrega un correo"
+                                             validatorMessage="Formato invalido">                                                 
+                                    <f:validateRegex
+                                        pattern="^[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})$" />
+                                </p:inputText>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <p:outputLabel for="telefono-input" styleClass="block">Teléfono/Whatsapp </p:outputLabel>                                 
+                            <div class="ui-input-icon-left w-100 ">
+                                <i class="pi pi-phone"  />
+                                <!--<p:inputText  id="telefono-input" value="#{contactoView.usuarioDto.telefono}" class="form-control" placeholder="Teléfono" required="true" requiredMessage="Teléfono requerido"/>                                                         -->
+                                <!-- mask="(999) 999-9999[ x99999]"-->
+                                <p:inputMask  id="telefono-input"  
+                                                value="#{contactoView.usuarioDto.telefono}" 
+                                                mask="9999999999"         
+                                                placeholder="9999999999"
+                                                required="true" 
+                                                requiredMessage="Teléfono requerido"/>
+                                <p:message id="msg_telefono" for="telefono-input"  />
+                            </div>              
+                        </div>
+
+                        <div class="row">
+                            <p:commandButton id="btn-guardar"
+                                             value="Guardar"
+                                             icon="pi pi-save"                                     
+                                             actionListener="#{contactoView.guardar}"
+                                             onstart="PF('bui').show()"
+                                             oncomplete="PF('bui').hide()"
+                                             styleClass="mt-3 text-lg ui-button-success btn-lg btn-block"
+                                             update="@form formUpload"
+                                             >                                                                        
+                            </p:commandButton>
+
+                            <p:commandLink value="Cancelar"                                                              
+                                           action="/main.xhtml?faces-redirect=true;"                                   
+                                           immediate="true"
+                                           styleClass="btn  btn-outline-light btn-lg btn-block">                                                
+                            </p:commandLink>
+                        </div>    
+                        
+                         <p:blockUI block="btn-guardar"      
+                                    
+                               widgetVar="bui">
+                            <i class="pi pi-spin pi-spinner"></i>
+                        </p:blockUI>
+
+                    </h:form>
+                   
+                </div>        
+                
+                <div class="col-sm-12 col-md-4 col-lg-4">
+                    <h:form id="formUpload" enctype="multipart/form-data">
+                        <p:accordionPanel id="panel-credencial" widgetVar="basic" multiple="true" styleClass="bg-gray"  >                                   
+                            <p:tab title="Credencial" >
+                                <div class="row">
+                                    <div class="card border-0 mr-2 w-100 ">                            
+                                        <div class="card-body  border-0 d-flex justify-content-center ">                                
+                                            <ui:fragment rendered="#{contactoView.imageContentsAsBase64 eq null}">
+                                                <!--<img class="card-img-top" src="/resources/img/credencial_placeholder.png"/>-->
+                                                <!--<img styleClass="sinBorde" 
+                                                 title="#{msgs['cabecera.paginaCompania']}" 
+                                                 src="/resources/imagenes/logo.png" alt="logo"                                                      
+                                                 class="rounded mx-auto d-block" 
+                                                 />-->                                                    
+                                            </ui:fragment>
+                                            <ui:fragment rendered="#{contactoView.fileContent ne null}">
+                                                <img src="data:image/png;base64,#{contactoView.imageContentsAsBase64}" 
+                                                     class="img-thumbnail w-100" />
+                                            </ui:fragment>
+
+                                            <p:fileUpload value="#{contactoView.fileInfo}"                                              
+                                                          chooseButtonStyleClass="rounded-button ui-button-outlined ui-button-secondary "
+                                                          label="Escanea una credencial"
+                                                          styleClass="p-0 m-0"                                                
+                                                          messageTemplate=""                                                                                                
+                                                          chooseIcon="pi pi-camera"
+                                                          chooseButtonTitle="Foto"
+                                                          cancelLabel="Cancelar"
+                                                          cancelButtonTitle="Cancelar"                
+                                                          cancelButtonStyleClass="ui-button-secondary ui-button-flat" 
+                                                          uploadButtonStyleClass=""                                                          
+                                                          mode="simple"                                                              
+                                                          update="@form"
+                                                          validateContentType="true"                                                          
+                                                          skinSimple="true"                                                                                            
+                                                          >
+                                            </p:fileUpload>                                                
+
+                                            <p:commandButton id="boton-procesar"
+                                                             value="Procesar"       
+                                                             onstart="PF('bui-procesar').show()"
+                                                             oncomplete="PF('bui-procesar').show()"
+                                                             process="@form"
+                                                             update="@form frm-registro"
+                                                             icon="pi pi-cog"
+                                                             action="#{contactoView.subirArchivo()}"                                                              
+                                                             
+                                                             styleClass="mt-3 ui-button-outlined block">                                                
+                                            </p:commandButton>
+                                        </div>
+                                    </div>
+                                </div>   
+                            </p:tab>
+
+                        </p:accordionPanel>
+
+                        <p:dataTable 
+                            id="data"
+                            size="small"                                     
+                            stripedRows="true" 
+                            showGridlines="true" 
+                            rows="20" 
+                            styleClass="table table-bordered  table-hover"
+                            value="#{contactoView.etiquetas}" 
+                            var="currentRow"                                     
+                            emptyMessage=""                                    
+                            rendered="#{contactoView.fileContent ne null}"
+                            >										     				    
+                            <p:column>                                        
+                                <h:outputText value="#{currentRow.key}" />
+                            </p:column>
+                            <p:column>
+                                <h:outputText value="#{currentRow.value.valor}" />
+                            </p:column>                                    
+                        </p:dataTable>   
+
+                        <p:blockUI block="panel-credencial" trigger="panel-credencial:boton-procesar" widgetVar="bui-procesar">
+                            <i class="pi pi-spin pi-spinner" style="font-size: 3rem"></i>
+                        </p:blockUI>
+                    </h:form>
+                </div> 
+
+            </div>
+        </div>
+
+
+
+
+
+        <script>
+            PrimeFaces.locales['es'] = {
+                closeText: 'Cerrar',
+                prevText: 'Anterior',
+                nextText: 'Siguiente',
+                monthNames: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
+                monthNamesShort: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'],
+                dayNames: ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'],
+                dayNamesShort: ['Dom', 'Lun', 'Mar', 'Mie', 'Jue', 'Vie', 'Sab'],
+                dayNamesMin: ['D', 'L', 'M', 'X', 'J', 'V', 'S'],
+                weekHeader: 'Semana',
+                firstDay: 1,
+                isRTL: false,
+                showMonthAfterYear: false,
+                yearSuffix: '',
+                timeOnlyTitle: 'Sólo hora',
+                timeText: 'Tiempo',
+                hourText: 'Hora',
+                minuteText: 'Minuto',
+                secondText: 'Segundo',
+                millisecondText: 'Milisegundo',
+                currentText: 'Fecha actual',
+                ampm: false,
+                month: 'Mes',
+                week: 'Semana',
+                day: 'Día',
+                allDayText: 'Todo el día',
+                today: 'Hoy',
+                clear: 'Claro'
+            };
+            PrimeFaces.locales ['de'] = {
+                closeText: 'Schließen',
+                prevText: 'Zurück',
+                nextText: 'Weiter',
+                monthNames: ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'],
+                monthNamesShort: ['Jan', 'Feb', 'Mär', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dez'],
+                dayNames: ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'],
+                dayNamesShort: ['Son', 'Mon', 'Die', 'Mit', 'Don', 'Fre', 'Sam'],
+                dayNamesMin: ['S', 'M', 'D', 'M ', 'D', 'F ', 'S'],
+                weekHeader: 'Woche',
+                firstDay: 1,
+                isRTL: false,
+                showMonthAfterYear: false,
+                yearSuffix: '',
+                timeOnlyTitle: 'Nur Zeit',
+                timeText: 'Zeit',
+                hourText: 'Stunde',
+                minuteText: 'Minute',
+                secondText: 'Sekunde',
+                millisecondText: 'Millisekunde',
+                currentText: 'Aktuelles Datum',
+                ampm: false,
+                month: 'Monat',
+                week: 'Woche',
+                day: 'Tag',
+                allDayText: 'Ganzer Tag',
+                today: 'Heute',
+                clear: 'Löschen'
+            };
+        </script>
+
+        <script>
+            //<![CDATA[
+            function dateTemplateFunc(date) {
+                return '<span style="background-color:' + ((date.day < 21 && date.day > 10) ? '#81C784' : 'inherit') + ';border-radius:50%;width: 2.5rem;height: 2.5rem;line-height: 2.5rem;display: flex;align-items: center;justify-content: center;">' + date.day + '</span>';
+            }
+
+            //]]>
+        </script>
+
+        <style>
+            .value {
+                font-weight: bold;
+            }
+            .ui-accordion .ui-accordion-header {
+                background: #C1AD95 !important;
+                border: none !important;
+            }
+            
+            .ui-outputlabel-rfi{
+                color: red !important;
+                
+            }
+        </style>
+
+    </ui:define>
+
+</ui:composition>
