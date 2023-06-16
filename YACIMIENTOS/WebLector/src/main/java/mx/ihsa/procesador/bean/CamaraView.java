@@ -21,8 +21,6 @@ import javax.inject.Inject;
 import javax.faces.view.ViewScoped;
 import javax.imageio.stream.FileImageOutputStream;
 import javax.inject.Named;
-import lector.vision.Item;
-import lector.vision.api.service.LectorService;
 import org.primefaces.event.CaptureEvent;
 
 /**
@@ -38,10 +36,7 @@ public class CamaraView implements Serializable {
     
     private String filename;
     
-    @Inject
-    private LectorService lectorService;
-    
-    private List<Item> listaTexto;
+    private List<String> listaTexto;
     
 
     public CamaraView() {
@@ -88,7 +83,7 @@ public class CamaraView implements Serializable {
         return filename;
     }
 
-    public List<Item> getListaTexto() {
+    public List<String> getListaTexto() {
         return listaTexto;
     }
      

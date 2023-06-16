@@ -10,7 +10,7 @@ package mx.ihsa.excepciones;
  * 
  * @author esapien
  */
-public class PromotionFailedException extends LectorException {
+public class PromotionFailedException extends GeneralException {
     
 
     public PromotionFailedException(String mensaje) {

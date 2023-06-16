@@ -15,7 +15,7 @@ package mx.ihsa.excepciones;
  * 
  * @author esapien
  */
-public class InvalidBusinessOperationException extends LectorException {
+public class InvalidBusinessOperationException extends GeneralException {
 
     public InvalidBusinessOperationException() {
     }

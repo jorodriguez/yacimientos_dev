@@ -23,7 +23,7 @@ import mx.ihsa.modelo.SiUsuarioRol;
 import mx.ihsa.modelo.Usuario;
 import javax.ejb.Stateless;
 import mx.ihsa.dominio.modelo.usuario.vo.UsuarioVO;
-import mx.ihsa.excepciones.LectorException;
+import mx.ihsa.excepciones.GeneralException;
 import mx.ihsa.notificaciones.sistema.impl.ServicioNotificacionSistemaImpl;
 import mx.ihsa.sistema.AbstractImpl;
 import mx.ihsa.util.UtilLog4j;
@@ -57,26 +57,22 @@ public class UsuarioImpl extends AbstractImpl<Usuario> {
         super(Usuario.class);
     }
 
-    public UsuarioVO login(final String correo, final String pass) throws LectorException {
+    public UsuarioVO login(final String correo, final String pass) throws GeneralException {
 
         if (Strings.isNullOrEmpty(correo) || Strings.isNullOrEmpty(pass)) {
 
-            throw new LectorException("El usuario y la clave son requeridos.");
+            throw new GeneralException("El usuario y la clave son requeridos.");
 
         }
         Usuario usuario = find(correo);
 
         if (usuario == null) {
-            throw new LectorException("Usuario no encontrado.");
+            throw new GeneralException("Usuario no encontrado.");
 
-        }
-        
-        if (usuario.getCTipoContacto().getId().equals(TIPO_CONTACTO)) {
-            throw new LectorException("No es posible el login, comunicate con el equipo de soporte.");
         }
 
         if (!usuario.getClave().equals(encriptar(pass))) {
-            throw new LectorException("El usuario y/0 la clave son incorrectos.");
+            throw new GeneralException("El usuario y/0 la clave son incorrectos.");
         }
 
         return castingToUsuarioVo(usuario);
@@ -88,21 +84,7 @@ public class UsuarioImpl extends AbstractImpl<Usuario> {
                 .id(usuario.getId())
                 .nombre(usuario.getNombre())
                 .email(usuario.getEmail())
-                .cCuenta(usuario.getCCuenta().getId())
                 .telefono(usuario.getTelefono())
-                .sexo(usuario.getSexo())
-                .cEstado(usuario.getCEstado() != null ? usuario.getCEstado().getId() : 0)
-                .estado(usuario.getCEstado() != null ? usuario.getCEstado().getNombre():"")
-                .estadoClave(usuario.getCEstado() != null ? usuario.getCEstado().getClave():0)
-                .cMunicipio(usuario.getCMunicipio() != null ? usuario.getCMunicipio().getId() : 0)                
-                .municipio(usuario.getCMunicipio() != null ? usuario.getCMunicipio().getNombre():"")
-                .municipioClave(usuario.getCMunicipio() != null ? usuario.getCMunicipio().getClave() : 0)
-                .cLocalidad(usuario.getCLocalidad() != null ? usuario.getCLocalidad().getId() : 0)                
-                .localidad(usuario.getCLocalidad() != null ? usuario.getCLocalidad().getNombre():"")
-                .localidadClave(usuario.getCLocalidad() != null ? usuario.getCLocalidad().getClave() : 0)
-                .cSeccion(usuario.getCSeccion() != null ? usuario.getCSeccion().getId():0)                
-                .seccion(usuario.getCSeccion() != null ? usuario.getCSeccion().getNombre():"")
-                .SeccionClave(usuario.getCSeccion() != null ? usuario.getCSeccion().getClave() : 0)
                 .build();
 
     }
@@ -184,7 +166,6 @@ public class UsuarioImpl extends AbstractImpl<Usuario> {
         vo.setClave(u.getClave());
         vo.setEmail(u.getEmail());
         vo.setTelefono(u.getTelefono());
-        vo.setSexo(u.getSexo());
 
         return vo;
     }
@@ -234,7 +215,6 @@ public class UsuarioImpl extends AbstractImpl<Usuario> {
             //
             usuario.setTelefono(usuarioVO.getTelefono());
 
-            usuario.setSexo(usuarioVO.getSexo());
             usuario.setFoto("/resources/imagenes/usuarios/usuario.png");
 
             usuario.setGenero(find(sesion));
@@ -259,7 +239,6 @@ public class UsuarioImpl extends AbstractImpl<Usuario> {
             usuario.setNombre(fixName(usuarioVO.getNombre()));
             usuario.setEmail(usuarioVO.getEmail());
             usuario.setTelefono(usuarioVO.getTelefono());
-            usuario.setSexo(usuarioVO.getSexo());
             edit(usuario);
             v = true;
         } catch (Exception e) {
@@ -504,7 +483,6 @@ public class UsuarioImpl extends AbstractImpl<Usuario> {
             usuario.setNombre(usuarioVO.getNombre());
             usuario.setEmail(usuarioVO.getEmail());
             usuario.setTelefono(usuarioVO.getTelefono());
-            usuario.setSexo(usuarioVO.getSexo());
             edit(usuario);
         } catch (Exception e) {
             LOGGER.error(this, "Ocurrio una excepcion al modificar el usuario  : : : : : " + e.getMessage(), e);

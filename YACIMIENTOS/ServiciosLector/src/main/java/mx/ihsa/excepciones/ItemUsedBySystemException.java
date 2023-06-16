@@ -16,7 +16,7 @@ package mx.ihsa.excepciones;
  *
  * @author b75ckd35th
  */
-public class ItemUsedBySystemException extends LectorException {
+public class ItemUsedBySystemException extends GeneralException {
 
     /**
      * Nombre del elemento que ya existe y que provoca la excepción

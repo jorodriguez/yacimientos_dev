@@ -4,16 +4,8 @@
  */
 package mx.ihsa.sistema.servlet.support;
 
-import javax.faces.application.FacesMessage;
-import javax.faces.component.UIComponent;
-import javax.faces.context.FacesContext;
-import javax.faces.convert.Converter;
-import javax.faces.convert.ConverterException;
-import javax.faces.convert.FacesConverter;
 import javax.inject.Inject;
-import javax.inject.Named;
-import lector.dominio.modelo.usuario.vo.UsuarioVO;
-import lector.servicios.catalogos.impl.UsuarioImpl;
+import mx.ihsa.servicios.catalogos.impl.UsuarioImpl;
 
 /**
  *

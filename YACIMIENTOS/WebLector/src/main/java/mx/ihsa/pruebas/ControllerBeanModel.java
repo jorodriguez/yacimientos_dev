@@ -9,7 +9,8 @@ import javax.enterprise.context.Conversation;
 import javax.enterprise.context.ConversationScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
-import lector.util.UtilLog4j;
+import mx.ihsa.util.UtilLog4j;
+
 
 @Named
 @ConversationScoped

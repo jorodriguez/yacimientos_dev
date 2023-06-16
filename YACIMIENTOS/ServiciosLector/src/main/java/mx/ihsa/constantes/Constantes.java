@@ -11,7 +11,7 @@ import java.util.Locale;
  */
 public class Constantes {
     
-    public static final String PERSISTENCE_UNIT = "Lector-ServiciosPU";
+    public static final String PERSISTENCE_UNIT = "Yacimientos-ServiciosPU";
     
     public static final String API_WHATSAPP = "http://localhost:5001/whatsapp/send";
     
@@ -166,43 +166,6 @@ public class Constantes {
 
     public static final SimpleDateFormat FMT_dd_MM_yyyy = new SimpleDateFormat("dd-MM-yyyy");    
     
-    public enum Etiquetas {                
-                NOMBRE("NOMBRE"),                 
-                DOMICILIO("DOMICILIO"),
-                CLAVE_DE_ELECTOR("CLAVE DE ELECTOR"),
-                CURP("CURP"),
-                ANIO_DE_REGISTRO("AÑO DE REGISTRO"),
-                FECHA_DE_NACIMIENTO("FECHA DE NACIMIENTO"),
-                SECCION("SECCIÓN"),
-                VIGENCIA("VIGENCIA"),
-                SEXO("SEXO"),
-                ESTADO("ESTADO"),
-                MUNICIPIO("MUNICIPIO"),
-                LOCALIDAD("LOCALIDAD"),
-                EMISION("EMISÓN");
-                
-                private final String value;
-                
-                private Etiquetas(String value){  
-                    this.value=value;  
-                }  
-                
-    };  
     
-    public static final List<String> ETIQUETAS_INE =  Arrays.asList(
-                                    Etiquetas.NOMBRE.value,
-                                    Etiquetas.DOMICILIO.value,
-                                    Etiquetas.CLAVE_DE_ELECTOR.value,
-                                    Etiquetas.CURP.value,
-                                    Etiquetas.ANIO_DE_REGISTRO.value,
-                                    Etiquetas.FECHA_DE_NACIMIENTO.value,
-                                    Etiquetas.SECCION.value,
-                                    Etiquetas.VIGENCIA.value,
-                                    Etiquetas.SEXO.value,
-                                    Etiquetas.ESTADO.value,
-                                    Etiquetas.MUNICIPIO.value,
-                                    Etiquetas.LOCALIDAD.value,
-                                    Etiquetas.EMISION.value                                   
-            );
     
 }

@@ -9,12 +9,9 @@ import mx.ihsa.sistema.bean.backing.Sesion;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Base64;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
@@ -26,15 +23,7 @@ import javax.inject.Inject;
 
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
-import lector.archivador.DocumentoAnexo;
-import lector.constantes.Constantes;
-import lector.dominio.modelo.usuario.vo.UsuarioVO;
-import lector.excepciones.LectorException;
 import mx.ihsa.sistema.bean.support.FacesUtils;
-import lector.util.ValidadorNombreArchivo;
-import lector.vision.InformacionCredencialDto;
-import lector.vision.Item;
-import lector.vision.api.service.LectorService;
 import lombok.Getter;
 import lombok.Setter;
 import org.primefaces.event.FileUploadEvent;
@@ -42,13 +31,15 @@ import org.primefaces.model.CroppedImage;
 import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
 import org.primefaces.model.file.UploadedFile;
-import static lector.constantes.Constantes.Etiquetas.*;
-import lector.dominio.vo.CLocalidadVo;
-import lector.dominio.vo.CSeccionVo;
-import lector.servicios.catalogos.impl.UbicacionesImpl;
-import lector.servicios.sistema.impl.ContactoImpl;
-import lector.util.UtilLog4j;
-import static lector.util.UtilsProcess.castToInt;
+
+import mx.ihsa.dominio.vo.CLocalidadVo;
+import mx.ihsa.dominio.vo.CSeccionVo;
+import mx.ihsa.servicios.catalogos.impl.UbicacionesImpl;
+import mx.ihsa.util.UtilLog4j;
+import mx.ihsa.archivador.DocumentoAnexo;
+import mx.ihsa.dominio.modelo.usuario.vo.UsuarioVO;
+import mx.ihsa.excepciones.GeneralException;
+import mx.ihsa.util.ValidadorNombreArchivo;
 
 /**
  *
@@ -64,12 +55,6 @@ public class ContactoView implements Serializable {
     @Inject
     private UbicacionesImpl ubicacionesService;
     
-    @Inject
-    private ContactoImpl contactoService;
-
-    @Inject
-    private LectorService lectorService;
-
 
     private CroppedImage croppedImage;
 
@@ -84,18 +69,7 @@ public class ContactoView implements Serializable {
 
     @Getter
     @Setter
-    private List<Item> listaItems;
-
-    @Getter
-    @Setter
     private List<CLocalidadVo> listaLocalidades;
-
-    @Getter
-    private InformacionCredencialDto informacionCredencialDto;
-
-    @Getter
-    @Setter
-    private UsuarioVO usuarioDto;
 
     @Getter
     @Setter
@@ -119,13 +93,12 @@ public class ContactoView implements Serializable {
         System.out.println("@Postconstruc" + this.getClass().getCanonicalName());
         //loaders
         limpiarForma();
-        cargarCatalogoLocalidades();
-
+        
     }
     
     
     private void limpiarForma(){
-        
+        /*
            usuarioDto = UsuarioVO.builder()
                 .nombre("")
                 .domicilio("")
@@ -135,23 +108,10 @@ public class ContactoView implements Serializable {
                 .anioEmision(0)
                 .vigencia(0)
                 .sexo("")                
-                .cCuenta(sesion.getUsuarioSesion().getCCuenta())
-                .cEstado(sesion.getUsuarioSesion().getCEstado())
-                .estado(sesion.getUsuarioSesion().getEstado())
-                .estadoClave(sesion.getUsuarioSesion().getEstadoClave())
-                .cMunicipio(sesion.getUsuarioSesion().getCMunicipio())                
-                .municipio(sesion.getUsuarioSesion().getMunicipio())
-                .municipioClave(sesion.getUsuarioSesion().getMunicipioClave())
-                .cLocalidad(sesion.getUsuarioSesion().getCLocalidad())
-                .localidad(sesion.getUsuarioSesion().getLocalidad())
-                .localidadClave(sesion.getUsuarioSesion().getLocalidadClave())                
-                .genero(sesion.getUsuarioSesion().getId())
-                .registro(sesion.getUsuarioSesion().getId())                
-                .cTipoContacto(Constantes.TIPO_CONTACTO)
                 .build();
            
            informacionCredencialDto = null;
-           
+           */
            fileContent = null;
            
                       
@@ -245,7 +205,7 @@ public class ContactoView implements Serializable {
                 documentoAnexo.setNombreBase(fileInfo.getFileName());
                 //almacenDocumentos.guardarDocumento(documentoAnexo);
 
-                informacionCredencialDto = lectorService.getInformacionCredencial(documentoAnexo);
+                //informacionCredencialDto = lectorService.getInformacionCredencial(documentoAnexo);
 
                 cargarValoresUsuario();
 
@@ -269,7 +229,7 @@ public class ContactoView implements Serializable {
 
             return true;
 
-        } catch (IOException | LectorException e) {
+        } catch (IOException | GeneralException e) {
             System.out.println(" error al cargar " + e);
             FacesUtils.addInfoMessage("Ocurrió un problema al cargar el archivo");
             return false;
@@ -281,7 +241,7 @@ public class ContactoView implements Serializable {
         log.info("@Guardar");
         System.out.println("@guardar");
 
-        try {
+      //  try {
 
             if(!validarUsuario()){
                 System.out.println("Validacion error");
@@ -298,14 +258,10 @@ public class ContactoView implements Serializable {
             
             if (fileInfo == null) {
                 
-                informacionCredencialDto = InformacionCredencialDto
-                        .builder()
-                        .usuarioDto(usuarioDto)                        
-                        .build();
             }
 
             //validacion de campos
-            contactoService.guardarContacto(informacionCredencialDto);
+            //contactoService.guardarContacto(informacionCredencialDto);
             
             limpiarForma();
             
@@ -313,11 +269,11 @@ public class ContactoView implements Serializable {
             System.out.println("Contacto agregado");
             log.info("contacto agregado....");
 
-        } catch (LectorException le) {
+       /* } catch (GeneralException le) {
              System.out.println("guardar ex"+le.getMessage());
             FacesUtils.addErrorMessage(le.getMessage());
 
-        }
+        }*/
 
     }
 
@@ -327,7 +283,7 @@ public class ContactoView implements Serializable {
         
         System.out.println("@validarUsuario");
                         
-        if (usuarioDto == null) {
+        /*if (usuarioDto == null) {
             FacesUtils.addErrorMessage("Existió un error al intentar guardar el contacto.");
             return false;
         }
@@ -357,7 +313,7 @@ public class ContactoView implements Serializable {
             return false;          
             
         }
-        
+        */
                        
         return true;
 
@@ -372,18 +328,19 @@ public class ContactoView implements Serializable {
 
     private boolean validarTelefono(){
         
-        return contactoService.findByTelefono(usuarioDto.getTelefono());
+        return true;
+      // return contactoService.findByTelefono(usuarioDto.getTelefono());
         
     }
     
     private void cargarValoresUsuario() {
 
         log.info("@cargarValoresUsuario");
-
+/*
         if (informacionCredencialDto == null) {
 
             throw new NullPointerException("Es null informacionCredencialDto");
-        }
+        }*/
 
         System.out.println("Valores etiquetas");
 
@@ -405,7 +362,7 @@ public class ContactoView implements Serializable {
         
         limpiarForma();
         
-        usuarioDto.setNombre(gettingValorEtiqueta(NOMBRE));
+       /* usuarioDto.setNombre(gettingValorEtiqueta(NOMBRE));
         usuarioDto.setDomicilio(gettingValorEtiqueta(DOMICILIO));
         usuarioDto.setClaveElector(gettingValorEtiqueta(CLAVE_DE_ELECTOR));
         usuarioDto.setCurp(gettingValorEtiqueta(CURP));
@@ -420,29 +377,14 @@ public class ContactoView implements Serializable {
         valor = gettingValorEtiqueta(EMISION);
         usuarioDto.setAnioEmision(
                 castToInt(valor)
-        );
+        );*/
         
         // -- TO-FIX
         //--- aqui buscar los ids de estado, municipio, localidad, seccion pero antes validar valores
 
     }
 
-    private String gettingValorEtiqueta(Constantes.Etiquetas etiqueta) {
-        System.out.println("@gettingValorEtiqueta");
-
-        System.out.println("Etiqueta " + etiqueta.name());
-
-        Item item = null;
-        
-        if(informacionCredencialDto != null){
-             item = informacionCredencialDto.getEtiquetasDetectadas().get(etiqueta.name());
-        }               
-
-        System.out.println("item " + item);
-
-        return item == null ? "NO ENCONTRADO" : item.getValor();
-
-    }
+   
 
     public void handleFileUpload(FileUploadEvent event) {
         System.out.println("@handleFileUpload");
@@ -511,18 +453,6 @@ public class ContactoView implements Serializable {
                 .build();
     }
 
-    public List<Map.Entry<String, Item>> getEtiquetas() {
-
-        Set<Map.Entry<String, Item>> setList = Collections.emptySet();
-
-        if (informacionCredencialDto != null && informacionCredencialDto.getEtiquetasDetectadas() != null) {
-
-            setList = informacionCredencialDto.getEtiquetasDetectadas().entrySet();
-
-        }
-
-        return new ArrayList<Map.Entry<String, Item>>(setList);
-    }
 
     public void changeFoto(ValueChangeEvent valuchangeevent) {
         System.out.println("@@changeFoto");
@@ -553,16 +483,7 @@ public class ContactoView implements Serializable {
         return fileContent != null ? Base64.getEncoder().encodeToString(fileContent) : null;
     }
 
-    private void cargarCatalogoLocalidades() {
-        
-        log.info("@cargarCatalogoLocalidades");
-       
-        final List<CLocalidadVo> localidades = ubicacionesService.findAllLocalidades(usuarioDto.getCMunicipio());
-        
-        this.localidadesMap = localidades.stream().collect(Collectors.toMap(CLocalidadVo::getId, Function.identity()));
-        
-        
-    }
+
     
     public void handleChangeLocalidad(ValueChangeEvent event){                        
         System.out.println("handleChangeLocalidad" );
@@ -576,11 +497,7 @@ public class ContactoView implements Serializable {
         System.out.println("New selection localidad : "+this.localidadSeleccionada.getId());
         System.out.println("New selection municipio : "+this.localidadSeleccionada.getMunicipio());
 
-        //Tofix
-        usuarioDto.setLocalidad(
-                    String.valueOf(this.localidadSeleccionada.getClave())
-        );
-                
+                        
         // cargar las secciones de la localidad seleccionada
         
         List<CSeccionVo> secciones = ubicacionesService.findAllSeccionesLocalidad(this.localidadSeleccionada.getId());

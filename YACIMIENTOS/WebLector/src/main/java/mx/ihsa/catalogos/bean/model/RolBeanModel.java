@@ -13,8 +13,8 @@ import javax.inject.Inject;
 import javax.faces.model.SelectItem;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
-import lector.servicios.catalogos.impl.UsuarioImpl;
-import lector.servicios.sistema.impl.SiUsuarioRolImpl;
+import mx.ihsa.servicios.catalogos.impl.UsuarioImpl;
+import mx.ihsa.servicios.sistema.impl.SiUsuarioRolImpl;
 import org.primefaces.PrimeFaces;
 import mx.ihsa.sistema.bean.backing.Sesion;
 

@@ -1,6 +1,6 @@
 package mx.ihsa.archivador;
 
-import mx.ihsa.excepciones.LectorException;
+import mx.ihsa.excepciones.GeneralException;
 
 /**
  * Almacén de documentos anexos.
@@ -9,11 +9,11 @@ public abstract class AlmacenDocumentos {
     
     private String raizAlmacen = "/";
     
-    public abstract void guardarDocumento(DocumentoAnexo documento) throws LectorException;
-    public abstract void borrarDocumento(DocumentoAnexo documento) throws LectorException;
-    public abstract void borrarDocumento(String rutaCompleta) throws LectorException;
-    public abstract DocumentoAnexo cargarDocumento(String rutaCompleta) throws LectorException;
-    public abstract void moverDocumento(DocumentoAnexo documento, String nuevaRuta) throws LectorException;
+    public abstract void guardarDocumento(DocumentoAnexo documento) throws GeneralException;
+    public abstract void borrarDocumento(DocumentoAnexo documento) throws GeneralException;
+    public abstract void borrarDocumento(String rutaCompleta) throws GeneralException;
+    public abstract DocumentoAnexo cargarDocumento(String rutaCompleta) throws GeneralException;
+    public abstract void moverDocumento(DocumentoAnexo documento, String nuevaRuta) throws GeneralException;
     
     public String getRaizAlmacen() {
         return raizAlmacen;

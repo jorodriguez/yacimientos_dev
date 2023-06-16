@@ -15,7 +15,7 @@ package mx.ihsa.excepciones;
  * 
  * @author esapien
  */
-public class UnavailableItemException extends LectorException {
+public class UnavailableItemException extends GeneralException {
 
     public UnavailableItemException() {
     }

@@ -15,16 +15,16 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import lector.archivador.AlmacenDocumentos;
-import lector.archivador.DocumentoAnexo;
-import lector.archivador.ProveedorAlmacenDocumentos;
-import lector.constantes.Configurador;
-import lector.dominio.vo.AdjuntoVO;
-import lector.excepciones.LectorException;
-import lector.servicios.sistema.impl.SiAdjuntoImpl;
-import lector.servicios.sistema.impl.SiParametroImpl;
+import mx.ihsa.archivador.AlmacenDocumentos;
+import mx.ihsa.archivador.DocumentoAnexo;
+import mx.ihsa.archivador.ProveedorAlmacenDocumentos;
+import mx.ihsa.constantes.Configurador;
+import mx.ihsa.dominio.vo.AdjuntoVO;
+import mx.ihsa.excepciones.GeneralException;
+import mx.ihsa.servicios.sistema.impl.SiAdjuntoImpl;
+import mx.ihsa.servicios.sistema.impl.SiParametroImpl;
 import mx.ihsa.sistema.bean.backing.Sesion;
-import lector.util.UtilLog4j;
+import mx.ihsa.util.UtilLog4j;
 
 /**
  *
@@ -68,11 +68,11 @@ public class AbrirArchivo extends HttpServlet {
         try {
             //  Sesion sesion = (Sesion) request.getSession().getAttribute("sesion");
             if (sesion == null) {
-                response.sendRedirect(Configurador.urlSistema() + "WebLector");
+                response.sendRedirect(Configurador.urlSistema() + "WebYacimientos");
             } else {
                 // si el managed bean usuario es diferente de null podemos verificar si ya inicio sesion
                 if (sesion.getUsuarioSesion() == null) {
-                    response.sendRedirect(Configurador.urlSistema() + "WebLector");
+                    response.sendRedirect(Configurador.urlSistema() + "WebYacimientos");
                 } else {
                     // si inicio sesion buscar el convenio q viene en el parametro del servlet
                     String SAId = request.getParameter("ZWZ2W");
@@ -119,7 +119,7 @@ public class AbrirArchivo extends HttpServlet {
                     }
                 } // si usuarioConectado es null el usuario no a iniciado sesion
             } // si el managed bean usuario es null ni si quiera a entrado a la aplicacion
-        } catch (LectorException e) {
+        } catch (GeneralException e) {
             LOGGER.error("File : " + fullFilePath, e);
             error = true;
         } catch (IOException e) {

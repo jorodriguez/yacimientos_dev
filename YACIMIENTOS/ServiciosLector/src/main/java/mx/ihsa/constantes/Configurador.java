@@ -18,7 +18,7 @@ import mx.ihsa.util.UtilLog4j;
 public final class Configurador {
 
     private final static UtilLog4j LOGGER = UtilLog4j.log;
-    private final static String CONF_FILE = "/etc/lector.properties";
+    private final static String CONF_FILE = "/etc/yacimientos.properties";
     private final static String DEFAULT_URL = "http://domain.mx";
     
     

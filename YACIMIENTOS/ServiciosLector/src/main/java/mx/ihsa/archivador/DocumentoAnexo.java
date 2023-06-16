@@ -12,7 +12,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.tika.Tika;
 import mx.ihsa.constantes.Constantes;
-import mx.ihsa.excepciones.LectorException;
+import mx.ihsa.excepciones.GeneralException;
 
 /**
  * Documento para anexar a un repositorio de documentos, ya sea en un sistema de archivos físico o
@@ -31,18 +31,18 @@ public class DocumentoAnexo {
     private String uuid;
     private String prettySize;
 
-    public DocumentoAnexo(byte[] contenido) throws LectorException {
+    public DocumentoAnexo(byte[] contenido) throws GeneralException {
         if (contenido == null) {
-            throw new LectorException("El contenido para el documento anexo está vacío.");
+            throw new GeneralException("El contenido para el documento anexo está vacío.");
         } else {
             this.contenido = contenido;
             extraerInfo();
         }
     }
 
-    public DocumentoAnexo(File file) throws IOException, LectorException {
+    public DocumentoAnexo(File file) throws IOException, GeneralException {
         if (file == null) {
-            throw new LectorException("El contenido para el documento anexo es nulo.");
+            throw new GeneralException("El contenido para el documento anexo es nulo.");
         } else {
             extraerInfo(file);
         }

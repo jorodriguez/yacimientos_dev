@@ -11,7 +11,7 @@ import java.util.TreeMap;
 import javax.enterprise.context.Conversation;
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Named;
-import lector.util.UtilLog4j;
+import mx.ihsa.util.UtilLog4j;
 
 /**
  * Clase que provee diversos métodos para poder administrar las Conversaciones

@@ -14,7 +14,7 @@ package mx.ihsa.excepciones;
  *
  * @author esapien
  */
-public class InvalidStateException extends LectorException {
+public class InvalidStateException extends GeneralException {
 
     public InvalidStateException(String mensaje) {
         super(mensaje);

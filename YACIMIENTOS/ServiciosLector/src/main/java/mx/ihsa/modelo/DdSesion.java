@@ -56,9 +56,6 @@ public class DdSesion implements Serializable {
     private Date fechaModifico;
     @Column(name = "eliminado")
     private Boolean eliminado;
-    @JoinColumn(name = "c_cuenta", referencedColumnName = "id")
-    @ManyToOne(optional = false)
-    private CCuenta cCuenta;
     @JoinColumn(name = "genero", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private Usuario genero;
@@ -154,13 +151,6 @@ public class DdSesion implements Serializable {
         this.eliminado = eliminado;
     }
 
-    public CCuenta getCCuenta() {
-        return cCuenta;
-    }
-
-    public void setCCuenta(CCuenta cCuenta) {
-        this.cCuenta = cCuenta;
-    }
 
     public Usuario getGenero() {
         return genero;

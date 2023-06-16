@@ -13,7 +13,7 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import mx.ihsa.excepciones.LectorException;
+import mx.ihsa.excepciones.GeneralException;
 import mx.ihsa.util.UtilLog4j;
 
 
@@ -28,7 +28,7 @@ public class AlmacenSistemaArchivos extends AlmacenDocumentos {
     private static final UtilLog4j LOGGER = UtilLog4j.log;
 
     @Override
-    public void guardarDocumento(DocumentoAnexo documento) throws LectorException {
+    public void guardarDocumento(DocumentoAnexo documento) throws GeneralException {
 	FileOutputStream fos = null;
 	/*String rutaBase
 	 = getRaizAlmacen()
@@ -59,11 +59,11 @@ public class AlmacenSistemaArchivos extends AlmacenDocumentos {
 	} catch (FileNotFoundException ex) {
 	    LOGGER.error(this, ex);
 
-	    throw new LectorException("No fue posible guardar el archivo : " + ex.getMessage());
+	    throw new GeneralException("No fue posible guardar el archivo : " + ex.getMessage());
 	} catch (IOException ex) {
 	    LOGGER.error(this, ex);
 
-	    throw new LectorException("No fue posible guardar el archivo : " + ex.getMessage());
+	    throw new GeneralException("No fue posible guardar el archivo : " + ex.getMessage());
 	} finally {
 	    if (fos != null) {
 		try {
@@ -81,12 +81,12 @@ public class AlmacenSistemaArchivos extends AlmacenDocumentos {
     }
 
     @Override
-    public void borrarDocumento(DocumentoAnexo documento) throws LectorException {
+    public void borrarDocumento(DocumentoAnexo documento) throws GeneralException {
 	borrarDocumento(documento.getRuta());
     }
 
     @Override
-    public void borrarDocumento(String rutaCompleta) throws LectorException {
+    public void borrarDocumento(String rutaCompleta) throws GeneralException {
 	LOGGER.debug(this, "Borrando archivo {0}", new Object[]{rutaCompleta});
 	//System.out.println("Borrando el archivo " + new Object[]{rutaCompleta});
 
@@ -94,12 +94,12 @@ public class AlmacenSistemaArchivos extends AlmacenDocumentos {
 	    Files.delete(Paths.get(getRaizAlmacen() + File.separator + rutaCompleta));
 	} catch (IOException ex) {
 	    LOGGER.error(this, ex);
-	    throw new LectorException("No fue posible borrar el archivo: " + ex.getMessage());
+	    throw new GeneralException("No fue posible borrar el archivo: " + ex.getMessage());
 	}
     }
 
     @Override
-    public DocumentoAnexo cargarDocumento(String rutaCompleta) throws LectorException {
+    public DocumentoAnexo cargarDocumento(String rutaCompleta) throws GeneralException {
 	InputStream inFile = null;
 	DocumentoAnexo retVal = null;
 
@@ -120,7 +120,7 @@ public class AlmacenSistemaArchivos extends AlmacenDocumentos {
 
 	} catch (IOException e) {
 	    LOGGER.error(this, e);
-	    throw new LectorException(
+	    throw new GeneralException(
 		    "Al cargar el documento desde el sistema de archivos del servidor"
 		    + e.getMessage()
 	    );
@@ -138,7 +138,7 @@ public class AlmacenSistemaArchivos extends AlmacenDocumentos {
     }
 
     @Override
-    public void moverDocumento(DocumentoAnexo documento, String nuevaRuta) throws LectorException {
+    public void moverDocumento(DocumentoAnexo documento, String nuevaRuta) throws GeneralException {
 	//TODO : implementar funcionalidad
 	LOGGER.debug(this, "Moviendo archivo {0} a {1}", new Object[]{documento.getNombreBase(), nuevaRuta});
 	throw new UnsupportedOperationException("Not supported yet.");

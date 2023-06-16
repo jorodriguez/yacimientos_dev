@@ -13,7 +13,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import lector.util.UtilLog4j;
+import mx.ihsa.util.UtilLog4j;
 
 /**
  *

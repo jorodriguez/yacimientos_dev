@@ -27,21 +27,21 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
-import lector.constantes.Constantes;
-import lector.dominio.modelo.usuario.vo.UsuarioVO;
-import lector.dominio.vo.UsuarioRolVo;
-import lector.modelo.SiUsuarioRol;
-import lector.modelo.Usuario;
-import lector.modelo.usuario.vo.UsuarioGerenciaDto;
-import lector.servicios.catalogos.impl.UsuarioImpl;
-import lector.servicios.sistema.impl.SiOpcionImpl;
-import lector.servicios.sistema.vo.MenuSiOpcionVo;
-import lector.servicios.sistema.vo.SiOpcionVo;
+import mx.ihsa.constantes.Constantes;
+import mx.ihsa.dominio.modelo.usuario.vo.UsuarioVO;
+import mx.ihsa.dominio.vo.UsuarioRolVo;
+import mx.ihsa.modelo.SiUsuarioRol;
+import mx.ihsa.modelo.Usuario;
+import mx.ihsa.modelo.usuario.vo.UsuarioGerenciaDto;
+import mx.ihsa.servicios.catalogos.impl.UsuarioImpl;
+import mx.ihsa.servicios.sistema.impl.SiOpcionImpl;
+import mx.ihsa.servicios.sistema.vo.MenuSiOpcionVo;
+import mx.ihsa.servicios.sistema.vo.SiOpcionVo;
 import lombok.Getter;
 import lombok.Setter;
 import mx.ihsa.sistema.bean.backing.Sesion;
 import mx.ihsa.sistema.bean.support.FacesUtils;
-import lector.util.UtilLog4j;
+import mx.ihsa.util.UtilLog4j;
 
 /**
  *
@@ -271,13 +271,10 @@ public class UsuarioBean implements Serializable {
             getUsuarioVOAlta().setTelefono(u.getTelefono());
             getUsuarioVOAlta().setExtension(u.getExtension());
             getUsuarioVOAlta().setCelular(u.getCelular());
-            getUsuarioVOAlta().setSexo(u.getSexo());
             //            
             getUsuarioVOAlta().setActivo(u.isActivo());
             getUsuarioVOAlta().setPregunta(u.getPregunta());
             getUsuarioVOAlta().setRespuesta(u.getRespuesta());
-            //Otros 5
-            getUsuarioVOAlta().setFechaNacimiento(u.getFechaNacimiento());
 
         }
     }

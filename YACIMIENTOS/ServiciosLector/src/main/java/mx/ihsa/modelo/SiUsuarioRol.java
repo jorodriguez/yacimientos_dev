@@ -43,9 +43,6 @@ public class SiUsuarioRol implements Serializable {
     private Date fechaModifico;
     @Column(name = "eliminado")
     private Boolean eliminado;
-    @JoinColumn(name = "c_cuenta", referencedColumnName = "id")
-    @ManyToOne(optional = false)
-    private CCuenta cCuenta;
     @JoinColumn(name = "si_rol", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private SiRol siRol;
@@ -103,13 +100,6 @@ public class SiUsuarioRol implements Serializable {
         this.eliminado = eliminado;
     }
 
-    public CCuenta getCCuenta() {
-        return cCuenta;
-    }
-
-    public void setCCuenta(CCuenta cCuenta) {
-        this.cCuenta = cCuenta;
-    }
 
     public SiRol getSiRol() {
         return siRol;

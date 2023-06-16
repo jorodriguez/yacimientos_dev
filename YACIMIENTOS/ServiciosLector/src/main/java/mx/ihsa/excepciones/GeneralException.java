@@ -18,7 +18,7 @@ import javax.ejb.ApplicationException;
  * @author b75ckd35th
  */
 @ApplicationException(rollback=true)
-public class LectorException extends Exception {
+public class GeneralException extends Exception {
 
     /**
      * Nombre de la Clase donde ocurre la excepción
@@ -39,11 +39,11 @@ public class LectorException extends Exception {
      */
     private String mensajeParaProgramador;
     
-    public LectorException() {
+    public GeneralException() {
         super("Ocurrio algo inesperado, por favor contacta al Equipo del SIA al correo soportesia@ihsa.mx.");
     }
     
-    public LectorException(Exception e) {
+    public GeneralException(Exception e) {
         super(e);
     }
     
@@ -51,7 +51,7 @@ public class LectorException extends Exception {
      * 
      * @param mensaje 
      */
-    public LectorException (String mensaje) {
+    public GeneralException (String mensaje) {
         super(mensaje);
     }
     
@@ -61,7 +61,7 @@ public class LectorException extends Exception {
      * @param metodoError
      * @param mensaje 
      */
-    public LectorException(String claseError, String metodoError, String mensaje) {
+    public GeneralException(String claseError, String metodoError, String mensaje) {
         super(mensaje);
         this.claseError = claseError;
         this.metodoError = metodoError;
@@ -73,11 +73,11 @@ public class LectorException extends Exception {
      * @param mensaje
      * @param mensajeParaProgramador
      */
-    public LectorException(String claseError, String metodoError, String mensaje, String mensajeParaProgramador) {
+    public GeneralException(String claseError, String metodoError, String mensaje, String mensajeParaProgramador) {
         super(mensaje);
         this.claseError = claseError;
         this.metodoError = metodoError;
-        this.mensajeParaProgramador = LectorException.class.getName() + " - " + mensajeParaProgramador;
+        this.mensajeParaProgramador = GeneralException.class.getName() + " - " + mensajeParaProgramador;
     } 
     
     /**
@@ -87,12 +87,12 @@ public class LectorException extends Exception {
      * @param literal
      * @param mensajeParaProgramador
      */
-    public LectorException(String claseError, String metodoError, String mensaje, String literal, String mensajeParaProgramador) {
+    public GeneralException(String claseError, String metodoError, String mensaje, String literal, String mensajeParaProgramador) {
         super(mensaje);
         this.claseError = claseError;
         this.metodoError = metodoError;
         this.literal = literal;
-        this.mensajeParaProgramador = LectorException.class.getName() + " - " + mensajeParaProgramador;
+        this.mensajeParaProgramador = GeneralException.class.getName() + " - " + mensajeParaProgramador;
     }  
     
     /**

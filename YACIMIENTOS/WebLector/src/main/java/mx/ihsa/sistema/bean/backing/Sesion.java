@@ -1,8 +1,6 @@
 package mx.ihsa.sistema.bean.backing;
 
-import java.io.IOException;
 import java.io.Serializable;
-import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -18,15 +16,13 @@ import javax.faces.model.DataModel;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import com.google.api.client.util.Strings;
-import lector.constantes.Constantes;
-import lector.dominio.modelo.usuario.vo.UsuarioVO;
-import lector.dominio.vo.UsuarioRolVo;
-import lector.excepciones.LectorException;
-import lector.modelo.Usuario;
-import lector.servicios.catalogos.impl.UsuarioImpl;
-import lector.servicios.sistema.impl.SiUsuarioRolImpl;
-import lector.servicios.sistema.vo.MenuSiOpcionVo;
+import mx.ihsa.constantes.Constantes;
+import mx.ihsa.dominio.modelo.usuario.vo.UsuarioVO;
+import mx.ihsa.dominio.vo.UsuarioRolVo;
+import mx.ihsa.excepciones.GeneralException;
+import mx.ihsa.servicios.catalogos.impl.UsuarioImpl;
+import mx.ihsa.servicios.sistema.impl.SiUsuarioRolImpl;
+import mx.ihsa.servicios.sistema.vo.MenuSiOpcionVo;
 
 import org.primefaces.PrimeFaces;
 
@@ -34,7 +30,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import mx.ihsa.sistema.bean.support.FacesUtils;
-import lector.util.Env;
+import mx.ihsa.util.Env;
 import mx.ihsa.util.SessionUtils;
 
 /**
@@ -126,7 +122,7 @@ public class Sesion implements Serializable {
 
                 subirValoresContexto();
             
-        } catch (LectorException e) {
+        } catch (GeneralException e) {
             log.error(Constantes.VACIO, e);
             setUsuarioSesion(null);
             FacesUtils.addInfoMessage(e.getMessage());

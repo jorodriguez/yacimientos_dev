@@ -4,7 +4,7 @@ import com.newrelic.api.agent.Trace;
 import java.io.File;
 import java.util.Properties;
 import mx.ihsa.alfresco.api.AlfrescoClient;
-import mx.ihsa.excepciones.LectorException;
+import mx.ihsa.excepciones.GeneralException;
 
 /**
  * Implementación de almacén de documentos con Alfresco. En este caso se utiliza
@@ -20,32 +20,32 @@ public class AlmacenAlfresco extends AlmacenDocumentos {
     }
     
     @Override
-    public void guardarDocumento(DocumentoAnexo documento) throws LectorException {
+    public void guardarDocumento(DocumentoAnexo documento) throws GeneralException {
         alfrescoClient.uploadFile(documento);
     }
 
     @Override
-    public void borrarDocumento(DocumentoAnexo documento) throws LectorException {
+    public void borrarDocumento(DocumentoAnexo documento) throws GeneralException {
         borrarDocumento(documento.getRuta() + File.separator + documento.getNombreBase());
     }
 
     @Override
-    public void borrarDocumento(String rutaCompleta) throws LectorException {
+    public void borrarDocumento(String rutaCompleta) throws GeneralException {
         if(!alfrescoClient.deleteObjectFromPath(rutaCompleta)) {
-            throw new LectorException("No fue posible eliminar el archivo.");
+            throw new GeneralException("No fue posible eliminar el archivo.");
         }
     }
 
     
     @Trace
     @Override
-    public DocumentoAnexo cargarDocumento(String rutaCompleta) throws LectorException {
+    public DocumentoAnexo cargarDocumento(String rutaCompleta) throws GeneralException {
         DocumentoAnexo retVal = new DocumentoAnexo(alfrescoClient.getObjectFromPath(rutaCompleta));
         return retVal;
     }
 
     @Override
-    public void moverDocumento(DocumentoAnexo documento, String nuevaRuta) throws LectorException {
+    public void moverDocumento(DocumentoAnexo documento, String nuevaRuta) throws GeneralException {
         //TODO : implementar funcionalidad
         throw new UnsupportedOperationException("Not supported yet.");
     }

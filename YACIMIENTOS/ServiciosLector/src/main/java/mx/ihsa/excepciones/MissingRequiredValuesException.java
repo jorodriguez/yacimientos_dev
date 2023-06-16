@@ -10,7 +10,7 @@ package mx.ihsa.excepciones;
  * 
  * @author esapien
  */
-public class MissingRequiredValuesException extends LectorException {
+public class MissingRequiredValuesException extends GeneralException {
     
     /**
      * 

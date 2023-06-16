@@ -8,7 +8,7 @@ package mx.ihsa.excepciones;
  * 
  * @author esapien
  */
-public class InvalidValuesException extends LectorException {
+public class InvalidValuesException extends GeneralException {
     
     public InvalidValuesException() {
     }

@@ -12,12 +12,12 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import lector.constantes.Configurador;
-import lector.modelo.SiAdjunto;
-import lector.servicios.sistema.impl.SiAdjuntoImpl;
-import lector.servicios.sistema.impl.SiParametroImpl;
+import mx.ihsa.constantes.Configurador;
+import mx.ihsa.modelo.SiAdjunto;
+import mx.ihsa.servicios.sistema.impl.SiAdjuntoImpl;
+import mx.ihsa.servicios.sistema.impl.SiParametroImpl;
 import mx.ihsa.sistema.bean.backing.Sesion;
-import lector.util.UtilLog4j;
+import mx.ihsa.util.UtilLog4j;
 
 /**
  *

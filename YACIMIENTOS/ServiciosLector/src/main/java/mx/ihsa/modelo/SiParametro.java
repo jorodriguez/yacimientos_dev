@@ -217,13 +217,6 @@ public class SiParametro implements Serializable {
         return "mx.ihsa.mavenproject1.SiParametro[ id=" + id + " ]";
     }
 
-    public byte[] getLogo() {
-        return logo;
-    }
-
-    public void setLogo(byte[] logo) {
-        this.logo = logo;
-    }
 
     public String getApiWhatsapp() {
         return apiWhatsapp;
@@ -232,5 +225,15 @@ public class SiParametro implements Serializable {
     public void setApiWhatsapp(String apiWhatsapp) {
         this.apiWhatsapp = apiWhatsapp;
     }
+
+    public byte[] getLogo() {
+        return logo;
+    }
+
+    public void setLogo(byte[] logo) {
+        this.logo = logo;
+    }
+
     
+
 }

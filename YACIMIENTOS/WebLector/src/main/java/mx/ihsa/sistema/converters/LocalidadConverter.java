@@ -11,8 +11,7 @@ import javax.faces.convert.Converter;
 import javax.faces.convert.ConverterException;
 import javax.faces.convert.FacesConverter;
 import javax.inject.Named;
-import lector.dominio.vo.CLocalidadVo;
-import lector.modelo.CLocalidad;
+import mx.ihsa.dominio.vo.CLocalidadVo;
 import mx.ihsa.procesador.bean.ContactoView;
 
 /**

@@ -15,8 +15,7 @@ import javax.inject.Named;
 import mx.ihsa.sistema.bean.support.FacesUtils;
 import lombok.Getter;
 import lombok.Setter;
-import lector.servicios.sistema.impl.WhatsappService;
-import lector.util.UtilLog4j;
+import mx.ihsa.util.UtilLog4j;
 
 /**
  *
@@ -29,8 +28,6 @@ public class TestMensajeriaView implements Serializable {
     @Inject
     private Sesion sesion;
 
-    @Inject
-    private WhatsappService whatsappService;
 
     @Getter
     @Setter
@@ -61,11 +58,11 @@ public class TestMensajeriaView implements Serializable {
             return;
         }
 
-        String ret = whatsappService.send(telefono, mensaje, sesion.getUsuarioSesion().getCCuenta());
+        //String ret = whatsappService.send(telefono, mensaje, sesion.getUsuarioSesion().getCCuenta());
 
         this.mensaje ="";
         
-        FacesUtils.addInfoMessage(ret);
+        FacesUtils.addInfoMessage("ok");
 
     }
 

@@ -59,9 +59,6 @@ public class SiAdjunto implements Serializable {
     private Boolean eliminado;
     @OneToMany(mappedBy = "siAdjunto")
     private List<Usuario> usuarioList;
-    @JoinColumn(name = "c_cuenta", referencedColumnName = "id")
-    @ManyToOne(optional = false)
-    private CCuenta cCuenta;
     @JoinColumn(name = "genero", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private Usuario genero;
@@ -169,13 +166,6 @@ public class SiAdjunto implements Serializable {
         this.usuarioList = usuarioList;
     }
 
-    public CCuenta getCCuenta() {
-        return cCuenta;
-    }
-
-    public void setCCuenta(CCuenta cCuenta) {
-        this.cCuenta = cCuenta;
-    }
 
     public Usuario getGenero() {
         return genero;

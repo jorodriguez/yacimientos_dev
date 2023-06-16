@@ -40,7 +40,7 @@ import mx.ihsa.alfresco.api.model.ContainerList;
 import mx.ihsa.alfresco.api.model.NetworkEntry;
 import mx.ihsa.alfresco.api.model.NetworkList;
 import mx.ihsa.archivador.DocumentoAnexo;
-import mx.ihsa.excepciones.LectorException;
+import mx.ihsa.excepciones.GeneralException;
 import mx.ihsa.util.UtilLog4j;
 
 
@@ -77,9 +77,9 @@ public class AlfrescoClient {
      * Permite subir un archivo al gestor documenta.
      *
      * @param documento El documento que vamos a cargar al repositorio
-     * @throws mx.ihsa.excepciones.LectorException
+     * @throws mx.ihsa.excepciones.GeneralException
      */
-    public void uploadFile(DocumentoAnexo documento) throws LectorException {
+    public void uploadFile(DocumentoAnexo documento) throws GeneralException {
 
         LOGGER.info(this,"*** Uploading file to Alfresco repository ...");
         LOGGER.info(this,"*** Path : {0}, Name : {1}, Type : {2}",
@@ -107,7 +107,7 @@ public class AlfrescoClient {
         } catch (IOException ex) {
             LOGGER.error(this,"Saving file : {0}", new Object[]{documento.getNombreBase()}, ex);
 
-            throw new LectorException("Error al guardar el archivo " + documento.getNombreBase() + " : " + ex.getMessage());
+            throw new GeneralException("Error al guardar el archivo " + documento.getNombreBase() + " : " + ex.getMessage());
         }
 
     }
@@ -273,9 +273,9 @@ public class AlfrescoClient {
      *
      * @param fullObjectPath La ruta completa del objeto, incluyento su nombre.
      * @return El objeto recuperado si existe, null en caso contrario.
-     * @throws LectorException
+     * @throws GeneralException
      */
-    public byte[] getObjectFromPath(String fullObjectPath) throws LectorException {
+    public byte[] getObjectFromPath(String fullObjectPath) throws GeneralException {
         byte[] retVal = null;
         CmisObject document = null;
 
@@ -283,7 +283,7 @@ public class AlfrescoClient {
             Folder folder = (Folder) getCmisSession().getObject(getRootFolderId(getSite()));
             document = getObject(folder, fullObjectPath);
         } catch (IOException e) {
-            throw new LectorException(e);
+            throw new GeneralException(e);
         }
 
         if (document != null) {

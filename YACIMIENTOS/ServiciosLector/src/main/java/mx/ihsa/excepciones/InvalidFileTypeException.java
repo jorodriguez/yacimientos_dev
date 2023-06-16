@@ -11,7 +11,7 @@ package mx.ihsa.excepciones;
  * 
  * @author esapien
  */
-public class InvalidFileTypeException extends LectorException {
+public class InvalidFileTypeException extends GeneralException {
 
     public InvalidFileTypeException() {
     }

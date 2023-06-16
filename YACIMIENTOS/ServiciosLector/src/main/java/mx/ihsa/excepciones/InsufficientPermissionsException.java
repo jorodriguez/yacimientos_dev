@@ -11,7 +11,7 @@ package mx.ihsa.excepciones;
  * 
  * @author esapien
  */
-public class InsufficientPermissionsException extends LectorException {
+public class InsufficientPermissionsException extends GeneralException {
 
     public InsufficientPermissionsException(String mensaje) {
         super(mensaje);

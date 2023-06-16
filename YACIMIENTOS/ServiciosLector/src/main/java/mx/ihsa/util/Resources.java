@@ -22,7 +22,7 @@ import org.jooq.impl.DefaultConfiguration;
 @ApplicationScoped
 public class Resources {
 
-    @Resource(lookup = "jdbc/__lectorPool")
+    @Resource(lookup = "jdbc/__yacimientosPool")
     private DataSource dataSource;
 
     private static final SQLDialect DIALECT = SQLDialect.POSTGRES;

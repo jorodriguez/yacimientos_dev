@@ -6,9 +6,9 @@ import java.util.Optional;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import lector.modelo.Usuario;
+import mx.ihsa.modelo.Usuario;
 import mx.ihsa.sistema.bean.backing.Sesion;
-import lector.util.UtilLog4j;
+import mx.ihsa.util.UtilLog4j;
 
 /**
  *
