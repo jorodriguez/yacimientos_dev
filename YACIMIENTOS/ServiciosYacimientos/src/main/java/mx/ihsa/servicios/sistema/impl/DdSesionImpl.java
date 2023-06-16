@@ -1,11 +1,9 @@
 package mx.ihsa.servicios.sistema.impl;
 
 import java.sql.Date;
-import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import javax.ejb.Stateless;
 import javax.persistence.EntityExistsException;
 import javax.persistence.TransactionRequiredException;
@@ -24,6 +22,8 @@ public class DdSesionImpl extends AbstractImpl<DdSesion> {
 
     private static final UtilLog4j log = UtilLog4j.log;
     
+    //@Inject
+    // DSLContext dbCtx;
     
     public DdSesionImpl() {
         super(DdSesion.class);

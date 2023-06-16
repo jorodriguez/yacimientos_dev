@@ -28,6 +28,7 @@ import mx.ihsa.notificaciones.sistema.impl.ServicioNotificacionSistemaImpl;
 import mx.ihsa.sistema.AbstractImpl;
 import mx.ihsa.util.UtilLog4j;
 import lombok.extern.slf4j.Slf4j;
+import org.jooq.DSLContext;
 
 
 /**
@@ -37,6 +38,8 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class UsuarioImpl extends AbstractImpl<Usuario> {
 
+       
+    
     private static final String CONSULTA
             = "SELECT u.id, u.nombre, u.clave, u.email,  u.destinatarios, u.telefono, u.extension, "
             + "  u.sexo, u.celular, u.fechanacimiento, u.rfc, u.compania, u.foto, u.pregunta_secreta,"
@@ -569,5 +572,27 @@ public class UsuarioImpl extends AbstractImpl<Usuario> {
         return retVal;
     }
     
+ /*
+     public List<CSeccionVo> findAllSeccionesLocalidad(Integer municipioId ) {
+        
+        log.info("@findAllSeccionesLocalidad "+municipioId);
+        System.out.println("@findAllSeccionesLocalidad");
+        
+        List<CSeccionVo> retVal = Collections.emptyList();
+        
+        try {
+            retVal = 
+                    dbCtx.fetch("select s.id, s.nombre  from c_seccion s where s.c_localidad = ? and eliminado = false", municipioId)
+                            .into(CSeccionVo.class);
+            
+        } catch (DataAccessException e) {
+            
+            log.warn(this, "*** Al recuperar la sesion {0}", new Object[]{municipioId}, e);
+            
+        }
+        
+        return retVal;
+    }
     
+    */   
 }

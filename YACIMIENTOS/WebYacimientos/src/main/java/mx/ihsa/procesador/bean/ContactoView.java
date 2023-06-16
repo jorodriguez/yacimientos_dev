@@ -34,7 +34,6 @@ import org.primefaces.model.file.UploadedFile;
 
 import mx.ihsa.dominio.vo.CLocalidadVo;
 import mx.ihsa.dominio.vo.CSeccionVo;
-import mx.ihsa.servicios.catalogos.impl.UbicacionesImpl;
 import mx.ihsa.util.UtilLog4j;
 import mx.ihsa.archivador.DocumentoAnexo;
 import mx.ihsa.dominio.modelo.usuario.vo.UsuarioVO;
@@ -52,9 +51,6 @@ public class ContactoView implements Serializable {
     @Inject
     private Sesion sesion;
 
-    @Inject
-    private UbicacionesImpl ubicacionesService;
-    
 
     private CroppedImage croppedImage;
 
@@ -488,7 +484,7 @@ public class ContactoView implements Serializable {
     public void handleChangeLocalidad(ValueChangeEvent event){                        
         System.out.println("handleChangeLocalidad" );
         
-        System.out.println("handleChangeLocalidad "+event.getNewValue() );
+       /* System.out.println("handleChangeLocalidad "+event.getNewValue() );
         
         final int idLocalidadSelect = (int) event.getNewValue();
         
@@ -504,7 +500,7 @@ public class ContactoView implements Serializable {
         
         this.seccionesItems = secciones.stream().map(seccionToSelectItem).collect(Collectors.toList());        
         
-        
+        */
                 
     }
 
