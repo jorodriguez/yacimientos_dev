@@ -28,7 +28,8 @@ import mx.ihsa.notificaciones.sistema.impl.ServicioNotificacionSistemaImpl;
 import mx.ihsa.sistema.AbstractImpl;
 import mx.ihsa.util.UtilLog4j;
 import lombok.extern.slf4j.Slf4j;
-import org.jooq.DSLContext;
+import mx.ihsa.util.Resources;
+
 
 
 /**
@@ -38,7 +39,8 @@ import org.jooq.DSLContext;
 @Slf4j
 public class UsuarioImpl extends AbstractImpl<Usuario> {
 
-       
+    @Inject
+    Resources dbCtx;
     
     private static final String CONSULTA
             = "SELECT u.id, u.nombre, u.clave, u.email,  u.destinatarios, u.telefono, u.extension, "
@@ -563,7 +565,7 @@ public class UsuarioImpl extends AbstractImpl<Usuario> {
                 + " AND eliminado = false";
 
         try {
-            return dbCtx.fetchOne(sql, usuarioId, usuarioId).into(UsuarioVO.class);
+            return dbCtx.getDsl().fetchOne(sql, usuarioId, usuarioId).into(UsuarioVO.class);
            
         } catch (DataAccessException e) {
             LOGGER.error(this, "Usuario : {0}", new Object[]{usuarioId}, e);

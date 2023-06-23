@@ -23,11 +23,10 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
 import org.codehaus.jackson.annotate.JsonIgnore;
 
 /**
@@ -35,64 +34,15 @@ import org.codehaus.jackson.annotate.JsonIgnore;
  * @author jorodriguez
  */
 @Entity
-@Getter
-@Setter
-@ToString
 @Table(name = "usuario")
+@XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "Usuario.findByCorreo", query = "SELECT u FROM Usuario u where u.email = ?1 and u.eliminado = false"),    
+    @NamedQuery(name = "Usuario.findByCorreo", query = "SELECT u FROM Usuario u where u.email = ?1  and u.eliminado = false"),    
     @NamedQuery(name = "Usuario.findById", query = "SELECT u FROM Usuario u where u.id = ?1 and u.eliminado = false"),    
     @NamedQuery(name = "Usuario.findAll", query = "SELECT u FROM Usuario u where u.eliminado = false")
 })
+
 public class Usuario implements Serializable {
-
-    @Basic(optional = false)
-    @NotNull
-    @Column(name = "eliminado")
-    private boolean eliminado;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "genero")
-    private Collection<SiUsuarioRol> siUsuarioRolCollection;
-    @OneToMany(mappedBy = "modifico")
-    private Collection<SiUsuarioRol> siUsuarioRolCollection1;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "usuario")
-    private Collection<SiUsuarioRol> siUsuarioRolCollection2;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "genero")
-    private Collection<SiOpcion> siOpcionCollection;
-    @OneToMany(mappedBy = "modifico")
-    private Collection<SiOpcion> siOpcionCollection1;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "genero")
-    private Collection<SiRelRolOpcion> siRelRolOpcionCollection;
-    @OneToMany(mappedBy = "modifico")
-    private Collection<SiRelRolOpcion> siRelRolOpcionCollection1;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "genero")
-    private Collection<DdSesion> ddSesionCollection;
-    @OneToMany(mappedBy = "modifico")
-    private Collection<DdSesion> ddSesionCollection1;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "genero")
-    private Collection<SiRol> siRolCollection;
-    @OneToMany(mappedBy = "modifico")
-    private Collection<SiRol> siRolCollection1;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "genero")
-    private Collection<SiParametro> siParametroCollection;
-    @OneToMany(mappedBy = "modifico")
-    private Collection<SiParametro> siParametroCollection1;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "genero")
-    private Collection<Usuario> usuarioCollection;
-    @OneToMany(mappedBy = "modifico")
-    private Collection<Usuario> usuarioCollection1;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "genero")
-    private Collection<SiModulo> siModuloCollection;
-    @OneToMany(mappedBy = "modifico")
-    private Collection<SiModulo> siModuloCollection1;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "genero")
-    private Collection<SiPlantillaHtml> siPlantillaHtmlCollection;
-    @OneToMany(mappedBy = "modifico")
-    private Collection<SiPlantillaHtml> siPlantillaHtmlCollection1;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "genero")
-    private Collection<SiAdjunto> siAdjuntoCollection;
-    @OneToMany(mappedBy = "modifico")
-    private Collection<SiAdjunto> siAdjuntoCollection1;
-
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -101,74 +51,73 @@ public class Usuario implements Serializable {
     @Column(name = "id")
     private Integer id;
     @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 128)
     @Column(name = "nombre")
     private String nombre;
+    // @Pattern(regexp="[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?", message="Invalid email")//if the field contains email address consider using this annotation to enforce field validation
     @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 120)
     @Column(name = "email")
     private String email;
     @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 80)
     @Column(name = "clave")
     private String clave;
     @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 25)
     @Column(name = "telefono")
     private String telefono;
     @Basic(optional = false)
+    @NotNull
     @Column(name = "fecha_nacimiento")
     @Temporal(TemporalType.DATE)
     private Date fechaNacimiento;
+    @Size(max = 2147483647)
     @Column(name = "domicilio")
     private String domicilio;
+    @Size(max = 20)
     @Column(name = "curp")
     private String curp;
+    @Size(max = 2147483647)
     @Column(name = "foto")
     private String foto;
-    @Column(name = "anio_registro")
-    private String anioRegistro;
-    @Column(name = "anio_emision")
-    private Integer anioEmision;
-    @Basic(optional = false)
-    @Column(name = "estado")
-    private int estado;
-    @Basic(optional = false)
-    @Column(name = "municipio")
-    private String municipio;
-    @Basic(optional = false)
+    @Size(max = 10)
     @Column(name = "seccion")
     private String seccion;
     @Basic(optional = false)
-    @Column(name = "localidad")
-    private String localidad;
-    @Basic(optional = false)
-    @Column(name = "emision")
-    private int emision;
-    @Basic(optional = false)
-    @Column(name = "vigencia")
-    private int vigencia;
-    @Basic(optional = false)
-    @Column(name = "sexo")
-    private String sexo;
-    @Basic(optional = false)
+    @NotNull
     @Column(name = "fecha_genero")
     @Temporal(TemporalType.TIMESTAMP)
     private Date fechaGenero;
     @Column(name = "fecha_modifico")
     @Temporal(TemporalType.TIMESTAMP)
     private Date fechaModifico;
-    @JoinColumn(name = "c_cuenta", referencedColumnName = "id")
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "eliminado")
+    private boolean eliminado;
     @JoinColumn(name = "si_adjunto", referencedColumnName = "id")
     @ManyToOne
     private SiAdjunto siAdjunto;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "genero")
+    private Collection<Usuario> usuarioCollection;
     @JoinColumn(name = "genero", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private Usuario genero;
+    @OneToMany(mappedBy = "modifico")
+    private Collection<Usuario> usuarioCollection1;
     @JoinColumn(name = "modifico", referencedColumnName = "id")
     @ManyToOne
     private Usuario modifico;
-    @JoinColumn(name = "registro", referencedColumnName = "id")
-    @ManyToOne(optional = false)
-    private Usuario registro;
-    
-    
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "genero")
+    private Collection<SiAdjunto> siAdjuntoCollection;
+    @OneToMany(mappedBy = "modifico")
+    private Collection<SiAdjunto> siAdjuntoCollection1;
+
     public Usuario() {
     }
 
@@ -177,7 +126,7 @@ public class Usuario implements Serializable {
     }
 
     @Builder
-    public Usuario(Integer id, String nombre, String email, String clave, String telefono, Date fechaNacimiento, String domicilio, String curp, String foto, String anioRegistro, Integer anioEmision, int estado, String municipio, String seccion, String localidad, int emision, int vigencia, String sexo, Date fechaGenero, Date fechaModifico, Boolean eliminado,  SiAdjunto siAdjunto, Usuario genero, Usuario modifico, Usuario registro) {
+    public Usuario(Integer id, String nombre, String email, String clave, String telefono, Date fechaNacimiento, String domicilio, String curp, String foto, String seccion, Date fechaGenero, Date fechaModifico, boolean eliminado, SiAdjunto siAdjunto, Collection<Usuario> usuarioCollection, Usuario genero, Collection<Usuario> usuarioCollection1, Usuario modifico, Collection<SiAdjunto> siAdjuntoCollection, Collection<SiAdjunto> siAdjuntoCollection1) {
         this.id = id;
         this.nombre = nombre;
         this.email = email;
@@ -187,166 +136,132 @@ public class Usuario implements Serializable {
         this.domicilio = domicilio;
         this.curp = curp;
         this.foto = foto;
+        this.seccion = seccion;
         this.fechaGenero = fechaGenero;
         this.fechaModifico = fechaModifico;
         this.eliminado = eliminado;
         this.siAdjunto = siAdjunto;
+        this.usuarioCollection = usuarioCollection;
         this.genero = genero;
+        this.usuarioCollection1 = usuarioCollection1;
         this.modifico = modifico;
-        this.registro = registro;
+        this.siAdjuntoCollection = siAdjuntoCollection;
+        this.siAdjuntoCollection1 = siAdjuntoCollection1;
     }
 
-   
-   
-    @Override
-    public int hashCode() {
-        int hash = 0;
-        hash += (id != null ? id.hashCode() : 0);
-        return hash;
+    
+    
+
+    public Integer getId() {
+        return id;
     }
 
-    @Override
-    public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Usuario)) {
-            return false;
-        }
-        Usuario other = (Usuario) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
-            return false;
-        }
-        return true;
+    public void setId(Integer id) {
+        this.id = id;
     }
 
-
-    @XmlTransient
-    @JsonIgnore
-    public Collection<SiUsuarioRol> getSiUsuarioRolCollection() {
-        return siUsuarioRolCollection;
+    public String getNombre() {
+        return nombre;
     }
 
-    public void setSiUsuarioRolCollection(Collection<SiUsuarioRol> siUsuarioRolCollection) {
-        this.siUsuarioRolCollection = siUsuarioRolCollection;
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
     }
 
-    @XmlTransient
-    @JsonIgnore
-    public Collection<SiUsuarioRol> getSiUsuarioRolCollection1() {
-        return siUsuarioRolCollection1;
+    public String getEmail() {
+        return email;
     }
 
-    public void setSiUsuarioRolCollection1(Collection<SiUsuarioRol> siUsuarioRolCollection1) {
-        this.siUsuarioRolCollection1 = siUsuarioRolCollection1;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
-    @XmlTransient
-    @JsonIgnore
-    public Collection<SiUsuarioRol> getSiUsuarioRolCollection2() {
-        return siUsuarioRolCollection2;
+    public String getClave() {
+        return clave;
     }
 
-    public void setSiUsuarioRolCollection2(Collection<SiUsuarioRol> siUsuarioRolCollection2) {
-        this.siUsuarioRolCollection2 = siUsuarioRolCollection2;
+    public void setClave(String clave) {
+        this.clave = clave;
     }
 
-    @XmlTransient
-    @JsonIgnore
-    public Collection<SiOpcion> getSiOpcionCollection() {
-        return siOpcionCollection;
+    public String getTelefono() {
+        return telefono;
     }
 
-    public void setSiOpcionCollection(Collection<SiOpcion> siOpcionCollection) {
-        this.siOpcionCollection = siOpcionCollection;
+    public void setTelefono(String telefono) {
+        this.telefono = telefono;
     }
 
-    @XmlTransient
-    @JsonIgnore
-    public Collection<SiOpcion> getSiOpcionCollection1() {
-        return siOpcionCollection1;
+    public Date getFechaNacimiento() {
+        return fechaNacimiento;
     }
 
-    public void setSiOpcionCollection1(Collection<SiOpcion> siOpcionCollection1) {
-        this.siOpcionCollection1 = siOpcionCollection1;
+    public void setFechaNacimiento(Date fechaNacimiento) {
+        this.fechaNacimiento = fechaNacimiento;
     }
 
-    @XmlTransient
-    @JsonIgnore
-    public Collection<SiRelRolOpcion> getSiRelRolOpcionCollection() {
-        return siRelRolOpcionCollection;
+    public String getDomicilio() {
+        return domicilio;
     }
 
-    public void setSiRelRolOpcionCollection(Collection<SiRelRolOpcion> siRelRolOpcionCollection) {
-        this.siRelRolOpcionCollection = siRelRolOpcionCollection;
+    public void setDomicilio(String domicilio) {
+        this.domicilio = domicilio;
     }
 
-    @XmlTransient
-    @JsonIgnore
-    public Collection<SiRelRolOpcion> getSiRelRolOpcionCollection1() {
-        return siRelRolOpcionCollection1;
+    public String getCurp() {
+        return curp;
     }
 
-    public void setSiRelRolOpcionCollection1(Collection<SiRelRolOpcion> siRelRolOpcionCollection1) {
-        this.siRelRolOpcionCollection1 = siRelRolOpcionCollection1;
+    public void setCurp(String curp) {
+        this.curp = curp;
     }
 
-    @XmlTransient
-    @JsonIgnore
-    public Collection<DdSesion> getDdSesionCollection() {
-        return ddSesionCollection;
+    public String getFoto() {
+        return foto;
     }
 
-    public void setDdSesionCollection(Collection<DdSesion> ddSesionCollection) {
-        this.ddSesionCollection = ddSesionCollection;
+    public void setFoto(String foto) {
+        this.foto = foto;
     }
 
-    @XmlTransient
-    @JsonIgnore
-    public Collection<DdSesion> getDdSesionCollection1() {
-        return ddSesionCollection1;
+    public String getSeccion() {
+        return seccion;
     }
 
-    public void setDdSesionCollection1(Collection<DdSesion> ddSesionCollection1) {
-        this.ddSesionCollection1 = ddSesionCollection1;
+    public void setSeccion(String seccion) {
+        this.seccion = seccion;
     }
 
-    @XmlTransient
-    @JsonIgnore
-    public Collection<SiRol> getSiRolCollection() {
-        return siRolCollection;
+    public Date getFechaGenero() {
+        return fechaGenero;
     }
 
-    public void setSiRolCollection(Collection<SiRol> siRolCollection) {
-        this.siRolCollection = siRolCollection;
+    public void setFechaGenero(Date fechaGenero) {
+        this.fechaGenero = fechaGenero;
     }
 
-    @XmlTransient
-    @JsonIgnore
-    public Collection<SiRol> getSiRolCollection1() {
-        return siRolCollection1;
+    public Date getFechaModifico() {
+        return fechaModifico;
     }
 
-    public void setSiRolCollection1(Collection<SiRol> siRolCollection1) {
-        this.siRolCollection1 = siRolCollection1;
+    public void setFechaModifico(Date fechaModifico) {
+        this.fechaModifico = fechaModifico;
     }
 
-    @XmlTransient
-    @JsonIgnore
-    public Collection<SiParametro> getSiParametroCollection() {
-        return siParametroCollection;
+    public boolean getEliminado() {
+        return eliminado;
     }
 
-    public void setSiParametroCollection(Collection<SiParametro> siParametroCollection) {
-        this.siParametroCollection = siParametroCollection;
+    public void setEliminado(boolean eliminado) {
+        this.eliminado = eliminado;
     }
 
-    @XmlTransient
-    @JsonIgnore
-    public Collection<SiParametro> getSiParametroCollection1() {
-        return siParametroCollection1;
+    public SiAdjunto getSiAdjunto() {
+        return siAdjunto;
     }
 
-    public void setSiParametroCollection1(Collection<SiParametro> siParametroCollection1) {
-        this.siParametroCollection1 = siParametroCollection1;
+    public void setSiAdjunto(SiAdjunto siAdjunto) {
+        this.siAdjunto = siAdjunto;
     }
 
     @XmlTransient
@@ -359,6 +274,14 @@ public class Usuario implements Serializable {
         this.usuarioCollection = usuarioCollection;
     }
 
+    public Usuario getGenero() {
+        return genero;
+    }
+
+    public void setGenero(Usuario genero) {
+        this.genero = genero;
+    }
+
     @XmlTransient
     @JsonIgnore
     public Collection<Usuario> getUsuarioCollection1() {
@@ -369,44 +292,12 @@ public class Usuario implements Serializable {
         this.usuarioCollection1 = usuarioCollection1;
     }
 
-    @XmlTransient
-    @JsonIgnore
-    public Collection<SiModulo> getSiModuloCollection() {
-        return siModuloCollection;
+    public Usuario getModifico() {
+        return modifico;
     }
 
-    public void setSiModuloCollection(Collection<SiModulo> siModuloCollection) {
-        this.siModuloCollection = siModuloCollection;
-    }
-
-    @XmlTransient
-    @JsonIgnore
-    public Collection<SiModulo> getSiModuloCollection1() {
-        return siModuloCollection1;
-    }
-
-    public void setSiModuloCollection1(Collection<SiModulo> siModuloCollection1) {
-        this.siModuloCollection1 = siModuloCollection1;
-    }
-
-    @XmlTransient
-    @JsonIgnore
-    public Collection<SiPlantillaHtml> getSiPlantillaHtmlCollection() {
-        return siPlantillaHtmlCollection;
-    }
-
-    public void setSiPlantillaHtmlCollection(Collection<SiPlantillaHtml> siPlantillaHtmlCollection) {
-        this.siPlantillaHtmlCollection = siPlantillaHtmlCollection;
-    }
-
-    @XmlTransient
-    @JsonIgnore
-    public Collection<SiPlantillaHtml> getSiPlantillaHtmlCollection1() {
-        return siPlantillaHtmlCollection1;
-    }
-
-    public void setSiPlantillaHtmlCollection1(Collection<SiPlantillaHtml> siPlantillaHtmlCollection1) {
-        this.siPlantillaHtmlCollection1 = siPlantillaHtmlCollection1;
+    public void setModifico(Usuario modifico) {
+        this.modifico = modifico;
     }
 
     @XmlTransient
@@ -429,13 +320,29 @@ public class Usuario implements Serializable {
         this.siAdjuntoCollection1 = siAdjuntoCollection1;
     }
 
-    public boolean getEliminado() {
-        return eliminado;
+    @Override
+    public int hashCode() {
+        int hash = 0;
+        hash += (id != null ? id.hashCode() : 0);
+        return hash;
     }
 
-    public void setEliminado(boolean eliminado) {
-        this.eliminado = eliminado;
+    @Override
+    public boolean equals(Object object) {
+        // TODO: Warning - this method won't work in the case the id fields are not set
+        if (!(object instanceof Usuario)) {
+            return false;
+        }
+        Usuario other = (Usuario) object;
+        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+            return false;
+        }
+        return true;
     }
 
-   
+    @Override
+    public String toString() {
+        return "mx.ihsa.modelo.Usuario[ id=" + id + " ]";
+    }
+    
 }

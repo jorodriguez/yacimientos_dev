@@ -5,8 +5,8 @@
 package mx.ihsa.modelo;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.Date;
-import java.util.List;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -21,6 +21,12 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
+import lombok.Builder;
+import org.codehaus.jackson.annotate.JsonIgnore;
 
 /**
  *
@@ -36,19 +42,26 @@ public class SiAdjunto implements Serializable {
     @Basic(optional = false)
     @Column(name = "id")
     private Integer id;
+    @Size(max = 64)
     @Column(name = "uuid")
     private String uuid;
+    @Size(max = 1024)
     @Column(name = "nombre")
     private String nombre;
+    @Size(max = 1024)
     @Column(name = "descripcion")
     private String descripcion;
+    @Size(max = 75)
     @Column(name = "tipo_archivo")
     private String tipoArchivo;
+    @Size(max = 10)
     @Column(name = "peso")
     private String peso;
+    @Size(max = 2147483647)
     @Column(name = "url")
     private String url;
     @Basic(optional = false)
+    @NotNull
     @Column(name = "fecha_genero")
     @Temporal(TemporalType.TIMESTAMP)
     private Date fechaGenero;
@@ -58,7 +71,7 @@ public class SiAdjunto implements Serializable {
     @Column(name = "eliminado")
     private Boolean eliminado;
     @OneToMany(mappedBy = "siAdjunto")
-    private List<Usuario> usuarioList;
+    private Collection<Usuario> usuarioCollection;
     @JoinColumn(name = "genero", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private Usuario genero;
@@ -69,6 +82,26 @@ public class SiAdjunto implements Serializable {
     public SiAdjunto() {
     }
 
+    @Builder
+    public SiAdjunto(Integer id, String uuid, String nombre, String descripcion, String tipoArchivo, String peso, String url, Date fechaGenero, Date fechaModifico, Boolean eliminado, Collection<Usuario> usuarioCollection, Usuario genero, Usuario modifico) {
+        this.id = id;
+        this.uuid = uuid;
+        this.nombre = nombre;
+        this.descripcion = descripcion;
+        this.tipoArchivo = tipoArchivo;
+        this.peso = peso;
+        this.url = url;
+        this.fechaGenero = fechaGenero;
+        this.fechaModifico = fechaModifico;
+        this.eliminado = eliminado;
+        this.usuarioCollection = usuarioCollection;
+        this.genero = genero;
+        this.modifico = modifico;
+    }
+
+    
+    
+    
     public SiAdjunto(Integer id) {
         this.id = id;
     }
@@ -158,14 +191,15 @@ public class SiAdjunto implements Serializable {
         this.eliminado = eliminado;
     }
 
-    public List<Usuario> getUsuarioList() {
-        return usuarioList;
+    @XmlTransient
+    @JsonIgnore
+    public Collection<Usuario> getUsuarioCollection() {
+        return usuarioCollection;
     }
 
-    public void setUsuarioList(List<Usuario> usuarioList) {
-        this.usuarioList = usuarioList;
+    public void setUsuarioCollection(Collection<Usuario> usuarioCollection) {
+        this.usuarioCollection = usuarioCollection;
     }
-
 
     public Usuario getGenero() {
         return genero;
@@ -205,7 +239,7 @@ public class SiAdjunto implements Serializable {
 
     @Override
     public String toString() {
-        return "mx.ihsa.mavenproject1.SiAdjunto[ id=" + id + " ]";
+        return "mx.ihsa.modelo.SiAdjunto_1[ id=" + id + " ]";
     }
     
 }

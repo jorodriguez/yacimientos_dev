@@ -4,14 +4,18 @@ import java.sql.Date;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 import javax.persistence.EntityExistsException;
 import javax.persistence.TransactionRequiredException;
 import mx.ihsa.dominio.modelo.sistema.vo.Sesion;
 import mx.ihsa.modelo.DdSesion;
 import mx.ihsa.modelo.Usuario;
 import mx.ihsa.sistema.AbstractImpl;
+import mx.ihsa.util.Resources;
 import mx.ihsa.util.UtilLog4j;
+import org.jooq.DSLContext;
 import org.jooq.exception.DataAccessException;
 
 /**
@@ -22,8 +26,8 @@ public class DdSesionImpl extends AbstractImpl<DdSesion> {
 
     private static final UtilLog4j log = UtilLog4j.log;
     
-    //@Inject
-    // DSLContext dbCtx;
+    @Inject
+    Resources dbCtx;
     
     public DdSesionImpl() {
         super(DdSesion.class);
@@ -54,7 +58,7 @@ public class DdSesionImpl extends AbstractImpl<DdSesion> {
         
         try {
             retVal = 
-                    dbCtx.fetchOne("SELECT * FROM dd_sesion WHERE sesion_id = ? ORDER BY fecha_inicio DESC LIMIT 1", sesionId)
+                    dbCtx.getDsl().fetchOne("SELECT * FROM dd_sesion WHERE sesion_id = ? ORDER BY fecha_inicio DESC LIMIT 1", sesionId)
                             .into(DdSesion.class);
         } catch (DataAccessException e) {
             log.warn(this, "*** Al recuperar la sesion {0}", new Object[]{sesionId}, e);

@@ -18,13 +18,11 @@ public interface UsuarioIHelp {
     static Usuario buildUsuarioDto(UsuarioVO usuario ){
         
         return Usuario.builder()
-                .nombre(usuario.getNombre())
-                .domicilio(usuario.getDomicilio())
+                .nombre(usuario.getNombre())                
                 .clave("")
                 .email(usuario.getEmail())
                 .telefono(usuario.getTelefono())
-                .genero(new Usuario(usuario.getGenero()))
-                .registro(new Usuario(usuario.getGenero()))                
+                .genero(new Usuario(usuario.getGenero()))                
                 .fechaGenero(new Date())                
                 .eliminado(Boolean.FALSE)
                 .build();

@@ -5,9 +5,14 @@
  */
 package mx.ihsa.util;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
+import javax.ejb.Singleton;
+import javax.ejb.Startup;
+import javax.ejb.Stateless;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
+import javax.inject.Named;
 import javax.sql.DataSource;
 import org.jooq.Configuration;
 import org.jooq.DSLContext;
@@ -19,18 +24,41 @@ import org.jooq.impl.DefaultConfiguration;
  *
  * @author 
  */
-@ApplicationScoped
-public class Resources {
 
+
+//@ApplicationScoped
+@Stateless
+@Startup
+public class Resources {
+    
     @Resource(lookup = "jdbc/__yacimientosPool")
     private DataSource dataSource;
+    
+    private static final SQLDialect DIALECT = SQLDialect.POSTGRES;   
+    
+    private DSLContext dsl;
+        
+    @PostConstruct
+    public void ini (){
+        System.out.println("===========================================================================================================");
+        final Configuration conf = new DefaultConfiguration().set(dataSource).set(DIALECT);
+        dsl = DSL.using(conf);
+    }
+         
+    public Resources() {}
+    
+    public DSLContext getDsl(){
+        return this.dsl;
+    }
+    
 
-    private static final SQLDialect DIALECT = SQLDialect.POSTGRES;
-
-    @Produces
+    /*@Produces
     public DSLContext ctxProducer() {
+        System.out.println("===========================================================================================================");
         final Configuration conf = new DefaultConfiguration().set(dataSource).set(DIALECT);
         return DSL.using(conf);
-    }
+    }*/
+   
+    
 
 }

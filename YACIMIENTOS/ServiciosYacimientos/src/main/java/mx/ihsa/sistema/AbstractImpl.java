@@ -4,22 +4,12 @@
  */
 package mx.ihsa.sistema;
 
-import java.util.Collections;
-import java.util.List;
-import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import mx.ihsa.constantes.Constantes;
 import mx.ihsa.util.UtilSia;
-import org.jooq.Condition;
-import org.jooq.DSLContext;
-import org.jooq.Record;
-import org.jooq.SelectJoinStep;
-import org.jooq.exception.DataAccessException;
-import org.jooq.impl.DSL;
 
-/**
- *
+/*
  * @param <T>
  */
 public abstract class AbstractImpl<T> {
@@ -32,10 +22,10 @@ public abstract class AbstractImpl<T> {
     @PersistenceContext(unitName = Constantes.PERSISTENCE_UNIT)
     protected EntityManager em;
 
-    @Inject
-    protected DSLContext dbCtx;
-
     protected StringBuilder query = new StringBuilder();
+
+    //@Inject
+    //private DSLContext dbCtx;
 
     private final Class<T> entityClass;
 
@@ -63,7 +53,7 @@ public abstract class AbstractImpl<T> {
         return em.find(entityClass, id);
     }
 
-    public <DTO> List<DTO> findAll(Class<DTO> dto, String... app) {
+   /* public <DTO> List<DTO> findAll(Class<DTO> dto, String... app) {
 
         //return dbCtx.fetch("SELECT * FROM "+camelToSnake(entityClass.getName())+" where eliminado = false").into(dto);
         return dbCtx.fetch("SELECT * FROM " + TABLE_NAME + " where eliminado = false").into(dto);
@@ -104,32 +94,29 @@ public abstract class AbstractImpl<T> {
 
         return retVal;
     }
-    
+
     public <D> List<D> getByCondition(final Condition conditions) {
-		List<D> retVal = null;
-                
-                final Class<D> typed = null;
-                
-		try {
-			                 SelectJoinStep<Record> select = dbCtx.select().from(TABLE_NAME);
+        List<D> retVal = null;
 
-			if(conditions != null) {
-				select.getQuery().addConditions(conditions);
-			}
+        final Class<D> typed = null;
 
-			/*if(orderBy != null) {
-				select.orderBy(orderBy);
-			}*/
+        try {
+            SelectJoinStep<Record> select = dbCtx.select().from(TABLE_NAME);
 
-			retVal = select.fetchInto(typed);
-                        
-		} catch (DataAccessException e) {
-			System.err.println("Error getByCondition "+e);			
-			retVal = Collections.emptyList();
-		}
+            if (conditions != null) {
+                select.getQuery().addConditions(conditions);
+            }
 
-		return retVal;
-	}
+      
+            retVal = select.fetchInto(typed);
+
+        } catch (DataAccessException e) {
+            System.err.println("Error getByCondition " + e);
+            retVal = Collections.emptyList();
+        }
+
+        return retVal;
+    }*/
 
     protected void clearQuery() {
         query.delete(0, query.length());
