@@ -113,68 +113,6 @@ public class ContactoView implements Serializable {
                       
     }
     
-    
-
-    /*  public void subirAdjunto(FileUploadEvent event) {
-        System.out.println("@subirAdjunto");
-
-        ValidadorNombreArchivo validadorNombreArchivo = new ValidadorNombreArchivo();
-
-        try {
-
-            AlmacenDocumentos almacenDocumentos = proveedorAlmacenDocumentos.getAlmacenDocumentos();
-
-            fileInfo = event.getFile();
-
-            boolean addArchivo = validadorNombreArchivo.isNombreValido(fileInfo.getFileName());
-
-            if (addArchivo) {
-
-                System.out.println("--proceder a verificar");
-
-                DocumentoAnexo documentoAnexo = new DocumentoAnexo(fileInfo.getContent());
-                documentoAnexo.setTipoMime(fileInfo.getContentType());
-                documentoAnexo.setRuta("credenciales");
-                documentoAnexo.setNombreBase(fileInfo.getFileName());
-                //almacenDocumentos.guardarDocumento(documentoAnexo);
-
-                System.out.println("nombre archivo " + fileInfo.getFileName());
-                System.out.println("content type" + fileInfo.getContentType());
-                System.out.println("content " + fileInfo.getContent().length);
-   
-                //-------- DESCOMENTAR listaItems = lectorService.getTextoData(fileInfo.getContent());
-                
-                this.fileContent = fileInfo.getContent();
-                
-                this.originalImageFile = null;
-                this.croppedImage = null;
-
-                if (fileInfo != null && fileInfo.getContent() != null && fileInfo.getContent().length > 0 && fileInfo.getFileName() != null) {
-                    this.originalImageFile = fileInfo;
-                    FacesMessage msg = new FacesMessage("Successful", this.originalImageFile.getFileName() + " is uploaded.");
-                    FacesContext.getCurrentInstance().addMessage(null, msg);
-                }
-
-                //listaTexto = lectorService.getTexto();
-                System.out.println("realizado ");
-
-                //doit updload
-                
-            } else {
-                FacesUtils.addErrorMessage(new StringBuilder()
-                        .append("No se permiten los siguientes caracteres especiales en el nombre del Archivo: ")
-                        .append(validadorNombreArchivo.getCaracteresNoValidos())
-                        .toString());
-            }
-
-            fileInfo.delete();
-
-        } catch (IOException | LectorException e) {
-            System.out.println(" error al cargar " + e);
-            FacesUtils.addInfoMessage("Ocurrió un problema al cargar el archivo, por favor contacte al equipo de soporte SIA (soport@gmail.mx)");
-        }
-
-    }*/
     public void listenerAdjunto(FileUploadEvent event) {
         System.out.println("Listener ");
         this.fileInfo = event.getFile();
@@ -256,20 +194,11 @@ public class ContactoView implements Serializable {
                 
             }
 
-            //validacion de campos
-            //contactoService.guardarContacto(informacionCredencialDto);
-            
             limpiarForma();
             
             FacesUtils.addInfoMessage("Contacto agregado.");
             System.out.println("Contacto agregado");
             log.info("contacto agregado....");
-
-       /* } catch (GeneralException le) {
-             System.out.println("guardar ex"+le.getMessage());
-            FacesUtils.addErrorMessage(le.getMessage());
-
-        }*/
 
     }
 
@@ -279,105 +208,26 @@ public class ContactoView implements Serializable {
         
         System.out.println("@validarUsuario");
                         
-        /*if (usuarioDto == null) {
-            FacesUtils.addErrorMessage("Existió un error al intentar guardar el contacto.");
-            return false;
-        }
-
-        if (usuarioDto.getNombre().isEmpty() || usuarioDto.getNombre().isBlank()) {
-            FacesUtils.addErrorMessage("Nombre requerido.");
-            return false;
-        }
-
-        if (usuarioDto.getDomicilio().isEmpty() || usuarioDto.getDomicilio().isBlank()) {
-            FacesUtils.addErrorMessage("Domicilio requerido.");
-            return false;
-        }
-
-        if (usuarioDto.getFechaNacimiento() == null) {
-            FacesUtils.addErrorMessage("Fecha de nacimiento requerida.");
-            return false;
-        }
-
-        if (usuarioDto.getEmail().isEmpty() || usuarioDto.getEmail().isBlank()) {
-            FacesUtils.addErrorMessage("El correo es requeido.");
-            return false;
-        }
-                       
-        if (usuarioDto.getTelefono().isEmpty() || usuarioDto.getTelefono().isBlank()) {
-            FacesUtils.addErrorMessage("El telefono es requeido.");
-            return false;          
-            
-        }
-        */
                        
         return true;
 
-        /*if(usuarioDto.getFechaNacimiento().after(
-                    Date.from(LocalDate.now().minusYears(18))
-        )
-            ){
-            FacesUtils.addErrorMessage("Fecha de nacimiento requerida.");           
-            return;
-         }*/
     }
 
     private boolean validarTelefono(){
         
         return true;
-      // return contactoService.findByTelefono(usuarioDto.getTelefono());
         
     }
     
     private void cargarValoresUsuario() {
 
         log.info("@cargarValoresUsuario");
-/*
-        if (informacionCredencialDto == null) {
-
-            throw new NullPointerException("Es null informacionCredencialDto");
-        }*/
 
         System.out.println("Valores etiquetas");
 
-        /*usuarioDto = UsuarioVO.builder()
-                .nombre(gettingValorEtiqueta(NOMBRE))
-                .domicilio(gettingValorEtiqueta(DOMICILIO))
-                .claveElector(gettingValorEtiqueta(CLAVE_DE_ELECTOR))
-                .curp(gettingValorEtiqueta(CURP))
-                .sexo(gettingValorEtiqueta(SEXO))
-                .estado(gettingValorEtiqueta(ESTADO))
-                .municipio(gettingValorEtiqueta(MUNICIPIO))
-                .localidad(gettingValorEtiqueta(LOCALIDAD))
-                .activo(true)
-                .cTipoContacto(Constantes.TIPO_CONTACTO)
-                .genero(sesion.getUsuarioSesion().getId())
-                .registro(sesion.getUsuarioSesion().getId())                
-                .conFoto(true)
-                .build();*/
         
         limpiarForma();
-        
-       /* usuarioDto.setNombre(gettingValorEtiqueta(NOMBRE));
-        usuarioDto.setDomicilio(gettingValorEtiqueta(DOMICILIO));
-        usuarioDto.setClaveElector(gettingValorEtiqueta(CLAVE_DE_ELECTOR));
-        usuarioDto.setCurp(gettingValorEtiqueta(CURP));
-        usuarioDto.setSexo(gettingValorEtiqueta(SEXO));
-               
-        String valor = gettingValorEtiqueta(VIGENCIA);
-        
-        usuarioDto.setVigencia(
-                castToInt(valor)
-        );
-
-        valor = gettingValorEtiqueta(EMISION);
-        usuarioDto.setAnioEmision(
-                castToInt(valor)
-        );*/
-        
-        // -- TO-FIX
-        //--- aqui buscar los ids de estado, municipio, localidad, seccion pero antes validar valores
-
+    
     }
 
    
@@ -484,23 +334,6 @@ public class ContactoView implements Serializable {
     public void handleChangeLocalidad(ValueChangeEvent event){                        
         System.out.println("handleChangeLocalidad" );
         
-       /* System.out.println("handleChangeLocalidad "+event.getNewValue() );
-        
-        final int idLocalidadSelect = (int) event.getNewValue();
-        
-        this.localidadSeleccionada = this.localidadesMap.get(idLocalidadSelect);
-        
-        System.out.println("New selection localidad : "+this.localidadSeleccionada.getId());
-        System.out.println("New selection municipio : "+this.localidadSeleccionada.getMunicipio());
-
-                        
-        // cargar las secciones de la localidad seleccionada
-        
-        List<CSeccionVo> secciones = ubicacionesService.findAllSeccionesLocalidad(this.localidadSeleccionada.getId());
-        
-        this.seccionesItems = secciones.stream().map(seccionToSelectItem).collect(Collectors.toList());        
-        
-        */
                 
     }
 
