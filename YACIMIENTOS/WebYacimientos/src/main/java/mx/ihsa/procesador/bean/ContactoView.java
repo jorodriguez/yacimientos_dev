@@ -63,21 +63,8 @@ public class ContactoView implements Serializable {
     @Setter
     private byte[] fileContent;
 
-    @Getter
-    @Setter
-    private List<CLocalidadVo> listaLocalidades;
 
-    @Getter
-    @Setter
-    private CLocalidadVo localidadSeleccionada;
-
-    @Getter
-    private List<SelectItem> seccionesItems;
-        
     private final Function<CSeccionVo, SelectItem> seccionToSelectItem = m -> new SelectItem(m.getId(), m.getNombre());
-    
-    @Getter    
-    private Map<Integer,CLocalidadVo> localidadesMap;
     
     private static final UtilLog4j log = UtilLog4j.log;
 
@@ -94,20 +81,6 @@ public class ContactoView implements Serializable {
     
     
     private void limpiarForma(){
-        /*
-           usuarioDto = UsuarioVO.builder()
-                .nombre("")
-                .domicilio("")
-                .fechaNacimiento(null)
-                .email("")
-                .telefono("")
-                .anioEmision(0)
-                .vigencia(0)
-                .sexo("")                
-                .build();
-           
-           informacionCredencialDto = null;
-           */
            fileContent = null;
            
                       
@@ -135,12 +108,10 @@ public class ContactoView implements Serializable {
 
                 final DocumentoAnexo documentoAnexo = new DocumentoAnexo(fileInfo.getContent());
                 documentoAnexo.setTipoMime(fileInfo.getContentType());
-                documentoAnexo.setRuta("credenciales");
+                documentoAnexo.setRuta("dummyPath");
                 documentoAnexo.setNombreBase(fileInfo.getFileName());
                 //almacenDocumentos.guardarDocumento(documentoAnexo);
-
-                //informacionCredencialDto = lectorService.getInformacionCredencial(documentoAnexo);
-
+                
                 cargarValoresUsuario();
 
                 System.out.println("upload *** ok");

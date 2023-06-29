@@ -32,7 +32,7 @@ public class LocalidadConverter implements Converter<CLocalidadVo> {
                 
                 ContactoView view = (ContactoView) context.getExternalContext().getApplicationMap().get("contactoView");
                 
-                return view.getListaLocalidades().stream().filter(e->e.getNombre().equals(value)).findFirst().get();
+                return null; //view.getListaLocalidades().stream().filter(e->e.getNombre().equals(value)).findFirst().get();
                 
                                 
             }
