@@ -48,16 +48,19 @@
                     </p:dataTable>
                 </h:form>
                 <!-- Registro de archivo-->
-                <h:form id="frmRegistrar">
+                <h:form id="frmRegistrar" enctype="multipart/form-data">
                     <div class="modal fade" id="dialogoRegistrar"
                          tabindex="-1" role="dialog" aria-labelledby="modal-default" aria-hidden="true">
                         <div class="modal-dialog modal-dialog-centered modal-lg" role="dialog">
                             <div class="modal-content">                                               
-                                <div class="modal-body p-4">
+                                <div class="modal-header">
+                                    <h4>Agregar archivos</h4>
+                                </div>
+                                <div class="modal-body">
                                     <div class="input-group">
-                                        <div class="col-9">
+                                        <div class="col-8 card card-body">
                                             <p:panel id="pnlCargarArc">
-                                                <p:fileUpload mode="simple"
+                                                <p:fileUpload mode="simple" skinSimple="true"
                                                               value="#{cargaArchivoBean.uploadedFile}"/>
                                             </p:panel>
                                             <div class="input-group">
@@ -76,16 +79,21 @@
                                                         </ui:repeat>
                                                     </p:panel>
                                                 </div>
-                                                <p:commandLink id="btnAddCatPrin" 
-                                                               action="#{cargaArchivoBean.agregarCategoria}"
-                                                               title="Enlazar categorías"
-                                                               process="@this" update="frmAgregarCategoria">
-                                                    <span class="fa fa-plus"></span>
-                                                </p:commandLink>
+                                                <div class="col-12">
+                                                    <div class="col-10">
+                                                    </div>
+                                                    <div class="col-2">
+                                                        <p:commandButton id="btnAddCatPrin" icon="fa fa-plus" 
+                                                                         action="#{cargaArchivoBean.agregarCategoria}"
+                                                                         title="Enlazar categorías" 
+                                                                         process="@this" update="frmAgregarCategoria">
+                                                        </p:commandButton>
+                                                    </div>
+                                                </div>
                                                 <p:dataTable id="dtCategorias" size="small" stripedRows="true" showGridlines="true" 
                                                              value="#{cargaArchivoBean.categorias}" var="data" 
-                                                             rows="20" paginator="true"  
-                                                             paginatorPosition="bottom" >
+                                                             rows="5" paginator="true"  
+                                                             paginatorPosition="bottom" emptyMessage="No hay categorías">
                                                     <f:facet name="header">#{cargaArchivoBean.categoriaSeleccionadaVo.nombre}</f:facet>
                                                     <p:column headerText="Nombre" style="text-align: left;">
                                                         <h:outputText value="#{data.nombre}"/>
@@ -107,21 +115,19 @@
                                             </div>
                                             <div class="input-group">
                                                 <h:outputText value="Tag" class="col-12"/>
-                                                <div class="col-10">
+                                                <div class="col-10 input-group">
                                                     <p:autoComplete id="aucSimple" value="#{cargaArchivoBean.texto}" 
                                                                     completeMethod="#{cargaArchivoBean.autocompletarTags}">
-                                                        <p:ajax  listener="#{cargaArchivoBean.selecionarTag}" update="pnlTags" />
+                                                        <p:ajax  listener="#{cargaArchivoBean.selecionarTag}" update="frmRegistrar:pnlTags frmRegistrar:aucSimple"/>
                                                     </p:autoComplete>
-                                                </div>
-                                                <div class="col-2">
                                                     <p:commandButton action="#{cargaArchivoBean.agregarTag}"
                                                                      process="@this"  icon="fa fa-plus"
                                                                      update="frmRegistrarTag">
                                                     </p:commandButton>
                                                 </div>
                                             </div>
-                                            <div class="input-group">
-                                                <p:panel id="pnlTags">
+                                            <div class="input-group col-12">
+                                                <p:panel id="pnlTags" class="col-12" header="Tags">
                                                     <ui:repeat  value="#{cargaArchivoBean.tagsAcumulados}" var="uic"> 
                                                         <p:chip label="#{uic.nombre}" styleClass="mr-2 custom-chip" removable="true"  >
                                                             <p:ajax event="close" listener="#{cargaArchivoBean.onClose(uic)}" update="frmRegistrar:pnlTags"/>
@@ -129,8 +135,22 @@
                                                     </ui:repeat>
                                                 </p:panel>
                                             </div>
+                                            <div class="input-group">
+                                                <h:outputText value="Fecha" class="col-12"/>
+                                                <div class="col-12">
+                                                    <p:datePicker value="#{cargaArchivoBean.categoriaAdjuntoVo.fecha}"
+                                                                  pattern="dd/MM/yyyy" maxdate="#{cargaArchivoBean.maxDate}"/>
+                                                </div>
+                                            </div>
+                                            <div class="input-group">
+                                                <h:outputText value="Faces" class="col-12"/>
+                                                <div class="col-12">
+                                                    <p:inputText class="form-control" value="#{cargaArchivoBean.categoriaAdjuntoVo.face}"/>
+                                                </div>
+                                            </div>
+
                                         </div>
-                                        <div class="col-3">
+                                        <div class="col-4 card card-body">
                                             <div class="input-group">
                                                 <h:outputText value="Notas" class="col-12"/>
                                                 <div class="col-12">
@@ -143,7 +163,8 @@
                                 </div>
                                 <div class="modal-footer">
                                     <p:commandLink value="Cerrar" onclick="$(dialogoRegistrar).modal('hide');" immediate="true"/>
-                                    <p:commandButton process="@form" update="frmRegistro:dtArchivo" value="Guardar"/>
+                                    <p:commandButton process="@form" update="frmRegistro:dtArchivo" value="Guardar"
+                                                     actionListener="#{cargaArchivoBean.guardarArchivo()}"/>
                                 </div>
                             </div>
                         </div>
@@ -186,7 +207,7 @@
                         </div>
                     </div>
                 </h:form>
-                
+
 
                 <!-- registrar tag-->
                 <h:form id="frmRegistrarTag">

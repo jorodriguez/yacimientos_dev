@@ -4,11 +4,17 @@
  */
 package mx.ihsa.servicios.sistema.impl;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
@@ -17,6 +23,7 @@ import mx.ihsa.dominio.vo.AdjuntoVO;
 import mx.ihsa.dominio.vo.CategoriaAdjuntoVo;
 import mx.ihsa.dominio.vo.CategoriaVo;
 import mx.ihsa.dominio.vo.TagVo;
+import mx.ihsa.excepciones.GeneralException;
 import mx.ihsa.modelo.RepAdjuntoCategoria;
 import mx.ihsa.modelo.RepAdjuntoTag;
 import mx.ihsa.modelo.SiAdjunto;
@@ -51,33 +58,41 @@ public class RepAdjuntoCategoriaImpl extends AbstractImpl<RepAdjuntoCategoria> {
     String catsel;
 
     public void guardar(int sesionId, CategoriaAdjuntoVo categoriaAdjuntoVo, AdjuntoVO adjuntoVo, List<CategoriaVo> categoriaVos, List<TagVo> tags) {
-        // guardar archivo
-        SiAdjunto adj = siAdjuntoImpl.saveSiAdjunto(adjuntoVo.getNombre(), adjuntoVo.getTipoArchivo(), "", adjuntoVo.getTamanio() + "", sesionId);
-        //
-        categoriaVos.stream().forEach(cs -> {
-            catsel += cs.getNombre();
-        });
-        RepAdjuntoCategoria categiriaAdj = new RepAdjuntoCategoria();
-        categiriaAdj.setSiAdjuntoId(adj);
-        categiriaAdj.setCategorias(catsel);
-        categiriaAdj.setFecha(categiriaAdj.getFecha());
-        categiriaAdj.setFase(categiriaAdj.getFase());
-        categiriaAdj.setSiCategoriaId(new SiCategoria(categoriaAdjuntoVo.getIdCategoria()));
-        categiriaAdj.setGenero(new Usuario(sesionId));
-        categiriaAdj.setFechaGenero(new Date());
-        categiriaAdj.setEliminado(Boolean.FALSE);
-        create(categiriaAdj);
-        // registro archivo tags
-        tags.stream().forEach(tg -> {
-            RepAdjuntoTag repAdjuntoTag = new RepAdjuntoTag();
-            repAdjuntoTag.setSiAdjuntoId(adj);
-            repAdjuntoTag.setSiTagId(new SiTag(tg.getId()));
-            repAdjuntoTag.setGenero(new Usuario(sesionId));
-            repAdjuntoTag.setFechaGenero(new Date());
-            repAdjuntoTag.setEliminado(Boolean.FALSE);
+        try {
+            Path pathFile = Files.write(Path.of("/tmp/" + adjuntoVo.getNombre()), adjuntoVo.getContenido());
+            String contenido = new String(Files.readAllBytes(pathFile));
+            // guardar archivo
+            SiAdjunto adj = siAdjuntoImpl.save(adjuntoVo.getNombre(), "/tmp/" + adjuntoVo.getNombre(), adjuntoVo.getTipoArchivo(), adjuntoVo.getTamanio(), sesionId);
             //
-            adjuntoTagImpl.create(repAdjuntoTag);
-        });
+            categoriaVos.stream().forEach(cs -> {
+                catsel += cs.getNombre();
+            });
+            RepAdjuntoCategoria categiriaAdj = new RepAdjuntoCategoria();
+            categiriaAdj.setSiAdjuntoId(adj);
+            categiriaAdj.setCategorias(catsel);
+            categiriaAdj.setFecha(categiriaAdj.getFecha());
+            categiriaAdj.setFase(categiriaAdj.getFase());
+            categiriaAdj.setSiCategoriaId(new SiCategoria(categoriaAdjuntoVo.getIdCategoria()));
+            categiriaAdj.setNotas(categiriaAdj.getNotas());
+            categiriaAdj.setArchivoTexto(contenido);
+            categiriaAdj.setGenero(new Usuario(sesionId));
+            categiriaAdj.setFechaGenero(new Date());
+            categiriaAdj.setEliminado(Boolean.FALSE);
+            create(categiriaAdj);
+            // registro archivo tags
+            tags.stream().forEach(tg -> {
+                RepAdjuntoTag repAdjuntoTag = new RepAdjuntoTag();
+                repAdjuntoTag.setSiAdjuntoId(adj);
+                repAdjuntoTag.setSiTagId(new SiTag(tg.getId()));
+                repAdjuntoTag.setGenero(new Usuario(sesionId));
+                repAdjuntoTag.setFechaGenero(new Date());
+                repAdjuntoTag.setEliminado(Boolean.FALSE);
+                //
+                adjuntoTagImpl.create(repAdjuntoTag);
+            });
+        } catch (GeneralException | IOException ex) {
+            Logger.getLogger(RepAdjuntoCategoriaImpl.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     public void modificar(int sesionId, CategoriaAdjuntoVo categoriaAdjuntoVo) {

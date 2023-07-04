@@ -38,7 +38,7 @@ public class RepAdjuntoCategoria implements Serializable {
     @Basic(optional = false)
     @Column(name = "id")
     private Integer id;
- 
+
     @JoinColumn(name = "si_adjunto_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private SiAdjunto siAdjuntoId;
@@ -51,6 +51,10 @@ public class RepAdjuntoCategoria implements Serializable {
     private String fase;
     @Column(name = "categorias")
     private String categorias;
+    @Column(name = "notas")
+    private String notas;
+    @Column(name = "archivo_texto")
+    private String archivoTexto;
     //
     @NotNull
     @Column(name = "fecha_genero")
@@ -88,5 +92,5 @@ public class RepAdjuntoCategoria implements Serializable {
     public String toString() {
         return "mx.ihsa.modelo.RepAdjuntoCategoria[ id=" + id + " ]";
     }
-    
+
 }

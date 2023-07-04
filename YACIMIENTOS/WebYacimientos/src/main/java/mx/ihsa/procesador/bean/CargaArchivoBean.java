@@ -8,6 +8,7 @@ import com.google.common.base.Preconditions;
 import javax.inject.Named;
 import javax.faces.view.ViewScoped;
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -77,9 +78,7 @@ public class CargaArchivoBean implements Serializable {
     @Getter
     @Setter
     List<TagVo> tags;
-    @Getter
-    @Setter
-    UploadedFile uploadedFile;
+    private UploadedFile uploadedFile;
     @Getter
     @Setter
     String notas;
@@ -89,9 +88,13 @@ public class CargaArchivoBean implements Serializable {
     @Getter
     @Setter
     List<TagVo> tagsAcumulados;
+    @Getter
+    @Setter
+    LocalDate maxDate;
 
     @PostConstruct
     public void iniciar() {
+        maxDate = LocalDate.now();
         tagVo = new TagVo();
         categoriaVo = new CategoriaVo();
         categoriaSeleccionadaVo = new CategoriaVo();
@@ -119,7 +122,7 @@ public class CargaArchivoBean implements Serializable {
     }
 
     private void llenarTag() {
-        tags = tagImpl.buscarPorNombre("");
+        tags = tagImpl.traerTodo();
     }
 
     public void cargarArchivo() {
@@ -216,7 +219,9 @@ public class CargaArchivoBean implements Serializable {
     }
 
     public void selecionarTag() {
-        tagsAcumulados.add(tagVo);
+        TagVo tVo = tagImpl.buscarPorNombre(texto);
+        texto = "";
+        tagsAcumulados.add(tVo);
     }
 
     public void agregarTag() {
@@ -226,6 +231,9 @@ public class CargaArchivoBean implements Serializable {
 
     public void registrarTag() {
         tagImpl.guardar(sesion.getUsuarioSesion().getId(), tagVo);
+        //
+        tagVo = tagImpl.buscarPorNombre(tagVo.getNombre());
+        tags.add(tagVo);
         tagsAcumulados.add(tagVo);
         tagVo = new TagVo();
         PrimeFaces.current().executeScript("$(dialogoRegistrarTag).modal('hide');");
@@ -247,6 +255,20 @@ public class CargaArchivoBean implements Serializable {
      */
     public void setArchivos(List<CategoriaAdjuntoVo> archivos) {
         this.archivos = archivos;
+    }
+
+    /**
+     * @return the uploadedFile
+     */
+    public UploadedFile getUploadedFile() {
+        return uploadedFile;
+    }
+
+    /**
+     * @param uploadedFile the uploadedFile to set
+     */
+    public void setUploadedFile(UploadedFile uploadedFile) {
+        this.uploadedFile = uploadedFile;
     }
 
 }

@@ -23,5 +23,7 @@ public class CategoriaAdjuntoVo extends Vo {
     private String categorias;
     private LocalDate fecha;
     private String face;
+    private String notas;
+    private String archivoTexto;
     private boolean selected;
 }
