@@ -8,13 +8,20 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import mx.ihsa.dominio.vo.AdjuntoVO;
 import mx.ihsa.dominio.vo.CategoriaAdjuntoVo;
+import mx.ihsa.dominio.vo.CategoriaVo;
+import mx.ihsa.dominio.vo.TagVo;
 import mx.ihsa.modelo.RepAdjuntoCategoria;
+import mx.ihsa.modelo.RepAdjuntoTag;
 import mx.ihsa.modelo.SiAdjunto;
 import mx.ihsa.modelo.SiCategoria;
+import mx.ihsa.modelo.SiTag;
 import mx.ihsa.modelo.Usuario;
 import mx.ihsa.sistema.AbstractImpl;
 
@@ -23,7 +30,7 @@ import mx.ihsa.sistema.AbstractImpl;
  * @author marin
  */
 @Stateless
-public class RepAdjuntoCategoriaImpl extends AbstractImpl<RepAdjuntoCategoria>  {
+public class RepAdjuntoCategoriaImpl extends AbstractImpl<RepAdjuntoCategoria> {
 
     @PersistenceContext(unitName = "Yacimientos-ServiciosPU")
     private EntityManager em;
@@ -35,15 +42,42 @@ public class RepAdjuntoCategoriaImpl extends AbstractImpl<RepAdjuntoCategoria>  
     public RepAdjuntoCategoriaImpl() {
         super(RepAdjuntoCategoria.class);
     }
+    @Inject
+    SiAdjuntoImpl siAdjuntoImpl;
+    @Inject
+    RepAdjuntoTagImpl adjuntoTagImpl;
+    @Inject
+    SiTagImpl tagImpl;
+    String catsel;
 
-    public void guardar(int sesionId, CategoriaAdjuntoVo categoriaAdjuntoVo) {
+    public void guardar(int sesionId, CategoriaAdjuntoVo categoriaAdjuntoVo, AdjuntoVO adjuntoVo, List<CategoriaVo> categoriaVos, List<TagVo> tags) {
+        // guardar archivo
+        SiAdjunto adj = siAdjuntoImpl.saveSiAdjunto(adjuntoVo.getNombre(), adjuntoVo.getTipoArchivo(), "", adjuntoVo.getTamanio() + "", sesionId);
+        //
+        categoriaVos.stream().forEach(cs -> {
+            catsel += cs.getNombre();
+        });
         RepAdjuntoCategoria categiriaAdj = new RepAdjuntoCategoria();
-        categiriaAdj.setSiAdjuntoId(new SiAdjunto(categoriaAdjuntoVo.getIdAdjunto()));
+        categiriaAdj.setSiAdjuntoId(adj);
+        categiriaAdj.setCategorias(catsel);
+        categiriaAdj.setFecha(categiriaAdj.getFecha());
+        categiriaAdj.setFase(categiriaAdj.getFase());
         categiriaAdj.setSiCategoriaId(new SiCategoria(categoriaAdjuntoVo.getIdCategoria()));
         categiriaAdj.setGenero(new Usuario(sesionId));
         categiriaAdj.setFechaGenero(new Date());
         categiriaAdj.setEliminado(Boolean.FALSE);
         create(categiriaAdj);
+        // registro archivo tags
+        tags.stream().forEach(tg -> {
+            RepAdjuntoTag repAdjuntoTag = new RepAdjuntoTag();
+            repAdjuntoTag.setSiAdjuntoId(adj);
+            repAdjuntoTag.setSiTagId(new SiTag(tg.getId()));
+            repAdjuntoTag.setGenero(new Usuario(sesionId));
+            repAdjuntoTag.setFechaGenero(new Date());
+            repAdjuntoTag.setEliminado(Boolean.FALSE);
+            //
+            adjuntoTagImpl.create(repAdjuntoTag);
+        });
     }
 
     public void modificar(int sesionId, CategoriaAdjuntoVo categoriaAdjuntoVo) {
@@ -54,7 +88,7 @@ public class RepAdjuntoCategoriaImpl extends AbstractImpl<RepAdjuntoCategoria>  
         adjuntoCat.setFechaModifico(new Date());
         edit(adjuntoCat);
     }
-    
+
     public void eliminiar(int sesionId, CategoriaAdjuntoVo categoriaAdjuntoVo) {
         RepAdjuntoCategoria adjuntoCat = find(categoriaAdjuntoVo.getId());
         adjuntoCat.setSiAdjuntoId(new SiAdjunto(categoriaAdjuntoVo.getIdAdjunto()));
@@ -66,9 +100,9 @@ public class RepAdjuntoCategoriaImpl extends AbstractImpl<RepAdjuntoCategoria>  
 
     public List<CategoriaAdjuntoVo> traerPorCategoria(int sesionId, String tag) {
         StringBuilder sb = new StringBuilder();
-        sb.append(" select rpt.id, ad.id, ad.nombre, ca.id, ca.nombre, ca.categorias, ca.categorias, ca.fecha, ca.fase  from rep_adjunto_categoria rpt ")
-                .append("   inner join si_adjunto ad on rpt.si_adjunto = ad.id")
-                .append("   inner join si_categoria ca on rpt.si_categoria = ca.id")
+        sb.append(" select rpt.id, ad.id, ad.nombre, ca.id, ca.nombre, ca.categorias, rpt.categorias, rpt.fecha, rpt.fase  from rep_adjunto_categoria rpt ")
+                .append("   inner join si_adjunto ad on rpt.si_adjunto_id = ad.id")
+                .append("   inner join si_categoria ca on rpt.si_categoria_id = ca.id")
                 .append(" where t.nombre = '").append(tag).append("'")
                 .append(" and rpt.eliminado =  false");
         //
@@ -91,9 +125,9 @@ public class RepAdjuntoCategoriaImpl extends AbstractImpl<RepAdjuntoCategoria>  
 
     public List<CategoriaAdjuntoVo> traerPorArchivo(int adjuntoId) {
         StringBuilder sb = new StringBuilder();
-        sb.append(" select rpt.id, ad.id, ad.nombre, ca.id, ca.nombre, ca.categorias, ca.categorias, ca.fecha, ca.fase  from rep_adjunto_categoria rpt ")
-                .append("   inner join si_adjunto ad on rpt.si_adjunto = ad.id")
-                .append("   inner join si_categoria ca on rpt.si_categoria = ca.id")
+        sb.append(" select rpt.id, ad.id, ad.nombre, ca.id, ca.nombre, rpt.categorias, rpt.fecha, rpt.fase  from rep_adjunto_categoria rpt ")
+                .append("   inner join si_adjunto ad on rpt.si_adjunto_id = ad.id")
+                .append("   inner join si_categoria ca on rpt.si_categoria_id = ca.id")
                 .append(" where ad.id = ").append(adjuntoId)
                 .append(" and rpt.eliminado =  false");
         //
@@ -113,12 +147,12 @@ public class RepAdjuntoCategoriaImpl extends AbstractImpl<RepAdjuntoCategoria>  
         }
         return adjTags;
     }
-    
+
     public List<CategoriaAdjuntoVo> buscarPorArchiCategoriaId(int adjuntoId, int categoriaId) {
         StringBuilder sb = new StringBuilder();
-        sb.append(" select rpt.id, ad.id, ad.nombre, ca.id, ca.nombre, ca.categorias, ca.categorias, ca.fecha, ca.fase  from rep_adjunto_categoria rpt ")
-                .append("   inner join si_adjunto ad on rpt.si_adjunto = ad.id")
-                .append("   inner join si_categoria ca on rpt.si_categoria = ca.id")
+        sb.append(" select rpt.id, ad.id, ad.nombre, ca.id, ca.nombre, rpt.categorias, rpt.fecha, rpt.fase  from rep_adjunto_categoria rpt ")
+                .append("   inner join si_adjunto ad on rpt.si_adjunto_id = ad.id")
+                .append("   inner join si_categoria ca on rpt.si_categoria_id = ca.id")
                 .append(" where ad.id = ").append(adjuntoId)
                 .append(" and ca.id = ").append(categoriaId)
                 .append(" and rpt.eliminado =  false");
@@ -142,9 +176,9 @@ public class RepAdjuntoCategoriaImpl extends AbstractImpl<RepAdjuntoCategoria>  
 
     public List<CategoriaAdjuntoVo> traerPorArchiCategoria() {
         StringBuilder sb = new StringBuilder();
-        sb.append(" select rpt.id, ad.id, ad.nombre, ca.id, ca.nombre, ca.categorias, ca.categorias, ca.fecha, ca.fase  from rep_adjunto_categoria rpt ")
-                .append("   inner join si_adjunto ad on rpt.si_adjunto = ad.id")
-                .append("   inner join si_categoria ca on rpt.si_categoria = ca.id")
+        sb.append(" select rpt.id, ad.id, ad.nombre, ca.id, ca.nombre, rpt.categorias, rpt.fecha, rpt.fase  from rep_adjunto_categoria rpt ")
+                .append("   inner join si_adjunto ad on rpt.si_adjunto_id = ad.id")
+                .append("   inner join si_categoria ca on rpt.si_categoria_id = ca.id")
                 .append(" where rpt.eliminado =  false");
         //
         List<Object[]> lo = em.createNativeQuery(sb.toString()).getResultList();
@@ -163,5 +197,5 @@ public class RepAdjuntoCategoriaImpl extends AbstractImpl<RepAdjuntoCategoria>  
         }
         return adjTags;
     }
-    
+
 }

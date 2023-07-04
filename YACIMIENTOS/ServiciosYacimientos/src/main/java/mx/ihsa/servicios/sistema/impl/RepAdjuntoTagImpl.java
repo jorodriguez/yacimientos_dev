@@ -57,8 +57,8 @@ public class RepAdjuntoTagImpl extends AbstractImpl<RepAdjuntoTag> {
     public List<AdjuntoTagVo> traerPorTag(int sesionId, String tag) {
         StringBuilder sb = new StringBuilder();
         sb.append(" select rpt.id, ad.id, ad.nombre, t.id, t.nombre  from rep_adjunto_tag rpt ")
-                .append("   inner join si_adjunto ad on rpt.si_adjunto = ad.id")
-                .append("   inner join si_tag t on rpt.si_tag = t.id")
+                .append("   inner join si_adjunto ad on rpt.si_adjunto_id = ad.id")
+                .append("   inner join si_tag t on rpt.si_tag_id = t.id")
                 .append(" where t.nombre = '").append(tag).append("'")
                 .append(" and rpt.eliminado =  false");
         //
@@ -80,8 +80,8 @@ public class RepAdjuntoTagImpl extends AbstractImpl<RepAdjuntoTag> {
     public List<AdjuntoTagVo> traerPorArchivo(int adjuntoId) {
         StringBuilder sb = new StringBuilder();
         sb.append(" select rpt.id, ad.id, ad.nombre, t.id, t.nombre  from rep_adjunto_tag rpt ")
-                .append("   inner join si_adjunto ad on rpt.si_adjunto = ad.id")
-                .append("   inner join si_tag t on rpt.si_tag = t.id")
+                .append("   inner join si_adjunto ad on rpt.si_adjunto_id = ad.id")
+                .append("   inner join si_tag t on rpt.si_tag_id = t.id")
                 .append(" where ad.id = ").append(adjuntoId)
                 .append(" and rpt.eliminado =  false");
         //
@@ -103,8 +103,8 @@ public class RepAdjuntoTagImpl extends AbstractImpl<RepAdjuntoTag> {
     public List<AdjuntoTagVo> buscarPorArchiTagId(int adjuntoId, int tagId) {
         StringBuilder sb = new StringBuilder();
         sb.append(" select rpt.id, ad.id, ad.nombre, t.id, t.nombre  from rep_adjunto_tag rpt ")
-                .append("   inner join si_adjunto ad on rpt.si_adjunto = ad.id")
-                .append("   inner join si_tag t on rpt.si_tag = t.id")
+                .append("   inner join si_adjunto ad on rpt.si_adjunto_id = ad.id")
+                .append("   inner join si_tag t on rpt.si_tag_id = t.id")
                 .append(" where ad.id = ").append(adjuntoId)
                 .append(" and t.id = ").append(tagId)
                 .append(" and rpt.eliminado =  false");

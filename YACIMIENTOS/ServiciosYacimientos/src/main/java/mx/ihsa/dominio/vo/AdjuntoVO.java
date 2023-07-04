@@ -26,6 +26,7 @@ public class AdjuntoVO extends Vo {
     private int idTabla;
     private String requerido;
     private long tamanio;
+    private byte[] contenido;
     
     private String urlZip;
 
