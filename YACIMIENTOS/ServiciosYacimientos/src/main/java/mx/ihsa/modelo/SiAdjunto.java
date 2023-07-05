@@ -15,15 +15,13 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import lombok.Builder;
 import org.codehaus.jackson.annotate.JsonIgnore;
@@ -34,11 +32,12 @@ import org.codehaus.jackson.annotate.JsonIgnore;
  */
 @Entity
 @Table(name = "si_adjunto")
+@SequenceGenerator(sequenceName = "si_adjunto_id_seq", name = "adjunto_seq", allocationSize = 1)
 public class SiAdjunto implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(generator = "adjunto_seq", strategy = GenerationType.SEQUENCE)
     @Basic(optional = false)
     @Column(name = "id")
     private Integer id;
@@ -99,9 +98,6 @@ public class SiAdjunto implements Serializable {
         this.modifico = modifico;
     }
 
-    
-    
-    
     public SiAdjunto(Integer id) {
         this.id = id;
     }
@@ -241,5 +237,5 @@ public class SiAdjunto implements Serializable {
     public String toString() {
         return "mx.ihsa.modelo.SiAdjunto_1[ id=" + id + " ]";
     }
-    
+
 }

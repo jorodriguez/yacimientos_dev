@@ -5,12 +5,17 @@
 package mx.ihsa.procesador.bean;
 
 import com.google.common.base.Preconditions;
+import java.io.IOException;
 import javax.inject.Named;
 import javax.faces.view.ViewScoped;
 import java.io.Serializable;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -20,8 +25,11 @@ import mx.ihsa.dominio.vo.AdjuntoVO;
 import mx.ihsa.dominio.vo.CategoriaAdjuntoVo;
 import mx.ihsa.dominio.vo.CategoriaVo;
 import mx.ihsa.dominio.vo.TagVo;
+import mx.ihsa.excepciones.GeneralException;
+import mx.ihsa.modelo.SiAdjunto;
 import mx.ihsa.modelo.SiCategoria;
 import mx.ihsa.servicios.sistema.impl.RepAdjuntoCategoriaImpl;
+import mx.ihsa.servicios.sistema.impl.SiAdjuntoImpl;
 import mx.ihsa.servicios.sistema.impl.SiCategoriaImpl;
 import mx.ihsa.servicios.sistema.impl.SiTagImpl;
 import mx.ihsa.sistema.bean.backing.Sesion;
@@ -51,6 +59,8 @@ public class CargaArchivoBean implements Serializable {
     SiCategoriaImpl categoriaImpl;
     @Inject
     SiTagImpl tagImpl;
+    @Inject
+    SiAdjuntoImpl adjuntoImpl;
     //
     @Setter
     List<CategoriaAdjuntoVo> archivos;
@@ -131,14 +141,29 @@ public class CargaArchivoBean implements Serializable {
     }
 
     public void guardarArchivo() {
-        adjuntoVo = new AdjuntoVO();
-        adjuntoVo.setNombre(uploadedFile.getFileName());
-        adjuntoVo.setTipoArchivo(uploadedFile.getContentType());
-        adjuntoVo.setTamanio(uploadedFile.getSize());
-        adjuntoVo.setContenido(uploadedFile.getContent());
-        categoriaAdjuntoVo.setIdCategoria(categoriaSeleccionadaVo.getId());
-        adjuntoCategoriaImpl.guardar(sesion.getUsuarioSesion().getId(), categoriaAdjuntoVo, adjuntoVo, categoriasSeleccionadas, tagsAcumulados);
-        PrimeFaces.current().executeScript("$(dialogoRegistrar).modal('show');");
+        try {
+            adjuntoVo = new AdjuntoVO();
+            adjuntoVo.setNombre(uploadedFile.getFileName());
+            adjuntoVo.setTipoArchivo(uploadedFile.getContentType());
+            adjuntoVo.setTamanio(uploadedFile.getSize());
+            adjuntoVo.setContenido(uploadedFile.getContent());
+            categoriaAdjuntoVo.setIdCategoria(categoriaSeleccionadaVo.getId());
+            //
+            Path pathFile = Files.write(Path.of("/tmp/" + adjuntoVo.getNombre()), adjuntoVo.getContenido());
+            String contenido = new String(Files.readAllBytes(pathFile));
+            // guardar archivo
+            SiAdjunto adj;
+            adj = adjuntoImpl.save(adjuntoVo.getNombre(), "/tmp/" + adjuntoVo.getNombre(), adjuntoVo.getTipoArchivo(), adjuntoVo.getTamanio(), sesion.getUsuarioSesion().getId());
+            //
+            categoriaAdjuntoVo.setArchivoTexto(contenido);
+            adjuntoCategoriaImpl.guardar(sesion.getUsuarioSesion().getId(), categoriaAdjuntoVo, adj.getId(), categoriasSeleccionadas, tagsAcumulados);
+            //
+            llenarDatos();
+            //
+            PrimeFaces.current().executeScript("$(dialogoRegistrar).modal('hide');");
+        } catch (GeneralException | IOException ex) {
+            Logger.getLogger(CargaArchivoBean.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     public void agregarCategoria() {

@@ -8,8 +8,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import javax.ejb.Stateless;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import mx.ihsa.dominio.vo.AdjuntoTagVo;
 import mx.ihsa.modelo.RepAdjuntoTag;
 import mx.ihsa.modelo.SiAdjunto;
@@ -23,13 +21,6 @@ import mx.ihsa.sistema.AbstractImpl;
  */
 @Stateless
 public class RepAdjuntoTagImpl extends AbstractImpl<RepAdjuntoTag> {
-
-    @PersistenceContext(unitName = "Yacimientos-ServiciosPU")
-    private EntityManager em;
-
-    protected EntityManager getEntityManager() {
-        return em;
-    }
 
     public RepAdjuntoTagImpl() {
         super(RepAdjuntoTag.class);
@@ -99,7 +90,7 @@ public class RepAdjuntoTagImpl extends AbstractImpl<RepAdjuntoTag> {
         }
         return adjTags;
     }
-    
+
     public List<AdjuntoTagVo> buscarPorArchiTagId(int adjuntoId, int tagId) {
         StringBuilder sb = new StringBuilder();
         sb.append(" select rpt.id, ad.id, ad.nombre, t.id, t.nombre  from rep_adjunto_tag rpt ")

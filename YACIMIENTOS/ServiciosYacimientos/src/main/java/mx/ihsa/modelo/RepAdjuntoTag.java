@@ -14,6 +14,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -29,15 +30,16 @@ import lombok.Setter;
 @Setter
 @Entity
 @Table(name = "rep_adjunto_tag")
+@SequenceGenerator(sequenceName = "rep_adjunto_tag_id_seq", name = "rep_adjunto_tag_seq", allocationSize = 1)
 public class RepAdjuntoTag implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(generator = "rep_adjunto_tag_seq", strategy = GenerationType.SEQUENCE)
     @Basic(optional = false)
     @Column(name = "id")
     private Integer id;
- 
+
     @JoinColumn(name = "si_adjunto_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private SiAdjunto siAdjuntoId;
@@ -78,7 +80,7 @@ public class RepAdjuntoTag implements Serializable {
 
     @Override
     public String toString() {
-        return "mx.ihsa.modelo.si_tag[ id=" + id + " ]";
+        return "mx.ihsa.modelo.RepAdjuntoTag[ id=" + id + " ]";
     }
-    
+
 }

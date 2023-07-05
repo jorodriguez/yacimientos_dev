@@ -4,7 +4,6 @@
  */
 package mx.ihsa.servicios.sistema.impl;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -22,13 +21,6 @@ import mx.ihsa.sistema.AbstractImpl;
  */
 @Stateless
 public class SiTagImpl extends AbstractImpl<SiTag> {
-
-    @PersistenceContext(unitName = "Yacimientos-ServiciosPU")
-    private EntityManager em;
-
-    protected EntityManager getEntityManager() {
-        return em;
-    }
 
     public SiTagImpl() {
         super(SiTag.class);

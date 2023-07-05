@@ -15,6 +15,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -29,12 +30,13 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-@Table(name = "rep_adjunto_categoria ")
+@Table(name = "rep_adjunto_categoria")
+@SequenceGenerator(sequenceName = "rep_adjunto_categoria_id_seq", name = "adjunto_categoria_seq", allocationSize = 1)
 public class RepAdjuntoCategoria implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(generator = "adjunto_categoria_seq", strategy = GenerationType.SEQUENCE)
     @Basic(optional = false)
     @Column(name = "id")
     private Integer id;
@@ -73,6 +75,10 @@ public class RepAdjuntoCategoria implements Serializable {
     private Usuario modifico;
 
     public RepAdjuntoCategoria() {
+    }
+
+    public RepAdjuntoCategoria(int id) {
+        this.id = id;
     }
 
     @Override

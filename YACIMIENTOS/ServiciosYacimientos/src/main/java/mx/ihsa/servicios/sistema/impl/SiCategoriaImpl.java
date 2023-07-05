@@ -8,9 +8,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import javax.ejb.Stateless;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import mx.ihsa.dominio.vo.CategoriaAdjuntoVo;
 import mx.ihsa.dominio.vo.CategoriaVo;
 import mx.ihsa.modelo.SiCategoria;
 import mx.ihsa.modelo.Usuario;
@@ -23,12 +20,6 @@ import mx.ihsa.sistema.AbstractImpl;
 @Stateless
 public class SiCategoriaImpl extends AbstractImpl<SiCategoria> {
 
-    @PersistenceContext(unitName = "Yacimientos-ServiciosPU")
-    private EntityManager em;
-
-    protected EntityManager getEntityManager() {
-        return em;
-    }
 
     public SiCategoriaImpl() {
         super(SiCategoria.class);

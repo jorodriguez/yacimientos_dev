@@ -14,6 +14,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -29,11 +30,12 @@ import lombok.Setter;
 @Setter
 @Entity
 @Table(name = "si_tag")
+@SequenceGenerator(sequenceName = "si_tag_id_seq", name = "si_tag_seq", allocationSize = 1)
 public class SiTag implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(generator = "si_tag_seq", strategy = GenerationType.SEQUENCE)
     @Basic(optional = false)
     @Column(name = "id")
     private Integer id;

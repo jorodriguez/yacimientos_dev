@@ -4,12 +4,12 @@
  */
 package mx.ihsa.servicios.sistema.impl;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.time.Instant;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -17,18 +17,15 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
+import mx.ihsa.dominio.vo.AdjuntoTagVo;
 import mx.ihsa.dominio.vo.AdjuntoVO;
 import mx.ihsa.dominio.vo.CategoriaAdjuntoVo;
 import mx.ihsa.dominio.vo.CategoriaVo;
 import mx.ihsa.dominio.vo.TagVo;
 import mx.ihsa.excepciones.GeneralException;
 import mx.ihsa.modelo.RepAdjuntoCategoria;
-import mx.ihsa.modelo.RepAdjuntoTag;
 import mx.ihsa.modelo.SiAdjunto;
 import mx.ihsa.modelo.SiCategoria;
-import mx.ihsa.modelo.SiTag;
 import mx.ihsa.modelo.Usuario;
 import mx.ihsa.sistema.AbstractImpl;
 
@@ -39,13 +36,6 @@ import mx.ihsa.sistema.AbstractImpl;
 @Stateless
 public class RepAdjuntoCategoriaImpl extends AbstractImpl<RepAdjuntoCategoria> {
 
-    @PersistenceContext(unitName = "Yacimientos-ServiciosPU")
-    private EntityManager em;
-
-    protected EntityManager getEntityManager() {
-        return em;
-    }
-
     public RepAdjuntoCategoriaImpl() {
         super(RepAdjuntoCategoria.class);
     }
@@ -55,42 +45,35 @@ public class RepAdjuntoCategoriaImpl extends AbstractImpl<RepAdjuntoCategoria> {
     RepAdjuntoTagImpl adjuntoTagImpl;
     @Inject
     SiTagImpl tagImpl;
-    String catsel;
+    StringBuilder catsel;
 
-    public void guardar(int sesionId, CategoriaAdjuntoVo categoriaAdjuntoVo, AdjuntoVO adjuntoVo, List<CategoriaVo> categoriaVos, List<TagVo> tags) {
+    public void guardar(int sesionId, CategoriaAdjuntoVo categoriaAdjuntoVo, int adjId, List<CategoriaVo> categoriaVos, List<TagVo> tags) {
         try {
-            Path pathFile = Files.write(Path.of("/tmp/" + adjuntoVo.getNombre()), adjuntoVo.getContenido());
-            String contenido = new String(Files.readAllBytes(pathFile));
-            // guardar archivo
-            SiAdjunto adj = siAdjuntoImpl.save(adjuntoVo.getNombre(), "/tmp/" + adjuntoVo.getNombre(), adjuntoVo.getTipoArchivo(), adjuntoVo.getTamanio(), sesionId);
-            //
+            catsel = new StringBuilder();
             categoriaVos.stream().forEach(cs -> {
-                catsel += cs.getNombre();
+                catsel.append(", ").append(cs.getId());
             });
             RepAdjuntoCategoria categiriaAdj = new RepAdjuntoCategoria();
-            categiriaAdj.setSiAdjuntoId(adj);
-            categiriaAdj.setCategorias(catsel);
-            categiriaAdj.setFecha(categiriaAdj.getFecha());
-            categiriaAdj.setFase(categiriaAdj.getFase());
+            categiriaAdj.setSiAdjuntoId(new SiAdjunto(adjId));
             categiriaAdj.setSiCategoriaId(new SiCategoria(categoriaAdjuntoVo.getIdCategoria()));
-            categiriaAdj.setNotas(categiriaAdj.getNotas());
-            categiriaAdj.setArchivoTexto(contenido);
+            categiriaAdj.setCategorias(catsel.substring(4, catsel.length()));
+            categiriaAdj.setFecha(categoriaAdjuntoVo.getFecha());
+            categiriaAdj.setFase(categoriaAdjuntoVo.getFace());
+            categiriaAdj.setNotas(categoriaAdjuntoVo.getNotas());
+            categiriaAdj.setArchivoTexto(categoriaAdjuntoVo.getArchivoTexto());
             categiriaAdj.setGenero(new Usuario(sesionId));
             categiriaAdj.setFechaGenero(new Date());
             categiriaAdj.setEliminado(Boolean.FALSE);
             create(categiriaAdj);
-            // registro archivo tags
+//            // registro archivo tags
             tags.stream().forEach(tg -> {
-                RepAdjuntoTag repAdjuntoTag = new RepAdjuntoTag();
-                repAdjuntoTag.setSiAdjuntoId(adj);
-                repAdjuntoTag.setSiTagId(new SiTag(tg.getId()));
-                repAdjuntoTag.setGenero(new Usuario(sesionId));
-                repAdjuntoTag.setFechaGenero(new Date());
-                repAdjuntoTag.setEliminado(Boolean.FALSE);
-                //
-                adjuntoTagImpl.create(repAdjuntoTag);
+                AdjuntoTagVo adjuntoTagVo = new AdjuntoTagVo();
+                adjuntoTagVo.setIdAdjunto(adjId);
+                adjuntoTagVo.setIdTag(tg.getId());
+                adjuntoTagImpl.guardar(sesionId, adjuntoTagVo);
             });
-        } catch (GeneralException | IOException ex) {
+        } catch (Exception ex) {
+            System.out.println("Error " + ex);
             Logger.getLogger(RepAdjuntoCategoriaImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
@@ -206,11 +189,14 @@ public class RepAdjuntoCategoriaImpl extends AbstractImpl<RepAdjuntoCategoria> {
             adjuntoTagVo.setIdCategoria((Integer) objects[3]);
             adjuntoTagVo.setNombreCategoria((String) objects[4]);
             adjuntoTagVo.setCategorias((String) objects[5]);
-            adjuntoTagVo.setFecha((LocalDate) objects[6]);
+            adjuntoTagVo.setFecha(objects[6] != null ? castDate((Date) objects[6]) : null);
             adjuntoTagVo.setFace((String) objects[7]);
             adjTags.add(adjuntoTagVo);
         }
         return adjTags;
     }
 
+    private LocalDate castDate(Date fecha) {
+        return Instant.ofEpochMilli(fecha.getTime()).atZone(ZoneId.systemDefault()).toLocalDate();
+    }
 }

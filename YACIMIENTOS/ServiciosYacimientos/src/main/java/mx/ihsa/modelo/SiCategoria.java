@@ -82,7 +82,7 @@ public class SiCategoria implements Serializable {
 
     @Override
     public String toString() {
-        return "mx.ihsa.modelo.si_categoria[ id=" + id + " ]";
+        return "mx.ihsa.modelo.SiCategoria[ id=" + id + " ]";
     }
     
 }
