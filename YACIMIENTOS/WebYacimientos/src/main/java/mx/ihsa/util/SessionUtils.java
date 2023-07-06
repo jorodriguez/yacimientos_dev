@@ -8,7 +8,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import mx.ihsa.modelo.Usuario;
 import mx.ihsa.sistema.bean.backing.Sesion;
-import mx.ihsa.util.UtilLog4j;
 
 /**
  *

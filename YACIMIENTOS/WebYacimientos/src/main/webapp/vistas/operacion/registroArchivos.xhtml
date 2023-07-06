@@ -1,0 +1,258 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <body>
+
+        <ui:composition template="./../../WEB-INF/facelets/templates/templatePrincipal.xhtml">
+            <ui:define name="contenido">
+                <h:form id="frmRegistro">
+                    <div class="row">
+                        <div class="col-10">
+                            <p:commandButton id="btnCargar" value="Cargar archivo"  
+                                             actionListener="#{cargaArchivoBean.cargarArchivo}"
+                                             process="@this" 
+                                             update="frmRegistrar"/>
+                        </div>
+                        <div class="col-2">
+                            <p:commandButton id="btnEliminar" value="Eliminar"  class="btn btn-dark text-danger"
+                                             actionListener="#{cargaArchivoBean.eliminarRegistro}"
+                                             process="frmRegistro:btnEliminar frmRegistro:dtArchivo" 
+                                             update="frmRegistro:dtArchivo"/>
+                        </div>
+                    </div>
+                    <p:dataTable id="dtArchivo" size="small" showGridlines="true" value="#{cargaArchivoBean.archivos}"
+                                 var="dataP">
+                        <p:column width="25">
+                            <p:selectBooleanCheckbox value="#{dataP.selected}"/>
+                        </p:column>
+                        <p:column headerText="Archivo">
+                            <h:outputText value="#{dataP.adjunto}"/>
+                        </p:column>
+                        <p:column headerText="Categoría">
+                            <h:outputText value="#{dataP.nombreCategoria}"/>
+                        </p:column>
+                        <p:column headerText="Fase">
+                            <h:outputText value="#{dataP.face}"/>
+                        </p:column>
+                        <p:column headerText="Fecha">
+                            <h:outputText value="#{dataP.fecha}"/>
+                        </p:column>
+                        <p:column headerText="Opciones">
+                            <p:commandButton value="Eliminar" icon="pi pi-trash" class="text-danger"
+                                             actionListener="#{cargaArchivoBean.eliminarRegistro()}" process="@this" update="frmRegistro:dtArchivo">
+                                <p:confirm header="Confirmar" message="La operaciń va a eliminar el registro, ¿está seguro?" icon="pi pi-info-circle"/>
+                            </p:commandButton>
+                        </p:column>
+                    </p:dataTable>
+                    <p:confirmDialog global="true" showEffect="fade" hideEffect="fade" responsive="true" width="350">
+                        <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no ui-button-flat"/>
+                        <p:commandButton value="Si" type="button" styleClass="ui-confirmdialog-yes" />
+                    </p:confirmDialog>
+                </h:form>
+                <!-- Registro de archivo-->
+                <h:form id="frmRegistrar" enctype="multipart/form-data">
+                    <div class="modal fade" id="dialogoRegistrar"
+                         tabindex="-1" role="dialog" aria-labelledby="modal-default" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered modal-lg" role="dialog">
+                            <div class="modal-content">                                               
+                                <div class="modal-header">
+                                    <h4>Agregar archivos</h4>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="input-group">
+                                        <div class="col-8">
+                                            <h4 class="text text-primary font-weight-bold">1. Seleccionar archivo</h4>
+                                            <p:panel id="pnlCargarArc">
+                                                <p:fileUpload mode="simple" skinSimple="true"
+                                                              value="#{cargaArchivoBean.uploadedFile}"/>
+                                            </p:panel>
+                                            <p:divider/>
+                                            <h4 class="text text-primary font-weight-bold">2. Seleccionar categoría</h4>
+                                            <div class="input-group">
+                                                <h:outputText value="Categoría Seleccionadas" class="col-12"/>
+                                                <div class="col-12">
+                                                    <p:panel id="pnlCatSel" >
+                                                        <ui:repeat value="#{cargaArchivoBean.categoriasSeleccionadas}" var="data"
+                                                                   varStatus="indice">
+                                                            <p:commandLink  action="#{cargaArchivoBean.seleccionarCategoriaEnSeleccionadas(indice.index)}"
+                                                                            styleClass="text text-primary" value="#{data.nombre} "
+                                                                            process="@this" update="frmRegistrar:dtCategorias frmRegistrar:pnlCatSel frmRegistrar:btnAddCatPrin">
+                                                                <span class="fa fa-arrow-right"
+                                                                      style="display: #{cargaArchivoBean.categoriasSeleccionadas.size() gt 0} ? 'block' : 'none'"></span>
+
+                                                            </p:commandLink>
+                                                        </ui:repeat>
+                                                    </p:panel>
+                                                </div>
+                                                <div class="col-12">
+                                                    <div class="col-10">
+                                                    </div>
+                                                    <div class="col-2">
+                                                        <p:commandButton id="btnAddCatPrin" icon="fa fa-plus" 
+                                                                         action="#{cargaArchivoBean.agregarCategoria}"
+                                                                         title="Enlazar categorías" 
+                                                                         process="@this" update="frmAgregarCategoria">
+                                                        </p:commandButton>
+                                                    </div>
+                                                </div>
+                                                <p:dataTable id="dtCategorias" size="small" stripedRows="true" showGridlines="true" 
+                                                             value="#{cargaArchivoBean.categorias}" var="data" 
+                                                             rows="5" paginator="true"  
+                                                             paginatorPosition="bottom" emptyMessage="No hay categorías">
+                                                    <f:facet name="header">#{cargaArchivoBean.categoriaSeleccionadaVo.nombre}</f:facet>
+                                                    <p:column style="text-align: left;">
+                                                        <h:outputText value="#{data.nombre}"/>
+                                                    </p:column>
+                                                    <p:column width="5%">
+                                                        <p:commandLink action="#{cargaArchivoBean.seleccionarCategoria(data)}"
+                                                                       process="@this" 
+                                                                       update="frmRegistrar:dtCategorias frmRegistrar:pnlCatSel frmRegistrar:btnAddCatPrin frmRegistrar:lblCalSel">
+                                                            <span class="fa fa-eye text-primary"></span>
+                                                        </p:commandLink>
+                                                    </p:column>
+                                                </p:dataTable>
+                                            </div>
+                                            <div class="input-group">
+                                                <h:outputText value="Categoría Seleccionada" class="col-12 font-weight-bold"/>
+                                                <div class="col-12">
+                                                    <h:outputLabel id="lblCalSel" value="#{cargaArchivoBean.categoriaSeleccionadaVo.nombre}" class="text-primary"/>
+                                                </div>
+                                            </div>
+                                            <p:divider/>
+                                            <h4 class="text text-primary font-weight-bold">3. Agregar etiquetas</h4>
+                                            <div class="input-group">
+                                                <h:outputText value="Tag" class="col-12"/>
+                                                <div class="col-10 input-group">
+                                                    <p:autoComplete id="aucSimple" value="#{cargaArchivoBean.texto}" 
+                                                                    completeMethod="#{cargaArchivoBean.autocompletarTags}">
+                                                        <p:ajax  listener="#{cargaArchivoBean.selecionarTag}" update="frmRegistrar:pnlTags frmRegistrar:aucSimple"/>
+                                                    </p:autoComplete>
+                                                    <p:commandButton action="#{cargaArchivoBean.agregarTag}"
+                                                                     process="@this"  icon="fa fa-plus"
+                                                                     update="frmRegistrarTag">
+                                                    </p:commandButton>
+                                                </div>
+                                            </div>
+                                            <div class="input-group col-12">
+                                                <p:panel id="pnlTags" class="col-12" header="Tags">
+                                                    <ui:repeat  value="#{cargaArchivoBean.tagsAcumulados}" var="uic"> 
+                                                        <p:chip label="#{uic.nombre}" styleClass="mr-2 custom-chip" removable="true"  >
+                                                            <p:ajax event="close" listener="#{cargaArchivoBean.onClose(uic)}" update="frmRegistrar:pnlTags"/>
+                                                        </p:chip>
+                                                    </ui:repeat>
+                                                </p:panel>
+                                            </div>
+                                        </div>
+                                        <div class="col-4">
+                                            <p:divider/>
+                                            <h4 class="text text-primary font-weight-bold">4. Anotaciones</h4>
+                                            <div class="input-group">
+                                                <h:outputText value="Fecha" class="col-12"/>
+                                                <div class="col-12">
+                                                    <p:datePicker value="#{cargaArchivoBean.categoriaAdjuntoVo.fecha}"
+                                                                  pattern="dd/MM/yyyy" maxdate="#{cargaArchivoBean.maxDate}"/>
+                                                </div>
+                                            </div>
+                                            <div class="input-group">
+                                                <h:outputText value="Faces" class="col-12"/>
+                                                <div class="col-12">
+                                                    <p:inputText class="form-control" value="#{cargaArchivoBean.categoriaAdjuntoVo.face}"/>
+                                                </div>
+                                            </div>
+                                            <div class="input-group">
+                                                <h:outputText value="Notas" class="col-12"/>
+                                                <div class="col-12">
+                                                    <p:inputTextarea value="#{cargaArchivoBean.notas}"
+                                                                     rows="12" class="form-control"/>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <p:commandLink value="Cerrar" onclick="$(dialogoRegistrar).modal('hide');" immediate="true"/>
+                                    <p:commandButton process="@form" update="frmRegistro:dtArchivo" value="Guardar"
+                                                     actionListener="#{cargaArchivoBean.guardarArchivo()}"
+                                                     />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </h:form>
+
+                <!-- registrar categoria-->
+                <h:form id="frmAgregarCategoria">
+                    <div class="modal fade" id="dialogoRegistrarCategoria"
+                         tabindex="-1" role="dialog" aria-labelledby="modal-default" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered " role="dialog">
+                            <div class="modal-content">                                               
+                                <div class="modal-title">
+                                    Registrar categoría
+                                </div>                                              
+                                <div class="modal-body">
+                                    <div class="input-group">
+                                        <h:outputText value="Categoría Seleccionda" class="col-12"/>
+                                        <div class="col-12">
+                                            <h:outputText value="#{cargaArchivoBean.categoriaSeleccionadaVo.nombre}" 
+                                                          class="form-control"/>
+                                        </div>
+                                    </div>
+                                    <div class="input-group">
+                                        <h:outputText value="Categoría" class="col-12"/>
+                                        <div class="col-12">
+                                            <p:inputText value="#{cargaArchivoBean.categoriaVo.nombre}" 
+                                                         placeholder="Categoría" class="form-control" required="true"
+                                                         requiredMessage="Agregue el nombre"/>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <p:commandLink value="Cerrar" onclick="$(dialogoRegistrarCategoria).modal('hide');"
+                                                   immediate="true"/>
+                                    <p:commandButton process="@form" update="frmRegistrar:dtCategorias" value="Guardar"
+                                                     actionListener="#{cargaArchivoBean.registrarCategoria()}"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </h:form>
+
+
+                <!-- registrar tag-->
+                <h:form id="frmRegistrarTag">
+                    <div class="modal fade" id="dialogoRegistrarTag"
+                         tabindex="-1" role="dialog" aria-labelledby="modal-default" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered " role="dialog">
+                            <div class="modal-content">                                               
+                                <div class="modal-title">
+                                    Registrar tag
+                                </div>                                              
+                                <div class="modal-body">
+                                    <div class="input-group">
+                                        <h:outputText value="Tag o Etiqueta" class="col-12"/>
+                                        <div class="col-12">
+                                            <p:inputText value="#{cargaArchivoBean.tagVo.nombre}" 
+                                                         placeholder="Etiqueta" class="form-control" required="true"
+                                                         requiredMessage="Agregue el nombre"/>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <p:commandLink value="Cerrar" onclick="$(dialogoRegistrarTag).modal('hide');"
+                                                   immediate="true"/>
+                                    <p:commandButton process="@form" update="frmRegistrar:pnlTags" value="Guardar"
+                                                     actionListener="#{cargaArchivoBean.registrarTag}"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </h:form>
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>
