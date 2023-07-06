@@ -139,11 +139,15 @@ public class CargaArchivoBean implements Serializable {
 
     public void cargarArchivo() {
         categoriaAdjuntoVo = new CategoriaAdjuntoVo();
+        categoriaAdjuntoVo.setFecha(maxDate);
         PrimeFaces.current().executeScript("$(dialogoRegistrar).modal('show');");
     }
 
     public void guardarArchivo() {
         try {
+            Preconditions.checkArgument((uploadedFile != null), "Seleccione el archivo");
+            Preconditions.checkArgument((categoriaSeleccionadaVo.getId() != null && categoriaSeleccionadaVo.getId() > 0), "Seleccione una categoría");
+            //
             adjuntoVo = new AdjuntoVO();
             adjuntoVo.setNombre(uploadedFile.getFileName());
             adjuntoVo.setTipoArchivo(uploadedFile.getContentType());
@@ -151,7 +155,7 @@ public class CargaArchivoBean implements Serializable {
             adjuntoVo.setContenido(uploadedFile.getContent());
             categoriaAdjuntoVo.setIdCategoria(categoriaSeleccionadaVo.getId());
             //
-            Path pathFile = Files.write(Path.of("/tmp/" + adjuntoVo.getNombre()), adjuntoVo.getContenido());
+            Path pathFile = Files.write(Path.of("/files/yac/" + adjuntoVo.getNombre()), adjuntoVo.getContenido());
             if (adjuntoVo.getNombre().endsWith("pdf")) {
                 categoriaAdjuntoVo.setArchivoTexto(contenidoPdf(adjuntoVo.getContenido()));
             } else {
@@ -160,7 +164,7 @@ public class CargaArchivoBean implements Serializable {
             }
             // guardar archivo
             SiAdjunto adj;
-            adj = adjuntoImpl.save(adjuntoVo.getNombre(), "/tmp/" + adjuntoVo.getNombre(), adjuntoVo.getTipoArchivo(), adjuntoVo.getTamanio(), sesion.getUsuarioSesion().getId());
+            adj = adjuntoImpl.save(adjuntoVo.getNombre(), "/files/yac/" + adjuntoVo.getNombre(), adjuntoVo.getTipoArchivo(), adjuntoVo.getTamanio(), sesion.getUsuarioSesion().getId());
             //
             adjuntoCategoriaImpl.guardar(sesion.getUsuarioSesion().getId(), categoriaAdjuntoVo, adj.getId(),
                     categoriasSeleccionadas, tagsAcumulados);
@@ -168,7 +172,8 @@ public class CargaArchivoBean implements Serializable {
             llenarDatos();
             //
             PrimeFaces.current().executeScript("$(dialogoRegistrar).modal('hide');");
-        } catch (GeneralException | IOException ex) {
+        } catch (GeneralException | IOException | IllegalArgumentException ex) {
+            FacesUtils.addErrorMessage(ex.getMessage());
             Logger.getLogger(CargaArchivoBean.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
@@ -196,6 +201,15 @@ public class CargaArchivoBean implements Serializable {
         categorias.add(categoriaVo);
         categoriaVo = new CategoriaVo();
         PrimeFaces.current().executeScript("$(dialogoRegistrarCategoria).modal('hide');");
+    }
+
+    public void eliminarArchivo(CategoriaAdjuntoVo cav) {
+        try {
+            adjuntoCategoriaImpl.eliminiar(sesion.getUsuarioSesion().getId(), cav);
+            llenarDatos();
+        } catch (IllegalArgumentException e) {
+            FacesUtils.addErrorMessage(e.getMessage());
+        }
     }
 
     public void eliminarRegistro() {
