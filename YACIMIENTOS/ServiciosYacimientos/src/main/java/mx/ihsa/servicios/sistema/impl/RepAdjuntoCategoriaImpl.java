@@ -85,10 +85,9 @@ public class RepAdjuntoCategoriaImpl extends AbstractImpl<RepAdjuntoCategoria> {
 
     public void eliminiar(int sesionId, CategoriaAdjuntoVo categoriaAdjuntoVo) {
         RepAdjuntoCategoria adjuntoCat = find(categoriaAdjuntoVo.getId());
-        adjuntoCat.setSiAdjuntoId(new SiAdjunto(categoriaAdjuntoVo.getIdAdjunto()));
-        adjuntoCat.setSiCategoriaId(new SiCategoria(categoriaAdjuntoVo.getIdCategoria()));
         adjuntoCat.setModifico(new Usuario(sesionId));
         adjuntoCat.setFechaModifico(new Date());
+        adjuntoCat.setEliminado(Boolean.TRUE);
         edit(adjuntoCat);
     }
 

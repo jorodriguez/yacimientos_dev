@@ -202,9 +202,10 @@ public class CargaArchivoBean implements Serializable {
         try {
             Preconditions.checkArgument(archivos.stream().anyMatch(CategoriaAdjuntoVo::isSelected), "Seleccione al menos un registro");
             //
-            archivos.stream().forEach(cs -> {
+            archivos.stream().filter(CategoriaAdjuntoVo::isSelected).forEach(cs -> {
                 adjuntoCategoriaImpl.eliminiar(sesion.getUsuarioSesion().getId(), cs);
             });
+            llenarDatos();
         } catch (IllegalArgumentException e) {
             FacesUtils.addErrorMessage(e.getMessage());
         }
