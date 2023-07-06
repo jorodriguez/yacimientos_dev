@@ -34,6 +34,8 @@ import mx.ihsa.servicios.sistema.impl.SiCategoriaImpl;
 import mx.ihsa.servicios.sistema.impl.SiTagImpl;
 import mx.ihsa.sistema.bean.backing.Sesion;
 import mx.ihsa.sistema.bean.support.FacesUtils;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.text.PDFTextStripper;
 import org.primefaces.PrimeFaces;
 import org.primefaces.model.file.UploadedFile;
 
@@ -150,13 +152,18 @@ public class CargaArchivoBean implements Serializable {
             categoriaAdjuntoVo.setIdCategoria(categoriaSeleccionadaVo.getId());
             //
             Path pathFile = Files.write(Path.of("/tmp/" + adjuntoVo.getNombre()), adjuntoVo.getContenido());
-            String contenido = new String(Files.readAllBytes(pathFile));
+            if (adjuntoVo.getNombre().endsWith("pdf")) {
+                categoriaAdjuntoVo.setArchivoTexto(contenidoPdf(adjuntoVo.getContenido()));
+            } else {
+                String contenido = new String(Files.readAllBytes(pathFile));
+                categoriaAdjuntoVo.setArchivoTexto(contenido);
+            }
             // guardar archivo
             SiAdjunto adj;
             adj = adjuntoImpl.save(adjuntoVo.getNombre(), "/tmp/" + adjuntoVo.getNombre(), adjuntoVo.getTipoArchivo(), adjuntoVo.getTamanio(), sesion.getUsuarioSesion().getId());
             //
-            categoriaAdjuntoVo.setArchivoTexto(contenido);
-            adjuntoCategoriaImpl.guardar(sesion.getUsuarioSesion().getId(), categoriaAdjuntoVo, adj.getId(), categoriasSeleccionadas, tagsAcumulados);
+            adjuntoCategoriaImpl.guardar(sesion.getUsuarioSesion().getId(), categoriaAdjuntoVo, adj.getId(),
+                    categoriasSeleccionadas, tagsAcumulados);
             //
             llenarDatos();
             //
@@ -296,4 +303,31 @@ public class CargaArchivoBean implements Serializable {
         this.uploadedFile = uploadedFile;
     }
 
+    private String contenidoPdf(byte[] contenidoFile) {
+        PDDocument document = null;
+        try {
+            // Load the PDF document
+            document = PDDocument.load(contenidoFile);
+
+            // Create an instance of PDFTextStripper
+            PDFTextStripper textStripper = new PDFTextStripper();
+
+            // Get the text content from the PDF
+            String text = textStripper.getText(document);
+
+            // Print the extracted text
+            System.out.println(text);
+            return text;
+        } catch (IOException e) {
+            System.out.println("ex: " + e);
+        } finally {
+            if (document != null) {
+                try {
+                    document.close();
+                } catch (IOException e) {
+                }
+            }
+        }
+        return "";
+    }
 }

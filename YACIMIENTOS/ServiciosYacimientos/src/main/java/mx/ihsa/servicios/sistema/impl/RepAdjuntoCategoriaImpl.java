@@ -4,9 +4,6 @@
  */
 package mx.ihsa.servicios.sistema.impl;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -18,11 +15,9 @@ import java.util.logging.Logger;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import mx.ihsa.dominio.vo.AdjuntoTagVo;
-import mx.ihsa.dominio.vo.AdjuntoVO;
 import mx.ihsa.dominio.vo.CategoriaAdjuntoVo;
 import mx.ihsa.dominio.vo.CategoriaVo;
 import mx.ihsa.dominio.vo.TagVo;
-import mx.ihsa.excepciones.GeneralException;
 import mx.ihsa.modelo.RepAdjuntoCategoria;
 import mx.ihsa.modelo.SiAdjunto;
 import mx.ihsa.modelo.SiCategoria;
@@ -61,6 +56,7 @@ public class RepAdjuntoCategoriaImpl extends AbstractImpl<RepAdjuntoCategoria> {
             categiriaAdj.setFase(categoriaAdjuntoVo.getFace());
             categiriaAdj.setNotas(categoriaAdjuntoVo.getNotas());
             categiriaAdj.setArchivoTexto(categoriaAdjuntoVo.getArchivoTexto());
+
             categiriaAdj.setGenero(new Usuario(sesionId));
             categiriaAdj.setFechaGenero(new Date());
             categiriaAdj.setEliminado(Boolean.FALSE);
@@ -199,4 +195,5 @@ public class RepAdjuntoCategoriaImpl extends AbstractImpl<RepAdjuntoCategoria> {
     private LocalDate castDate(Date fecha) {
         return Instant.ofEpochMilli(fecha.getTime()).atZone(ZoneId.systemDefault()).toLocalDate();
     }
+
 }
