@@ -9,26 +9,51 @@
     <body>
 
         <ui:composition template="./../../WEB-INF/facelets/templates/templatePrincipal.xhtml">
+
             <ui:define name="contenido">
+
+                <style>
+                    .ui-datatable .ui-datatable-data .even-row td{
+                        background-color:#DDE3FD !important;
+                        color: red !important;
+                    }
+
+                    .ui-datatable .ui-datatable-data .odd-row td{
+                        background-color:#C9D1F7 !important;
+                    }
+                </style>
+
+
                 <h:form id="frmRegistro">
-                    <div class="row">
-                        <div class="col-10">
-                            <p:commandButton id="btnCargar" value="Cargar archivo"  
-                                             actionListener="#{cargaArchivoBean.cargarArchivo}"
-                                             process="@this" 
-                                             update="frmRegistrar"/>
-                        </div>
-                        <div class="col-2">
-                            <p:commandButton id="btnEliminar" value="Eliminar"  class="btn btn-dark text-danger"
-                                             actionListener="#{cargaArchivoBean.eliminarRegistro}"
-                                             process="frmRegistro:btnEliminar frmRegistro:dtArchivo" 
-                                             update="frmRegistro:dtArchivo"/>
-                        </div>
+                    <div class="d-flex justify-content-between pb-1">
+
+                        <p:commandButton id="btnCargar" value="Cargar archivo"  
+                                         icon="pi pi-upload"
+                                         styleClass="rounded-button ui-button-success"
+                                         actionListener="#{cargaArchivoBean.cargarArchivo}"
+                                         process="@this" 
+                                         update="frmRegistrar"/>
+
+                        <p:commandButton id="btnEliminar" 
+                                         value="Eliminar"
+                                         class="ui-button-outlined ui-button-danger text-gray text-sm"
+                                         actionListener="#{cargaArchivoBean.eliminarRegistro}"
+                                         icon="pi pi-trash"                                             
+                                         process="frmRegistro:btnEliminar frmRegistro:dtArchivo" 
+                                         update="frmRegistro:dtArchivo"/>
+
                     </div>
-                    <p:dataTable id="dtArchivo" size="small" showGridlines="true" value="#{cargaArchivoBean.archivos}"
+                    <p:dataTable id="dtArchivo" size="small" 
+                                 showGridlines="true" value="#{cargaArchivoBean.archivos}"
+                                 emptyMessage="No existen archivos"
+                                 reflow="true"
+                                 stripedRows="true"                                 
                                  var="dataP">
                         <p:column width="25">
                             <p:selectBooleanCheckbox value="#{dataP.selected}"/>
+                        </p:column>
+                        <p:column headerText="" class="col-1">
+                            <h:outputText value="[PREVIEW]"/>
                         </p:column>
                         <p:column headerText="Archivo">
                             <h:outputText value="#{dataP.adjunto}"/>
@@ -42,9 +67,10 @@
                         <p:column headerText="Fecha">
                             <h:outputText value="#{dataP.fecha}"/>
                         </p:column>
-                        <p:column headerText="Opciones">
-                            <p:commandButton value="Eliminar" icon="pi pi-trash" class="text-danger"
-                                             actionListener="#{cargaArchivoBean.eliminarRegistro()}" process="@this" update="frmRegistro:dtArchivo">
+                        <p:column headerText="" class="text-center col-1">
+                            <p:commandButton  icon="pi pi-trash" 
+                                              styleClass="rounded-button ui-button-flat text-gray"
+                                              actionListener="#{cargaArchivoBean.eliminarRegistro()}" process="@this" update="frmRegistro:dtArchivo">
                                 <p:confirm header="Confirmar" message="La operaciń va a eliminar el registro, ¿está seguro?" icon="pi pi-info-circle"/>
                             </p:commandButton>
                         </p:column>
