@@ -20,7 +20,6 @@ import mx.ihsa.sistema.AbstractImpl;
 @Stateless
 public class CatObjetivoImpl extends AbstractImpl<CatObjetivo> {
 
-
     public CatObjetivoImpl() {
         super(CatObjetivo.class);
     }
@@ -59,13 +58,21 @@ public class CatObjetivoImpl extends AbstractImpl<CatObjetivo> {
             return null;
         }
     }
-    
-     public List<CatObjetivo> traerTodos() {
+
+    public List<ObjetivoVo> traerTodos() {
         try {
             StringBuilder sb = new StringBuilder();
             sb.append(" select ca.id, ca.nombre from cat_objetivo ca ")
                     .append(" where ca.eliminado = false");
-            return  em.createNativeQuery(sb.toString(), CatObjetivo.class).getResultList();
+            List<Object[]> lo = em.createNativeQuery(sb.toString()).getResultList();
+            List<ObjetivoVo> objs = new ArrayList<>();
+            for (Object[] objects : lo) {
+                ObjetivoVo obj = new ObjetivoVo();
+                obj.setId((Integer) objects[0]);
+                obj.setNombre((String) objects[1]);
+                objs.add(obj);
+            }
+            return objs;
         } catch (Exception e) {
             return null;
         }

@@ -134,10 +134,16 @@ public class CargaArchivoBean implements Serializable {
         iniciarCatSel();
         //
         llenarTag();
+        //
+        llenarObjetivos();
     }
 
     private void llenarDatos() {
         setArchivos(adjuntoCategoriaImpl.traerPorArchiCategoria());
+    }
+
+    private void llenarObjetivos() {
+        objetivos = objetivoImpl.traerTodos();
     }
 
     private void llenarCategorias() {
@@ -276,13 +282,10 @@ public class CargaArchivoBean implements Serializable {
         }
     }
 
-    public List<String> completeObjetivo(String cad) {
+    public List<ObjetivoVo> completeObjetivo(String cad) {
         String queryLowerCase = cad.toLowerCase();
-        List<String> countryList = new ArrayList<>();
-        for (ObjetivoVo obj : objetivos) {
-            countryList.add(obj.getNombre());
-        }
-        return countryList.stream().filter(t -> t.toLowerCase().startsWith(queryLowerCase)).collect(Collectors.toList());
+        return objetivos.stream().filter(t -> t.getNombre().toLowerCase()
+                .startsWith(queryLowerCase)).collect(Collectors.toList());
     }
 
     public List<String> autocompletarTags(String cad) {
