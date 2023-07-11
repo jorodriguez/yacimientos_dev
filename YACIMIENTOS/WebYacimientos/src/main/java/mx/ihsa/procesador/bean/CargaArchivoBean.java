@@ -24,10 +24,13 @@ import lombok.Setter;
 import mx.ihsa.dominio.vo.AdjuntoVO;
 import mx.ihsa.dominio.vo.CategoriaAdjuntoVo;
 import mx.ihsa.dominio.vo.CategoriaVo;
+import mx.ihsa.dominio.vo.ObjetivoVo;
 import mx.ihsa.dominio.vo.TagVo;
 import mx.ihsa.excepciones.GeneralException;
+import mx.ihsa.modelo.CatObjetivo;
 import mx.ihsa.modelo.SiAdjunto;
 import mx.ihsa.modelo.SiCategoria;
+import mx.ihsa.servicios.sistema.impl.CatObjetivoImpl;
 import mx.ihsa.servicios.sistema.impl.RepAdjuntoCategoriaImpl;
 import mx.ihsa.servicios.sistema.impl.SiAdjuntoImpl;
 import mx.ihsa.servicios.sistema.impl.SiCategoriaImpl;
@@ -63,9 +66,17 @@ public class CargaArchivoBean implements Serializable {
     SiTagImpl tagImpl;
     @Inject
     SiAdjuntoImpl adjuntoImpl;
+    @Inject
+    CatObjetivoImpl objetivoImpl;
     //
     @Setter
     List<CategoriaAdjuntoVo> archivos;
+    @Getter
+    @Setter
+    ObjetivoVo objetivoVo;
+    @Getter
+    @Setter
+    String objetivo;
     @Getter
     @Setter
     CategoriaAdjuntoVo categoriaAdjuntoVo;
@@ -90,6 +101,9 @@ public class CargaArchivoBean implements Serializable {
     @Getter
     @Setter
     List<TagVo> tags;
+    @Getter
+    @Setter
+    List<ObjetivoVo> objetivos;
     private UploadedFile uploadedFile;
     @Getter
     @Setter
@@ -100,18 +114,15 @@ public class CargaArchivoBean implements Serializable {
     @Getter
     @Setter
     List<TagVo> tagsAcumulados;
-    @Getter
-    @Setter
-    LocalDate maxDate;
 
     @PostConstruct
     public void iniciar() {
-        maxDate = LocalDate.now();
         tagVo = new TagVo();
         categoriaVo = new CategoriaVo();
         categoriaSeleccionadaVo = new CategoriaVo();
         categoriaAdjuntoVo = new CategoriaAdjuntoVo();
         tags = new ArrayList<>();
+        objetivos = new ArrayList<>();
         tagsAcumulados = new ArrayList<>();
         categorias = new ArrayList<>();
         categoriasSeleccionadas = new ArrayList<>();
@@ -139,26 +150,35 @@ public class CargaArchivoBean implements Serializable {
 
     public void cargarArchivo() {
         categoriaAdjuntoVo = new CategoriaAdjuntoVo();
-        categoriaAdjuntoVo.setFecha(maxDate);
+        objetivoVo = new ObjetivoVo();
         PrimeFaces.current().executeScript("$(dialogoRegistrar).modal('show');");
     }
 
     public void guardarArchivo() {
         try {
             Preconditions.checkArgument((uploadedFile != null), "Seleccione el archivo");
-            Preconditions.checkArgument((categoriaSeleccionadaVo.getId() != null && categoriaSeleccionadaVo.getId() > 0), "Seleccione una categoría");
+            Preconditions.checkArgument((categoriaVo.getId() != null && categoriaVo.getId() > 0), "Seleccione una categoría");
+            Preconditions.checkArgument(!categoriaAdjuntoVo.getNombre().trim().isEmpty(), "Agregue un nombre");
             //
             adjuntoVo = new AdjuntoVO();
             adjuntoVo.setNombre(uploadedFile.getFileName());
             adjuntoVo.setTipoArchivo(uploadedFile.getContentType());
             adjuntoVo.setTamanio(uploadedFile.getSize());
             adjuntoVo.setContenido(uploadedFile.getContent());
-            categoriaAdjuntoVo.setIdCategoria(categoriaSeleccionadaVo.getId());
+            categoriaAdjuntoVo.setIdCategoria(categoriaVo.getId());
             //
+            if (objetivoVo.getId() == 0) {
+                objetivoVo.setNombre(objetivo);
+                CatObjetivo cob = objetivoImpl.guardar(sesion.getUsuarioSesion().getId(), objetivoVo);
+                if (cob != null) {
+                    categoriaAdjuntoVo.setIdObjetivo(cob.getId());
+                }
+            }
+
             Path pathFile = Files.write(Path.of("/files/yac/" + adjuntoVo.getNombre()), adjuntoVo.getContenido());
             if (adjuntoVo.getNombre().endsWith("pdf")) {
                 categoriaAdjuntoVo.setArchivoTexto(contenidoPdf(adjuntoVo.getContenido()));
-            } else {
+            } else if ((adjuntoVo.getNombre().endsWith("docx"))) {
                 String contenido = new String(Files.readAllBytes(pathFile));
                 categoriaAdjuntoVo.setArchivoTexto(contenido);
             }
@@ -254,6 +274,15 @@ public class CargaArchivoBean implements Serializable {
                 }
             }
         }
+    }
+
+    public List<String> completeObjetivo(String cad) {
+        String queryLowerCase = cad.toLowerCase();
+        List<String> countryList = new ArrayList<>();
+        for (ObjetivoVo obj : objetivos) {
+            countryList.add(obj.getNombre());
+        }
+        return countryList.stream().filter(t -> t.toLowerCase().startsWith(queryLowerCase)).collect(Collectors.toList());
     }
 
     public List<String> autocompletarTags(String cad) {

@@ -18,6 +18,7 @@ import mx.ihsa.dominio.vo.AdjuntoTagVo;
 import mx.ihsa.dominio.vo.CategoriaAdjuntoVo;
 import mx.ihsa.dominio.vo.CategoriaVo;
 import mx.ihsa.dominio.vo.TagVo;
+import mx.ihsa.modelo.CatObjetivo;
 import mx.ihsa.modelo.RepAdjuntoCategoria;
 import mx.ihsa.modelo.SiAdjunto;
 import mx.ihsa.modelo.SiCategoria;
@@ -44,16 +45,12 @@ public class RepAdjuntoCategoriaImpl extends AbstractImpl<RepAdjuntoCategoria> {
 
     public void guardar(int sesionId, CategoriaAdjuntoVo categoriaAdjuntoVo, int adjId, List<CategoriaVo> categoriaVos, List<TagVo> tags) {
         try {
-            catsel = new StringBuilder();
-            categoriaVos.stream().forEach(cs -> {
-                catsel.append(", ").append(cs.getId());
-            });
             RepAdjuntoCategoria categiriaAdj = new RepAdjuntoCategoria();
             categiriaAdj.setSiAdjuntoId(new SiAdjunto(adjId));
             categiriaAdj.setSiCategoriaId(new SiCategoria(categoriaAdjuntoVo.getIdCategoria()));
-            categiriaAdj.setCategorias(catsel.substring(4, catsel.length()));
-            categiriaAdj.setFecha(categoriaAdjuntoVo.getFecha());
-            categiriaAdj.setFase(categoriaAdjuntoVo.getFace());
+            categiriaAdj.setCatObjetivoId(new CatObjetivo(categoriaAdjuntoVo.getIdObjetivo()));
+            categiriaAdj.setFecha(LocalDate.now());
+            categiriaAdj.setNombre(categoriaAdjuntoVo.getNombre());
             categiriaAdj.setNotas(categoriaAdjuntoVo.getNotas());
             categiriaAdj.setArchivoTexto(categoriaAdjuntoVo.getArchivoTexto());
 
@@ -91,61 +88,46 @@ public class RepAdjuntoCategoriaImpl extends AbstractImpl<RepAdjuntoCategoria> {
         edit(adjuntoCat);
     }
 
-    public List<CategoriaAdjuntoVo> traerPorCategoria(int sesionId, String tag) {
+    private String consulta() {
         StringBuilder sb = new StringBuilder();
-        sb.append(" select rpt.id, ad.id, ad.nombre, ca.id, ca.nombre, ca.categorias, rpt.categorias, rpt.fecha, rpt.fase  from rep_adjunto_categoria rpt ")
+        sb.append(" select rpt.id, ad.id, ad.nombre, ca.id, ca.nombre, rpt.fecha, rpt.nombre, cob.id, cob.nombre from rep_adjunto_categoria rpt ")
                 .append("   inner join si_adjunto ad on rpt.si_adjunto_id = ad.id")
                 .append("   inner join si_categoria ca on rpt.si_categoria_id = ca.id")
+                .append("   inner join cat_objetivo cob on rpt.cat_objetivo_id = cob.id");
+        return sb.toString();
+    }
+
+    public List<CategoriaAdjuntoVo> traerPorCategoria(int sesionId, String tag) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(consulta())
                 .append(" where t.nombre = '").append(tag).append("'")
                 .append(" and rpt.eliminado =  false");
         //
         List<Object[]> lo = em.createNativeQuery(sb.toString()).getResultList();
         List<CategoriaAdjuntoVo> adjTags = new ArrayList<>();
         for (Object[] objects : lo) {
-            CategoriaAdjuntoVo adjuntoTagVo = new CategoriaAdjuntoVo();
-            adjuntoTagVo.setId((Integer) objects[0]);
-            adjuntoTagVo.setIdAdjunto((Integer) objects[1]);
-            adjuntoTagVo.setAdjunto((String) objects[2]);
-            adjuntoTagVo.setIdCategoria((Integer) objects[3]);
-            adjuntoTagVo.setNombreCategoria((String) objects[4]);
-            adjuntoTagVo.setCategorias((String) objects[5]);
-            adjuntoTagVo.setFecha((LocalDate) objects[6]);
-            adjuntoTagVo.setFace((String) objects[7]);
-            adjTags.add(adjuntoTagVo);
+            adjTags.add(cast(objects));
         }
         return adjTags;
     }
 
     public List<CategoriaAdjuntoVo> traerPorArchivo(int adjuntoId) {
         StringBuilder sb = new StringBuilder();
-        sb.append(" select rpt.id, ad.id, ad.nombre, ca.id, ca.nombre, rpt.categorias, rpt.fecha, rpt.fase  from rep_adjunto_categoria rpt ")
-                .append("   inner join si_adjunto ad on rpt.si_adjunto_id = ad.id")
-                .append("   inner join si_categoria ca on rpt.si_categoria_id = ca.id")
+        sb.append(consulta())
                 .append(" where ad.id = ").append(adjuntoId)
                 .append(" and rpt.eliminado =  false");
         //
         List<Object[]> lo = em.createNativeQuery(sb.toString()).getResultList();
         List<CategoriaAdjuntoVo> adjTags = new ArrayList<>();
         for (Object[] objects : lo) {
-            CategoriaAdjuntoVo adjuntoTagVo = new CategoriaAdjuntoVo();
-            adjuntoTagVo.setId((Integer) objects[0]);
-            adjuntoTagVo.setIdAdjunto((Integer) objects[1]);
-            adjuntoTagVo.setAdjunto((String) objects[2]);
-            adjuntoTagVo.setIdCategoria((Integer) objects[3]);
-            adjuntoTagVo.setNombreCategoria((String) objects[4]);
-            adjuntoTagVo.setCategorias((String) objects[5]);
-            adjuntoTagVo.setFecha((LocalDate) objects[6]);
-            adjuntoTagVo.setFace((String) objects[7]);
-            adjTags.add(adjuntoTagVo);
+            adjTags.add(cast(objects));
         }
         return adjTags;
     }
 
     public List<CategoriaAdjuntoVo> buscarPorArchiCategoriaId(int adjuntoId, int categoriaId) {
         StringBuilder sb = new StringBuilder();
-        sb.append(" select rpt.id, ad.id, ad.nombre, ca.id, ca.nombre, rpt.categorias, rpt.fecha, rpt.fase  from rep_adjunto_categoria rpt ")
-                .append("   inner join si_adjunto ad on rpt.si_adjunto_id = ad.id")
-                .append("   inner join si_categoria ca on rpt.si_categoria_id = ca.id")
+        sb.append(consulta())
                 .append(" where ad.id = ").append(adjuntoId)
                 .append(" and ca.id = ").append(categoriaId)
                 .append(" and rpt.eliminado =  false");
@@ -153,40 +135,20 @@ public class RepAdjuntoCategoriaImpl extends AbstractImpl<RepAdjuntoCategoria> {
         List<Object[]> lo = em.createNativeQuery(sb.toString()).getResultList();
         List<CategoriaAdjuntoVo> adjTags = new ArrayList<>();
         for (Object[] objects : lo) {
-            CategoriaAdjuntoVo adjuntoTagVo = new CategoriaAdjuntoVo();
-            adjuntoTagVo.setId((Integer) objects[0]);
-            adjuntoTagVo.setIdAdjunto((Integer) objects[1]);
-            adjuntoTagVo.setAdjunto((String) objects[2]);
-            adjuntoTagVo.setIdCategoria((Integer) objects[3]);
-            adjuntoTagVo.setNombreCategoria((String) objects[4]);
-            adjuntoTagVo.setCategorias((String) objects[5]);
-            adjuntoTagVo.setFecha((LocalDate) objects[6]);
-            adjuntoTagVo.setFace((String) objects[7]);
-            adjTags.add(adjuntoTagVo);
+            adjTags.add(cast(objects));
         }
         return adjTags;
     }
 
     public List<CategoriaAdjuntoVo> traerPorArchiCategoria() {
         StringBuilder sb = new StringBuilder();
-        sb.append(" select rpt.id, ad.id, ad.nombre, ca.id, ca.nombre, rpt.categorias, rpt.fecha, rpt.fase  from rep_adjunto_categoria rpt ")
-                .append("   inner join si_adjunto ad on rpt.si_adjunto_id = ad.id")
-                .append("   inner join si_categoria ca on rpt.si_categoria_id = ca.id")
+        sb.append(consulta())
                 .append(" where rpt.eliminado =  false");
         //
         List<Object[]> lo = em.createNativeQuery(sb.toString()).getResultList();
         List<CategoriaAdjuntoVo> adjTags = new ArrayList<>();
         for (Object[] objects : lo) {
-            CategoriaAdjuntoVo adjuntoTagVo = new CategoriaAdjuntoVo();
-            adjuntoTagVo.setId((Integer) objects[0]);
-            adjuntoTagVo.setIdAdjunto((Integer) objects[1]);
-            adjuntoTagVo.setAdjunto((String) objects[2]);
-            adjuntoTagVo.setIdCategoria((Integer) objects[3]);
-            adjuntoTagVo.setNombreCategoria((String) objects[4]);
-            adjuntoTagVo.setCategorias((String) objects[5]);
-            adjuntoTagVo.setFecha(objects[6] != null ? castDate((Date) objects[6]) : null);
-            adjuntoTagVo.setFace((String) objects[7]);
-            adjTags.add(adjuntoTagVo);
+            adjTags.add(cast(objects));
         }
         return adjTags;
     }
@@ -195,4 +157,17 @@ public class RepAdjuntoCategoriaImpl extends AbstractImpl<RepAdjuntoCategoria> {
         return Instant.ofEpochMilli(fecha.getTime()).atZone(ZoneId.systemDefault()).toLocalDate();
     }
 
+    private CategoriaAdjuntoVo cast(Object[] objects) {
+        CategoriaAdjuntoVo adjuntoTagVo = new CategoriaAdjuntoVo();
+        adjuntoTagVo.setId((Integer) objects[0]);
+        adjuntoTagVo.setIdAdjunto((Integer) objects[1]);
+        adjuntoTagVo.setAdjunto((String) objects[2]);
+        adjuntoTagVo.setIdCategoria((Integer) objects[3]);
+        adjuntoTagVo.setNombreCategoria((String) objects[4]);
+        adjuntoTagVo.setFecha(objects[5] != null ? castDate((Date) objects[5]) : null);
+        adjuntoTagVo.setNombre((String) objects[6]);
+        adjuntoTagVo.setIdObjetivo((Integer) objects[7]);
+        adjuntoTagVo.setObjetivo((String) objects[8]);
+        return adjuntoTagVo;
+    }
 }
