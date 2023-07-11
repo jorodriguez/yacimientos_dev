@@ -5,7 +5,6 @@
 package mx.ihsa.modelo;
 
 import java.io.Serializable;
-import java.time.LocalDate;
 import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -15,11 +14,9 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-import javax.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -30,36 +27,18 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-@Table(name = "rep_adjunto_categoria")
-@SequenceGenerator(sequenceName = "rep_adjunto_categoria_id_seq", name = "adjunto_categoria_seq", allocationSize = 1)
-public class RepAdjuntoCategoria implements Serializable {
+@Table(name = "cat_objetivo")
+public class CatObjetivo implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
-    @GeneratedValue(generator = "adjunto_categoria_seq", strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "id")
     private Integer id;
-
-    @JoinColumn(name = "si_adjunto_id", referencedColumnName = "id")
-    @ManyToOne(optional = false)
-    private SiAdjunto siAdjuntoId;
-    @JoinColumn(name = "si_categoria_id", referencedColumnName = "id")
-    @ManyToOne(optional = false)
-    private SiCategoria siCategoriaId;
-    @JoinColumn(name = "cat_objetivo_id", referencedColumnName = "id")
-    @ManyToOne(optional = false)
-    private CatObjetivo catObjetivoId;
-    @Column(name = "fecha")
-    private LocalDate fecha;
-    @Column(name = "notas")
-    private String notas;
-    @Column(name = "archivo_texto")
-    private String archivoTexto;
     @Column(name = "nombre")
     private String nombre;
-    //
-    @NotNull
+    @Basic(optional = false)
     @Column(name = "fecha_genero")
     @Temporal(TemporalType.TIMESTAMP)
     private Date fechaGenero;
@@ -75,20 +54,37 @@ public class RepAdjuntoCategoria implements Serializable {
     @ManyToOne
     private Usuario modifico;
 
-    public RepAdjuntoCategoria() {
+    public CatObjetivo() {
     }
 
-    public RepAdjuntoCategoria(int id) {
+    public CatObjetivo(Integer id) {
         this.id = id;
+    }
+
+    public CatObjetivo(Integer id, String nombre, Date fechaGenero, Date fechaModifico, Boolean eliminado, Usuario genero, Usuario modifico) {
+        this.id = id;
+        this.nombre = nombre;
+        this.fechaGenero = fechaGenero;
+        this.fechaModifico = fechaModifico;
+        this.eliminado = eliminado;
+        this.genero = genero;
+        this.modifico = modifico;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 0;
+        hash += (id != null ? id.hashCode() : 0);
+        return hash;
     }
 
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof RepAdjuntoCategoria)) {
+        if (!(object instanceof CatObjetivo)) {
             return false;
         }
-        RepAdjuntoCategoria other = (RepAdjuntoCategoria) object;
+        CatObjetivo other = (CatObjetivo) object;
         if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }
@@ -97,7 +93,7 @@ public class RepAdjuntoCategoria implements Serializable {
 
     @Override
     public String toString() {
-        return "mx.ihsa.modelo.RepAdjuntoCategoria[ id=" + id + " ]";
+        return "mx.ihsa.mavenproject1.CatObjetivo[ id=" + id + " ]";
     }
 
 }

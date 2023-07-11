@@ -20,10 +20,11 @@ public class CategoriaAdjuntoVo extends Vo {
     private String adjunto;
     private int idCategoria;
     private String nombreCategoria;
-    private String categorias;
     private LocalDate fecha;
-    private String face;
     private String notas;
     private String archivoTexto;
     private boolean selected;
+    //
+    private int idObjetivo;
+    private String objetivo;
 }
