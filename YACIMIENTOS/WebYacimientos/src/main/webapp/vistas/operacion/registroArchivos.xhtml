@@ -63,7 +63,7 @@
                         <p:column headerText="" class="text-center col-1">
                             <p:commandButton  icon="pi pi-trash" 
                                               styleClass="rounded-button ui-button-flat text-gray"
-                                              actionListener="#{cargaArchivoBean.eliminarRegistro()}" process="@this" update="frmRegistro:dtArchivo">
+                                              actionListener="#{cargaArchivoBean.eliminarArchivo(dataP)}" process="@this" update="frmRegistro:dtArchivo">
                                 <p:confirm header="Confirmar" message="La operaciń va a eliminar el registro, ¿está seguro?" icon="pi pi-info-circle"/>
                             </p:commandButton>
                         </p:column>
@@ -74,7 +74,9 @@
                     </p:confirmDialog>
                 </h:form>
                 <!-- Registro de archivo-->
-                <h:form id="frmRegistrar" enctype="multipart/form-data">
+                <h:form id="frmRegistrar" enctype="multipart/form-data" onkeypress="if (event.keyCode == 13) {
+                            return false;
+                        }"	 >
                     <div class="modal fade" id="dialogoRegistrar"
                          tabindex="-1" role="dialog" aria-labelledby="modal-default" aria-hidden="true">
                         <div class="modal-dialog modal-dialog-centered modal-lg" role="dialog">
@@ -85,10 +87,9 @@
                                 <div class="modal-body">
                                     <div class="row">
                                         <div class="col-3">
-                                            <p:panel id="pnlCargarArc">
-                                                <p:fileUpload mode="simple" skinSimple="true"
-                                                              value="#{cargaArchivoBean.uploadedFile}"/>
-                                            </p:panel>
+                                            <p:fileUpload mode="simple" skinSimple="true" 
+                                                          value="#{cargaArchivoBean.uploadedFile}"
+                                                          />
                                         </div>
                                         <div class="col-6">
                                             <div class="input-group">
@@ -96,8 +97,7 @@
                                                 <div class="col-12">
                                                     <p:autoComplete id="objPojo" value="#{cargaArchivoBean.objetivo}" 
                                                                     completeMethod="#{cargaArchivoBean.completeObjetivo}"
-                                                                    var="obj" itemLabel="#{obj.nombre}" itemValue="#{obj}" 
-                                                                    converter="#{objetivoConverter}" size="42"
+                                                                    size="42"
                                                                     minQueryLength="4" placeholder="Escriba el objetivo"/>
                                                 </div>
                                             </div>
@@ -120,13 +120,15 @@
                                                 <h:outputText value="Tag" class="col-12"/>
                                                 <div class="col-10 input-group">
                                                     <p:autoComplete id="aucSimple" value="#{cargaArchivoBean.texto}" 
-                                                                    completeMethod="#{cargaArchivoBean.autocompletarTags}">
-                                                        <p:ajax  listener="#{cargaArchivoBean.selecionarTag}" update="frmRegistrar:pnlTags frmRegistrar:aucSimple"/>
+                                                                    completeMethod="#{cargaArchivoBean.autocompletarTags}"
+                                                                    size="42" >
+                                                        <p:ajax listener="#{cargaArchivoBean.selecionarTag}" 
+                                                                update="frmRegistrar:pnlTags frmRegistrar:aucSimple"/>
                                                     </p:autoComplete>
-                                                    <p:commandButton action="#{cargaArchivoBean.agregarTag}"
+                                                    <!--p:commandButton action="{cargaArchivoBean.agregarTag}"
                                                                      process="@this"  icon="fa fa-plus"
                                                                      update="frmRegistrarTag">
-                                                    </p:commandButton>
+                                                    </p:commandButton-->
                                                 </div>
                                             </div>
                                             <div class="input-group col-12">

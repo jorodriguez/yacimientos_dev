@@ -41,7 +41,6 @@ public class RepAdjuntoCategoriaImpl extends AbstractImpl<RepAdjuntoCategoria> {
     RepAdjuntoTagImpl adjuntoTagImpl;
     @Inject
     SiTagImpl tagImpl;
-    StringBuilder catsel;
 
     public void guardar(int sesionId, CategoriaAdjuntoVo categoriaAdjuntoVo, int adjId, List<CategoriaVo> categoriaVos, List<TagVo> tags) {
         try {
@@ -62,6 +61,10 @@ public class RepAdjuntoCategoriaImpl extends AbstractImpl<RepAdjuntoCategoria> {
             tags.stream().forEach(tg -> {
                 AdjuntoTagVo adjuntoTagVo = new AdjuntoTagVo();
                 adjuntoTagVo.setIdAdjunto(adjId);
+                if (tg.getId() == 0) {
+                    TagVo tag = tagImpl.buscarPorNombre(tg.getNombre());
+                    tg.setId(tag.getId());
+                }
                 adjuntoTagVo.setIdTag(tg.getId());
                 adjuntoTagImpl.guardar(sesionId, adjuntoTagVo);
             });

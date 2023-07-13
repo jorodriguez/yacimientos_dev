@@ -8,8 +8,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import javax.ejb.Stateless;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import mx.ihsa.dominio.vo.TagVo;
 import mx.ihsa.modelo.SiTag;
 import mx.ihsa.modelo.Usuario;
@@ -27,12 +25,15 @@ public class SiTagImpl extends AbstractImpl<SiTag> {
     }
 
     public void guardar(int sesionId, TagVo tagVo) {
-        SiTag siTag = new SiTag();
-        siTag.setNombre(tagVo.getNombre());
-        siTag.setGenero(new Usuario(sesionId));
-        siTag.setFechaGenero(new Date());
-        siTag.setEliminado(Boolean.FALSE);
-        create(siTag);
+        TagVo tgVo = buscarPorNombre(tagVo.getNombre());
+        if (tgVo.getId() == 0) {
+            SiTag siTag = new SiTag();
+            siTag.setNombre(tagVo.getNombre());
+            siTag.setGenero(new Usuario(sesionId));
+            siTag.setFechaGenero(new Date());
+            siTag.setEliminado(Boolean.FALSE);
+            create(siTag);
+        }
     }
 
     public void modificar(int sesionId, TagVo tagVo) {
@@ -61,7 +62,7 @@ public class SiTagImpl extends AbstractImpl<SiTag> {
             return null;
         }
     }
-    
+
     public List<TagVo> traerTodo() {
         try {
 
@@ -82,4 +83,22 @@ public class SiTagImpl extends AbstractImpl<SiTag> {
         }
     }
 
+    public TagVo buscarPorId(Integer id) {
+        try {
+
+            StringBuilder sb = new StringBuilder();
+            sb.append(" select t.id, t.nombre from si_tag t  where t.id = ").append(id)
+                    .append(" and t.eliminado = false");
+            List<Object[]> lo = em.createNativeQuery(sb.toString()).getResultList();
+            TagVo tagVo = new TagVo();
+            for (Object[] objects : lo) {
+                tagVo.setId((Integer) objects[0]);
+                tagVo.setNombre((String) objects[1]);
+            }
+            return tagVo;
+        } catch (Exception e) {
+            System.out.println("E: " + e.getMessage());
+            return null;
+        }
+    }
 }

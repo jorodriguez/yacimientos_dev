@@ -12,27 +12,27 @@ import javax.faces.convert.ConverterException;
 import javax.faces.convert.FacesConverter;
 import javax.inject.Inject;
 import javax.inject.Named;
-import mx.ihsa.dominio.vo.ObjetivoVo;
-import mx.ihsa.servicios.sistema.impl.CatObjetivoImpl;
+import mx.ihsa.dominio.vo.TagVo;
+import mx.ihsa.servicios.sistema.impl.SiTagImpl;
 
 /**
  *
  * @author joel
  */
 @Named
-@FacesConverter(value = "objetivoConverter", managed = true)
-public class ObjetivoConverter implements Converter {
+@FacesConverter(value = "tagConverter", managed = true)
+public class TagConverter implements Converter<TagVo> {
 
     @Inject
-    CatObjetivoImpl objetivoImpl;
+    SiTagImpl tagImpl;
 
     @Override
-    public ObjetivoVo getAsObject(FacesContext fc, UIComponent uic, String value) {
+    public TagVo getAsObject(FacesContext fc, UIComponent uic, String value) {
         if (value != null && value.trim().length() > 0) {
             try {
-                return objetivoImpl.buscarPorId(Integer.valueOf(value));
+                return tagImpl.buscarPorId(Integer.valueOf(value));
             } catch (NumberFormatException e) {
-                throw new ConverterException(new FacesMessage(FacesMessage.SEVERITY_ERROR, "Conversion Error", "Objetivo no encontrado."));
+                throw new ConverterException(new FacesMessage(FacesMessage.SEVERITY_ERROR, "Conversión Error", "Objetivo no encontrado."));
             }
         } else {
             return null;
@@ -40,9 +40,9 @@ public class ObjetivoConverter implements Converter {
     }
 
     @Override
-    public String getAsString(FacesContext fc, UIComponent uic, Object object) {
+    public String getAsString(FacesContext fc, UIComponent uic, TagVo object) {
         if (object != null) {
-            return String.valueOf(((ObjetivoVo) object).getId());
+            return object.getNombre();
         } else {
             return null;
         }

@@ -78,4 +78,20 @@ public class CatObjetivoImpl extends AbstractImpl<CatObjetivo> {
         }
     }
 
+    public ObjetivoVo buscarPorId(Integer id) {
+        try {
+            StringBuilder sb = new StringBuilder();
+            sb.append(" select ca.id, ca.nombre from cat_objetivo ca ")
+                    .append(" where ca.id = ").append(id)
+                    .append(" and ca.eliminado = false");
+            Object[] obj = (Object[]) em.createNativeQuery(sb.toString()).getSingleResult();
+            ObjetivoVo objVo = new ObjetivoVo();
+            objVo.setId((Integer) obj[0]);
+            objVo.setNombre((String) obj[1]);
+            return objVo;
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
 }

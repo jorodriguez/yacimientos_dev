@@ -157,15 +157,17 @@ public class CargaArchivoBean implements Serializable {
     public void cargarArchivo() {
         categoriaAdjuntoVo = new CategoriaAdjuntoVo();
         objetivoVo = new ObjetivoVo();
+        tagsAcumulados = new ArrayList<>();
         PrimeFaces.current().executeScript("$(dialogoRegistrar).modal('show');");
     }
 
     public void guardarArchivo() {
         try {
             Preconditions.checkArgument((uploadedFile != null), "Seleccione el archivo");
-            Preconditions.checkArgument((categoriaVo.getId() != null && categoriaVo.getId() > 0), "Seleccione una categoría");
+            Preconditions.checkArgument(objetivo != null && !objetivo.isEmpty(), "Agregue el objetivo");
             Preconditions.checkArgument(!categoriaAdjuntoVo.getNombre().trim().isEmpty(), "Agregue un nombre");
-            //
+            Preconditions.checkArgument((categoriaVo.getId() != null && categoriaVo.getId() > 0), "Seleccione una categoría");
+//
             adjuntoVo = new AdjuntoVO();
             adjuntoVo.setNombre(uploadedFile.getFileName());
             adjuntoVo.setTipoArchivo(uploadedFile.getContentType());
@@ -173,12 +175,10 @@ public class CargaArchivoBean implements Serializable {
             adjuntoVo.setContenido(uploadedFile.getContent());
             categoriaAdjuntoVo.setIdCategoria(categoriaVo.getId());
             //
-            if (objetivoVo.getId() == 0) {
-                objetivoVo.setNombre(objetivo);
-                CatObjetivo cob = objetivoImpl.guardar(sesion.getUsuarioSesion().getId(), objetivoVo);
-                if (cob != null) {
-                    categoriaAdjuntoVo.setIdObjetivo(cob.getId());
-                }
+            objetivoVo.setNombre(objetivo);
+            CatObjetivo cob = objetivoImpl.guardar(sesion.getUsuarioSesion().getId(), objetivoVo);
+            if (cob != null) {
+                categoriaAdjuntoVo.setIdObjetivo(cob.getId());
             }
 
             Path pathFile = Files.write(Path.of("/files/yac/" + adjuntoVo.getNombre()), adjuntoVo.getContenido());
@@ -191,6 +191,11 @@ public class CargaArchivoBean implements Serializable {
             // guardar archivo
             SiAdjunto adj;
             adj = adjuntoImpl.save(adjuntoVo.getNombre(), "/files/yac/" + adjuntoVo.getNombre(), adjuntoVo.getTipoArchivo(), adjuntoVo.getTamanio(), sesion.getUsuarioSesion().getId());
+            //
+            // guardar tags
+            tagsAcumulados.stream().filter(tg -> tg.getId() == 0).forEach(t -> {
+                tagImpl.guardar(sesion.getUsuarioSesion().getId(), t);
+            });
             //
             adjuntoCategoriaImpl.guardar(sesion.getUsuarioSesion().getId(), categoriaAdjuntoVo, adj.getId(),
                     categoriasSeleccionadas, tagsAcumulados);
@@ -282,25 +287,34 @@ public class CargaArchivoBean implements Serializable {
         }
     }
 
-    public List<ObjetivoVo> completeObjetivo(String cad) {
+    public List<String> completeObjetivo(String cad) {
         String queryLowerCase = cad.toLowerCase();
-        return objetivos.stream().filter(t -> t.getNombre().toLowerCase()
+        List<String> objs = new ArrayList<>();
+        for (ObjetivoVo tg : objetivos) {
+            objs.add(tg.getNombre());
+        }
+        return objs.stream().filter(t -> t.toLowerCase()
                 .startsWith(queryLowerCase)).collect(Collectors.toList());
     }
 
     public List<String> autocompletarTags(String cad) {
         String queryLowerCase = cad.toLowerCase();
-        List<String> countryList = new ArrayList<>();
+        List<String> tgs = new ArrayList<>();
         for (TagVo tg : tags) {
-            countryList.add(tg.getNombre());
+            tgs.add(tg.getNombre());
         }
-        return countryList.stream().filter(t -> t.toLowerCase().startsWith(queryLowerCase)).collect(Collectors.toList());
+        return tgs.stream().filter(t -> t.toLowerCase().startsWith(queryLowerCase)).collect(Collectors.toList());
     }
 
     public void selecionarTag() {
         TagVo tVo = tagImpl.buscarPorNombre(texto);
-        texto = "";
+        if (tVo.getId() == 0) {
+            tVo = new TagVo();
+            tVo.setId(0);
+            tVo.setNombre(texto);
+        }
         tagsAcumulados.add(tVo);
+        texto = "";
     }
 
     public void agregarTag() {
