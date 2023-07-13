@@ -181,13 +181,13 @@ public class CargaArchivoBean implements Serializable {
                 categoriaAdjuntoVo.setIdObjetivo(cob.getId());
             }
 
-            Path pathFile = Files.write(Path.of("/files/yac/" + adjuntoVo.getNombre()), adjuntoVo.getContenido());
-            if (adjuntoVo.getNombre().endsWith("pdf")) {
-                categoriaAdjuntoVo.setArchivoTexto(contenidoPdf(adjuntoVo.getContenido()));
-            } else if ((adjuntoVo.getNombre().endsWith("docx"))) {
-                String contenido = new String(Files.readAllBytes(pathFile));
-                categoriaAdjuntoVo.setArchivoTexto(contenido);
-            }
+//            Path pathFile = Files.write(Path.of("/files/yac/" + adjuntoVo.getNombre()), adjuntoVo.getContenido());
+//            if (adjuntoVo.getNombre().endsWith("pdf")) {
+//                categoriaAdjuntoVo.setArchivoTexto(contenidoPdf(adjuntoVo.getContenido()));
+//            } else if ((adjuntoVo.getNombre().endsWith("docx"))) {
+//                String contenido = new String(Files.readAllBytes(pathFile));
+//                categoriaAdjuntoVo.setArchivoTexto(contenido);
+//            }
             // guardar archivo
             SiAdjunto adj;
             adj = adjuntoImpl.save(adjuntoVo.getNombre(), "/files/yac/" + adjuntoVo.getNombre(), adjuntoVo.getTipoArchivo(), adjuntoVo.getTamanio(), sesion.getUsuarioSesion().getId());
@@ -202,8 +202,9 @@ public class CargaArchivoBean implements Serializable {
             //
             llenarDatos();
             //
+            objetivo = "";
             PrimeFaces.current().executeScript("$(dialogoRegistrar).modal('hide');");
-        } catch (GeneralException | IOException | IllegalArgumentException ex) {
+        } catch (GeneralException | IllegalArgumentException ex) {
             FacesUtils.addErrorMessage(ex.getMessage());
             Logger.getLogger(CargaArchivoBean.class.getName()).log(Level.SEVERE, null, ex);
         }
